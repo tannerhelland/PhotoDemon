@@ -31,21 +31,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -1483,24 +1483,30 @@ Private Sub MnuLayerOrientation_Click(Index As Integer)
     
         'Rotate 90 clockwise
         Case 0
-        
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
+            
         'Rotate 90 counter-clockwise
         Case 1
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
         
         'Rotate 180
         Case 2
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
         
         'Rotate arbitrary
         Case 3
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
         
         '<separator>
         Case 4
         
         'Flip horizontal
         Case 5
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
         
         'Flip vertical
         Case 6
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
     
     End Select
 
@@ -1512,12 +1518,14 @@ Private Sub MnuLayerSize_Click(Index As Integer)
     
         'Reset to actual size
         Case 0
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
         
         '<separator>
         Case 1
-        
+            
         'Standard resize
         Case 2
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
         
         'Content-aware resize
         Case 3
@@ -2551,10 +2559,12 @@ Private Sub MnuImage_Click(Index As Integer)
             
         'Fit canvas to active layer
         Case 5
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
             Process "Fit canvas to layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex)
         
         'Fit canvas around all layers
         Case 6
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
             Process "Fit canvas to all layers", False
             
         '<separator>
@@ -2566,6 +2576,7 @@ Private Sub MnuImage_Click(Index As Integer)
         
         'Trim empty borders
         Case 9
+            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
             Process "Trim"
         
         '<separator>
