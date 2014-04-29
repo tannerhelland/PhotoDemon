@@ -72,11 +72,14 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     Dim sFile(0) As String
     Dim sTitle As String, sFilename As String
     
+    Dim downloadSuccess As Boolean
+    
     'PNGs on the clipboard get preferential treatment, as they preserve transparency data - so check for them first
     Dim clpObject As cCustomClipboard
     Set clpObject = New cCustomClipboard
     
-    'See if clipboard data is available in PNG format.  If it is, attempt to load it
+    'See if clipboard data is available in PNG format.  If it is, attempt to load it.
+    ' (If successful, this IF block will manually exit the sub upon completion.)
     If clpObject.IsDataAvailableForFormatName(FormMain.hWnd, "PNG") Then
             
         Dim PNGID As Long
@@ -121,8 +124,63 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             clpObject.ClipboardClose
         
         End If
-                
+        
     End If
+    
+    'If no PNG data was found, look for an HTML fragment.  Chrome and Firefox will include an HTML fragment link to any
+    ' copied image from within the browser, which we can use to download the image in question.
+    ' (If successful, this IF block will manually exit the sub upon completion.)
+    If clpObject.IsDataAvailableForFormatName(FormMain.hWnd, "HTML Format") Then
+    
+        Dim HtmlID As Long
+        HtmlID = clpObject.FormatIDForName(FormMain.hWnd, "HTML Format")
+        
+        If clpObject.ClipboardOpen(FormMain.hWnd) Then
+        
+            Dim htmlString As String
+            If clpObject.GetTextData(HtmlID, htmlString) Then
+                
+                'Look for an image reference within the HTML snippet
+                If InStr(1, htmlString, "<img src=", vbTextCompare) > 0 Then
+                
+                    'Retrieve the full image path, which will be between the first set of quotation marks following the
+                    ' "<img src=" statement in the HTML snippet.
+                    Dim vbQuoteMark As String
+                    vbQuoteMark = """"
+                    
+                    'Parse out the URL between the img src quotes
+                    Dim urlStart As Long, urlEnd As Long
+                    urlStart = InStr(1, htmlString, "<img src=", vbTextCompare)
+                    urlStart = InStr(urlStart, htmlString, vbQuoteMark, vbBinaryCompare) + 1
+                    urlEnd = InStr(urlStart + 1, htmlString, vbQuoteMark, vbBinaryCompare)
+                    
+                    'As a failsafe, make sure a valid URL was actually found
+                    If (urlStart > 0) And (urlEnd > 0) Then
+                    
+                        Message "Image URL found on clipboard.  Attempting to download..."
+                        downloadSuccess = FormInternetImport.ImportImageFromInternet(Mid$(htmlString, urlStart, urlEnd - urlStart))
+    
+                        'If the download failed, let the user know that hey, at least we tried.
+                        If Not downloadSuccess Then Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
+                    
+                        Message "Clipboard data imported successfully "
+                    
+                        clpObject.ClipboardClose
+                        Exit Sub
+                        
+                    End If
+                
+                End If
+                
+        
+            End If
+        
+            clpObject.ClipboardClose
+        
+        End If
+    
+    End If
+    
     
     'Make sure the clipboard format is a bitmap
     If Clipboard.GetFormat(CLIPBOARD_FORMAT_BMP) Then
@@ -167,7 +225,6 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     ElseIf Clipboard.GetFormat(vbCFText) And ((Left$(Trim(Str(Clipboard.GetText)), 7) = "http://") Or (Left$(Trim(Str(Clipboard.GetText)), 6) = "ftp://")) Then
         
         Message "URL found on clipboard.  Attempting to download image at that location..."
-        Dim downloadSuccess As Boolean
         downloadSuccess = FormInternetImport.ImportImageFromInternet(Trim(Str(Clipboard.GetText)))
         
         'If the download failed, let the user know that hey, at least we tried.
