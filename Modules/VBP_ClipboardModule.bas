@@ -3,8 +3,8 @@ Attribute VB_Name = "Clipboard_Handler"
 'Clipboard Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 28/April/14
-'Last update: all Paste options now work for either "Paste as New Layer" or "Paste as New Image"
+'Last updated: 29/April/14
+'Last update: improve reliability of URL parsing from clipboard HTML data
 '
 'Module for handling all Windows clipboard routines.  Copy and Paste are the real stars; Cut is not included
 ' (as there is no purpose for it at present), though Empty Clipboard does make an appearance.
@@ -23,7 +23,6 @@ Private Declare Function GetClipboardData Lib "user32" (ByVal wFormat As Long) A
 Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
 
 Private Const CF_HDROP As Long = 15
-Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 
 'Copy the current layer (or composite image, if copyMerged is true) to the clipboard.
 ' If a selection is active, crop the image to the layer area first.
@@ -139,7 +138,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             If clpObject.GetTextData(HtmlID, htmlString) Then
                 
                 'Look for an image reference within the HTML snippet
-                If InStr(1, htmlString, "<img src=", vbTextCompare) > 0 Then
+                If InStr(1, htmlString, "<img ", vbTextCompare) > 0 Then
                 
                     'Retrieve the full image path, which will be between the first set of quotation marks following the
                     ' "<img src=" statement in the HTML snippet.
@@ -148,9 +147,12 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                     
                     'Parse out the URL between the img src quotes
                     Dim urlStart As Long, urlEnd As Long
-                    urlStart = InStr(1, htmlString, "<img src=", vbTextCompare)
+                    urlStart = InStr(InStr(1, htmlString, "<img "), htmlString, "src=", vbTextCompare)
                     urlStart = InStr(urlStart, htmlString, vbQuoteMark, vbBinaryCompare) + 1
-                    urlEnd = InStr(urlStart + 1, htmlString, vbQuoteMark, vbBinaryCompare)
+                    
+                    'The magic number 6 below is calculated as the length of (src="), + 1 to advance to the
+                    ' character immediately following the quotation mark.
+                    urlEnd = InStr(urlStart + 6, htmlString, vbQuoteMark, vbBinaryCompare)
                     
                     'As a failsafe, make sure a valid URL was actually found
                     If (urlStart > 0) And (urlEnd > 0) Then
@@ -201,7 +203,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
     
     'Make sure the clipboard format is a bitmap
-    If Clipboard.GetFormat(CLIPBOARD_FORMAT_BMP) Then
+    If Clipboard.GetFormat(vbCFBitmap) Then
         
         'Copy the image into an StdPicture object
         Dim tmpPicture As StdPicture
@@ -213,7 +215,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         tmpDIB.CreateFromPicture tmpPicture
         
         'Ask the DIB to write its contents to file in BMP format
-        tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.tmp"
+        tmpClipboardFile = g_UserPreferences.GetTempPath & "PD_Clipboard.tmp"
         tmpDIB.writeToBitmapFile tmpClipboardFile
         
         'Now that the image is saved on the hard drive, we can delete our temporary objects
@@ -414,7 +416,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         tmpDIB.CreateFromPicture tmpPicture
         
         'Ask the DIB to write its contents to file in BMP format
-        tmpString = g_UserPreferences.GetTempPath & "PDClipboard.tmp"
+        tmpString = g_UserPreferences.GetTempPath & "PD_DragDrop.tmp"
         tmpDIB.writeToBitmapFile tmpString
         
         'Now that the image is saved on the hard drive, we can delete our temporary objects
