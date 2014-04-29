@@ -1164,82 +1164,9 @@ Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button A
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
     
-    Dim sFile() As String
-    
-    'Verify that the object being dragged is some sort of file or file list
-    If Data.GetFormat(vbCFFiles) Then
-        
-        'Copy the filenames into an array
-        ReDim sFile(0 To Data.Files.Count) As String
-        
-        Dim oleFilename
-        Dim tmpString As String
-        
-        Dim countFiles As Long
-        countFiles = 0
-        
-        For Each oleFilename In Data.Files
-            tmpString = oleFilename
-            If tmpString <> "" Then
-                sFile(countFiles) = tmpString
-                countFiles = countFiles + 1
-            End If
-        Next oleFilename
-        
-        'Because the OLE drop may include blank strings, verify the size of the array against countFiles
-        ReDim Preserve sFile(0 To countFiles - 1) As String
-        
-        'If an open image exists, pass the list of filenames to LoadImageAsNewLayer, which will load the images one-at-a-time
-        Dim i As Long
-        
-        If g_OpenImageCount > 0 Then
-            For i = 0 To UBound(sFile)
-                Layer_Handler.loadImageAsNewLayer False, sFile(i)
-            Next i
-        Else
-            LoadFileAsNewImage sFile
-        End If
-    
-    'If the data is not a file list, see if it's a URL.
-    ElseIf Data.GetFormat(vbCFText) Then
-    
-        Dim tmpDownloadFile As String
-        tmpDownloadFile = Trim$(Data.GetData(vbCFText))
-        
-        If (StrComp(Left$(tmpDownloadFile, 7), "http://", vbTextCompare) = 0) Or (StrComp(Left$(tmpDownloadFile, 6), "ftp://", vbTextCompare) = 0) Then
-        
-            Message "Image URL found on clipboard.  Attempting to download..."
-            
-            tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
-            
-            'If the download was successful, we can now use the standard image load routine to import the temporary file
-            If Len(tmpDownloadFile) > 0 Then
-                
-                'Depending on the number of open images, load the clipboard data as a new image or as a new layer in the current image
-                If g_OpenImageCount > 0 Then
-                    Layer_Handler.loadImageAsNewLayer False, tmpDownloadFile
-                Else
-                    ReDim sFile(0) As String
-                    sFile(0) = tmpDownloadFile
-                    LoadFileAsNewImage sFile
-                End If
-                
-                'Delete the temporary file
-                If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
-                
-                'Exit!
-                Exit Sub
-            
-            Else
-            
-                'If the download failed, let the user know that hey, at least we tried.
-                Message "Image download failed.  Please supply a valid image URL and try again."
-                
-            End If
-            
-        End If
-    
-    End If
+    'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
+    ' to load the OLE source.
+    Clipboard_Handler.loadImageFromDragDrop Data, Effect, True
     
 End Sub
 
@@ -1250,7 +1177,7 @@ Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button A
     If Not g_AllowDragAndDrop Then Exit Sub
 
     'Check to make sure the type of OLE object is files
-    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Then
+    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Or Data.GetFormat(vbCFBitmap) Then
         'Inform the source that the files will be treated as "copied"
         Effect = vbDropEffectCopy And Effect
     Else

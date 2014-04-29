@@ -350,3 +350,144 @@ Public Function ClipboardGetFiles() As String()
     
 End Function
 
+'Because OLE drag/drop is so similar to clipboard functionality, I have included that functionality here.
+' Data and Effect are passed as-is from the calling function, while intendedTargetIsLayer controls whether the image file(s)
+' (if valid) should be loaded as new layers or new images.
+Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByVal intendedTargetIsLayer As Boolean) As Boolean
+
+    Dim sFile() As String
+    Dim tmpString As String
+    
+    'Verify that the object being dragged is some sort of file or file list
+    If Data.GetFormat(vbCFFiles) Then
+        
+        'Copy the filenames into an array
+        ReDim sFile(0 To Data.Files.Count) As String
+        
+        Dim oleFilename
+        
+        Dim countFiles As Long
+        countFiles = 0
+        
+        For Each oleFilename In Data.Files
+            tmpString = oleFilename
+            If (Len(tmpString) > 0) And FileExist(tmpString) Then
+                sFile(countFiles) = tmpString
+                countFiles = countFiles + 1
+            End If
+        Next oleFilename
+        
+        'Make sure at least one valid, existant file was found
+        If countFiles > 0 Then
+        
+            'Because the OLE drop may include blank strings, verify the size of the array against countFiles
+            ReDim Preserve sFile(0 To countFiles - 1) As String
+            
+            'If an open image exists, pass the list of filenames to LoadImageAsNewLayer, which will load the images one-at-a-time
+            Dim i As Long
+            
+            If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
+                For i = 0 To UBound(sFile)
+                    Layer_Handler.loadImageAsNewLayer False, sFile(i)
+                Next i
+            Else
+                LoadFileAsNewImage sFile
+            End If
+            
+            loadImageFromDragDrop = True
+            Exit Function
+            
+        End If
+    
+    End If
+    
+    'If the data is not a file list, see if it's a bitmap
+    If Data.GetFormat(vbCFBitmap) Then
+    
+        'Copy the image into an StdPicture object
+        Dim tmpPicture As StdPicture
+        Set tmpPicture = Data.GetData(vbCFBitmap)
+        
+        'Create a temporary DIB and copy the temporary StdPicture object into it
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateFromPicture tmpPicture
+        
+        'Ask the DIB to write its contents to file in BMP format
+        tmpString = g_UserPreferences.GetTempPath & "PDClipboard.tmp"
+        tmpDIB.writeToBitmapFile tmpString
+        
+        'Now that the image is saved on the hard drive, we can delete our temporary objects
+        Set tmpPicture = Nothing
+        tmpDIB.eraseDIB
+        Set tmpDIB = Nothing
+        
+        'Use the standard image load routine to import the temporary file
+        Dim sTitle As String, sFilename As String
+        ReDim sFile(0) As String
+        sFile(0) = tmpString
+        sTitle = g_Language.TranslateMessage("Imported Image")
+        sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+        
+        'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+        If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
+            Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle
+        Else
+            LoadFileAsNewImage sFile, False, sTitle, sFilename
+        End If
+            
+        'Be polite and remove the temporary file
+        If FileExist(tmpString) Then Kill tmpString
+            
+        Message "Image imported successfully "
+        
+        loadImageFromDragDrop = True
+        Exit Function
+    
+    'If the data is not a file list, see if it's a URL.
+    ElseIf Data.GetFormat(vbCFText) Then
+    
+        Dim tmpDownloadFile As String
+        tmpDownloadFile = Trim$(Data.GetData(vbCFText))
+        
+        If (StrComp(Left$(tmpDownloadFile, 7), "http://", vbTextCompare) = 0) Or (StrComp(Left$(tmpDownloadFile, 6), "ftp://", vbTextCompare) = 0) Then
+        
+            Message "Image URL found on clipboard.  Attempting to download..."
+            
+            tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
+            
+            'If the download was successful, we can now use the standard image load routine to import the temporary file
+            If Len(tmpDownloadFile) > 0 Then
+                
+                'Depending on the number of open images, load the clipboard data as a new image or as a new layer in the current image
+                If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
+                    Layer_Handler.loadImageAsNewLayer False, tmpDownloadFile
+                Else
+                    ReDim sFile(0) As String
+                    sFile(0) = tmpDownloadFile
+                    LoadFileAsNewImage sFile
+                End If
+                
+                'Delete the temporary file
+                If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
+                
+                'Exit!
+                loadImageFromDragDrop = True
+                Exit Function
+            
+            Else
+            
+                'If the download failed, let the user know that hey, at least we tried.
+                Message "Image download failed.  Please supply a valid image URL and try again."
+                
+            End If
+            
+        End If
+    
+    End If
+    
+    'If we made it all the way here, something went horribly wrong
+    loadImageFromDragDrop = False
+    Exit Function
+
+End Function
