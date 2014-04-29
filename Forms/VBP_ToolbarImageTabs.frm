@@ -690,70 +690,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
     
-    Dim sFile() As String
-    
-    'Verify that the object being dragged is some sort of file or file list
-    If Data.GetFormat(vbCFFiles) Then
-        
-        'Copy the filenames into an array
-        ReDim sFile(0 To Data.Files.Count) As String
-        
-        Dim oleFilename
-        Dim tmpString As String
-        
-        Dim countFiles As Long
-        countFiles = 0
-        
-        For Each oleFilename In Data.Files
-            tmpString = oleFilename
-            If tmpString <> "" Then
-                sFile(countFiles) = tmpString
-                countFiles = countFiles + 1
-            End If
-        Next oleFilename
-        
-        'Because the OLE drop may include blank strings, verify the size of the array against countFiles
-        ReDim Preserve sFile(0 To countFiles - 1) As String
-        
-        'Load the files as new images
-        LoadFileAsNewImage sFile
-        
-    'If the data is not a file list, see if it's a URL.
-    ElseIf Data.GetFormat(vbCFText) Then
-    
-        Dim tmpDownloadFile As String
-        tmpDownloadFile = Trim$(Data.GetData(vbCFText))
-        
-        If (StrComp(Left$(tmpDownloadFile, 7), "http://", vbTextCompare) = 0) Or (StrComp(Left$(tmpDownloadFile, 6), "ftp://", vbTextCompare) = 0) Then
-        
-            Message "Image URL found on clipboard.  Attempting to download..."
-            
-            tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
-            
-            'If the download was successful, we can now use the standard image load routine to import the temporary file
-            If Len(tmpDownloadFile) > 0 Then
-                
-                'Load the downloaded file as a new image
-                ReDim sFile(0) As String
-                sFile(0) = tmpDownloadFile
-                LoadFileAsNewImage sFile
-                
-                'Delete the temporary file
-                If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
-                
-                'Exit!
-                Exit Sub
-            
-            Else
-            
-                'If the download failed, let the user know that hey, at least we tried.
-                Message "Image download failed.  Please supply a valid image URL and try again."
-                
-            End If
-            
-        End If
-    
-    End If
+    'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
+    ' to load the OLE source.
+    Clipboard_Handler.loadImageFromDragDrop Data, Effect, False
 
 End Sub
 
