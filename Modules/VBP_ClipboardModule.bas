@@ -3,8 +3,8 @@ Attribute VB_Name = "Clipboard_Handler"
 'Clipboard Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 19/August/13
-'Last update: removed all references to metafile handling; there are no plans for me to restore EMF/WMF clipboard support
+'Last updated: 28/April/14
+'Last update: all Paste options now work for either "Paste as New Layer" or "Paste as New Image"
 '
 'Module for handling all Windows clipboard routines.  Copy and Paste are the real stars; Cut is not included
 ' (as there is no purpose for it at present), though Empty Clipboard does make an appearance.
@@ -68,12 +68,10 @@ End Sub
 ' The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image, or as a new layer in an existing image.
 Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
-    Dim tmpClipboardFile As String
+    Dim tmpClipboardFile As String, tmpDownloadFile As String
     Dim sFile(0) As String
     Dim sTitle As String, sFilename As String
-    
-    Dim downloadSuccess As Boolean
-    
+        
     'PNGs on the clipboard get preferential treatment, as they preserve transparency data - so check for them first
     Dim clpObject As cCustomClipboard
     Set clpObject = New cCustomClipboard
@@ -91,7 +89,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             If clpObject.GetBinaryData(PNGID, PNGData) Then
                 
                 'Dump the PNG data out to file
-                tmpClipboardFile = g_UserPreferences.getTempPath & "PDClipboard.png"
+                tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.png"
                 
                 Dim fileID As Integer
                 fileID = FreeFile()
@@ -158,16 +156,36 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                     If (urlStart > 0) And (urlEnd > 0) Then
                     
                         Message "Image URL found on clipboard.  Attempting to download..."
-                        downloadSuccess = FormInternetImport.ImportImageFromInternet(Mid$(htmlString, urlStart, urlEnd - urlStart))
-    
-                        'If the download failed, let the user know that hey, at least we tried.
-                        If Not downloadSuccess Then Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
-                    
-                        Message "Clipboard data imported successfully "
-                    
-                        clpObject.ClipboardClose
-                        Exit Sub
                         
+                        tmpDownloadFile = FormInternetImport.downloadURLToTempFile(Mid$(htmlString, urlStart, urlEnd - urlStart))
+                        
+                        'If the download was successful, we can now use the standard image load routine to import the temporary file
+                        If Len(tmpDownloadFile) > 0 Then
+                        
+                            sFile(0) = tmpDownloadFile
+                            
+                            'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+                            If srcIsMeantAsLayer Then
+                                Layer_Handler.loadImageAsNewLayer False, sFile(0)
+                            Else
+                                LoadFileAsNewImage sFile, False
+                            End If
+                            
+                            'Delete the temporary file
+                            If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
+                            
+                            Message "Clipboard data imported successfully "
+                    
+                            clpObject.ClipboardClose
+                            Exit Sub
+                        
+                        Else
+                        
+                            'If the download failed, let the user know that hey, at least we tried.
+                            Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
+                            
+                        End If
+                    
                     End If
                 
                 End If
@@ -195,7 +213,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         tmpDIB.CreateFromPicture tmpPicture
         
         'Ask the DIB to write its contents to file in BMP format
-        tmpClipboardFile = g_UserPreferences.getTempPath & "PDClipboard.tmp"
+        tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.tmp"
         tmpDIB.writeToBitmapFile tmpClipboardFile
         
         'Now that the image is saved on the hard drive, we can delete our temporary objects
@@ -222,14 +240,45 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
     'Next, see if the clipboard contains text.  If it does, it may be a hyperlink - if so, try and load it.
     ' TODO: make hyperlinks work with "Paste as new layer".  Right now they will always default to loading as a new image.
-    ElseIf Clipboard.GetFormat(vbCFText) And ((Left$(Trim(Str(Clipboard.GetText)), 7) = "http://") Or (Left$(Trim(Str(Clipboard.GetText)), 6) = "ftp://")) Then
+    ElseIf Clipboard.GetFormat(vbCFText) Then
         
-        Message "URL found on clipboard.  Attempting to download image at that location..."
-        downloadSuccess = FormInternetImport.ImportImageFromInternet(Trim(Str(Clipboard.GetText)))
+        tmpDownloadFile = Trim$(Clipboard.GetText)
         
-        'If the download failed, let the user know that hey, at least we tried.
-        If downloadSuccess = False Then Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
-    
+        If (StrComp(Left$(tmpDownloadFile, 7), "http://", vbTextCompare) = 0) Or (StrComp(Left$(tmpDownloadFile, 6), "ftp://", vbTextCompare) = 0) Then
+        
+            Message "Image URL found on clipboard.  Attempting to download..."
+            
+            tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
+            
+            'If the download was successful, we can now use the standard image load routine to import the temporary file
+            If Len(tmpDownloadFile) > 0 Then
+            
+                sFile(0) = tmpDownloadFile
+                
+                'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+                If srcIsMeantAsLayer Then
+                    Layer_Handler.loadImageAsNewLayer False, sFile(0)
+                Else
+                    LoadFileAsNewImage sFile, False
+                End If
+                
+                'Delete the temporary file
+                If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
+                
+                Message "Clipboard data imported successfully "
+        
+                clpObject.ClipboardClose
+                Exit Sub
+            
+            Else
+            
+                'If the download failed, let the user know that hey, at least we tried.
+                Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
+                
+            End If
+            
+        End If
+        
     'Next, see if the clipboard contains one or more files.  If it does, try to load them.
     ElseIf Clipboard.GetFormat(vbCFFiles) Then
     
