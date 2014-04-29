@@ -728,8 +728,6 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         DoEvents
         
-        
-        
         '*************************************************************************************************************************************
         ' Run a few checks to confirm that the image data was loaded successfully
         '*************************************************************************************************************************************
