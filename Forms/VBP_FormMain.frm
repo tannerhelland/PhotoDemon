@@ -31,21 +31,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -272,7 +272,7 @@ Begin VB.Form FormMain
          Index           =   2
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Content-aware resize..."
+         Caption         =   "-"
          Index           =   3
       End
       Begin VB.Menu MnuImage 
@@ -280,24 +280,32 @@ Begin VB.Form FormMain
          Index           =   4
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Fit canvas to active layer"
          Index           =   5
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Crop to selection"
+         Caption         =   "Fit canvas around all layers"
          Index           =   6
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Autocrop"
+         Caption         =   "-"
          Index           =   7
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Crop to selection"
          Index           =   8
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Rotate"
+         Caption         =   "Trim empty borders"
          Index           =   9
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "-"
+         Index           =   10
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Rotate"
+         Index           =   11
          Begin VB.Menu MnuRotate 
             Caption         =   "90° clockwise"
             Index           =   0
@@ -317,31 +325,31 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Flip horizontal"
-         Index           =   10
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Flip vertical"
-         Index           =   11
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "-"
          Index           =   12
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Indexed color..."
+         Caption         =   "Flip vertical"
          Index           =   13
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Tile..."
+         Caption         =   "-"
          Index           =   14
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Indexed color..."
          Index           =   15
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Metadata"
+         Caption         =   "Tile..."
          Index           =   16
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "-"
+         Index           =   17
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Metadata"
+         Index           =   18
          Begin VB.Menu MnuMetadata 
             Caption         =   "Browse image metadata..."
             Index           =   0
@@ -439,19 +447,64 @@ Begin VB.Form FormMain
          Index           =   6
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Transform"
+         Caption         =   "Orientation"
          Index           =   7
-         Begin VB.Menu MnuLayerTransform 
-            Caption         =   "(coming soon)"
+         Begin VB.Menu MnuLayerOrientation 
+            Caption         =   "Rotate 90° clockwise"
+            Index           =   0
+         End
+         Begin VB.Menu MnuLayerOrientation 
+            Caption         =   "Rotate 90° counter-clockwise"
+            Index           =   1
+         End
+         Begin VB.Menu MnuLayerOrientation 
+            Caption         =   "Rotate 180°"
+            Index           =   2
+         End
+         Begin VB.Menu MnuLayerOrientation 
+            Caption         =   "Rotate arbitrary..."
+            Index           =   3
+         End
+         Begin VB.Menu MnuLayerOrientation 
+            Caption         =   "-"
+            Index           =   4
+         End
+         Begin VB.Menu MnuLayerOrientation 
+            Caption         =   "Flip horizontal"
+            Index           =   5
+         End
+         Begin VB.Menu MnuLayerOrientation 
+            Caption         =   "Flip vertical"
+            Index           =   6
+         End
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Size"
+         Index           =   8
+         Begin VB.Menu MnuLayerSize 
+            Caption         =   "Reset to actual size"
+            Index           =   0
+         End
+         Begin VB.Menu MnuLayerSize 
+            Caption         =   "-"
+            Index           =   1
+         End
+         Begin VB.Menu MnuLayerSize 
+            Caption         =   "Resize..."
+            Index           =   2
+         End
+         Begin VB.Menu MnuLayerSize 
+            Caption         =   "Content-aware resize..."
+            Index           =   3
          End
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
-         Index           =   8
+         Index           =   9
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "Transparency"
-         Index           =   9
+         Index           =   10
          Begin VB.Menu MnuLayerTransparency 
             Caption         =   "Add basic transparency..."
             Index           =   0
@@ -471,15 +524,15 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
-         Index           =   10
-      End
-      Begin VB.Menu MnuLayer 
-         Caption         =   "Flatten image"
          Index           =   11
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Merge visible layers"
+         Caption         =   "Flatten image"
          Index           =   12
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Merge visible layers"
+         Index           =   13
       End
    End
    Begin VB.Menu MnuSelectTop 
@@ -1264,7 +1317,7 @@ Private tooltipBackup As Collection
 Private WithEvents cMouseEvents As bluMouseEvents
 Attribute cMouseEvents.VB_VarHelpID = -1
 
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
 
 'When the main form is resized, we must re-align the main canvas
@@ -1324,24 +1377,27 @@ Private Sub MnuLayer_Click(Index As Integer)
         '<separator>
         Case 6
         
-        'Transform (top-level)
+        'Orientation (top-level)
         Case 7
         
-        '<separator>
+        'Size (top-level)
         Case 8
         
-        'Transparency (top-level)
+        '<separator>
         Case 9
         
-        '<separator>
+        'Transparency (top-level)
         Case 10
         
-        'Flatten layers
+        '<separator>
         Case 11
+        
+        'Flatten layers
+        Case 12
             Process "Flatten image", , , 1
         
         'Merge visible layers
-        Case 12
+        Case 13
             Process "Merge visible layers", , , 1
         
     End Select
@@ -1421,6 +1477,56 @@ Private Sub MnuLayerOrder_Click(Index As Integer)
 
 End Sub
 
+Private Sub MnuLayerOrientation_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Rotate 90 clockwise
+        Case 0
+        
+        'Rotate 90 counter-clockwise
+        Case 1
+        
+        'Rotate 180
+        Case 2
+        
+        'Rotate arbitrary
+        Case 3
+        
+        '<separator>
+        Case 4
+        
+        'Flip horizontal
+        Case 5
+        
+        'Flip vertical
+        Case 6
+    
+    End Select
+
+End Sub
+
+Private Sub MnuLayerSize_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Reset to actual size
+        Case 0
+        
+        '<separator>
+        Case 1
+        
+        'Standard resize
+        Case 2
+        
+        'Content-aware resize
+        Case 3
+            Process "Content-aware resize", True
+    
+    End Select
+
+End Sub
+
 'When download of the update information is complete, write out the current date to the preferences file
 Private Sub updateChecker_Complete()
     Debug.Print "Update file download complete.  Update information has been saved at " & g_UserPreferences.getDataPath & "updates.xml"
@@ -1428,25 +1534,25 @@ Private Sub updateChecker_Complete()
 End Sub
 
 'Forward mousewheel events to the relevant window
-Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     If g_OpenImageCount > 0 Then
         If g_MouseOverImageTabstrip Then
-            toolbar_ImageTabs.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, X, Y
+            toolbar_ImageTabs.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
         Else
-            FormMain.mainCanvas(0).cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, X, Y
+            FormMain.mainCanvas(0).cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
         End If
     End If
 
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     If g_OpenImageCount > 0 Then
         If g_MouseOverImageTabstrip Then
-            toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, X, Y
+            toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
         Else
-            FormMain.mainCanvas(0).cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, X, Y
+            FormMain.mainCanvas(0).cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
         End If
     End If
 
@@ -1725,7 +1831,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files and URLs onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1736,7 +1842,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -2429,44 +2535,51 @@ Private Sub MnuImage_Click(Index As Integer)
         Case 0
             Process "Duplicate image", , , False
         
-        'Separator
+        '<separator>
         Case 1
         
         'Resize
         Case 2
             Process "Resize", True
-            
-        'Content-aware resize
+        
+        '<separator>
         Case 3
-            Process "Content-aware resize", True
         
         'Canvas resize
         Case 4
             Process "Canvas size", True
-                
-        'Separator
+            
+        'Fit canvas to active layer
         Case 5
+            Process "Fit canvas to layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex)
+        
+        'Fit canvas around all layers
+        Case 6
+            Process "Fit canvas to all layers", False
+            
+        '<separator>
+        Case 7
             
         'Crop to selection
-        Case 6
+        Case 8
             Process "Crop"
         
-        'Autocrop
-        Case 7
-            Process "Autocrop"
+        'Trim empty borders
+        Case 9
+            Process "Trim"
         
-        'Separator
-        Case 8
+        '<separator>
+        Case 10
         
         'Top-level Rotate
-        Case 9
+        Case 11
         
         'Flip horizontal (mirror)
-        Case 10
+        Case 12
             Process "Flip horizontal"
         
         'Flip vertical
-        Case 11
+        Case 13
             Process "Flip vertical"
         
         'NOTE: isometric view was removed in 6.4.  I may include it at a later date if there is demand.
@@ -2474,22 +2587,22 @@ Private Sub MnuImage_Click(Index As Integer)
         'Case 12
         '    Process "Isometric conversion"
             
-        'Separator
-        Case 12
+        '<separator>
+        Case 14
         
         'Indexed color
-        Case 13
+        Case 15
             Process "Reduce colors", True
         
         'Tile
-        Case 14
+        Case 16
             Process "Tile", True
             
-        'Separator
-        Case 15
+        '<separator>
+        Case 17
         
         'Metadata top-level
-        Case 16
+        Case 18
     
     End Select
 
