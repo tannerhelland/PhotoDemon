@@ -132,12 +132,53 @@ Dim m_ToolTip As clsToolTip
 'Import an image from the Internet; all that's required is a valid URL (must be prefaced with http:// or ftp://)
 Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
 
-    'First things first - prompt the user for a URL
-    If URL = "" Then
+    'First things first - if an invalid URL was provided, exit immediately.
+    If Len(URL) = 0 Then
         Message "Image download canceled."
         Exit Function
     End If
     
+    'Use the generic download function to retrieve the URL
+    Dim downloadedFilename As String
+    downloadedFilename = downloadURLToTempFile(URL)
+    
+    'If the download worked, attempt to load the image.
+    If Len(downloadedFilename) > 0 Then
+    
+        Dim sFile(0) As String
+        sFile(0) = downloadedFilename
+        
+        Dim tmpFilename As String
+        tmpFilename = downloadedFilename
+        StripFilename tmpFilename
+        
+        LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename
+        
+        'Unique to this particular import is remembering the full filename + extension (because this method of import
+        ' actually supplies a file extension, unlike scanning or screen capturing or something else)
+        If Not pdImages(g_CurrentImage) Is Nothing Then pdImages(g_CurrentImage).originalFileNameAndExtension = tmpFilename
+        
+        'Delete the temporary file
+        If FileExist(downloadedFilename) Then Kill downloadedFilename
+        
+        Message "Image download complete. "
+        ImportImageFromInternet = True
+        
+    Else
+        ImportImageFromInternet = False
+    End If
+    
+End Function
+
+'Download the contents of a given URL to a temporary file.  Progress reports will be automatically provided via the
+' program progress bar.
+'
+'If successful, the program will return the full path to the temp file used.  If unsuccessful, a blank string will
+' be returned.  Use Len(returnString) = 0 to check for failure state.
+'
+'Note that the calling function is responsible for cleaning up the temp file!
+Public Function downloadURLToTempFile(ByVal URL As String) As String
+
     'Normally changing the cursor is handled by the software processor, but because this function routes
     ' internally, we'll make an exception and change it here. Note that everywhere this function can
     ' terminate (and it's many places - a lot can go wrong while downloading) - the cursor needs to be reset.
@@ -146,31 +187,31 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     'Open an Internet session and assign it a handle
     Dim hInternetSession As Long
     
-    Message "Attempting to connect to Internet..."
+    Message "Attempting to connect to the Internet..."
     hInternetSession = InternetOpen(App.EXEName, INTERNET_OPEN_TYPE_PRECONFIG, vbNullString, vbNullString, 0)
     
     If hInternetSession = 0 Then
         pdMsgBox "%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error", PROGRAMNAME
-        ImportImageFromInternet = False
+        downloadURLToTempFile = ""
         Screen.MousePointer = 0
         Exit Function
     End If
     
-    'Using the new Internet session, attempt to find the URL; if found, assign it a handle
+    'Using the new Internet session, attempt to find the URL; if found, assign it a handle.
     Message "Verifying image URL (this may take a moment)..."
     
     Dim hUrl As Long
     hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
 
     If hUrl = 0 Then
-        pdMsgBox "%1 could not locate a valid image at that URL.  Please double-check the path.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, "Online Image Not Found", PROGRAMNAME
+        pdMsgBox "%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation + vbApplicationModal + vbOKOnly, "Online File Not Found", PROGRAMNAME
         If hInternetSession Then InternetCloseHandle hInternetSession
-        ImportImageFromInternet = False
+        downloadURLToTempFile = ""
         Screen.MousePointer = 0
         Exit Function
     End If
     
-    'Check the size of the image to be downloaded...
+    'Check the size of the file to be downloaded...
     Dim downloadSize As Long
     Dim tmpStrBuffer As String
     tmpStrBuffer = String$(1024, 0)
@@ -180,7 +221,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     
     If downloadSize <> 0 Then SetProgBarMax downloadSize
     
-    'We need a temporary file to house the image; generate it automatically, using the extension of the original image
+    'We need a temporary file to house the file; generate it automatically, using the extension of the original file.
     Message "Creating temporary file..."
     Dim tmpFilename As String
     tmpFilename = URL
@@ -188,7 +229,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     makeValidWindowsFilename tmpFilename
     
     Dim tmpFile As String
-    tmpFile = g_UserPreferences.getTempPath & tmpFilename
+    tmpFile = g_UserPreferences.GetTempPath & tmpFilename
     
     'Open the temporary file and begin downloading the image to it
     Message "Image URL verified.  Downloading image..."
@@ -216,8 +257,8 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
             chunkOK = InternetReadFile(hUrl, Buffer, Len(Buffer), numOfBytesRead)
    
             'If something went wrong, terminate
-            If chunkOK = False Then
-                pdMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error", PROGRAMNAME
+            If Not chunkOK Then
+                pdMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error", PROGRAMNAME
                 If FileExist(tmpFile) Then
                     Close #fileNum
                     Kill tmpFile
@@ -226,7 +267,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
                 If hInternetSession Then InternetCloseHandle hInternetSession
                 SetProgBarVal 0
                 releaseProgressBar
-                ImportImageFromInternet = False
+                downloadURLToTempFile = ""
                 Screen.MousePointer = 0
                 Exit Function
             End If
@@ -243,7 +284,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
             
             If downloadSize <> 0 Then
                 SetProgBarVal totalBytesRead
-                Message "Image URL verified.  Downloading image (%1 of %2 bytes received)...", totalBytesRead, downloadSize
+                Message "Downloading file (%1 of %2 bytes received)...", totalBytesRead, downloadSize
             End If
             
             'DoEvents
@@ -264,42 +305,35 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     ' prevented our download.  (Direct downloads are sometimes treated as hotlinking; similarly, some sites
     ' prevent scraping, which a direct download like this may seem to be.)
     If totalBytesRead < 20 Then
+        
         Message "Download canceled.  (Remote server denied access.)"
+        
         Dim domainName As String
         domainName = GetDomainName(URL)
-        pdMsgBox "Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)" & vbCrLf & vbCrLf & "You will need to download this image using your Internet browser of choice, then manually load it into %2." & vbCrLf & vbCrLf & "I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(", vbCritical + vbApplicationModal + vbOKOnly, "Download Unsuccessful", domainName, PROGRAMNAME
+        pdMsgBox "Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)" & vbCrLf & vbCrLf & "You will need to download this file using your Internet browser, then manually load it into %2." & vbCrLf & vbCrLf & "I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(", vbCritical + vbApplicationModal + vbOKOnly, "Download Unsuccessful", domainName, PROGRAMNAME
+        
         If FileExist(tmpFile) Then Kill tmpFile
         If hUrl Then InternetCloseHandle hUrl
         If hInternetSession Then InternetCloseHandle hInternetSession
+        
         SetProgBarVal 0
         releaseProgressBar
-        ImportImageFromInternet = False
         Screen.MousePointer = 0
+        
+        downloadURLToTempFile = ""
         Exit Function
+        
     End If
     
-    'If we've made it this far, it's probably safe to assume that download worked.  Attempt to load the image.
-    Dim sFile(0) As String
-    sFile(0) = tmpFile
-    
-    LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename
-    
-    'Unique to this particular import is remembering the full filename + extension (because this method of import
-    ' actually supplies a file extension, unlike scanning or screen capturing or something else)
-    If Not pdImages(g_CurrentImage) Is Nothing Then pdImages(g_CurrentImage).originalFileNameAndExtension = tmpFilename
-    
+    'If we made it all the way here, the file was downloaded successfully (most likely... with web stuff, it's always
+    ' possible that some strange error has occurred, but we have done our due diligence in attempting a download!)
     SetProgBarVal 0
     releaseProgressBar
-    
-    'Delete the temporary file
-    If FileExist(tmpFile) Then Kill tmpFile
-    
-    Message "Image download complete. "
-    
     Screen.MousePointer = 0
     
-    ImportImageFromInternet = True
-    
+    'Return the temp file location
+    downloadURLToTempFile = tmpFile
+
 End Function
 
 'CANCEL button

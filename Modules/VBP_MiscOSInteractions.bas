@@ -3,8 +3,8 @@ Attribute VB_Name = "OS_Interactions"
 'Miscellaneous OS Interaction Handler
 'Copyright ©2011-2014 by Tanner Helland
 'Created: 27/November/12
-'Last updated: 27/November/12
-'Last update: added function for returning PhotoDemon's current memory usage
+'Last updated: 28/April/14
+'Last update: added function for retrieving a unique temporary file name
 '
 'Sometimes, PhotoDemon needs to query Windows for OS-specific data - such as the current version of Windows, or the
 ' available RAM on the system.  This module handles such calls.
@@ -55,6 +55,8 @@ Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccessas As 
 Private Declare Function GetModuleFileNameExA Lib "psapi" (ByVal hProcess As Long, ByVal hModule As Long, ByVal ModuleName As String, ByVal nSize As Long) As Long
 Private Declare Function GetProcessMemoryInfo Lib "psapi" (ByVal hProcess As Long, ppsmemCounters As PROCESS_MEMORY_COUNTERS, ByVal cb As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal Handle As Long) As Long
+
+'Device caps, or "device capabilities", which can be probed using the constants below
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As DeviceChecks) As Long
 
 Public Enum DeviceChecks
@@ -145,6 +147,34 @@ Private Const TC_RA_ABLE As Long = 2000
 Private Const TC_VA_ABLE As Long = 4000
 Private Const TC_SCROLLBLT As Long = 10000
 
+'Windows constants for retrieving a unique temporary filename
+Private Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long
+Private Declare Function GetTempFileName Lib "kernel32" Alias "GetTempFileNameA" (ByVal lpszPath As String, ByVal lpPrefixString As String, ByVal wUnique As Long, ByVal lpTempFileName As String) As Long
+
+'Return a unique temporary filename, via the API.  Thank you to this MSDN support doc for the implementation:
+' http://support.microsoft.com/kb/195763
+Public Function getUniqueTempFilename(Optional ByRef customPrefix As String = "PD_") As String
+         
+    Dim sTmpPath As String * 512
+    Dim sTmpName As String * 576
+    Dim nRet As Long
+
+    nRet = GetTempPath(512, sTmpPath)
+    If (nRet > 0 And nRet < 512) Then
+    
+        nRet = GetTempFileName(sTmpPath, customPrefix, 0, sTmpName)
+        
+        If nRet <> 0 Then
+            getUniqueTempFilename = Left$(sTmpName, InStr(sTmpName, vbNullChar) - 1)
+        Else
+            getUniqueTempFilename = ""
+        End If
+    
+    Else
+        getUniqueTempFilename = ""
+    End If
+
+End Function
 
 'Given a type of device capability check, return a string that describes the reported capabilities
 Public Function getDeviceCapsString() As String
