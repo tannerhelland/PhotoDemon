@@ -1216,6 +1216,8 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     If Not FileExist(imagePath) Then
         pdMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", imagePath
         QuickLoadImageToDIB = False
+        FormMain.Enabled = True
+        Screen.MousePointer = vbNormal
         Exit Function
     End If
         
@@ -1277,8 +1279,13 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         'Deactivate the (now useless) DIB
         targetDIB.eraseDIB
         
+        'Re-enable the main interface
+        FormMain.Enabled = True
+        Screen.MousePointer = vbNormal
+        
         'Exit with failure status
         QuickLoadImageToDIB = False
+        
         Exit Function
         
     End If
@@ -1313,6 +1320,10 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha True
     
     End If
+
+    'Restore the main interface
+    FormMain.Enabled = True
+    Screen.MousePointer = vbNormal
 
     'If we made it all the way here, the image file was loaded successfully!
     QuickLoadImageToDIB = True
@@ -1925,7 +1936,7 @@ Public Sub DuplicateCurrentImage()
     
     'Ask the currently active image to write itself out to file
     Dim tmpDuplicationFile As String
-    tmpDuplicationFile = g_UserPreferences.getTempPath & "PDDuplicate.pdi"
+    tmpDuplicationFile = g_UserPreferences.GetTempPath & "PDDuplicate.pdi"
     SavePhotoDemonImage pdImages(g_CurrentImage), tmpDuplicationFile, True, True, True, False
     
     'We can now use the standard image load routine to import the temporary file
