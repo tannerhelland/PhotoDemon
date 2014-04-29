@@ -1264,7 +1264,7 @@ Private tooltipBackup As Collection
 Private WithEvents cMouseEvents As bluMouseEvents
 Attribute cMouseEvents.VB_VarHelpID = -1
 
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
 
 'When the main form is resized, we must re-align the main canvas
@@ -1428,25 +1428,25 @@ Private Sub updateChecker_Complete()
 End Sub
 
 'Forward mousewheel events to the relevant window
-Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
 
     If g_OpenImageCount > 0 Then
         If g_MouseOverImageTabstrip Then
-            toolbar_ImageTabs.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
+            toolbar_ImageTabs.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, X, Y
         Else
-            FormMain.mainCanvas(0).cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
+            FormMain.mainCanvas(0).cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, X, Y
         End If
     End If
 
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
 
     If g_OpenImageCount > 0 Then
         If g_MouseOverImageTabstrip Then
-            toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
+            toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, X, Y
         Else
-            FormMain.mainCanvas(0).cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
+            FormMain.mainCanvas(0).cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, X, Y
         End If
     End If
 
@@ -1724,17 +1724,18 @@ Private Sub Form_Load()
      
 End Sub
 
-'Allow the user to drag-and-drop files from Windows Explorer onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+'Allow the user to drag-and-drop files and URLs onto the main form
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
 
-    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
+        'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
-
+    
+    Dim sFile() As String
+    
     'Verify that the object being dragged is some sort of file or file list
     If Data.GetFormat(vbCFFiles) Then
         
         'Copy the filenames into an array
-        Dim sFile() As String
         ReDim sFile(0 To Data.Files.Count) As String
         
         Dim oleFilename
@@ -1744,7 +1745,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         countFiles = 0
         
         For Each oleFilename In Data.Files
-            tmpString = Str(oleFilename)
+            tmpString = oleFilename
             If tmpString <> "" Then
                 sFile(countFiles) = tmpString
                 countFiles = countFiles + 1
@@ -1754,24 +1755,59 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         'Because the OLE drop may include blank strings, verify the size of the array against countFiles
         ReDim Preserve sFile(0 To countFiles - 1) As String
         
-        'Pass the list of filenames to LoadFileAsNewImage, which will load the images one-at-a-time
+        'Load the files as new images
         LoadFileAsNewImage sFile
         
+    'If the data is not a file list, see if it's a URL.
+    ElseIf Data.GetFormat(vbCFText) Then
+    
+        Dim tmpDownloadFile As String
+        tmpDownloadFile = Trim$(Data.GetData(vbCFText))
+        
+        If (StrComp(Left$(tmpDownloadFile, 7), "http://", vbTextCompare) = 0) Or (StrComp(Left$(tmpDownloadFile, 6), "ftp://", vbTextCompare) = 0) Then
+        
+            Message "Image URL found on clipboard.  Attempting to download..."
+            
+            tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
+            
+            'If the download was successful, we can now use the standard image load routine to import the temporary file
+            If Len(tmpDownloadFile) > 0 Then
+                
+                'Load the downloaded file as a new image
+                ReDim sFile(0) As String
+                sFile(0) = tmpDownloadFile
+                LoadFileAsNewImage sFile
+                
+                'Delete the temporary file
+                If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
+                
+                'Exit!
+                Exit Sub
+            
+            Else
+            
+                'If the download failed, let the user know that hey, at least we tried.
+                Message "Image download failed.  Please supply a valid image URL and try again."
+                
+            End If
+            
+        End If
+    
     End If
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
 
     'Check to make sure the type of OLE object is files
-    If Data.GetFormat(vbCFFiles) Then
-        'Inform the source (Explorer, in this case) that the files will be treated as "copied"
+    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Then
+        'Inform the source that the files will be treated as "copied"
         Effect = vbDropEffectCopy And Effect
     Else
-        'If it's not files, don't allow a drop
+        'If it's not files or text, don't allow a drop
         Effect = vbDropEffectNone
     End If
 

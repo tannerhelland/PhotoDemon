@@ -22,6 +22,7 @@ Begin VB.Form toolbar_ImageTabs
    MaxButton       =   0   'False
    MinButton       =   0   'False
    NegotiateMenus  =   0   'False
+   OLEDropMode     =   1  'Manual
    ScaleHeight     =   76
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   914
@@ -332,22 +333,22 @@ End Sub
 
 'Given mouse coordinates over the form, return the thumbnail at that location.  If the cursor is not over a thumbnail,
 ' the function will return -1
-Private Function getThumbAtPosition(ByVal x As Long, ByVal y As Long) As Long
+Private Function getThumbAtPosition(ByVal X As Long, ByVal Y As Long) As Long
     
     Dim thumbOffset As Long
     thumbOffset = hsThumbnails.Value
     
     If verticalLayout Then
-        getThumbAtPosition = (y + thumbOffset) \ thumbHeight
+        getThumbAtPosition = (Y + thumbOffset) \ thumbHeight
         If getThumbAtPosition > (numOfThumbnails - 1) Then getThumbAtPosition = -1
     Else
-        getThumbAtPosition = (x + thumbOffset) \ thumbWidth
+        getThumbAtPosition = (X + thumbOffset) \ thumbWidth
         If getThumbAtPosition > (numOfThumbnails - 1) Then getThumbAtPosition = -1
     End If
     
 End Function
 
-Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
 
     'Horizontal scrolling - only trigger it if the horizontal scroll bar is actually visible
     If m_ListScrollable Then
@@ -360,7 +361,7 @@ Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button
                 hsThumbnails.Value = hsThumbnails.Value + hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
         
         ElseIf CharsScrolled > 0 Then
@@ -371,7 +372,7 @@ Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button
                 hsThumbnails.Value = hsThumbnails.Value - hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
             
         End If
@@ -397,7 +398,7 @@ Private Sub cMouseEvents_MouseOut()
     
 End Sub
 
-Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
 
     'Vertical scrolling - only trigger it if the horizontal scroll bar is actually visible
     If m_ListScrollable Then
@@ -410,7 +411,7 @@ Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button
                 hsThumbnails.Value = hsThumbnails.Value + hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
         
         ElseIf LinesScrolled > 0 Then
@@ -421,7 +422,7 @@ Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button
                 hsThumbnails.Value = hsThumbnails.Value - hsThumbnails.LargeChange
             End If
             
-            curThumbHover = getThumbAtPosition(x, y)
+            curThumbHover = getThumbAtPosition(X, Y)
             redrawToolbar
             
         End If
@@ -484,13 +485,13 @@ Private Sub Form_Load()
 End Sub
 
 'When the left mouse button is pressed, activate click-to-drag mode for scrolling the tabstrip window
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     'Make a note of the initial mouse position
     If Button = vbLeftButton Then
         m_MouseDown = True
-        m_InitX = x
-        m_InitY = y
+        m_InitX = X
+        m_InitY = Y
         m_MouseDistanceTraveled = 0
         m_InitOffset = hsThumbnails.Value
     End If
@@ -503,7 +504,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     'Note that the mouse is currently over the tabstrip
     g_MouseOverImageTabstrip = True
@@ -530,19 +531,19 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     Select Case g_WindowManager.getImageTabstripAlignment
     
         Case vbAlignLeft
-            If (y > 0) And (y < Me.ScaleHeight) And (x > Me.ScaleWidth - resizeBorderAllowance) Then mouseInResizeTerritory = True
+            If (Y > 0) And (Y < Me.ScaleHeight) And (X > Me.ScaleWidth - resizeBorderAllowance) Then mouseInResizeTerritory = True
             hitCode = HTRIGHT
         
         Case vbAlignTop
-            If (x > 0) And (x < Me.ScaleWidth) And (y > Me.ScaleHeight - resizeBorderAllowance) Then mouseInResizeTerritory = True
+            If (X > 0) And (X < Me.ScaleWidth) And (Y > Me.ScaleHeight - resizeBorderAllowance) Then mouseInResizeTerritory = True
             hitCode = HTBOTTOM
         
         Case vbAlignRight
-            If (y > 0) And (y < Me.ScaleHeight) And (x < resizeBorderAllowance) Then mouseInResizeTerritory = True
+            If (Y > 0) And (Y < Me.ScaleHeight) And (X < resizeBorderAllowance) Then mouseInResizeTerritory = True
             hitCode = HTLEFT
         
         Case vbAlignBottom
-            If (x > 0) And (x < Me.ScaleWidth) And (y < resizeBorderAllowance) Then mouseInResizeTerritory = True
+            If (X > 0) And (X < Me.ScaleWidth) And (Y < resizeBorderAllowance) Then mouseInResizeTerritory = True
             hitCode = HTTOP
     
     End Select
@@ -574,9 +575,9 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
                 Dim mouseOffset As Long
                 
                 If verticalLayout Then
-                    mouseOffset = (m_InitY - y)
+                    mouseOffset = (m_InitY - Y)
                 Else
-                    mouseOffset = (m_InitX - x)
+                    mouseOffset = (m_InitX - X)
                 End If
                 
                 'Change the invisible scroll bar to match the new offset
@@ -606,7 +607,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         oldThumbHover = curThumbHover
         
         'Retrieve the thumbnail at this position, and change the mouse pointer accordingly
-        curThumbHover = getThumbAtPosition(x, y)
+        curThumbHover = getThumbAtPosition(X, Y)
         
         'To prevent flickering, only update the tooltip when absolutely necessary
         If curThumbHover <> oldThumbHover Then
@@ -655,13 +656,13 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     
 End Sub
 
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'If the _MouseUp event was triggered by the user, select the image at that position
     If Not weAreResponsibleForResize Then
     
         Dim potentialNewThumb As Long
-        potentialNewThumb = getThumbAtPosition(x, y)
+        potentialNewThumb = getThumbAtPosition(X, Y)
         
         'Notify the program that a new image has been selected; it will then bring that image to the foreground,
         ' which will automatically trigger a toolbar redraw.  Also, do not select the image if the user has been
@@ -679,6 +680,96 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
         m_InitX = 0
         m_InitY = 0
         m_MouseDistanceTraveled = 0
+    End If
+
+End Sub
+
+'(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+
+    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
+    If Not g_AllowDragAndDrop Then Exit Sub
+    
+    Dim sFile() As String
+    
+    'Verify that the object being dragged is some sort of file or file list
+    If Data.GetFormat(vbCFFiles) Then
+        
+        'Copy the filenames into an array
+        ReDim sFile(0 To Data.Files.Count) As String
+        
+        Dim oleFilename
+        Dim tmpString As String
+        
+        Dim countFiles As Long
+        countFiles = 0
+        
+        For Each oleFilename In Data.Files
+            tmpString = oleFilename
+            If tmpString <> "" Then
+                sFile(countFiles) = tmpString
+                countFiles = countFiles + 1
+            End If
+        Next oleFilename
+        
+        'Because the OLE drop may include blank strings, verify the size of the array against countFiles
+        ReDim Preserve sFile(0 To countFiles - 1) As String
+        
+        'Load the files as new images
+        LoadFileAsNewImage sFile
+        
+    'If the data is not a file list, see if it's a URL.
+    ElseIf Data.GetFormat(vbCFText) Then
+    
+        Dim tmpDownloadFile As String
+        tmpDownloadFile = Trim$(Data.GetData(vbCFText))
+        
+        If (StrComp(Left$(tmpDownloadFile, 7), "http://", vbTextCompare) = 0) Or (StrComp(Left$(tmpDownloadFile, 6), "ftp://", vbTextCompare) = 0) Then
+        
+            Message "Image URL found on clipboard.  Attempting to download..."
+            
+            tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
+            
+            'If the download was successful, we can now use the standard image load routine to import the temporary file
+            If Len(tmpDownloadFile) > 0 Then
+                
+                'Load the downloaded file as a new image
+                ReDim sFile(0) As String
+                sFile(0) = tmpDownloadFile
+                LoadFileAsNewImage sFile
+                
+                'Delete the temporary file
+                If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
+                
+                'Exit!
+                Exit Sub
+            
+            Else
+            
+                'If the download failed, let the user know that hey, at least we tried.
+                Message "Image download failed.  Please supply a valid image URL and try again."
+                
+            End If
+            
+        End If
+    
+    End If
+
+End Sub
+
+'(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+
+    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
+    If Not g_AllowDragAndDrop Then Exit Sub
+
+    'Check to make sure the type of OLE object is files
+    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Then
+        'Inform the source that the files will be treated as "copied"
+        Effect = vbDropEffectCopy And Effect
+    Else
+        'If it's not files or text, don't allow a drop
+        Effect = vbDropEffectNone
     End If
 
 End Sub
