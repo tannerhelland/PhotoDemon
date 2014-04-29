@@ -90,11 +90,11 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Content-Aware Resize(e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
+'Content-Aware Resize (e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/January/14
-'Last updated: 08/January/14
-'Last update: finished work on enlarging support
+'Last updated: 29/April/14
+'Last update: reworked content-aware scaling to operate on layers
 '
 'Content-aware scaling is a very exciting addition to PhotoDemon 6.2.  (As a comparison, PhotoShop didn't gain this
 ' feature until CS4, so it's pretty cutting-edge stuff!)
@@ -144,8 +144,8 @@ End Sub
 Private Sub cmdBar_RandomizeClick()
     
     ucResize.lockAspectRatio = False
-    ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
-    ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+    ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth)
+    ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight)
     
 End Sub
 
@@ -153,7 +153,7 @@ Private Sub cmdBar_ResetClick()
 
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.unitOfMeasurement = MU_PIXELS
-    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+    ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
     ucResize.lockAspectRatio = True
     
 End Sub
@@ -162,7 +162,7 @@ End Sub
 Private Sub Form_Load()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+    ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -188,20 +188,15 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
     ' width and height values to pixel measurements.
-    iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, pdImages(g_CurrentImage).Width)
-    iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, pdImages(g_CurrentImage).Height)
+    iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth)
+    iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight)
     
     'Pass the temporary DIB to the master seam carve function
     SeamCarveDIB tmpDIB, iWidth, iHeight
     
     'Copy the newly resized DIB back into its parent image
-    'pdImages(g_CurrentImage).mainDIB.createFromExistingDIB tmpDIB
+    pdImages(g_CurrentImage).getActiveLayer.layerDIB.createFromExistingDIB tmpDIB
     Set tmpDIB = Nothing
-    
-    'Update the main image's size and DPI values
-    pdImages(g_CurrentImage).updateSize
-    pdImages(g_CurrentImage).setDPI iDPI, iDPI
-    DisplaySize pdImages(g_CurrentImage)
     
     'Fit the new image on-screen and redraw its viewport
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Content-aware resize"
@@ -214,12 +209,6 @@ End Sub
 Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal iHeight As Long) As Boolean
 
     'For more information on how seam-carving works, visit http://en.wikipedia.org/wiki/Seam_carving
-
-    'If the image contains an active selection, disable it before doing any transformation work
-    If pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
-    End If
     
     Message "Initializing content-aware resize engine..."
     
