@@ -72,6 +72,8 @@ Private Type LayerData
     l_BlendMode As LAYER_BLENDMODE  'Layer blend mode; defaults to BL_NORMAL
     l_OffsetX As Double             'X/Y offset of the layer's top-left corner
     l_OffsetY As Double
+    l_CanvasXModifier As Double     'Width/height modifier for the image; by default, these are set to 1.0.
+    l_CanvasYModifier As Double
     l_Angle As Double               'Layer angle.  (A long-term goal is to support non-destructive rotation of layers.)
     l_Visibility As Boolean         'Layer visibility
 End Type
@@ -180,6 +182,23 @@ Public Sub setLayerOffsetY(ByVal newOffsetY As Double)
     myLayerData.l_OffsetY = newOffsetY
 End Sub
 
+'Get/set layer canvas modifiers (necessary for non-destructive on-canvas resizing)
+Public Function getLayerCanvasXModifier() As Double
+    getLayerOffsetX = myLayerData.l_CanvasXModifier
+End Function
+
+Public Function getLayerCanvasYModifier() As Double
+    getLayerOffsetY = myLayerData.l_CanvasYModifier
+End Function
+
+Public Sub setLayerCanvasXModifier(ByVal newXModifier As Double)
+    myLayerData.l_CanvasXModifier = newXModifier
+End Sub
+
+Public Sub setLayerCanvasYModifier(ByVal newYModifier As Double)
+    myLayerData.l_CanvasYModifier = newYModifier
+End Sub
+
 'Get/set layer angle
 Public Function getLayerAngle() As Double
     getLayerAngle = myLayerData.l_Angle
@@ -199,6 +218,8 @@ Private Sub Class_Initialize()
         .l_BlendMode = BL_NORMAL
         .l_OffsetX = 0
         .l_OffsetY = 0
+        .l_CanvasXModifier = 1
+        .l_CanvasYModifier = 1
         .l_Angle = 0
         .l_Visibility = True
     End With
@@ -249,6 +270,8 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
         xmlEngine.writeTag "BlendMode", .l_BlendMode
         xmlEngine.writeTag "OffsetX", .l_OffsetX
         xmlEngine.writeTag "OffsetY", .l_OffsetY
+        xmlEngine.writeTag "CanvasXModifier", .l_CanvasXModifier
+        xmlEngine.writeTag "CanvasYModifier", .l_CanvasYModifier
         xmlEngine.writeTag "Angle", .l_Angle
         xmlEngine.writeTag "Visibility", .l_Visibility
     End With
@@ -304,6 +327,8 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
             .l_BlendMode = xmlEngine.getUniqueTag_Long("BlendMode")
             .l_OffsetX = xmlEngine.getUniqueTag_Double("OffsetX")
             .l_OffsetY = xmlEngine.getUniqueTag_Double("OffsetY")
+            .l_CanvasXModifier = xmlEngine.getUniqueTag_Double("CanvasXModifier", 1)
+            .l_CanvasYModifier = xmlEngine.getUniqueTag_Double("CanvasYModifier", 1)
             .l_Angle = xmlEngine.getUniqueTag_Double("Angle")
             .l_Visibility = xmlEngine.getUniqueTag_Boolean("Visibility")
         End With
@@ -382,6 +407,8 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_BlendMode = srcLayer.getLayerBlendMode
         .l_OffsetX = srcLayer.getLayerOffsetX
         .l_OffsetY = srcLayer.getLayerOffsetY
+        .l_CanvasXModifier = srcLayer.l_CanvasXModifier
+        .l_CanvasYModifier = srcLayer.l_CanvasYModifier
         .l_Angle = srcLayer.getLayerAngle
         .l_Visibility = srcLayer.getLayerVisibility
     End With
