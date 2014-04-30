@@ -340,28 +340,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             ' we effectively LOAD a copy of the original image, so all loading operations (create a form, catalog
             ' metadata, initialize properties) have to be repeated.
             DuplicateCurrentImage
-        
-        'Alpha channel addition/removal
-        Case "Add alpha channel"
-            If showDialog Then
-                showPDDialog vbModal, FormTransparency_Basic
-            Else
-                FormTransparency_Basic.simpleConvert32bpp cParams.GetLong(1)
-            End If
-            
-        Case "Color to alpha"
-            If showDialog Then
-                showPDDialog vbModal, FormTransparency_FromColor
-            Else
-                FormTransparency_FromColor.colorToAlpha cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3)
-            End If
-            
-        Case "Remove alpha channel"
-            If showDialog Then
-                showPDDialog vbModal, FormConvert24bpp
-            Else
-                ConvertImageColorDepth 24, cParams.GetLong(1)
-            End If
             
         'Resize operations
         Case "Resize"
@@ -371,19 +349,19 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96)
             End If
         
-        Case "Content-aware resize"
-            If showDialog Then
-                showPDDialog vbModal, FormResizeContentAware
-            Else
-                FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96)
-            End If
-        
+        'Canvas size operations
         Case "Canvas size"
             If showDialog Then
                 showPDDialog vbModal, FormCanvasSize
             Else
                 FormCanvasSize.ResizeCanvas cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5, MU_PIXELS), cParams.GetLong(6, 96)
             End If
+            
+        Case "Fit canvas to layer"
+            Filters_Transform.MenuFitCanvasToLayer cParams.GetLong(1)
+        
+        Case "Fit canvas to all layers"
+            Filters_Transform.MenuFitCanvasToAllLayers
         
         'Crop operations
         Case "Crop"
@@ -444,23 +422,20 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'LAYER FUNCTIONS
         ' Any action triggered from the Layer menu, or the Layer toolbox - creating layers, moving them, etc
         
-        'Add a blank 32bpp layer to the image
+        'Add layers to an image
         Case "Add blank layer"
             Layer_Handler.addBlankLayer cParams.GetLong(1)
         
-        'Add an image file to the current image (as a new layer)
         Case "New Layer from File"
             Layer_Handler.loadImageAsNewLayer showDialog, processParameters
         
-        'Duplicate a given layer
         Case "Duplicate Layer"
             Layer_Handler.duplicateLayerByIndex cParams.GetLong(1)
             
-        'Delete a layer
+        'Remove layers from an image
         Case "Delete layer"
             Layer_Handler.deleteLayer cParams.GetLong(1)
-            
-        'Delete all hidden layers
+        
         Case "Delete hidden layers"
             Layer_Handler.deleteHiddenLayers
             
@@ -484,7 +459,37 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Lower layer to bottom"
             Layer_Handler.moveLayerToEndOfStack cParams.GetLong(1), False
+        
+        'Resize a layer
+        Case "Content-aware resize"
+            If showDialog Then
+                showPDDialog vbModal, FormResizeContentAware
+            Else
+                FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96)
+            End If
+        
+        'Change layer alpha
+        Case "Add alpha channel"
+            If showDialog Then
+                showPDDialog vbModal, FormTransparency_Basic
+            Else
+                FormTransparency_Basic.simpleConvert32bpp cParams.GetLong(1)
+            End If
             
+        Case "Color to alpha"
+            If showDialog Then
+                showPDDialog vbModal, FormTransparency_FromColor
+            Else
+                FormTransparency_FromColor.colorToAlpha cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3)
+            End If
+            
+        Case "Remove alpha channel"
+            If showDialog Then
+                showPDDialog vbModal, FormConvert24bpp
+            Else
+                ConvertImageColorDepth 24, cParams.GetLong(1)
+            End If
+        
         'Flatten image
         Case "Flatten image"
             Layer_Handler.flattenImage
