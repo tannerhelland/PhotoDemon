@@ -184,11 +184,11 @@ End Sub
 
 'Get/set layer canvas modifiers (necessary for non-destructive on-canvas resizing)
 Public Function getLayerCanvasXModifier() As Double
-    getLayerOffsetX = myLayerData.l_CanvasXModifier
+    getLayerCanvasXModifier = myLayerData.l_CanvasXModifier
 End Function
 
 Public Function getLayerCanvasYModifier() As Double
-    getLayerOffsetY = myLayerData.l_CanvasYModifier
+    getLayerCanvasYModifier = myLayerData.l_CanvasYModifier
 End Function
 
 Public Sub setLayerCanvasXModifier(ByVal newXModifier As Double)
@@ -407,8 +407,8 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_BlendMode = srcLayer.getLayerBlendMode
         .l_OffsetX = srcLayer.getLayerOffsetX
         .l_OffsetY = srcLayer.getLayerOffsetY
-        .l_CanvasXModifier = srcLayer.l_CanvasXModifier
-        .l_CanvasYModifier = srcLayer.l_CanvasYModifier
+        .l_CanvasXModifier = srcLayer.getLayerCanvasXModifier
+        .l_CanvasYModifier = srcLayer.getLayerCanvasYModifier
         .l_Angle = srcLayer.getLayerAngle
         .l_Visibility = srcLayer.getLayerVisibility
     End With

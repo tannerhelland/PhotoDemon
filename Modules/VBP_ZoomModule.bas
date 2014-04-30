@@ -3,18 +3,16 @@ Attribute VB_Name = "Viewport_Handler"
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 15/September/13
-'Last update: Optimize viewport scrolling if GDI+ is available.
+'Last updated: 30/April/14
+'Last update: start adding tool-specific steps to the pipeline
 '
-'Module for handling the image viewport.  There are key routines:
+'Module for handling the image viewport.  The render pipeline works as follows:
 ' - PrepareViewport: for recalculating all viewport variables and controls (done only when the zoom value is changed or a new picture is loaded)
 ' - ScrollViewport: when the viewport is scrolled (minimal redrawing is done, since the zoom value hasn't changed)
 ' - RenderViewport: perform any final compositing, such as the Selection Tool effect, then draw the viewport on-screen
 '
-'PhotoDemon is intelligent about calling the lowest routine in the "render chain", which is how it is able to render the viewport
-' so quickly regardless of zoom or scroll values.
-'
-'Finally, note that StretchBlt is used for the actual rendering, and its "halftone" mode is explicitly specified for shrinking the image.
+'PhotoDemon is intelligent about calling the lowest routine in the pipeline, which helps it render the viewport quickly
+' regardless of zoom or scroll values.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -152,15 +150,35 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     End If
     
     'Finally, we can do some tool-specific rendering directly onto the form.
+    Select Case g_CurrentTool
     
-    'Check to see if a selection is active and transformable.  If it is, draw nodes around the selected area.
-    If srcImage.selectionActive And srcImage.mainSelection.isTransformable Then
-    
-        'If it is, composite the selection against the temporary buffer
-        srcImage.mainSelection.renderTransformNodes srcImage, dstCanvas, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop
-    
-    End If
-    
+        'The nav tool provides two render options at present: draw layer borders, and draw layer transform nodes
+        Case NAV_MOVE
+        
+            'If the user has requested visible layer borders, draw them now
+            If CBool(toolbar_Tools.chkLayerBorder) Then
+                
+                'Draw layer borders
+                
+            End If
+            
+            'If the user has requested visible transformation nodes, draw them now
+            If CBool(toolbar_Tools.chkLayerNodes) Then
+                
+                'Draw layer nodes
+                
+            End If
+        
+        'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
+        ' draw transform nodes around the selection area.
+        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+            
+            'Next, check to see if a selection is active and transformable.  If it is, draw nodes around the selected area.
+            If srcImage.selectionActive And srcImage.mainSelection.isTransformable Then
+                srcImage.mainSelection.renderTransformNodes srcImage, dstCanvas, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop
+            End If
+        
+    End Select
     
     'With all rendering complete, copy the form's image into the .Picture (e.g. render it on-screen) and refresh
     dstCanvas.requestBufferSync
