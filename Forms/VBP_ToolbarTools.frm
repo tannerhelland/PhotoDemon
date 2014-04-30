@@ -25,6 +25,87 @@ Begin VB.Form toolbar_Tools
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   911
    ShowInTaskbar   =   0   'False
+   Begin VB.PictureBox picTools 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ClipControls    =   0   'False
+      ForeColor       =   &H80000008&
+      Height          =   1575
+      Index           =   1
+      Left            =   15
+      ScaleHeight     =   105
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   918
+      TabIndex        =   25
+      Top             =   1020
+      Visible         =   0   'False
+      Width           =   13770
+      Begin PhotoDemon.smartCheckBox chkLayerBorder 
+         Height          =   480
+         Left            =   120
+         TabIndex        =   27
+         Top             =   360
+         Width           =   2025
+         _ExtentX        =   3572
+         _ExtentY        =   847
+         Caption         =   "show layer borders"
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkLayerNodes 
+         Height          =   480
+         Left            =   120
+         TabIndex        =   28
+         Top             =   780
+         Width           =   2775
+         _ExtentX        =   4895
+         _ExtentY        =   847
+         Caption         =   "show layer transform nodes"
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblOptions 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "display options:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   0
+         Left            =   120
+         TabIndex        =   26
+         Top             =   60
+         Width           =   1335
+      End
+   End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   2
@@ -840,7 +921,11 @@ Public Sub resetToolButtonStates()
     
     Select Case g_CurrentTool
         
-        'Rectangular, Elliptical selections
+        'Move/size tool
+        Case NAV_MOVE
+            activeToolPanel = 1
+        
+        'Rectangular, Elliptical, Line selections
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             activeToolPanel = 0
         
@@ -980,6 +1065,9 @@ Private Sub newToolSelected()
         Case Else
         
     End Select
+    
+    'Finally, because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas
+    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
