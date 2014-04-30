@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Transform"
 'Image Transformations Interface (including flip/mirror/rotation/crop/etc)
 'Copyright ©2003-2014 by Tanner Helland
 'Created: 25/January/03
-'Last updated: 14/April/14
-'Last update: got rotation functions working with layers!
+'Last updated: 30/April/14
+'Last update: add "fit canvas to active layer" and "fit canvas to all layers" options
 '
 'Runs all image transformations, including rotate, flip, mirror and crop at present.
 '
@@ -239,12 +239,8 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
 End Sub
 
 'Crop the image to the current selection.
-' TODO: look at optimizations for short-circuiting the full crop operation.  Transparent pixels could be skipped, for example,
-'       and we could probably make use of existing premultiplication (instead of undoing then redoing it, as we do now).
 Public Sub MenuCropToSelection()
-
-    'TODO: make this work with layers.
-
+    
     'First, make sure there is an active selection
     If Not pdImages(g_CurrentImage).selectionActive Then
         Message "No active selection found.  Crop abandoned."
@@ -602,8 +598,6 @@ End Sub
 'Rotate an image 180°
 Public Sub MenuRotate180()
 
-    'TODO: make this function work with layers.
-
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
@@ -824,4 +818,99 @@ Public Function getInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, B
 
 End Function
 
+'Fit the image canvas around the current layer
+Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
+    
+    Message "Fitting image canvas around layer..."
+    
+    'Start by calculating a new offset, based on the current layer's offsets
+    Dim dstX As Long, dstY As Long
+    dstX = pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerOffsetX
+    dstY = pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerOffsetY
+    
+    'Now that we have new top-left corner coordinates (and new width/height values), resizing the canvas
+    ' is actually very easy.  In PhotoDemon, there is no such thing as "image data"; an image is just an
+    ' imaginary bounding box around the layers collection.  Because of this, we don't actually need to
+    ' resize any pixel data - we just need to modify all layer offsets to account for the new top-left corner!
+    Dim i As Long
+    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+        With pdImages(g_CurrentImage).getLayerByIndex(i)
+            .setLayerOffsetX .getLayerOffsetX - dstX
+            .setLayerOffsetY .getLayerOffsetY - dstY
+        End With
+    
+    Next i
+    
+    'Finally, update the parent image's size and DPI values
+    pdImages(g_CurrentImage).updateSize False, pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).layerDIB.getDIBWidth, pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).layerDIB.getDIBHeight
+    DisplaySize pdImages(g_CurrentImage)
+    
+    'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
+    ' appearance of any of the layers, we can leave it as-is!
+    
+    'Fit the new image on-screen and redraw its viewport
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Fit canvas to layer"
+    
+    Message "Finished."
+    
+End Sub
 
+'Fit the canvas around all layers present in the image
+Public Sub MenuFitCanvasToAllLayers()
+    
+    Message "Fitting image canvas around layer..."
+    
+    'Start by finding two things:
+    ' 1) The lowest x/y offsets in the current layer stack
+    ' 2) The highest width/height in the current layer stack (while accounting for offsets as well!)
+    Dim dstLeft As Long, dstTop As Long, dstRight As Long, dstBottom As Long
+    dstLeft = &HFFFFFF
+    dstTop = &HFFFFFF
+    dstRight = -1 * &HFFFFFF
+    dstBottom = -1 * &HFFFFFF
+    
+    Dim i As Long
+    
+    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+        With pdImages(g_CurrentImage).getLayerByIndex(i)
+        
+            'Check for new minimum offsets
+            If .getLayerOffsetX < dstLeft Then dstLeft = .getLayerOffsetX
+            If .getLayerOffsetY < dstTop Then dstTop = .getLayerOffsetY
+            
+            'Check for new maximum right/top
+            If .getLayerOffsetX + .layerDIB.getDIBWidth > dstRight Then dstRight = .getLayerOffsetX + .layerDIB.getDIBWidth
+            If .getLayerOffsetY + .layerDIB.getDIBHeight > dstBottom Then dstBottom = .getLayerOffsetY + .layerDIB.getDIBHeight
+        
+        End With
+    
+    Next i
+    
+    'Now that we have new top-left corner coordinates (and new width/height values), resizing the canvas
+    ' is actually very easy.  In PhotoDemon, there is no such thing as "image data"; an image is just an
+    ' imaginary bounding box around the layers collection.  Because of this, we don't actually need to
+    ' resize any pixel data - we just need to modify all layer offsets to account for the new top-left corner!
+    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+        With pdImages(g_CurrentImage).getLayerByIndex(i)
+            .setLayerOffsetX .getLayerOffsetX - dstLeft
+            .setLayerOffsetY .getLayerOffsetY - dstTop
+        End With
+    
+    Next i
+    
+    'Finally, update the parent image's size and DPI values
+    pdImages(g_CurrentImage).updateSize False, (dstRight - dstLeft), (dstBottom - dstTop)
+    DisplaySize pdImages(g_CurrentImage)
+    
+    'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
+    ' appearance of any of the layers, we can leave it as-is!
+    
+    'Fit the new image on-screen and redraw its viewport
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Fit canvas to all layers"
+    
+    Message "Finished."
+    
+End Sub
