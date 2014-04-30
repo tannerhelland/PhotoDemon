@@ -4,7 +4,7 @@ Attribute VB_Name = "Filters_Transform"
 'Copyright ©2003-2014 by Tanner Helland
 'Created: 25/January/03
 'Last updated: 30/April/14
-'Last update: add "fit canvas to active layer" and "fit canvas to all layers" options
+'Last update: add "fit canvas to active layer", "fit canvas to all layers", and "trim empty borders" functions
 '
 'Runs all image transformations, including rotate, flip, mirror and crop at present.
 '
@@ -823,6 +823,12 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     
     Message "Fitting image canvas around layer..."
     
+    'If the image contains an active selection, disable it before transforming the canvas
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
+    End If
+    
     'Start by calculating a new offset, based on the current layer's offsets
     Dim dstX As Long, dstY As Long
     dstX = pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerOffsetX
@@ -860,6 +866,12 @@ End Sub
 Public Sub MenuFitCanvasToAllLayers()
     
     Message "Fitting image canvas around layer..."
+    
+    'If the image contains an active selection, disable it before transforming the canvas
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
+    End If
     
     'Start by finding two things:
     ' 1) The lowest x/y offsets in the current layer stack
@@ -901,7 +913,7 @@ Public Sub MenuFitCanvasToAllLayers()
     
     Next i
     
-    'Finally, update the parent image's size and DPI values
+    'Finally, update the parent image's size
     pdImages(g_CurrentImage).updateSize False, (dstRight - dstLeft), (dstBottom - dstTop)
     DisplaySize pdImages(g_CurrentImage)
     
@@ -914,3 +926,193 @@ Public Sub MenuFitCanvasToAllLayers()
     Message "Finished."
     
 End Sub
+
+'Automatically trim empty borders from an image.  Empty borders are defined as borders comprised only of 100% transparent pixels.
+Public Sub TrimImage()
+
+    'If the image contains an active selection, disable it before transforming the canvas
+    If pdImages(g_CurrentImage).selectionActive Then
+        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).mainSelection.lockRelease
+    End If
+
+    'The image will be trimmed in four steps.  Each edge will be trimmed separately, starting with the top.
+    
+    Message "Analyzing top edge of image..."
+    
+    'Retrieve a copy of the composited image
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    pdImages(g_CurrentImage).getCompositedImage tmpDIB
+    
+    'Point an array at the DIB data
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, tmpDIB
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    finalX = pdImages(g_CurrentImage).Width - 1
+    finalY = pdImages(g_CurrentImage).Height - 1
+            
+    'These values will help us access locations in the array more quickly.
+    Dim quickVal As Long
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    SetProgBarMax 4
+    
+    'The new edges of the image will mark these values for us
+    Dim newTop As Long, newBottom As Long, newLeft As Long, newRight As Long
+    
+    'When a non-transparent pixel is found, this check value will be set to TRUE
+    Dim colorFails As Boolean
+    colorFails = False
+    
+    'Scan the image, starting at the top-left and moving right
+    For y = 0 To finalY
+    For x = 0 To finalX
+        
+        'If this pixel is transparent, keep scanning.  Otherwise, note that we have found a non-transparent pixel
+        ' and exit the loop.
+        If srcImageData(x * 4 + 3, y) > 0 Then colorFails = True
+        If colorFails Then Exit For
+        
+    Next x
+        If colorFails Then Exit For
+    Next y
+    
+    'We have now reached one of two conditions:
+    '1) The entire image is transparent
+    '2) The loop progressed part-way through the image and terminated
+    
+    'Check for case (1) and warn the user if it occurred
+    If Not colorFails Then
+    
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        Erase srcImageData
+        
+        SetProgBarVal 0
+        releaseProgressBar
+        
+        Message "Image is fully transparent.  Trim abandoned."
+        Exit Sub
+    
+    'Next, check for case (2)
+    Else
+        newTop = y
+    End If
+    
+    initY = newTop
+    
+    'Repeat the above steps, but tracking the left edge instead.  Note also that we will only be scanning from wherever
+    ' the top trim failed - this saves processing time.
+    colorFails = False
+    
+    Message "Analyzing left edge of image..."
+    SetProgBarVal 1
+    
+    For x = 0 To finalX
+        quickVal = x * 4
+    For y = initY To finalY
+    
+        If srcImageData(quickVal + 3, y) > 0 Then colorFails = True
+        If colorFails Then Exit For
+        
+    Next y
+        If colorFails Then Exit For
+    Next x
+    
+    newLeft = x
+    
+    'Repeat the above steps, but tracking the right edge instead.  Note also that we will only be scanning from wherever
+    ' the top trim failed - this saves processing time.
+    colorFails = False
+    
+    Message "Analyzing right edge of image..."
+    SetProgBarVal 2
+    
+    For x = finalX To 0 Step -1
+        quickVal = x * 4
+    For y = initY To finalY
+    
+        If srcImageData(quickVal + 3, y) > 0 Then colorFails = True
+        If colorFails Then Exit For
+        
+    Next y
+        If colorFails Then Exit For
+    Next x
+    
+    newRight = x
+    
+    'Finally, repeat the steps above for the bottom of the image.  Note also that we will only be scanning from wherever
+    ' the left and right trims failed - this saves processing time.
+    colorFails = False
+    initX = newLeft
+    finalX = newRight
+    
+    Message "Analyzing bottom edge of image..."
+    SetProgBarVal 3
+    
+    For y = finalY To initY Step -1
+    For x = initX To finalX
+        
+        If srcImageData(x * 4 + 3, y) > 0 Then colorFails = True
+        If colorFails Then Exit For
+        
+    Next x
+        If colorFails Then Exit For
+    Next y
+    
+    newBottom = y
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    
+    'Erase the temporary DIB
+    Set tmpDIB = Nothing
+    
+    'We now know where to crop the image.  Apply the crop.
+    If (newTop = 0) And (newBottom = pdImages(g_CurrentImage).Height - 1) And (newLeft = 0) And (newRight = pdImages(g_CurrentImage).Width - 1) Then
+        SetProgBarVal 0
+        releaseProgressBar
+        Message "Image is already trimmed.  (No changes were made to the image.)"
+    Else
+    
+        Message "Trimming image to new dimensions..."
+        SetProgBarVal 4
+        
+        'Now that we have new top-left corner coordinates (and new width/height values), resizing the canvas
+        ' is actually very easy.  In PhotoDemon, there is no such thing as "image data"; an image is just an
+        ' imaginary bounding box around the layers collection.  Because of this, we don't actually need to
+        ' resize any pixel data - we just need to modify all layer offsets to account for the new top-left corner!
+        Dim i As Long
+        For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+        
+            With pdImages(g_CurrentImage).getLayerByIndex(i)
+                .setLayerOffsetX .getLayerOffsetX - newLeft
+                .setLayerOffsetY .getLayerOffsetY - newTop
+            End With
+        
+        Next i
+    
+        'Finally, update the parent image's size
+        pdImages(g_CurrentImage).updateSize False, (newRight - newLeft), (newBottom - newTop)
+        DisplaySize pdImages(g_CurrentImage)
+    
+        'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
+        ' appearance of any of the layers, we can leave it as-is!
+        
+        Message "Finished. "
+        SetProgBarVal 0
+        releaseProgressBar
+        
+        'Redraw the image
+        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Trim empty borders"
+    
+    End If
+
+End Sub
+

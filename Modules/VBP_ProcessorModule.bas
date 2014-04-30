@@ -367,8 +367,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Crop"
             MenuCropToSelection
             
-        Case "Autocrop"
-            AutocropImage
+        'Case "Autocrop"
+        '    AutocropImage
+        
+        Case "Trim empty borders"
+            Filters_Transform.TrimImage
             
         'Rotate operations
         Case "Rotate 90° clockwise"
