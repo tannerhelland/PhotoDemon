@@ -27,18 +27,39 @@ Public Enum SystemIconConstants
 End Enum
 
 Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
-Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
+Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal hIcon As Long) As Long
 
 'GDI drawing functions
-Private Const PS_SOLID As Long = &H0
-Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
-Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function CreatePatternBrush Lib "gdi32" (ByVal hBitmap As Long) As Long
+Private Const PS_SOLID = 0
+Private Const PS_DASH = 1
+Private Const PS_DOT = 2
+Private Const PS_DASHDOT = 3
+Private Const PS_DASHDOTDOT = 4
+
+Private Const RGN_AND = 1
+Private Const RGN_OR = 2
+Private Const RGN_XOR = 3
+Private Const RGN_DIFF = 4
+Private Const RGN_COPY = 5
+
+Private Const HS_DIAGCROSS = 5
+
+Private Const NULL_BRUSH = 5
+
 Private Declare Function CreateDIBPatternBrushPt Lib "gdi32" (ByVal dibPointer As Long, ByVal iUsage As Long) As Long
-Private Declare Function PatBlt Lib "gdi32" (ByVal targetDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function CreatePatternBrush Lib "gdi32" (ByVal hBitmap As Long) As Long
+Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
+Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Long
+Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
+Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
+Private Declare Function PatBlt Lib "gdi32" (ByVal targetDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function SetBrushOrgEx Lib "gdi32" (ByVal targetDC As Long, ByVal nXOrg As Long, ByVal nYOrg As Long, ByVal refToPeviousPoint As Long) As Long
+Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode As Long) As Long
+
 
 'Basic wrapper to line-drawing via the API
 Public Sub drawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
@@ -75,10 +96,10 @@ Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, By
 End Sub
 
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
-Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
+Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal X As Long, ByVal Y As Long)
     Dim hIcon As Long
     hIcon = LoadIconByID(0, icon)
-    DrawIcon hDC, x, y, hIcon
+    DrawIcon hDC, X, Y, hIcon
 End Sub
 
 'Used to draw the main image onto a preview picture box
@@ -163,7 +184,7 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
 
     'Calculation variables (used to interpolate between the gradient colors)
     Dim VR As Double, VG As Double, VB As Double
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     
     'Red, green, and blue variables for each gradient color
     Dim r As Long, g As Long, b As Long
@@ -202,19 +223,19 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     
     'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
     If drawHorizontal Then
-        For x = 0 To tmpWidth
-            r2 = r + VR * x
-            g2 = g + VG * x
-            b2 = b + VB * x
-            DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
-        Next x
+        For X = 0 To tmpWidth
+            r2 = r + VR * X
+            g2 = g + VG * X
+            b2 = b + VB * X
+            DstPicBox.Line (X, 0)-(X, tmpHeight), RGB(r2, g2, b2)
+        Next X
     Else
-        For y = 0 To tmpHeight
-            r2 = r + VR * y
-            g2 = g + VG * y
-            b2 = b + VB * y
-            DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)
-        Next y
+        For Y = 0 To tmpHeight
+            r2 = r + VR * Y
+            g2 = g + VG * Y
+            b2 = b + VB * Y
+            DstPicBox.Line (0, Y)-(tmpWidth, Y), RGB(r2, g2, b2)
+        Next Y
     End If
     
 End Sub
@@ -267,23 +288,23 @@ Public Sub createAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Fill the source DIB with the checkerboard pattern
-    Dim x As Long, y As Long, QuickX As Long
-    For x = 0 To srcDIB.getDIBWidth - 1
-        QuickX = x * 3
-    For y = 0 To srcDIB.getDIBHeight - 1
+    Dim X As Long, Y As Long, QuickX As Long
+    For X = 0 To srcDIB.getDIBWidth - 1
+        QuickX = X * 3
+    For Y = 0 To srcDIB.getDIBHeight - 1
          
-        If (((x \ chkSize) + (y \ chkSize)) And 1) = 0 Then
-            srcImageData(QuickX + 2, y) = r1
-            srcImageData(QuickX + 1, y) = g1
-            srcImageData(QuickX, y) = b1
+        If (((X \ chkSize) + (Y \ chkSize)) And 1) = 0 Then
+            srcImageData(QuickX + 2, Y) = r1
+            srcImageData(QuickX + 1, Y) = g1
+            srcImageData(QuickX, Y) = b1
         Else
-            srcImageData(QuickX + 2, y) = r2
-            srcImageData(QuickX + 1, y) = g2
-            srcImageData(QuickX, y) = b2
+            srcImageData(QuickX + 2, Y) = r2
+            srcImageData(QuickX + 1, Y) = g2
+            srcImageData(QuickX, Y) = b2
         End If
         
-    Next y
-    Next x
+    Next Y
+    Next X
     
     'Release our temporary array and exit
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -309,5 +330,109 @@ Public Sub fillDIBWithAlphaCheckerboard(ByRef srcDIB As pdDIB, ByVal x1 As Long,
     'Remove and delete the brush
     SelectObject srcDIB.getDIBDC, hOldBrush
     DeleteObject hCheckerboard
+
+End Sub
+
+'Given an (x,y) pair on the current viewport, convert the value to coordinates on the image.
+Public Sub convertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Double, ByVal canvasY As Double, ByRef imgX As Double, ByRef imgY As Double, Optional ByVal forceInBounds As Boolean = False)
+
+    If srcImage.imgViewport Is Nothing Then Exit Sub
+    
+    'Get the current zoom value from the source image
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
+                
+    'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
+    ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
+    canvasY = canvasY - srcImage.imgViewport.getTopOffset
+    
+    'Calculate image x and y positions, while taking into account zoom and scroll values
+    imgX = srcCanvas.getScrollValue(PD_HORIZONTAL) + Int((canvasX - srcImage.imgViewport.targetLeft) / zoomVal)
+    imgY = srcCanvas.getScrollValue(PD_VERTICAL) + Int((canvasY - srcImage.imgViewport.targetTop) / zoomVal)
+    
+    'If the caller wants the coordinates bound-checked, apply it now
+    If forceInBounds Then
+        If imgX < 0 Then imgX = 0
+        If imgY < 0 Then imgY = 0
+        If imgX >= srcImage.Width Then imgX = srcImage.Width - 1
+        If imgY >= srcImage.Height Then imgY = srcImage.Height - 1
+    End If
+    
+End Sub
+
+'Given an (x,y) pair on the current image, convert the value to coordinates on the current viewport canvas.
+Public Sub convertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal imgX As Double, ByVal imgY As Double, ByRef canvasX As Double, ByRef canvasY As Double, Optional ByVal forceInBounds As Boolean = False)
+
+    If srcImage.imgViewport Is Nothing Then Exit Sub
+    
+    'Get the current zoom value from the source image
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
+    
+    'Calculate canvas x and y positions, while taking into account zoom and scroll values
+    canvasX = (imgX - srcCanvas.getScrollValue(PD_HORIZONTAL)) * zoomVal + srcImage.imgViewport.targetLeft
+    canvasY = (imgY - srcCanvas.getScrollValue(PD_VERTICAL)) * zoomVal + srcImage.imgViewport.targetTop
+    
+    'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
+    ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
+    canvasY = canvasY + srcImage.imgViewport.getTopOffset
+    
+    'If the caller wants the coordinates bound-checked, apply it now
+    If forceInBounds Then
+        If canvasX < srcImage.imgViewport.targetLeft Then imgX = srcImage.imgViewport.targetLeft
+        If canvasY < srcImage.imgViewport.targetTop Then imgY = srcImage.imgViewport.targetTop
+        If canvasX >= srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth Then imgX = srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth - 1
+        If canvasY >= srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight Then imgY = srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight - 1
+    End If
+    
+End Sub
+
+Public Sub getCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT)
+
+End Sub
+
+'On the current viewport, render lines around the active layer
+Public Sub drawLayerBoundaries(ByVal layerIndex As Long)
+
+    'Start by filling a rect with the current layer boundaries, but translated to the canvas coordinate system
+    Dim layerCanvasRect As RECT
+    
+    
+    
+    'Finally, draw a rectangle to the coordinates we provided
+    
+    'Store the destination DC to a local variable
+    Dim dstDC As Long
+    dstDC = FormMain.mainCanvas(0).hDC
+    
+    'Since we'll be using the API to draw our selection area, we need to initialize several brushes
+    Dim hPen As Long, hOldPen As Long
+    
+    hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
+    hOldPen = SelectObject(dstDC, hPen)
+    
+    'Get a transparent brush
+    Dim hBrush As Long, hOldBrush As Long
+    hBrush = GetStockObject(NULL_BRUSH)
+    hOldBrush = SelectObject(dstDC, hBrush)
+    
+    'Change the rasterOp to XOR (this will invert the line)
+    SetROP2 dstDC, vbSrcInvert
+                
+    'Draw the rectangle
+    With layerCanvasRect
+        Rectangle dstDC, .Left, .Top, .Right, .Bottom
+    End With
+    
+    'Restore the normal COPY rOp
+    SetROP2 dstDC, vbSrcCopy
+    
+    'Remove the brush from the DC
+    SelectObject dstDC, hOldBrush
+    DeleteObject hBrush
+    
+    'Remove the pen from the DC
+    SelectObject dstDC, hOldPen
+    DeleteObject hPen
 
 End Sub

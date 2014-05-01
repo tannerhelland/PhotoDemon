@@ -39,7 +39,7 @@ Private Type RECTF
     Left        As Single
     Top         As Single
     Right       As Single
-    bottom      As Single
+    Bottom      As Single
 End Type
     
 'Some API functions are used to simplify the process of things like merging layers
@@ -49,6 +49,8 @@ Private Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECT, B
 'Composite two DIBs using the requested blend mode.  An offset can be specified for the top DIB, relative to the bottom DIB.
 ' Note that the top DIB is treated as the destination, because after all compositing is done, the top DIB still needs
 ' to be alpha-blended with the bottom DIB (to account for net opacity).
+'
+'TODO: profile an integer-based implementation.
 Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single)
 
     'We will be doing a lot of int/float conversions.  To speed things up, use a persistent look-up table.
@@ -89,28 +91,28 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
     CopyMemory ByVal VarPtrArray(tImageData()), VarPtr(topSA), 4
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-    Dim x As Long, y As Long, quickX As Long, quickBottomX As Long, quickBottomY As Long
+    Dim x As Long, y As Long, QuickX As Long, quickBottomX As Long, quickBottomY As Long
     
     Dim topR As Single, topG As Single, topB As Single, topA As Single
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single
     Dim newR As Single, newG As Single, newB As Single, newA As Single
     
     For x = initX To finalX
-        quickX = x * 4
+        QuickX = x * 4
         quickBottomX = (dstX + x) * 4
     For y = initY To finalY
     
         quickBottomY = dstY + y
         
         'Retrieve top layer RGBA values
-        topA = IntToFloat(tImageData(quickX + 3, y))
+        topA = IntToFloat(tImageData(QuickX + 3, y))
         
         'Ignore transparent pixels
         If topA > 0 Then
         
-            topR = IntToFloat(tImageData(quickX + 2, y))
-            topG = IntToFloat(tImageData(quickX + 1, y))
-            topB = IntToFloat(tImageData(quickX, y))
+            topR = IntToFloat(tImageData(QuickX + 2, y))
+            topG = IntToFloat(tImageData(QuickX + 1, y))
+            topB = IntToFloat(tImageData(QuickX, y))
             
             'Retrieve bottom layer RGB values
             bottomA = IntToFloat(bImageData(quickBottomX + 3, quickBottomY))
@@ -173,9 +175,9 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                 newB = (newB * bottomA) + (topB * (1 - bottomA))
                 
                 'Copy the new values into the bottom layer, and premultiply them
-                tImageData(quickX + 2, y) = (newR * 255) * topA
-                tImageData(quickX + 1, y) = (newG * 255) * topA
-                tImageData(quickX, y) = (newB * 255) * topA
+                tImageData(QuickX + 2, y) = (newR * 255) * topA
+                tImageData(QuickX + 1, y) = (newG * 255) * topA
+                tImageData(QuickX, y) = (newB * 255) * topA
                 
             End If
             
@@ -218,7 +220,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         UnionRect finalRect, topRect, bottomRect
         
         'finalRect now contains the coordinates of the resulting rect.  Create a blank DIB at those dimensions.
-        tmpDIB.createBlank finalRect.Right - finalRect.Left, finalRect.bottom - finalRect.Top, 32, 0
+        tmpDIB.createBlank finalRect.Right - finalRect.Left, finalRect.Bottom - finalRect.Top, 32, 0
         
         'We now need to do a couple of things.  Let's start by copying the bottom DIB into this new temporary DIB.
         xOffset = bottomRect.Left - finalRect.Left
@@ -347,14 +349,14 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         .Left = dstX
         .Top = dstY
         .Right = dstX + dstWidth
-        .bottom = dstY + dstHeight
+        .Bottom = dstY + dstHeight
     End With
     
     With srcImageRect
         .Left = srcX
         .Top = srcY
         .Right = srcX + srcWidth
-        .bottom = srcY + srcHeight
+        .Bottom = srcY + srcHeight
     End With
     
     'A few other things to note before we begin:
@@ -415,12 +417,12 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                     .Left = intRectSrc.Left - tmpLayerRef.getLayerOffsetX
                     .Right = intRectSrc.Right - tmpLayerRef.getLayerOffsetX
                     .Top = intRectSrc.Top - tmpLayerRef.getLayerOffsetY
-                    .bottom = intRectSrc.bottom - tmpLayerRef.getLayerOffsetY
+                    .Bottom = intRectSrc.Bottom - tmpLayerRef.getLayerOffsetY
                 End With
                 
                 'We now have everything we need to create a resized version of this layer!  Grab it now.
-                tmpDIB.createBlank dstRect.Right - dstRect.Left, dstRect.bottom - dstRect.Top, 32, 0
-                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.bottom - srcRect.Top, interpolationType
+                tmpDIB.createBlank dstRect.Right - dstRect.Left, dstRect.Bottom - dstRect.Top, 32, 0
+                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
                                 
                 'tmpDIB now contains the chunk of this layer that appears on the viewport.  Time to composite it!
                 If tmpLayerRef.getLayerBlendMode <> BL_NORMAL Then
@@ -451,7 +453,7 @@ Friend Sub fillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT)
         dstRect.Left = .getLayerOffsetX
         dstRect.Right = .getLayerOffsetX + .layerDIB.getDIBWidth
         dstRect.Top = .getLayerOffsetY
-        dstRect.bottom = .getLayerOffsetY + .layerDIB.getDIBHeight
+        dstRect.Bottom = .getLayerOffsetY + .layerDIB.getDIBHeight
     End With
 
 End Sub
@@ -466,7 +468,7 @@ Private Function getDstRectFromSrcRect(ByRef dstRect As RECT, ByRef srcRect As R
         .Left = (srcRect.Left - srcX) / srcWidth
         .Right = (srcRect.Right - srcX) / srcWidth
         .Top = (srcRect.Top - srcY) / srcHeight
-        .bottom = (srcRect.bottom - srcY) / srcHeight
+        .Bottom = (srcRect.Bottom - srcY) / srcHeight
     End With
     
     'Using those source values, fill the destination rect
@@ -474,7 +476,7 @@ Private Function getDstRectFromSrcRect(ByRef dstRect As RECT, ByRef srcRect As R
         .Left = dstX + (srcRectF.Left * dstWidth)
         .Right = dstX + (srcRectF.Right * dstWidth)
         .Top = dstY + (srcRectF.Top * dstHeight)
-        .bottom = dstY + (srcRectF.bottom * dstHeight)
+        .Bottom = dstY + (srcRectF.Bottom * dstHeight)
     End With
 
 End Function
