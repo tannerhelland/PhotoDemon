@@ -387,7 +387,25 @@ Public Sub convertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
     
 End Sub
 
+'Given a specific layer, return a RECT filled with that layer's corner coordinates -
+' IN THE CANVAS COORDINATE SPACE (hence the function name).
 Public Sub getCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT)
+
+    Dim tmpX As Double, tmpY As Double
+    
+    With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
+        
+        'Start with the top-left corner
+        convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX, .getLayerOffsetY, tmpX, tmpY
+        dstRect.Left = tmpX
+        dstRect.Top = tmpY
+        
+        'End with the bottom-right corner
+        convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth, .getLayerOffsetY + .layerDIB.getDIBHeight, tmpX, tmpY
+        dstRect.Right = tmpX
+        dstRect.Bottom = tmpY
+        
+    End With
 
 End Sub
 
@@ -396,10 +414,9 @@ Public Sub drawLayerBoundaries(ByVal layerIndex As Long)
 
     'Start by filling a rect with the current layer boundaries, but translated to the canvas coordinate system
     Dim layerCanvasRect As RECT
+    getCanvasRectForLayer layerIndex, layerCanvasRect
     
-    
-    
-    'Finally, draw a rectangle to the coordinates we provided
+    'Next, draw a rectangle to the coordinates we provided
     
     'Store the destination DC to a local variable
     Dim dstDC As Long
@@ -434,5 +451,32 @@ Public Sub drawLayerBoundaries(ByVal layerIndex As Long)
     'Remove the pen from the DC
     SelectObject dstDC, hOldPen
     DeleteObject hPen
+
+End Sub
+
+'On the current viewport, render standard PD transformation nodes atop the active layer.
+' (At present, only the corners are marked.  In the future, rotation may also be added.)
+Public Sub drawLayerNodes(ByVal layerIndex As Long)
+
+    'Start by filling a rect with the current layer boundaries, but translated to the canvas coordinate system
+    Dim layerCanvasRect As RECT
+    getCanvasRectForLayer layerIndex, layerCanvasRect
+    
+    'Draw transform nodes around the layer
+    Dim circRadius As Long
+    circRadius = 7
+    
+    Dim circAlpha As Long
+    circAlpha = 190
+    
+    'Store the destination DC to a local variable
+    Dim dstDC As Long
+    dstDC = FormMain.mainCanvas(0).hDC
+    
+    'Corner circles first
+    GDIPlusDrawCanvasCircle dstDC, layerCanvasRect.Left, layerCanvasRect.Top, circRadius, circAlpha
+    GDIPlusDrawCanvasCircle dstDC, layerCanvasRect.Right, layerCanvasRect.Top, circRadius, circAlpha
+    GDIPlusDrawCanvasCircle dstDC, layerCanvasRect.Right, layerCanvasRect.Bottom, circRadius, circAlpha
+    GDIPlusDrawCanvasCircle dstDC, layerCanvasRect.Left, layerCanvasRect.Bottom, circRadius, circAlpha
 
 End Sub
