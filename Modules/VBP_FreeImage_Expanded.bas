@@ -21,6 +21,8 @@ Attribute VB_Name = "Plugin_FreeImage_Expanded_Interface"
 
 Option Explicit
 
+Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
+
 'When loading a multipage image, the user will be prompted to load each page as an individual image.  If the user agrees,
 ' this variable will be set to TRUE.  LoadFileAsNewImage will then use this variable to launch the import of the subsequent pages.
 Public g_imageHasMultiplePages As Boolean
@@ -772,4 +774,69 @@ isMultiImage_Error:
 
     isMultiImage = 0
 
+End Function
+
+'Use FreeImage to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
+' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
+' This function is also declared identically to PD's GDI+ equivalent, specifically GDIPlusResizeDIB.  This was done
+' so that the two functions can be used interchangeably.
+Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As FREE_IMAGE_FILTER) As Boolean
+
+    'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
+    ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
+    ' have timing reports sent to the debug window.
+    Dim profileTime As Double
+    profileTime = Timer
+
+    FreeImageResizeDIB = True
+
+    'Double-check that FreeImage exists
+    If g_ImageFormats.FreeImageEnabled Then
+        
+        'If the original image is 32bpp, remove premultiplication now
+        'If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha
+        
+        'Create a temporary DIB at the size of the source image
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank srcWidth, srcHeight, srcDIB.getDIBColorDepth, 0
+        
+        'Copy the relevant source portion of the image into the temporary DIB
+        BitBlt tmpDIB.getDIBDC, 0, 0, srcWidth, srcHeight, srcDIB.getDIBDC, srcX, srcY, vbSrcCopy
+        
+        'Create a FreeImage copy of the temporary DIB
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+        
+        'Use that handle to request an image resize
+        If fi_DIB <> 0 Then
+            
+            Dim returnDIB As Long
+            returnDIB = FreeImage_RescaleByPixel(fi_DIB, dstWidth, dstHeight, True, interpolationType)
+            
+            'Resize the destination DIB in preparation for the transfer
+            'dstDIB.createBlank iWidth, iHeight, srcDIB.getDIBColorDepth
+            
+            'Copy the bits from the FreeImage DIB to our DIB
+            tmpDIB.createBlank dstWidth, dstHeight, 32, 0
+            SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 0, 0, 0, srcHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+            
+            'AlphaBlend the result onto the destination DIB
+            AlphaBlend dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
+            
+            'With the transfer complete, release the FreeImage DIB and unload the library
+            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+            
+        End If
+        
+        'If the original image is 32bpp, add back in premultiplication now
+        'If srcDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
+        
+    Else
+        FreeImageResizeDIB = False
+    End If
+    
+    'Uncomment the line below to receive timing reports
+    Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    
 End Function
