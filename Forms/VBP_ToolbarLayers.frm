@@ -25,13 +25,32 @@ Begin VB.Form toolbar_Layers
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
+   Begin VB.ComboBox cboBlendMode 
+      Appearance      =   0  'Flat
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   330
+      Left            =   960
+      Style           =   2  'Dropdown List
+      TabIndex        =   10
+      Top             =   675
+      Width           =   2655
+   End
    Begin VB.VScrollBar vsLayer 
       Height          =   4905
       LargeChange     =   32
       Left            =   3360
       Max             =   100
       TabIndex        =   7
-      Top             =   840
+      Top             =   1320
       Width           =   285
    End
    Begin VB.PictureBox picLayerButtons 
@@ -55,25 +74,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   4
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0000
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0000
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1
+         picturenormal   =   "VBP_ToolbarLayers.frx":0028
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -82,25 +93,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   5
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0D7A
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1
+         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -109,25 +112,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":1AF4
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1
+         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
    End
    Begin VB.PictureBox picLayers 
@@ -143,7 +138,7 @@ Begin VB.Form toolbar_Layers
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   215
       TabIndex        =   2
-      Top             =   840
+      Top             =   1320
       Width           =   3255
       Begin VB.TextBox txtLayerName 
          BeginProperty Font 
@@ -170,11 +165,20 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   120
       Width           =   2760
-      _ExtentX        =   4868
-      _ExtentY        =   873
-      Max             =   100
-      Value           =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+      _extentx        =   4868
+      _extenty        =   873
+      font            =   "VBP_ToolbarLayers.frx":286E
+      max             =   100
+      value           =   100
+   End
+   Begin VB.Label lblLayerSettings 
+      Alignment       =   1  'Right Justify
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "blend:"
+      BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -183,14 +187,21 @@ Begin VB.Form toolbar_Layers
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ForeColor       =   &H00606060&
+      Height          =   240
+      Index           =   0
+      Left            =   375
+      TabIndex        =   9
+      Top             =   720
+      Width           =   540
    End
    Begin VB.Line lnSeparator 
       BorderColor     =   &H8000000D&
       Index           =   0
       X1              =   8
       X2              =   240
-      Y1              =   48
-      Y2              =   48
+      Y1              =   80
+      Y2              =   80
    End
    Begin VB.Label lblLayerSettings 
       Alignment       =   1  'Right Justify
@@ -310,13 +321,20 @@ Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     
     If refreshThumbnailCache Then cacheLayerThumbnails
     
-    'Synchronize the opacity scroll bar to the active layer.
+    'Sync opacity, blend mode, and other controls to the currently active layer
     disableRedraws = True
     If (g_OpenImageCount > 0) Then
         If (Not pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then
+            
+            'Synchronize the opacity scroll bar to the active layer
             sltLayerOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOpacity
+            
+            'Synchronize the blend mode to the active layer
+            cboBlendMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerBlendMode
+            
         End If
     End If
+    
     disableRedraws = False
     
     'resizeLayerUI already calls all the proper redraw functions for us, so simply link it here
@@ -367,6 +385,26 @@ Private Sub checkButtonEnablement()
     
 End Sub
 
+'Change the blend mode of the active layer
+Private Sub cboBlendMode_Click()
+
+    'By default, changing the drop-down will automatically update the blend mode of the selected layer, and the main viewport
+    ' will be redrawn.  When changing the blend mode programmatically, set disableRedraws to TRUE to prevent cylical redraws.
+    If disableRedraws Then Exit Sub
+
+    If g_OpenImageCount > 0 Then
+    
+        If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
+        
+            pdImages(g_CurrentImage).getActiveLayer.setLayerBlendMode cboBlendMode.ListIndex
+            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+        End If
+    
+    End If
+
+End Sub
+
 'Layer action buttons - move layers up/down, delete layers, etc.
 Private Sub cmdLayerAction_Click(Index As Integer)
 
@@ -399,7 +437,7 @@ Private Sub cMouseEvents_MouseOut()
     
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If vsLayer.Visible Then
@@ -412,7 +450,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
                 vsLayer.Value = vsLayer.Value + vsLayer.LargeChange
             End If
             
-            curLayerHover = getLayerAtPosition(X, Y)
+            curLayerHover = getLayerAtPosition(x, y)
             redrawLayerBox
         
         ElseIf LinesScrolled > 0 Then
@@ -423,7 +461,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
                 vsLayer.Value = vsLayer.Value - vsLayer.LargeChange
             End If
             
-            curLayerHover = getLayerAtPosition(X, Y)
+            curLayerHover = getLayerAtPosition(x, y)
             redrawLayerBox
             
         End If
@@ -433,7 +471,17 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
 End Sub
 
 Private Sub Form_Load()
-
+    
+    'Populate the blend mode box
+    cboBlendMode.Clear
+    cboBlendMode.AddItem "Normal", 0
+    cboBlendMode.AddItem "Multiply", 1
+    cboBlendMode.AddItem "Screen", 2
+    cboBlendMode.AddItem "Overlay", 3
+    cboBlendMode.AddItem "Hard light", 4
+    cboBlendMode.AddItem "Soft light", 5
+    cboBlendMode.ListIndex = 0
+    
     'Reset the thumbnail array
     numOfThumbnails = 0
     ReDim layerThumbnails(0 To numOfThumbnails) As thumbEntry
@@ -849,13 +897,13 @@ Private Sub picLayers_DblClick()
 End Sub
 
 'Layer box was clicked; set that layer as the new active layer, and notify the parent pdImage object
-Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'Ignore user interaction while in drag/drop mode
     If inDragDropMode Then Exit Sub
     
     Dim clickedLayer As Long
-    clickedLayer = getLayerAtPosition(X, Y)
+    clickedLayer = getLayerAtPosition(x, y)
     
     If clickedLayer >= 0 Then
         
@@ -864,24 +912,24 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, X As Single
             'Check the clicked position against a series of rects, each one representing a unique interaction.
             
             'Has the user clicked a visibility rectangle?
-            If isPointInRect(X, Y, m_VisibilityRect) Then
+            If isPointInRect(x, y, m_VisibilityRect) Then
                 
                 Layer_Handler.setLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).getLayerByIndex(clickedLayer).getLayerVisibility, True
             
             'Duplicate rectangle?
-            ElseIf isPointInRect(X, Y, m_DuplicateRect) Then
+            ElseIf isPointInRect(x, y, m_DuplicateRect) Then
             
                 Process "Duplicate Layer", False, Str(clickedLayer)
             
             'Merge down rectangle?
-            ElseIf isPointInRect(X, Y, m_MergeDownRect) Then
+            ElseIf isPointInRect(x, y, m_MergeDownRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
                     Process "Merge layer down", False, Str(clickedLayer)
                 End If
             
             'Merge up rectangle?
-            ElseIf isPointInRect(X, Y, m_MergeUpRect) Then
+            ElseIf isPointInRect(x, y, m_MergeUpRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
                     Process "Merge layer up", False, Str(clickedLayer)
@@ -903,7 +951,7 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, X As Single
     
 End Sub
 
-Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'Ignore user interaction while in drag/drop mode
     If inDragDropMode Then Exit Sub
@@ -912,20 +960,20 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, X As Single
     If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
     
     'If a layer other than the active one is being hovered, highlight that box
-    If curLayerHover <> getLayerAtPosition(X, Y) Then
-        curLayerHover = getLayerAtPosition(X, Y)
+    If curLayerHover <> getLayerAtPosition(x, y) Then
+        curLayerHover = getLayerAtPosition(x, y)
         redrawLayerBox
     End If
     
     'Store the mouse position so other functions in this routine can access them
-    m_MouseX = X
-    m_MouseY = Y
+    m_MouseX = x
+    m_MouseY = y
     
     'Update the tooltip contingent on the mouse position.
     Dim toolString As String
     
     'Mouse is over a visibility toggle
-    If isPointInRect(X, Y, m_VisibilityRect) Then
+    If isPointInRect(x, y, m_VisibilityRect) Then
         
         'Fast mouse movements can cause this event to trigger, even when no layer is hovered.
         ' As such, we need to make sure we won't be attempting to access a bad layer index.
@@ -938,14 +986,14 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, X As Single
         End If
         
     'Mouse is over Duplicate
-    ElseIf isPointInRect(X, Y, m_DuplicateRect) Then
+    ElseIf isPointInRect(x, y, m_DuplicateRect) Then
     
         If curLayerHover >= 0 Then
             toolString = g_Language.TranslateMessage("Click to duplicate this layer.")
         End If
     
     'Mouse is over Merge Down
-    ElseIf isPointInRect(X, Y, m_MergeDownRect) Then
+    ElseIf isPointInRect(x, y, m_MergeDownRect) Then
     
         If curLayerHover >= 0 Then
             If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, True) >= 0 Then
@@ -956,7 +1004,7 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, X As Single
         End If
             
     'Mouse is over Merge Up
-    ElseIf isPointInRect(X, Y, m_MergeUpRect) Then
+    ElseIf isPointInRect(x, y, m_MergeUpRect) Then
     
         If curLayerHover >= 0 Then
             If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, False) >= 0 Then
@@ -971,7 +1019,7 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, X As Single
     Else
         
         'The tooltip is irrelevant if the current layer is already active
-        If pdImages(g_CurrentImage).getActiveLayerIndex <> getLayerAtPosition(X, Y) Then
+        If pdImages(g_CurrentImage).getActiveLayerIndex <> getLayerAtPosition(x, y) Then
             toolString = g_Language.TranslateMessage("Click to make this the active layer.")
         Else
             toolString = g_Language.TranslateMessage("This is the currently active layer.")
@@ -985,7 +1033,7 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, X As Single
 End Sub
 
 'Given mouse coordinates over the buffer picture box, return the layer at that location
-Private Function getLayerAtPosition(ByVal X As Long, ByVal Y As Long) As Long
+Private Function getLayerAtPosition(ByVal x As Long, ByVal y As Long) As Long
     
     If pdImages(g_CurrentImage) Is Nothing Then
         getLayerAtPosition = -1
@@ -996,7 +1044,7 @@ Private Function getLayerAtPosition(ByVal X As Long, ByVal Y As Long) As Long
     vOffset = vsLayer.Value
     
     Dim tmpLayerCheck As Long
-    tmpLayerCheck = (Y + vOffset) \ fixDPI(BLOCKHEIGHT)
+    tmpLayerCheck = (y + vOffset) \ fixDPI(BLOCKHEIGHT)
     
     'It's a bit counterintuitive, but we draw the layer box in reverse order: layer 0 is at the BOTTOM,
     ' and layer(max) is at the TOP.  Because of this, all layer positioning checks must be reversed.
@@ -1015,7 +1063,7 @@ Private Function getLayerAtPosition(ByVal X As Long, ByVal Y As Long) As Long
     
 End Function
 
-Private Sub picLayers_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picLayers_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1028,7 +1076,7 @@ Private Sub picLayers_OLEDragDrop(Data As DataObject, Effect As Long, Button As 
 
 End Sub
 
-Private Sub picLayers_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub picLayers_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1048,7 +1096,7 @@ End Sub
 Private Sub sltLayerOpacity_Change()
 
     'By default, changing the scroll bar will automatically update the opacity value of the selected layer, and
-    ' the main viewport will be redrawn.  When changing the scrollbar programmatically, set disableRedraws to FALSE
+    ' the main viewport will be redrawn.  When changing the scrollbar programmatically, set disableRedraws to TRUE
     ' to prevent cylical redraws.
     If disableRedraws Then Exit Sub
 
