@@ -167,6 +167,7 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
             If CBool(toolbar_Tools.chkLayerNodes) Then
                 
                 'Draw layer nodes
+                Drawing.drawLayerNodes pdImages(g_CurrentImage).getActiveLayerIndex
                 
             End If
         
