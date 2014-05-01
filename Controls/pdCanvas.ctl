@@ -272,6 +272,15 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Enum PD_MOUSEEVENT
+    pMouseDown = 0
+    pMouseMove = 1
+    pMouseUp = 2
+End Enum
+
+#If False Then
+    Private Const pMouseDown = 0, pMouseMove = 1, pMouseUp = 2
+#End If
 
 Private Const SM_CXVSCROLL As Long = 2
 Private Const SM_CYHSCROLL As Long = 3
@@ -287,6 +296,10 @@ Private hasMouseMoved As Long
 
 'Track initial mouse button locations
 Private m_initMouseX As Double, m_initMouseY As Double
+
+'On the canvas's MouseDown event, mark the relevant point of interest index for this layer (if any).
+' If a point of interest has not been selected, this value will be reset to -1.
+Private curPointOfInterest As Long
 
 'An outside class provides access to specialized mouse events (like mousewheel and forward/back keys)
 Private WithEvents cMouseEvents As bluMouseEvents
@@ -685,20 +698,20 @@ Private Sub UserControl_Initialize()
 End Sub
 
 'Mousekey back triggers the same thing as clicking Undo
-Private Sub cMouseEvents_MouseBackButtonDown(ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseBackButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     If pdImages(g_CurrentImage).IsActive Then
         If pdImages(g_CurrentImage).undoManager.getUndoState Then Process "Undo", , , False
     End If
 End Sub
 
 'Mousekey forward triggers the same thing as clicking Redo
-Private Sub cMouseEvents_MouseForwardButtonDown(ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Private Sub cMouseEvents_MouseForwardButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     If pdImages(g_CurrentImage).IsActive Then
         If pdImages(g_CurrentImage).undoManager.getRedoState Then Process "Redo", , , False
     End If
 End Sub
 
-Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
     'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
     If picScrollH.Visible And Not (Shift And vbCtrlMask) Then
@@ -743,7 +756,7 @@ Private Sub cMouseEvents_MouseOut()
     If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
 End Sub
 
-Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Single, ByVal Y As Single)
+Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If picScrollV.Visible And Not (Shift And vbCtrlMask) Then
@@ -823,7 +836,7 @@ Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
     
 End Sub
 
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'If the main form is disabled, exit
     If Not FormMain.Enabled Then Exit Sub
@@ -840,6 +853,12 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
     imgX = -1
     imgY = -1
     
+    'Display the image coordinates under the mouse pointer
+    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    
+    'Display a relevant cursor for the current action
+    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+    
     'Check mouse button use
     If Button = vbLeftButton Then
         
@@ -848,25 +867,23 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
         hasMouseMoved = 0
             
         'Remember this location
-        m_initMouseX = X
-        m_initMouseY = Y
-            
-        'Display the image coordinates under the mouse pointer
-        displayImageCoordinates X, Y, pdImages(g_CurrentImage), Me, imgX, imgY
+        m_initMouseX = x
+        m_initMouseY = y
+        
+        'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
+        ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
+        ' the mouse is released.
+        curPointOfInterest = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
         
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
         
             'Drag-to-pan canvas
             Case NAV_DRAG
-                UserControl.MousePointer = vbCustom
-                setPNGCursorToHwnd Me.hWnd, "HANDCLOSED", 0, 0
                 setInitialCanvasScrollValues FormMain.mainCanvas(0)
                 
             'Move stuff around
             Case NAV_MOVE
-                UserControl.MousePointer = vbCustom
-                setSizeAllCursor Me
                 setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer
         
             'Rectangular selection
@@ -877,7 +894,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
                 
                     'Check the mouse coordinates of this click.
                     Dim sCheck As Long
-                    sCheck = findNearestSelectionCoordinates(X, Y, pdImages(g_CurrentImage), Me)
+                    sCheck = findNearestSelectionCoordinates(x, y, pdImages(g_CurrentImage), Me)
                     
                     'If that function did not return zero, notify the selection and exit
                     If (sCheck <> 0) And pdImages(g_CurrentImage).mainSelection.isTransformable Then
@@ -935,7 +952,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
 
 End Sub
 
-Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'If the main form is disabled, exit
     If Not FormMain.Enabled Then Exit Sub
@@ -955,6 +972,12 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
     imgX = -1
     imgY = -1
     
+    'Display the image coordinates under the mouse pointer
+    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    
+    'Display a relevant cursor for the current action
+    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+    
     'Check the left mouse button
     If lMouseDown Then
     
@@ -962,24 +985,17 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
         
             'Drag-to-pan canvas
             Case NAV_DRAG
-                UserControl.MousePointer = vbCustom
-                setPNGCursorToHwnd Me.hWnd, "HANDCLOSED", 0, 0
-                panImageCanvas m_initMouseX, m_initMouseY, X, Y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                panImageCanvas m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
             'Move stuff around
             Case NAV_MOVE
-                UserControl.MousePointer = vbCustom
-                setSizeAllCursor Me
-                moveCurrentLayer m_initMouseX, m_initMouseY, X, Y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                moveCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
     
                 'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
                 If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
-                                        
-                    'Display the image coordinates under the mouse pointer
-                    displayImageCoordinates X, Y, pdImages(g_CurrentImage), Me, imgX, imgY
                     
                     'If the SHIFT key is down, notify the selection engine that a square shape is requested
                     pdImages(g_CurrentImage).mainSelection.requestSquare ShiftDown
@@ -1002,20 +1018,12 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
         
             'Drag-to-navigate
             Case NAV_DRAG
-            
-                'If the cursor is over the image, change to an arrow cursor
-                If isMouseOverImage(X, Y, pdImages(g_CurrentImage)) Then
-                    UserControl.MousePointer = vbCustom
-                    setPNGCursorToHwnd Me.hWnd, "HANDOPEN", 0, 0
-                Else
-                    setArrowCursorToHwnd Me.hWnd
-                End If
+                setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
                 
             'Move stuff around
             Case NAV_MOVE
-                UserControl.MousePointer = vbCustom
-                setSizeAllCursor Me
-        
+                setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+                
             'Standard selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             
@@ -1027,7 +1035,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
                         'This routine will return a best estimate for the location of the mouse.  We then pass its value
                         ' to a sub that will use it to select the most appropriate mouse cursor.
                         Dim sCheck As Long
-                        sCheck = findNearestSelectionCoordinates(X, Y, pdImages(g_CurrentImage), Me)
+                        sCheck = findNearestSelectionCoordinates(x, y, pdImages(g_CurrentImage), Me)
                         
                         'Based on that return value, assign a new mouse cursor to the form
                         setSelectionCursor sCheck
@@ -1039,7 +1047,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
                     
                         'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
                         ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
-                        If isMouseOverImage(X, Y, pdImages(g_CurrentImage)) Then
+                        If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
                             setArrowCursorToHwnd Me.hWnd
                         Else
                             setArrowCursorToHwnd Me.hWnd
@@ -1052,7 +1060,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
         
                 'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
                 ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
-                If isMouseOverImage(X, Y, pdImages(g_CurrentImage)) Then
+                If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
                     setArrowCursorToHwnd Me.hWnd
                 Else
                     setArrowCursorToHwnd Me.hWnd
@@ -1062,19 +1070,23 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
         
     End If
     
-    'Display the image coordinates under the mouse pointer (but only if this is the currently active image)
-    displayImageCoordinates X, Y, pdImages(g_CurrentImage), Me
-    
 End Sub
 
-Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'If no images have been loaded, exit
     If g_OpenImageCount = 0 Then Exit Sub
 
     'If the image has not yet been loaded, exit
     If Not pdImages(g_CurrentImage).loadedSuccessfully Then Exit Sub
-        
+    
+    'Display the image coordinates under the mouse pointer
+    Dim imgX As Double, imgY As Double
+    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    
+    'Display a relevant cursor for the current action
+    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+    
     'Check mouse buttons
     If Button = vbLeftButton Then
     
@@ -1084,14 +1096,10 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
         
             'Click-to-drag navigation
             Case NAV_DRAG
-                UserControl.MousePointer = vbCustom
-                setPNGCursorToHwnd Me.hWnd, "HANDOPEN", 0, 0
-            
+                
             'Move stuff around
             Case NAV_MOVE
-                UserControl.MousePointer = vbDefault
-                setArrowCursorToHwnd Me.hWnd
-            
+                
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             
@@ -1100,7 +1108,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
                     
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
-                    If ((X = m_initMouseX) And (Y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(X, Y, pdImages(g_CurrentImage), Me) = 0)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
+                    If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, pdImages(g_CurrentImage), Me) = 0)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
                         Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2, g_CurrentTool
                     Else
                     
@@ -1150,6 +1158,9 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
     
     If Button = vbRightButton Then rMouseDown = False
     
+    'Reset any tracked point of interest value for this layer
+    curPointOfInterest = -1
+    
     'makeFormPretty Me
     'setArrowCursorToHwnd UserControl.hWnd
         
@@ -1159,7 +1170,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
 End Sub
 
 '(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there)
-Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1171,7 +1182,7 @@ Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button A
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1311,7 +1322,7 @@ End Sub
 
 'Selections can be initiated several different ways.  To cut down on duplicated code, all new selection instances for this form are referred
 ' to this function.  Initial X/Y values are required.
-Private Sub initSelectionByPoint(ByVal X As Double, ByVal Y As Double)
+Private Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
 
     'I don't have a good explanation, but without DoEvents here, creating a line selection for the first
     ' time may inexplicably fail.  While I try to track down the exact cause, I'll leave this here to
@@ -1327,7 +1338,7 @@ Private Sub initSelectionByPoint(ByVal X As Double, ByVal Y As Double)
     pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
     
     'Set the first two coordinates of this selection to this mouseclick's location
-    pdImages(g_CurrentImage).mainSelection.setInitialCoordinates X, Y
+    pdImages(g_CurrentImage).mainSelection.setInitialCoordinates x, y
     syncTextToCurrentSelection g_CurrentImage
     pdImages(g_CurrentImage).mainSelection.requestNewMask
         
@@ -1425,3 +1436,73 @@ Public Function populateSizeUnits()
     cmbSizeUnit.ListIndex = 0
 
 End Function
+
+'Whenever the mouse cursor needs to be reset, use this function to do so.  Also, when a new tool is created or a new tool feature
+' is added, make sure to visit this sub and make any necessary cursor changes!
+'
+'A lot of extra values are passed to this function.  Individual tools can use those at their leisure to customize their cursor requests.
+'
+' (NOTE: selection tools are still handled via their own function, on account of their older implementation.
+'        TODO: integrate them into this function.)
+Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double)
+
+    'Obviously, cursor setting is handled separately for each tool.
+    Select Case g_CurrentTool
+        
+        Case NAV_DRAG
+        
+            'When click-dragging the image to scroll around it, the cursor depends on being over the image
+            If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
+                
+                If Button <> 0 Then
+                    UserControl.MousePointer = vbCustom
+                    setPNGCursorToHwnd Me.hWnd, "HANDCLOSED", 0, 0
+                Else
+                    UserControl.MousePointer = vbCustom
+                    setPNGCursorToHwnd Me.hWnd, "HANDOPEN", 0, 0
+                End If
+                
+            Else
+                setArrowCursorToHwnd Me.hWnd        'If the cursor is not over the image, change to an arrow cursor
+            End If
+        
+        Case NAV_MOVE
+        
+            'When transforming layers, the cursor depends on several factors
+            Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+            
+                'Mouse is not over the current layer
+                Case -1
+                    UserControl.MousePointer = vbDefault
+                    setArrowCursorToHwnd Me.hWnd
+                    
+                'Mouse is over the top-left corner
+                Case 0
+                    UserControl.MousePointer = vbCustom
+                    setSizeNWSECursor Me
+                
+                'Mouse is over the top-right corner
+                Case 1
+                    UserControl.MousePointer = vbCustom
+                    setSizeNESWCursor Me
+            
+                'Mouse is over the bottom-right corner
+                Case 2
+                    UserControl.MousePointer = vbCustom
+                    setSizeNWSECursor Me
+                
+                'Mouse is over the bottom-left corner
+                Case 3
+                    UserControl.MousePointer = vbCustom
+                    setSizeNESWCursor Me
+                
+                'Mouse is within the layer, but not over a specific node
+                Case 4
+                    UserControl.MousePointer = vbCustom
+                    setSizeAllCursor Me
+            
+            End Select
+                    
+    End Select
+
+End Sub

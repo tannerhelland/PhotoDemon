@@ -130,7 +130,7 @@ Public Sub copyToTextBoxF(ByVal srcValue As Double, ByRef dstTextBox As TextBox,
 
 End Sub
 
-'Let a form know whether the mouse pointer is over its image or just the viewport
+'Find out whether the mouse pointer is over image contents or just the viewport
 Public Function isMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcImage As pdImage) As Boolean
 
     If srcImage.imgViewport Is Nothing Then
@@ -148,6 +148,30 @@ Public Function isMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcIm
         isMouseOverImage = False
     End If
 
+End Function
+
+'Find out whether the mouse pointer is over a given layer in an image
+Public Function isMouseOverLayer(ByVal imgX As Long, ByVal imgY As Long, ByRef srcImage As pdImage, ByRef srcLayerIndex As Long) As Boolean
+
+    If srcImage.imgViewport Is Nothing Then
+        isMouseOverLayer = False
+        Exit Function
+    End If
+    
+    With srcImage.getLayerByIndex(srcLayerIndex)
+    
+        If (imgX >= .getLayerOffsetX) And (imgX <= .getLayerOffsetX + .layerDIB.getDIBWidth) Then
+            If (imgY >= .getLayerOffsetY) And (imgY <= .getLayerOffsetY + .layerDIB.getDIBHeight) Then
+                isMouseOverLayer = True
+                Exit Function
+            Else
+                isMouseOverLayer = False
+            End If
+            isMouseOverLayer = False
+        End If
+    
+    End With
+    
 End Function
 
 'Calculate and display the current mouse position.

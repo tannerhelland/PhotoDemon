@@ -758,3 +758,98 @@ Private Sub prepInternalSafeArray(ByRef srcSA As SAFEARRAY2D)
     End With
     
 End Sub
+
+'Whenever the user does something with the mouse - click, move, etc - the primary canvas will poll this function.  This function
+' will check the passed mouse values (which have already been translated into the IMAGE coordinate space), and return a Long-type
+' value specifying whether or not that coordinate is of interest to this layer.  This basically provides a flexible framework for
+' supporting mouse events for any layer, because it's up to the layer to determine which points are interesting and which are not.
+'
+'INPUTS: current mouse coords, already translated into the IMAGE coordinate space (not the canvas coordinate space!)
+'
+'OUTPUT: index of the point of interest, if any.  If the mouse is not over a point of interest, -1 is returned.
+Public Function checkForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) As Long
+    
+    'MouseAccuracy in PD is a global value, but because we are working in image coordinates, we must compensate for the
+    ' current zoom value.  (Otherwise, when zoomed out the user would be forced to work with tighter accuracy!)
+    Dim mouseAccuracy As Double
+    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.getZoomValue(pdImages(g_CurrentImage).currentZoomValue))
+    
+    'Find the smallest distance for this mouse position
+    Dim minDistance As Double
+    minDistance = mouseAccuracy
+    
+    'When a point within the accuracy limit is found, its index will be assigned to this variable
+    Dim closestPoint As Long
+    closestPoint = -1
+    
+    'To facilitate the notion of "generalized point of interest" handling, coordinate checks are performed against
+    ' an array of potential POI targets.  While arrays may not make as much sense as something like a RECT (when
+    ' working with standard layers), it lets us generalize all coordinate checks into a single function, which is awesome!
+    Dim poiList() As POINTAPI
+    
+    'Points of interest are sorted by layer type.  In most cases, only the corners of a layer are interesting (as they control
+    ' the layer's bounding box), but in the future, things like a Pen tool could have tons of points of interest.
+    Select Case myLayerType
+    
+        'Image and text layers consider their corners to be points of interest
+        Case PDL_IMAGE, PDL_TEXT
+            
+            'Manually populate the point of interest array with the layer's corner coordinates.
+            ReDim poiList(0 To 3) As POINTAPI
+            poiList(0).x = getLayerOffsetX
+            poiList(0).y = getLayerOffsetY
+            poiList(1).x = getLayerOffsetX + layerDIB.getDIBWidth
+            poiList(1).y = getLayerOffsetY
+            poiList(2).x = getLayerOffsetX + layerDIB.getDIBWidth
+            poiList(2).y = getLayerOffsetY + layerDIB.getDIBHeight
+            poiList(3).x = getLayerOffsetX
+            poiList(3).y = getLayerOffsetY + layerDIB.getDIBHeight
+            
+            'Check to see if one of the corners has been clicked
+            closestPoint = findClosestPointInArray(imgX, imgY, minDistance, poiList)
+            
+            'If a corner was clicked, return its value and exit
+            If closestPoint <> -1 Then
+                checkForPointOfInterest = closestPoint
+                Exit Function
+            End If
+            
+            'If we're at this line of code, a corner was not clicked. Perform one final check to see if the mouse is within
+            ' the layer's boundaries, and if it is, return the "move selection" ID, then exit.
+            If (imgX > poiList(0).x) And (imgX < poiList(1).x) And (imgY > poiList(0).y) And (imgY < poiList(2).y) Then
+                checkForPointOfInterest = 4
+            Else
+                checkForPointOfInterest = -1
+            End If
+    
+    End Select
+
+End Function
+
+'Given an array of points, find the closest one to a target location.  If none fall below a minimum distance threshold, return -1.
+Private Function findClosestPointInArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As POINTAPI) As Long
+
+    Dim curMinDistance As Double, curMinIndex As Long
+    curMinDistance = &HFFFFFFF
+    curMinIndex = -1
+    
+    Dim tmpDistance As Double
+    
+    'From the array of supplied points, find the one closest to the target point
+    Dim i As Long
+    For i = LBound(poiArray) To UBound(poiArray)
+        tmpDistance = distanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
+        If tmpDistance < curMinDistance Then
+            curMinDistance = tmpDistance
+            curMinIndex = i
+        End If
+    Next i
+    
+    'If the distance of the closest point falls below the allowed threshold, return that point's index.
+    If curMinDistance < minAllowedDistance Then
+        findClosestPointInArray = curMinIndex
+    Else
+        findClosestPointInArray = -1
+    End If
+
+End Function
