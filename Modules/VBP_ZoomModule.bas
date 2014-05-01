@@ -124,7 +124,7 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     
     End If
     
-    'In the future, additional compositing can be handled here.
+    'In the future, any additional UI compositing can be handled here.
     
     'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
@@ -159,6 +159,7 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
             If CBool(toolbar_Tools.chkLayerBorder) Then
                 
                 'Draw layer borders
+                Drawing.drawLayerBoundaries pdImages(g_CurrentImage).getActiveLayerIndex
                 
             End If
             
