@@ -136,7 +136,7 @@ Private Sub chkBox_Click()
 End Sub
 
 'Setting Value to true will automatically raise all necessary external events and redraw the control
-Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lblCaption_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked
@@ -233,7 +233,7 @@ Private Sub UserControl_InitProperties()
 End Sub
 
 'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Value = vbChecked Then
         chkBox.Value = vbUnchecked
         Value = vbUnchecked
@@ -241,6 +241,10 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
         chkBox.Value = vbChecked
         Value = vbChecked
     End If
+End Sub
+
+Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    setHandCursorToHwnd UserControl.hWnd
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
