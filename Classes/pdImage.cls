@@ -148,9 +148,17 @@ Option Explicit
     ' zero-based; e.g. right after an image file is loaded, this will be set to 1.
     Private numOfLayers As Long
     
+    'Floating-point rect
+    Private Type RECTF
+        Left        As Single
+        Top         As Single
+        Right       As Single
+        Bottom      As Single
+    End Type
+    
 'Some API functions are used to simplify the process of things like merging layers
 Private Declare Function UnionRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Long
-
+Private Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Long
 
 'Create a new, blank layer in this image.  Note that layer type is not provided - that is handled separately, via the
 ' layer object itself.  All this function does is create a new pdLayer object and rearrange the layer stack to fit.
@@ -344,6 +352,131 @@ Public Sub getCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplic
     End If
     
 End Sub
+
+'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
+' as we only composite the relevant portions of the image.
+'
+'This function is large, complicated, and unfortunately tricky, as we must resize and composite each layer in turn.  Optimizing this
+' function will be a huge project going forward, but we must optimize carefully if we want the viewport to work smoothly.
+Public Sub getCompositedRect(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As InterpolationMode)
+    
+    'Before doing anything else, fill two rects with the coordinates we were passed.  We will use these rects to calculate the
+    ' boundary regions for all individual layers.
+    Dim dstViewportRect As RECT, srcImageRect As RECT
+    
+    With dstViewportRect
+        .Left = dstX
+        .Top = dstY
+        .Right = dstX + dstWidth
+        .Bottom = dstY + dstHeight
+    End With
+    
+    With srcImageRect
+        .Left = srcX
+        .Top = srcY
+        .Right = srcX + srcWidth
+        .Bottom = srcY + srcHeight
+    End With
+    
+    'A few other things to note before we begin:
+    ' - dstDIB will have already been created by the caller.  It may contain a background checkerboard, so we can't
+    '    delete or recreate it.
+    ' - The difference between the destination and source sizes can be used to infer a zoom value.  Note that aspect
+    '    ratio will *always* be preserved by this function.
+    ' - At present, GDI+ is used for all resizing.  Any other function with a StretchBlt-like interface could also
+    '    be used, but GDI+ is currently the fastest method we have.
+    
+    'Start by creating a temporary DIB the size of the destination image (viewport).  All compositing will be done to this DIB,
+    ' and as the final step, we will AlphaBlend the finished image onto dstDIB.
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.layerDIB.createBlank dstWidth, dstHeight, 32
+    
+    'We also need a separate temporary DIB.  This DIB will be used to hold the resized chunk of each layer that fits within the
+    ' specified viewport.  By minimizing the size of these DIBs, we can more quickly blend them, regardless of blend mode.
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    'The base layer will get blended onto the destination area first.  Its blend mode does not matter.  (Blend mode of the
+    ' base layer is always ignored, because there are no pixels beneath it with which to blend.)
+    
+    'As part of the compositing process, we will only be working with the relevant on-screen chunks of each layer.  If a layer
+    ' lies off the current viewport, it will be completely ignored.
+    Dim xOffset As Double, yOffset As Double
+    
+    'Start by seeing if the base layer intersects with the viewport at all.  We solve this by finding the intersection rect of
+    ' the current source rectangle, and the base layer.  If successful, this will return their intersection, as well as a
+    ' non-zero function return value.
+    Dim layerRect As RECT, intRectSrc As RECT, dstRect As RECT, srcRect As RECT
+    
+    Dim i As Long
+    For i = 0 To numOfLayers - 1
+        
+        'Only process a layer if it is currently visible.
+        If imgLayers(i).getLayerVisibility Then
+            
+            'Retrieve a rect for this layer, relative to the full-size composite image
+            fillRectForLayer imgLayers(i), layerRect
+    
+            If IntersectRect(intRectSrc, srcImageRect, layerRect) <> 0 Then
+            
+                'The base layer intersects with the viewport rect, and the intersecting area is now contained within intRectSrc.
+                ' We need to convert that into a relevant dstRect, so that we have both source and destination values for our
+                ' resize function.
+                getDstRectFromSrcRect dstRect, intRectSrc, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight
+                
+                'dstRect and intRectSrc now contain StretchBlt-compatible destination and source rectangles RELATIVE TO THE FULL IMAGE.
+                ' Because the layer is unlikely to be the same size as the full image, we must come up with a final source rect that
+                ' represents the source area, relative to the layer's DIB (which is probably smaller than the full image).
+                With srcRect
+                    .Left = intRectSrc.Left - imgLayers(i).getLayerOffsetX
+                    .Right = intRectSrc.Right - imgLayers(i).getLayerOffsetX
+                    .Top = intRectSrc.Top - imgLayers(i).getLayerOffsetY
+                    .Bottom = intRectSrc.Bottom - imgLayers(i).getLayerOffsetY
+                End With
+                
+                'We now have everything we need to create a resized version of this layer!  Grab it now.
+                tmpDIB.createBlank dstRect.Right - dstRect.Left, dstRect.Bottom - dstRect.Top, 32, 0
+                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, imgLayers(i).layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
+                                
+                'tmpDIB now contains the chunk of this layer that appears on the viewport.  Time to composite it!
+                tmpDIB.alphaBlendToDC tmpLayer.layerDIB.getDIBDC, imgLayers(i).getLayerOpacity * 2.55, dstRect.Left - dstX, dstRect.Top - dstY
+            
+            End If
+            
+        End If
+        
+    Next i
+    
+    'With all layers successfully blended onto tmpLayer's DIB, we can now perform a final alphaBlend onto dstDIB
+    tmpLayer.layerDIB.alphaBlendToDC dstDIB.getDIBDC, 255, dstX, dstY
+    
+    'Release the temp layer's hold on the destination DIB
+    Set tmpLayer.layerDIB = Nothing
+    Set tmpDIB = Nothing
+    
+End Sub
+
+Private Function getDstRectFromSrcRect(ByRef dstRect As RECT, ByRef srcRect As RECT, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long)
+    
+    'Convert the source rectangle coordinates into a [0, 1] scale relative to the total source area
+    Dim srcRectF As RECTF
+    With srcRectF
+        .Left = (srcRect.Left - srcX) / srcWidth
+        .Right = (srcRect.Right - srcX) / srcWidth
+        .Top = (srcRect.Top - srcY) / srcHeight
+        .Bottom = (srcRect.Bottom - srcY) / srcHeight
+    End With
+    
+    'Using those source values, fill the destination rect
+    With dstRect
+        .Left = dstX + (srcRectF.Left * dstWidth)
+        .Right = dstX + (srcRectF.Right * dstWidth)
+        .Top = dstY + (srcRectF.Top * dstHeight)
+        .Bottom = dstY + (srcRectF.Bottom * dstHeight)
+    End With
+
+End Function
 
 'Get the currently active layer index
 Public Function getActiveLayerIndex() As Long
@@ -1016,7 +1149,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     leftOffset = mainSelection.boundLeft
     topOffset = mainSelection.boundTop
     
-    Dim x As Long, y As Long
+    Dim X As Long, Y As Long
     Dim r As Long, g As Long, b As Long
     Dim thisAlpha As Long, origAlpha As Long
     Dim blendAlpha As Double
@@ -1027,13 +1160,13 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Dim dstDIBCD As Long, dstQuickX As Long
     dstDIBCD = dstDIB.getDIBColorDepth \ 8
             
-    For x = 0 To dstDIB.getDIBWidth - 1
-        dstQuickX = x * dstDIBCD
-        srcQuickX = (leftOffset + x) * srcDIBCD
-        selQuickX = (leftOffset + x) * 3
-    For y = 0 To dstDIB.getDIBHeight - 1
+    For X = 0 To dstDIB.getDIBWidth - 1
+        dstQuickX = X * dstDIBCD
+        srcQuickX = (leftOffset + X) * srcDIBCD
+        selQuickX = (leftOffset + X) * 3
+    For Y = 0 To dstDIB.getDIBHeight - 1
     
-        srcQuickY = topOffset + y
+        srcQuickY = topOffset + Y
         thisAlpha = selData(selQuickX, srcQuickY)
         
         'If the selection does not exist at this pixel, we have no reason to process this pixel further!
@@ -1058,27 +1191,27 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
                     blendAlpha = thisAlpha / 255
                     
                     'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
-                    dstImageData(dstQuickX + 2, y) = r * blendAlpha
-                    dstImageData(dstQuickX + 1, y) = g * blendAlpha
-                    dstImageData(dstQuickX, y) = b * blendAlpha
+                    dstImageData(dstQuickX + 2, Y) = r * blendAlpha
+                    dstImageData(dstQuickX + 1, Y) = g * blendAlpha
+                    dstImageData(dstQuickX, Y) = b * blendAlpha
                     
                     'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
                     ' the original alpha value, and the selection mask value at this location.
-                    dstImageData(dstQuickX + 3, y) = origAlpha * blendAlpha
+                    dstImageData(dstQuickX + 3, Y) = origAlpha * blendAlpha
                     
                 End If
                 
             Else
-                dstImageData(dstQuickX, y) = srcImageData(srcQuickX, srcQuickY)
-                dstImageData(dstQuickX + 1, y) = srcImageData(srcQuickX + 1, srcQuickY)
-                dstImageData(dstQuickX + 2, y) = srcImageData(srcQuickX + 2, srcQuickY)
-                dstImageData(dstQuickX + 3, y) = thisAlpha
+                dstImageData(dstQuickX, Y) = srcImageData(srcQuickX, srcQuickY)
+                dstImageData(dstQuickX + 1, Y) = srcImageData(srcQuickX + 1, srcQuickY)
+                dstImageData(dstQuickX + 2, Y) = srcImageData(srcQuickX + 2, srcQuickY)
+                dstImageData(dstQuickX + 3, Y) = thisAlpha
             End If
             
         End If
         
-    Next y
-    Next x
+    Next Y
+    Next X
     
     'Clear all array references
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

@@ -2,7 +2,11 @@ Attribute VB_Name = "Public_Constants"
 Option Explicit
 
 'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects
-Public Const DISPLAY_TIMINGS As Boolean = False
+Public Const DISPLAY_TIMINGS As Boolean = True
+
+'Enable this constant if you want PhotoDemon to use experimental methods (when available).  This is helpful
+' during debugging, but SHOULD NEVER BE ENABLED IN PRODUCTION BUILDS!
+Public Const PD_EXPERIMENTAL_MODE As Boolean = True
 
 'Identifier for pdImage data saved to file.  (ASCII characters "PDID", as hex, listed here in little-endian notation.)
 Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450

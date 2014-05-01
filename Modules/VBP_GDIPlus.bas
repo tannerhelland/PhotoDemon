@@ -494,7 +494,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
         GdipCreateBitmapFromScan0 srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.getActualDIBBits, tBitmap
-    
+        
     Else
     
         'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
@@ -513,7 +513,6 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
     'Request the smoothing mode we were passed
-    interpolationType = InterpolationModeHighQualityBicubic
     If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
     
         'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
@@ -1314,3 +1313,4 @@ End Function
 '        pvPtrToStrA = sOut
 '    End If
 'End Function
+
