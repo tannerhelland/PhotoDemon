@@ -201,6 +201,10 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     'If the image associated with this form is inactive, ignore this request
     If Not srcImage.IsActive Then Exit Sub
     
+    'This function can return timing reports if desired
+    Dim startTime As Double
+    If DISPLAY_TIMINGS Then startTime = Timer
+    
     'We can use the .Tag property of the target form to locate the matching pdImage in the pdImages array
     Dim curImage As Long
     curImage = srcImage.imageID
@@ -219,17 +223,17 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     'Paint the image from the back buffer to the front buffer.  We handle this as two cases: one for zooming in, another for zooming out.
     ' This is simpler from a coding standpoint, as each case involves a number of specialized calculations.
     
-    'Retrieve a composited copy of the image.  (TODO: optimize this process... somehow.)
+    'Certain rendering options require us to retrieve a 100% size composited copy the image.  If that ends up being necessary,
+    ' this DIB will receive the composited image.
     Dim compositedImage As pdDIB
     Set compositedImage = New pdDIB
-    srcImage.getCompositedImage compositedImage
     
     If zoomVal < 1 Then
         
         'ZOOMED OUT
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
-        If compositedImage.getDIBColorDepth = 32 Then
+        'If compositedImage.getDIBColorDepth = 32 Then
             
             'Before rendering the image, apply a checkerboard pattern to the target image's back buffer
             Drawing.fillDIBWithAlphaCheckerboard srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
@@ -237,8 +241,25 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
             'Update 14 Feb '14: If GDI+ is available, use it to render 32bpp images when zoomed out.  (This is preferable to StretchBlt,
             ' as StretchBlt erases all alpha channel data if HALFTONE mode is used, limiting it to nearest-neighbor only!)
             If g_GDIPlusAvailable Then
-                GDIPlusResizeDIB srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage, srcX, srcY, srcWidth, srcHeight, InterpolationModeHighQualityBicubic
+                
+                If PD_EXPERIMENTAL_MODE Then
+                    srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage, srcX, srcY, srcWidth, srcHeight, InterpolationModeHighQualityBicubic
+                Else
+                    
+                    srcImage.getCompositedImage compositedImage
+                    
+                    'All of the methods below are operational.  Only one will be used in the final build, but I am including all of them
+                    ' here so that I can do additional performance profiling.
+                    GDIPlusResizeDIB srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage, srcX, srcY, srcWidth, srcHeight, InterpolationModeHighQualityBicubic
+                    'FreeImageResizeDIB srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage, srcX, srcY, srcWidth, srcHeight, FILTER_BICUBIC
+                    'SetStretchBltMode srcImage.backBuffer.getDIBDC, STRETCHBLT_COLORONCOLOR
+                    'StretchDIBits srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, compositedImage.getActualDIBBits, compositedImage.getDIBHeader, 0&, vbSrcCopy
+                    
+                End If
+            
             Else
+            
+                srcImage.getCompositedImage compositedImage
             
                 'Create a blank DIB in the parent pdImages object.  (For performance reasons, we create this image at the size of the viewport.)
                 srcImage.alphaFixDIB.createBlank srcWidth, srcHeight, 32
@@ -249,10 +270,11 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
                 
             End If
             
-        Else
-            SetStretchBltMode srcImage.backBuffer.getDIBDC, STRETCHBLT_HALFTONE
-            StretchBlt srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage.getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
-        End If
+        'Else
+        '    srcImage.getCompositedImage compositedImage
+        '    SetStretchBltMode srcImage.backBuffer.getDIBDC, STRETCHBLT_HALFTONE
+        '    StretchBlt srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage.getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
+        'End If
         
     Else
     
@@ -267,6 +289,8 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
         srcWidth = bltWidth / zoomVal
         bltHeight = srcImage.imgViewport.targetHeight '+ (Int(g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)) - (srcImage.imgViewport.targetHeight Mod Int(g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue))))
         srcHeight = bltHeight / zoomVal
+        
+        srcImage.getCompositedImage compositedImage
         
         'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
         If compositedImage.getDIBColorDepth = 32 Then
@@ -291,7 +315,9 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     
     'Pass control to the viewport renderer, which will handle the final compositing
     RenderViewport srcImage, dstCanvas
-
+    
+    If DISPLAY_TIMINGS Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"
+    
 End Sub
 
 'Per its name, PrepareViewport is responsible for calculating the maximum values and positions of the viewport scroll bars
