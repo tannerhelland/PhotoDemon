@@ -267,7 +267,11 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             
             'Copy the bits from the FreeImage DIB to our DIB
             SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
-                
+            
+            'With the transfer complete, release the FreeImage DIB and unload the library
+            If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
+            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+            
             'Finally, render the preview and erase the temporary DIB to conserve memory
             tmpDIB.renderToPictureBox fxPreview.getPreviewPic
             fxPreview.setFXImage tmpDIB
@@ -331,6 +335,10 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 'Copy the bits from the FreeImage DIB to our DIB
                 SetDIBitsToDevice tmpLayerRef.layerDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
                 
+                'With the transfer complete, release the FreeImage DIB and unload the library
+                If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+                If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
+                
                 'Remove any null-padding
                 tmpLayerRef.cropNullPaddedLayer
                 
@@ -350,10 +358,6 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             SetProgBarVal 0
         
         End If
-        
-        'With the transfer complete, release the FreeImage DIB and unload the library
-        If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
-        If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
         
     Else
         Message "Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled."
