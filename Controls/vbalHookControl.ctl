@@ -1,18 +1,18 @@
 VERSION 5.00
 Begin VB.UserControl vbalHookControl 
-   ClientHeight    =   720
+   ClientHeight    =   721
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   795
+   ClientWidth     =   798
    InvisibleAtRuntime=   -1  'True
-   ScaleHeight     =   720
-   ScaleWidth      =   795
+   ScaleHeight     =   721
+   ScaleWidth      =   798
    Begin VB.Image imgIcon 
-      Height          =   600
-      Left            =   120
+      Height          =   280
+      Left            =   119
       Picture         =   "vbalHookControl.ctx":0000
-      Top             =   60
-      Width           =   675
+      Top             =   63
+      Width           =   315
    End
 End
 Attribute VB_Name = "vbalHookControl"
