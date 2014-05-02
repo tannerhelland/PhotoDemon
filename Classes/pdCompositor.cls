@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Compositor class
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright ï¿½2013-2014 by Tanner Helland
 'Created: 01/May/14
 'Last updated: 01/May/14
 'Last update: add blend modes!
@@ -136,30 +136,100 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                 'Apply the requested blend mode
                 Select Case blendMode
                 
+                    Case BL_DARKEN
+                        If bottomR < topR Then newR = bottomR Else newR = topR
+                        If bottomG < topG Then newG = bottomG Else newG = topG
+                        If bottomB < topB Then newB = bottomB Else newB = topB
+                
                     Case BL_MULTIPLY
                         newR = topR * bottomR
                         newG = topG * bottomG
                         newB = topB * bottomB
                         
+                    Case BL_COLORBURN
+                        If topR = 0 Then newR = 0 Else newR = 1 - (1 - bottomR) / topR
+                        If topG = 0 Then newG = 0 Else newG = 1 - (1 - bottomG) / topG
+                        If topB = 0 Then newB = 0 Else newB = 1 - (1 - bottomB) / topB
+                    
+                    Case BL_LINEARBURN
+                        newR = topR + bottomR - 1
+                        newG = topG + bottomG - 1
+                        newB = topB + bottomB - 1
+                        
+                    Case BL_LIGHTEN
+                        If bottomR > topR Then newR = bottomR Else newR = topR
+                        If bottomG > topG Then newG = bottomG Else newG = topG
+                        If bottomB > topB Then newB = bottomB Else newB = topB
+                
                     Case BL_SCREEN
                         newR = 1 - (1 - bottomR) * (1 - topR)
                         newG = 1 - (1 - bottomG) * (1 - topG)
                         newB = 1 - (1 - bottomB) * (1 - topB)
+                    
+                    Case BL_COLORDODGE
+                        If topR = 1 Then newR = 1 Else newR = bottomR / (1 - topR)
+                        If topG = 1 Then newG = 1 Else newG = bottomG / (1 - topG)
+                        If topB = 1 Then newB = 1 Else newB = bottomB / (1 - topB)
+                        
+                    Case BL_LINEARDODGE
+                        newR = topR + bottomR
+                        newG = topG + bottomG
+                        newB = topB + bottomB
                     
                     Case BL_OVERLAY
                         If bottomR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
                         If bottomG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
                         If bottomB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
                     
+                    Case BL_SOFTLIGHT
+                        newR = (1 - 2 * topR) * bottomR * bottomR + 2 * bottomR * topR
+                        newG = (1 - 2 * topG) * bottomG * bottomG + 2 * bottomG * topG
+                        newB = (1 - 2 * topB) * bottomB * bottomB + 2 * bottomB * topB
+                    
                     Case BL_HARDLIGHT
                         If topR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
                         If topG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
                         If topB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
                     
-                    Case BL_SOFTLIGHT
-                        newR = (1 - 2 * topR) * bottomR * bottomR + 2 * bottomR * topR
-                        newG = (1 - 2 * topG) * bottomG * bottomG + 2 * bottomG * topG
-                        newB = (1 - 2 * topB) * bottomB * bottomB + 2 * bottomB * topB
+                    Case BL_VIVIDLIGHT
+                        If topR > 0.5 Then newR = bottomR + 2 * (topR - 0.5) Else newR = bottomR + 2 * topR - 1
+                        If topB > 0.5 Then newG = bottomG + 2 * (topG - 0.5) Else newG = bottomG + 2 * topG - 1
+                        If topG > 0.5 Then newB = bottomB + 2 * (topB - 0.5) Else newB = bottomB + 2 * topB - 1
+                    
+                    Case BL_LINEARLIGHT
+                        newR = bottomR + (2 * topR) - 1
+                        newG = bottomG + (2 * topG) - 1
+                        newB = bottomB + (2 * topB) - 1
+                        
+                    Case BL_PINLIGHT
+                        If topR > 0.5 Then newR = Max(bottomR, 2 * (topR - 0.5)) Else newR = Min(bottomR, 2 * topR)
+                        If topG > 0.5 Then newG = Max(bottomG, 2 * (topG - 0.5)) Else newG = Min(bottomG, 2 * topG)
+                        If topB > 0.5 Then newB = Max(bottomB, 2 * (topB - 0.5)) Else newB = Min(bottomB, 2 * topB)
+                        
+                    Case BL_HARDMIX
+                        If topR < 1 - bottomR Then newR = 0 Else newR = 1
+                        If topG < 1 - bottomG Then newG = 0 Else newG = 1
+                        If topB < 1 - bottomB Then newB = 0 Else newB = 1
+                    
+                    Case BL_DIFFERENCE
+                        newR = Abs(bottomR - topR)
+                        newG = Abs(bottomG - topG)
+                        newB = Abs(bottomB - topB)
+                        
+                    Case BL_EXCLUSION
+                        newR = bottomR + topR - 2 * (bottomR * topR)
+                        newG = bottomG + topG - 2 * (bottomG * topG)
+                        newB = bottomB + topB - 2 * (bottomB * topB)
+                        
+                    Case BL_SUBTRACT
+                        newR = bottomR - topR
+                        newG = bottomG - topG
+                        newB = bottomB - topB
+                    
+                    Case BL_DIVIDE
+                        If topR = 0 Then newR = 0 Else newR = bottomR / topR
+                        If topG = 0 Then newG = 0 Else newG = bottomG / topG
+                        If topB = 0 Then newB = 0 Else newB = bottomB / topB
                     
                     Case Else
                         newR = topR
@@ -167,6 +237,14 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                         newB = topB
                 
                 End Select
+                
+                If newR < 0 Then newR = 0
+                If newG < 0 Then newG = 0
+                If newB < 0 Then newB = 0
+                        
+                If newR > 1 Then newR = 1
+                If newG > 1 Then newG = 1
+                If newB > 1 Then newB = 1
                 
                 'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
                 ' if the bottom image is transparent, the top image is unchanged.)
@@ -479,4 +557,20 @@ Private Function getDstRectFromSrcRect(ByRef dstRect As RECT, ByRef srcRect As R
         .Bottom = dstY + (srcRectF.Bottom * dstHeight)
     End With
 
+End Function
+
+Private Function Min(x As Single, y As Single) As Single
+If x > y Then
+      Min = y
+ Else
+      Min = x
+End If
+End Function
+
+Private Function Max(x As Single, y As Single) As Single
+If x < y Then
+    Max = y
+ Else
+    Max = x
+End If
 End Function
