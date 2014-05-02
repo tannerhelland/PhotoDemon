@@ -5,9 +5,9 @@ Begin VB.Form toolbar_Layers
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Layers"
    ClientHeight    =   7245
-   ClientLeft      =   45
+   ClientLeft      =   42
    ClientTop       =   315
-   ClientWidth     =   3735
+   ClientWidth     =   3738
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -21,9 +21,9 @@ Begin VB.Form toolbar_Layers
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   483
+   ScaleHeight     =   1035
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   249
+   ScaleWidth      =   534
    ShowInTaskbar   =   0   'False
    Begin VB.ComboBox cboBlendMode 
       Appearance      =   0  'Flat
@@ -61,9 +61,9 @@ Begin VB.Form toolbar_Layers
       ForeColor       =   &H80000008&
       Height          =   495
       Left            =   0
-      ScaleHeight     =   33
+      ScaleHeight     =   71
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   249
+      ScaleWidth      =   534
       TabIndex        =   3
       Top             =   6750
       Width           =   3735
@@ -74,25 +74,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   4
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0000
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0000
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":0028
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -101,25 +93,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   5
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0D7A
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -128,25 +112,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":1AF4
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
    End
    Begin VB.PictureBox picLayers 
@@ -158,9 +134,9 @@ Begin VB.Form toolbar_Layers
       Height          =   4935
       Left            =   120
       OLEDropMode     =   1  'Manual
-      ScaleHeight     =   327
+      ScaleHeight     =   703
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   215
+      ScaleWidth      =   463
       TabIndex        =   2
       Top             =   1320
       Width           =   3255
@@ -189,19 +165,11 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   120
       Width           =   2760
-      _ExtentX        =   4868
-      _ExtentY        =   873
-      Max             =   100
-      Value           =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4868
+      _extenty        =   873
+      font            =   "VBP_ToolbarLayers.frx":286E
+      max             =   100
+      value           =   100
    End
    Begin VB.Label lblLayerSettings 
       Alignment       =   1  'Right Justify
@@ -574,8 +542,19 @@ End Sub
 'Load a UI image from the resource section and into a DIB
 Private Sub initializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
     
-    Set dstDIB = New pdDIB
-    loadResourceToDIB resString, dstDIB
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    loadResourceToDIB resString, tmpDIB
+    
+    'If the screen is high DPI, resize all DIBs to match
+    If fixDPIFloat(1) > 1 Then
+        Set dstDIB = New pdDIB
+        dstDIB.createBlank fixDPI(tmpDIB.getDIBWidth), fixDPI(tmpDIB.getDIBHeight), tmpDIB.getDIBColorDepth, 0
+        GDIPlusResizeDIB dstDIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+    Else
+        dstDIB.createFromExistingDIB tmpDIB
+    End If
     
     'Pad all interface images with 2px blank space; this makes them a bit more aesthetically pleasing, and saves us the
     ' trouble of manually calculating 2px offsets for each image at draw-time
@@ -634,7 +613,7 @@ Private Sub resizeLayerUI()
     m_BufferHeight = picLayers.ScaleHeight
     
     'Determine thumbnail height/width
-    thumbHeight = BLOCKHEIGHT - 2
+    thumbHeight = fixDPI(BLOCKHEIGHT) - fixDPI(2)
     thumbWidth = thumbHeight
     
     'Redraw the toolbar
@@ -833,7 +812,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         End If
         
         'A few objects still need to be rendered below the current layer.  They all have the same y-offset, so calculate it in advance.
-        yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + fixDPI(6)
+        yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + 6
         
         'If this layer is currently hovered, draw some extra controls beneath the layer name.  This keeps the
         ' layer box from getting too cluttered, because we only draw relevant controls for the hovered layer.
@@ -1223,6 +1202,8 @@ Private Sub myHookProc(ByVal bBefore As Boolean, _
         
         bHandled = True
         
+    Else
+        bHandled = False
     End If
             
     'Per http://msdn.microsoft.com/en-us/library/ms644984.aspx, we are required to return the value of
