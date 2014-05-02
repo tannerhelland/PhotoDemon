@@ -759,36 +759,46 @@ End Sub
 Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If picScrollV.Visible And Not (Shift And vbCtrlMask) Then
+    If Not (Shift And vbCtrlMask) Then
+    
+        'PhotoDemon uses the standard photo editor convention of Ctrl+Wheel = zoom, Shift+Wheel = h_scroll, and Wheel = v_scroll.
+        ' Some users (for reasons I don't understand??) expect plain mousewheel to zoom the image.  For these users, we now
+        ' display a helpful message telling them to use the damn Ctrl modifier like everyone else.
+        If picScrollV.Visible Then
       
-        If LinesScrolled < 0 Then
+            If LinesScrolled < 0 Then
+                
+                m_suspendRedraws = True
+                
+                If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
+                    VScroll.Value = VScroll.Max
+                Else
+                    VScroll.Value = VScroll.Value + VScroll.LargeChange
+                End If
+                
+                m_suspendRedraws = False
+                
+                ScrollViewport pdImages(g_CurrentImage), Me
             
-            m_suspendRedraws = True
-            
-            If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
-                VScroll.Value = VScroll.Max
-            Else
-                VScroll.Value = VScroll.Value + VScroll.LargeChange
+            ElseIf LinesScrolled > 0 Then
+                
+                m_suspendRedraws = True
+                
+                If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
+                    VScroll.Value = VScroll.Min
+                Else
+                    VScroll.Value = VScroll.Value - VScroll.LargeChange
+                End If
+                
+                m_suspendRedraws = False
+                
+                ScrollViewport pdImages(g_CurrentImage), Me
+                
             End If
-            
-            m_suspendRedraws = False
-            
-            ScrollViewport pdImages(g_CurrentImage), Me
-        
-        ElseIf LinesScrolled > 0 Then
-            
-            m_suspendRedraws = True
-            
-            If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
-                VScroll.Value = VScroll.Min
-            Else
-                VScroll.Value = VScroll.Value - VScroll.LargeChange
-            End If
-            
-            m_suspendRedraws = False
-            
-            ScrollViewport pdImages(g_CurrentImage), Me
-            
+    
+        'The user is using the mousewheel without Ctrl/Shift modifiers, even without a visible scrollbar
+        Else
+            Message "Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM"
         End If
     
     End If
