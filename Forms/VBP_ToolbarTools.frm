@@ -48,11 +48,19 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   27
          Top             =   360
          Width           =   2025
-         _extentx        =   3572
-         _extenty        =   847
-         caption         =   "show layer borders"
-         font            =   "VBP_ToolbarTools.frx":0000
-         value           =   1
+         _ExtentX        =   3572
+         _ExtentY        =   847
+         Caption         =   "show layer borders"
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin PhotoDemon.smartCheckBox chkLayerNodes 
          Height          =   480
@@ -60,11 +68,19 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   28
          Top             =   780
          Width           =   2775
-         _extentx        =   4895
-         _extenty        =   847
-         caption         =   "show layer transform nodes"
-         font            =   "VBP_ToolbarTools.frx":0028
-         value           =   1
+         _ExtentX        =   4895
+         _ExtentY        =   847
+         Caption         =   "show layer transform nodes"
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin VB.Label lblOptions 
          Appearance      =   0  'Flat
@@ -97,18 +113,26 @@ Begin VB.Form toolbar_Tools
       TabIndex        =   16
       Top             =   315
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   7
-      font            =   "VBP_ToolbarTools.frx":0050
-      backcolor       =   -2147483643
-      caption         =   ""
-      handpointer     =   -1  'True
-      picturenormal   =   "VBP_ToolbarTools.frx":0078
-      pictureeffectondown=   0
-      captioneffects  =   0
-      mode            =   1
-      colorscheme     =   3
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarTools.frx":0000
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin VB.PictureBox picTools 
       Appearance      =   0  'Flat
@@ -141,9 +165,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":0C5A
+         ItemData        =   "VBP_ToolbarTools.frx":0BE2
          Left            =   120
-         List            =   "VBP_ToolbarTools.frx":0C5C
+         List            =   "VBP_ToolbarTools.frx":0BE4
          Style           =   2  'Dropdown List
          TabIndex        =   20
          TabStop         =   0   'False
@@ -164,9 +188,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":0C5E
+         ItemData        =   "VBP_ToolbarTools.frx":0BE6
          Left            =   8340
-         List            =   "VBP_ToolbarTools.frx":0C60
+         List            =   "VBP_ToolbarTools.frx":0BE8
          Style           =   2  'Dropdown List
          TabIndex        =   2
          TabStop         =   0   'False
@@ -188,9 +212,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":0C62
+         ItemData        =   "VBP_ToolbarTools.frx":0BEA
          Left            =   5640
-         List            =   "VBP_ToolbarTools.frx":0C64
+         List            =   "VBP_ToolbarTools.frx":0BEC
          Style           =   2  'Dropdown List
          TabIndex        =   1
          TabStop         =   0   'False
@@ -205,10 +229,18 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   3
          Top             =   345
          Width           =   2670
-         _extentx        =   4710
-         _extenty        =   873
-         font            =   "VBP_ToolbarTools.frx":0C66
-         max             =   10000
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Max             =   10000
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin PhotoDemon.textUpDown tudSel 
          Height          =   405
@@ -217,11 +249,19 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   4
          Top             =   390
          Width           =   1320
-         _extentx        =   2328
-         _extenty        =   714
-         font            =   "VBP_ToolbarTools.frx":0C8E
-         min             =   -30000
-         max             =   30000
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin PhotoDemon.textUpDown tudSel 
          Height          =   405
@@ -230,11 +270,19 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   5
          Top             =   840
          Width           =   1320
-         _extentx        =   2328
-         _extenty        =   714
-         font            =   "VBP_ToolbarTools.frx":0CB6
-         min             =   -30000
-         max             =   30000
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin PhotoDemon.textUpDown tudSel 
          Height          =   405
@@ -243,11 +291,19 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   6
          Top             =   390
          Width           =   1320
-         _extentx        =   2328
-         _extenty        =   714
-         font            =   "VBP_ToolbarTools.frx":0CDE
-         min             =   -30000
-         max             =   30000
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin PhotoDemon.textUpDown tudSel 
          Height          =   405
@@ -256,11 +312,19 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   7
          Top             =   840
          Width           =   1320
-         _extentx        =   2328
-         _extenty        =   714
-         font            =   "VBP_ToolbarTools.frx":0D06
-         min             =   -30000
-         max             =   30000
+         _ExtentX        =   2328
+         _ExtentY        =   714
+         Min             =   -30000
+         Max             =   30000
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
          CausesValidation=   0   'False
@@ -270,12 +334,20 @@ Begin VB.Form toolbar_Tools
          Top             =   840
          Visible         =   0   'False
          Width           =   2670
-         _extentx        =   4710
-         _extenty        =   873
-         font            =   "VBP_ToolbarTools.frx":0D2E
-         min             =   1
-         max             =   10000
-         value           =   1
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   10000
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
          CausesValidation=   0   'False
@@ -284,10 +356,18 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   9
          Top             =   840
          Width           =   2670
-         _extentx        =   4710
-         _extenty        =   873
-         font            =   "VBP_ToolbarTools.frx":0D56
-         max             =   100
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Max             =   100
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
          CausesValidation=   0   'False
@@ -296,12 +376,20 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   10
          Top             =   345
          Width           =   2670
-         _extentx        =   4710
-         _extenty        =   873
-         font            =   "VBP_ToolbarTools.frx":0D7E
-         min             =   1
-         max             =   10000
-         value           =   10
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   1
+         Max             =   10000
+         Value           =   10
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin VB.Label lblSelection 
          Appearance      =   0  'Flat
@@ -449,18 +537,26 @@ Begin VB.Form toolbar_Tools
       TabIndex        =   17
       Top             =   315
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   7
-      font            =   "VBP_ToolbarTools.frx":0DA6
-      backcolor       =   -2147483643
-      caption         =   ""
-      handpointer     =   -1  'True
-      picturenormal   =   "VBP_ToolbarTools.frx":0DCE
-      pictureeffectondown=   0
-      captioneffects  =   0
-      mode            =   1
-      colorscheme     =   3
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarTools.frx":0BEE
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
@@ -469,18 +565,26 @@ Begin VB.Form toolbar_Tools
       TabIndex        =   18
       Top             =   315
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   7
-      font            =   "VBP_ToolbarTools.frx":19B0
-      backcolor       =   -2147483643
-      caption         =   ""
-      handpointer     =   -1  'True
-      picturenormal   =   "VBP_ToolbarTools.frx":19D8
-      pictureeffectondown=   0
-      captioneffects  =   0
-      mode            =   1
-      colorscheme     =   3
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarTools.frx":17D0
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
@@ -489,18 +593,26 @@ Begin VB.Form toolbar_Tools
       TabIndex        =   23
       Top             =   315
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   7
-      font            =   "VBP_ToolbarTools.frx":25BA
-      backcolor       =   -2147483643
-      caption         =   ""
-      handpointer     =   -1  'True
-      picturenormal   =   "VBP_ToolbarTools.frx":25E2
-      pictureeffectondown=   0
-      captioneffects  =   0
-      mode            =   1
-      colorscheme     =   3
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarTools.frx":23B2
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
@@ -509,18 +621,26 @@ Begin VB.Form toolbar_Tools
       TabIndex        =   24
       Top             =   315
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   7
-      font            =   "VBP_ToolbarTools.frx":3334
-      backcolor       =   -2147483643
-      caption         =   ""
-      handpointer     =   -1  'True
-      picturenormal   =   "VBP_ToolbarTools.frx":335C
-      pictureeffectondown=   0
-      captioneffects  =   0
-      mode            =   1
-      colorscheme     =   3
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarTools.frx":3104
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin VB.Label lblCategory 
       Appearance      =   0  'Flat
@@ -599,13 +719,13 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Selections Toolbar
+'PhotoDemon Tools Toolbox
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 03/October/13
-'Last updated: 15/October/13
-'Last update: redesigned with a horizontal layout
+'Last updated: 02/May/14
+'Last update: started adding additional options for the "move/size" tool.
 '
-'This form was initially integrated into the main MDI form.  In fall 2014, PhotoDemon left behind the MDI model,
+'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind the MDI model,
 ' and all toolbars were moved to their own forms.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
