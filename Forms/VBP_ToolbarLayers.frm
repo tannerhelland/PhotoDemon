@@ -595,6 +595,15 @@ Private Sub Form_Load()
     ' layer name text box receives focus.  Similarly, when it loses focus, it will immediately release the hook.
     Set cSubclass = New cSelfSubHookCallback
     
+    'Force the blend mode drop-down to display the full list of items.  The SendMessage call is structured as:
+    ' 1) hWnd of combo box
+    ' 2) Constant for "set number of visible items" request
+    ' 3) Number of visible items requested (in our case, the count of the combo box)
+    ' 4) (unused)
+    ' NOTE: this requires a manifest, so it won't work in the IDE.
+    Const CB_SETMINVISIBLE As Long = 339
+    SendMessage cboBlendMode.hWnd, 339, CLng(cboBlendMode.ListCount), ByVal 0&
+    
 End Sub
 
 'Load a UI image from the resource section and into a DIB
