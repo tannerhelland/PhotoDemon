@@ -1018,11 +1018,11 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
         
             'Drag-to-navigate
             Case NAV_DRAG
-                setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+                'setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
                 
             'Move stuff around
             Case NAV_MOVE
-                setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+                'setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
                 
             'Standard selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE

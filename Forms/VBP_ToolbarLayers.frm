@@ -586,13 +586,21 @@ End Sub
 'Load a UI image from the resource section and into a DIB
 Private Sub initializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
     
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+
+    loadResourceToDIB resString, tmpDIB
+    
     Set dstDIB = New pdDIB
-    loadResourceToDIB resString, dstDIB
     
-    'Pad all interface images with 2px blank space; this makes them a bit more aesthetically pleasing, and saves us the
-    ' trouble of manually calculating 2px offsets for each image at draw-time
-    Filters_Layers.padDIB dstDIB, fixDPI(2)
-    
+    'If the screen is high DPI, resize all DIBs to match
+    If fixDPIFloat(1) > 1 Then
+        dstDIB.createBlank fixDPI(tmpDIB.getDIBWidth), fixDPI(tmpDIB.getDIBHeight), tmpDIB.getDIBColorDepth, 0
+        GDIPlusResizeDIB dstDIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+    Else
+        dstDIB.createFromExistingDIB tmpDIB
+    End If
+        
 End Sub
 
 Private Sub Form_Resize()
@@ -646,7 +654,7 @@ Private Sub resizeLayerUI()
     m_BufferHeight = picLayers.ScaleHeight
     
     'Determine thumbnail height/width
-    thumbHeight = BLOCKHEIGHT - 2
+    thumbHeight = fixDPI(BLOCKHEIGHT) - fixDPI(2)
     thumbWidth = thumbHeight
     
     'Redraw the toolbar
@@ -845,7 +853,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         End If
         
         'A few objects still need to be rendered below the current layer.  They all have the same y-offset, so calculate it in advance.
-        yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + fixDPI(6)
+        yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + 6
         
         'If this layer is currently hovered, draw some extra controls beneath the layer name.  This keeps the
         ' layer box from getting too cluttered, because we only draw relevant controls for the hovered layer.
