@@ -521,19 +521,19 @@ Private Sub Form_Load()
     cboBlendMode.AddItem "Normal", 0
     cboBlendMode.AddItem "Darken", 1
     cboBlendMode.AddItem "Multiply", 2
-    cboBlendMode.AddItem "Color Burn", 3
-    cboBlendMode.AddItem "Linear Burn", 4
+    cboBlendMode.AddItem "Color burn", 3
+    cboBlendMode.AddItem "Linear burn", 4
     cboBlendMode.AddItem "Lighten", 5
     cboBlendMode.AddItem "Screen", 6
-    cboBlendMode.AddItem "Color Dodge", 7
-    cboBlendMode.AddItem "Linear Dodge", 8
+    cboBlendMode.AddItem "Color dodge", 7
+    cboBlendMode.AddItem "Linear dodge", 8
     cboBlendMode.AddItem "Overlay", 9
-    cboBlendMode.AddItem "Soft Light", 10
-    cboBlendMode.AddItem "Hard Light", 11
-    cboBlendMode.AddItem "Vivid Light", 12
-    cboBlendMode.AddItem "Linear Light", 13
-    cboBlendMode.AddItem "Pin Light", 14
-    cboBlendMode.AddItem "Hard Mix", 15
+    cboBlendMode.AddItem "Soft light", 10
+    cboBlendMode.AddItem "Hard light", 11
+    cboBlendMode.AddItem "Vivid light", 12
+    cboBlendMode.AddItem "Linear light", 13
+    cboBlendMode.AddItem "Pin light", 14
+    cboBlendMode.AddItem "Hard mix", 15
     cboBlendMode.AddItem "Difference", 16
     cboBlendMode.AddItem "Exclusion", 17
     cboBlendMode.AddItem "Subtract", 18
