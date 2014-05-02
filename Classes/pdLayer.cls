@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layers class
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright ï¿½2013-2014 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 18/March/14
 'Last update: moved all DIB-centric code to the pdDIB class, and started rewriting this class as a source-agnostic layer
@@ -44,15 +44,31 @@ Private myLayerType As LAYER_TYPE
 
 Public Enum LAYER_BLENDMODE
     BL_NORMAL = 0
-    BL_MULTIPLY = 1
-    BL_SCREEN = 2
-    BL_OVERLAY = 3
-    BL_HARDLIGHT = 4
-    BL_SOFTLIGHT = 5
+    BL_DARKEN = 1
+    BL_MULTIPLY = 2
+    BL_COLORBURN = 3
+    BL_LINEARBURN = 4
+    BL_LIGHTEN = 5
+    BL_SCREEN = 6
+    BL_COLORDODGE = 7
+    BL_LINEARDODGE = 8
+    BL_OVERLAY = 9
+    BL_SOFTLIGHT = 10
+    BL_HARDLIGHT = 11
+    BL_VIVIDLIGHT = 12
+    BL_LINEARLIGHT = 13
+    BL_PINLIGHT = 14
+    BL_HARDMIX = 15
+    BL_DIFFERENCE = 16
+    BL_EXCLUSION = 17
+    BL_SUBTRACT = 18
+    BL_DIVIDE = 19
 End Enum
 
 #If False Then
-    Const BL_NORMAL = 0, BL_MULTIPLY = 1, BL_SCREEN = 2, BL_OVERLAY = 3, BL_HARDLIGHT = 4, BL_SOFTLIGHT = 5
+    Const BL_NORMAL = 0, BL_DARKEN = 1, BL_MULTIPLY = 2, BL_COLORBURN = 3, BL_LINEARBURN = 4, BL_LIGHTEN = 5, BL_SCREEN = 6, BL_COLORDODGE = 7
+    Const BL_LINEARDODGE = 8, BL_OVERLAY = 9, BL_SOFTLIGHT = 10, BL_HARDLIGHT = 11, BL_VIVIDLIGHT = 12, BL_LINEARLIGHT = 13, BL_PINLIGHT = 14
+    Const BL_HARDMIX = 15, BL_DIFFERENCE = 16, BL_EXCLUSION = 17, BL_SUBTRACT = 18, BL_DIVIDE = 19
 #End If
 
 'Canonical ID value for this layer.  This value is set once, at layer creation time, and can never be changed again.  It is
