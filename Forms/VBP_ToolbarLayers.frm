@@ -5,9 +5,9 @@ Begin VB.Form toolbar_Layers
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Layers"
    ClientHeight    =   7245
-   ClientLeft      =   42
+   ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   3738
+   ClientWidth     =   3735
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -21,9 +21,9 @@ Begin VB.Form toolbar_Layers
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   1035
+   ScaleHeight     =   483
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   534
+   ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
    Begin VB.ComboBox cboBlendMode 
       Appearance      =   0  'Flat
@@ -61,9 +61,9 @@ Begin VB.Form toolbar_Layers
       ForeColor       =   &H80000008&
       Height          =   495
       Left            =   0
-      ScaleHeight     =   71
+      ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   534
+      ScaleWidth      =   249
       TabIndex        =   3
       Top             =   6750
       Width           =   3735
@@ -74,17 +74,25 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   4
          Top             =   15
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   13
-         font            =   "VBP_ToolbarLayers.frx":0000
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_ToolbarLayers.frx":0028
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":0000
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -93,17 +101,25 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   5
          Top             =   15
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   13
-         font            =   "VBP_ToolbarLayers.frx":0D7A
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -112,17 +128,25 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   15
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   13
-         font            =   "VBP_ToolbarLayers.frx":1AF4
-         backcolor       =   15199212
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15199212
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
       End
    End
    Begin VB.PictureBox picLayers 
@@ -134,9 +158,9 @@ Begin VB.Form toolbar_Layers
       Height          =   4935
       Left            =   120
       OLEDropMode     =   1  'Manual
-      ScaleHeight     =   703
+      ScaleHeight     =   327
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   463
+      ScaleWidth      =   215
       TabIndex        =   2
       Top             =   1320
       Width           =   3255
@@ -165,11 +189,19 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   120
       Width           =   2760
-      _extentx        =   4868
-      _extenty        =   873
-      font            =   "VBP_ToolbarLayers.frx":286E
-      max             =   100
-      value           =   100
+      _ExtentX        =   4868
+      _ExtentY        =   873
+      Max             =   100
+      Value           =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblLayerSettings 
       Alignment       =   1  'Right Justify
@@ -233,6 +265,18 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'***************************************************************************
+'PhotoDemon Layers Toolbar
+'Copyright ©2013-2014 by Tanner Helland
+'Created: 25/March/14
+'Last updated: 02/May/14
+'Last update: experimenting with a right-aligned layout for the hover layer buttons
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
+'***************************************************************************
+
 Option Explicit
 
 'A collection of all currently active layer thumbnails.  It is dynamically resized as layers are added/removed.
@@ -266,7 +310,7 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 Private Const BLOCKHEIGHT As Long = 48
 
 'The distance (in pixels at 96 dpi) between clickable buttons in the "show on hover" layer block menu
-Private Const DIST_BETWEEN_HOVER_BUTTONS As Long = 10
+Private Const DIST_BETWEEN_HOVER_BUTTONS As Long = 12
 
 'Internal DIB (and measurements) for the custom layer list interface
 Private bufferDIB As pdDIB
@@ -542,19 +586,8 @@ End Sub
 'Load a UI image from the resource section and into a DIB
 Private Sub initializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
     
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    
-    loadResourceToDIB resString, tmpDIB
-    
-    'If the screen is high DPI, resize all DIBs to match
-    If fixDPIFloat(1) > 1 Then
-        Set dstDIB = New pdDIB
-        dstDIB.createBlank fixDPI(tmpDIB.getDIBWidth), fixDPI(tmpDIB.getDIBHeight), tmpDIB.getDIBColorDepth, 0
-        GDIPlusResizeDIB dstDIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, InterpolationModeHighQualityBicubic
-    Else
-        dstDIB.createFromExistingDIB tmpDIB
-    End If
+    Set dstDIB = New pdDIB
+    loadResourceToDIB resString, dstDIB
     
     'Pad all interface images with 2px blank space; this makes them a bit more aesthetically pleasing, and saves us the
     ' trouble of manually calculating 2px offsets for each image at draw-time
@@ -613,7 +646,7 @@ Private Sub resizeLayerUI()
     m_BufferHeight = picLayers.ScaleHeight
     
     'Determine thumbnail height/width
-    thumbHeight = fixDPI(BLOCKHEIGHT) - fixDPI(2)
+    thumbHeight = BLOCKHEIGHT - 2
     thumbWidth = thumbHeight
     
     'Redraw the toolbar
@@ -812,7 +845,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         End If
         
         'A few objects still need to be rendered below the current layer.  They all have the same y-offset, so calculate it in advance.
-        yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + 6
+        yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + fixDPI(6)
         
         'If this layer is currently hovered, draw some extra controls beneath the layer name.  This keeps the
         ' layer box from getting too cluttered, because we only draw relevant controls for the hovered layer.
@@ -820,8 +853,8 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         '  request a touch-centric UI.)
         If (blockIndex = curLayerHover) Then
         
-            'Start with an x-offset that matches the text offset
-            xObjOffset = xTextOffset
+            'Start with an x-offset at the far right of the panel
+            xObjOffset = m_BufferWidth - img_EyeClosed.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
         
             'Draw the visibility toggle.  Note that an icon for the opposite visibility state is drawn, to show
             ' the user what will happen if they click the icon.
@@ -835,7 +868,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             fillRectWithDIBCoords m_VisibilityRect, img_EyeOpen, xObjOffset, yObjOffset
             
             'Next, provide a "duplicate layer" shortcut
-            xObjOffset = xObjOffset + img_EyeOpen.getDIBWidth + fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+            xObjOffset = xObjOffset - img_EyeOpen.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
             img_Duplicate.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
             fillRectWithDIBCoords m_DuplicateRect, img_Duplicate, xObjOffset, yObjOffset
             
@@ -843,7 +876,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             If tmpLayerRef.getLayerVisibility Then
             
                 'Merge down comes first...
-                xObjOffset = xObjOffset + img_Duplicate.getDIBWidth + fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+                xObjOffset = xObjOffset - img_Duplicate.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
                 
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, True) >= 0 Then
                     img_MergeDown.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
@@ -853,7 +886,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
                 fillRectWithDIBCoords m_MergeDownRect, img_MergeDown, xObjOffset, yObjOffset
                 
                 '...then Merge up
-                xObjOffset = xObjOffset + img_MergeDown.getDIBWidth + fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+                xObjOffset = xObjOffset - img_MergeDown.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, False) >= 0 Then
                     img_MergeUp.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
                 Else
@@ -1202,8 +1235,6 @@ Private Sub myHookProc(ByVal bBefore As Boolean, _
         
         bHandled = True
         
-    Else
-        bHandled = False
     End If
             
     'Per http://msdn.microsoft.com/en-us/library/ms644984.aspx, we are required to return the value of
