@@ -475,11 +475,25 @@ Private Sub Form_Load()
     'Populate the blend mode box
     cboBlendMode.Clear
     cboBlendMode.AddItem "Normal", 0
-    cboBlendMode.AddItem "Multiply", 1
-    cboBlendMode.AddItem "Screen", 2
-    cboBlendMode.AddItem "Overlay", 3
-    cboBlendMode.AddItem "Hard light", 4
-    cboBlendMode.AddItem "Soft light", 5
+    cboBlendMode.AddItem "Darken", 1
+    cboBlendMode.AddItem "Multiply", 2
+    cboBlendMode.AddItem "Color Burn", 3
+    cboBlendMode.AddItem "Linear Burn", 4
+    cboBlendMode.AddItem "Lighten", 5
+    cboBlendMode.AddItem "Screen", 6
+    cboBlendMode.AddItem "Color Dodge", 7
+    cboBlendMode.AddItem "Linear Dodge", 8
+    cboBlendMode.AddItem "Overlay", 9
+    cboBlendMode.AddItem "Soft Light", 10
+    cboBlendMode.AddItem "Hard Light", 11
+    cboBlendMode.AddItem "Vivid Light", 12
+    cboBlendMode.AddItem "Linear Light", 13
+    cboBlendMode.AddItem "Pin Light", 14
+    cboBlendMode.AddItem "Hard Mix", 15
+    cboBlendMode.AddItem "Difference", 16
+    cboBlendMode.AddItem "Exclusion", 17
+    cboBlendMode.AddItem "Subtract", 18
+    cboBlendMode.AddItem "Divide", 19
     cboBlendMode.ListIndex = 0
     
     'Reset the thumbnail array
