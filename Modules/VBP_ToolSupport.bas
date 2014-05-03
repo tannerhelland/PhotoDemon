@@ -105,7 +105,8 @@ End Sub
 'The nav tool uses this function to move the current layer around
 Public Sub moveCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas)
 
-    'Prevent the canvas from redrawing itself until our pan operation is complete.  (This prevents juddery movement.)
+    'Prevent the canvas from redrawing itself until our movement calculations are complete.
+    ' (This prevents juddery movement.)
     srcCanvas.setRedrawSuspension True
     
     'Start by converting the mouse coordinates we were passed from screen units to image units

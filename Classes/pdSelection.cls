@@ -392,7 +392,7 @@ Public Function getTransformationType()
     If transformModeActive Then
         getTransformationType = selTransformationType
     Else
-        getTransformationType = 0
+        getTransformationType = -1
     End If
 End Function
 
@@ -491,71 +491,71 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
             'Based on the transform mode, set the initial points accordingly
             Select Case selTransformationType
             
-                'Case 0 should never occur, but if it does - treat this like a normal initial coordinate call
-                Case 0
+                'Case -1 should never occur, but if it does - treat this like a normal initial coordinate call
+                Case -1
                     x1 = x
                     y1 = y
                     x2 = x
                     y2 = y
                 
-                '1 - NW corner
-                Case 1
+                '0 - NW corner
+                Case 0
                     x1 = selLeft + selWidth
                     y1 = selTop + selHeight
                     x2 = selLeft
                     y2 = selTop
                 
-                '2 - NE corner
+                '1 - NE corner
+                Case 1
+                    x1 = selLeft
+                    y1 = selTop + selHeight
+                    x2 = x
+                    y2 = y
+                
+                '2 - SE corner
                 Case 2
                     x1 = selLeft
-                    y1 = selTop + selHeight
-                    x2 = x
-                    y2 = y
-                
-                '3 - SE corner
-                Case 3
-                    x1 = selLeft
                     y1 = selTop
                     x2 = x
                     y2 = y
                 
-                '4 - SW corner
-                Case 4
+                '3 - SW corner
+                Case 3
                     x1 = selLeft + selWidth
                     y1 = selTop
                     x2 = x
                     y2 = y
                 
-                '5 - N edge
+                '4 - N edge
+                Case 4
+                    x1 = selLeft
+                    x2 = selLeft + selWidth
+                    y1 = selTop + selHeight
+                    y2 = y
+                
+                '5 - E edge
                 Case 5
                     x1 = selLeft
-                    x2 = selLeft + selWidth
-                    y1 = selTop + selHeight
-                    y2 = y
-                
-                '6 - E edge
-                Case 6
-                    x1 = selLeft
                     x2 = x
                     y1 = selTop
                     y2 = selTop + selHeight
                 
-                '7 - S edge
-                Case 7
+                '6 - S edge
+                Case 6
                     x1 = selLeft
                     x2 = selLeft + selWidth
                     y1 = selTop
                     y2 = y
                 
-                '8 - W edge
-                Case 8
+                '7 - W edge
+                Case 7
                     x1 = selLeft + selWidth
                     x2 = x
                     y1 = selTop
                     y2 = selTop + selHeight
                 
-                '9 - interior of selection, not near a corner or edge
-                Case 9
+                '8 - interior of selection, not near a corner or edge
+                Case 8
                     moveXDist = x - selLeft
                     moveYDist = y - selTop
             
@@ -566,19 +566,19 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
         Case sLine
         
             'Case 0 should never occur, but if it does - treat this like a normal initial coordinate call
-            Case 0
+            Case -1
                 x1 = x
                 y1 = y
                 x2 = x
                 y2 = y
             
             'First point is being moved
-            Case 1
+            Case 0
                 x1 = x
                 y1 = y
             
             'Second point is being moved
-            Case 2
+            Case 1
                 x2 = x
                 y2 = y
         
@@ -636,32 +636,32 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                 'Based on the transform mode, set the initial points accordingly
                 Select Case selTransformationType
                 
-                    'Cases 0 should never occur, but if it does - treat this like a normal subsequent coordinate call
+                    'Case -1 should never occur, but if it does - treat this like a normal subsequent coordinate call
                     'Cases 1-4 can similarly be treated like a normal subsequent coordinate call
                     ' (See setInitialTransformCoordinates for details on what the different cases mean.  And yes, I should convert
                     '  these to constants instead of numbers... :P)
-                    Case 0 To 4
+                    Case 0 To 3
                         x2 = x
                         y2 = y
                     
-                    '5 - N edge
+                    '4 - N edge
+                    Case 4
+                        y2 = y
+                        
+                    '5 - E edge
                     Case 5
-                        y2 = y
+                        x2 = x
                         
-                    '6 - E edge
+                    '6 - S edge
                     Case 6
-                        x2 = x
-                        
-                    '7 - S edge
-                    Case 7
                         y2 = y
                         
-                    '8 - W edge
-                    Case 8
+                    '7 - W edge
+                    Case 7
                         x2 = x
                         
-                    '9 - interior of selection, not near a corner or edge (e.g. move the selection, but don't resize it)
-                    Case 9
+                    '8 - interior of selection, not near a corner or edge (e.g. move the selection, but don't resize it)
+                    Case 8
                     
                         x1 = x - moveXDist
                         y1 = y - moveYDist
@@ -676,16 +676,16 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                 'Based on the transform mode, set the initial points accordingly
                 Select Case selTransformationType
             
-                    'Case 0 should never occur
-                    Case 0
+                    'Case -1 should never occur.  (-1 represents an invalid transformation request)
+                    Case -1
                     
                     'First point is being moved
-                    Case 1
+                    Case 0
                         x1 = x
                         y1 = y
                         
                     'Second point is being moved
-                    Case 2
+                    Case 1
                         x2 = x
                         y2 = y
                         
