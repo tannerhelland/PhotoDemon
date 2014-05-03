@@ -430,43 +430,36 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
 End Sub
 
 'This sub will return a constant correlating to the nearest selection point. Its return values are:
-' 0 - Cursor is not near a selection point
-' 1 - NW corner
-' 2 - NE corner
-' 3 - SE corner
-' 4 - SW corner
-' 5 - N edge
-' 6 - E edge
-' 7 - S edge
-' 8 - W edge
-' 9 - interior of selection, not near a corner or edge
-Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As Single, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas) As Long
+' -1 - Cursor is not near a selection point
+' 0 - NW corner
+' 1 - NE corner
+' 2 - SE corner
+' 3 - SW corner
+' 4 - N edge
+' 5 - E edge
+' 6 - S edge
+' 7 - W edge
+' 8 - interior of selection, not near a corner or edge (e.g. move the selection)
+'
+'Note that the x and y values this function is passed are assumed to already be in the IMAGE coordinate space, not the SCREEN or CANVAS
+' coordinate space.
+Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY As Double, ByRef srcImage As pdImage) As Long
     
     'If the current selection is NOT transformable, return 0.
     If Not srcImage.mainSelection.isTransformable Then
-        findNearestSelectionCoordinates = 0
+        findNearestSelectionCoordinates = -1
         Exit Function
     End If
-
-    'Grab the current zoom value
-    Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
-    'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
-    ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-    y1 = y1 - srcImage.imgViewport.getTopOffset
-    
-    'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcCanvas.getScrollValue(PD_HORIZONTAL) + Int((x1 - srcImage.imgViewport.targetLeft) / zoomVal)
-    y1 = srcCanvas.getScrollValue(PD_VERTICAL) + Int((y1 - srcImage.imgViewport.targetTop) / zoomVal)
-    
-    'Vertical and/or horizontal offsets may be necessary if the form's status bar and/or rulers are visible
-    Dim horzOffset As Long, vertOffset As Long
-    vertOffset = srcImage.imgViewport.getVerticalOffset
-    
-    'With x1 and y1 now representative of a location within the image, it's time to start calculating distances.
-    Dim tLeft As Double, tTop As Double, tRight As Double, tBottom As Double
-    
+    'If the current selection is NOT active, return 0.
+    If Not srcImage.selectionActive Then
+        findNearestSelectionCoordinates = -1
+        Exit Function
+    End If
+        
+    'Calculate points of interest for the current selection.  Said points will be corners (for rectangle and circle selections),
+    ' or line endpoints (for line selections).
+    Dim tLeft As Long, tTop As Long, tRight As Long, tBottom As Long
     If (srcImage.mainSelection.getSelectionShape = sRectangle) Or (srcImage.mainSelection.getSelectionShape = sCircle) Then
         tLeft = srcImage.mainSelection.selLeft
         tTop = srcImage.mainSelection.selTop
@@ -481,7 +474,7 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     
     'Adjust the mouseAccuracy value based on the current zoom value
     Dim mouseAccuracy As Double
-    mouseAccuracy = g_MouseAccuracy * (1 / zoomVal)
+    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.getZoomValue(srcImage.currentZoomValue))
     
     'Before doing anything else, make sure the pointer is actually worth checking - e.g. make sure it's near the selection
     'If (x1 < tLeft - mouseAccuracy) Or (x1 > tRight + mouseAccuracy) Or (y1 < tTop - mouseAccuracy) Or (y1 > tBottom + mouseAccuracy) Then
@@ -494,42 +487,29 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
     minDistance = mouseAccuracy
     
     Dim closestPoint As Long
+    closestPoint = -1
     
     'If we made it here, this mouse location is worth evaluating.  How we evaluate it depends on the shape of the current selection.
     Select Case srcImage.mainSelection.getSelectionShape
     
+        'Rectangular and elliptical selections have identical POIs: the corners, edges, and interior of the selection
         Case sRectangle, sCircle
     
             'Corners get preference, so check them first.
-            Dim nwDist As Double, neDist As Double, seDist As Double, swDist As Double
+            Dim poiList() As POINTAPI
+            ReDim poiList(0 To 3) As POINTAPI
             
-            nwDist = distanceTwoPoints(x1, y1, tLeft, tTop)
-            neDist = distanceTwoPoints(x1, y1, tRight, tTop)
-            swDist = distanceTwoPoints(x1, y1, tLeft, tBottom)
-            seDist = distanceTwoPoints(x1, y1, tRight, tBottom)
+            poiList(0).x = tLeft
+            poiList(0).y = tTop
+            poiList(1).x = tRight
+            poiList(1).y = tTop
+            poiList(2).x = tRight
+            poiList(2).y = tBottom
+            poiList(3).x = tLeft
+            poiList(3).y = tBottom
             
-            'Find the smallest distance for this mouse position
-            closestPoint = -1
-            
-            If nwDist <= minDistance Then
-                minDistance = nwDist
-                closestPoint = 1
-            End If
-            
-            If neDist <= minDistance Then
-                minDistance = neDist
-                closestPoint = 2
-            End If
-            
-            If seDist <= minDistance Then
-                minDistance = seDist
-                closestPoint = 3
-            End If
-            
-            If swDist <= minDistance Then
-                minDistance = swDist
-                closestPoint = 4
-            End If
+            'Used the generalized point comparison function to see if one of the points matches
+            closestPoint = findClosestPointInArray(imgX, imgY, minDistance, poiList)
             
             'Was a close point found? If yes, then return that value
             If closestPoint <> -1 Then
@@ -537,32 +517,33 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
                 Exit Function
             End If
         
-            'If we're at this line of code, a closest corner was not found. So check edges next.
+            'If we're at this line of code, a closest corner was not found.  Check edges next.
+            ' (Unfortunately, we don't yet have a generalized function for edge checking, so this must be done manually.)
             Dim nDist As Double, eDist As Double, sDist As Double, wDist As Double
             
-            nDist = distanceOneDimension(y1, tTop)
-            eDist = distanceOneDimension(x1, tRight)
-            sDist = distanceOneDimension(y1, tBottom)
-            wDist = distanceOneDimension(x1, tLeft)
+            nDist = distanceOneDimension(imgY, tTop)
+            eDist = distanceOneDimension(imgX, tRight)
+            sDist = distanceOneDimension(imgY, tBottom)
+            wDist = distanceOneDimension(imgX, tLeft)
             
-            If (nDist <= minDistance) And (x1 > (tLeft - minDistance)) And (x1 < (tRight + minDistance)) Then
+            If (nDist <= minDistance) And (imgX > (tLeft - minDistance)) And (imgX < (tRight + minDistance)) Then
                 minDistance = nDist
+                closestPoint = 4
+            End If
+            
+            If (eDist <= minDistance) And (imgY > (tTop - minDistance)) And (imgY < (tBottom + minDistance)) Then
+                minDistance = eDist
                 closestPoint = 5
             End If
             
-            If (eDist <= minDistance) And (y1 > (tTop - minDistance)) And (y1 < (tBottom + minDistance)) Then
-                minDistance = eDist
+            If (sDist <= minDistance) And (imgX > (tLeft - minDistance)) And (imgX < (tRight + minDistance)) Then
+                minDistance = sDist
                 closestPoint = 6
             End If
             
-            If (sDist <= minDistance) And (x1 > (tLeft - minDistance)) And (x1 < (tRight + minDistance)) Then
-                minDistance = sDist
-                closestPoint = 7
-            End If
-            
-            If (wDist <= minDistance) And (y1 > (tTop - minDistance)) And (y1 < (tBottom + minDistance)) Then
+            If (wDist <= minDistance) And (imgY > (tTop - minDistance)) And (imgY < (tBottom + minDistance)) Then
                 minDistance = wDist
-                closestPoint = 8
+                closestPoint = 7
             End If
             
             'Was a close point found? If yes, then return that value.
@@ -573,10 +554,10 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
         
             'If we're at this line of code, a closest edge was not found. Perform one final check to ensure that the mouse is within the
             ' image's boundaries, and if it is, return the "move selection" ID, then exit.
-            If (x1 > tLeft) And (x1 < tRight) And (y1 > tTop) And (y1 < tBottom) Then
-                findNearestSelectionCoordinates = 9
+            If (imgX > tLeft) And (imgX < tRight) And (imgY > tTop) And (imgY < tBottom) Then
+                findNearestSelectionCoordinates = 8
             Else
-                findNearestSelectionCoordinates = 0
+                findNearestSelectionCoordinates = -1
             End If
             
         Case sLine
@@ -585,23 +566,23 @@ Public Function findNearestSelectionCoordinates(ByRef x1 As Single, ByRef y1 As 
             Dim xCoord As Double, yCoord As Double
             Dim firstDist As Double, secondDist As Double
             
-            closestPoint = 0
+            closestPoint = -1
             
             srcImage.mainSelection.getSelectionCoordinates 1, xCoord, yCoord
-            firstDist = distanceTwoPoints(x1, y1, xCoord, yCoord)
+            firstDist = distanceTwoPoints(imgX, imgY, xCoord, yCoord)
             
             srcImage.mainSelection.getSelectionCoordinates 2, xCoord, yCoord
-            secondDist = distanceTwoPoints(x1, y1, xCoord, yCoord)
+            secondDist = distanceTwoPoints(imgX, imgY, xCoord, yCoord)
                         
-            If firstDist <= minDistance Then closestPoint = 1
-            If secondDist <= minDistance Then closestPoint = 2
+            If (firstDist <= minDistance) Then closestPoint = 0
+            If (secondDist <= minDistance) Then closestPoint = 1
             
             'Was a close point found? If yes, then return that value.
             findNearestSelectionCoordinates = closestPoint
             Exit Function
             
         Case Else
-            findNearestSelectionCoordinates = 0
+            findNearestSelectionCoordinates = -1
             Exit Function
             
     End Select
@@ -858,7 +839,8 @@ End Sub
 
 'The selection engine integrates closely with tool selection (as it needs to know what kind of selection is being
 ' created/edited at any given time).  This function is called whenever the selection engine needs to correlate the
-' current tool with a selection type.  When new tools are added, make sure to update this function!
+' current tool with a selection type.  This allows us to easily switch between a rectangle and circle selection,
+' for example, without forcing the user to recreate the selection from scratch.
 Public Function getSelectionTypeFromCurrentTool() As SelectionShape
 
     Select Case g_CurrentTool
@@ -902,3 +884,31 @@ Public Function getRelevantToolFromSelectType() As PDTools
 
 End Function
 
+'Selections can be initiated several different ways.  To cut down on duplicated code, all new selection instances are referred
+' to this function.  Initial X/Y values are required.
+Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
+
+    'I don't have a good explanation, but without DoEvents here, creating a line selection for the first
+    ' time may inexplicably fail.  While I try to track down the exact cause, I'll leave this here to
+    ' maintain desired behavior...
+    ' TODO: solve the mystery of why line selections require DoEvents here, but nothing else does...
+    'DoEvents
+    
+    'Activate the attached image's primary selection
+    pdImages(g_CurrentImage).selectionActive = True
+    pdImages(g_CurrentImage).mainSelection.lockRelease
+    
+    'Populate a variety of selection attributes using a single shorthand declaration.  A breakdown of these
+    ' values and what they mean can be found in the corresponding pdSelection.initFromParamString function
+    pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+    
+    'Set the first two coordinates of this selection to this mouseclick's location
+    pdImages(g_CurrentImage).mainSelection.setInitialCoordinates x, y
+    syncTextToCurrentSelection g_CurrentImage
+    pdImages(g_CurrentImage).mainSelection.requestNewMask
+        
+    'Make the selection tools visible
+    metaToggle tSelection, True
+    metaToggle tSelectionTransform, True
+                        
+End Sub

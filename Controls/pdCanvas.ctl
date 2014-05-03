@@ -796,9 +796,10 @@ Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button
                 
             End If
     
-        'The user is using the mousewheel without Ctrl/Shift modifiers, even without a visible scrollbar
+        'The user is using the mousewheel without Ctrl/Shift modifiers, even without a visible scrollbar.
+        ' Display a message about how mousewheels are supposed to work.
         Else
-            Message "Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM"
+            If Not vbCtrlMask Then Message "Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM"
         End If
     
     End If
@@ -860,8 +861,6 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
     'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
     ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
     Dim imgX As Double, imgY As Double
-    imgX = -1
-    imgY = -1
     
     'Display the image coordinates under the mouse pointer
     displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
@@ -873,7 +872,6 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
     If Button = vbLeftButton Then
         
         lMouseDown = True
-            
         hasMouseMoved = 0
             
         'Remember this location
@@ -904,10 +902,10 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                 
                     'Check the mouse coordinates of this click.
                     Dim sCheck As Long
-                    sCheck = findNearestSelectionCoordinates(x, y, pdImages(g_CurrentImage), Me)
+                    sCheck = findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
                     
                     'If that function did not return zero, notify the selection and exit
-                    If (sCheck <> 0) And pdImages(g_CurrentImage).mainSelection.isTransformable Then
+                    If (sCheck <> -1) And pdImages(g_CurrentImage).mainSelection.isTransformable Then
                     
                         'If the selection type matches the current selection tool, start transforming the selection.
                         If (pdImages(g_CurrentImage).mainSelection.getSelectionShape = getSelectionTypeFromCurrentTool()) Then
@@ -918,8 +916,6 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                             'Initialize a selection transformation
                             pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
                             pdImages(g_CurrentImage).mainSelection.setInitialTransformCoordinates imgX, imgY
-                            
-                            Exit Sub
                             
                         'If the selection type does NOT match the current selection tool, select the proper tool, then start transforming
                         ' the selection.
@@ -934,8 +930,6 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                             pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
                             pdImages(g_CurrentImage).mainSelection.setInitialTransformCoordinates imgX, imgY
                             
-                            Exit Sub
-                        
                         End If
                                         
                     'If it did return zero, erase any existing selection and start a new one
@@ -944,13 +938,13 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                         'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
                         pdImages(g_CurrentImage).mainSelection.setBackupParamString
                     
-                        initSelectionByPoint imgX, imgY
+                        Selection_Handler.initSelectionByPoint imgX, imgY
                     
                     End If
                 
                 Else
                     
-                    initSelectionByPoint imgX, imgY
+                    Selection_Handler.initSelectionByPoint imgX, imgY
                     
                 End If
             
@@ -970,17 +964,14 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
     'If no images have been loaded, exit
     If g_OpenImageCount = 0 Then Exit Sub
     
-    If pdImages(g_CurrentImage) Is Nothing Then Exit Sub
-    
     'If the image has not yet been loaded, exit
+    If pdImages(g_CurrentImage) Is Nothing Then Exit Sub
     If Not pdImages(g_CurrentImage).loadedSuccessfully Then Exit Sub
     
     hasMouseMoved = hasMouseMoved + 1
     
     'These variables will hold the corresponding (x,y) coordinates on the image - NOT the viewport
     Dim imgX As Double, imgY As Double
-    imgX = -1
-    imgY = -1
     
     'Display the image coordinates under the mouse pointer
     displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
@@ -1028,53 +1019,14 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
         
             'Drag-to-navigate
             Case NAV_DRAG
-                'setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
                 
             'Move stuff around
             Case NAV_MOVE
-                'setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
                 
             'Standard selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             
-                'Next, check to see if a selection is active. If it is, we need to provide the user with visual cues about their
-                ' ability to resize the selection.
-                If Not pdImages(g_CurrentImage).mainSelection Is Nothing Then
-                    If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
-                    
-                        'This routine will return a best estimate for the location of the mouse.  We then pass its value
-                        ' to a sub that will use it to select the most appropriate mouse cursor.
-                        Dim sCheck As Long
-                        sCheck = findNearestSelectionCoordinates(x, y, pdImages(g_CurrentImage), Me)
-                        
-                        'Based on that return value, assign a new mouse cursor to the form
-                        setSelectionCursor sCheck
-                        
-                        'Set the active selection's transformation type to match
-                        pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
-                        
-                    Else
-                    
-                        'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
-                        ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
-                        If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
-                            setArrowCursorToHwnd Me.hWnd
-                        Else
-                            setArrowCursorToHwnd Me.hWnd
-                        End If
-                    
-                    End If
-                End If
-        
             Case Else
-        
-                'Check the location of the mouse to see if it's over the image, and set the cursor accordingly.
-                ' (NOTE: at present this has no effect, but once paint tools are implemented, it will be more important.)
-                If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
-                    setArrowCursorToHwnd Me.hWnd
-                Else
-                    setArrowCursorToHwnd Me.hWnd
-                End If
             
         End Select
         
@@ -1118,7 +1070,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
                     
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
-                    If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(x, y, pdImages(g_CurrentImage), Me) = 0)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
+                    If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
                         Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2, g_CurrentTool
                     Else
                     
@@ -1219,6 +1171,7 @@ Private Sub UserControl_Resize()
     cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
 
     fixChromeLayout
+    
 End Sub
 
 Private Sub UserControl_Show()
@@ -1265,97 +1218,6 @@ End Sub
 
 Private Sub VScroll_Scroll()
     If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
-End Sub
-
-'Selection tools utilize a variety of cursors.  To keep the main MouseMove sub clean, cursors are set separately
-' by this routine.
-Private Sub setSelectionCursor(ByVal transformID As Long)
-
-    Select Case pdImages(g_CurrentImage).mainSelection.getSelectionShape()
-
-        Case sRectangle, sCircle
-        
-            'For a rectangle or circle selection, the possible transform IDs are:
-            ' 0 - Cursor is not near a selection point
-            ' 1 - NW corner
-            ' 2 - NE corner
-            ' 3 - SE corner
-            ' 4 - SW corner
-            ' 5 - N edge
-            ' 6 - E edge
-            ' 7 - S edge
-            ' 8 - W edge
-            ' 9 - interior of selection, not near a corner or edge
-            Select Case transformID
-        
-                Case 0
-                    setArrowCursorToHwnd Me.hWnd
-                Case 1
-                    setSizeNWSECursor Me
-                Case 2
-                    setSizeNESWCursor Me
-                Case 3
-                    setSizeNWSECursor Me
-                Case 4
-                    setSizeNESWCursor Me
-                Case 5
-                    setSizeNSCursor Me
-                Case 6
-                    setSizeWECursor Me
-                Case 7
-                    setSizeNSCursor Me
-                Case 8
-                    setSizeWECursor Me
-                Case 9
-                    setSizeAllCursor Me
-                    
-            End Select
-            
-        'For a line selection, the possible transform IDs are:
-        ' 0 - Cursor is not near an endpoint
-        ' 1 - Near x1/y1
-        ' 2 - Near x2/y2
-        Case sLine
-        
-            Select Case transformID
-                Case 0
-                    setArrowCursorToHwnd Me.hWnd
-                Case 1
-                    setSizeAllCursor Me
-                Case 2
-                    setSizeAllCursor Me
-            End Select
-        
-    End Select
-
-End Sub
-
-'Selections can be initiated several different ways.  To cut down on duplicated code, all new selection instances for this form are referred
-' to this function.  Initial X/Y values are required.
-Private Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
-
-    'I don't have a good explanation, but without DoEvents here, creating a line selection for the first
-    ' time may inexplicably fail.  While I try to track down the exact cause, I'll leave this here to
-    ' maintain desired behavior...
-    DoEvents
-    
-    'Activate the attached image's primary selection
-    pdImages(g_CurrentImage).selectionActive = True
-    pdImages(g_CurrentImage).mainSelection.lockRelease
-    
-    'Populate a variety of selection attributes using a single shorthand declaration.  A breakdown of these
-    ' values and what they mean can be found in the corresponding pdSelection.initFromParamString function
-    pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
-    
-    'Set the first two coordinates of this selection to this mouseclick's location
-    pdImages(g_CurrentImage).mainSelection.setInitialCoordinates x, y
-    syncTextToCurrentSelection g_CurrentImage
-    pdImages(g_CurrentImage).mainSelection.requestNewMask
-        
-    'Make the selection tools visible
-    metaToggle tSelection, True
-    metaToggle tSelectionTransform, True
-                        
 End Sub
 
 'Whenever this window changes size, we may need to re-align various bits of internal chrome (status bar, rulers, etc).  Call this function
@@ -1451,9 +1313,6 @@ End Function
 ' is added, make sure to visit this sub and make any necessary cursor changes!
 '
 'A lot of extra values are passed to this function.  Individual tools can use those at their leisure to customize their cursor requests.
-'
-' (NOTE: selection tools are still handled via their own function, on account of their older implementation.
-'        TODO: integrate them into this function.)
 Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double)
 
     'Obviously, cursor setting is handled separately for each tool.
@@ -1508,6 +1367,78 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 
                 'Mouse is within the layer, but not over a specific node
                 Case 4
+                    UserControl.MousePointer = vbCustom
+                    setSizeAllCursor Me
+                
+            End Select
+            
+        Case SELECT_RECT, SELECT_CIRC
+        
+            'When transforming selections, the cursor image depends on its proximity to a point of interest.
+            '
+            'For a rectangle or circle selection, the possible transform IDs are:
+            ' -1 - Cursor is not near a selection point
+            ' 0 - NW corner
+            ' 1 - NE corner
+            ' 2 - SE corner
+            ' 3 - SW corner
+            ' 4 - N edge
+            ' 5 - E edge
+            ' 6 - S edge
+            ' 7 - W edge
+            ' 8 - interior of selection, not near a corner or edge
+            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            
+                Case -1
+                    UserControl.MousePointer = vbDefault
+                    setArrowCursorToHwnd Me.hWnd
+                Case 0
+                    UserControl.MousePointer = vbCustom
+                    setSizeNWSECursor Me
+                Case 1
+                    UserControl.MousePointer = vbCustom
+                    setSizeNESWCursor Me
+                Case 2
+                    UserControl.MousePointer = vbCustom
+                    setSizeNWSECursor Me
+                Case 3
+                    UserControl.MousePointer = vbCustom
+                    setSizeNESWCursor Me
+                Case 4
+                    UserControl.MousePointer = vbCustom
+                    setSizeNSCursor Me
+                Case 5
+                    UserControl.MousePointer = vbCustom
+                    setSizeWECursor Me
+                Case 6
+                    UserControl.MousePointer = vbCustom
+                    setSizeNSCursor Me
+                Case 7
+                    UserControl.MousePointer = vbCustom
+                    setSizeWECursor Me
+                Case 8
+                    UserControl.MousePointer = vbCustom
+                    setSizeAllCursor Me
+            
+            End Select
+        
+        Case SELECT_LINE
+        
+            'When transforming selections, the cursor image depends on its proximity to a point of interest.
+            '
+            'For a line selection, the possible transform IDs are:
+            ' -1 - Cursor is not near an endpoint
+            ' 0 - Near x1/y1
+            ' 1 - Near x2/y2
+            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            
+                Case -1
+                    UserControl.MousePointer = vbDefault
+                    setArrowCursorToHwnd Me.hWnd
+                Case 0
+                    UserControl.MousePointer = vbCustom
+                    setSizeAllCursor Me
+                Case 1
                     UserControl.MousePointer = vbCustom
                     setSizeAllCursor Me
             

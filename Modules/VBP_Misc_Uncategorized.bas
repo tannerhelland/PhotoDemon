@@ -194,8 +194,8 @@ Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef
     y1 = srcCanvas.getScrollValue(PD_VERTICAL) + Int((y1 - srcImage.imgViewport.targetTop) / zoomVal)
             
     'If the user has requested copies of these coordinates, assign them now
-    If copyX Then copyX = x1
-    If copyY Then copyY = y1
+    copyX = x1
+    copyY = y1
     
     If g_OpenImageCount > 0 Then srcCanvas.displayCanvasCoordinates x1, y1
     

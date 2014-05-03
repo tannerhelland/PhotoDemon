@@ -270,3 +270,33 @@ Public Function LoWord(dw As Long) As Integer
       LoWord = dw And &HFFFF&
    End If
 End Function
+
+'Given an array of points, find the closest one to a target location.  If none fall below a minimum distance threshold, return -1.
+' (This function is used by many bits of mouse interaction code, to see if the user has clicked on something interesting.)
+Public Function findClosestPointInArray(ByVal targetX As Double, ByVal targetY As Double, ByVal minAllowedDistance As Double, ByRef poiArray() As POINTAPI) As Long
+
+    Dim curMinDistance As Double, curMinIndex As Long
+    curMinDistance = &HFFFFFFF
+    curMinIndex = -1
+    
+    Dim tmpDistance As Double
+    
+    'From the array of supplied points, find the one closest to the target point
+    Dim i As Long
+    For i = LBound(poiArray) To UBound(poiArray)
+        tmpDistance = distanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
+        If tmpDistance < curMinDistance Then
+            curMinDistance = tmpDistance
+            curMinIndex = i
+        End If
+    Next i
+    
+    'If the distance of the closest point falls below the allowed threshold, return that point's index.
+    If curMinDistance < minAllowedDistance Then
+        findClosestPointInArray = curMinIndex
+    Else
+        findClosestPointInArray = -1
+    End If
+
+End Function
+
