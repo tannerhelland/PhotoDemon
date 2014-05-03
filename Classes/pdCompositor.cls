@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Compositor class
-'Copyright ï¿½2013-2014 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland
 'Created: 01/May/14
 'Last updated: 01/May/14
 'Last update: add blend modes!
@@ -26,6 +26,8 @@ Attribute VB_Exposed = False
 ' to devise some sort of caching mechanism to reduce the amount of data traded between the two classes, but at
 ' present the parent pdImage object always passes a self-reference to this class when a compositing operation
 ' is requested.  (This is simpler than dealing with persistent circular references.)
+'
+'Many thanks to expert contributor audioglider for implementing many of PhotoDemon's blend modes.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
