@@ -22,10 +22,35 @@ Private m_InitHScroll As Long, m_InitVScroll As Long
 'The move tool uses these values to store the original layer offset
 Private m_InitX As Double, m_InitY As Double
 
-'The move tool uses this function to set the initiali layer offsets for a move operation
-Public Sub setInitialLayerOffsets(ByRef srcLayer As pdLayer)
+'The move tool uses these values to store the original layer canvas x/y modifiers
+Private m_InitCanvasXMod As Double, m_InitCanvasYMod As Double
+
+'If a point of interest is being modified by a tool action, its ID will be stored here.  Make sure to clear this value
+' (to -1, which means "no point of interest") when you are finished with it (typically after MouseUp).
+Private curPOI As Long
+
+'When a tool is finished processing, it can call this function to release all tool tracking variables
+Public Sub terminateGenericToolTracking()
+    
+    'Reset the current POI, if any
+    curPOI = -1
+    
+End Sub
+
+'The move tool uses this function to set the initial layer offsets for a move operation
+Public Sub setInitialLayerOffsets(ByRef srcLayer As pdLayer, Optional ByVal relevantPOI As Long = -1)
+    
+    'Store the layer's initial offset values (before any MouseMove events have occurred)
     m_InitX = srcLayer.getLayerOffsetX
     m_InitY = srcLayer.getLayerOffsetY
+    
+    'Store the layer's initial canvas x/y offset values
+    m_InitCanvasXMod = srcLayer.getLayerCanvasXModifier
+    m_InitCanvasYMod = srcLayer.getLayerCanvasYModifier
+    
+    'If a relevant POI was supplied, store it as well
+    curPOI = relevantPOI
+    
 End Sub
 
 'The drag-to-pan tool uses this function to set the initial scroll bar values for a pan operation
@@ -119,10 +144,62 @@ Public Sub moveCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX
     hOffset = curImgX - initImgX
     vOffset = curImgY - initImgY
     
-    'Assign the new layer offsets and redraw the screen
+    'To help us more easily process the transformation's effect on the layer, store the layer's original position
+    ' and size inside a RECT.  Note that we make two copies: one with canvas modifications (such as dynamic x/y
+    ' changes caused by on-canvas resizing), and one without.
+    Dim origLayerRect As RECT, origLayerRectModified As RECT
+    Layer_Handler.fillRectForLayer srcImage.getActiveLayer, origLayerRect
+    Layer_Handler.fillRectForLayer srcImage.getActiveLayer, origLayerRectModified, True
+    
+    'Calculate original width/height values, which will simplify our x/y modifier calculations later on
+    Dim origWidth As Double, origHeight As Double
+    origWidth = origLayerRect.Right - origLayerRect.Left
+    origHeight = origLayerRect.Bottom - origLayerRect.Top
+    
+    'The way we assign new offsets to the layer depends on the POI (point of interest) the user has used to move the image.
+    ' Layers currently support five points of interest: each of their 4 corners, and anywhere in the layer interior
+    ' (for moving the layer).
+    
+    'Check the POI we were given, and update the layer accordingly.
     With srcImage.getActiveLayer
-        .setLayerOffsetX m_InitX + hOffset
-        .setLayerOffsetY m_InitY + vOffset
+    
+        Select Case curPOI
+            
+            '-1: the mouse is not over the layer.  Do nothing.
+            Case -1
+                Exit Sub
+                
+            '0: the mouse is dragging the top-left corner of the layer
+            Case 0
+                .setLayerOffsetX m_InitX + hOffset
+                .setLayerOffsetY m_InitY + vOffset
+                .setLayerCanvasXModifier (origLayerRectModified.Right - .getLayerOffsetX) / origWidth
+                .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
+            
+            '1: top-right corner
+            Case 1
+                .setLayerOffsetY m_InitY + vOffset
+                .setLayerCanvasXModifier (curImgX - origLayerRect.Left) / origWidth
+                .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
+            
+            '2: bottom-right
+            Case 2
+                .setLayerCanvasXModifier (curImgX - origLayerRect.Left) / origWidth
+                .setLayerCanvasYModifier (curImgY - origLayerRect.Top) / origHeight
+            
+            '3: bottom-left
+            Case 3
+                .setLayerOffsetX m_InitX + hOffset
+                .setLayerCanvasXModifier (origLayerRectModified.Right - .getLayerOffsetX) / origWidth
+                .setLayerCanvasYModifier (curImgY - origLayerRect.Top) / origHeight
+            
+            '4: interior of the layer (e.g. move the layer instead of resize it)
+            Case 4
+                .setLayerOffsetX m_InitX + hOffset
+                .setLayerOffsetY m_InitY + vOffset
+            
+        End Select
+        
     End With
     
     'Reinstate canvas redraws

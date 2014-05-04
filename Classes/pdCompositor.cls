@@ -285,18 +285,18 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     Set tmpDIB = New pdDIB
     
     'If the bottom layer is the size of the image itself, we can use the existing layer offsets in our calculation.  (Nice!)
-    If bottomLayerIsFullSize Then
+    'If bottomLayerIsFullSize Then
     
-        xOffset = topLayer.getLayerOffsetX
-        yOffset = topLayer.getLayerOffsetY
+        'xOffset = topLayer.getLayerOffsetX
+        'yOffset = topLayer.getLayerOffsetY
     
     'The top and bottom layer sizes are totally independent.  This makes our life somewhat unpleasant.
-    Else
+    'Else
     
         'First, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
         Dim topRect As RECT, bottomRect As RECT, finalRect As RECT
-        fillRectForLayer bottomLayer, bottomRect
-        fillRectForLayer topLayer, topRect
+        Layer_Handler.fillRectForLayer bottomLayer, bottomRect, True
+        Layer_Handler.fillRectForLayer topLayer, topRect, True
         UnionRect finalRect, topRect, bottomRect
         
         'finalRect now contains the coordinates of the resulting rect.  Create a blank DIB at those dimensions.
@@ -305,7 +305,16 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         'We now need to do a couple of things.  Let's start by copying the bottom DIB into this new temporary DIB.
         xOffset = bottomRect.Left - finalRect.Left
         yOffset = bottomRect.Top - finalRect.Top
-        BitBlt tmpDIB.getDIBDC, xOffset, yOffset, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, bottomLayer.layerDIB.getDIBDC, 0, 0, vbSrcCopy
+        
+        If bottomLayer.getLayerCanvasXModifier = 1 And bottomLayer.getLayerCanvasYModifier = 1 Then
+            BitBlt tmpDIB.getDIBDC, xOffset, yOffset, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, bottomLayer.layerDIB.getDIBDC, 0, 0, vbSrcCopy
+        Else
+            GDIPlusResizeDIB tmpDIB, xOffset, yOffset, bottomLayer.layerDIB.getDIBWidth * bottomLayer.getLayerCanvasXModifier, bottomLayer.layerDIB.getDIBHeight * bottomLayer.getLayerCanvasYModifier, bottomLayer.layerDIB, 0, 0, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+            
+            'Also, resize the canvas modifiers for the bottom layer now, as we have effectively nullified them by this resize
+            bottomLayer.setLayerCanvasXModifier 1
+            bottomLayer.setLayerCanvasYModifier 1
+        End If
         
         'We now need to calculate a new layer offset for this temporary DIB, which will eventually be copied into the bottom layer.
         ' Without this, the main composite won't know where to stick the layer!
@@ -319,7 +328,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         xOffset = topRect.Left - finalRect.Left
         yOffset = topRect.Top - finalRect.Top
         
-    End If
+    'End If
     
     'Now that the two layers are ready to be condensed into one, the merge process is actually very simple.
     
@@ -336,8 +345,14 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     '32bpp case
     Else
     
-        'Make a copy of the current layer
-        tmpDIB.createFromExistingDIB topLayer.layerDIB
+        'Make a copy of the current layer, with any width/height modifications applied
+        'Before proceeding further, we must check the top layer for any size modifications; if found, apply them now.
+        If topLayer.getLayerCanvasXModifier = 1 And topLayer.getLayerCanvasYModifier = 1 Then
+            tmpDIB.createFromExistingDIB topLayer.layerDIB
+        Else
+            tmpDIB.createBlank topLayer.getLayerCanvasWidthModified, topLayer.getLayerCanvasHeightModified, 32, 0
+            GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, topLayer.layerDIB, 0, 0, topLayer.layerDIB.getDIBWidth, topLayer.layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+        End If
     
         'tmpDIB now contains the chunk of this layer that appears on the viewport.  Time to composite it!
         If topLayer.getLayerBlendMode <> BL_NORMAL Then
@@ -373,6 +388,10 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     dstDIB.createBlank srcImage.Width, srcImage.Height, 32
     Set tmpLayer.layerDIB = dstDIB
     
+    'We may need a temporary DIB to handle dynamic layer resizing
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
     'We will be accessing all layers of the source image in turn.  Rather than re-requesting those layers through
     ' functions, we will simply use a local reference.
     Dim tmpLayerRef As pdLayer
@@ -382,9 +401,25 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     Set tmpLayerRef = srcImage.getLayerByIndex(0)
     If tmpLayerRef.getLayerVisibility Then
     
-        With tmpLayerRef
-            .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-        End With
+        'Check to see if the base layer has any size modifications; if it does, apply them now
+        If tmpLayerRef.getLayerCanvasXModifier = 1 And tmpLayerRef.getLayerCanvasYModifier = 1 Then
+        
+            With tmpLayerRef
+                .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+            End With
+            
+        Else
+        
+            With tmpLayerRef
+                
+                tmpDIB.createBlank .getLayerCanvasWidthModified, .getLayerCanvasHeightModified, 32, 0
+                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, .layerDIB, 0, 0, .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+                
+                tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+            
+            End With
+        
+        End If
     
     End If
     
@@ -481,8 +516,8 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         If tmpLayerRef.getLayerVisibility Then
             
             'Retrieve a rect for this layer, relative to the full-size composite image
-            fillRectForLayer tmpLayerRef, layerRect
-    
+            Layer_Handler.fillRectForLayer tmpLayerRef, layerRect, True
+            
             If IntersectRect(intRectSrc, srcImageRect, layerRect) <> 0 Then
             
                 'The base layer intersects with the viewport rect, and the intersecting area is now contained within intRectSrc.
@@ -493,11 +528,13 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                 'dstRect and intRectSrc now contain StretchBlt-compatible destination and source rectangles RELATIVE TO THE FULL IMAGE.
                 ' Because the layer is unlikely to be the same size as the full image, we must come up with a final source rect that
                 ' represents the source area, relative to the layer's DIB (which is probably smaller than the full image).
+                'As an additional headache, we must also factor in the layer's current x/y modifiers, which are used if the user
+                ' has dynamically resized the image on the canvas.
                 With srcRect
-                    .Left = intRectSrc.Left - tmpLayerRef.getLayerOffsetX
-                    .Right = intRectSrc.Right - tmpLayerRef.getLayerOffsetX
-                    .Top = intRectSrc.Top - tmpLayerRef.getLayerOffsetY
-                    .Bottom = intRectSrc.Bottom - tmpLayerRef.getLayerOffsetY
+                    .Left = (intRectSrc.Left - tmpLayerRef.getLayerOffsetX) * (1 / tmpLayerRef.getLayerCanvasXModifier)
+                    .Right = (intRectSrc.Right - tmpLayerRef.getLayerOffsetX) * (1 / tmpLayerRef.getLayerCanvasXModifier)
+                    .Top = (intRectSrc.Top - tmpLayerRef.getLayerOffsetY) * (1 / tmpLayerRef.getLayerCanvasYModifier)
+                    .Bottom = (intRectSrc.Bottom - tmpLayerRef.getLayerOffsetY) * (1 / tmpLayerRef.getLayerCanvasYModifier)
                 End With
                 
                 'We now have everything we need to create a resized version of this layer!  Grab it now.
@@ -524,18 +561,6 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     Set dstLayer.layerDIB = Nothing
     Set tmpDIB = Nothing
     
-End Sub
-
-'Given a layer, populate a rect with its coordinates (relative to the main image coordinates, always)
-Friend Sub fillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT)
-
-    With srcLayer
-        dstRect.Left = .getLayerOffsetX
-        dstRect.Right = .getLayerOffsetX + .layerDIB.getDIBWidth
-        dstRect.Top = .getLayerOffsetY
-        dstRect.Bottom = .getLayerOffsetY + .layerDIB.getDIBHeight
-    End With
-
 End Sub
 
 'Given StretchBlt-like parameters, create a destination rect that reflects the transformation of a source rect

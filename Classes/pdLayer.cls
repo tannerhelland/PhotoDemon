@@ -208,12 +208,32 @@ Public Function getLayerCanvasYModifier() As Double
 End Function
 
 Public Sub setLayerCanvasXModifier(ByVal newXModifier As Double)
-    myLayerData.l_CanvasXModifier = newXModifier
+    If newXModifier <= 0 Then
+        myLayerData.l_CanvasXModifier = 0.00000001
+    Else
+        myLayerData.l_CanvasXModifier = newXModifier
+    End If
 End Sub
 
 Public Sub setLayerCanvasYModifier(ByVal newYModifier As Double)
-    myLayerData.l_CanvasYModifier = newYModifier
+    If newYModifier <= 0 Then
+        myLayerData.l_CanvasYModifier = 0.00000001
+    Else
+        myLayerData.l_CanvasYModifier = newYModifier
+    End If
 End Sub
+
+'As a convenience to the user, modified width/height values can be retrieved using this function.  Note that
+' error handling is automatically performed to prevent over/underflow.
+Public Function getLayerCanvasWidthModified() As Long
+    getLayerCanvasWidthModified = layerDIB.getDIBWidth * myLayerData.l_CanvasXModifier
+    If getLayerCanvasWidthModified < 1 Then getLayerCanvasWidthModified = 1
+End Function
+
+Public Function getLayerCanvasHeightModified() As Long
+    getLayerCanvasHeightModified = layerDIB.getDIBHeight * myLayerData.l_CanvasYModifier
+    If getLayerCanvasHeightModified < 1 Then getLayerCanvasHeightModified = 1
+End Function
 
 'Get/set layer angle
 Public Function getLayerAngle() As Double
@@ -814,12 +834,12 @@ Public Function checkForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
             ReDim poiList(0 To 3) As POINTAPI
             poiList(0).x = getLayerOffsetX
             poiList(0).y = getLayerOffsetY
-            poiList(1).x = getLayerOffsetX + layerDIB.getDIBWidth
+            poiList(1).x = getLayerOffsetX + (layerDIB.getDIBWidth * getLayerCanvasXModifier)
             poiList(1).y = getLayerOffsetY
-            poiList(2).x = getLayerOffsetX + layerDIB.getDIBWidth
-            poiList(2).y = getLayerOffsetY + layerDIB.getDIBHeight
+            poiList(2).x = getLayerOffsetX + (layerDIB.getDIBWidth * getLayerCanvasXModifier)
+            poiList(2).y = getLayerOffsetY + (layerDIB.getDIBHeight * getLayerCanvasYModifier)
             poiList(3).x = getLayerOffsetX
-            poiList(3).y = getLayerOffsetY + layerDIB.getDIBHeight
+            poiList(3).y = getLayerOffsetY + (layerDIB.getDIBHeight * getLayerCanvasYModifier)
             
             'Check to see if one of the corners has been clicked
             closestPoint = findClosestPointInArray(imgX, imgY, minDistance, poiList)

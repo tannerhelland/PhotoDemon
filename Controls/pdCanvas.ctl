@@ -96,34 +96,26 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   8
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":0004
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom in"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":0004
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1
+         picturenormal   =   "pdCanvas.ctx":002C
+         pictureeffectondown=   0
+         captioneffects  =   0
+         picturealign    =   7
+         tooltip         =   "Zoom in"
+         colorscheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":0856
+         ItemData        =   "pdCanvas.ctx":087E
          Left            =   450
-         List            =   "pdCanvas.ctx":0858
+         List            =   "pdCanvas.ctx":0880
          Style           =   2  'Dropdown List
          TabIndex        =   7
          Top             =   15
@@ -135,27 +127,19 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":085A
-         PictureAlign    =   0
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom Out"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":0882
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1
+         picturenormal   =   "pdCanvas.ctx":08AA
+         pictureeffectondown=   0
+         captioneffects  =   0
+         picturealign    =   0
+         tooltip         =   "Zoom Out"
+         colorscheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -892,7 +876,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                 
             'Move stuff around
             Case NAV_MOVE
-                setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer
+                setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
         
             'Rectangular selection
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
@@ -1061,6 +1045,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
                 
             'Move stuff around
             Case NAV_MOVE
+                Tool_Support.terminateGenericToolTracking
                 
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
