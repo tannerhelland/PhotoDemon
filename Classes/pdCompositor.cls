@@ -285,13 +285,13 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     Set tmpDIB = New pdDIB
     
     'If the bottom layer is the size of the image itself, we can use the existing layer offsets in our calculation.  (Nice!)
-    'If bottomLayerIsFullSize Then
+    If bottomLayerIsFullSize Then
     
-        'xOffset = topLayer.getLayerOffsetX
-        'yOffset = topLayer.getLayerOffsetY
+        xOffset = topLayer.getLayerOffsetX
+        yOffset = topLayer.getLayerOffsetY
     
     'The top and bottom layer sizes are totally independent.  This makes our life somewhat unpleasant.
-    'Else
+    Else
     
         'First, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
         Dim topRect As RECT, bottomRect As RECT, finalRect As RECT
@@ -328,7 +328,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         xOffset = topRect.Left - finalRect.Left
         yOffset = topRect.Top - finalRect.Top
         
-    'End If
+    End If
     
     'Now that the two layers are ready to be condensed into one, the merge process is actually very simple.
     
