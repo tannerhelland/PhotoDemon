@@ -27,7 +27,7 @@ Public Enum SystemIconConstants
 End Enum
 
 Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
-Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal hIcon As Long) As Long
+Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 
 'GDI drawing functions
 Private Const PS_SOLID = 0
@@ -52,9 +52,9 @@ Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal n
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Long
-Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
-Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
-Private Declare Function PatBlt Lib "gdi32" (ByVal targetDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function LineTo Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal pointerToRectOfOldCoords As Long) As Long
+Private Declare Function PatBlt Lib "gdi32" (ByVal targetDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function SetBrushOrgEx Lib "gdi32" (ByVal targetDC As Long, ByVal nXOrg As Long, ByVal nYOrg As Long, ByVal refToPeviousPoint As Long) As Long
@@ -96,10 +96,10 @@ Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, By
 End Sub
 
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
-Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal X As Long, ByVal Y As Long)
+Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
     Dim hIcon As Long
     hIcon = LoadIconByID(0, icon)
-    DrawIcon hDC, X, Y, hIcon
+    DrawIcon hDC, x, y, hIcon
 End Sub
 
 'Used to draw the main image onto a preview picture box
@@ -184,7 +184,7 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
 
     'Calculation variables (used to interpolate between the gradient colors)
     Dim VR As Double, VG As Double, VB As Double
-    Dim X As Long, Y As Long
+    Dim x As Long, y As Long
     
     'Red, green, and blue variables for each gradient color
     Dim r As Long, g As Long, b As Long
@@ -223,19 +223,19 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     
     'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
     If drawHorizontal Then
-        For X = 0 To tmpWidth
-            r2 = r + VR * X
-            g2 = g + VG * X
-            b2 = b + VB * X
-            DstPicBox.Line (X, 0)-(X, tmpHeight), RGB(r2, g2, b2)
-        Next X
+        For x = 0 To tmpWidth
+            r2 = r + VR * x
+            g2 = g + VG * x
+            b2 = b + VB * x
+            DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
+        Next x
     Else
-        For Y = 0 To tmpHeight
-            r2 = r + VR * Y
-            g2 = g + VG * Y
-            b2 = b + VB * Y
-            DstPicBox.Line (0, Y)-(tmpWidth, Y), RGB(r2, g2, b2)
-        Next Y
+        For y = 0 To tmpHeight
+            r2 = r + VR * y
+            g2 = g + VG * y
+            b2 = b + VB * y
+            DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)
+        Next y
     End If
     
 End Sub
@@ -288,23 +288,23 @@ Public Sub createAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Fill the source DIB with the checkerboard pattern
-    Dim X As Long, Y As Long, QuickX As Long
-    For X = 0 To srcDIB.getDIBWidth - 1
-        QuickX = X * 3
-    For Y = 0 To srcDIB.getDIBHeight - 1
+    Dim x As Long, y As Long, QuickX As Long
+    For x = 0 To srcDIB.getDIBWidth - 1
+        QuickX = x * 3
+    For y = 0 To srcDIB.getDIBHeight - 1
          
-        If (((X \ chkSize) + (Y \ chkSize)) And 1) = 0 Then
-            srcImageData(QuickX + 2, Y) = r1
-            srcImageData(QuickX + 1, Y) = g1
-            srcImageData(QuickX, Y) = b1
+        If (((x \ chkSize) + (y \ chkSize)) And 1) = 0 Then
+            srcImageData(QuickX + 2, y) = r1
+            srcImageData(QuickX + 1, y) = g1
+            srcImageData(QuickX, y) = b1
         Else
-            srcImageData(QuickX + 2, Y) = r2
-            srcImageData(QuickX + 1, Y) = g2
-            srcImageData(QuickX, Y) = b2
+            srcImageData(QuickX + 2, y) = r2
+            srcImageData(QuickX + 1, y) = g2
+            srcImageData(QuickX, y) = b2
         End If
         
-    Next Y
-    Next X
+    Next y
+    Next x
     
     'Release our temporary array and exit
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -389,7 +389,7 @@ End Sub
 
 'Given a specific layer, return a RECT filled with that layer's corner coordinates -
 ' IN THE CANVAS COORDINATE SPACE (hence the function name).
-Public Sub getCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT)
+Public Sub getCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT, Optional ByVal useCanvasModifiers As Boolean = False)
 
     Dim tmpX As Double, tmpY As Double
     
@@ -401,7 +401,11 @@ Public Sub getCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT
         dstRect.Top = tmpY
         
         'End with the bottom-right corner
-        convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth, .getLayerOffsetY + .layerDIB.getDIBHeight, tmpX, tmpY
+        If useCanvasModifiers Then
+            convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth * .getLayerCanvasXModifier, .getLayerOffsetY + .layerDIB.getDIBHeight * .getLayerCanvasYModifier, tmpX, tmpY
+        Else
+            convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth, .getLayerOffsetY + .layerDIB.getDIBHeight, tmpX, tmpY
+        End If
         dstRect.Right = tmpX
         dstRect.Bottom = tmpY
         
@@ -414,7 +418,7 @@ Public Sub drawLayerBoundaries(ByVal layerIndex As Long)
 
     'Start by filling a rect with the current layer boundaries, but translated to the canvas coordinate system
     Dim layerCanvasRect As RECT
-    getCanvasRectForLayer layerIndex, layerCanvasRect
+    getCanvasRectForLayer layerIndex, layerCanvasRect, True
     
     'Next, draw a rectangle to the coordinates we provided
     
@@ -460,7 +464,7 @@ Public Sub drawLayerNodes(ByVal layerIndex As Long)
 
     'Start by filling a rect with the current layer boundaries, but translated to the canvas coordinate system
     Dim layerCanvasRect As RECT
-    getCanvasRectForLayer layerIndex, layerCanvasRect
+    getCanvasRectForLayer layerIndex, layerCanvasRect, True
     
     'Draw transform nodes around the layer
     Dim circRadius As Long

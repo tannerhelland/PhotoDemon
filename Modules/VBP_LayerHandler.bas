@@ -514,3 +514,23 @@ Public Sub mergeVisibleLayers()
 
 End Sub
 
+'Given a layer, populate a rect with its coordinates (relative to the main image coordinates, always)
+Public Sub fillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT, Optional ByVal useCanvasModifiers As Boolean = False)
+
+    With srcLayer
+        dstRect.Left = .getLayerOffsetX
+        If useCanvasModifiers Then
+            dstRect.Right = .getLayerOffsetX + (.getLayerCanvasWidthModified)
+        Else
+            dstRect.Right = .getLayerOffsetX + .layerDIB.getDIBWidth
+        End If
+        dstRect.Top = .getLayerOffsetY
+        If useCanvasModifiers Then
+            dstRect.Bottom = .getLayerOffsetY + (.getLayerCanvasHeightModified)
+        Else
+            dstRect.Bottom = .getLayerOffsetY + .layerDIB.getDIBHeight
+        End If
+    End With
+
+End Sub
+
