@@ -85,17 +85,9 @@ Begin VB.Form FormResize
       TabIndex        =   0
       Top             =   6750
       Width           =   9630
-      _ExtentX        =   16986
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   16986
+      _extenty        =   1323
+      font            =   "VBP_FormResize.frx":0000
    End
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
@@ -103,17 +95,9 @@ Begin VB.Form FormResize
       TabIndex        =   1
       Top             =   480
       Width           =   8775
-      _ExtentX        =   15478
-      _ExtentY        =   5027
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   15478
+      _extenty        =   5027
+      font            =   "VBP_FormResize.frx":0028
    End
    Begin PhotoDemon.smartCheckBox chkNames 
       Height          =   480
@@ -121,18 +105,10 @@ Begin VB.Form FormResize
       TabIndex        =   3
       Top             =   4440
       Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   847
-      Caption         =   "show technical names"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   3995
+      _extenty        =   847
+      caption         =   "show technical names"
+      font            =   "VBP_FormResize.frx":0050
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
@@ -142,8 +118,8 @@ Begin VB.Form FormResize
       Top             =   6120
       Visible         =   0   'False
       Width           =   7935
-      _ExtentX        =   13996
-      _ExtentY        =   873
+      _extentx        =   13996
+      _extenty        =   873
    End
    Begin VB.Label lblSize 
       Appearance      =   0  'Flat
@@ -593,7 +569,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
         'Null-pad the layer
-        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, False
         
         'Call the appropriate external function, based on the user's resize selection.  Each function will
         ' place a resized version of tmpLayerRef.layerDIB into tmpDIB.
