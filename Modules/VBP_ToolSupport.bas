@@ -3,8 +3,8 @@ Attribute VB_Name = "Tool_Support"
 'Helper functions for various PhotoDemon tools
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/February/14
-'Last updated: 06/February/14
-'Last update: initial build
+'Last updated: 05/May/14
+'Last update: add bounds checking to transformCurrentLayer to prevent the user from resizing an image layer into oblivion
 '
 'To keep the pdCanvas user control codebase lean, much of its MouseMove events redirect here, to specialized
 ' functions that take mouse actions on the canvas and translate them into tool actions.
@@ -127,8 +127,8 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
 
 End Sub
 
-'The nav tool uses this function to move the current layer around
-Public Sub moveCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas)
+'The nav tool uses this function to move and/or resize the current layer
+Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas)
 
     'Prevent the canvas from redrawing itself until our movement calculations are complete.
     ' (This prevents juddery movement.)
@@ -156,6 +156,10 @@ Public Sub moveCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX
     origWidth = origLayerRect.Right - origLayerRect.Left
     origHeight = origLayerRect.Bottom - origLayerRect.Top
     
+    'To prevent the user from flipping or mirroring the image, we must do some bound checking on their changes,
+    ' and disallow anything that results in an invalid image coordinate.
+    Dim newX As Double, newY As Double
+    
     'The way we assign new offsets to the layer depends on the POI (point of interest) the user has used to move the image.
     ' Layers currently support five points of interest: each of their 4 corners, and anywhere in the layer interior
     ' (for moving the layer).
@@ -171,14 +175,20 @@ Public Sub moveCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX
                 
             '0: the mouse is dragging the top-left corner of the layer
             Case 0
-                .setLayerOffsetX m_InitX + hOffset
-                .setLayerOffsetY m_InitY + vOffset
+                newX = m_InitX + hOffset
+                newY = m_InitY + vOffset
+                If newX > origLayerRectModified.Right - 1 Then newX = origLayerRectModified.Right - 1
+                If newY > origLayerRectModified.Bottom - 1 Then newY = origLayerRectModified.Bottom - 1
+                .setLayerOffsetX newX
+                .setLayerOffsetY newY
                 .setLayerCanvasXModifier (origLayerRectModified.Right - .getLayerOffsetX) / origWidth
                 .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
             
             '1: top-right corner
             Case 1
-                .setLayerOffsetY m_InitY + vOffset
+                newY = m_InitY + vOffset
+                If newY > origLayerRectModified.Bottom - 1 Then newY = origLayerRectModified.Bottom - 1
+                .setLayerOffsetY newY
                 .setLayerCanvasXModifier (curImgX - origLayerRect.Left) / origWidth
                 .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
             
@@ -189,7 +199,9 @@ Public Sub moveCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX
             
             '3: bottom-left
             Case 3
-                .setLayerOffsetX m_InitX + hOffset
+                newX = m_InitX + hOffset
+                If newX > origLayerRectModified.Right - 1 Then newX = origLayerRectModified.Right - 1
+                .setLayerOffsetX newX
                 .setLayerCanvasXModifier (origLayerRectModified.Right - .getLayerOffsetX) / origWidth
                 .setLayerCanvasYModifier (curImgY - origLayerRect.Top) / origHeight
             
