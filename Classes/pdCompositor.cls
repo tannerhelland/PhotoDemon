@@ -357,14 +357,14 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         Layer_Handler.fillRectForLayer topLayer, topRect, True
         UnionRect finalRect, topRect, bottomRect
         
-        'finalRect now contains the coordinates of the resulting rect.  Create a blank DIB at those dimensions.
+        'finalRect now contains the coordinates of the union rect.  Create a blank DIB at those dimensions.
         tmpDIB.createBlank finalRect.Right - finalRect.Left, finalRect.Bottom - finalRect.Top, 32, 0
         
         'We now need to do a couple of things.  Let's start by copying the bottom DIB into this new temporary DIB.
         xOffset = bottomRect.Left - finalRect.Left
         yOffset = bottomRect.Top - finalRect.Top
         
-        If bottomLayer.getLayerCanvasXModifier = 1 And bottomLayer.getLayerCanvasYModifier = 1 Then
+        If (bottomLayer.getLayerCanvasXModifier = 1) And (bottomLayer.getLayerCanvasYModifier = 1) Then
             BitBlt tmpDIB.getDIBDC, xOffset, yOffset, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, bottomLayer.layerDIB.getDIBDC, 0, 0, vbSrcCopy
         Else
             GDIPlusResizeDIB tmpDIB, xOffset, yOffset, bottomLayer.getLayerCanvasWidthModified, bottomLayer.getLayerCanvasHeightModified, bottomLayer.layerDIB, 0, 0, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
@@ -405,7 +405,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     
         'Make a copy of the current layer, with any width/height modifications applied
         'Before proceeding further, we must check the top layer for any size modifications; if found, apply them now.
-        If topLayer.getLayerCanvasXModifier = 1 And topLayer.getLayerCanvasYModifier = 1 Then
+        If (topLayer.getLayerCanvasXModifier = 1) And (topLayer.getLayerCanvasYModifier = 1) Then
             tmpDIB.createFromExistingDIB topLayer.layerDIB
         Else
             tmpDIB.createBlank topLayer.getLayerCanvasWidthModified, topLayer.getLayerCanvasHeightModified, 32, 0
@@ -418,10 +418,8 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         End If
     
         'Always use the AlphaBlend API for 32bpp layers
-        With topLayer
-            tmpDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, .getLayerOpacity * 2.55, xOffset, yOffset
-        End With
-    
+        tmpDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, topLayer.getLayerOpacity * 2.55, xOffset, yOffset
+        
     End If
     
     'The two layers have been merged successfully!  Any further actions (like deleting the top layer) must be handled
@@ -511,7 +509,7 @@ End Sub
 '
 'This function is large, complicated, and unfortunately tricky, as we must resize and composite each layer in turn.  Optimizing this
 ' function will be a huge project going forward, but we must optimize carefully if we want the viewport to work smoothly.
-Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As InterpolationMode)
+Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As InterpolationMode)
     
     'Before doing anything else, fill two rects with the coordinates we were passed.  We will use these rects to calculate the
     ' boundary regions for all individual layers.
