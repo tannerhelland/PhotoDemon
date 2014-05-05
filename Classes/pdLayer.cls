@@ -61,12 +61,17 @@ Public Enum LAYER_BLENDMODE
     BL_EXCLUSION = 17
     BL_SUBTRACT = 18
     BL_DIVIDE = 19
+    BL_HUE = 20
+    BL_SATURATION = 21
+    BL_COLOR = 22
+    BL_LUMINOSITY = 23
 End Enum
 
 #If False Then
     Const BL_NORMAL = 0, BL_DARKEN = 1, BL_MULTIPLY = 2, BL_COLORBURN = 3, BL_LINEARBURN = 4, BL_LIGHTEN = 5, BL_SCREEN = 6, BL_COLORDODGE = 7
     Const BL_LINEARDODGE = 8, BL_OVERLAY = 9, BL_SOFTLIGHT = 10, BL_HARDLIGHT = 11, BL_VIVIDLIGHT = 12, BL_LINEARLIGHT = 13, BL_PINLIGHT = 14
     Const BL_HARDMIX = 15, BL_DIFFERENCE = 16, BL_EXCLUSION = 17, BL_SUBTRACT = 18, BL_DIVIDE = 19
+    Const BL_HUE = 20, BL_SATURATION = 21, BL_COLOR = 22, BL_LUMINOSITY = 23
 #End If
 
 'Canonical ID value for this layer.  This value is set once, at layer creation time, and can never be changed again.  It is
@@ -599,13 +604,13 @@ Public Function cropNullPaddedLayer() As Boolean
         'Repeat the above steps, but tracking the left edge instead.  Note also that we will only be scanning from wherever
         ' the top and bottom border detections arrived (to save processing time).
         pixelFails = False
-        Dim quickVal As Long
+        Dim QuickVal As Long
         
         For x = 0 To finalX
-            quickVal = x * 4 + 3
+            QuickVal = x * 4 + 3
         For y = initY To finalY
         
-            If srcImageData(quickVal, y) <> 0 Then
+            If srcImageData(QuickVal, y) <> 0 Then
                 pixelFails = True
                 Exit For
             End If
@@ -621,10 +626,10 @@ Public Function cropNullPaddedLayer() As Boolean
         pixelFails = False
         
         For x = finalX To newLeft Step -1
-            quickVal = x * 4 + 3
+            QuickVal = x * 4 + 3
         For y = initY To finalY
         
-            If srcImageData(quickVal, y) <> 0 Then
+            If srcImageData(QuickVal, y) <> 0 Then
                 pixelFails = True
                 Exit For
             End If

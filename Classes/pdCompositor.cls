@@ -95,9 +95,14 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, QuickX As Long, quickBottomX As Long, quickBottomY As Long
     
+    'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single
     Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    'Extra variables for transforms that require HSL conversions.
+    Dim topH As Single, topS As Single, topV As Single
+    Dim bottomH As Single, bottomS As Single, bottomV As Single
     
     For x = initX To finalX
         QuickX = x * 4
@@ -204,9 +209,9 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                         newB = bottomB + (2 * topB) - 1
                         
                     Case BL_PINLIGHT
-                        If topR > 0.5 Then newR = Max(bottomR, 2 * (topR - 0.5)) Else newR = Min(bottomR, 2 * topR)
-                        If topG > 0.5 Then newG = Max(bottomG, 2 * (topG - 0.5)) Else newG = Min(bottomG, 2 * topG)
-                        If topB > 0.5 Then newB = Max(bottomB, 2 * (topB - 0.5)) Else newB = Min(bottomB, 2 * topB)
+                        If topR > 0.5 Then newR = fMax(bottomR, 2 * (topR - 0.5)) Else newR = fMin(bottomR, 2 * topR)
+                        If topG > 0.5 Then newG = fMax(bottomG, 2 * (topG - 0.5)) Else newG = fMin(bottomG, 2 * topG)
+                        If topB > 0.5 Then newB = fMax(bottomB, 2 * (topB - 0.5)) Else newB = fMin(bottomB, 2 * topB)
                         
                     Case BL_HARDMIX
                         If topR < 1 - bottomR Then newR = 0 Else newR = 1
@@ -232,6 +237,26 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                         If topR = 0 Then newR = 0 Else newR = bottomR / topR
                         If topG = 0 Then newG = 0 Else newG = bottomG / topG
                         If topB = 0 Then newB = 0 Else newB = bottomB / topB
+                        
+                    Case BL_HUE
+                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        fHSVtoRGB topH, bottomS, bottomV, newR, newG, newB
+                    
+                    Case BL_SATURATION
+                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        fHSVtoRGB bottomH, topS, bottomV, newR, newG, newB
+                    
+                    Case BL_COLOR
+                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        fHSVtoRGB topH, topS, bottomV, newR, newG, newB
+                    
+                    Case BL_LUMINOSITY
+                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        fHSVtoRGB bottomH, bottomS, topV, newR, newG, newB
                     
                     Case Else
                         newR = topR
@@ -585,18 +610,139 @@ Private Function getDstRectFromSrcRect(ByRef dstRect As RECT, ByRef srcRect As R
 
 End Function
 
-Private Function Min(x As Single, y As Single) As Single
-If x > y Then
-      Min = y
- Else
-      Min = x
-End If
+'A heavily modified RGB to HSV transform, courtesy of http://lolengine.net/blog/2013/01/13/fast-rgb-to-hsv.
+' Note that the code assumes RGB values already in the [0, 1] range, and it will return HSV values in the [0, 1] range.
+Public Sub fastRGBtoHSV(ByVal r As Single, ByVal g As Single, ByVal b As Single, ByRef h As Single, ByRef s As Single, ByRef v As Single)
+
+    Dim k As Single, tmpSwap As Single, chroma As Single
+    
+    If (g < b) Then
+        tmpSwap = b
+        b = g
+        g = tmpSwap
+        k = -1
+    End If
+    
+    If (r < g) Then
+        tmpSwap = g
+        g = r
+        r = tmpSwap
+        k = -(2 / 6) - k
+    End If
+    
+    chroma = r - fMin(g, b)
+    h = Abs(k + (g - b) / (6 * chroma + 0.0000001))
+    s = chroma / (r + 0.00000001)
+    v = r
+    
+End Sub
+
+'Convert [0,1] HSV values to [0,255] RGB values, with thanks to easyrgb.com for the conversion math
+Public Sub fHSVtoRGB(ByRef h As Single, ByRef s As Single, ByRef v As Single, ByRef r As Single, ByRef g As Single, ByRef b As Single)
+
+    'If saturation is 0, RGB are calculated identically
+    If s = 0 Then
+        r = v
+        g = v
+        b = v
+        Exit Sub
+    
+    'If saturation is not 0, we have to calculate RGB independently
+    Else
+       
+        Dim var_H As Single
+        var_H = h * 6
+        
+        'To keep our math simple, limit hue to [0, 5.9999999]
+        If var_H >= 6 Then var_H = 0
+        
+        Dim var_I As Long
+        var_I = Int(var_H)
+        
+        Dim var_1 As Single, var_2 As Single, var_3 As Single
+        var_1 = v * (1 - s)
+        var_2 = v * (1 - s * (var_H - var_I))
+        var_3 = v * (1 - s * (1 - (var_H - var_I)))
+        
+        Select Case var_I
+        
+            Case 0
+                r = v
+                g = var_3
+                b = var_1
+                
+            Case 1
+                r = var_2
+                g = v
+                b = var_1
+                
+            Case 2
+                r = var_1
+                g = v
+                b = var_3
+                
+            Case 3
+                r = var_1
+                g = var_2
+                b = v
+            
+            Case 4
+                r = var_3
+                g = var_1
+                b = v
+                
+            Case Else
+                r = v
+                g = var_1
+                b = var_2
+                
+        End Select
+                
+    End If
+
+End Sub
+
+'Return the minimum of two floating-point values
+Private Function fMin(x As Single, y As Single) As Single
+    If x > y Then fMin = y Else fMin = x
 End Function
 
-Private Function Max(x As Single, y As Single) As Single
-If x < y Then
-    Max = y
- Else
-    Max = x
-End If
+'Return the maximum of two floating-point values
+Private Function fMax(x As Single, y As Single) As Single
+    If x < y Then fMax = y Else fMax = x
 End Function
+
+'Return the maximum of three floating point values
+Private Function fMax3(rR As Single, rG As Single, rB As Single) As Single
+   If (rR > rG) Then
+      If (rR > rB) Then
+         fMax3 = rR
+      Else
+         fMax3 = rB
+      End If
+   Else
+      If (rB > rG) Then
+         fMax3 = rB
+      Else
+         fMax3 = rG
+      End If
+   End If
+End Function
+
+'Return the minimum of three floating point values
+Private Function fMin3(rR As Single, rG As Single, rB As Single) As Single
+   If (rR < rG) Then
+      If (rR < rB) Then
+         fMin3 = rR
+      Else
+         fMin3 = rB
+      End If
+   Else
+      If (rB < rG) Then
+         fMin3 = rB
+      Else
+         fMin3 = rG
+      End If
+   End If
+End Function
+

@@ -538,6 +538,10 @@ Private Sub Form_Load()
     cboBlendMode.AddItem "Exclusion", 17
     cboBlendMode.AddItem "Subtract", 18
     cboBlendMode.AddItem "Divide", 19
+    cboBlendMode.AddItem "Hue", 20
+    cboBlendMode.AddItem "Saturation", 21
+    cboBlendMode.AddItem "Color", 22
+    cboBlendMode.AddItem "Luminosity", 23
     cboBlendMode.ListIndex = 0
     
     'Reset the thumbnail array
