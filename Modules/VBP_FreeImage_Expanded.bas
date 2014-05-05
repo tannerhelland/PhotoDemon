@@ -86,17 +86,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     Dim fi_ImportFlags As FREE_IMAGE_LOAD_OPTIONS
     fi_ImportFlags = 0
     
-    'For JPEGs, specify a preference for accuracy and quality over load speed under normal circumstances,
-    ' but when performing a batch conversion choose the reverse (speed over accuracy).  Also, if the showMessages parameter
-    ' is false, we know that preview-quality is acceptable - so load the image as quickly as possible.
+    'For JPEGs, specify a preference for accuracy and quality over load speed.
     If fileFIF = FIF_JPEG Then
-        
-        If (MacroStatus = MacroBATCH) Or (Not showMessages) Then
-            fi_ImportFlags = FILO_JPEG_FAST Or FILO_JPEG_EXIFROTATE
-        Else
-            fi_ImportFlags = FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE
-        End If
-        
+        fi_ImportFlags = FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE
     End If
     
     'Check for CMYK JPEGs, TIFFs, and PSD files.  If an image is CMYK and an ICC profile is present, ask FreeImage to load the
