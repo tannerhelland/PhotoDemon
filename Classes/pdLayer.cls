@@ -15,10 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 18/March/14
-'Last update: moved all DIB-centric code to the pdDIB class, and started rewriting this class as a source-agnostic layer
-'              wrapper.  Going forward, PD will support many different types of layers, and it will be up to this class
-'              to manage those types in a relatively OOP way.
+'Last updated: 05/May/14
+'Last update: new function for permanently applying any on-canvas layer transforms to the layer's DIB
 '
 'Description forthcoming once more features have been implemented...
 '
@@ -234,6 +232,29 @@ Public Function getLayerCanvasHeightModified() As Long
     getLayerCanvasHeightModified = layerDIB.getDIBHeight * myLayerData.l_CanvasYModifier
     If getLayerCanvasHeightModified < 1 Then getLayerCanvasHeightModified = 1
 End Function
+
+'If this layer needs to have its on-canvas transformations made permanent (for example, when applying an action
+' that involves a selection), this function can be used.
+Public Sub makeCanvasTransformsPermanent()
+
+    'If this layer does not have any active transforms, ignore this request
+    If (myLayerData.l_CanvasXModifier = 1) And (myLayerData.l_CanvasYModifier = 1) Then Exit Sub
+
+    'Resize the current layer DIB to match its on-canvas transform values
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    tmpDIB.createBlank getLayerCanvasWidthModified, getLayerCanvasHeightModified, 32, 0
+    GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+    
+    layerDIB.createFromExistingDIB tmpDIB
+    Set tmpDIB = Nothing
+    
+    'Reset the width/height modifiers for this layer
+    myLayerData.l_CanvasXModifier = 1
+    myLayerData.l_CanvasYModifier = 1
+
+End Sub
 
 'Get/set layer angle
 Public Function getLayerAngle() As Double
@@ -656,8 +677,14 @@ End Function
 'Null-pad this layer (with transparent pixels) against the size of our parent pdImage.  Note that the parent pdImage's dimensions
 ' must be explicitly passed, because layers do not maintain a link to their parent.
 ' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.
-Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parentImageHeight As Long)
+Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parentImageHeight As Long, Optional ByVal applyCanvasTransformsFirst As Boolean = True)
 
+    'If this layer has transforms applied to it, we have to make them permanent before proceeding.
+    ' Otherwise, the resulting image may not look right.  (Note that this behavior can be overridden if a function
+    ' is ABSOLUTELY CERTAIN that the end result won't botch the transform - this is only true for pixels transforms
+    ' that operate strictly in separate x/y domains, such as resizing).
+    If applyCanvasTransformsFirst Then makeCanvasTransformsPermanent
+    
     'Create a blank destination DIB at the size of the image
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
