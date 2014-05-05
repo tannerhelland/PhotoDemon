@@ -157,11 +157,17 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                         If topR = 0 Then newR = 0 Else newR = 1 - (1 - bottomR) / topR
                         If topG = 0 Then newG = 0 Else newG = 1 - (1 - bottomG) / topG
                         If topB = 0 Then newB = 0 Else newB = 1 - (1 - bottomB) / topB
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
                     
                     Case BL_LINEARBURN
                         newR = topR + bottomR - 1
                         newG = topG + bottomG - 1
                         newB = topB + bottomB - 1
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
                         
                     Case BL_LIGHTEN
                         If bottomR > topR Then newR = bottomR Else newR = topR
@@ -177,11 +183,17 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                         If topR = 1 Then newR = 1 Else newR = bottomR / (1 - topR)
                         If topG = 1 Then newG = 1 Else newG = bottomG / (1 - topG)
                         If topB = 1 Then newB = 1 Else newB = bottomB / (1 - topB)
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
                         
                     Case BL_LINEARDODGE
                         newR = topR + bottomR
                         newG = topG + bottomG
                         newB = topB + bottomB
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
                     
                     Case BL_OVERLAY
                         If bottomR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
@@ -202,11 +214,23 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                         If topR > 0.5 Then newR = bottomR + 2 * (topR - 0.5) Else newR = bottomR + 2 * topR - 1
                         If topB > 0.5 Then newG = bottomG + 2 * (topG - 0.5) Else newG = bottomG + 2 * topG - 1
                         If topG > 0.5 Then newB = bottomB + 2 * (topB - 0.5) Else newB = bottomB + 2 * topB - 1
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
                     
                     Case BL_LINEARLIGHT
                         newR = bottomR + (2 * topR) - 1
                         newG = bottomG + (2 * topG) - 1
                         newB = bottomB + (2 * topB) - 1
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
                         
                     Case BL_PINLIGHT
                         If topR > 0.5 Then newR = fMax(bottomR, 2 * (topR - 0.5)) Else newR = fMin(bottomR, 2 * topR)
@@ -232,11 +256,17 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                         newR = bottomR - topR
                         newG = bottomG - topG
                         newB = bottomB - topB
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
                     
                     Case BL_DIVIDE
-                        If topR = 0 Then newR = 0 Else newR = bottomR / topR
-                        If topG = 0 Then newG = 0 Else newG = bottomG / topG
-                        If topB = 0 Then newB = 0 Else newB = bottomB / topB
+                        If topR = 0 Then newR = 1 Else newR = bottomR / topR
+                        If topG = 0 Then newG = 1 Else newG = bottomG / topG
+                        If topB = 0 Then newB = 1 Else newB = bottomB / topB
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
                         
                     Case BL_HUE
                         fastRGBtoHSV topR, topG, topB, topH, topS, topV
@@ -250,11 +280,11 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                     
                     Case BL_COLOR
                         fastRGBtoHSV topR, topG, topB, topH, topS, topV
-                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        bottomV = fMax3(bottomR, bottomG, bottomB)
                         fHSVtoRGB topH, topS, bottomV, newR, newG, newB
                     
                     Case BL_LUMINOSITY
-                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        topV = fMax3(topR, topG, topB)
                         fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
                         fHSVtoRGB bottomH, bottomS, topV, newR, newG, newB
                     
@@ -264,25 +294,28 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                         newB = topB
                 
                 End Select
+                                
+                If topA = 1 Then
+                    
+                    'Top layer is opaque, so premultiplication is irrelevant
+                    tImageData(QuickX + 2, y) = (newR * 255)
+                    tImageData(QuickX + 1, y) = (newG * 255)
+                    tImageData(QuickX, y) = (newB * 255)
                 
-                If newR < 0 Then newR = 0
-                If newG < 0 Then newG = 0
-                If newB < 0 Then newB = 0
-                        
-                If newR > 1 Then newR = 1
-                If newG > 1 Then newG = 1
-                If newB > 1 Then newB = 1
+                Else
                 
-                'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
-                ' if the bottom image is transparent, the top image is unchanged.)
-                newR = (newR * bottomA) + (topR * (1 - bottomA))
-                newG = (newG * bottomA) + (topG * (1 - bottomA))
-                newB = (newB * bottomA) + (topB * (1 - bottomA))
-                
-                'Copy the new values into the bottom layer, and premultiply them
-                tImageData(QuickX + 2, y) = (newR * 255) * topA
-                tImageData(QuickX + 1, y) = (newG * 255) * topA
-                tImageData(QuickX, y) = (newB * 255) * topA
+                    'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
+                    ' if the bottom image is transparent, the top image is unchanged.)
+                    newR = (newR * bottomA) + (topR * (1 - bottomA))
+                    newG = (newG * bottomA) + (topG * (1 - bottomA))
+                    newB = (newB * bottomA) + (topB * (1 - bottomA))
+                    
+                    'Copy the new values into the bottom layer, and premultiply them
+                    tImageData(QuickX + 2, y) = (newR * 255) * topA
+                    tImageData(QuickX + 1, y) = (newG * 255) * topA
+                    tImageData(QuickX, y) = (newB * 255) * topA
+                    
+                End If
                 
             End If
             
@@ -614,24 +647,24 @@ End Function
 ' Note that the code assumes RGB values already in the [0, 1] range, and it will return HSV values in the [0, 1] range.
 Public Sub fastRGBtoHSV(ByVal r As Single, ByVal g As Single, ByVal b As Single, ByRef h As Single, ByRef s As Single, ByRef v As Single)
 
-    Dim k As Single, tmpSwap As Single, chroma As Single
+    Dim K As Single, tmpSwap As Single, chroma As Single
     
     If (g < b) Then
         tmpSwap = b
         b = g
         g = tmpSwap
-        k = -1
+        K = -1
     End If
     
     If (r < g) Then
         tmpSwap = g
         g = r
         r = tmpSwap
-        k = -(2 / 6) - k
+        K = -(2 / 6) - K
     End If
     
     chroma = r - fMin(g, b)
-    h = Abs(k + (g - b) / (6 * chroma + 0.0000001))
+    h = Abs(K + (g - b) / (6 * chroma + 0.0000001))
     s = chroma / (r + 0.00000001)
     v = r
     
