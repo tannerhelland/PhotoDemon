@@ -3,8 +3,8 @@ Attribute VB_Name = "Viewport_Handler"
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 30/April/14
-'Last update: start adding tool-specific steps to the pipeline
+'Last updated: 05/May/14
+'Last update: greatly simplify the ScrollViewport step of the pipeline, thanks to our awesome new getCompositedRect function.
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
 ' - PrepareViewport: for recalculating all viewport variables and controls (done only when the zoom value is changed or a new picture is loaded)
@@ -203,13 +203,9 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     'If the image associated with this form is inactive, ignore this request
     If Not srcImage.IsActive Then Exit Sub
     
-    'This function can return timing reports if desired
+    'This function can return timing reports if desired; set the public DISPLAY_TIMINGS constant to TRUE to enable.
     Dim startTime As Double
     If DISPLAY_TIMINGS Then startTime = Timer
-    
-    'We can use the .Tag property of the target form to locate the matching pdImage in the pdImages array
-    Dim curImage As Long
-    curImage = srcImage.imageID
     
     'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
     zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
@@ -222,96 +218,32 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then srcX = dstCanvas.getScrollValue(PD_HORIZONTAL) Else srcX = 0
     If dstCanvas.getScrollVisibility(PD_VERTICAL) Then srcY = dstCanvas.getScrollValue(PD_VERTICAL) Else srcY = 0
         
-    'Paint the image from the back buffer to the front buffer.  We handle this as two cases: one for zooming in, another for zooming out.
-    ' This is simpler from a coding standpoint, as each case involves a number of specialized calculations.
-    
-    'Certain rendering options require us to retrieve a 100% size composited copy the image.  If that ends up being necessary,
-    ' this DIB will receive the composited image.
-    Dim compositedImage As pdDIB
-    Set compositedImage = New pdDIB
-    
-    If zoomVal < 1 Then
+    'Before rendering the image, apply a checkerboard pattern to the target image's back buffer
+    Drawing.fillDIBWithAlphaCheckerboard srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
         
-        'ZOOMED OUT
+    'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
+    ' in the future... but for now, we leave it, just in case.
+    If g_GDIPlusAvailable Then
         
-        'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
-        'If compositedImage.getDIBColorDepth = 32 Then
-            
-            'Before rendering the image, apply a checkerboard pattern to the target image's back buffer
-            Drawing.fillDIBWithAlphaCheckerboard srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
-            
-            'Update 14 Feb '14: If GDI+ is available, use it to render 32bpp images when zoomed out.  (This is preferable to StretchBlt,
-            ' as StretchBlt erases all alpha channel data if HALFTONE mode is used, limiting it to nearest-neighbor only!)
-            If g_GDIPlusAvailable Then
-                
-                If PD_EXPERIMENTAL_MODE Then
-                    srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage, srcX, srcY, srcWidth, srcHeight, InterpolationModeHighQualityBicubic
-                Else
-                    
-                    srcImage.getCompositedImage compositedImage
-                    
-                    'All of the methods below are operational.  Only one will be used in the final build, but I am including all of them
-                    ' here so that I can do additional performance profiling.
-                    GDIPlusResizeDIB srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage, srcX, srcY, srcWidth, srcHeight, InterpolationModeHighQualityBicubic
-                    'FreeImageResizeDIB srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage, srcX, srcY, srcWidth, srcHeight, FILTER_BICUBIC
-                    'SetStretchBltMode srcImage.backBuffer.getDIBDC, STRETCHBLT_COLORONCOLOR
-                    'StretchDIBits srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, compositedImage.getActualDIBBits, compositedImage.getDIBHeader, 0&, vbSrcCopy
-                    
-                End If
-            
-            Else
-            
-                srcImage.getCompositedImage compositedImage
-            
-                'Create a blank DIB in the parent pdImages object.  (For performance reasons, we create this image at the size of the viewport.)
-                srcImage.alphaFixDIB.createBlank srcWidth, srcHeight, 32
-                BitBlt srcImage.alphaFixDIB.getDIBDC, 0, 0, srcWidth, srcHeight, compositedImage.getDIBDC, srcX, srcY, vbSrcCopy
-                
-                'Paint that chopped-out DIB to the target image's back buffer
-                srcImage.alphaFixDIB.alphaBlendToDC srcImage.backBuffer.getDIBDC, 255, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
-                
-            End If
-            
-        'Else
-        '    srcImage.getCompositedImage compositedImage
-        '    SetStretchBltMode srcImage.backBuffer.getDIBDC, STRETCHBLT_HALFTONE
-        '    StretchBlt srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, compositedImage.getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
-        'End If
+        'Use our new rect-specific compositor to retrieve only the relevant section of the current viewport
+        srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(zoomVal <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
         
+    'This is an emergency fallback, only.  PD probably won't work at all without GDI+ - consider yourself warned!
     Else
     
-        'ZOOMED IN (OR 100%)
+        Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
         
-        'When zoomed in, the blitting call must be modified as follows: restrict it to multiples of the current zoom factor.
-        ' (Without this fix, funny stretching occurs; to see it yourself, place the zoom at 300%, and drag an image's window larger or smaller.)
-        ' NOTE: I have removed that stretching fix, because it causes invalid rendering later down the chain.  As it's not
-        '       a particularly pressing concern, I will revisit at some point in the future (ETA to be determined).
-        Dim bltWidth As Long, bltHeight As Long
-        bltWidth = srcImage.imgViewport.targetWidth '+ (Int(g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)) - (srcImage.imgViewport.targetWidth Mod Int(g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue))))
-        srcWidth = bltWidth / zoomVal
-        bltHeight = srcImage.imgViewport.targetHeight '+ (Int(g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)) - (srcImage.imgViewport.targetHeight Mod Int(g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue))))
-        srcHeight = bltHeight / zoomVal
-        
+        'Because we have no support for dynamic resizing of layers without GDI+, we must retrieve a full copy of the composited image.
+        Dim compositedImage As pdDIB
+        Set compositedImage = New pdDIB
         srcImage.getCompositedImage compositedImage
+    
+        'Create a blank DIB in the parent pdImages object.  (For performance reasons, we create this image at the size of the viewport.)
+        srcImage.alphaFixDIB.createBlank srcWidth, srcHeight, 32
+        BitBlt srcImage.alphaFixDIB.getDIBDC, 0, 0, srcWidth, srcHeight, compositedImage.getDIBDC, srcX, srcY, vbSrcCopy
         
-        'Check for alpha channel.  If it's found, perform pre-multiplication against a checkered background before rendering.
-        If compositedImage.getDIBColorDepth = 32 Then
-            
-            'Fill the target area with the alpha checkerboard
-            Drawing.fillDIBWithAlphaCheckerboard srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
-            
-            'Create a temporary streched copy of the image
-            srcImage.alphaFixDIB.createBlank bltWidth, bltHeight, 32
-            SetStretchBltMode srcImage.alphaFixDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt srcImage.alphaFixDIB.getDIBDC, 0, 0, bltWidth, bltHeight, compositedImage.getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
-            
-            'Alpha blend the DIB onto the checkerboard background
-            srcImage.alphaFixDIB.alphaBlendToDC srcImage.backBuffer.getDIBDC, 255, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
-            
-        Else
-            SetStretchBltMode srcImage.backBuffer.getDIBDC, STRETCHBLT_COLORONCOLOR
-            StretchBlt srcImage.backBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, bltWidth, bltHeight, compositedImage.getDIBDC, srcX, srcY, srcWidth, srcHeight, vbSrcCopy
-        End If
+        'Paint that chopped-out DIB to the target image's back buffer
+        srcImage.alphaFixDIB.alphaBlendToDC srcImage.backBuffer.getDIBDC, 255, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
         
     End If
     
@@ -362,7 +294,7 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
     If Not srcImage.IsActive Then Exit Sub
     
     'Because this routine is time-consuming, I track it carefully to try and minimize how frequently it's called.  Feel free to comment out this line.
-    Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & curImage & ") | " '& formToBuffer.Caption
+    Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & curImage & ") "
     
     On Error GoTo ZoomErrorHandler
     
