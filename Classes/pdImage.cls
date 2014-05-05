@@ -318,8 +318,8 @@ End Function
 Public Function getLayerByIndex(ByVal layerIndex As Long) As pdLayer
     
     'As a failsafe, validate the incoming layer index
-    If layerIndex < 0 Then layerIndex = 0
     If layerIndex > numOfLayers - 1 Then layerIndex = numOfLayers - 1
+    If layerIndex < 0 Then layerIndex = 0
     
     'Return the requested layer
     Set getLayerByIndex = imgLayers(layerIndex)
