@@ -309,7 +309,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         If bottomLayer.getLayerCanvasXModifier = 1 And bottomLayer.getLayerCanvasYModifier = 1 Then
             BitBlt tmpDIB.getDIBDC, xOffset, yOffset, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, bottomLayer.layerDIB.getDIBDC, 0, 0, vbSrcCopy
         Else
-            GDIPlusResizeDIB tmpDIB, xOffset, yOffset, bottomLayer.layerDIB.getDIBWidth * bottomLayer.getLayerCanvasXModifier, bottomLayer.layerDIB.getDIBHeight * bottomLayer.getLayerCanvasYModifier, bottomLayer.layerDIB, 0, 0, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+            GDIPlusResizeDIB tmpDIB, xOffset, yOffset, bottomLayer.getLayerCanvasWidthModified, bottomLayer.getLayerCanvasHeightModified, bottomLayer.layerDIB, 0, 0, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
             
             'Also, resize the canvas modifiers for the bottom layer now, as we have effectively nullified them by this resize
             bottomLayer.setLayerCanvasXModifier 1
@@ -356,7 +356,6 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     
         'tmpDIB now contains the chunk of this layer that appears on the viewport.  Time to composite it!
         If topLayer.getLayerBlendMode <> BL_NORMAL Then
-            Debug.Print xOffset, yOffset
             compositeDIBs tmpDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset
         End If
     
