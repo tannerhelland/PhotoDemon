@@ -186,6 +186,6 @@ Public Function incrementTrailingNumber(ByVal srcString As String) As String
         numToAppend = 2
     End If
     
-    incrementTrailingNumber = srcString & " (" & Str(numToAppend) & ")"
+    incrementTrailingNumber = srcString & " (" & Trim$(Str(numToAppend)) & ")"
 
 End Function
