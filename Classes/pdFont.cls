@@ -212,6 +212,23 @@ Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     
 End Sub
 
+'A roughly identical function to fastRenderText, above, but with support for linebreaks
+Public Sub fastRenderMultilineText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcString As String)
+    
+    'Find the bounding rect of the text
+    Dim tmpRect As RECT
+    
+    'Modify the rect to account for the specified offset
+    tmpRect.Left = dstX
+    tmpRect.Top = dstY
+    tmpRect.Right = dstX + getWidthOfString(srcString)
+    tmpRect.Bottom = dstY + getHeightOfWordwrapString(srcString, getWidthOfString(srcString))
+    
+    'If the text is going to extend past the target rect, draw it with ellipses
+    DrawText curDC, srcString, Len(srcString), tmpRect, DT_LEFT Or DT_TOP Or DT_WORDBREAK
+    
+End Sub
+
 'Select the current font and other text settings into the specified DC.  Ideally, this should only be done when absolutely
 ' necessary to keep speed high.  (Also, note the DC so we can do fast font rendering later.)
 Public Sub attachToDC(ByVal targetDC As Long)
