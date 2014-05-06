@@ -198,8 +198,14 @@ Attribute VB_Exposed = False
 'Image Curves Adjustment Dialog
 'Copyright ©2008-2014 by Tanner Helland
 'Created: sometime 2008
-'Last updated: 04/February/14
-'Last update: fix Curve preset storage to account for commas as a decimal separator in some locales
+'Last updated: 06/May/14
+'Last update: Fix a number of preset-related bugs, and add dynamic curve coordinate display.  This dialog is a huge
+'              PITA when it comes to presets, because all its data is not only custom, but it relies on formatting
+'              that's prone to localization issues (floating-point, coordinates).  Also, as a convenience to users,
+'              we transform all node data into a DPI-agnostic, screen-size-agnostic format when storing.  I think
+'              I've *finally* solved all issues relating to saving/loading Curve preset data while accounting for
+'              all these factors, which is ironic considering that I'm about to add individual RGB curves to the
+'              mix, which will probably break everything yet again...  :p
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -245,6 +251,9 @@ Private isMouseDown As Boolean
 'Currently selected node in the workspace area
 Private selectedNode As Long
 
+'Current mouse position
+Private m_MouseX As Single, m_MouseY As Single
+
 'Two additional arrays are needed to generate the cubic spline used for the curve function
 Private p() As Double
 Private u() As Double
@@ -268,6 +277,10 @@ Private hMaxPosition() As Byte
 
 'An image of the current image histogram is drawn once each for regular and logarithmic, then stored to these DIBs.
 Private hDIB As pdDIB, hLogDIB As pdDIB
+
+'The current mouse coordinates are rendered to this DIB, which is then overlaid atop the curve box
+Private mouseCoordFont As pdFont
+Private mouseCoordDIB As pdDIB
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -306,7 +319,7 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -357,18 +370,18 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
                 
         'Assign the new values to each color channel
-        ImageData(quickVal + 2, y) = newGamma(r)
-        ImageData(quickVal + 1, y) = newGamma(g)
-        ImageData(quickVal, y) = newGamma(b)
+        ImageData(QuickVal + 2, y) = newGamma(r)
+        ImageData(QuickVal + 1, y) = newGamma(g)
+        ImageData(QuickVal, y) = newGamma(b)
         
     Next y
         If Not toPreview Then
@@ -403,12 +416,12 @@ Private Sub cmdBar_AddCustomPresetData()
     nodeString = ""
     
     Dim nodeBoxWidth As Long, nodeBoxHeight As Long
-    nodeBoxWidth = picDraw.ScaleWidth
-    nodeBoxHeight = picDraw.ScaleHeight
+    nodeBoxWidth = picDraw.ScaleWidth - previewBorder * 2
+    nodeBoxHeight = picDraw.ScaleHeight - previewBorder * 2
     
     Dim i As Long
     For i = 1 To numOfNodes
-        nodeString = nodeString & Str(cNodes(i).pX / nodeBoxWidth) & ":" & Str(cNodes(i).pY / nodeBoxHeight)
+        nodeString = nodeString & Trim$(Str((cNodes(i).pX - previewBorder) / nodeBoxWidth)) & ";" & Trim$(Str((cNodes(i).pY - previewBorder) / nodeBoxHeight))
         If i < numOfNodes Then nodeString = nodeString & "|"
     Next i
     
@@ -475,19 +488,25 @@ Private Sub cmdBar_ReadCustomPresetData()
         If InStr(1, tmpString, ".") > 0 Then
             cParams.setParamString Replace(tmpString, ",", "|")
         Else
-            cParams.setParamString Replace(tmpString, ":", "|")
+            cParams.setParamString Replace(tmpString, ";", "|")
         End If
         
     Else
+        cParams.setParamString Replace(tmpString, ";", "|")
+    End If
+    
+    tmpString = cParams.getParamString
+    
+    If InStr(1, tmpString, ":") > 0 Then
         cParams.setParamString Replace(tmpString, ":", "|")
     End If
     
-    'UPDATE 03 Dec 2014: instead of storing absolute coordinates, we now store relative ones per the size of
+    'UPDATE 03 Dec 2013: instead of storing absolute coordinates, we now store relative ones per the size of
     '                    the curve box.  This fixes an extremely rare error when the user changes DPI for
     '                    their monitor while having a previously stored set of curve coordinates.
     Dim nodeBoxWidth As Long, nodeBoxHeight As Long
-    nodeBoxWidth = picDraw.ScaleWidth
-    nodeBoxHeight = picDraw.ScaleHeight
+    nodeBoxWidth = picDraw.ScaleWidth - (previewBorder * 2)
+    nodeBoxHeight = picDraw.ScaleHeight - (previewBorder * 2)
     
     Dim i As Long
     For i = 1 To numOfNodes
@@ -509,6 +528,10 @@ Private Sub cmdBar_ReadCustomPresetData()
             cNodes(i).pY = cNodes(i).pY * nodeBoxHeight
         
         End If
+        
+        'Add the preview border offset to all incoming values as well
+        cNodes(i).pX = cNodes(i).pX + previewBorder
+        cNodes(i).pY = cNodes(i).pY + previewBorder
                 
     Next i
     
@@ -602,6 +625,18 @@ Private Sub Form_Load()
     cboHistogram.AddItem " standard", 1
     cboHistogram.AddItem " logarithmic", 2
     cboHistogram.ListIndex = 1
+    
+    'Initialize the dynamic mouse coordinate font and DIB display
+    Set mouseCoordDIB = New pdDIB
+    Set mouseCoordFont = New pdFont
+    
+    With mouseCoordFont
+        .setFontColor RGB(25, 25, 25)
+        .setFontBold True
+        .setFontSize 10
+        .createFontObject
+        .setTextAlignment vbAlignLeft
+    End With
     
 End Sub
 
@@ -721,6 +756,84 @@ Private Sub redrawPreviewBox()
         GDIPlusDrawCanvasCircle picDraw.hDC, cNodes(selectedNode).pX, cNodes(selectedNode).pY, circRadius, circAlpha
     End If
     
+    'Finally, display a live coordinate overlay for the current mouse position.  If a node is selected, the coordinate display
+    ' will reflect that node; otherwise, it will display the interpolated value of the curve at the current mouse position.
+    If (selectedNode > 0) Or ((m_MouseX > previewBorder) And (m_MouseX < picDraw.ScaleWidth - previewBorder) And (m_MouseY > previewBorder) And (m_MouseY < picDraw.ScaleHeight - previewBorder)) Then
+    
+        'Generate input and output node coordinate strings first; we do these separately, because we want to calculate
+        ' width independently for each string, and use the larger of the two as our bounding rect for the coordinate overlay.
+        Dim coordString As String, coordStringI As String, coordStringO As String
+        
+        Dim coordActualX As Double, coordActualY As Double
+        Dim coordRelativeX As Double, coordRelativeY As Double
+        
+        'If a node is currently being hovered/clicked, lock the mouse position to that node.  Otherwise, use the interpolated
+        ' curve value at this location.
+        If selectedNode > 0 Then
+            coordActualX = cNodes(selectedNode).pX
+            coordActualY = cNodes(selectedNode).pY
+        Else
+            coordActualX = m_MouseX
+            coordActualY = cResults(m_MouseX)
+        End If
+        
+        'Draw lines at the current curve position, to help orient the user
+        GDIPlusDrawLineToDC picDraw.hDC, CLng(coordActualX), CLng(previewBorder), CLng(coordActualX), CLng(picDraw.ScaleHeight - previewBorder), RGB(0, 0, 64), 172
+        GDIPlusDrawLineToDC picDraw.hDC, CLng(previewBorder), CLng(coordActualY), CLng(picDraw.ScaleWidth - previewBorder), CLng(coordActualY), RGB(0, 0, 64), 172
+        
+        'From the physical x/y position of the mouse cursor, generate relative x/y values in the [0,255] range, which will be the
+        ' values actually displayed to the user.
+        coordRelativeX = (coordActualX - previewBorder) / (picDraw.ScaleWidth - previewBorder * 2)
+        coordRelativeX = coordRelativeX * 255
+        
+        coordRelativeY = (coordActualY - previewBorder) / (picDraw.ScaleHeight - previewBorder * 2)
+        coordRelativeY = coordRelativeY * 255
+        
+        'Use those coordinates to generate an actual input and output string, with translations applied
+        coordStringI = g_Language.TranslateMessage("input:") & " " & CLng(coordRelativeX)
+        coordStringO = g_Language.TranslateMessage("output:") & " " & CLng(255 - coordRelativeY)
+        
+        'Find the larger of the two strings
+        Dim maxStringWidth As Long
+        maxStringWidth = mouseCoordFont.getWidthOfString(coordStringI)
+        If mouseCoordFont.getWidthOfString(coordStringO) > maxStringWidth Then maxStringWidth = mouseCoordFont.getWidthOfString(coordStringO)
+        
+        'Concatenate the input and output strings
+        coordString = coordStringI & vbCrLf & coordStringO
+        
+        'Calculate the size of the concatenated input/output string (in pixels, both width and height, with the width limited
+        ' to the larger of the original two strings)
+        Dim coordStringWidth As Long, coordStringHeight As Long
+        coordStringWidth = maxStringWidth
+        coordStringHeight = mouseCoordFont.getHeightOfWordwrapString(coordString, coordStringWidth + 1)
+        
+        'Create a new DIB at the size of the string (with a slight bit of padding on all sides)
+        mouseCoordDIB.createBlank coordStringWidth + fixDPI(8), coordStringHeight + fixDPI(5), 24, RGB(255, 255, 255)
+        
+        'Render the coordinate string onto the temporary DIB
+        mouseCoordFont.attachToDC mouseCoordDIB.getDIBDC
+        mouseCoordFont.fastRenderMultilineText fixDPI(4), fixDPI(2), coordString
+        
+        'Render a 1px border around the coordinate overlay
+        GDIPlusDrawRectOutlineToDC mouseCoordDIB.getDIBDC, 0, 0, mouseCoordDIB.getDIBWidth - 1, mouseCoordDIB.getDIBHeight - 1, RGB(25, 25, 25)
+        
+        'Calculate render coordinates for the coordinate box.  Normally these will be placed below and to the right of a
+        ' given node, but if that location lies off-image, move the overlay in-bounds.
+        Dim coordX As Long, coordY As Long
+        
+        coordX = coordActualX + fixDPI(3)
+        If coordX < 0 Then coordX = 0
+        If coordX + mouseCoordDIB.getDIBWidth > picDraw.ScaleWidth Then coordX = picDraw.ScaleWidth - mouseCoordDIB.getDIBWidth
+        
+        coordY = coordActualY + fixDPI(3)
+        If coordY < 0 Then coordY = 0
+        If coordY + mouseCoordDIB.getDIBHeight > picDraw.ScaleHeight Then coordY = picDraw.ScaleHeight - mouseCoordDIB.getDIBHeight
+        
+        'Render the completed coordinate overlay DIB onto the main curve box
+        mouseCoordDIB.alphaBlendToDC picDraw.hDC, 192, coordX, coordY
+        
+    End If
+    
     'Lock the image, force a refresh, and our work here is done
     picDraw.Picture = picDraw.Image
     picDraw.Refresh
@@ -838,6 +951,10 @@ Private Sub deleteCurveNode(ByVal nodeIndex As Long)
 End Sub
 
 Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+
+    'Store the current mouse position in module-level variables.  The render function may use these to display a coordinate overlay.
+    m_MouseX = x
+    m_MouseY = y
 
     'If the mouse is *not* down, indicate to the user that points can be moved
     If Not isMouseDown Then

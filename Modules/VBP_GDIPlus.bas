@@ -3,8 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 07/December/13
-'Last update: added support for true ICC-profile-based CMYK conversion when loading images via GDI+.  Surprisingly simple!
+'Last updated: 06/May/14
+'Last update: new GDIPlusDrawRectOutlineToDC function
 '
 'This interface provides a means for interacting with the unnecessarily complex (and overwrought) GDI+ module.  GDI+ was
 ' originally used as a fallback for image loading and saving if the FreeImage DLL was not found, but over time it has become
@@ -704,6 +704,33 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
 
 End Function
 
+'Use GDI+ to render a hollow rectangle, with optional color, opacity, and antialiasing
+Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinecap As LineCap = 0) As Boolean
+
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstDC, iGraphics
+    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    
+    'Create a pen, which will be used to stroke the line
+    Dim iPen As Long
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
+    
+    'If a custom line cap was specified, apply it now
+    If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
+    
+    'Render the rectangle
+    GdipDrawLine iGraphics, iPen, rectLeft, rectTop, rectRight, rectTop
+    GdipDrawLine iGraphics, iPen, rectRight, rectTop, rectRight, rectBottom
+    GdipDrawLine iGraphics, iPen, rectRight, rectBottom, rectLeft, rectBottom
+    GdipDrawLine iGraphics, iPen, rectLeft, rectBottom, rectLeft, rectTop
+        
+    'Release all created objects
+    GdipDeletePen iPen
+    GdipDeleteGraphics iGraphics
+
+End Function
+
 'Use GDI+ to render a hollow circle, with optional color, opacity, and antialiasing
 Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
 
@@ -792,14 +819,18 @@ End Function
 'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
 ' long and supplied alpha.  It's not a very efficient conversion, but I need it so infrequently that I don't really care.
 Private Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
+    
     Dim dstQuad As RGBQUAD
     dstQuad.Red = ExtractR(vbRGB)
     dstQuad.Green = ExtractG(vbRGB)
     dstQuad.Blue = ExtractB(vbRGB)
     dstQuad.Alpha = alphaValue
+    
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
+    
     fillQuadWithVBRGB = placeHolder.lngResult
+    
 End Function
 
 'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any supported image type.
