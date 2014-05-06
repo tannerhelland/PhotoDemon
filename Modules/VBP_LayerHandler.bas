@@ -173,8 +173,8 @@ Public Sub duplicateLayerByIndex(ByVal dLayerIndex As Long)
     'Ask the new layer to copy the contents of the layer we are duplicating
     pdImages(g_CurrentImage).getLayerByID(newLayerID).CopyExistingLayer pdImages(g_CurrentImage).getLayerByID(dupedLayerID)
     
-    'Restore the original active layer
-    pdImages(g_CurrentImage).setActiveLayerByID activeLayerID
+    'Make the duplicate layer the active layer
+    pdImages(g_CurrentImage).setActiveLayerByID newLayerID
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
