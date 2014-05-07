@@ -522,11 +522,13 @@ End Sub
 
 'Rotate an image 90° clockwise
 ' TODO: lean on the API for this, as it's not very fast to process manually in VB
-Public Sub MenuRotate90Clockwise()
+Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
+
+    Dim flipAllLayers As Boolean
+    If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
     
-    'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
-    ' the selection to match the new image, but we can fix that at a later date.)
-    If pdImages(g_CurrentImage).selectionActive Then
+    'If the image contains an active selection, disable it before transforming the canvas
+    If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
@@ -549,36 +551,62 @@ Public Sub MenuRotate90Clockwise()
     Dim finalX As Long, finalY As Long, imgWidth As Long, imgHeight As Long
     imgWidth = pdImages(g_CurrentImage).Width
     imgHeight = pdImages(g_CurrentImage).Height
-    finalX = imgWidth - 1
-    finalY = imgHeight - 1
     
     Dim iWidth As Long, iHeight As Long
-    iWidth = finalX * 4
-    iHeight = finalY * 4
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
+    Dim progBarCheck As Long, progBarOffsetX As Long
+    If flipAllLayers Then
+        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
+    Else
+        SetProgBarMax pdImages(g_CurrentImage).getActiveDIB.getDIBWidth
+    End If
+    
     progBarCheck = findBestProgBarValue()
     
     'Iterate through each layer, rotating them in turn
     Dim tmpLayerRef As pdLayer
     
-    Dim i As Long
-    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    Dim i As Long, lStart As Long, lEnd As Long
+    
+    'If the user wants us to process all layers, we will iterate through the full layer stack, applying the transformation to each in turn.
+    ' Otherwise, we will only transform the specified layer.  To cut down on code duplication, we simply modify the endpoints of the loop.
+    If flipAllLayers Then
+        lStart = 0
+        lEnd = pdImages(g_CurrentImage).getNumOfLayers - 1
+    Else
+        lStart = targetLayerIndex
+        lEnd = targetLayerIndex
+    End If
+    
+    'Loop through all relevant layers, transforming each as we go
+    For i = lStart To lEnd
+    
+        If flipAllLayers Then
+            progBarOffsetX = i * imgWidth
+        Else
+            progBarOffsetX = 0
+        End If
     
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
         'Null-pad the layer
-        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Make a copy of the layer, which we will use as our source during the transform
         copyDIB.createFromExistingDIB tmpLayerRef.layerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
-        tmpLayerRef.layerDIB.createBlank pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).Width, 32
+        tmpLayerRef.layerDIB.createBlank tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBWidth, 32
+        
+        'Populate some key variables for the transformation
+        finalX = copyDIB.getDIBWidth - 1
+        finalY = copyDIB.getDIBHeight - 1
+        
+        iWidth = finalX * 4
+        iHeight = finalY * 4
         
         'Now we can point arrays at both the source and destination pixel sets
         prepSafeArray copySA, copyDIB
@@ -598,7 +626,7 @@ Public Sub MenuRotate90Clockwise()
             Next j
             
         Next y
-            If (((i * imgWidth) + x) And progBarCheck) = 0 Then SetProgBarVal ((i * imgWidth) + x)
+            If ((progBarOffsetX + x) And progBarCheck) = 0 Then SetProgBarVal progBarOffsetX + x
         Next x
     
         'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
@@ -608,13 +636,15 @@ Public Sub MenuRotate90Clockwise()
         Erase dstImageData
         
         'Remove any null-padding
-        tmpLayerRef.cropNullPaddedLayer
+        If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
     
     Next i
     
-    'Update the current image size
-    pdImages(g_CurrentImage).updateSize False, imgHeight, imgWidth
-    DisplaySize pdImages(g_CurrentImage)
+    'Update the current image size, if necessary
+    If flipAllLayers Then
+        pdImages(g_CurrentImage).updateSize False, imgHeight, imgWidth
+        DisplaySize pdImages(g_CurrentImage)
+    End If
     
     Message "Finished. "
     
@@ -627,10 +657,13 @@ Public Sub MenuRotate90Clockwise()
 End Sub
 
 'Rotate an image 180°
-Public Sub MenuRotate180()
+Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
 
+    Dim flipAllLayers As Boolean
+    If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
+    
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).selectionActive Then
+    If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
@@ -641,20 +674,32 @@ Public Sub MenuRotate180()
     'Iterate through each layer, rotating them in turn
     Dim tmpLayerRef As pdLayer
     
-    Dim i As Long
-    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    Dim i As Long, lStart As Long, lEnd As Long
+    
+    'If the user wants us to process all layers, we will iterate through the full layer stack, applying the transformation to each in turn.
+    ' Otherwise, we will only transform the specified layer.  To cut down on code duplication, we simply modify the endpoints of the loop.
+    If flipAllLayers Then
+        lStart = 0
+        lEnd = pdImages(g_CurrentImage).getNumOfLayers - 1
+    Else
+        lStart = targetLayerIndex
+        lEnd = targetLayerIndex
+    End If
+    
+    'Loop through all relevant layers, transforming each as we go
+    For i = lStart To lEnd
     
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
         'Null-pad the layer
-        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Rotate it by inverting both directions of a StretchBlt call
         StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, tmpLayerRef.layerDIB.getDIBWidth - 1, tmpLayerRef.layerDIB.getDIBHeight - 1, -tmpLayerRef.layerDIB.getDIBWidth, -tmpLayerRef.layerDIB.getDIBHeight, vbSrcCopy
         
         'Remove any null-padding
-        tmpLayerRef.cropNullPaddedLayer
+        If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
     
     Next i
             
@@ -666,11 +711,13 @@ End Sub
 
 'Rotate an image 90° counter-clockwise
 ' TODO: lean on the API for this, as it's not very fast to process manually in VB
-Public Sub MenuRotate270Clockwise()
+Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
-    'If a selection is active, remove it.  (This is not the most elegant solution - the elegant solution would be rotating
-    ' the selection to match the new image, but we can fix that at a later date.)
-    If pdImages(g_CurrentImage).selectionActive Then
+    Dim flipAllLayers As Boolean
+    If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
+    
+    'If the image contains an active selection, disable it before transforming the canvas
+    If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
@@ -693,38 +740,62 @@ Public Sub MenuRotate270Clockwise()
     Dim finalX As Long, finalY As Long, imgWidth As Long, imgHeight As Long
     imgWidth = pdImages(g_CurrentImage).Width
     imgHeight = pdImages(g_CurrentImage).Height
-    finalX = imgWidth - 1
-    finalY = imgHeight - 1
     
     Dim iWidth As Long, iHeight As Long
-    iWidth = finalX * 4
-    iHeight = finalY * 4
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long, progBarOffsetX As Long
-    SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
+    If flipAllLayers Then
+        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
+    Else
+        SetProgBarMax pdImages(g_CurrentImage).getActiveDIB.getDIBWidth
+    End If
+    
     progBarCheck = findBestProgBarValue()
     
     'Iterate through each layer, rotating them in turn
     Dim tmpLayerRef As pdLayer
     
-    Dim i As Long
-    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    Dim i As Long, lStart As Long, lEnd As Long
     
-        progBarOffsetX = i * imgWidth
+    'If the user wants us to process all layers, we will iterate through the full layer stack, applying the transformation to each in turn.
+    ' Otherwise, we will only transform the specified layer.  To cut down on code duplication, we simply modify the endpoints of the loop.
+    If flipAllLayers Then
+        lStart = 0
+        lEnd = pdImages(g_CurrentImage).getNumOfLayers - 1
+    Else
+        lStart = targetLayerIndex
+        lEnd = targetLayerIndex
+    End If
+    
+    'Loop through all relevant layers, transforming each as we go
+    For i = lStart To lEnd
+    
+        If flipAllLayers Then
+            progBarOffsetX = i * imgWidth
+        Else
+            progBarOffsetX = 0
+        End If
         
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
         'Null-pad the layer
-        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Make a copy of the layer, which we will use as our source during the transform
         copyDIB.createFromExistingDIB tmpLayerRef.layerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
-        tmpLayerRef.layerDIB.createBlank pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).Width, 32
+        tmpLayerRef.layerDIB.createBlank tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBWidth, 32
+        
+        'Populate some key variables for the transformation
+        finalX = copyDIB.getDIBWidth - 1
+        finalY = copyDIB.getDIBHeight - 1
+        
+        iWidth = finalX * 4
+        iHeight = finalY * 4
         
         'Now we can point arrays at both the source and destination pixel sets
         prepSafeArray copySA, copyDIB
@@ -754,13 +825,15 @@ Public Sub MenuRotate270Clockwise()
         Erase dstImageData
         
         'Remove any null-padding
-        tmpLayerRef.cropNullPaddedLayer
+        If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
     
     Next i
     
-    'Update the current image size
-    pdImages(g_CurrentImage).updateSize False, imgHeight, imgWidth
-    DisplaySize pdImages(g_CurrentImage)
+    'Update the current image size, if necessary
+    If flipAllLayers Then
+        pdImages(g_CurrentImage).updateSize False, imgHeight, imgWidth
+        DisplaySize pdImages(g_CurrentImage)
+    End If
     
     Message "Finished. "
     

@@ -1631,9 +1631,13 @@ Public Sub LoadAccelerators()
         .AddAccelerator 188, vbCtrlMask Or vbAltMask, "Reduce colors", FormMain.MnuImage(15), True, True, False, 0
         
             'Image -> Rotate submenu
-            .AddAccelerator vbKeyR, 0, "Rotate 90° clockwise", FormMain.MnuRotate(0), True, True, False, 1
-            .AddAccelerator vbKeyL, 0, "Rotate 90° counter-clockwise", FormMain.MnuRotate(1), True, True, False, 1
-            .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary rotation", FormMain.MnuRotate(3), True, True, True, False
+            .AddAccelerator vbKeyR, 0, "Rotate image 90° clockwise", FormMain.MnuRotate(0), True, True, False, 1
+            .AddAccelerator vbKeyL, 0, "Rotate image 90° counter-clockwise", FormMain.MnuRotate(1), True, True, False, 1
+            .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", FormMain.MnuRotate(3), True, True, True, False
+        
+        'Layer Menu
+        '(none yet)
+        
         
         'Select Menu
         .AddAccelerator vbKeyA, vbCtrlMask, "Select all", FormMain.MnuSelect(0), True, True, False, 2

@@ -369,9 +369,9 @@ End Sub
 'OK button
 Private Sub cmdBar_OKClick()
     If optRotate(0) Then
-        Process "Arbitrary rotation", , buildParams(0, sltAngle)
+        Process "Arbitrary image rotation", , buildParams(0, sltAngle)
     Else
-        Process "Arbitrary rotation", , buildParams(1, sltAngle)
+        Process "Arbitrary image rotation", , buildParams(1, sltAngle)
     End If
     
 End Sub
