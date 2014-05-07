@@ -41,6 +41,12 @@ Private m_ParamString As String
 Private m_Params() As String
 Private m_numOfParams As Long
 
+'Return the number of parameters in the current param string.  This function has no effect if a param string
+' has not yet been assigned to the class.
+Public Function getParamCount() As Long
+    getParamCount = m_numOfParams
+End Function
+
 Public Function getParamString() As String
     getParamString = m_ParamString
 End Function
@@ -76,10 +82,10 @@ Public Function doesParamExist(ByVal pIndex As Long) As Boolean
 End Function
 
 'Change the value at a given location.  (This assumes setParamString has already been called, obviously.)
-Public Sub setNewValueAtLocation(ByVal pIndex As Long, ByVal NewValue As String)
+Public Sub setNewValueAtLocation(ByVal pIndex As Long, ByVal newValue As String)
 
     If pIndex <= m_numOfParams Then
-        m_Params(pIndex - 1) = NewValue
+        m_Params(pIndex - 1) = newValue
     End If
 
 End Sub
