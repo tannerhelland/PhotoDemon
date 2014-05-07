@@ -3,8 +3,9 @@ Attribute VB_Name = "Filters_Transform"
 'Image Transformations Interface (including flip/mirror/rotation/crop/etc)
 'Copyright ©2003-2014 by Tanner Helland
 'Created: 25/January/03
-'Last updated: 30/April/14
-'Last update: add "fit canvas to active layer", "fit canvas to all layers", and "trim empty borders" functions
+'Last updated: 07/May/14
+'Last update: start work on individual layer transformations.  Rather than writing these from scratch, they will simply
+'              be special parameters passed to the existing transform functions.
 '
 'Runs all image transformations, including rotate, flip, mirror and crop at present.
 '
@@ -52,7 +53,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     'qvDepth = pdImages(g_CurrentImage).mainDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -82,8 +83,8 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'Scan the image, starting at the top-left and moving right
     For y = 0 To finalY
     For x = 0 To finalX
-        quickVal = x * qvDepth
-        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        QuickVal = x * qvDepth
+        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -126,10 +127,10 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     SetProgBarVal 1
     
     For x = 0 To finalX
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -148,15 +149,15 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     
     Message "Analyzing right edge of image..."
-    quickVal = finalX * qvDepth
-    initColor = gLookup(CLng(srcImageData(quickVal, initY)) + CLng(srcImageData(quickVal + 1, 0)) + CLng(srcImageData(quickVal + 2, 0)))
+    QuickVal = finalX * qvDepth
+    initColor = gLookup(CLng(srcImageData(QuickVal, initY)) + CLng(srcImageData(QuickVal + 1, 0)) + CLng(srcImageData(QuickVal + 2, 0)))
     SetProgBarVal 2
     
     For x = finalX To 0 Step -1
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -175,16 +176,16 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     initX = newLeft
     finalX = newRight
-    quickVal = initX * qvDepth
-    initColor = gLookup(CLng(srcImageData(quickVal, finalY)) + CLng(srcImageData(quickVal + 1, finalY)) + CLng(srcImageData(quickVal + 2, finalY)))
+    QuickVal = initX * qvDepth
+    initColor = gLookup(CLng(srcImageData(QuickVal, finalY)) + CLng(srcImageData(QuickVal + 1, finalY)) + CLng(srcImageData(QuickVal + 2, finalY)))
     
     Message "Analyzing bottom edge of image..."
     SetProgBarVal 3
     
     For y = finalY To initY Step -1
     For x = initX To finalX
-        quickVal = x * qvDepth
-        curColor = gLookup(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        QuickVal = x * qvDepth
+        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -413,11 +414,14 @@ Public Sub MenuCropToSelection()
     
 End Sub
 
-'Flip an image vertically
-Public Sub MenuFlip()
+'Flip an image vertically.  If no layer is specified (e.g. if targetLayerIndex = -1), all layers will be flipped.
+Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
+
+    Dim flipAllLayers As Boolean
+    If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
 
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).selectionActive Then
+    If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
@@ -427,20 +431,32 @@ Public Sub MenuFlip()
     'Iterate through each layer, flipping them in turn
     Dim tmpLayerRef As pdLayer
     
-    Dim i As Long
-    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    Dim i As Long, lStart As Long, lEnd As Long
+    
+    'If the user wants us to process all layers, we will iterate through the full layer stack, applying the transformation to each in turn.
+    ' Otherwise, we will only transform the specified layer.  To cut down on code duplication, we simply modify the endpoints of the loop.
+    If flipAllLayers Then
+        lStart = 0
+        lEnd = pdImages(g_CurrentImage).getNumOfLayers - 1
+    Else
+        lStart = targetLayerIndex
+        lEnd = targetLayerIndex
+    End If
+    
+    'Loop through all relevant layers, transforming each as we go
+    For i = lStart To lEnd
     
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
         'Null-pad the layer
-        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Flip it
         StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, 0, tmpLayerRef.layerDIB.getDIBHeight - 1, tmpLayerRef.layerDIB.getDIBWidth, -tmpLayerRef.layerDIB.getDIBHeight, vbSrcCopy
         
         'Remove any null-padding
-        tmpLayerRef.cropNullPaddedLayer
+        If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
     
     Next i
     
@@ -452,10 +468,13 @@ Public Sub MenuFlip()
 End Sub
 
 'Flip an image horizontally (mirror)
-Public Sub MenuMirror()
+Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
+
+    Dim flipAllLayers As Boolean
+    If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).selectionActive Then
+    If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
@@ -465,20 +484,32 @@ Public Sub MenuMirror()
     'Iterate through each layer, mirroring them in turn
     Dim tmpLayerRef As pdLayer
     
-    Dim i As Long
-    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    Dim i As Long, lStart As Long, lEnd As Long
+    
+    'If the user wants us to process all layers, we will iterate through the full layer stack, applying the transformation to each in turn.
+    ' Otherwise, we will only transform the specified layer.  To cut down on code duplication, we simply modify the endpoints of the loop.
+    If flipAllLayers Then
+        lStart = 0
+        lEnd = pdImages(g_CurrentImage).getNumOfLayers - 1
+    Else
+        lStart = targetLayerIndex
+        lEnd = targetLayerIndex
+    End If
+    
+    'Loop through all relevant layers, transforming each as we go
+    For i = lStart To lEnd
     
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
         'Null-pad the layer
-        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Mirror it
         StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, tmpLayerRef.layerDIB.getDIBWidth - 1, 0, -tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, vbSrcCopy
         
         'Remove any null-padding
-        tmpLayerRef.cropNullPaddedLayer
+        If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
     
     Next i
     
@@ -514,7 +545,7 @@ Public Sub MenuRotate90Clockwise()
     
     'Lots of helper variables for a function like this
     Dim x As Long, y As Long, j As Long
-    Dim quickVal As Long, QuickValY
+    Dim QuickVal As Long, QuickValY
     Dim finalX As Long, finalY As Long, imgWidth As Long, imgHeight As Long
     imgWidth = pdImages(g_CurrentImage).Width
     imgHeight = pdImages(g_CurrentImage).Height
@@ -558,12 +589,12 @@ Public Sub MenuRotate90Clockwise()
         
         'Rotate the source image into the destination image, using the arrays provided
         For x = 0 To finalX
-            quickVal = x * 4
+            QuickVal = x * 4
         For y = 0 To finalY
             QuickValY = y * 4
             
             For j = 0 To 3
-                dstImageData(iHeight - QuickValY + j, finalX - x) = copyImageData(iWidth - quickVal + j, y)
+                dstImageData(iHeight - QuickValY + j, finalX - x) = copyImageData(iWidth - QuickVal + j, y)
             Next j
             
         Next y
@@ -658,7 +689,7 @@ Public Sub MenuRotate270Clockwise()
     
     'Lots of helper variables for a function like this
     Dim x As Long, y As Long, j As Long
-    Dim quickVal As Long, QuickValY
+    Dim QuickVal As Long, QuickValY
     Dim finalX As Long, finalY As Long, imgWidth As Long, imgHeight As Long
     imgWidth = pdImages(g_CurrentImage).Width
     imgHeight = pdImages(g_CurrentImage).Height
@@ -704,12 +735,12 @@ Public Sub MenuRotate270Clockwise()
         
         'Rotate the source image into the destination image, using the arrays provided
         For x = 0 To finalX
-            quickVal = x * 4
+            QuickVal = x * 4
         For y = 0 To finalY
             QuickValY = y * 4
             
             For j = 0 To 3
-                dstImageData(QuickValY + j, x) = copyImageData(iWidth - quickVal + j, y)
+                dstImageData(QuickValY + j, x) = copyImageData(iWidth - QuickVal + j, y)
             Next j
             
         Next y
@@ -957,7 +988,7 @@ Public Sub TrimImage()
     finalY = pdImages(g_CurrentImage).Height - 1
             
     'These values will help us access locations in the array more quickly.
-    Dim quickVal As Long
+    Dim QuickVal As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1014,10 +1045,10 @@ Public Sub TrimImage()
     SetProgBarVal 1
     
     For x = 0 To finalX
-        quickVal = x * 4
+        QuickVal = x * 4
     For y = initY To finalY
     
-        If srcImageData(quickVal + 3, y) > 0 Then colorFails = True
+        If srcImageData(QuickVal + 3, y) > 0 Then colorFails = True
         If colorFails Then Exit For
         
     Next y
@@ -1034,10 +1065,10 @@ Public Sub TrimImage()
     SetProgBarVal 2
     
     For x = finalX To 0 Step -1
-        quickVal = x * 4
+        QuickVal = x * 4
     For y = initY To finalY
     
-        If srcImageData(quickVal + 3, y) > 0 Then colorFails = True
+        If srcImageData(QuickVal + 3, y) > 0 Then colorFails = True
         If colorFails Then Exit For
         
     Next y
