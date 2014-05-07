@@ -463,7 +463,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Lower layer to bottom"
             Layer_Handler.moveLayerToEndOfStack cParams.GetLong(1), False
         
-        'Resize a layer
+        'Layer orientation changes
+        Case "Flip layer horizontal"
+            MenuMirror pdImages(g_CurrentImage).getActiveLayerIndex
+        
+        Case "Flip layer vertical"
+            MenuFlip pdImages(g_CurrentImage).getActiveLayerIndex
+        
+        'Layer Size changes
         Case "Content-aware resize"
             If showDialog Then
                 showPDDialog vbModal, FormResizeContentAware

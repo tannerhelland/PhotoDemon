@@ -1502,11 +1502,11 @@ Private Sub MnuLayerOrientation_Click(Index As Integer)
         
         'Flip horizontal
         Case 5
-            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
+            Process "Flip layer horizontal"
         
         'Flip vertical
         Case 6
-            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
+            Process "Flip layer vertical"
     
     End Select
 
