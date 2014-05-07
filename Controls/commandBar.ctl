@@ -879,7 +879,13 @@ Private Sub UserControl_Show()
     'At run-time, give the OK button focus by default.  (Note that using the .Default property to do this will
     ' BREAK THINGS.  .Default overrides catching the Enter key anywhere else in the form, so we cannot do things
     ' like save a preset via Enter keypress, because the .Default control will always eat the Enter keypress.)
+    
+    'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
+    ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
+    On Error GoTo somethingStoleFocus
     If g_UserModeFix Then cmdOK.SetFocus
+
+somethingStoleFocus:
     
     'Enable previews, and request a refresh
     controlFullyLoaded = True
