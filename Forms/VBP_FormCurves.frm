@@ -58,8 +58,8 @@ Begin VB.Form FormCurves
       Height          =   360
       Left            =   8040
       Style           =   2  'Dropdown List
-      TabIndex        =   6
-      Top             =   5850
+      TabIndex        =   5
+      Top             =   6060
       Width           =   4815
    End
    Begin VB.PictureBox picDraw 
@@ -74,7 +74,7 @@ Begin VB.Form FormCurves
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   464
       TabIndex        =   2
-      Top             =   120
+      Top             =   840
       Width           =   6960
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -89,8 +89,8 @@ Begin VB.Form FormCurves
    Begin PhotoDemon.smartCheckBox chkGrid 
       Height          =   480
       Left            =   6240
-      TabIndex        =   7
-      Top             =   6360
+      TabIndex        =   6
+      Top             =   6480
       Width           =   1350
       _ExtentX        =   2381
       _ExtentY        =   847
@@ -109,8 +109,8 @@ Begin VB.Form FormCurves
    Begin PhotoDemon.smartCheckBox chkDiagonal 
       Height          =   480
       Left            =   6240
-      TabIndex        =   8
-      Top             =   6840
+      TabIndex        =   7
+      Top             =   6960
       Width           =   3465
       _ExtentX        =   6112
       _ExtentY        =   847
@@ -125,6 +125,123 @@ Begin VB.Form FormCurves
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.jcbutton cmdChannel 
+      Height          =   600
+      Index           =   3
+      Left            =   11160
+      TabIndex        =   8
+      Top             =   120
+      Width           =   1650
+      _ExtentX        =   2910
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   "RGB"
+      ForeColor       =   3158064
+      Mode            =   1
+      Value           =   -1  'True
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormCurves.frx":0000
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.jcbutton cmdChannel 
+      Height          =   600
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   9
+      Top             =   120
+      Width           =   1650
+      _ExtentX        =   2910
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   "red"
+      ForeColor       =   3158064
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormCurves.frx":0D52
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.jcbutton cmdChannel 
+      Height          =   600
+      Index           =   1
+      Left            =   7800
+      TabIndex        =   10
+      Top             =   120
+      Width           =   1650
+      _ExtentX        =   2910
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   "green"
+      ForeColor       =   3158064
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormCurves.frx":1AA4
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.jcbutton cmdChannel 
+      Height          =   600
+      Index           =   2
+      Left            =   9480
+      TabIndex        =   11
+      Top             =   120
+      Width           =   1650
+      _ExtentX        =   2910
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   "blue"
+      ForeColor       =   3158064
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormCurves.frx":27F6
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin VB.Label lblTitle 
       Alignment       =   1  'Right Justify
@@ -144,30 +261,9 @@ Begin VB.Form FormCurves
       Height          =   240
       Index           =   1
       Left            =   6240
-      TabIndex        =   5
-      Top             =   5910
-      Width           =   1605
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "additional options:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
       TabIndex        =   4
-      Top             =   5400
-      Width           =   1980
+      Top             =   6120
+      Width           =   1605
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent
@@ -199,13 +295,7 @@ Attribute VB_Exposed = False
 'Copyright ©2008-2014 by Tanner Helland
 'Created: sometime 2008
 'Last updated: 06/May/14
-'Last update: Fix a number of preset-related bugs, and add dynamic curve coordinate display.  This dialog is a huge
-'              PITA when it comes to presets, because all its data is not only custom, but it relies on formatting
-'              that's prone to localization issues (floating-point, coordinates).  Also, as a convenience to users,
-'              we transform all node data into a DPI-agnostic, screen-size-agnostic format when storing.  I think
-'              I've *finally* solved all issues relating to saving/loading Curve preset data while accounting for
-'              all these factors, which is ironic considering that I'm about to add individual RGB curves to the
-'              mix, which will probably break everything yet again...  :p
+'Last update: add individual handling for each of red, green, blue, and luminance channels.
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -224,10 +314,6 @@ Attribute VB_Exposed = False
 ' render function to make it extremely quick, and it is currently comparable to brightness/contrast adjustment in speed
 ' (e.g. VERY FAST!).
 '
-'At present, only the image's luminance curve can be adjusted.  I've debated adding color curves as well, but I have my
-' doubts about the utility of this.  It complicates the interface greatly to add those features, and at what benefit to
-' the end-user?  If research shows a good technical reason for RGB curves as well, I'll consider adding it later.
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -242,7 +328,7 @@ Private Type fPoint
 End Type
 
 'This array will store all curve control nodes, including those added by the user at run-time
-Private numOfNodes As Long
+Private numOfNodes() As Long
 Private cNodes() As fPoint
 
 'Track mouse status between MouseDown and MouseMove events
@@ -253,6 +339,9 @@ Private selectedNode As Long
 
 'Current mouse position
 Private m_MouseX As Single, m_MouseY As Single
+
+'Current channel ([0, 3] where 0 = red, 1 = green, 2 = blue, 3 = luminance)
+Private m_curChannel As Long
 
 'Two additional arrays are needed to generate the cubic spline used for the curve function
 Private p() As Double
@@ -276,7 +365,7 @@ Private hMaxLog() As Double
 Private hMaxPosition() As Byte
 
 'An image of the current image histogram is drawn once each for regular and logarithmic, then stored to these DIBs.
-Private hDIB As pdDIB, hLogDIB As pdDIB
+Private hDIB(0 To 3) As pdDIB, hLogDIB(0 To 3) As pdDIB
 
 'The current mouse coordinates are rendered to this DIB, which is then overlaid atop the curve box
 Private mouseCoordFont As pdFont
@@ -297,11 +386,12 @@ Private Sub chkGrid_Click()
     updatePreview
 End Sub
 
-'Apply a curve to an image's luminance values
-' Input: a list of 256 values, one for each luminance point in the image
-Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'Apply four potential curves to an image; one each for RED, GREEN, BLUE, and LUMINANCE/RGB
+' Input: four lists of 256 values, one list for channel, with each channel explicitly stating the look-up values
+'         for each entry in that channel.
+Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If Not toPreview Then Message "Applying new luminance curve to image..."
+    If Not toPreview Then Message "Applying new curve to image..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -331,42 +421,51 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
     Dim r As Long, g As Long, b As Long
     
     'Take the list of curve points we were passed (in string format) and convert them into a numeric array.
-    Dim cHistogram(0 To 255) As Long
+    Dim cHistogram(0 To 3, 0 To 255) As Long
+    
+    'Our curves correction can be easily applied using a look-up table; the processed param string will be stored
+    ' in this table.
+    Dim newGamma(0 To 3, 0 To 255) As Byte
+    Dim tmpGamma As Double
     
     Dim cParams As pdParamString
     Set cParams = New pdParamString
     cParams.setParamString listOfPoints
     
-    For x = 0 To 255
-        cHistogram(x) = cParams.GetDouble(x + 1) * 255
-    Next x
+    Dim i As Long
     
-    'Our curves correction can be easily applied using a look-up table
-    Dim newGamma(0 To 255) As Byte
-    Dim tmpGamma As Double
+    'Repeat our calculations for each channel; note that values are stored in RGBL order in the param string, with 256
+    ' unique entries for each channel (one each for each potential byte value).
+    For i = 0 To 3
     
-    For x = 0 To 255
-    
-        tmpGamma = CDbl(x) / 255
+        For x = 0 To 255
+            cHistogram(i, x) = cParams.GetDouble((x + 256 * i) + 1) * 255
+        Next x
         
-        'This 'if' statement is necessary to match a weird trend with Photoshop's Curves dialog.  For darker gamma
-        ' values, Photoshop increases the force of the gamma conversion.  This is good for emphasizing subtle dark
-        ' shades that the human eye doesn't normally pick up... I think.  If this 'if' statement is removed and
-        ' only the TRUE condition is kept, the function will yield more mathematically correct results.
-        If cHistogram(x) <= (256 - x) Then
-            tmpGamma = tmpGamma ^ (1 / ((256 - x) / (cHistogram(x) + 1)))
-        Else
-            tmpGamma = tmpGamma ^ ((1 / ((256 - x) / (cHistogram(x) + 1))) ^ 1.5)
-        End If
+        For x = 0 To 255
         
-        tmpGamma = tmpGamma * 255
+            tmpGamma = CDbl(x) / 255
+            
+            'This 'if' statement is necessary to match a weird trend with Photoshop's Curves dialog.  For darker gamma
+            ' values, Photoshop increases the force of the gamma conversion.  This is good for emphasizing subtle dark
+            ' shades that the human eye doesn't normally pick up... I think.  If this 'if' statement is removed and
+            ' only the TRUE condition is kept, the function will yield more mathematically correct results.
+            If cHistogram(i, x) <= (256 - x) Then
+                tmpGamma = tmpGamma ^ (1 / ((256 - x) / (cHistogram(i, x) + 1)))
+            Else
+                tmpGamma = tmpGamma ^ ((1 / ((256 - x) / (cHistogram(i, x) + 1))) ^ 1.5)
+            End If
+            
+            tmpGamma = tmpGamma * 255
+            
+            If tmpGamma > 255 Then tmpGamma = 255
+            If tmpGamma < 0 Then tmpGamma = 0
+            
+            newGamma(i, x) = CByte(tmpGamma)
+            
+        Next x
         
-        If tmpGamma > 255 Then tmpGamma = 255
-        If tmpGamma < 0 Then tmpGamma = 0
-        
-        newGamma(x) = CByte(tmpGamma)
-        
-    Next x
+    Next i
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -374,14 +473,14 @@ Public Sub ApplyCurveToImage(ByVal listOfPoints As String, Optional ByVal toPrev
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = newGamma(0, ImageData(QuickVal + 2, y))
+        g = newGamma(1, ImageData(QuickVal + 1, y))
+        b = newGamma(2, ImageData(QuickVal, y))
                 
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = newGamma(r)
-        ImageData(QuickVal + 1, y) = newGamma(g)
-        ImageData(QuickVal, y) = newGamma(b)
+        ImageData(QuickVal + 2, y) = newGamma(3, r)
+        ImageData(QuickVal + 1, y) = newGamma(3, g)
+        ImageData(QuickVal, y) = newGamma(3, b)
         
     Next y
         If Not toPreview Then
@@ -405,27 +504,34 @@ End Sub
 ' whenever the command bar needs custom data from us.
 Private Sub cmdBar_AddCustomPresetData()
     
-    'Write the number of nodes to file
-    cmdBar.addPresetData "NodeCount", Str(numOfNodes)
-    
     'Next, place all node data in one giant string.
-    ' UPDATE 03 Dec 2014: instead of storing absolute coordinates, store relative ones per the size of the
+    ' UPDATE 03 Dec 2013: instead of storing absolute coordinates, store relative ones per the size of the
     '                     curve box.  This fixes an extremely rare error when the user changes DPI for their
     '                     monitor while having a previously stored set of curve coordinates.
     Dim nodeString As String
-    nodeString = ""
     
     Dim nodeBoxWidth As Long, nodeBoxHeight As Long
     nodeBoxWidth = picDraw.ScaleWidth - previewBorder * 2
     nodeBoxHeight = picDraw.ScaleHeight - previewBorder * 2
     
-    Dim i As Long
-    For i = 1 To numOfNodes
-        nodeString = nodeString & Trim$(Str((cNodes(i).pX - previewBorder) / nodeBoxWidth)) & ";" & Trim$(Str((cNodes(i).pY - previewBorder) / nodeBoxHeight))
-        If i < numOfNodes Then nodeString = nodeString & "|"
-    Next i
+    Dim i As Long, j As Long
     
-    cmdBar.addPresetData "NodeData", nodeString
+    For i = 0 To 3
+    
+        'Write the number of nodes for this array to file
+        cmdBar.addPresetData "NodeCount_" & i, Trim$(Str(numOfNodes(i)))
+        
+        nodeString = ""
+        
+        'Compile all nodes into a single string, with coordinate pairs separated by "|" and x/y values separated by ";"
+        For j = 1 To numOfNodes(i)
+            nodeString = nodeString & Trim$(Str((cNodes(i, j).pX - previewBorder) / nodeBoxWidth)) & ";" & Trim$(Str((cNodes(i, j).pY - previewBorder) / nodeBoxHeight))
+            If j < numOfNodes(i) Then nodeString = nodeString & "|"
+        Next j
+    
+        cmdBar.addPresetData "NodeData_" & i, nodeString
+    
+    Next i
     
 End Sub
 
@@ -433,31 +539,41 @@ End Sub
 Private Sub cmdBar_RandomizeClick()
 
     Randomize Timer
-
-    'Initialize the control to somewhere between 3 and 6 points
-    numOfNodes = Int(Rnd * 4) + 3
-    ReDim cNodes(0 To numOfNodes) As fPoint
     
-    'Start by equally spacing the nodes
-    Dim i As Long
-    For i = 0 To numOfNodes
-        cNodes(i).pX = (i - 1) * ((picDraw.ScaleWidth - previewBorder * 2) / (numOfNodes - 1))
-        cNodes(i).pY = (picDraw.ScaleHeight - previewBorder * 2) - (cNodes(i).pX / (picDraw.ScaleWidth - previewBorder * 2)) * (picDraw.ScaleHeight - previewBorder * 2)
-        cNodes(i).pX = cNodes(i).pX + previewBorder
-        cNodes(i).pY = cNodes(i).pY + previewBorder
-    Next i
+    Dim i As Long, j As Long
     
-    'Finally, move all nodes a random amount up or down, left or right
-    For i = 0 To numOfNodes
+    'Reset the node array.  Note that in order to simplify our code, we limit the node count to 513 unique points.  In reality,
+    ' nowhere near this many will ever be used, but it doesn't hurt to err on the side of safety.
+    ReDim cNodes(0 To 3, 0 To 512) As fPoint
+    
+    'Initialize each control to somewhere between 3 and 6 randomly distributed points
+    For i = 0 To 3
+    
+        'Set a random number of nodes for this location
+        numOfNodes(i) = Int(Rnd * 4) + 3
         
-        cNodes(i).pX = cNodes(i).pX + Int(-20 + Rnd * 41)
-        If cNodes(i).pX < previewBorder Then cNodes(i).pX = previewBorder
-        If cNodes(i).pX > (picDraw.ScaleWidth - previewBorder) Then cNodes(i).pX = (picDraw.ScaleWidth - previewBorder)
+        'Start by equally spacing the nodes
         
-        cNodes(i).pY = cNodes(i).pY + Int(-40 + Rnd * 81)
-        If cNodes(i).pY < previewBorder Then cNodes(i).pY = previewBorder
-        If cNodes(i).pY > (picDraw.ScaleHeight - previewBorder) Then cNodes(i).pY = (picDraw.ScaleHeight - previewBorder)
+        For j = 0 To numOfNodes(i)
+            cNodes(i, j).pX = (j - 1) * ((picDraw.ScaleWidth - previewBorder * 2) / (numOfNodes(i) - 1))
+            cNodes(i, j).pY = (picDraw.ScaleHeight - previewBorder * 2) - (cNodes(i, j).pX / (picDraw.ScaleWidth - previewBorder * 2)) * (picDraw.ScaleHeight - previewBorder * 2)
+            cNodes(i, j).pX = cNodes(i, j).pX + previewBorder
+            cNodes(i, j).pY = cNodes(i, j).pY + previewBorder
+        Next j
         
+        'Finally, move all nodes a random amount up or down, left or right
+        For j = 0 To numOfNodes(i)
+            
+            cNodes(i, j).pX = cNodes(i, j).pX + Int(-20 + Rnd * 41)
+            If cNodes(i, j).pX < previewBorder Then cNodes(i, j).pX = previewBorder
+            If cNodes(i, j).pX > (picDraw.ScaleWidth - previewBorder) Then cNodes(i, j).pX = (picDraw.ScaleWidth - previewBorder)
+            
+            cNodes(i, j).pY = cNodes(i, j).pY + Int(-40 + Rnd * 81)
+            If cNodes(i, j).pY < previewBorder Then cNodes(i, j).pY = previewBorder
+            If cNodes(i, j).pY > (picDraw.ScaleHeight - previewBorder) Then cNodes(i, j).pY = (picDraw.ScaleHeight - previewBorder)
+            
+        Next j
+    
     Next i
     
 End Sub
@@ -465,41 +581,9 @@ End Sub
 'When a preset is loaded from file, we need to retrieve the custom curve information alongside it
 Private Sub cmdBar_ReadCustomPresetData()
     
-    'Retrieve the number of nodes in this preset
-    Dim tmpString As String
-    tmpString = cmdBar.retrievePresetData("NodeCount")
-    numOfNodes = CLng(tmpString)
-    
-    'Using that as our guide, repopulate the cNodes array
-    ReDim cNodes(0 To numOfNodes) As fPoint
-    
-    'Retrieve the string that contains the node coordinates
-    tmpString = cmdBar.retrievePresetData("NodeData")
-    
-    'With the help of a paramString class, parse out individual coordinates into the cNodes array
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    
-    'Old versions of the Curves dialog used the comma to separate coordinate entries.  This was a bad idea, because
-    ' some locales (e.g. IT-IT) use the comma as a decimal separator!  We now use a colon instead, but to make
-    ' sure old data doesn't crash the program, check for it now.
-    If InStr(1, tmpString, ",") > 0 Then
-        
-        If InStr(1, tmpString, ".") > 0 Then
-            cParams.setParamString Replace(tmpString, ",", "|")
-        Else
-            cParams.setParamString Replace(tmpString, ";", "|")
-        End If
-        
-    Else
-        cParams.setParamString Replace(tmpString, ";", "|")
-    End If
-    
-    tmpString = cParams.getParamString
-    
-    If InStr(1, tmpString, ":") > 0 Then
-        cParams.setParamString Replace(tmpString, ":", "|")
-    End If
+    'Erase the cNodes array in preparation for receiving the preset data from file
+    ReDim numOfNodes(0 To 3) As Long
+    ReDim cNodes(0 To 3, 0 To 512) As fPoint
     
     'UPDATE 03 Dec 2013: instead of storing absolute coordinates, we now store relative ones per the size of
     '                    the curve box.  This fixes an extremely rare error when the user changes DPI for
@@ -508,31 +592,78 @@ Private Sub cmdBar_ReadCustomPresetData()
     nodeBoxWidth = picDraw.ScaleWidth - (previewBorder * 2)
     nodeBoxHeight = picDraw.ScaleHeight - (previewBorder * 2)
     
-    Dim i As Long
-    For i = 1 To numOfNodes
+    Dim tmpString As String, cParams As pdParamString
+    
+    Dim i As Long, j As Long
+    For i = 0 To 3
+    
+        'Retrieve the number of nodes for this channel
+        tmpString = cmdBar.retrievePresetData("NodeCount_" & i)
         
-        'Retrieve this node's x and y values
-        cNodes(i).pX = cParams.GetDouble((i - 1) * 2 + 1)
-        cNodes(i).pY = cParams.GetDouble((i - 1) * 2 + 2)
-        
-        'Old preset values may store the node values as absolutes rather than relatives.  Check for this, and
-        ' adjust node values accordingly.
-        If cNodes(i).pX > 1 Then
-        
-            If cNodes(i).pX > nodeBoxWidth Then cNodes(i).pX = nodeBoxWidth
-            If cNodes(i).pY > nodeBoxHeight Then cNodes(i).pY = nodeBoxHeight
-        
-        Else
-        
-            cNodes(i).pX = cNodes(i).pX * nodeBoxWidth
-            cNodes(i).pY = cNodes(i).pY * nodeBoxHeight
-        
+        'If no node data is found for this entry, reset all node data and exit immediately
+        If Len(tmpString) = 0 Then
+            
+            resetCurvePoints
+            Exit Sub
+            
         End If
         
-        'Add the preview border offset to all incoming values as well
-        cNodes(i).pX = cNodes(i).pX + previewBorder
-        cNodes(i).pY = cNodes(i).pY + previewBorder
-                
+        numOfNodes(i) = CLng(tmpString)
+    
+        'Retrieve the string that contains the actual node coordinates
+        tmpString = cmdBar.retrievePresetData("NodeData_" & i)
+    
+        'With the help of a paramString class, parse out individual coordinates into the cNodes array
+        Set cParams = New pdParamString
+    
+        'Old versions of the Curves dialog used the comma to separate coordinate entries.  This was a bad idea, because
+        ' some locales (e.g. IT-IT) use the comma as a decimal separator!  We now use a semicolon instead, but to make
+        ' sure old data doesn't crash the program, check for it now.
+        If InStr(1, tmpString, ",") > 0 Then
+            
+            If InStr(1, tmpString, ".") > 0 Then
+                cParams.setParamString Replace(tmpString, ",", "|")
+            Else
+                cParams.setParamString Replace(tmpString, ";", "|")
+            End If
+            
+        Else
+            cParams.setParamString Replace(tmpString, ";", "|")
+        End If
+        
+        tmpString = cParams.getParamString
+        
+        If InStr(1, tmpString, ":") > 0 Then
+            cParams.setParamString Replace(tmpString, ":", "|")
+        End If
+        
+        'Iterate through all nodes in the list, copying them into our cNodes array as we go
+        For j = 1 To numOfNodes(i)
+            
+            'Retrieve this node's x and y values
+            cNodes(i, j).pX = cParams.GetDouble((j - 1) * 2 + 1)
+            cNodes(i, j).pY = cParams.GetDouble((j - 1) * 2 + 2)
+            
+            'Old preset values may store the node values as absolutes rather than relatives.  Check for this, and
+            ' adjust node values accordingly.
+            If cNodes(i, j).pX > 1 Then
+            
+                If cNodes(i, j).pX > nodeBoxWidth Then cNodes(i, j).pX = nodeBoxWidth
+                If cNodes(i, j).pY > nodeBoxHeight Then cNodes(i, j).pY = nodeBoxHeight
+            
+            Else
+            
+                cNodes(i, j).pX = cNodes(i, j).pX * nodeBoxWidth
+                cNodes(i, j).pY = cNodes(i, j).pY * nodeBoxHeight
+            
+            End If
+            
+            'Add the preview border offset to all incoming values as well
+            cNodes(i, j).pX = cNodes(i, j).pX + previewBorder
+            cNodes(i, j).pY = cNodes(i, j).pY + previewBorder
+                    
+        Next j
+        
     Next i
     
 End Sub
@@ -553,6 +684,29 @@ Private Sub cmdBar_ResetClick()
     'Also, reset will automatically select the first entry in a combo box.  In this case, we actually want the 1st one.
     cboHistogram.ListIndex = 1
     
+End Sub
+
+'When the active channel is changed, redraw the curve display
+Private Sub cmdChannel_Click(Index As Integer)
+
+    Dim i As Long
+    For i = 0 To cmdChannel.Count - 1
+        If i = Index Then
+            cmdChannel(i).Value = True
+            m_curChannel = Index
+        Else
+            cmdChannel(i).Value = False
+        End If
+    Next i
+    
+    'Reset the selected node and mouse position
+    selectedNode = -1
+    m_MouseX = -1
+    m_MouseY = -1
+    
+    'Redraw the current preview (and curve interaction box)
+    updatePreview
+
 End Sub
 
 Private Sub Form_Activate()
@@ -577,33 +731,64 @@ Private Sub Form_Activate()
     'Fill the histogram arrays
     fillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
     
-    'Initialize the background histogram image DIBs
-    Set hDIB = New pdDIB
-    Set hLogDIB = New pdDIB
-    hDIB.createBlank picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
-    hLogDIB.createFromExistingDIB hDIB
-    
-    'Build a look-up table of x-positions for the histogram data
-    Dim hLookupX(0 To 255) As Double
-    Dim i As Long
-    
-    For i = 0 To 255
-        hLookupX(i) = (CDbl(i) / 255) * hDIB.getDIBWidth
-    Next i
-    
-    'Render the luminance histogram data to each DIB (one for regular, one for logarithmic)
     Dim yMax As Double
-    yMax = 0.9 * hDIB.getDIBHeight
+    Dim hLookupX() As Double
+    Dim hColor As Long
     
-    For i = 1 To 255
-        GDIPlusDrawLineToDC hDIB.getDIBDC, hLookupX(i - 1), hDIB.getDIBHeight - (hData(3, i - 1) / hMax(3)) * yMax, hLookupX(i), hDIB.getDIBHeight - (hData(3, i) / hMax(3)) * yMax, RGB(192, 192, 192), 255
-        GDIPlusDrawLineToDC hLogDIB.getDIBDC, hLookupX(i - 1), hDIB.getDIBHeight - (hDataLog(3, i - 1) / hMaxLog(3)) * yMax, hLookupX(i), hDIB.getDIBHeight - (hDataLog(3, i) / hMaxLog(3)) * yMax, RGB(192, 192, 192), 255
-    Next i
+    'Initialize the background histogram image DIBs
+    Dim i As Long, j As Long
     
-    'Beneath each line, add an even lighter "filled" version of the line
-    For i = 0 To 255
-        GDIPlusDrawLineToDC hDIB.getDIBDC, hLookupX(i), hDIB.getDIBHeight - (hData(3, i) / hMax(3)) * yMax - 1, hLookupX(i), hDIB.getDIBHeight, RGB(192, 192, 192), 128
-        GDIPlusDrawLineToDC hLogDIB.getDIBDC, hLookupX(i), hDIB.getDIBHeight - (hDataLog(3, i) / hMaxLog(3)) * yMax - 1, hLookupX(i), hDIB.getDIBHeight, RGB(192, 192, 192), 128
+    For i = 0 To 3
+    
+        'Initialize this channel's DIB
+        Set hDIB(i) = New pdDIB
+        Set hLogDIB(i) = New pdDIB
+        hDIB(i).createBlank picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
+        hLogDIB(i).createFromExistingDIB hDIB(i)
+        
+        yMax = 0.9 * hDIB(i).getDIBHeight
+        
+        'Build a look-up table of x-positions for the histogram data
+        ReDim hLookupX(0 To 255) As Double
+        
+        For j = 0 To 255
+            hLookupX(j) = (CDbl(j) / 255) * hDIB(i).getDIBWidth
+        Next j
+        
+        'The color of the histogram changes for each channel
+        Select Case i
+        
+            'Red
+            Case 0
+                hColor = RGB(255, 60, 80)
+            
+            'Green
+            Case 1
+                hColor = RGB(60, 210, 80)
+            
+            'Blue
+            Case 2
+                hColor = RGB(60, 100, 255)
+            
+            'Luminance
+            Case 3
+                hColor = RGB(192, 192, 192)
+        
+        
+        End Select
+        
+        'Render the histogram data to each DIB (one for regular, one for logarithmic)
+        For j = 1 To 255
+            GDIPlusDrawLineToDC hDIB(i).getDIBDC, hLookupX(j - 1), hDIB(i).getDIBHeight - (hData(i, j - 1) / hMax(i)) * yMax, hLookupX(j), hDIB(i).getDIBHeight - (hData(i, j) / hMax(i)) * yMax, hColor, 255
+            GDIPlusDrawLineToDC hLogDIB(i).getDIBDC, hLookupX(j - 1), hDIB(i).getDIBHeight - (hDataLog(i, j - 1) / hMaxLog(i)) * yMax, hLookupX(j), hDIB(i).getDIBHeight - (hDataLog(i, j) / hMaxLog(i)) * yMax, hColor, 255
+        Next j
+        
+        'Beneath each line, add an even lighter "filled" version of the line
+        For j = 0 To 255
+            GDIPlusDrawLineToDC hDIB(i).getDIBDC, hLookupX(j), hDIB(i).getDIBHeight - (hData(i, j) / hMax(i)) * yMax - 1, hLookupX(j), hDIB(i).getDIBHeight, hColor, 128
+            GDIPlusDrawLineToDC hLogDIB(i).getDIBDC, hLookupX(j), hDIB(i).getDIBHeight - (hDataLog(i, j) / hMaxLog(i)) * yMax - 1, hLookupX(j), hDIB(i).getDIBHeight, hColor, 128
+        Next j
+    
     Next i
         
     'Assign the system hand cursor to all relevant objects
@@ -638,6 +823,10 @@ Private Sub Form_Load()
         .setTextAlignment vbAlignLeft
     End With
     
+    'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
+    m_curChannel = 3
+    cmdChannel(3).Value = True
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -666,25 +855,38 @@ End Sub
 ' a list of histogram points, in PD string parameter format.
 Private Function getCurvesParamString() As String
     
+    'Make sure the fillResultsArray is up to date
+    'fillResultsArray
+    
     Dim paramString As String
     paramString = ""
 
-    Dim i As Long
+    Dim i As Long, j As Long
     
-    'The histogram array will be filled with a list of values in the range [0.0, 1.0]
-    Dim cHistogram(0 To 255) As Double
+    Dim cHistogram() As Double
     Dim cEntry As Long
-    For i = 0 To 255
-        cEntry = previewBorder + (CDbl(i) / 255) * (picDraw.ScaleWidth - previewBorder * 2)
-        cHistogram(i) = (cResults(cEntry) - previewBorder) / (picDraw.ScaleHeight - previewBorder * 2)
+    
+    'The histogram array will be filled with a list of values in the range [0.0, 1.0].  Note that we must repeat all
+    ' calculations 4x - once for each channel (red, green, blue, and luminance/RGB).
+    For i = 0 To 3
+    
+        ReDim cHistogram(0 To 255) As Double
+    
+        For j = 0 To 255
+            cEntry = previewBorder + (CDbl(j) / 255) * (picDraw.ScaleWidth - previewBorder * 2)
+            cHistogram(j) = (cResults(i, cEntry) - previewBorder) / (picDraw.ScaleHeight - previewBorder * 2)
+        Next j
+    
+        'We now need to convert the histogram array into a "|"-delimited string that can be passed through the
+        ' software processor.  Generate it automatically.
+        For j = 0 To 255
+            paramString = paramString & Trim$(Str(cHistogram(j))) & "|"
+        Next j
+        
     Next i
-
-    'We now need to convert the histogram array into a "|"-delimited string that can be passed through the
-    ' software processor.  Generate it automatically.
-    For i = 0 To 255
-        paramString = paramString & Str(cHistogram(i))
-        If i < 255 Then paramString = paramString & "|"
-    Next i
+    
+    'Add a trailing null parameter to the string, then return it
+    paramString = paramString & "0"
     
     getCurvesParamString = paramString
     
@@ -704,11 +906,11 @@ Private Sub redrawPreviewBox()
         
         'Normal histogram
         Case 1
-            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hDIB.getDIBWidth, hDIB.getDIBHeight, hDIB.getDIBDC, 0, 0, vbSrcCopy
+            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
         
         'Logarithmic histogram
         Case 2
-            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hDIB.getDIBWidth, hDIB.getDIBHeight, hLogDIB.getDIBDC, 0, 0, vbSrcCopy
+            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hLogDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
         
     End Select
     
@@ -734,7 +936,7 @@ Private Sub redrawPreviewBox()
     
     'Use the previously created spline array (cResults) to draw the cubic spline onto picDraw, while using GDI+ for antialiasing
     For i = previewBorder + 1 To picDraw.ScaleWidth - previewBorder
-        GDIPlusDrawLineToDC picDraw.hDC, i, cResults(i), i - 1, cResults(i - 1), RGB(0, 0, 255), 192, 2
+        GDIPlusDrawLineToDC picDraw.hDC, i, cResults(m_curChannel, i), i - 1, cResults(m_curChannel, i - 1), RGB(0, 0, 0), 210, 2
     Next i
     
     'Next, render the spline control points.
@@ -747,13 +949,13 @@ Private Sub redrawPreviewBox()
     'The curves function requires an input of 256 points - one for each level of the histogram.
     'NOTE: this function requires fillResultsArray() to have been called immediately prior.  Otherwise, the
     '       cResults array will not contain the entries necessary to generate a parameter list.
-    For i = 1 To numOfNodes
-        GDIPlusDrawEllipseToDC picDraw.hDC, cNodes(i).pX - (circRadius / 2), cNodes(i).pY - (circRadius / 2), circRadius, circRadius, RGB(32, 32, 255), True
+    For i = 1 To numOfNodes(m_curChannel)
+        GDIPlusDrawEllipseToDC picDraw.hDC, cNodes(m_curChannel, i).pX - (circRadius / 2), cNodes(m_curChannel, i).pY - (circRadius / 2), circRadius, circRadius, RGB(32, 32, 64), True
     Next i
     
     'Render a special highlight around the currently selected node
     If selectedNode > 0 Then
-        GDIPlusDrawCanvasCircle picDraw.hDC, cNodes(selectedNode).pX, cNodes(selectedNode).pY, circRadius, circAlpha
+        GDIPlusDrawCanvasCircle picDraw.hDC, cNodes(m_curChannel, selectedNode).pX, cNodes(m_curChannel, selectedNode).pY, circRadius, circAlpha
     End If
     
     'Finally, display a live coordinate overlay for the current mouse position.  If a node is selected, the coordinate display
@@ -770,16 +972,16 @@ Private Sub redrawPreviewBox()
         'If a node is currently being hovered/clicked, lock the mouse position to that node.  Otherwise, use the interpolated
         ' curve value at this location.
         If selectedNode > 0 Then
-            coordActualX = cNodes(selectedNode).pX
-            coordActualY = cNodes(selectedNode).pY
+            coordActualX = cNodes(m_curChannel, selectedNode).pX
+            coordActualY = cNodes(m_curChannel, selectedNode).pY
         Else
             coordActualX = m_MouseX
-            coordActualY = cResults(m_MouseX)
+            coordActualY = cResults(m_curChannel, m_MouseX)
         End If
         
         'Draw lines at the current curve position, to help orient the user
-        GDIPlusDrawLineToDC picDraw.hDC, CLng(coordActualX), CLng(previewBorder), CLng(coordActualX), CLng(picDraw.ScaleHeight - previewBorder), RGB(0, 0, 64), 172
-        GDIPlusDrawLineToDC picDraw.hDC, CLng(previewBorder), CLng(coordActualY), CLng(picDraw.ScaleWidth - previewBorder), CLng(coordActualY), RGB(0, 0, 64), 172
+        GDIPlusDrawLineToDC picDraw.hDC, CLng(coordActualX), CLng(previewBorder), CLng(coordActualX), CLng(picDraw.ScaleHeight - previewBorder), RGB(32, 32, 64), 172
+        GDIPlusDrawLineToDC picDraw.hDC, CLng(previewBorder), CLng(coordActualY), CLng(picDraw.ScaleWidth - previewBorder), CLng(coordActualY), RGB(32, 32, 64), 172
         
         'From the physical x/y position of the mouse cursor, generate relative x/y values in the [0,255] range, which will be the
         ' values actually displayed to the user.
@@ -859,44 +1061,43 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, 
             Dim pointFound As Long
             pointFound = -1
             
-            For i = 0 To numOfNodes
-                If cNodes(i).pX > x Then
+            For i = 0 To numOfNodes(m_curChannel)
+                If cNodes(m_curChannel, i).pX > x Then
                     pointFound = i
                     Exit For
                 End If
             Next i
         
-            numOfNodes = numOfNodes + 1
-            ReDim Preserve cNodes(0 To numOfNodes) As fPoint
+            numOfNodes(m_curChannel) = numOfNodes(m_curChannel) + 1
             
             'If a neighboring point was found, use that location to insert the new point
             If pointFound > -1 Then
                 
                 'Shift all points "above" this one to the right
-                For i = numOfNodes To pointFound + 1 Step -1
-                    cNodes(i).pX = cNodes(i - 1).pX
-                    cNodes(i).pY = cNodes(i - 1).pY
+                For i = numOfNodes(m_curChannel) To pointFound + 1 Step -1
+                    cNodes(m_curChannel, i).pX = cNodes(m_curChannel, i - 1).pX
+                    cNodes(m_curChannel, i).pY = cNodes(m_curChannel, i - 1).pY
                 Next i
                 
                 'Store the new point
-                cNodes(pointFound).pX = x
-                cNodes(pointFound).pY = y
+                cNodes(m_curChannel, pointFound).pX = x
+                cNodes(m_curChannel, pointFound).pY = y
                 
                 'Make sure the new point falls within acceptable boundaries
-                If cNodes(pointFound).pX < previewBorder Then cNodes(pointFound).pX = previewBorder
-                If cNodes(pointFound).pX > picDraw.ScaleWidth - previewBorder Then cNodes(pointFound).pX = picDraw.ScaleWidth - previewBorder
-                If cNodes(pointFound).pY < previewBorder Then cNodes(pointFound).pY = previewBorder
-                If cNodes(pointFound).pY > picDraw.ScaleHeight - previewBorder Then cNodes(pointFound).pY = picDraw.ScaleHeight - previewBorder
+                If cNodes(m_curChannel, pointFound).pX < previewBorder Then cNodes(m_curChannel, pointFound).pX = previewBorder
+                If cNodes(m_curChannel, pointFound).pX > picDraw.ScaleWidth - previewBorder Then cNodes(m_curChannel, pointFound).pX = picDraw.ScaleWidth - previewBorder
+                If cNodes(m_curChannel, pointFound).pY < previewBorder Then cNodes(m_curChannel, pointFound).pY = previewBorder
+                If cNodes(m_curChannel, pointFound).pY > picDraw.ScaleHeight - previewBorder Then cNodes(m_curChannel, pointFound).pY = picDraw.ScaleHeight - previewBorder
                 
                 'Perform a fail-safe check of the array to make sure there are no duplicate x-values
-                For i = numOfNodes To 1 Step -1
-                    If cNodes(i).pX = cNodes(i - 1).pX Then cNodes(i - 1).pX = cNodes(i - 1).pX - 1
+                For i = numOfNodes(m_curChannel) To 1 Step -1
+                    If cNodes(m_curChannel, i).pX = cNodes(m_curChannel, i - 1).pX Then cNodes(m_curChannel, i - 1).pX = cNodes(m_curChannel, i - 1).pX - 1
                 Next i
                 
                 'And finally, perform an additional fail-safe to remove any x-values that now occur outside acceptable boundaries
                 ' (e.g. points pushed off the left of the curve)
-                For i = numOfNodes To 1 Step -1
-                    If cNodes(i).pX < previewBorder Then deleteCurveNode i
+                For i = numOfNodes(m_curChannel) To 1 Step -1
+                    If cNodes(m_curChannel, i).pX < previewBorder Then deleteCurveNode i
                 Next i
                 
                 'Mark this node as the currently selected one
@@ -904,9 +1105,9 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, 
             
             'If no neighboring point was found, this point should be inserted at the end of the curve
             Else
-                cNodes(numOfNodes).pX = x
-                cNodes(numOfNodes).pY = y
-                selectedNode = numOfNodes
+                cNodes(m_curChannel, numOfNodes(m_curChannel)).pX = x
+                cNodes(m_curChannel, numOfNodes(m_curChannel)).pY = y
+                selectedNode = numOfNodes(m_curChannel)
             End If
             
             'Request a full redraw of the curve
@@ -931,18 +1132,18 @@ End Sub
 Private Sub deleteCurveNode(ByVal nodeIndex As Long)
 
     'Only erase a node if more than two nodes will be left after the operation
-    If numOfNodes > 2 Then
+    If numOfNodes(m_curChannel) > 2 Then
     
         'Start by shifting all nodes "above" the current one to the left
         Dim i As Long
-        For i = nodeIndex To numOfNodes - 1
-            cNodes(i).pX = cNodes(i + 1).pX
-            cNodes(i).pY = cNodes(i + 1).pY
+        For i = nodeIndex To numOfNodes(m_curChannel) - 1
+            cNodes(m_curChannel, i).pX = cNodes(m_curChannel, i + 1).pX
+            cNodes(m_curChannel, i).pY = cNodes(m_curChannel, i + 1).pY
         Next i
         
         'Reduce the point count and resize the main point array
-        numOfNodes = numOfNodes - 1
-        ReDim Preserve cNodes(0 To numOfNodes) As fPoint
+        numOfNodes(m_curChannel) = numOfNodes(m_curChannel) - 1
+        'ReDim Preserve cNodes(0 To numOfNodes) As fPoint
     
         selectedNode = -1
     
@@ -977,25 +1178,25 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
     
         If selectedNode > 0 Then
         
-            cNodes(selectedNode).pX = x
-            cNodes(selectedNode).pY = y
+            cNodes(m_curChannel, selectedNode).pX = x
+            cNodes(m_curChannel, selectedNode).pY = y
             
             'Perform basic bounds-checking.  Points are not allowed to cross over each other, and they cannot lie
             ' outside the bounds of the curve preview box.
-            If selectedNode < numOfNodes Then
-                If cNodes(selectedNode).pX >= cNodes(selectedNode + 1).pX Then cNodes(selectedNode).pX = cNodes(selectedNode + 1).pX - 1
+            If selectedNode < numOfNodes(m_curChannel) Then
+                If cNodes(m_curChannel, selectedNode).pX >= cNodes(m_curChannel, selectedNode + 1).pX Then cNodes(m_curChannel, selectedNode).pX = cNodes(m_curChannel, selectedNode + 1).pX - 1
             End If
             
             'Because legitimate points start at index position 1, we don't need to worry about "if selectedNode > 0"
             ' as that statement is already handled at the top of this segment.
-            If cNodes(selectedNode).pX <= cNodes(selectedNode - 1).pX Then
-                cNodes(selectedNode).pX = cNodes(selectedNode - 1).pX + 1
+            If cNodes(m_curChannel, selectedNode).pX <= cNodes(m_curChannel, selectedNode - 1).pX Then
+                cNodes(m_curChannel, selectedNode).pX = cNodes(m_curChannel, selectedNode - 1).pX + 1
             End If
             
-            If cNodes(selectedNode).pX < previewBorder Then cNodes(selectedNode).pX = previewBorder
-            If cNodes(selectedNode).pX > picDraw.ScaleWidth - previewBorder Then cNodes(selectedNode).pX = picDraw.ScaleWidth - previewBorder
-            If cNodes(selectedNode).pY < previewBorder Then cNodes(selectedNode).pY = previewBorder
-            If cNodes(selectedNode).pY > picDraw.ScaleHeight - previewBorder Then cNodes(selectedNode).pY = picDraw.ScaleHeight - previewBorder
+            If cNodes(m_curChannel, selectedNode).pX < previewBorder Then cNodes(m_curChannel, selectedNode).pX = previewBorder
+            If cNodes(m_curChannel, selectedNode).pX > picDraw.ScaleWidth - previewBorder Then cNodes(m_curChannel, selectedNode).pX = picDraw.ScaleWidth - previewBorder
+            If cNodes(m_curChannel, selectedNode).pY < previewBorder Then cNodes(m_curChannel, selectedNode).pY = previewBorder
+            If cNodes(m_curChannel, selectedNode).pY > picDraw.ScaleHeight - previewBorder Then cNodes(m_curChannel, selectedNode).pY = picDraw.ScaleHeight - previewBorder
             
             updatePreview
             
@@ -1019,8 +1220,8 @@ Private Function checkClick(ByVal x As Long, ByVal y As Long) As Long
     Dim pDist As Double
     Dim i As Long
     
-    For i = 1 To numOfNodes
-        pDist = pDistance(x, y, cNodes(i).pX, cNodes(i).pY)
+    For i = 1 To numOfNodes(m_curChannel)
+        pDist = pDistance(x, y, cNodes(m_curChannel, i).pX, cNodes(m_curChannel, i).pY)
         
         'If we're close to an existing point, return the index of that point
         If pDist < g_MouseAccuracy Then
@@ -1041,11 +1242,11 @@ Private Function pDistance(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long,
 End Function
 
 'Original required spline function:
-Private Function getCurvePoint(ByVal i As Long, ByVal v As Double) As Double
+Private Function getCurvePoint(ByVal curChannel As Long, ByVal i As Long, ByVal v As Double) As Double
     Dim t As Double
     'derived curve equation (which uses p's and u's for coefficients)
-    t = (v - cNodes(i).pX) / u(i)
-    getCurvePoint = t * cNodes(i + 1).pY + (1 - t) * cNodes(i).pY + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
+    t = (v - cNodes(curChannel, i).pX) / u(i)
+    getCurvePoint = t * cNodes(curChannel, i + 1).pY + (1 - t) * cNodes(curChannel, i).pY + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
 End Function
 
 'Original required spline function:
@@ -1054,13 +1255,13 @@ Private Function f(ByRef x As Double) As Double
 End Function
 
 'Original required spline function:
-Private Sub SetPandU()
+Private Sub SetPandU(ByVal channelID As Long)
     
     Dim i As Long
     Dim d() As Double
     Dim w() As Double
-    ReDim d(0 To numOfNodes) As Double
-    ReDim w(0 To numOfNodes) As Double
+    ReDim d(0 To numOfNodes(channelID)) As Double
+    ReDim w(0 To numOfNodes(channelID)) As Double
     
     'Routine to compute the parameters of our cubic spline.  Based on equations derived from some basic facts...
     'Each segment must be a cubic polynomial.  Curve segments must have equal first and second derivatives
@@ -1070,86 +1271,103 @@ Private Sub SetPandU()
     'arrays.  we're essentially trying to find the values of the second derivative of each polynomial
     'at each knot within the curve.  That's why theres only N-2 p's (where N is # points).
     'later, we use the p's and u's to calculate curve points...
-
-    For i = 2 To numOfNodes - 1
-        d(i) = 2 * (cNodes(i + 1).pX - cNodes(i - 1).pX)
+    
+    '06 May '14 addition: repeat the calculations for all color channels, instead of just luminance...
+    For i = 2 To numOfNodes(channelID) - 1
+        d(i) = 2 * (cNodes(channelID, i + 1).pX - cNodes(channelID, i - 1).pX)
     Next
-    For i = 1 To numOfNodes - 1
-        u(i) = cNodes(i + 1).pX - cNodes(i).pX
+    For i = 1 To numOfNodes(channelID) - 1
+        u(i) = cNodes(channelID, i + 1).pX - cNodes(channelID, i).pX
     Next
-    For i = 2 To numOfNodes - 1
-        w(i) = 6# * ((cNodes(i + 1).pY - cNodes(i).pY) / u(i) - (cNodes(i).pY - cNodes(i - 1).pY) / u(i - 1))
+    For i = 2 To numOfNodes(channelID) - 1
+        w(i) = 6# * ((cNodes(channelID, i + 1).pY - cNodes(channelID, i).pY) / u(i) - (cNodes(channelID, i).pY - cNodes(channelID, i - 1).pY) / u(i - 1))
     Next
-    For i = 2 To numOfNodes - 2
+    For i = 2 To numOfNodes(channelID) - 2
         w(i + 1) = w(i + 1) - w(i) * u(i) / d(i)
         d(i + 1) = d(i + 1) - u(i) * u(i) / d(i)
     Next
     p(1) = 0#
-    For i = numOfNodes - 1 To 2 Step -1
+    For i = numOfNodes(channelID) - 1 To 2 Step -1
         p(i) = (w(i) - u(i) * p(i + 1)) / d(i)
     Next
-    p(numOfNodes) = 0#
-    
+    p(numOfNodes(channelID)) = 0#
+            
 End Sub
 
 'By default, three points are provided: one at each corner, and one in the middle of the diagonal
 Private Sub resetCurvePoints()
 
-    numOfNodes = 3
-    ReDim cNodes(0 To numOfNodes) As fPoint
+    Dim i As Long, j As Long
+    ReDim numOfNodes(0 To 3) As Long
+    ReDim cNodes(0 To 3, 0 To 512) As fPoint
     
-    Dim i As Long
-    For i = 0 To numOfNodes
-        cNodes(i).pX = (i - 1) * ((picDraw.ScaleWidth - previewBorder * 2) / (numOfNodes - 1))
-        cNodes(i).pY = (picDraw.ScaleHeight - previewBorder * 2) - (cNodes(i).pX / (picDraw.ScaleWidth - previewBorder * 2)) * (picDraw.ScaleHeight - previewBorder * 2)
-        cNodes(i).pX = cNodes(i).pX + previewBorder
-        cNodes(i).pY = cNodes(i).pY + previewBorder
+    For i = 0 To 3
+        numOfNodes(i) = 3
+        
+        For j = 0 To numOfNodes(i)
+            cNodes(i, j).pX = (j - 1) * ((picDraw.ScaleWidth - previewBorder * 2) / (numOfNodes(i) - 1))
+            cNodes(i, j).pY = (picDraw.ScaleHeight - previewBorder * 2) - (cNodes(i, j).pX / (picDraw.ScaleWidth - previewBorder * 2)) * (picDraw.ScaleHeight - previewBorder * 2)
+            cNodes(i, j).pX = cNodes(i, j).pX + previewBorder
+            cNodes(i, j).pY = cNodes(i, j).pY + previewBorder
+        Next j
+    
     Next i
 
 End Sub
 
 'Generates a spline from the current set of control points, and fills the results array with the relevant values
 Private Sub fillResultsArray()
-
-    ReDim p(0 To numOfNodes) As Double
-    ReDim u(0 To numOfNodes) As Double
-
-    'Clear the results array and reset the max/min variables
-    ReDim cResults(-1 To picDraw.ScaleWidth) As Double
     
-    Dim i As Long
-    For i = -1 To picDraw.ScaleWidth
-        cResults(i) = -1
+    'Clear the results array and reset the max/min variables
+    ReDim cResults(0 To 3, -1 To picDraw.ScaleWidth) As Double
+    
+    Dim i As Long, j As Long
+    For i = 0 To 3
+        For j = -1 To picDraw.ScaleWidth
+            cResults(i, j) = -1
+        Next j
     Next i
     
-    Dim minX As Double, maxX As Double
-    minX = picDraw.ScaleWidth
-    maxX = -1
+    Dim minX(0 To 3) As Double, maxX(0 To 3) As Double
+    
+    For i = 0 To 3
+        minX(i) = picDraw.ScaleWidth
+        maxX(i) = -1
+    Next i
     
     'Now run a loop through the knots, calculating spline values as we go
-    SetPandU
     Dim xPos As Long, yPos As Single
     
-    For i = 1 To numOfNodes - 1
-        For xPos = cNodes(i).pX To cNodes(i + 1).pX
-            yPos = getCurvePoint(i, xPos)
-            If xPos < minX Then minX = xPos
-            If xPos > maxX Then maxX = xPos
-            If yPos > picDraw.ScaleHeight - previewBorder Then yPos = picDraw.ScaleHeight - previewBorder
-            If yPos < previewBorder Then yPos = previewBorder
-            cResults(xPos) = yPos
-        Next xPos
+    For i = 0 To 3
+    
+        ReDim p(0 To numOfNodes(i)) As Double
+        ReDim u(0 To numOfNodes(i)) As Double
+        
+        SetPandU i
+        
+        For j = 1 To numOfNodes(i) - 1
+            For xPos = cNodes(i, j).pX To cNodes(i, j + 1).pX
+                yPos = getCurvePoint(i, j, xPos)
+                If xPos < minX(i) Then minX(i) = xPos
+                If xPos > maxX(i) Then maxX(i) = xPos
+                If yPos > picDraw.ScaleHeight - previewBorder Then yPos = picDraw.ScaleHeight - previewBorder
+                If yPos < previewBorder Then yPos = previewBorder
+                cResults(i, xPos) = yPos
+            Next xPos
+        Next j
+        
+        'cResults() now contains the y-coordinate of the spline for every x-coordinate in picDraw that falls between the
+        ' initial point and the final point.  Points outside this range are treated as flat lines with values matching
+        ' the nearest end point, and we fill those values now.
+        For j = previewBorder - 1 To minX(i) - 1
+            cResults(i, j) = cResults(i, minX(i))
+        Next j
+        For j = picDraw.ScaleWidth - previewBorder To maxX(i) + 1 Step -1
+            cResults(i, j) = cResults(i, maxX(i))
+        Next j
+    
     Next i
 
-    'cResults() now contains the y-coordinate of the spline for every x-coordinate in picDraw that falls between the
-    ' initial point and the final point.  Points outside this range are treated as flat lines with values matching
-    ' the nearest end point, and we fill those values now.
-    For i = previewBorder - 1 To minX - 1
-        cResults(i) = cResults(minX)
-    Next i
-    For i = picDraw.ScaleWidth - previewBorder To maxX + 1 Step -1
-        cResults(i) = cResults(maxX)
-    Next i
     
     'cResults is now complete.  Its primary dimension is the width of the picture box, and each entry in the array
     ' contains the y-value of the spline at that x-position.  This can be used to easily render the spline on-screen,
