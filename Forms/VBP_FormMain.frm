@@ -1481,32 +1481,32 @@ Private Sub MnuLayerOrientation_Click(Index As Integer)
 
     Select Case Index
     
-        'Rotate 90 clockwise
+        'Rotate 90
         Case 0
-            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
-            
-        'Rotate 90 counter-clockwise
+            Process "Rotate layer 90° clockwise"
+        
+        'Rotate 270
         Case 1
-            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
+            Process "Rotate layer 90° counter-clockwise"
         
         'Rotate 180
         Case 2
-            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
+            Process "Rotate layer 180°"
         
         'Rotate arbitrary
         Case 3
-            MsgBox "This tool is currently under construction.  I expect it to be done sometime in May 2014."
+            Process "Arbitrary layer rotation", True
         
         '<separator>
         Case 4
         
         'Flip horizontal
         Case 5
-            Process "Flip layer horizontal"
+            Process "Flip layer horizontally"
         
         'Flip vertical
         Case 6
-            Process "Flip layer vertical"
+            Process "Flip layer vertically"
     
     End Select
 
@@ -2584,11 +2584,11 @@ Private Sub MnuImage_Click(Index As Integer)
         
         'Flip horizontal (mirror)
         Case 12
-            Process "Flip horizontal"
+            Process "Flip image horizontally"
         
         'Flip vertical
         Case 13
-            Process "Flip vertical"
+            Process "Flip image vertically"
         
         'NOTE: isometric view was removed in 6.4.  I may include it at a later date if there is demand.
         'Isometric view
@@ -2927,19 +2927,19 @@ Private Sub MnuRotate_Click(Index As Integer)
     
         'Rotate 90
         Case 0
-            Process "Rotate 90° clockwise"
+            Process "Rotate image 90° clockwise"
         
         'Rotate 270
         Case 1
-            Process "Rotate 90° counter-clockwise"
+            Process "Rotate image 90° counter-clockwise"
         
         'Rotate 180
         Case 2
-            Process "Rotate 180°"
+            Process "Rotate image 180°"
         
         'Rotate arbitrary
         Case 3
-            Process "Arbitrary rotation", True
+            Process "Arbitrary image rotation", True
             
     End Select
             

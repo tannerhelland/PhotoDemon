@@ -374,16 +374,16 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Filters_Transform.TrimImage
             
         'Rotate operations
-        Case "Rotate 90° clockwise"
+        Case "Rotate image 90° clockwise"
             MenuRotate90Clockwise
             
-        Case "Rotate 180°"
+        Case "Rotate image 180°"
             MenuRotate180
             
-        Case "Rotate 90° counter-clockwise"
+        Case "Rotate image 90° counter-clockwise"
             MenuRotate270Clockwise
             
-        Case "Arbitrary rotation"
+        Case "Arbitrary image rotation"
             If showDialog Then
                 showPDDialog vbModal, FormRotate
             Else
@@ -391,10 +391,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
             
         'Other coordinate transforms
-        Case "Flip vertical"
+        Case "Flip image vertically"
             MenuFlip
             
-        Case "Flip horizontal"
+        Case "Flip image horizontally"
             MenuMirror
         
         'NOTE: isometric conversion was removed in v6.4
@@ -464,10 +464,26 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Layer_Handler.moveLayerToEndOfStack cParams.GetLong(1), False
         
         'Layer orientation changes
-        Case "Flip layer horizontal"
+        Case "Rotate layer 90° clockwise"
+            MenuRotate90Clockwise pdImages(g_CurrentImage).getActiveLayerIndex
+            
+        Case "Rotate layer 180°"
+            MenuRotate180 pdImages(g_CurrentImage).getActiveLayerIndex
+            
+        Case "Rotate layer 90° counter-clockwise"
+            MenuRotate270Clockwise pdImages(g_CurrentImage).getActiveLayerIndex
+            
+        Case "Arbitrary layer rotation"
+            If showDialog Then
+                showPDDialog vbModal, FormRotate
+            Else
+                FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2)
+            End If
+            
+        Case "Flip layer horizontally"
             MenuMirror pdImages(g_CurrentImage).getActiveLayerIndex
         
-        Case "Flip layer vertical"
+        Case "Flip layer vertically"
             MenuFlip pdImages(g_CurrentImage).getActiveLayerIndex
         
         'Layer Size changes
