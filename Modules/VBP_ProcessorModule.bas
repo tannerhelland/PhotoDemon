@@ -803,7 +803,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormSplitTone
             Else
-                FormSplitTone.SplitTone cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
+                FormSplitTone.SplitTone cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
         
         'EFFECT FUNCTIONS
