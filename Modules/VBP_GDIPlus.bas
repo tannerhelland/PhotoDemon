@@ -341,6 +341,10 @@ Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageA
 Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal mWrap As WrapMode, ByVal argbConst As Long, ByVal bClamp As Long) As Long
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal pixOffsetMode As PixelOffsetMode) As Long
 
+'Transforms
+Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
+Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dX As Single, ByVal dY As Single, ByVal Order As Long) As Long
+
 'Helpful GDI functions for moving image data between GDI and GDI+
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -539,6 +543,104 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         
     Else
         GDIPlusResizeDIB = False
+    End If
+    
+    'Release both the destination graphics object and the source bitmap object
+    GdipDeleteGraphics iGraphics
+    GdipDisposeImage tBitmap
+    
+    'Uncomment the line below to receive timing reports
+    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    
+End Function
+
+'Use GDI+ to rotate a DIB.  (Technically, to copy a rotated portion of a source image into a destination image.)
+' The function currently expects the rotation to occur around the center point of the source image.  Unlike the various
+' size interaction calls in this module, all (x,y) coordinate pairs refer to the CENTER of the image, not the top-left
+' corner.  This was a deliberate decision to make copying rotated data easier.
+Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rotationAngle As Single, ByVal interpolationType As InterpolationMode) As Boolean
+
+    'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
+    ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
+    ' have timing reports sent to the debug window.
+    'Dim profileTime As Double
+    'profileTime = Timer
+
+    GDIPlusRotateDIB = True
+
+    'Create a GDI+ graphics object that points to the destination DIB's DC
+    Dim iGraphics As Long, tBitmap As Long
+    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    
+    'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
+    ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
+    If srcDIB.getDIBColorDepth = 32 Then
+        
+        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
+        GdipCreateBitmapFromScan0 srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.getActualDIBBits, tBitmap
+        
+    Else
+    
+        'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
+        Dim imgHeader As BITMAPINFO
+        With imgHeader.Header
+            .Size = Len(imgHeader.Header)
+            .Planes = 1
+            .BitCount = srcDIB.getDIBColorDepth
+            .Width = srcDIB.getDIBWidth
+            .Height = -srcDIB.getDIBHeight
+        End With
+        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.getActualDIBBits, tBitmap
+        
+    End If
+    
+    'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
+    
+    'Request the smoothing mode we were passed
+    If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
+    
+        'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
+        ' algorithm from drawing semi-transparent lines randomly around image borders.
+        ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
+        Dim imgAttributesHandle As Long
+        GdipCreateImageAttributes imgAttributesHandle
+        GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0&, 0&
+        
+        'To improve performance, explicitly request high-speed alpha compositing operation
+        GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
+        
+        'PixelOffsetMode doesn't seem to affect rendering speed more than < 5%, but I did notice a slight
+        ' improvement from explicitly requesting HighQuality mode - so why not leave it?
+        GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
+    
+        'Lock the incoming angle to something in the range [-360, 360]
+        'rotationAngle = rotationAngle + 180
+        If (rotationAngle <= -360) Or (rotationAngle >= 360) Then rotationAngle = (Int(rotationAngle) Mod 360) + (rotationAngle - Int(rotationAngle))
+        
+        'Perform the rotation
+        
+        'Transform the destination world matrix twice: once for the rotation angle, and once again to offset all coordinates.
+        ' This allows us to rotate the image around its *center* rather than around its top-left corner.
+        If GdipRotateWorldTransform(iGraphics, rotationAngle, 0&) = 0 Then
+            If GdipTranslateWorldTransform(iGraphics, dstX + dstWidth / 2, dstY + dstHeight / 2, 1&) = 0 Then
+        
+                'Render the image onto the destination
+                If GdipDrawImageRectRectI(iGraphics, tBitmap, -dstWidth / 2, -dstHeight / 2, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel, imgAttributesHandle) <> 0 Then
+                    GDIPlusRotateDIB = False
+                End If
+                
+            Else
+                GDIPlusRotateDIB = False
+            End If
+        Else
+            GDIPlusRotateDIB = False
+        End If
+        
+        'Release our image attributes object
+        GdipDisposeImageAttributes imgAttributesHandle
+        
+    Else
+        GDIPlusRotateDIB = False
     End If
     
     'Release both the destination graphics object and the source bitmap object
