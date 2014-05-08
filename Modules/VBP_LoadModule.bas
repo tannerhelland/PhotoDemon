@@ -1661,19 +1661,22 @@ Public Sub LoadAccelerators()
         
             'Color adjustments
             .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", FormMain.MnuColor(3), True, True, True, False
-            .AddAccelerator vbKeyP, vbCtrlMask Or vbAltMask, "Photo filter", FormMain.MnuColor(4), True, True, True, False
             
             'Lighting adjustments
-            .AddAccelerator vbKeyE, vbCtrlMask Or vbAltMask, "Exposure", FormMain.MnuLighting(2), True, True, True, False
-            .AddAccelerator vbKeyG, vbCtrlMask, "Gamma", FormMain.MnuLighting(3), True, True, True, False
-            .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuLighting(5), True, True, True, False
-            .AddAccelerator vbKeyT, vbCtrlMask, "Temperature", FormMain.MnuLighting(6), True, True, True, False
+            .AddAccelerator vbKeyG, vbCtrlMask, "Gamma", FormMain.MnuLighting(2), True, True, True, False
+            .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuLighting(4), True, True, True, False
+            .AddAccelerator vbKeyT, vbCtrlMask, "Temperature", FormMain.MnuLighting(5), True, True, True, False
             
             'Adjustments -> Invert submenu
             .AddAccelerator vbKeyI, vbCtrlMask, "Invert RGB", FormMain.mnuInvert, True, True, False, 1
             
             'Adjustments -> Monochrome submenu
             .AddAccelerator vbKeyB, vbCtrlMask Or vbAltMask Or vbShiftMask, "Color to monochrome", FormMain.MnuMonochrome(0), True, True, True, False
+            
+            'Adjustments -> Photography submenu
+            .AddAccelerator vbKeyE, vbCtrlMask Or vbAltMask, "Exposure", FormMain.MnuAdjustmentsPhoto(0), True, True, True, False
+            .AddAccelerator vbKeyP, vbCtrlMask Or vbAltMask, "Photo filter", FormMain.MnuAdjustmentsPhoto(1), True, True, True, False
+            
         
         'Effects Menu
         '.AddAccelerator vbKeyZ, vbCtrlMask Or vbAltMask Or vbShiftMask, "Add RGB noise", FormMain.MnuNoise(1), True, True, True, False

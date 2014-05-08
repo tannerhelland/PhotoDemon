@@ -31,21 +31,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -688,32 +688,28 @@ Begin VB.Form FormMain
             Index           =   3
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Photo filters..."
+            Caption         =   "Vibrance..."
             Index           =   4
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Vibrance..."
+            Caption         =   "-"
             Index           =   5
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "-"
+            Caption         =   "Black and white..."
             Index           =   6
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Black and white..."
+            Caption         =   "Colorize..."
             Index           =   7
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Colorize..."
+            Caption         =   "Replace color..."
             Index           =   8
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Replace color..."
-            Index           =   9
-         End
-         Begin VB.Menu MnuColor 
             Caption         =   "Sepia"
-            Index           =   10
+            Index           =   9
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -763,24 +759,20 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Exposure..."
+            Caption         =   "Gamma..."
             Index           =   2
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Gamma..."
+            Caption         =   "Levels..."
             Index           =   3
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Levels..."
+            Caption         =   "Shadows and highlights..."
             Index           =   4
          End
          Begin VB.Menu MnuLighting 
-            Caption         =   "Shadows and highlights..."
-            Index           =   5
-         End
-         Begin VB.Menu MnuLighting 
             Caption         =   "Temperature..."
-            Index           =   6
+            Index           =   5
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -793,6 +785,22 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuMonochrome 
             Caption         =   "Monochrome to grayscale..."
             Index           =   1
+         End
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Photography"
+         Index           =   14
+         Begin VB.Menu MnuAdjustmentsPhoto 
+            Caption         =   "Exposure..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuAdjustmentsPhoto 
+            Caption         =   "Photo filters..."
+            Index           =   1
+         End
+         Begin VB.Menu MnuAdjustmentsPhoto 
+            Caption         =   "Split-toning..."
+            Index           =   2
          End
       End
    End
@@ -1347,6 +1355,27 @@ Public Sub refreshAllCanvases()
         PrepareViewport pdImages(g_CurrentImage), mainCanvas(0), "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
     End If
     
+End Sub
+
+'Menu: Adjustments -> Photography
+Private Sub MnuAdjustmentsPhoto_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Exposure
+        Case 0
+            Process "Exposure", True
+    
+        'Photo filters
+        Case 1
+            Process "Photo filter", True
+            
+        'Split-toning
+        Case 2
+            Process "Split-toning", True
+    
+    End Select
+
 End Sub
 
 'Menu: top-level layer actions
@@ -2124,31 +2153,27 @@ Private Sub MnuColor_Click(Index As Integer)
         Case 3
             Process "Hue and saturation", True
         
-        'Photo filters
-        Case 4
-            Process "Photo filter", True
-
         'Vibrance
-        Case 5
+        Case 4
             Process "Vibrance", True
         
         '<separator>
-        Case 6
+        Case 5
         
         'Grayscale (black and white)
-        Case 7
+        Case 6
             Process "Black and white", True
         
         'Colorize
-        Case 8
+        Case 7
             Process "Colorize", True
             
         'Replace color
-        Case 9
+        Case 8
             Process "Replace color", True
                 
         'Sepia
-        Case 10
+        Case 9
             Process "Sepia"
 
     End Select
@@ -2675,25 +2700,21 @@ Private Sub MnuLighting_Click(Index As Integer)
         'Curves
         Case 1
             Process "Curves", True
-        
-        'Exposure
-        Case 2
-            Process "Exposure", True
             
         'Gamma correction
-        Case 3
+        Case 2
             Process "Gamma", True
             
         'Levels
-        Case 4
+        Case 3
             Process "Levels", True
 
         'Shadows/Midtones/Highlights
-        Case 5
+        Case 4
             Process "Shadows and highlights", True
             
         'Temperature
-        Case 6
+        Case 5
             Process "Temperature", True
     
     End Select

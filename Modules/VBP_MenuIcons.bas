@@ -308,12 +308,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "COLORBALANCE", 6, 9, 0  'Color balance
         addMenuIcon "WHITEBAL", 6, 9, 1      'White Balance
         addMenuIcon "HSL", 6, 9, 3           'HSL adjustment
-        addMenuIcon "PHOTOFILTER", 6, 9, 4   'Photo filters
-        addMenuIcon "VIBRANCE", 6, 9, 5      'Vibrance
-        addMenuIcon "GRAYSCALE", 6, 9, 7     'Black and white
-        addMenuIcon "COLORIZE", 6, 9, 8      'Colorize
-        addMenuIcon "REPLACECLR", 6, 9, 9    'Replace color
-        addMenuIcon "SEPIA", 6, 9, 10        'Sepia
+        addMenuIcon "VIBRANCE", 6, 9, 4      'Vibrance
+        addMenuIcon "GRAYSCALE", 6, 9, 6     'Black and white
+        addMenuIcon "COLORIZE", 6, 9, 7      'Colorize
+        addMenuIcon "REPLACECLR", 6, 9, 8    'Replace color
+        addMenuIcon "SEPIA", 6, 9, 9         'Sepia
     
     'Histogram
     addMenuIcon "HISTOGRAM", 6, 10      'Histogram top-level
@@ -332,16 +331,21 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "LIGHTING", 6, 12       'Lighting top-level
         addMenuIcon "BRIGHT", 6, 12, 0       'Brightness/Contrast
         addMenuIcon "CURVES", 6, 12, 1       'Curves
-        addMenuIcon "EXPOSURE", 6, 12, 2     'Exposure
-        addMenuIcon "GAMMA", 6, 12, 3        'Gamma Correction
-        addMenuIcon "LEVELS", 6, 12, 4       'Levels
-        addMenuIcon "SHDWHGHLGHT", 6, 12, 5  'Shadow/Highlight
-        addMenuIcon "TEMPERATURE", 6, 12, 6  'Temperature
+        addMenuIcon "GAMMA", 6, 12, 2        'Gamma Correction
+        addMenuIcon "LEVELS", 6, 12, 3       'Levels
+        addMenuIcon "SHDWHGHLGHT", 6, 12, 4  'Shadow/Highlight
+        addMenuIcon "TEMPERATURE", 6, 12, 5  'Temperature
     
     'Monochrome
     addMenuIcon "MONOCHROME", 6, 13      'Monochrome
         addMenuIcon "COLORTOMONO", 6, 13, 0   'Color to monochrome
         addMenuIcon "MONOTOCOLOR", 6, 13, 1   'Monochrome to grayscale
+        
+    'Photography
+    addMenuIcon "PHOTOFILTER", 6, 14      'Photography top-level
+        addMenuIcon "EXPOSURE", 6, 14, 0     'Exposure
+        addMenuIcon "PHOTOFILTER", 6, 14, 1  'Photo filters
+        'addMenuIcon "SPLITTONING", 6, 14, 2  'Split-toning
     
     
     'Effects (Filters) Menu

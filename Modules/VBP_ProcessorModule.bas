@@ -630,13 +630,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormCurves.ApplyCurveToImage cParams.getParamString
             End If
-        
-        Case "Exposure"
-            If showDialog Then
-                showPDDialog vbModal, FormExposure
-            Else
-                FormExposure.Exposure cParams.GetDouble(1)
-            End If
             
         Case "Gamma"
             If showDialog Then
@@ -679,13 +672,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 showPDDialog vbModal, FormHSL
             Else
                 FormHSL.AdjustImageHSL cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
-            End If
-            
-        Case "Photo filter"
-            If showDialog Then
-                showPDDialog vbModal, FormPhotoFilters
-            Else
-                FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
             End If
             
         Case "Replace color"
@@ -798,7 +784,27 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormEqualize.EqualizeHistogram cParams.GetBool(1), cParams.GetBool(2), cParams.GetBool(3), cParams.GetBool(4)
             End If
         
+        'Photography sub-menu functions
+        Case "Exposure"
+            If showDialog Then
+                showPDDialog vbModal, FormExposure
+            Else
+                FormExposure.Exposure cParams.GetDouble(1)
+            End If
         
+        Case "Photo filter"
+            If showDialog Then
+                showPDDialog vbModal, FormPhotoFilters
+            Else
+                FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
+            End If
+            
+        Case "Split-toning"
+            If showDialog Then
+                showPDDialog vbModal, FormSplitTone
+            Else
+                FormSplitTone.SplitTone cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
+            End If
         
         'EFFECT FUNCTIONS
         'Sometimes fun, sometimes practical, no real unifying factor to these.
