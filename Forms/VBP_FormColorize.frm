@@ -66,7 +66,6 @@ Begin VB.Form FormColorize
       Height          =   375
       Left            =   6240
       Max             =   359
-      Min             =   1
       TabIndex        =   1
       Top             =   2160
       Value           =   180
