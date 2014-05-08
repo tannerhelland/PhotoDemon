@@ -32,9 +32,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Color Selector custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 17/August/13
-'Last updated: 04/September/13
-'Last update: external displayColorSelection function, which forces the control to display the color selection
-'             window (without requiring a user click)
+'Last updated: 08/May/14
+'Last update: allow a raised selection dialog to pass changes backward to the control, so it can raise Change
+'              events on its parent form, allowing for live previews even while a dialog is active.
 '
 'This thin user control is basically an empty control that when clicked, displays a color selection window.  If a
 ' color is selected (e.g. Cancel is not pressed), it updates its back color to match, and raises a "ColorChanged"
@@ -62,6 +62,9 @@ Private mouseHandler As bluMouseEvents
 'The control's current color
 Private curColor As OLE_COLOR
 
+'When the select color dialog is live, this will be set to TRUE
+Private isDialogLive As Boolean
+
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
@@ -86,11 +89,20 @@ End Sub
 
 Private Sub UserControl_Click()
 
+    isDialogLive = True
+    
+    'Store the current color
+    Dim newColor As Long, oldColor As Long
+    oldColor = Color
+    
     'Use the default color dialog to select a new color
-    Dim newColor As Long
-    If showColorDialog(newColor, CLng(curColor)) Then
+    If showColorDialog(newColor, CLng(curColor), Me) Then
         Color = newColor
+    Else
+        Color = oldColor
     End If
+    
+    isDialogLive = False
     
 End Sub
 
@@ -147,4 +159,10 @@ Private Sub drawControlBorders()
     UserControl.Picture = UserControl.Image
     UserControl.Refresh
     
+End Sub
+
+'If a color selection dialog is active, it will pass color updates backward to this function, so that we can let
+' our parent form display live updates *while the user is playing with colors* - very cool!
+Public Sub notifyOfLiveColorChange(ByVal newColor As Long)
+    Color = newColor
 End Sub
