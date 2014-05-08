@@ -643,7 +643,7 @@ End Function
 
 'A heavily modified RGB to HSV transform, courtesy of http://lolengine.net/blog/2013/01/13/fast-rgb-to-hsv.
 ' Note that the code assumes RGB values already in the [0, 1] range, and it will return HSV values in the [0, 1] range.
-Public Sub fastRGBtoHSV(ByVal r As Single, ByVal g As Single, ByVal b As Single, ByRef h As Single, ByRef s As Single, ByRef v As Single)
+Private Sub fastRGBtoHSV(ByVal r As Single, ByVal g As Single, ByVal b As Single, ByRef h As Single, ByRef s As Single, ByRef v As Single)
 
     Dim K As Single, tmpSwap As Single, chroma As Single
     
@@ -669,7 +669,7 @@ Public Sub fastRGBtoHSV(ByVal r As Single, ByVal g As Single, ByVal b As Single,
 End Sub
 
 'Convert [0,1] HSV values to [0,255] RGB values, with thanks to easyrgb.com for the conversion math
-Public Sub fHSVtoRGB(ByRef h As Single, ByRef s As Single, ByRef v As Single, ByRef r As Single, ByRef g As Single, ByRef b As Single)
+Private Sub fHSVtoRGB(ByRef h As Single, ByRef s As Single, ByRef v As Single, ByRef r As Single, ByRef g As Single, ByRef b As Single)
 
     'If saturation is 0, RGB are calculated identically
     If s = 0 Then

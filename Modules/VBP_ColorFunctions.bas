@@ -573,6 +573,97 @@ Public Sub HSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByR
 
 End Sub
 
+'A heavily modified RGB to HSV transform, courtesy of http://lolengine.net/blog/2013/01/13/fast-rgb-to-hsv.
+' Note that the code assumes RGB values already in the [0, 1] range, and it will return HSV values in the [0, 1] range.
+Public Sub fRGBtoHSV(ByVal r As Double, ByVal g As Double, ByVal b As Double, ByRef h As Double, ByRef s As Double, ByRef v As Double)
+
+    Dim K As Double, tmpSwap As Double, chroma As Double
+    
+    If (g < b) Then
+        tmpSwap = b
+        b = g
+        g = tmpSwap
+        K = -1
+    End If
+    
+    If (r < g) Then
+        tmpSwap = g
+        g = r
+        r = tmpSwap
+        K = -(2 / 6) - K
+    End If
+    
+    chroma = r - fMin(g, b)
+    h = Abs(K + (g - b) / (6 * chroma + 0.0000001))
+    s = chroma / (r + 0.00000001)
+    v = r
+    
+End Sub
+
+'Convert [0,1] HSV values to [0,1] RGB values, with thanks to easyrgb.com for the conversion math
+Public Sub fHSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByRef r As Double, ByRef g As Double, ByRef b As Double)
+
+    'If saturation is 0, RGB are calculated identically
+    If s = 0 Then
+        r = v
+        g = v
+        b = v
+        Exit Sub
+    
+    'If saturation is not 0, we have to calculate RGB independently
+    Else
+       
+        Dim var_H As Double
+        var_H = h * 6
+        
+        'To keep our math simple, limit hue to [0, 5.9999999]
+        If var_H >= 6 Then var_H = 0
+        
+        Dim var_I As Long
+        var_I = Int(var_H)
+        
+        Dim var_1 As Double, var_2 As Double, var_3 As Double
+        var_1 = v * (1 - s)
+        var_2 = v * (1 - s * (var_H - var_I))
+        var_3 = v * (1 - s * (1 - (var_H - var_I)))
+        
+        Select Case var_I
+        
+            Case 0
+                r = v
+                g = var_3
+                b = var_1
+                
+            Case 1
+                r = var_2
+                g = v
+                b = var_1
+                
+            Case 2
+                r = var_1
+                g = v
+                b = var_3
+                
+            Case 3
+                r = var_1
+                g = var_2
+                b = v
+            
+            Case 4
+                r = var_3
+                g = var_1
+                b = v
+                
+            Case Else
+                r = v
+                g = var_1
+                b = var_2
+                
+        End Select
+                
+    End If
+
+End Sub
 
 'This function is just a thin wrapper to RGBtoXYZ and XYZtoLAB.  There is no direct conversion from RGB to CieLAB.
 Public Sub RGBtoLAB(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef labL As Double, ByRef labA As Double, ByRef labB As Double)
@@ -635,4 +726,49 @@ Private Function fXYZ(ByVal t As Double) As Double
         fXYZ = (7.787 * t) + (16 / 116)
     End If
 End Function
+
+'Return the minimum of two floating-point values
+Private Function fMin(x As Double, y As Double) As Double
+    If x > y Then fMin = y Else fMin = x
+End Function
+
+'Return the maximum of two floating-point values
+Private Function fMax(x As Double, y As Double) As Double
+    If x < y Then fMax = y Else fMax = x
+End Function
+
+'Return the maximum of three floating point values
+Private Function fMax3(rR As Double, rG As Double, rB As Double) As Double
+   If (rR > rG) Then
+      If (rR > rB) Then
+         fMax3 = rR
+      Else
+         fMax3 = rB
+      End If
+   Else
+      If (rB > rG) Then
+         fMax3 = rB
+      Else
+         fMax3 = rG
+      End If
+   End If
+End Function
+
+'Return the minimum of three floating point values
+Private Function fMin3(rR As Double, rG As Double, rB As Double) As Double
+   If (rR < rG) Then
+      If (rR < rB) Then
+         fMin3 = rR
+      Else
+         fMin3 = rB
+      End If
+   Else
+      If (rB < rG) Then
+         fMin3 = rB
+      Else
+         fMin3 = rG
+      End If
+   End If
+End Function
+
 

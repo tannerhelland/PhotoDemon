@@ -260,13 +260,16 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Split Toning Form
-'Copyright Â©2014 by Audioglider
+'Copyright ©2014 by Audioglider
 'Created: 07/May/14
 'Last updated: 07/May/14
 'Last update: Initial build.
 '
 'This technique applies a different colored tone for shadows and
 ' highlights in the image.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -423,71 +426,6 @@ End Sub
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
-End Sub
-
-'Convert [0,1] HSV values to [0,255] RGB values, with thanks to easyrgb.com for the conversion math
-Private Sub fHSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByRef r As Double, ByRef g As Double, ByRef b As Double)
-
-    'If saturation is 0, RGB are calculated identically
-    If s = 0 Then
-        r = v
-        g = v
-        b = v
-        Exit Sub
-    
-    'If saturation is not 0, we have to calculate RGB independently
-    Else
-       
-        Dim var_H As Single
-        var_H = h * 6
-        
-        'To keep our math simple, limit hue to [0, 5.9999999]
-        If var_H >= 6 Then var_H = 0
-        
-        Dim var_I As Long
-        var_I = Int(var_H)
-        
-        Dim var_1 As Single, var_2 As Single, var_3 As Single
-        var_1 = v * (1 - s)
-        var_2 = v * (1 - s * (var_H - var_I))
-        var_3 = v * (1 - s * (1 - (var_H - var_I)))
-        
-        Select Case var_I
-        
-            Case 0
-                r = v
-                g = var_3
-                b = var_1
-                
-            Case 1
-                r = var_2
-                g = v
-                b = var_1
-                
-            Case 2
-                r = var_1
-                g = v
-                b = var_3
-                
-            Case 3
-                r = var_1
-                g = var_2
-                b = v
-            
-            Case 4
-                r = var_3
-                g = var_1
-                b = v
-                
-            Case Else
-                r = v
-                g = var_1
-                b = var_2
-                
-        End Select
-                
-    End If
-
 End Sub
 
 Private Function convertRange(ByVal originalStart As Double, ByVal originalEnd As Double, ByVal newStart As Double, ByVal newEnd As Double, ByVal Value As Double) As Double
