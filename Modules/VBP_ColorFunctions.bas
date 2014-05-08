@@ -82,7 +82,7 @@ End Function
 '          2) an optional initial color
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function showColorDialog(ByRef colorReceive As Long, Optional ByVal initialColor As Long = vbWhite) As Boolean
+Public Function showColorDialog(ByRef colorReceive As Long, Optional ByVal initialColor As Long = vbWhite, Optional ByRef callingControl As colorSelector) As Boolean
 
     'Uncomment this code to use the system color selector
     'Dim retColor As Long
@@ -98,7 +98,7 @@ Public Function showColorDialog(ByRef colorReceive As Long, Optional ByVal initi
     'End If
     
     'As of November 2014, PhotoDemon has its own color selector!
-    If choosePDColor(initialColor, colorReceive) = vbOK Then
+    If choosePDColor(initialColor, colorReceive, callingControl) = vbOK Then
         showColorDialog = True
     Else
         showColorDialog = False

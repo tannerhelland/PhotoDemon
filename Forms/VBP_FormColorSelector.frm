@@ -822,6 +822,10 @@ Private xmlFilename As String
 ' recent color list.  We have to create special DIBs of each color, then blt those onto the respective boxes.
 Private recentColors() As Long
 
+'If a user control spawned this dialog, it will pass itself as a reference.  We can then send color updates back
+' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
+Private parentColorControl As colorSelector
+
 '***
 'All declarations below this line are necessary for capturing a color from an arbitrary point on the screen.
 
@@ -974,7 +978,10 @@ Private Sub CmdOK_Click()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByVal initialColor As Long)
+Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl As colorSelector = Nothing)
+
+    'Store a reference to the calling control (if any)
+    Set parentColorControl = callingControl
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -1300,6 +1307,12 @@ Private Sub syncInterfaceToCurrentColor()
     rightSideArrow.alphaBlendToDC Me.hDC, , picHue.Left + picHue.Width, hueY - (rightSideArrow.getDIBHeight \ 2)
     Me.Picture = Me.Image
     Me.Refresh
+    
+    'If we have a reference to a parent color selection user control, notify that control that the user's color
+    ' has changed.
+    If Not (parentColorControl Is Nothing) Then
+        parentColorControl.notifyOfLiveColorChange RGB(curRed, curGreen, curBlue)
+    End If
     
 End Sub
 

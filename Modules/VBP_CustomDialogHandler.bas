@@ -24,10 +24,10 @@ Attribute VB_Name = "Dialog_Handler"
 Option Explicit
 
 'Display a custom color selection dialog
-Public Function choosePDColor(ByVal oldColor As Long, ByRef newColor As Long) As VbMsgBoxResult
+Public Function choosePDColor(ByVal oldColor As Long, ByRef newColor As Long, Optional ByRef callingControl As colorSelector) As VbMsgBoxResult
 
     Load dialog_ColorSelector
-    dialog_ColorSelector.showDialog oldColor
+    dialog_ColorSelector.showDialog oldColor, callingControl
     
     choosePDColor = dialog_ColorSelector.DialogResult
     If choosePDColor = vbOK Then newColor = dialog_ColorSelector.newColor
