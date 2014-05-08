@@ -28,7 +28,7 @@ Begin VB.Form FormSplitTone
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   11
+      TabIndex        =   5
       Top             =   5730
       Width           =   12090
       _ExtentX        =   21325
@@ -43,66 +43,6 @@ Begin VB.Form FormSplitTone
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.PictureBox picSaturation 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   300
-      Index           =   1
-      Left            =   6375
-      ScaleHeight     =   18
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   287
-      TabIndex        =   15
-      Top             =   4470
-      Width           =   4335
-   End
-   Begin VB.PictureBox picSaturation 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   300
-      Index           =   0
-      Left            =   6375
-      ScaleHeight     =   18
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   287
-      TabIndex        =   14
-      Top             =   2100
-      Width           =   4335
-   End
-   Begin VB.PictureBox picHue 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   300
-      Index           =   1
-      Left            =   6375
-      ScaleHeight     =   18
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   287
-      TabIndex        =   13
-      Top             =   3285
-      Width           =   4335
-   End
-   Begin VB.PictureBox picHue 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   300
-      Index           =   0
-      Left            =   6375
-      ScaleHeight     =   18
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   287
-      TabIndex        =   12
-      Top             =   915
-      Width           =   4335
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
@@ -114,14 +54,14 @@ Begin VB.Form FormSplitTone
    End
    Begin PhotoDemon.sliderTextCombo sltBalance 
       Height          =   495
-      Left            =   6000
+      Left            =   6120
       TabIndex        =   2
-      Top             =   5175
-      Width           =   5895
-      _ExtentX        =   10610
+      Top             =   2655
+      Width           =   5775
+      _ExtentX        =   10186
       _ExtentY        =   873
+      Min             =   -100
       Max             =   100
-      Value           =   50
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -132,133 +72,50 @@ Begin VB.Form FormSplitTone
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin PhotoDemon.sliderTextCombo sltHue 
-      Height          =   495
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   435
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Max             =   360
-      Value           =   180
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+   Begin PhotoDemon.colorSelector cpHighlight 
+      Height          =   615
+      Left            =   6240
+      TabIndex        =   6
+      Top             =   1440
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1085
+      curColor        =   16744192
+   End
+   Begin PhotoDemon.colorSelector cpShadow 
+      Height          =   615
+      Left            =   6240
+      TabIndex        =   7
+      Top             =   3840
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1085
+      curColor        =   32767
+   End
+   Begin VB.Label lblShadow 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "shadow color:"
+      BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin PhotoDemon.sliderTextCombo sltSaturation 
-      Height          =   495
-      Index           =   0
+      ForeColor       =   &H00404040&
+      Height          =   285
       Left            =   6000
       TabIndex        =   4
-      Top             =   1620
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Max             =   100
-      Value           =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.sliderTextCombo sltHue 
-      Height          =   495
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   8
-      Top             =   2805
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Max             =   360
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.sliderTextCombo sltSaturation 
-      Height          =   495
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   3990
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Max             =   100
-      Value           =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin VB.Label Label2 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "shadow saturation:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   5880
-      TabIndex        =   10
-      Top             =   3645
-      Width           =   2025
-   End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "shadow hue:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   5880
-      TabIndex        =   7
-      Top             =   2460
-      Width           =   1365
+      Top             =   3420
+      Width           =   1500
    End
    Begin VB.Label lblHue 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "highlight hue:"
+      Caption         =   "highlight color:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -270,15 +127,15 @@ Begin VB.Form FormSplitTone
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   5880
-      TabIndex        =   6
-      Top             =   90
-      Width           =   1485
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   1050
+      Width           =   1620
    End
-   Begin VB.Label lblSaturation 
+   Begin VB.Label lblBalance 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "highlight saturation:"
+      Caption         =   "balance:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -290,30 +147,10 @@ Begin VB.Form FormSplitTone
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   5880
-      TabIndex        =   5
-      Top             =   1275
-      Width           =   2145
-   End
-   Begin VB.Label lblStrength 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   5880
+      Left            =   6000
       TabIndex        =   0
-      Top             =   4830
-      Width           =   960
+      Top             =   2310
+      Width           =   885
    End
 End
 Attribute VB_Name = "FormSplitTone"
@@ -326,7 +163,7 @@ Attribute VB_Exposed = False
 'Copyright ©2014 by Audioglider and Tanner Helland
 'Created: 07/May/14
 'Last updated: 08/May/14
-'Last update: add preview boxes for highlight/shadow hue and saturation
+'Last update: rework Balance slider to mimic Lightroom's behavior
 '
 'This technique applies a different tones to shadows and highlights in the image.  For a comprehensive explanation
 ' of split-toning (and its historical relevance), see
@@ -344,20 +181,27 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-' Input: hue and saturation tones for Shadows and Highlights; Balance defines whether shadows tone or
-'        highlights tone gets larger share of tonal range to tint.
-Public Sub SplitTone(ByVal highlightHue As Double, ByVal highlightSaturation As Double, ByVal shadowHue As Double, ByVal shadowSaturation As Double, ByVal Balance As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'Apply a split-tone filter to the current layer or selection
+'Inputs:
+'  - Highlight color (as Long, created via VB's RGB() command)
+'  - Shadow color (as Long, created via VB's RGB() command)
+'  - Balance parameter, [-100, 100].  At 0, tones will be equally split between the highlight and shadow colors.  > 0 Balance will favor
+'     highlights, while < 0 will favor shadows.
+Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, ByVal Balance As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If Not toPreview Then Message "Split toning image..."
+    If Not toPreview Then Message "Split-toning image..."
     
-    'Convert the modifiers to be on the same scale as the HSV translation routine
-    highlightHue = highlightHue / 360
-    highlightSaturation = highlightSaturation / 100
-    shadowHue = shadowHue / 360
-    shadowSaturation = shadowSaturation / 100
+    'From the incoming colors, determine corresponding hue and saturation values
+    Dim highlightHue As Double, highlightSaturation As Double, shadowHue As Double, shadowSaturation As Double
+    Dim ignoreLuminance As Double
+    fRGBtoHSV ExtractR(highlightColor), ExtractG(highlightColor), ExtractB(highlightColor), highlightHue, highlightSaturation, ignoreLuminance
+    fRGBtoHSV ExtractR(shadowColor), ExtractG(shadowColor), ExtractB(shadowColor), shadowHue, shadowSaturation, ignoreLuminance
     
-    'Convert balance mix value to [0,1]; it will be used to blend split-toned colors with their original RGB values
-    Balance = Math_Functions.convertRange(0, 100, 0, 1, Balance)
+    'Convert balance mix value to [0,2]; it will be used to blend split-toned colors at a varying scale (low balance
+    ' favors the shadow tone, high balance favors the highlight tone)
+    Dim balGradient As Double
+    balGradient = Math_Functions.convertRange(-100, 100, 0, 2, Balance)
+    Debug.Print balGradient
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -390,20 +234,7 @@ Public Sub SplitTone(ByVal highlightHue As Double, ByVal highlightSaturation As 
     
     Dim rHighlight As Double, gHighlight As Double, bHighlight As Double
     Dim rShadow As Double, gShadow As Double, bShadow As Double
-    
-    'To accelerate the main loop, use lookup tables for grayscale conversion
-    Dim averageLookup(0 To 765) As Long, averageLookupFloat(0 To 255) As Single
-    For x = 0 To 765
-        averageLookup(x) = x \ 3
-    Next x
-    
-    For x = 0 To 255
-        averageLookupFloat(x) = x / 255
-    Next x
-    
-    Dim average As Double, averageFloat As Double, invAverageFloat As Double
-    Dim redToned As Double, greenToned As Double, blueToned As Double
-    Dim rDiff As Double, gDiff As Double, bDiff As Double
+    Dim thisGradient As Double
     
     For x = initX To finalX
         QuickVal = x * qvDepth
@@ -413,10 +244,11 @@ Public Sub SplitTone(ByVal highlightHue As Double, ByVal highlightSaturation As 
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        'Calculate luminance for this pixel
-        v = CDbl(getLuminance(r, g, b)) / 255
+        'Calculate a luminance value using the original ITU-R recommended formula (BT.709, specifically)
+        v = (213 * r + 715 * g + 72 * b) \ 1000
+        v = v / 255
         
-        'Retrieve RGB conversions for the supplied highlight and shadow values
+        'Retrieve RGB conversions for the supplied highlight and shadow values, but retaining the pixel's current luminance (v)
         fHSVtoRGB highlightHue, highlightSaturation, v, rHighlight, gHighlight, bHighlight
         fHSVtoRGB shadowHue, shadowSaturation, v, rShadow, gShadow, bShadow
         
@@ -428,41 +260,27 @@ Public Sub SplitTone(ByVal highlightHue As Double, ByVal highlightSaturation As 
         bHighlight = bHighlight * 255
         bShadow = bShadow * 255
         
-        'Calculate average values
-        average = averageLookup(r + g + b)
-        averageFloat = averageLookupFloat(average)
-        invAverageFloat = 1 - averageFloat
+        'We now have shadow and highlight colors for this pixel, already modified according to this pixel's luminance.
         
-        'Tone the specified colors
-        redToned = (rHighlight * averageFloat) + (rShadow * (invAverageFloat))
-        greenToned = (gHighlight * averageFloat) + (gShadow * (invAverageFloat))
-        blueToned = (bHighlight * averageFloat) + (bShadow * (invAverageFloat))
+        'Next, we need to decide the ratio at which to mix the colors.  This is controlled by the balance slider; at a Balance of 0,
+        ' the colors are equally mixed between the shadow and gradient colors according to their luminance.  If the Balance is > 0,
+        ' we favor the highlight color, and if < 0 we favor the shadow color.
+        thisGradient = v * balGradient
+        If thisGradient > 1 Then thisGradient = 1
+        If thisGradient < 0 Then thisGradient = 0
         
-        rDiff = redToned - average
-        gDiff = greenToned - average
-        bDiff = blueToned - average
+        'Use the balance value to mix the shadow and highlight colors
+        newR = BlendColors(rShadow, rHighlight, thisGradient)
+        newG = BlendColors(gShadow, gHighlight, thisGradient)
+        newB = BlendColors(bShadow, bHighlight, thisGradient)
         
-        'Calculate final RGB values by splitting the difference beetween the toned values
-        ' and this pixel's average tone
-        newR = (average + rDiff - (gDiff / 2) - (bDiff / 2))
-        newG = (average + gDiff - (rDiff / 2) - (bDiff / 2))
-        newB = (average + bDiff - (rDiff / 2) - (gDiff / 2))
-        
-        If newR > 255 Then newR = 255
-        If newR < 0 Then newR = 0
-        If newG > 255 Then newG = 255
-        If newG < 0 Then newG = 0
-        If newB > 255 Then newB = 255
-        If newB < 0 Then newB = 0
-        
-        'As a final step, apply the Balance parameter to the colors; effectively, this just mixes them
-        ' with their original RGB values at the strength requested by the user.
-        ImageData(QuickVal + 2, y) = BlendColors(r, newR, Balance)
-        ImageData(QuickVal + 1, y) = BlendColors(g, newG, Balance)
-        ImageData(QuickVal, y) = BlendColors(b, newB, Balance)
+        'Finally, apply the new RGB values to the image!
+        ImageData(QuickVal + 2, y) = newR
+        ImageData(QuickVal + 1, y) = newG
+        ImageData(QuickVal, y) = newB
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -480,7 +298,7 @@ Public Sub SplitTone(ByVal highlightHue As Double, ByVal highlightSaturation As 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Split toning", , buildParams(sltHue(0).Value, sltSaturation(0).Value, sltHue(1).Value, sltSaturation(1).Value, sltBalance.Value)
+    Process "Split toning", , buildParams(cpHighlight.Color, cpShadow.Color, sltBalance.Value)
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -489,20 +307,20 @@ End Sub
 
 'To help orient the user, slightly different reset values are used for this tool.
 Private Sub cmdBar_ResetClick()
-    sltHue(0).Value = 180
-    sltSaturation(0).Value = 100
-    sltSaturation(1).Value = 100
-    sltBalance.Value = 50
+    cpHighlight.Color = RGB(150, 200, 255)
+    cpShadow.Color = RGB(255, 200, 150)
+    sltBalance.Value = 0
+End Sub
+
+Private Sub cpHighlight_ColorChanged()
+    updatePreview
+End Sub
+
+Private Sub cpShadow_ColorChanged()
+    updatePreview
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Draw the hue and saturation preview boxes
-    Dim i As Long
-    For i = 0 To 1
-        Drawing.drawHueBox_HSV picHue(i)
-        Drawing.drawSaturationBox_HSV picSaturation(i), sltHue(i).Value / 360
-    Next i
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -517,21 +335,8 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub sltBalance_Change()
-    updatePreview
-End Sub
-
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then SplitTone sltHue(0), sltSaturation(0), sltHue(1), sltSaturation(1), sltBalance, True, fxPreview
-End Sub
-
-Private Sub sltHue_Change(Index As Integer)
-    Drawing.drawSaturationBox_HSV picSaturation(Index), sltHue(Index).Value / 360
-    updatePreview
-End Sub
-
-Private Sub sltSaturation_Change(Index As Integer)
-    updatePreview
+    If cmdBar.previewsAllowed Then SplitTone cpHighlight.Color, cpShadow.Color, sltBalance.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -539,3 +344,6 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+Private Sub sltBalance_Change()
+    updatePreview
+End Sub
