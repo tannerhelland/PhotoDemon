@@ -1,11 +1,10 @@
 Attribute VB_Name = "Math_Functions"
 '***************************************************************************
 'Specialized Math Routines
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright ©2013-2014 by Tanner Helland and Audioglider
 'Created: 13/June/13
-'Last updated: 13/June/13
-'Last update: added a function by VB6 coder LaVolpe that converts decimals to fractions.  PhotoDemon uses this function to
-'             approximate image aspect ratios from width/height values.
+'Last updated: 08/May/14
+'Last update: added convertRange function from audioglider
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
 ' until June 2013.  This module is now used to store all the random bits of specialized math required by the program.
@@ -17,6 +16,14 @@ Attribute VB_Name = "Math_Functions"
 
 Option Explicit
 
+'Given an arbitrary output range and input range, convert a value from the input range to the output range
+' Thank you to expert coder audioglider for contributing this function.
+Public Function convertRange(ByVal originalStart As Double, ByVal originalEnd As Double, ByVal newStart As Double, ByVal newEnd As Double, ByVal Value As Double) As Double
+    Dim dScale As Double
+    
+    dScale = (newEnd - newStart) / (originalEnd - originalStart)
+    convertRange = (newStart + ((Value - originalStart) * dScale))
+End Function
 
 'Convert a decimal to a near-identical fraction using vector math.
 ' This excellent function comes courtesy of VB6 coder LaVolpe.  I have modified it slightly to suit PhotoDemon's unique needs.
