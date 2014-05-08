@@ -269,8 +269,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers Toolbar
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 25/March/14
-'Last updated: 02/May/14
-'Last update: experimenting with a right-aligned layout for the hover layer buttons
+'Last updated: 08/May/14
+'Last update: limit hand cursor appearance to times when the cursor is over a valid layer
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -561,7 +561,6 @@ Private Sub Form_Load()
     'Enable mousewheel scrolling for the layer box
     Set cMouseEvents = New bluMouseEvents
     cMouseEvents.Attach picLayers.hWnd, Me.hWnd
-    cMouseEvents.MousePointer = IDC_HAND
     
     'No layer has been hovered yet
     curLayerHover = -1
@@ -1035,7 +1034,16 @@ Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single
     'Ignore user interaction while in drag/drop mode
     If inDragDropMode Then Exit Sub
     
-    'Don't process MouseMove events if no images are loaded
+    'Only display the hand cursor if the cursor is over a layer
+    If getLayerAtPosition(x, y) <> -1 Then
+        picLayers.MousePointer = vbCustom
+        setHandCursorToHwnd picLayers.hWnd
+    Else
+        picLayers.MousePointer = vbDefault
+        setArrowCursorToHwnd picLayers.hWnd
+    End If
+    
+    'Don't process further MouseMove events if no images are loaded
     If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
     
     'If a layer other than the active one is being hovered, highlight that box
