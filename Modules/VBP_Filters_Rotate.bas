@@ -3,9 +3,8 @@ Attribute VB_Name = "Filters_Transform"
 'Image Transformations Interface (including flip/mirror/rotation/crop/etc)
 'Copyright ©2003-2014 by Tanner Helland
 'Created: 25/January/03
-'Last updated: 07/May/14
-'Last update: start work on individual layer transformations.  Rather than writing these from scratch, they will simply
-'              be special parameters passed to the existing transform functions.
+'Last updated: 08/May/14
+'Last update: convert rotate 90/270 functions to use GDI+; this gives a small but welcome speed improvement
 '
 'Runs all image transformations, including rotate, flip, mirror and crop at present.
 '
@@ -521,7 +520,7 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
 End Sub
 
 'Rotate an image 90° clockwise
-' TODO: lean on the API for this, as it's not very fast to process manually in VB
+' TODO: test PlgBlt as an alternative implementation (PD currently uses GDI+, which is not the fastest kid on the block)
 Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
     Dim flipAllLayers As Boolean
@@ -535,35 +534,23 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
     Message "Rotating image clockwise..."
     
-    'Arrays will be pointed at both source and destination pixels (we obviously cannot do an in-place 90° rotation)
-    Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
-    Dim copyImageData() As Byte
-    Dim copySA As SAFEARRAY2D
-    
     'A temporary DIB will hold the contents of the layer as it is being rotated
     Dim copyDIB As pdDIB
     Set copyDIB = New pdDIB
     
     'Lots of helper variables for a function like this
-    Dim x As Long, y As Long, j As Long
-    Dim QuickVal As Long, QuickValY
-    Dim finalX As Long, finalY As Long, imgWidth As Long, imgHeight As Long
+    Dim imgWidth As Long, imgHeight As Long
     imgWidth = pdImages(g_CurrentImage).Width
     imgHeight = pdImages(g_CurrentImage).Height
-    
-    Dim iWidth As Long, iHeight As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long, progBarOffsetX As Long
     If flipAllLayers Then
-        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
+        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers - 1
     Else
-        SetProgBarMax pdImages(g_CurrentImage).getActiveDIB.getDIBWidth
+        SetProgBarMax targetLayerIndex
     End If
-    
-    progBarCheck = findBestProgBarValue()
     
     'Iterate through each layer, rotating them in turn
     Dim tmpLayerRef As pdLayer
@@ -582,13 +569,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     'Loop through all relevant layers, transforming each as we go
     For i = lStart To lEnd
-    
-        If flipAllLayers Then
-            progBarOffsetX = i * imgWidth
-        Else
-            progBarOffsetX = 0
-        End If
-    
+        
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
@@ -601,42 +582,14 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         'Create a blank destination DIB to receive the transformed pixels
         tmpLayerRef.layerDIB.createBlank tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBWidth, 32
         
-        'Populate some key variables for the transformation
-        finalX = copyDIB.getDIBWidth - 1
-        finalY = copyDIB.getDIBHeight - 1
-        
-        iWidth = finalX * 4
-        iHeight = finalY * 4
-        
-        'Now we can point arrays at both the source and destination pixel sets
-        prepSafeArray copySA, copyDIB
-        CopyMemory ByVal VarPtrArray(copyImageData()), VarPtr(copySA), 4
-    
-        prepSafeArray dstSA, tmpLayerRef.layerDIB
-        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-        
-        'Rotate the source image into the destination image, using the arrays provided
-        For x = 0 To finalX
-            QuickVal = x * 4
-        For y = 0 To finalY
-            QuickValY = y * 4
-            
-            For j = 0 To 3
-                dstImageData(iHeight - QuickValY + j, finalX - x) = copyImageData(iWidth - QuickVal + j, y)
-            Next j
-            
-        Next y
-            If ((progBarOffsetX + x) And progBarCheck) = 0 Then SetProgBarVal progBarOffsetX + x
-        Next x
-    
-        'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
-        CopyMemory ByVal VarPtrArray(copyImageData), 0&, 4
-        Erase copyImageData
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-        Erase dstImageData
+        'Use GDI+ to apply the rotation
+        GDIPlusRotateDIB tmpLayerRef.layerDIB, (tmpLayerRef.layerDIB.getDIBWidth - copyDIB.getDIBWidth) / 2, (tmpLayerRef.layerDIB.getDIBHeight - copyDIB.getDIBHeight) / 2, copyDIB.getDIBWidth, copyDIB.getDIBHeight, copyDIB, 0, 0, copyDIB.getDIBWidth, copyDIB.getDIBHeight, 90, InterpolationModeNearestNeighbor
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+    
+        'Update the progress bar (really only relevant if rotating the entire image)
+        SetProgBarVal i
     
     Next i
     
@@ -710,7 +663,7 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
 End Sub
 
 'Rotate an image 90° counter-clockwise
-' TODO: lean on the API for this, as it's not very fast to process manually in VB
+' TODO: test PlgBlt as an alternative implementation (PD currently uses GDI+, which is not the fastest kid on the block)
 Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
     Dim flipAllLayers As Boolean
@@ -724,35 +677,23 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
     Message "Rotating image counter-clockwise..."
     
-    'Arrays will be pointed at both source and destination pixels (we obviously cannot do an in-place 90° rotation)
-    Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
-    Dim copyImageData() As Byte
-    Dim copySA As SAFEARRAY2D
-    
     'A temporary DIB will hold the contents of the layer as it is being rotated
     Dim copyDIB As pdDIB
     Set copyDIB = New pdDIB
     
     'Lots of helper variables for a function like this
-    Dim x As Long, y As Long, j As Long
-    Dim QuickVal As Long, QuickValY
-    Dim finalX As Long, finalY As Long, imgWidth As Long, imgHeight As Long
+    Dim imgWidth As Long, imgHeight As Long
     imgWidth = pdImages(g_CurrentImage).Width
     imgHeight = pdImages(g_CurrentImage).Height
-    
-    Dim iWidth As Long, iHeight As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long, progBarOffsetX As Long
     If flipAllLayers Then
-        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
+        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers - 1
     Else
-        SetProgBarMax pdImages(g_CurrentImage).getActiveDIB.getDIBWidth
+        SetProgBarMax targetLayerIndex
     End If
-    
-    progBarCheck = findBestProgBarValue()
     
     'Iterate through each layer, rotating them in turn
     Dim tmpLayerRef As pdLayer
@@ -771,12 +712,6 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     'Loop through all relevant layers, transforming each as we go
     For i = lStart To lEnd
-    
-        If flipAllLayers Then
-            progBarOffsetX = i * imgWidth
-        Else
-            progBarOffsetX = 0
-        End If
         
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
@@ -790,42 +725,14 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         'Create a blank destination DIB to receive the transformed pixels
         tmpLayerRef.layerDIB.createBlank tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBWidth, 32
         
-        'Populate some key variables for the transformation
-        finalX = copyDIB.getDIBWidth - 1
-        finalY = copyDIB.getDIBHeight - 1
-        
-        iWidth = finalX * 4
-        iHeight = finalY * 4
-        
-        'Now we can point arrays at both the source and destination pixel sets
-        prepSafeArray copySA, copyDIB
-        CopyMemory ByVal VarPtrArray(copyImageData()), VarPtr(copySA), 4
-    
-        prepSafeArray dstSA, tmpLayerRef.layerDIB
-        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-        
-        'Rotate the source image into the destination image, using the arrays provided
-        For x = 0 To finalX
-            QuickVal = x * 4
-        For y = 0 To finalY
-            QuickValY = y * 4
-            
-            For j = 0 To 3
-                dstImageData(QuickValY + j, x) = copyImageData(iWidth - QuickVal + j, y)
-            Next j
-            
-        Next y
-            If ((progBarOffsetX + x) And progBarCheck) = 0 Then SetProgBarVal progBarOffsetX + x
-        Next x
-    
-        'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
-        CopyMemory ByVal VarPtrArray(copyImageData), 0&, 4
-        Erase copyImageData
-        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-        Erase dstImageData
+        'Use GDI+ to apply the rotation
+        GDIPlusRotateDIB tmpLayerRef.layerDIB, (tmpLayerRef.layerDIB.getDIBWidth - copyDIB.getDIBWidth) / 2, (tmpLayerRef.layerDIB.getDIBHeight - copyDIB.getDIBHeight) / 2, copyDIB.getDIBWidth, copyDIB.getDIBHeight, copyDIB, 0, 0, copyDIB.getDIBWidth, copyDIB.getDIBHeight, -90, InterpolationModeNearestNeighbor
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+    
+        'Update the progress bar (really only relevant if rotating the entire image)
+        SetProgBarVal i
     
     Next i
     
