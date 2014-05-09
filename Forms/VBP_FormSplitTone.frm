@@ -56,7 +56,7 @@ Begin VB.Form FormSplitTone
       Height          =   495
       Left            =   6120
       TabIndex        =   2
-      Top             =   2655
+      Top             =   2295
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
@@ -76,7 +76,7 @@ Begin VB.Form FormSplitTone
       Height          =   615
       Left            =   6240
       TabIndex        =   6
-      Top             =   1440
+      Top             =   1080
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1085
@@ -86,11 +86,51 @@ Begin VB.Form FormSplitTone
       Height          =   615
       Left            =   6240
       TabIndex        =   7
-      Top             =   3840
+      Top             =   3480
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1085
       curColor        =   32767
+   End
+   Begin PhotoDemon.sliderTextCombo sltStrength 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   8
+      Top             =   4665
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Max             =   100
+      Value           =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblStrength 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "toning strength:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   4320
+      Width           =   1710
    End
    Begin VB.Label lblShadow 
       AutoSize        =   -1  'True
@@ -109,7 +149,7 @@ Begin VB.Form FormSplitTone
       Height          =   285
       Left            =   6000
       TabIndex        =   4
-      Top             =   3420
+      Top             =   3060
       Width           =   1500
    End
    Begin VB.Label lblHue 
@@ -129,7 +169,7 @@ Begin VB.Form FormSplitTone
       Height          =   285
       Left            =   6000
       TabIndex        =   3
-      Top             =   1050
+      Top             =   690
       Width           =   1620
    End
    Begin VB.Label lblBalance 
@@ -149,7 +189,7 @@ Begin VB.Form FormSplitTone
       Height          =   285
       Left            =   6000
       TabIndex        =   0
-      Top             =   2310
+      Top             =   1950
       Width           =   885
    End
 End
@@ -162,8 +202,8 @@ Attribute VB_Exposed = False
 'Split Toning Form
 'Copyright ©2014 by Audioglider and Tanner Helland
 'Created: 07/May/14
-'Last updated: 08/May/14
-'Last update: rework Balance slider to mimic Lightroom's behavior
+'Last updated: 09/May/14
+'Last update: add strength slider
 '
 'This technique applies a different tones to shadows and highlights in the image.  For a comprehensive explanation
 ' of split-toning (and its historical relevance), see
@@ -187,7 +227,7 @@ Dim m_ToolTip As clsToolTip
 '  - Shadow color (as Long, created via VB's RGB() command)
 '  - Balance parameter, [-100, 100].  At 0, tones will be equally split between the highlight and shadow colors.  > 0 Balance will favor
 '     highlights, while < 0 will favor shadows.
-Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, ByVal Balance As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, ByVal Balance As Double, ByVal Strength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Split-toning image..."
     
@@ -201,7 +241,9 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     ' favors the shadow tone, high balance favors the highlight tone)
     Dim balGradient As Double
     balGradient = Math_Functions.convertRange(-100, 100, 0, 2, Balance)
-    Debug.Print balGradient
+    
+    'Strength controls the ratio at which the split-toned pixels are merged with the original pixels.  We want it on a [0, 1] scale.
+    Strength = Math_Functions.convertRange(0, 100, 0, 1, Strength)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -274,10 +316,10 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
         newG = BlendColors(gShadow, gHighlight, thisGradient)
         newB = BlendColors(bShadow, bHighlight, thisGradient)
         
-        'Finally, apply the new RGB values to the image!
-        ImageData(QuickVal + 2, y) = newR
-        ImageData(QuickVal + 1, y) = newG
-        ImageData(QuickVal, y) = newB
+        'Finally, apply the new RGB values to the image by blending them with their original color at the user's requested strength.
+        ImageData(QuickVal + 2, y) = BlendColors(r, newR, Strength)
+        ImageData(QuickVal + 1, y) = BlendColors(g, newG, Strength)
+        ImageData(QuickVal, y) = BlendColors(b, newB, Strength)
         
     Next y
         If Not toPreview Then
@@ -298,7 +340,7 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Split toning", , buildParams(cpHighlight.Color, cpShadow.Color, sltBalance.Value)
+    Process "Split toning", , buildParams(cpHighlight.Color, cpShadow.Color, sltBalance.Value, sltStrength.Value)
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -310,6 +352,7 @@ Private Sub cmdBar_ResetClick()
     cpHighlight.Color = RGB(150, 200, 255)
     cpShadow.Color = RGB(255, 200, 150)
     sltBalance.Value = 0
+    sltStrength.Value = 100
 End Sub
 
 Private Sub cpHighlight_ColorChanged()
@@ -336,11 +379,15 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then SplitTone cpHighlight.Color, cpShadow.Color, sltBalance.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then SplitTone cpHighlight.Color, cpShadow.Color, sltBalance.Value, sltStrength.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
+Private Sub sltStrength_Change()
     updatePreview
 End Sub
 
