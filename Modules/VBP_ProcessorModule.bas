@@ -342,11 +342,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             DuplicateCurrentImage
             
         'Resize operations
-        Case "Resize"
+        Case "Resize image"
             If showDialog Then
-                showPDDialog vbModal, FormResize
+                showResizeDialog PD_AT_WHOLEIMAGE
             Else
-                FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96)
+                FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96), PD_AT_WHOLEIMAGE
             End If
         
         'Canvas size operations
@@ -489,6 +489,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Layer Size changes
         Case "Reset layer size"
             Layer_Handler.resetLayerSize cParams.GetLong(1)
+            
+        Case "Resize layer"
+            If showDialog Then
+                showResizeDialog PD_AT_SINGLELAYER
+            Else
+                FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96), PD_AT_SINGLELAYER
+            End If
         
         Case "Content-aware resize"
             If showDialog Then

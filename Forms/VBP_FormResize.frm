@@ -85,9 +85,17 @@ Begin VB.Form FormResize
       TabIndex        =   0
       Top             =   6750
       Width           =   9630
-      _extentx        =   16986
-      _extenty        =   1323
-      font            =   "VBP_FormResize.frx":0000
+      _ExtentX        =   16986
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
@@ -95,9 +103,17 @@ Begin VB.Form FormResize
       TabIndex        =   1
       Top             =   480
       Width           =   8775
-      _extentx        =   15478
-      _extenty        =   5027
-      font            =   "VBP_FormResize.frx":0028
+      _ExtentX        =   15478
+      _ExtentY        =   5027
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkNames 
       Height          =   480
@@ -105,10 +121,18 @@ Begin VB.Form FormResize
       TabIndex        =   3
       Top             =   4440
       Width           =   2265
-      _extentx        =   3995
-      _extenty        =   847
-      caption         =   "show technical names"
-      font            =   "VBP_FormResize.frx":0050
+      _ExtentX        =   3995
+      _ExtentY        =   847
+      Caption         =   "show technical names"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
@@ -118,8 +142,8 @@ Begin VB.Form FormResize
       Top             =   6120
       Visible         =   0   'False
       Width           =   7935
-      _extentx        =   13996
-      _extenty        =   873
+      _ExtentX        =   13996
+      _ExtentY        =   873
    End
    Begin VB.Label lblSize 
       Appearance      =   0  'Flat
@@ -232,8 +256,16 @@ End Enum
     Const rsFriendly = 0, rsTechnical = 1
 #End If
 
+'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
+' and can be externally accessed by the ResizeTarget property.
+Private m_ResizeTarget As PD_ACTION_TARGET
+
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+Public Property Let ResizeTarget(newTarget As PD_ACTION_TARGET)
+    m_ResizeTarget = newTarget
+End Property
 
 'Whenever the user toggles technical and friendly resample options, this sub is called.  It will translate between
 ' friendly and technical choices, as well as displaying the proper combo box.
@@ -379,7 +411,15 @@ Private Sub cmdBar_OKClick()
         resampleAlgorithm = resampleTypes(rsFriendly, cboResampleFriendly.ListIndex).ProgramID
     End If
     
-    Process "Resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI)
+    Select Case m_ResizeTarget
+    
+        Case PD_AT_WHOLEIMAGE
+            Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget)
+        
+        Case PD_AT_SINGLELAYER
+            Process "Resize layer", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget)
+    
+    End Select
     
 End Sub
 
@@ -397,7 +437,17 @@ Private Sub cmdBar_ResetClick()
     
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.unitOfMeasurement = MU_PIXELS
-    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+    
+    Select Case m_ResizeTarget
+    
+        Case PD_AT_WHOLEIMAGE
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            
+        Case PD_AT_SINGLELAYER
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+        
+    End Select
+    
     ucResize.lockAspectRatio = True
     
     'Use friendly resample names by default
@@ -415,9 +465,30 @@ End Sub
 
 Private Sub Form_Activate()
 
+    'Set the dialog caption to match the current resize operation (resize image or resize single layer)
+    Select Case m_ResizeTarget
+        
+        Case PD_AT_WHOLEIMAGE
+            Me.Caption = g_Language.TranslateMessage("Resize image")
+        
+        Case PD_AT_SINGLELAYER
+            Me.Caption = g_Language.TranslateMessage("Resize layer")
+        
+    End Select
+
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.unitOfMeasurement = MU_PIXELS
-    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+    
+    Select Case m_ResizeTarget
+        
+        Case PD_AT_WHOLEIMAGE
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            
+        Case PD_AT_SINGLELAYER
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+        
+    End Select
+    
     ucResize.lockAspectRatio = True
 
 End Sub
@@ -443,7 +514,15 @@ Private Sub Form_Load()
     ' do this again in the Activate step, as the last-used settings will automatically override these values.  However,
     ' if we do not also provide these values here, the resize control may attempt to set parameters while having
     ' a width/height/resolution of 0, which will cause divide-by-zero errors.)
-    ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+    Select Case m_ResizeTarget
+    
+        Case PD_AT_WHOLEIMAGE
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            
+        Case PD_AT_SINGLELAYER
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+        
+    End Select
     
     'Add some tooltips
     cboResampleFriendly.ToolTipText = g_Language.TranslateMessage("Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.")
@@ -499,15 +578,24 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
 End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
-Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal resampleMethod As Long, ByVal fitMethod As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
+Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal resampleMethod As Long, ByVal fitMethod As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long, Optional ByVal thingToResize As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE)
     
     'Depending on the requested fitting technique, we may have to resize the image to a slightly different size
     ' than the one requested.  Before doing anything else, calculate that new size.
     Dim fitWidth As Long, fitHeight As Long
     
     Dim srcWidth As Long, srcHeight As Long
-    srcWidth = pdImages(g_CurrentImage).Width
-    srcHeight = pdImages(g_CurrentImage).Height
+    Select Case thingToResize
+    
+        Case PD_AT_WHOLEIMAGE
+            srcWidth = pdImages(g_CurrentImage).Width
+            srcHeight = pdImages(g_CurrentImage).Height
+        
+        Case PD_AT_SINGLELAYER
+            srcWidth = pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth
+            srcHeight = pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight
+        
+    End Select
     
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
@@ -536,7 +624,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     End Select
     
     'If the image contains an active selection, automatically deactivate it
-    If pdImages(g_CurrentImage).selectionActive Then
+    If pdImages(g_CurrentImage).selectionActive And (thingToResize = PD_AT_WHOLEIMAGE) Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
@@ -548,10 +636,14 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     'Because we will likely use outside libraries for the resize (FreeImage, GDI+), we won't be able to track
     ' detailed progress of the actions.  Instead, let the user know when a layer has been resized by using
     ' the number of layers as our progress guide.
-    SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers
-    
-    Message "Resizing image..."
-    
+    If (thingToResize = PD_AT_WHOLEIMAGE) Then
+        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers
+        Message "Resizing image..."
+    Else
+        SetProgBarMax 1
+        Message "Resizing layer..."
+    End If
+        
     Dim srcAspect As Double, dstAspect As Double
     Dim dstX As Long, dstY As Long
     
@@ -560,16 +652,32 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     ' will be automatically padded to the image's full size.
     Dim tmpLayerRef As pdLayer
     
-    Dim i As Long
-    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    'If we are resizing the entire image, we must handle all layers in turn.  Otherwise, we can handle just
+    ' the active layer.
+    Dim lInit As Long, lFinal As Long
     
-        SetProgBarVal i
+    Select Case thingToResize
+    
+        Case PD_AT_WHOLEIMAGE
+            lInit = 0
+            lFinal = pdImages(g_CurrentImage).getNumOfLayers - 1
+        
+        Case PD_AT_SINGLELAYER
+            lInit = pdImages(g_CurrentImage).getActiveLayerIndex
+            lFinal = pdImages(g_CurrentImage).getActiveLayerIndex
+    
+    End Select
+    
+    Dim i As Long
+    For i = lInit To lFinal
+    
+        If thingToResize = PD_AT_WHOLEIMAGE Then SetProgBarVal i
         
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
         
         'Null-pad the layer
-        tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, False
+        If thingToResize = PD_AT_WHOLEIMAGE Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, False
         
         'Call the appropriate external function, based on the user's resize selection.  Each function will
         ' place a resized version of tmpLayerRef.layerDIB into tmpDIB.
@@ -635,9 +743,9 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
         
         'tmpDIB now holds a copy of the resized image.
         
-        'Calculate the aspect ratio of the temporary DIB and the target picture box.  If the user has selected
+        'Calculate the aspect ratio of the temporary DIB and the target size.  If the user has selected
         ' a resize mode other than "fit exactly", we still need to do a bit of extra trimming.
-        srcAspect = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height
+        srcAspect = srcWidth / srcHeight
         dstAspect = iWidth / iHeight
         
         'We now want to copy the resized image into the current image using the technique requested by the user.
@@ -689,7 +797,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
         End Select
         
         'With the layer now successfully resized, we can remove any null-padding that may still exist
-        tmpLayerRef.cropNullPaddedLayer
+        If thingToResize = PD_AT_WHOLEIMAGE Then tmpLayerRef.cropNullPaddedLayer
     
     'Move on to the next layer
     Next i
@@ -698,10 +806,12 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     Set tmpDIB = Nothing
     
     'Update the main image's size and DPI values
-    pdImages(g_CurrentImage).updateSize False, iWidth, iHeight
-    pdImages(g_CurrentImage).setDPI iDPI, iDPI
-    DisplaySize pdImages(g_CurrentImage)
-    
+    If thingToResize = PD_AT_WHOLEIMAGE Then
+        pdImages(g_CurrentImage).updateSize False, iWidth, iHeight
+        pdImages(g_CurrentImage).setDPI iDPI, iDPI
+        DisplaySize pdImages(g_CurrentImage)
+    End If
+        
     'Fit the new image on-screen and redraw its viewport
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Image resize"
     

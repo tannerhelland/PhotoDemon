@@ -1623,7 +1623,7 @@ Public Sub LoadAccelerators()
         
         'Image menu
         .AddAccelerator vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", FormMain.MnuImage(0), True, True, False, 0
-        .AddAccelerator vbKeyR, vbCtrlMask, "Resize", FormMain.MnuImage(2), True, True, True, 0
+        .AddAccelerator vbKeyR, vbCtrlMask, "Resize image", FormMain.MnuImage(2), True, True, True, 0
         .AddAccelerator vbKeyR, vbCtrlMask Or vbAltMask, "Canvas size", FormMain.MnuImage(4), True, True, True, 0
         .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(8), True, True, False, 1
         .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim", FormMain.MnuImage(9), True, True, False, 1

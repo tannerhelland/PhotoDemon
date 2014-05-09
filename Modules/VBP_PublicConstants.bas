@@ -95,3 +95,14 @@ End Enum
 #If False Then
     Const PD_HORIZONTAL = 0, PD_VERTICAL = 1, PD_BOTH = 2
 #End If
+
+'Some PhotoDemon actions can operate on the whole image, or on just a specific layer (e.g. resize).  When initiating
+' one of these dual-action operations, the constants below can be used to specify the mode.
+Public Enum PD_ACTION_TARGET
+    PD_AT_WHOLEIMAGE = 0
+    PD_AT_SINGLELAYER = 1
+End Enum
+
+#If False Then
+    Const PD_AT_WHOLEIMAGE = 0, PD_AT_SINGLELAYER = 1
+#End If
