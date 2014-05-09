@@ -826,7 +826,7 @@ Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button
 End Sub
 
 Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
-
+    
     ShiftDown = (Shift And vbShiftMask) > 0
     CtrlDown = (Shift And vbCtrlMask) > 0
     AltDown = (Shift And vbAltMask) > 0
@@ -837,7 +837,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
-    
+        
     ShiftDown = (Shift And vbShiftMask) > 0
     CtrlDown = (Shift And vbCtrlMask) > 0
     AltDown = (Shift And vbAltMask) > 0
@@ -990,7 +990,8 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
             
             'Move stuff around
             Case NAV_MOVE
-                transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                Message "Shift key: preserve layer aspect ratio"
+                transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
         
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
@@ -999,7 +1000,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
                 If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
                     
                     'If the SHIFT key is down, notify the selection engine that a square shape is requested
-                    pdImages(g_CurrentImage).mainSelection.requestSquare ShiftDown
+                    pdImages(g_CurrentImage).mainSelection.requestSquare (Shift And vbShiftMask)
                     
                     'Pass new points to the active selection
                     pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
