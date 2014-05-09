@@ -330,7 +330,7 @@ End Function
 Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, l As Double)
     
     Dim Max As Double, Min As Double
-    Dim Delta As Double
+    Dim delta As Double
     Dim rR As Double, rG As Double, rB As Double
     
     rR = r / 255
@@ -354,23 +354,23 @@ Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, 
         h = 0
     Else
         
-        Delta = Max - Min
+        delta = Max - Min
         
         'Calculate saturation
         If l <= 0.5 Then
-            s = Delta / (Max + Min)
+            s = delta / (Max + Min)
         Else
-            s = Delta / (2 - Max - Min)
+            s = delta / (2 - Max - Min)
         End If
         
         'Calculate hue
         
         If rR = Max Then
-            h = (rG - rB) / Delta    '{Resulting color is between yellow and magenta}
+            h = (rG - rB) / delta    '{Resulting color is between yellow and magenta}
         ElseIf rG = Max Then
-            h = 2 + (rB - rR) / Delta '{Resulting color is between cyan and yellow}
+            h = 2 + (rB - rR) / delta '{Resulting color is between cyan and yellow}
         ElseIf rB = Max Then
-            h = 4 + (rR - rG) / Delta '{Resulting color is between magenta and cyan}
+            h = 4 + (rR - rG) / delta '{Resulting color is between magenta and cyan}
         End If
         
         'If you prefer hue in the [0,360] range instead of [-1, 5] you can use this code
@@ -456,6 +456,110 @@ Public Sub tHSLToRGB(h As Double, s As Double, l As Double, r As Long, g As Long
    If b > 255 Then b = 255
    
 End Sub
+
+'Floating-point conversion between RGB [0, 1] and HSL [0, 1]
+Public Sub fRGBtoHSL(ByVal r As Double, ByVal g As Double, ByVal b As Double, ByRef h As Double, ByRef s As Double, ByRef l As Double)
+
+    Dim minVal As Double, maxVal As Double, delta As Double
+    
+    minVal = fMin3(r, g, b)
+    maxVal = fMax3(r, g, b)
+    delta = maxVal - minVal
+
+    l = (maxVal + minVal) / 2
+
+    'Check the achromatic case
+    If delta = 0 Then
+
+        'Hue is technically undefined, but we have to return SOME value...
+        h = 0
+        s = 0
+        
+    'Chromatic case...
+    Else
+        
+        If (l < 0.5) Then
+            s = delta / (maxVal + minVal)
+        Else
+            s = delta / (2 - maxVal - minVal)
+        End If
+        
+        Dim deltaR As Double, deltaG As Double, deltaB As Double, halfDelta As Double
+        halfDelta = delta / 2
+
+        deltaR = (((maxVal - r) / 6) + halfDelta) / delta
+        deltaG = (((maxVal - g) / 6) + halfDelta) / delta
+        deltaB = (((maxVal - b) / 6) + halfDelta) / delta
+
+        If (r = maxVal) Then
+            h = deltaB - deltaG
+        ElseIf (g = maxVal) Then
+            h = 0.333333333333333 + deltaR - deltaB
+        Else
+            h = 0.666666666666667 + deltaG - deltaR
+        End If
+        
+        'Lock hue to the [0, 1] range
+        If h < 0 Then h = h + 1
+        If h > 1 Then h = h - 1
+    
+    End If
+    
+End Sub
+
+'Floating-point conversion between HSL [0, 1] and RGB [0, 1]
+Public Sub fHSLtoRGB(ByVal h As Double, ByVal s As Double, ByVal l As Double, ByRef r As Double, ByRef g As Double, ByRef b As Double)
+
+    'Check the achromatic case
+    If (s = 0) Then
+    
+        r = l
+        g = l
+        b = l
+    
+    'Check the chromatic case
+    Else
+        
+        'As a failsafe, lock hue to [0, 1]
+        If (h < 0) Then h = h + 1
+        If (h > 1) Then h = h - 1
+        
+        Dim var_1 As Double, var_2 As Double
+        
+        If l < 0.5 Then
+            var_2 = l * (1 + s)
+        Else
+            var_2 = (l + s) - (s * l)
+        End If
+
+        var_1 = 2 * l - var_2
+
+        r = fHueToRGB(var_1, var_2, h + 0.333333333333333)
+        g = fHueToRGB(var_1, var_2, h)
+        b = fHueToRGB(var_1, var_2, h - 0.333333333333333)
+    
+        'Failsafe check for underflow
+        If (r < 0) Then r = 0
+        If (g < 0) Then g = 0
+        If (b < 0) Then b = 0
+        
+    End If
+
+End Sub
+
+Private Function fHueToRGB(ByRef v1 As Double, ByRef v2 As Double, ByRef vH As Double) As Double
+    
+    If (6 * vH) < 1 Then
+        fHueToRGB = v1 + (v2 - v1) * 6 * vH
+    ElseIf (2 * vH) < 1 Then
+        fHueToRGB = v2
+    ElseIf (3 * vH) < 2 Then
+        fHueToRGB = v1 + (v2 - v1) * (0.666666666666667 - vH) * 6
+    Else
+        fHueToRGB = v1
+    End If
+
+End Function
 
 'Convert [0,255] RGB values to [0,1] HSV values, with thanks to easyrgb.com for the conversion math
 Public Sub RGBtoHSV(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef h As Double, ByRef s As Double, ByRef v As Double)
