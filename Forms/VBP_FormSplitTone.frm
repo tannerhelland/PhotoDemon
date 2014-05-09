@@ -260,6 +260,10 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     invBalGradient = Math_Functions.convertRange(-100, 100, 0, 1, Balance)
     balGradient = 1 - invBalGradient
     
+    'Prevent divide-by-zero errors, below
+    If invBalGradient <= 0 Then invBalGradient = 0.0000001
+    If balGradient <= 0 Then balGradient = 0.0000001
+    
     'Strength controls the ratio at which the split-toned pixels are merged with the original pixels.  We want it on a [0, 1] scale.
     Strength = Math_Functions.convertRange(0, 100, 0, 1, Strength)
     
@@ -378,8 +382,8 @@ End Sub
 
 'To help orient the user, slightly different reset values are used for this tool.
 Private Sub cmdBar_ResetClick()
-    cpHighlight.Color = RGB(150, 200, 255)
-    cpShadow.Color = RGB(255, 200, 150)
+    cpHighlight.Color = RGB(255, 200, 150)
+    cpShadow.Color = RGB(150, 200, 255)
     sltBalance.Value = 0
     sltStrength.Value = 50
 End Sub
