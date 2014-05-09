@@ -487,6 +487,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             MenuFlip pdImages(g_CurrentImage).getActiveLayerIndex
         
         'Layer Size changes
+        Case "Reset layer size"
+            Layer_Handler.resetLayerSize cParams.GetLong(1)
+        
         Case "Content-aware resize"
             If showDialog Then
                 showPDDialog vbModal, FormResizeContentAware

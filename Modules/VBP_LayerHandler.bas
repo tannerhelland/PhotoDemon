@@ -514,6 +514,20 @@ Public Sub mergeVisibleLayers()
 
 End Sub
 
+'If a layer has been transformed using the on-canvas tools, this will reset it to its default size.
+Public Sub resetLayerSize(ByVal srcLayerIndex As Long)
+
+    pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).setLayerCanvasXModifier 1
+    pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).setLayerCanvasYModifier 1
+    
+    'Re-sync the interface
+    syncInterfaceToCurrentImage
+    
+    'Redraw the viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
 'Given a layer, populate a rect with its coordinates (relative to the main image coordinates, always)
 Public Sub fillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT, Optional ByVal useCanvasModifiers As Boolean = False)
 
