@@ -101,7 +101,7 @@ Begin VB.Form FormSplitTone
       _ExtentX        =   10186
       _ExtentY        =   873
       Max             =   100
-      Value           =   100
+      Value           =   50
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -199,17 +199,32 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Split Toning Form
+'Split Toning Dialog
 'Copyright ©2014 by Audioglider and Tanner Helland
 'Created: 07/May/14
 'Last updated: 09/May/14
-'Last update: switch to HSL instead of HSV; this is slower, but arguably more appropriate for this tool.
+'Last update: tweak the split toning algorithm to perfection (I hope?)
 '
-'This technique applies a different tones to shadows and highlights in the image.  For a comprehensive explanation
-' of split-toning (and its historical relevance), see
+'Split toning (a digital relative of traditional Duotone printing) allows the user to apply two unique tones to an
+' image: one for the highlights, and one for the shadows.  A balance slider controls the midpoint between highlights
+' and shadows, while an optional strength parameter allows the user to blend the split tone results with the
+' original image.  (This differs from traditional Duotone printing, where the image is reproduced using *only* the
+' two inks specified.)
+'
+'For a comprehensive explanation of split-toning (and its historical relevance), see this article:
 ' http://www.alternativephotography.com/wp/toning/split-toning-history
 '
-'Many thanks to expert coder Audioglider for contributing this tool to PhotoDemon.
+' ... and for a good example of the effects that can be achieved with split toning, see this article:
+' http://www.digitalcameraworld.com/2013/02/09/split-toning-in-photoshop-how-to-get-creative-with-your-black-and-white-conversions/
+'
+'PhotoDemon's version of this tool has gone through a lot of iterations.  The current incarnation tries to adhere to
+' the traditional split-toning model, where the image is faded through gray at its specified midtone.  This limits
+' the bulk of the coloring to the ends of the luminance spectrum, which reduces muddiness and draws the eye to the
+' areas of greatest contrast in the image.  I think it's quite an excellent tool, and its results should be comparable
+' to what you'd get from (much more expensive) professional software like Adobe Lightroom.
+'
+'Many thanks to expert coder Audioglider for his help in creating this tool.  Audioglider not only built the initial
+' version of the tool from scratch, but he was immensely helpful in testing later iterations.  Thanks!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -239,10 +254,11 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     fRGBtoHSL ExtractR(highlightColor) / 255, ExtractG(highlightColor) / 255, ExtractB(highlightColor) / 255, highlightHue, highlightSaturation, ignoreLuminance
     fRGBtoHSL ExtractR(shadowColor) / 255, ExtractG(shadowColor) / 255, ExtractB(shadowColor) / 255, shadowHue, shadowSaturation, ignoreLuminance
     
-    'Convert balance mix value to [0,2]; it will be used to blend split-toned colors at a varying scale (low balance
-    ' favors the shadow tone, high balance favors the highlight tone)
-    Dim balGradient As Double
-    balGradient = Math_Functions.convertRange(-100, 100, 0, 2, Balance)
+    'Convert balance mix value to [1,0]; it will be used to blend split-toned colors at a varying scale (low balance
+    ' favors the shadow tone, high balance favors the highlight tone).
+    Dim balGradient As Double, invBalGradient As Double
+    invBalGradient = Math_Functions.convertRange(-100, 100, 0, 1, Balance)
+    balGradient = 1 - invBalGradient
     
     'Strength controls the ratio at which the split-toned pixels are merged with the original pixels.  We want it on a [0, 1] scale.
     Strength = Math_Functions.convertRange(0, 100, 0, 1, Strength)
@@ -274,7 +290,7 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     'Color variables
     Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
-    Dim v As Double
+    Dim v As Long, vFloat As Double
     
     Dim rHighlight As Double, gHighlight As Double, bHighlight As Double
     Dim rShadow As Double, gShadow As Double, bShadow As Double
@@ -289,11 +305,12 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
         b = ImageData(QuickVal, y)
         
         'Calculate HSL-compatible luminance
-        v = getLuminance(r, g, b) / 255
+        v = getLuminance(r, g, b)
+        vFloat = v / 255
         
         'Retrieve RGB conversions for the supplied highlight and shadow values, but retaining the pixel's current luminance (v)
-        fHSLtoRGB highlightHue, highlightSaturation, v, rHighlight, gHighlight, bHighlight
-        fHSLtoRGB shadowHue, shadowSaturation, v, rShadow, gShadow, bShadow
+        fHSLtoRGB highlightHue, highlightSaturation, vFloat, rHighlight, gHighlight, bHighlight
+        fHSLtoRGB shadowHue, shadowSaturation, vFloat, rShadow, gShadow, bShadow
         
         'Highlight and shadow values are returned in the range [0, 1]; convert them to [0, 255] before continuing
         rHighlight = rHighlight * 255
@@ -305,18 +322,29 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
         
         'We now have shadow and highlight colors for this pixel, already modified according to this pixel's luminance.
         
-        'Next, we need to decide the ratio at which to mix the colors.  This is controlled by the balance slider; at a Balance of 0,
-        ' the colors are equally mixed between the shadow and gradient colors according to their luminance.  If the Balance is > 0,
-        ' we favor the highlight color, and if < 0 we favor the shadow color.
-        thisGradient = v * balGradient
-        If thisGradient > 1 Then thisGradient = 1
-        If thisGradient < 0 Then thisGradient = 0
+        'New strategy!  We don't want to color midtones, and midtones are defined according to the Balance parameter.
+        ' So in a nutshell: if a pixel's luminance falls above the Balance param, fade it between gray and the highlight.
+        ' If a pixel's luminance is below the Balance param, fade it between the shadow and gray.
+        If vFloat > balGradient Then
         
-        'Use the balance value to mix the shadow and highlight colors
-        newR = BlendColors(rShadow, rHighlight, thisGradient)
-        newG = BlendColors(gShadow, gHighlight, thisGradient)
-        newB = BlendColors(bShadow, bHighlight, thisGradient)
+            'Gradient between balGradient and 1.
+            thisGradient = 1 - ((vFloat - balGradient) / invBalGradient)
+            
+            newR = BlendColors(rHighlight, v, thisGradient)
+            newG = BlendColors(gHighlight, v, thisGradient)
+            newB = BlendColors(bHighlight, v, thisGradient)
+            
+        Else
         
+            'Gradient between 0 and balGradient.
+            thisGradient = 1 - (Abs(balGradient - vFloat) / balGradient)
+            
+            newR = BlendColors(rShadow, v, thisGradient)
+            newG = BlendColors(gShadow, v, thisGradient)
+            newB = BlendColors(bShadow, v, thisGradient)
+            
+        End If
+                
         'Finally, apply the new RGB values to the image by blending them with their original color at the user's requested strength.
         ImageData(QuickVal + 2, y) = BlendColors(r, newR, Strength)
         ImageData(QuickVal + 1, y) = BlendColors(g, newG, Strength)
@@ -353,7 +381,7 @@ Private Sub cmdBar_ResetClick()
     cpHighlight.Color = RGB(150, 200, 255)
     cpShadow.Color = RGB(255, 200, 150)
     sltBalance.Value = 0
-    sltStrength.Value = 100
+    sltStrength.Value = 50
 End Sub
 
 Private Sub cpHighlight_ColorChanged()
