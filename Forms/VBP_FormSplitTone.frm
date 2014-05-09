@@ -203,7 +203,7 @@ Attribute VB_Exposed = False
 'Copyright ©2014 by Audioglider and Tanner Helland
 'Created: 07/May/14
 'Last updated: 09/May/14
-'Last update: add strength slider
+'Last update: switch to HSL instead of HSV; this is slower, but arguably more appropriate for this tool.
 '
 'This technique applies a different tones to shadows and highlights in the image.  For a comprehensive explanation
 ' of split-toning (and its historical relevance), see
@@ -227,6 +227,8 @@ Dim m_ToolTip As clsToolTip
 '  - Shadow color (as Long, created via VB's RGB() command)
 '  - Balance parameter, [-100, 100].  At 0, tones will be equally split between the highlight and shadow colors.  > 0 Balance will favor
 '     highlights, while < 0 will favor shadows.
+'  - Strength parameter, [0, 100].  At 100, current pixel values will be overwritten by their split-toned counterparts.  At 50, the original
+'     and split-toned RGB values will be blended at a 50/50 ratio.  0 = no change.
 Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, ByVal Balance As Double, ByVal Strength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Split-toning image..."
@@ -234,8 +236,8 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     'From the incoming colors, determine corresponding hue and saturation values
     Dim highlightHue As Double, highlightSaturation As Double, shadowHue As Double, shadowSaturation As Double
     Dim ignoreLuminance As Double
-    fRGBtoHSV ExtractR(highlightColor), ExtractG(highlightColor), ExtractB(highlightColor), highlightHue, highlightSaturation, ignoreLuminance
-    fRGBtoHSV ExtractR(shadowColor), ExtractG(shadowColor), ExtractB(shadowColor), shadowHue, shadowSaturation, ignoreLuminance
+    fRGBtoHSL ExtractR(highlightColor) / 255, ExtractG(highlightColor) / 255, ExtractB(highlightColor) / 255, highlightHue, highlightSaturation, ignoreLuminance
+    fRGBtoHSL ExtractR(shadowColor) / 255, ExtractG(shadowColor) / 255, ExtractB(shadowColor) / 255, shadowHue, shadowSaturation, ignoreLuminance
     
     'Convert balance mix value to [0,2]; it will be used to blend split-toned colors at a varying scale (low balance
     ' favors the shadow tone, high balance favors the highlight tone)
@@ -286,13 +288,12 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        'Calculate a luminance value using the original ITU-R recommended formula (BT.709, specifically)
-        v = (213 * r + 715 * g + 72 * b) \ 1000
-        v = v / 255
+        'Calculate HSL-compatible luminance
+        v = getLuminance(r, g, b) / 255
         
         'Retrieve RGB conversions for the supplied highlight and shadow values, but retaining the pixel's current luminance (v)
-        fHSVtoRGB highlightHue, highlightSaturation, v, rHighlight, gHighlight, bHighlight
-        fHSVtoRGB shadowHue, shadowSaturation, v, rShadow, gShadow, bShadow
+        fHSLtoRGB highlightHue, highlightSaturation, v, rHighlight, gHighlight, bHighlight
+        fHSLtoRGB shadowHue, shadowSaturation, v, rShadow, gShadow, bShadow
         
         'Highlight and shadow values are returned in the range [0, 1]; convert them to [0, 255] before continuing
         rHighlight = rHighlight * 255
