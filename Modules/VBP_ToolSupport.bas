@@ -128,8 +128,8 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
 End Sub
 
 'The nav tool uses this function to move and/or resize the current layer
-Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas)
-
+Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas, Optional ByVal isShiftDown As Boolean = False)
+    
     'Prevent the canvas from redrawing itself until our movement calculations are complete.
     ' (This prevents juddery movement.)
     srcCanvas.setRedrawSuspension True
@@ -183,6 +183,9 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
                 .setLayerOffsetY newY
                 .setLayerCanvasXModifier (origLayerRectModified.Right - .getLayerOffsetX) / origWidth
                 .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
+                
+                'If the user is pressing the SHIFT key, lock the image's aspect ratio
+                If isShiftDown Then .setLayerCanvasYModifier .getLayerCanvasXModifier
             
             '1: top-right corner
             Case 1
@@ -191,11 +194,17 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
                 .setLayerOffsetY newY
                 .setLayerCanvasXModifier (curImgX - origLayerRect.Left) / origWidth
                 .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
+                
+                'If the user is pressing the SHIFT key, lock the image's aspect ratio
+                If isShiftDown Then .setLayerCanvasYModifier .getLayerCanvasXModifier
             
             '2: bottom-right
             Case 2
                 .setLayerCanvasXModifier (curImgX - origLayerRect.Left) / origWidth
                 .setLayerCanvasYModifier (curImgY - origLayerRect.Top) / origHeight
+                
+                'If the user is pressing the SHIFT key, lock the image's aspect ratio
+                If isShiftDown Then .setLayerCanvasYModifier .getLayerCanvasXModifier
             
             '3: bottom-left
             Case 3
@@ -204,6 +213,9 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
                 .setLayerOffsetX newX
                 .setLayerCanvasXModifier (origLayerRectModified.Right - .getLayerOffsetX) / origWidth
                 .setLayerCanvasYModifier (curImgY - origLayerRect.Top) / origHeight
+                
+                'If the user is pressing the SHIFT key, lock the image's aspect ratio
+                If isShiftDown Then .setLayerCanvasYModifier .getLayerCanvasXModifier
             
             '4: interior of the layer (e.g. move the layer instead of resize it)
             Case 4
