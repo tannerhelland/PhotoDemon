@@ -874,42 +874,34 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         'Blur
         
+        'Standard blur filters
         Case "Box blur"
             If showDialog Then
                 showPDDialog vbModal, FormBoxBlur
             Else
                 FormBoxBlur.BoxBlurFilter cParams.GetLong(1), cParams.GetLong(2)
             End If
-        
-        Case "Chroma blur"
-            If showDialog Then
-                showPDDialog vbModal, FormChromaBlur
-            Else
-                FormChromaBlur.ChromaBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
-            End If
-        
+            
         Case "Gaussian blur"
             If showDialog Then
                 showPDDialog vbModal, FormGaussianBlur
             Else
                 FormGaussianBlur.GaussianBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
             End If
-        
-        Case "Grid blur"
-            FilterGridBlur
             
+        Case "Surface blur"
+            If showDialog Then
+                showPDDialog vbModal, FormSurfaceBlur
+            Else
+                FormSurfaceBlur.SurfaceBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3)
+            End If
+            
+        'Motion (directional) blurs
         Case "Motion blur"
             If showDialog Then
                 showPDDialog vbModal, FormMotionBlur
             Else
                 FormMotionBlur.MotionBlurFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3), cParams.GetBool(4)
-            End If
-            
-        Case "Pixelate"
-            If showDialog Then
-                showPDDialog vbModal, FormPixelate
-            Else
-                FormPixelate.PixelateFilter cParams.GetLong(1), cParams.GetLong(2)
             End If
             
         Case "Radial blur"
@@ -918,20 +910,39 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormRadialBlur.RadialBlurFilter cParams.GetDouble(1), cParams.GetBool(2), cParams.GetBool(3)
             End If
-            
-        Case "Smart blur"
-            If showDialog Then
-                showPDDialog vbModal, FormSmartBlur
-            Else
-                FormSmartBlur.SmartBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3)
-            End If
-            
+        
         Case "Zoom blur"
             If showDialog Then
                 showPDDialog vbModal, FormZoomBlur
             Else
                 FormZoomBlur.ZoomBlurWrapper cParams.GetBool(1), cParams.GetLong(2)
             End If
+            
+        'Miscellaneous blurs
+        Case "Chroma blur"
+            If showDialog Then
+                showPDDialog vbModal, FormChromaBlur
+            Else
+                FormChromaBlur.ChromaBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
+            End If
+        
+        Case "Fragment"
+            If showDialog Then
+                showPDDialog vbModal, FormFragment
+            Else
+                FormFragment.Fragment cParams.GetLong(1)
+            End If
+        
+        Case "Grid blur"
+            FilterGridBlur
+            
+        Case "Pixelate"
+            If showDialog Then
+                showPDDialog vbModal, FormPixelate
+            Else
+                FormPixelate.PixelateFilter cParams.GetLong(1), cParams.GetLong(2)
+            End If
+            
         
         'Distort filters
         

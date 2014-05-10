@@ -31,9 +31,17 @@ Begin VB.Form FormFragment
       TabIndex        =   0
       Top             =   5775
       Width           =   11895
-      _extentx        =   20981
-      _extenty        =   1323
-      font            =   "VBP_FormFragment.frx":0000
+      _ExtentX        =   20981
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -41,9 +49,9 @@ Begin VB.Form FormFragment
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
-      disablezoompan  =   -1
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
       Height          =   495
@@ -51,12 +59,20 @@ Begin VB.Form FormFragment
       TabIndex        =   3
       Top             =   2520
       Width           =   5775
-      _extentx        =   10186
-      _extenty        =   873
-      font            =   "VBP_FormFragment.frx":0028
-      forecolor       =   0
-      max             =   50
-      value           =   4
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Max             =   50
+      Value           =   4
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   0
    End
    Begin VB.Label lblAlgorithm 
       AutoSize        =   -1  'True
@@ -86,15 +102,18 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fragment Filter Dialog
-'Copyright Â©2014 by Audioglider
-'Created: 5/09/14
+'Copyright ©2014 by Audioglider
+'Created: 09/May/14
 'Last updated: 09/May/14
-'Last update: initial build.
+'Last update: added handling for 32bpp images (e.g. alpha channels)
 '
 'Similar to the Fragment effect from Photoshop except adjustable.
 ' We create 4 layers and offset them the same distance from the origin,
 ' but at different positions (top, bottom, left and right), then merge them
 ' all together.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -103,9 +122,10 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'Apply a fragment filter to the active layer
 Public Sub Fragment(ByVal Distance As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
    
-    If toPreview = False Then Message "Applying beer goggles..."
+    If Not toPreview Then Message "Applying beer goggles..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -154,29 +174,26 @@ Public Sub Fragment(ByVal Distance As Long, Optional ByVal toPreview As Boolean 
     Next x
     
     'Color variables
-    Dim R As Long, G As Long, B As Long
-    Dim newR As Long, newG As Long, newB As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
     
-    Dim r2 As Long, g2 As Long, b2 As Long
-    Dim r3 As Long, g3 As Long, b3 As Long
-    Dim r4 As Long, g4 As Long, b4 As Long
-    Dim r5 As Long, g5 As Long, b5 As Long
+    Dim r2 As Long, g2 As Long, b2 As Long, a2 As Long
+    Dim r3 As Long, g3 As Long, b3 As Long, a3 As Long
+    Dim r4 As Long, g4 As Long, b4 As Long, a4 As Long
+    Dim r5 As Long, g5 As Long, b5 As Long, a5 As Long
     
-    Dim yOffset As Long, xOffset As Long
-    
-    Dim yCenter As Long, xCenter As Long
-    yCenter = finalY / 2
-    xCenter = finalX / 2
-    
+    Dim xOffset As Long, yOffset As Long
+        
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
     
         'Grab the current pixel values
-        R = srcImageData(QuickVal + 2, y)
-        G = srcImageData(QuickVal + 1, y)
-        B = srcImageData(QuickVal, y)
+        r = srcImageData(QuickVal + 2, y)
+        g = srcImageData(QuickVal + 1, y)
+        b = srcImageData(QuickVal, y)
+        If qvDepth = 4 Then a = srcImageData(QuickVal + 3, y)
         
         'Bottom
         If y + Distance >= finalY Then
@@ -187,6 +204,7 @@ Public Sub Fragment(ByVal Distance As Long, Optional ByVal toPreview As Boolean 
         r2 = srcImageData(QuickVal + 2, yOffset)
         g2 = srcImageData(QuickVal + 1, yOffset)
         b2 = srcImageData(QuickVal, yOffset)
+        If qvDepth = 4 Then a2 = srcImageData(QuickVal + 3, yOffset)
         
         'Top
         If y - Distance < initY Then
@@ -197,6 +215,7 @@ Public Sub Fragment(ByVal Distance As Long, Optional ByVal toPreview As Boolean 
         r3 = srcImageData(QuickVal + 2, yOffset)
         g3 = srcImageData(QuickVal + 1, yOffset)
         b3 = srcImageData(QuickVal, yOffset)
+        If qvDepth = 4 Then a3 = srcImageData(QuickVal + 3, yOffset)
         
         'Right
         If x + Distance >= finalX Then
@@ -207,6 +226,7 @@ Public Sub Fragment(ByVal Distance As Long, Optional ByVal toPreview As Boolean 
         r4 = srcImageData(xOffset + 2, y)
         g4 = srcImageData(xOffset + 1, y)
         b4 = srcImageData(xOffset, y)
+        If qvDepth = 4 Then a4 = srcImageData(xOffset + 3, y)
                 
         'Left
         If x - Distance < 0 Then
@@ -217,18 +237,21 @@ Public Sub Fragment(ByVal Distance As Long, Optional ByVal toPreview As Boolean 
         r5 = srcImageData(xOffset + 2, y)
         g5 = srcImageData(xOffset + 1, y)
         b5 = srcImageData(xOffset, y)
+        If qvDepth = 4 Then a5 = srcImageData(xOffset + 3, y)
         
         'Alpha-blend the the four layers using our shortcut look-up table
-        newR = (CLng(hLookup(R + r2)) + CLng(hLookup(r2 + r3)) + CLng(hLookup(r3 + r4)) + CLng(hLookup(r4 + r5))) / 4
-        newG = (CLng(hLookup(G + g2)) + CLng(hLookup(g2 + g3)) + CLng(hLookup(g3 + g4)) + CLng(hLookup(g4 + g5))) / 4
-        newB = (CLng(hLookup(B + b2)) + CLng(hLookup(b2 + b3)) + CLng(hLookup(b3 + b4)) + CLng(hLookup(b4 + b5))) / 4
+        newR = (CLng(hLookup(r + r2)) + CLng(hLookup(r2 + r3)) + CLng(hLookup(r3 + r4)) + CLng(hLookup(r4 + r5))) \ 4
+        newG = (CLng(hLookup(g + g2)) + CLng(hLookup(g2 + g3)) + CLng(hLookup(g3 + g4)) + CLng(hLookup(g4 + g5))) \ 4
+        newB = (CLng(hLookup(b + b2)) + CLng(hLookup(b2 + b3)) + CLng(hLookup(b3 + b4)) + CLng(hLookup(b4 + b5))) \ 4
+        If qvDepth = 4 Then newA = (CLng(hLookup(a + a2)) + CLng(hLookup(a2 + a3)) + CLng(hLookup(a3 + a4)) + CLng(hLookup(a4 + a5))) \ 4
       
         dstImageData(QuickVal + 2, y) = newR
         dstImageData(QuickVal + 1, y) = newG
         dstImageData(QuickVal, y) = newB
+        If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = newA
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -249,8 +272,9 @@ Public Sub Fragment(ByVal Distance As Long, Optional ByVal toPreview As Boolean 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    
+    Process "Fragment", False, buildParams(sltDistance.Value)
 End Sub
+
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub

@@ -31,21 +31,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -861,15 +861,15 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Chroma blur..."
+            Caption         =   "Gaussian blur..."
             Index           =   1
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Gaussian blur..."
+            Caption         =   "Surface blur..."
             Index           =   2
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Grid blur"
+            Caption         =   "-"
             Index           =   3
          End
          Begin VB.Menu MnuBlurFilter 
@@ -877,20 +877,32 @@ Begin VB.Form FormMain
             Index           =   4
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Pixelate..."
+            Caption         =   "Radial blur..."
             Index           =   5
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Radial blur..."
+            Caption         =   "Zoom blur..."
             Index           =   6
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Smart blur..."
+            Caption         =   "-"
             Index           =   7
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Zoom blur..."
+            Caption         =   "Chroma blur..."
             Index           =   8
+         End
+         Begin VB.Menu MnuBlurFilter 
+            Caption         =   "Fragment..."
+            Index           =   9
+         End
+         Begin VB.Menu MnuBlurFilter 
+            Caption         =   "Grid blur"
+            Index           =   10
+         End
+         Begin VB.Menu MnuBlurFilter 
+            Caption         =   "Pixelate..."
+            Index           =   11
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -2092,38 +2104,48 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
         'Box blur
         Case 0
             Process "Box blur", True
-            
-        'Chroma blur
-        Case 1
-            Process "Chroma blur", True
         
         'Gaussian blur
-        Case 2
+        Case 1
             Process "Gaussian blur", True
-                
-        'Grid blur
+        
+        'Surface Blur
+        Case 2
+            Process "Surface blur", True
+        
+        '<separator>
         Case 3
-            Process "Grid blur"
-            
+        
         'Motion blur
         Case 4
             Process "Motion blur", True
-            
-        'Pixelate (mosaic)
-        Case 5
-            Process "Pixelate", True
         
         'Radial blur
-        Case 6
+        Case 5
             Process "Radial blur", True
-            
-        'Smart Blur
-        Case 7
-            Process "Smart blur", True
         
         'Zoom Blur
-        Case 8
+        Case 6
             Process "Zoom blur", True
+            
+        '<separator>
+        Case 7
+        
+        'Chroma blur
+        Case 8
+            Process "Chroma blur", True
+        
+        'Fragment
+        Case 9
+            Process "Fragment", True
+                
+        'Grid blur
+        Case 10
+            Process "Grid blur"
+            
+        'Pixelate (mosaic)
+        Case 11
+            Process "Pixelate", True
             
     End Select
 

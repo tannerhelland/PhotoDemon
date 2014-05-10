@@ -236,17 +236,17 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
     
     'Layer menu
-    'addMenuIcon "SELECTALL", 4, 0       'Add layer (top-level)
+    'addMenuIcon "ADDLAYER", 4, 0        'Add layer (top-level)
         '--> Add layer sub-menu
         'addMenuIcon "", 4, 0, 0             'Add blank layer
         addMenuIcon "DUPL_LAYER", 4, 0, 1          'Add duplicate layer
         addMenuIcon "PASTE_LAYER", 4, 0, 3          'Add layer from clipboard
         'addMenuIcon "", 4, 0, 4             'Add layer from file
-    'addMenuIcon "SELECTALL", 4, 1       'Delete layer (top-level)
-    'addMenuIcon "SELECTALL", 4, 3       'Merge up
-    'addMenuIcon "SELECTALL", 4, 4       'Merge down
-    'addMenuIcon "SELECTALL", 4, 5       'Order (top-level)
-    addMenuIcon "ROTATECW", 4, 7       'Orientation (top-level)
+    'addMenuIcon "DELLAYER", 4, 1        'Delete layer (top-level)
+    'addMenuIcon "MERGEUP", 4, 3         'Merge up
+    'addMenuIcon "MERGEDOWN", 4, 4       'Merge down
+    'addMenuIcon "LAYERORDER", 4, 5      'Order (top-level)
+    addMenuIcon "ROTATECW", 4, 7         'Layer Orientation (top-level)
         '--> Orientation sub-menu
         addMenuIcon "ROTATECW", 4, 7, 0     'Rotate Clockwise
         addMenuIcon "ROTATECCW", 4, 7, 1    'Rotate Counter-clockwise
@@ -254,18 +254,18 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 4, 7, 3   'Rotate Arbitrary
         addMenuIcon "MIRROR", 4, 7, 5       'Mirror
         addMenuIcon "FLIP", 4, 7, 6         'Flip
-    addMenuIcon "RESIZE", 4, 8          'Size (top-level)
+    addMenuIcon "RESIZE", 4, 8           'Layer Size (top-level)
         '--> Size sub-menu
         'addMenuIcon "RESETSIZE", 4, 8, 0        'Reset to original size
         addMenuIcon "RESIZE", 4, 8, 2        'Resize
         addMenuIcon "SMRTRESIZE", 4, 8, 3    'Content-aware resize
-    addMenuIcon "TRANSPARENCY", 4, 10   'Transparency
+    addMenuIcon "TRANSPARENCY", 4, 10    'Layer Transparency
         '--> Transparency sub-menu
         addMenuIcon "ADDTRANS", 4, 10, 0     'Add alpha channel
         addMenuIcon "GREENSCREEN", 4, 10, 1  'Color to alpha
         addMenuIcon "REMOVETRANS", 4, 10, 3  'Remove alpha channel
-    'addMenuIcon "SELECTALL", 4, 12      'Flatten image
-    'addMenuIcon "SELECTALL", 4, 13      'Merge visible layers
+    'addMenuIcon "FLATTENIMG", 4, 12     'Flatten image
+    'addMenuIcon "MERGEVISIBLE", 4, 13   'Merge visible layers
     
     'Select Menu
     addMenuIcon "SELECTALL", 5, 0       'Select all
@@ -364,14 +364,16 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "BLUR", 7, 3            'Blur
         '--> Blur sub-menu
         addMenuIcon "BOXBLUR", 7, 3, 0        'Box Blur
-        addMenuIcon "CHROMABLUR", 7, 3, 1     'Chroma Blur
-        addMenuIcon "GAUSSBLUR", 7, 3, 2      'Gaussian Blur
-        addMenuIcon "GRIDBLUR", 7, 3, 3       'Grid Blur
+        addMenuIcon "GAUSSBLUR", 7, 3, 1      'Gaussian Blur
+        addMenuIcon "SMARTBLUR", 7, 3, 2      'Surface Blur (formerly Smart Blur)
         addMenuIcon "MOTIONBLUR", 7, 3, 4     'Motion Blur
-        addMenuIcon "PIXELATE", 7, 3, 5       'Pixelate (formerly Mosaic)
-        addMenuIcon "RADIALBLUR", 7, 3, 6     'Radial Blur
-        addMenuIcon "SMARTBLUR", 7, 3, 7      'Smart Blur
-        addMenuIcon "ZOOMBLUR", 7, 3, 8       'Zoom Blur
+        addMenuIcon "RADIALBLUR", 7, 3, 5     'Radial Blur
+        addMenuIcon "ZOOMBLUR", 7, 3, 6       'Zoom Blur
+        addMenuIcon "CHROMABLUR", 7, 3, 8     'Chroma Blur
+        'addMenuIcon "FRAGMENT", 7, 3, 9       'Fragment
+        addMenuIcon "GRIDBLUR", 7, 3, 10       'Grid Blur
+        addMenuIcon "PIXELATE", 7, 3, 11       'Pixelate (formerly Mosaic)
+        
     addMenuIcon "DISTORT", 7, 4         'Distort
         '--> Distort sub-menu
         addMenuIcon "LENSDISTORT", 7, 4, 0    'Apply lens distortion

@@ -1,8 +1,8 @@
 VERSION 5.00
-Begin VB.Form FormSmartBlur 
+Begin VB.Form FormSurfaceBlur 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Smart Blur"
+   Caption         =   " Surface Blur"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -220,13 +220,13 @@ Begin VB.Form FormSmartBlur
       Width           =   735
    End
 End
-Attribute VB_Name = "FormSmartBlur"
+Attribute VB_Name = "FormSurfaceBlur"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'"Smart" Blur Tool
+'Surface Blur Tool (formerly "Smart Blur")
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 17/January/13
 'Last updated: 24/August/13
@@ -253,9 +253,9 @@ Dim m_ToolTip As clsToolTip
 
 'Convolve an image using a selective gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
-Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If Not toPreview Then Message "Analyzing image in preparation for smart blur..."
+    If Not toPreview Then Message "Analyzing image in preparation for surface blur..."
             
     'More color variables - in this case, sums for each color component
     Dim r As Long, g As Long, b As Long
@@ -395,7 +395,7 @@ Public Sub SmartBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, By
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Smart blur", , buildParams(sltRadius, sltThreshold, optEdges(1))
+    Process "Surface blur", , buildParams(sltRadius, sltThreshold, optEdges(1))
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -449,7 +449,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then SmartBlurFilter sltRadius, sltThreshold, optEdges(1), True, fxPreview
+    If cmdBar.previewsAllowed Then SurfaceBlurFilter sltRadius, sltThreshold, optEdges(1), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
