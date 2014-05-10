@@ -221,9 +221,8 @@ Attribute VB_Exposed = False
 'Image Size Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 15/April/14
-'Last update: big update: resize now supports layered images, and GDI+ is used (instead of custom fallbacks)
-'             if FreeImage is not available.
+'Last updated: 09/May/14
+'Last update: allow resizing of the entire image, or a single layer
 '
 'Handles all image-size related functions.  Currently supports nearest-neighbor and halftone resampling
 ' (via the API; not 100% accurate but faster than doing it manually), bilinear resampling via pure VB, and
