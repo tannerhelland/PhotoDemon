@@ -723,6 +723,17 @@ Public Sub showResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
 
 End Sub
 
+'A thin wrapper to showPDDialog above, customized for arbitrary rotation.
+Public Sub showRotateDialog(ByVal RotateTarget As PD_ACTION_TARGET)
+
+    'Notify the resize dialog of the intended target
+    FormRotate.RotateTarget = RotateTarget
+
+    'Display the resize dialog
+    showPDDialog vbModal, FormRotate
+
+End Sub
+
 'Return the system keyboard delay, in seconds.  This isn't an exact science because the delay is actually hardware dependent
 ' (e.g. the system returns a value from 0 to 3), but we can use a "good enough" approximation.
 Public Function getKeyboardDelay() As Double

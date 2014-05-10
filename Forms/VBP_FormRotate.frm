@@ -192,13 +192,21 @@ Option Explicit
 'This temporary DIB will be used for rendering the preview
 Dim smallDIB As pdDIB
 
+'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
+' and can be externally accessed by the ResizeTarget property.
+Private m_RotateTarget As PD_ACTION_TARGET
+
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Double, Optional ByVal isPreview As Boolean = False)
-    
+Public Property Let RotateTarget(newTarget As PD_ACTION_TARGET)
+    m_RotateTarget = newTarget
+End Property
+
+Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Double, Optional ByVal thingToRotate As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE, Optional ByVal isPreview As Boolean = False)
+        
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).selectionActive Then
+    If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
@@ -224,8 +232,19 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             cx = smallDIB.getDIBWidth / 2
             cy = smallDIB.getDIBHeight / 2
         Else
-            cx = pdImages(g_CurrentImage).Width / 2
-            cy = pdImages(g_CurrentImage).Height / 2
+        
+            Select Case thingToRotate
+            
+                Case PD_AT_WHOLEIMAGE
+                    cx = pdImages(g_CurrentImage).Width / 2
+                    cy = pdImages(g_CurrentImage).Height / 2
+                    
+                Case PD_AT_SINGLELAYER
+                    cx = pdImages(g_CurrentImage).getActiveDIB.getDIBWidth / 2
+                    cy = pdImages(g_CurrentImage).getActiveDIB.getDIBHeight / 2
+                    
+            End Select
+                    
         End If
         
         
@@ -279,20 +298,41 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             Set tmpDIB = Nothing
             
         Else
-        
-            Message "Rotating image..."
             
             'FreeImage doesn't raise progress events, but we can use the number of layers as
             ' a stand-in progress parameter.
-            SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers
+            If thingToRotate = PD_AT_WHOLEIMAGE Then
+                Message "Rotating image..."
+                SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers
+            Else
+                Message "Rotating layer..."
+                SetProgBarMax 1
+            End If
             
             'Iterate through each layer, rotating as we go
             Dim tmpLayerRef As pdLayer
+            Dim origOffsetX As Long, origOffsetY As Long
+            
+            'If we are rotating the entire image, we must handle all layers in turn.  Otherwise, we can handle just
+            ' the active layer.
+            Dim lInit As Long, lFinal As Long
+            
+            Select Case thingToRotate
+            
+                Case PD_AT_WHOLEIMAGE
+                    lInit = 0
+                    lFinal = pdImages(g_CurrentImage).getNumOfLayers - 1
+                
+                Case PD_AT_SINGLELAYER
+                    lInit = pdImages(g_CurrentImage).getActiveLayerIndex
+                    lFinal = pdImages(g_CurrentImage).getActiveLayerIndex
+            
+            End Select
             
             Dim i As Long
-            For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+            For i = lInit To lFinal
             
-                SetProgBarVal i
+                If thingToRotate = PD_AT_WHOLEIMAGE Then SetProgBarVal i
             
                 'Retrieve a pointer to the layer of interest
                 Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
@@ -300,9 +340,14 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 'Remove premultiplied alpha, if any
                 tmpLayerRef.layerDIB.fixPremultipliedAlpha False
                 
-                'Null-pad the layer
-                tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+                'If we are only resizing a single layer, make a copy of the layer's current offset.  We will use these
+                ' to re-center the layer after it has been resized.
+                origOffsetX = tmpLayerRef.getLayerOffsetX + (tmpLayerRef.layerDIB.getDIBWidth \ 2)
+                origOffsetY = tmpLayerRef.getLayerOffsetY + (tmpLayerRef.layerDIB.getDIBHeight \ 2)
                 
+                'Null-pad the layer
+                If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+                                
                 'Give FreeImage a handle to the layer's pixel data
                 fi_DIB = FreeImage_CreateFromDC(tmpLayerRef.layerDIB.getDIBDC)
             
@@ -339,8 +384,15 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
                 If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
                 
-                'Remove any null-padding
-                tmpLayerRef.cropNullPaddedLayer
+                'If resizing the entire image, remove any null-padding now
+                If thingToRotate = PD_AT_WHOLEIMAGE Then
+                    tmpLayerRef.cropNullPaddedLayer
+                
+                'If resizing only a single layer, re-center it according to its old offset
+                Else
+                    tmpLayerRef.setLayerOffsetX origOffsetX - (tmpLayerRef.layerDIB.getDIBWidth \ 2)
+                    tmpLayerRef.setLayerOffsetY origOffsetY - (tmpLayerRef.layerDIB.getDIBHeight \ 2)
+                End If
                 
             'Continue with the next layer
             Next i
@@ -348,14 +400,17 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             'All layers have been rotated successfully!
             
             'Update the image's size
-            pdImages(g_CurrentImage).updateSize False, nWidth, nHeight
-            DisplaySize pdImages(g_CurrentImage)
+            If thingToRotate = PD_AT_WHOLEIMAGE Then
+                pdImages(g_CurrentImage).updateSize False, nWidth, nHeight
+                DisplaySize pdImages(g_CurrentImage)
+            End If
             
-            'Fit the new image on-screen and redraw it
-            FitImageToViewport
+            'Fit the new image on-screen and redraw its viewport
+            PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Image resize"
             
             Message "Rotation complete."
             SetProgBarVal 0
+            releaseProgressBar
         
         End If
         
@@ -369,9 +424,9 @@ End Sub
 'OK button
 Private Sub cmdBar_OKClick()
     If optRotate(0) Then
-        Process "Arbitrary image rotation", , buildParams(0, sltAngle)
+        Process "Arbitrary image rotation", , buildParams(0, sltAngle, m_RotateTarget)
     Else
-        Process "Arbitrary image rotation", , buildParams(1, sltAngle)
+        Process "Arbitrary layer rotation", , buildParams(1, sltAngle, m_RotateTarget)
     End If
     
 End Sub
@@ -382,6 +437,75 @@ End Sub
 
 Private Sub Form_Activate()
             
+    'Set the dialog caption to match the current resize operation (resize image or resize single layer)
+    Select Case m_RotateTarget
+        
+        Case PD_AT_WHOLEIMAGE
+            Me.Caption = g_Language.TranslateMessage("Rotate image")
+        
+        Case PD_AT_SINGLELAYER
+            Me.Caption = g_Language.TranslateMessage("Rotate layer")
+        
+    End Select
+    
+    'During the preview stage, we want to rotate a smaller version of the image or active layer.  This increases
+    ' the speed of previewing immensely (especially for large images, like 10+ megapixel photos)
+    Set smallDIB = New pdDIB
+    
+    'Determine a new image size that preserves the current aspect ratio
+    Dim srcWidth As Long, srcHeight As Long
+    Dim dWidth As Long, dHeight As Long
+    
+    Select Case m_RotateTarget
+        
+        Case PD_AT_WHOLEIMAGE
+            srcWidth = pdImages(g_CurrentImage).Width
+            srcHeight = pdImages(g_CurrentImage).Height
+        
+        Case PD_AT_SINGLELAYER
+            srcWidth = pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth
+            srcHeight = pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight
+        
+    End Select
+    
+    convertAspectRatio srcWidth, srcHeight, fxPreview.getPreviewWidth, fxPreview.getPreviewHeight, dWidth, dHeight
+    
+    'Create a new, smaller image at those dimensions
+    If (dWidth < srcWidth) Or (dHeight < srcHeight) Then
+        
+        smallDIB.createBlank dWidth, dHeight, 32, 0
+        
+        Select Case m_RotateTarget
+        
+            Case PD_AT_WHOLEIMAGE
+                pdImages(g_CurrentImage).getCompositedRect smallDIB, 0, 0, dWidth, dHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, InterpolationModeHighQualityBicubic
+            
+            Case PD_AT_SINGLELAYER
+                GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, pdImages(g_CurrentImage).getActiveDIB, 0, 0, pdImages(g_CurrentImage).getActiveDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+            
+        End Select
+        
+    'The source image or layer is tiny; just use the whole thing!
+    Else
+    
+        Select Case m_RotateTarget
+        
+            Case PD_AT_WHOLEIMAGE
+                pdImages(g_CurrentImage).getCompositedImage smallDIB
+            
+            Case PD_AT_SINGLELAYER
+                smallDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
+            
+        End Select
+        
+    End If
+        
+    'Remove premultiplied alpha from the small DIB copy
+    smallDIB.fixPremultipliedAlpha False
+    
+    'Give the preview object a copy of this image data so it can show it to the user if requested
+    fxPreview.setOriginalImage smallDIB
+    
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
@@ -396,36 +520,7 @@ Private Sub Form_Load()
 
     'Disable previewing until the dialog is fully initialized
     cmdBar.markPreviewStatus False
-    
-    'During the preview stage, we want to rotate a smaller version of the image.  This increases the speed of
-    ' previewing immensely (especially for large images, like 10+ megapixel photos)
-    Set smallDIB = New pdDIB
-            
-    'Determine a new image size that preserves the current aspect ratio
-    Dim dWidth As Long, dHeight As Long
-    convertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, fxPreview.getPreviewWidth, fxPreview.getPreviewHeight, dWidth, dHeight
-    
-    'Create a new, smaller image at those dimensions
-    If (dWidth < pdImages(g_CurrentImage).Width) Or (dHeight < pdImages(g_CurrentImage).Height) Then
         
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        pdImages(g_CurrentImage).getCompositedImage tmpDIB
-        
-        smallDIB.createFromExistingDIB tmpDIB, dWidth, dHeight, True
-        
-        Set tmpDIB = Nothing
-        
-    Else
-        pdImages(g_CurrentImage).getCompositedImage smallDIB
-    End If
-        
-    'Remove premultiplied alpha from the small DIB copy
-    smallDIB.fixPremultipliedAlpha False
-    
-    'Give the preview object a copy of this image data so it can show it to the user if requested
-    fxPreview.setOriginalImage smallDIB
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -441,9 +536,9 @@ Private Sub updatePreview()
     
     If cmdBar.previewsAllowed Then
         If optRotate(0).Value Then
-            RotateArbitrary 0, sltAngle, True
+            RotateArbitrary 0, sltAngle, m_RotateTarget, True
         Else
-            RotateArbitrary 1, sltAngle, True
+            RotateArbitrary 1, sltAngle, m_RotateTarget, True
         End If
     End If
 

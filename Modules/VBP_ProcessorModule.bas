@@ -8,7 +8,7 @@ Attribute VB_Name = "Processor"
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
-' 1) a central error handler that works for every sub throughout the program (due to recursive error handling)
+' 1) a central error handler
 ' 2) PhotoDemon can run macros by simply tracking the values that pass through this routine
 ' 3) PhotoDemon can control code flow by delaying requests that pass through here (for example,
 '    if the program is busy applying a filter, we can wait to process subsequent calls)
@@ -64,7 +64,7 @@ Private m_ProcessingTime As Double
 '                requires completely different code vs undoing an image filter.)  This value is set to 1 by default, but some functions
 '                - like "Count image colors" - may explicitly specify that no Undo is necessary.  NOTE: if showDialog is TRUE, this value
 '                will automatically be set to 0, which means "DO NOT CREATE UNDO", because we never create Undo data when showing a
-'                dialog (as the user may cancel it).
+'                dialog (as the user may cancel the dialog).
 ' - *relevantTool: some Process calls are initiated by a particular tool (for example, "create selection" will be called by one of the
 '                  selection tools).  This parameter can contain the relevant tool for a given action.  If Undo is used to return to a
 '                  previous state, the relevant tool can automatically be selected, making it much easier for the user to make changes
@@ -385,9 +385,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Arbitrary image rotation"
             If showDialog Then
-                showPDDialog vbModal, FormRotate
+                showRotateDialog PD_AT_WHOLEIMAGE
             Else
-                FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2)
+                FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
             
         'Other coordinate transforms
@@ -475,9 +475,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Arbitrary layer rotation"
             If showDialog Then
-                showPDDialog vbModal, FormRotate
+                showRotateDialog PD_AT_SINGLELAYER
             Else
-                FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2)
+                FormRotate.RotateArbitrary cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
             
         Case "Flip layer horizontally"
