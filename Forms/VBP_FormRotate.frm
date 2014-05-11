@@ -206,7 +206,7 @@ End Property
 Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Double, Optional ByVal thingToRotate As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE, Optional ByVal isPreview As Boolean = False)
         
     'If the image contains an active selection, disable it before transforming the canvas
-    If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).selectionActive Then
+    If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).selectionActive And (Not isPreview) Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
@@ -423,12 +423,25 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    If optRotate(0) Then
-        Process "Arbitrary image rotation", , buildParams(0, sltAngle, m_RotateTarget)
-    Else
-        Process "Arbitrary layer rotation", , buildParams(1, sltAngle, m_RotateTarget)
-    End If
+
+    Select Case m_RotateTarget
     
+        Case PD_AT_WHOLEIMAGE
+            If optRotate(0) Then
+                Process "Arbitrary image rotation", , buildParams(0, sltAngle, m_RotateTarget)
+            Else
+                Process "Arbitrary image rotation", , buildParams(1, sltAngle, m_RotateTarget)
+            End If
+        
+        Case PD_AT_SINGLELAYER
+            If optRotate(0) Then
+                Process "Arbitrary layer rotation", , buildParams(0, sltAngle, m_RotateTarget)
+            Else
+                Process "Arbitrary layer rotation", , buildParams(1, sltAngle, m_RotateTarget)
+            End If
+    
+    End Select
+        
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
