@@ -307,20 +307,28 @@ Begin VB.Form FormMain
          Caption         =   "Rotate"
          Index           =   11
          Begin VB.Menu MnuRotate 
-            Caption         =   "90° clockwise"
+            Caption         =   "Straighten"
             Index           =   0
          End
          Begin VB.Menu MnuRotate 
-            Caption         =   "90° counter-clockwise"
+            Caption         =   "-"
             Index           =   1
          End
          Begin VB.Menu MnuRotate 
-            Caption         =   "180°"
+            Caption         =   "90° clockwise"
             Index           =   2
          End
          Begin VB.Menu MnuRotate 
-            Caption         =   "Arbitrary..."
+            Caption         =   "90° counter-clockwise"
             Index           =   3
+         End
+         Begin VB.Menu MnuRotate 
+            Caption         =   "180°"
+            Index           =   4
+         End
+         Begin VB.Menu MnuRotate 
+            Caption         =   "Arbitrary..."
+            Index           =   5
          End
       End
       Begin VB.Menu MnuImage 
@@ -450,32 +458,40 @@ Begin VB.Form FormMain
          Caption         =   "Orientation"
          Index           =   7
          Begin VB.Menu MnuLayerOrientation 
-            Caption         =   "Rotate 90° clockwise"
+            Caption         =   "Straighten"
             Index           =   0
          End
          Begin VB.Menu MnuLayerOrientation 
-            Caption         =   "Rotate 90° counter-clockwise"
+            Caption         =   "-"
             Index           =   1
          End
          Begin VB.Menu MnuLayerOrientation 
-            Caption         =   "Rotate 180°"
+            Caption         =   "Rotate 90° clockwise"
             Index           =   2
          End
          Begin VB.Menu MnuLayerOrientation 
-            Caption         =   "Rotate arbitrary..."
+            Caption         =   "Rotate 90° counter-clockwise"
             Index           =   3
          End
          Begin VB.Menu MnuLayerOrientation 
-            Caption         =   "-"
+            Caption         =   "Rotate 180°"
             Index           =   4
          End
          Begin VB.Menu MnuLayerOrientation 
-            Caption         =   "Flip horizontal"
+            Caption         =   "Rotate arbitrary..."
             Index           =   5
          End
          Begin VB.Menu MnuLayerOrientation 
-            Caption         =   "Flip vertical"
+            Caption         =   "-"
             Index           =   6
+         End
+         Begin VB.Menu MnuLayerOrientation 
+            Caption         =   "Flip horizontal"
+            Index           =   7
+         End
+         Begin VB.Menu MnuLayerOrientation 
+            Caption         =   "Flip vertical"
+            Index           =   8
          End
       End
       Begin VB.Menu MnuLayer 
@@ -1522,31 +1538,38 @@ Private Sub MnuLayerOrientation_Click(Index As Integer)
 
     Select Case Index
     
-        'Rotate 90
+        'Straighten
         Case 0
+            Process "Straighten layer", True
+        
+        '<separator>
+        Case 1
+        
+        'Rotate 90
+        Case 2
             Process "Rotate layer 90° clockwise"
         
         'Rotate 270
-        Case 1
+        Case 3
             Process "Rotate layer 90° counter-clockwise"
         
         'Rotate 180
-        Case 2
+        Case 4
             Process "Rotate layer 180°"
         
         'Rotate arbitrary
-        Case 3
+        Case 5
             Process "Arbitrary layer rotation", True
         
         '<separator>
-        Case 4
+        Case 6
         
         'Flip horizontal
-        Case 5
+        Case 7
             Process "Flip layer horizontally"
         
         'Flip vertical
-        Case 6
+        Case 8
             Process "Flip layer vertically"
     
     End Select
@@ -2968,20 +2991,27 @@ Private Sub MnuRotate_Click(Index As Integer)
 
     Select Case Index
     
-        'Rotate 90
+        'Straighten
         Case 0
+            Process "Straighten image", True
+        
+        '<separator>
+        Case 1
+        
+        'Rotate 90
+        Case 2
             Process "Rotate image 90° clockwise"
         
         'Rotate 270
-        Case 1
+        Case 3
             Process "Rotate image 90° counter-clockwise"
         
         'Rotate 180
-        Case 2
+        Case 4
             Process "Rotate image 180°"
         
         'Rotate arbitrary
-        Case 3
+        Case 5
             Process "Arbitrary image rotation", True
             
     End Select

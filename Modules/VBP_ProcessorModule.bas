@@ -374,6 +374,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Filters_Transform.TrimImage
             
         'Rotate operations
+        Case "Straighten image"
+            If showDialog Then
+                showStraightenDialog PD_AT_WHOLEIMAGE
+            Else
+                FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
+            End If
+        
         Case "Rotate image 90° clockwise"
             MenuRotate90Clockwise
             
@@ -464,6 +471,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Layer_Handler.moveLayerToEndOfStack cParams.GetLong(1), False
         
         'Layer orientation changes
+        Case "Straighten layer"
+            If showDialog Then
+                showStraightenDialog PD_AT_SINGLELAYER
+            Else
+                FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
+            End If
+            
         Case "Rotate layer 90° clockwise"
             MenuRotate90Clockwise pdImages(g_CurrentImage).getActiveLayerIndex
             
@@ -486,7 +500,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Flip layer vertically"
             MenuFlip pdImages(g_CurrentImage).getActiveLayerIndex
         
-        'Layer Size changes
+        'Layer size changes
         Case "Reset layer size"
             Layer_Handler.resetLayerSize cParams.GetLong(1)
             
