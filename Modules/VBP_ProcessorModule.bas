@@ -930,7 +930,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormFragment
             Else
-                FormFragment.Fragment cParams.GetLong(1)
+                FormFragment.Fragment cParams.GetLong(1), cParams.GetLong(2), cParams.GetDouble(2)
             End If
         
         Case "Grid blur"

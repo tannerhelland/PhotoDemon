@@ -1,181 +1,181 @@
 VERSION 5.00
-Begin VB.Form FormFragment
-   AutoRedraw = -1 'True
-   BackColor = &H80000005&
-   BorderStyle = 4 'Fixed ToolWindow
-   Caption = " Fragment"
-   ClientHeight = 6525
-   ClientLeft = -15
-   ClientTop = 225
-   ClientWidth = 11895
-   BeginProperty Font
-      Name = "Tahoma"
-      Size = 8.25
-      Charset = 0
-      Weight = 400
-      Underline = 0 'False
-      Italic = 0 'False
-      Strikethrough = 0 'False
+Begin VB.Form FormFragment 
+   AutoRedraw      =   -1  'True
+   BackColor       =   &H80000005&
+   BorderStyle     =   4  'Fixed ToolWindow
+   Caption         =   " Fragment"
+   ClientHeight    =   6525
+   ClientLeft      =   -15
+   ClientTop       =   225
+   ClientWidth     =   11895
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
    EndProperty
-   LinkTopic = "Form1"
-   MaxButton = 0 'False
-   MinButton = 0 'False
-   ScaleHeight = 435
-   ScaleMode = 3 'Pixel
-   ScaleWidth = 793
-   ShowInTaskbar = 0 'False
-   Begin PhotoDemon.commandBar cmdBar
-      Align = 2 'Align Bottom
-      Height = 750
-      Left = 0
-      TabIndex = 0
-      Top = 5775
-      Width = 11895
-      _ExtentX = 20981
-      _ExtentY = 1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851}
-         Name = "Tahoma"
-         Size = 9.75
-         Charset = 0
-         Weight = 400
-         Underline = 0 'False
-         Italic = 0 'False
-         Strikethrough = 0 'False
+   LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
+   ScaleHeight     =   435
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   793
+   ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   0
+      Top             =   5775
+      Width           =   11895
+      _ExtentX        =   20981
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
       EndProperty
    End
-   Begin PhotoDemon.fxPreviewCtl fxPreview
-      Height = 5625
-      Left = 120
-      TabIndex = 1
-      Top = 120
-      Width = 5625
-      _ExtentX = 9922
-      _ExtentY = 9922
-      DisableZoomPan = -1 'True
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
+      TabIndex        =   1
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltDistance
-      Height = 495
-      Left = 6000
-      TabIndex = 3
-      Top = 2520
-      Width = 5775
-      _ExtentX = 10186
-      _ExtentY = 873
-      Max = 100
-      Value = 8
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851}
-         Name = "Tahoma"
-         Size = 9.75
-         Charset = 0
-         Weight = 400
-         Underline = 0 'False
-         Italic = 0 'False
-         Strikethrough = 0 'False
+   Begin PhotoDemon.sliderTextCombo sltDistance 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   2520
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Max             =   100
+      Value           =   8
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
       EndProperty
-      ForeColor = 0
+      ForeColor       =   0
    End
-   Begin PhotoDemon.sliderTextCombo sltFragments
-      Height = 495
-      Left = 6000
-      TabIndex = 4
-      Top = 1320
-      Width = 5775
-      _ExtentX = 10186
-      _ExtentY = 873
-      Min = 2
-      Max = 50
-      Value = 4
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851}
-         Name = "Tahoma"
-         Size = 9.75
-         Charset = 0
-         Weight = 400
-         Underline = 0 'False
-         Italic = 0 'False
-         Strikethrough = 0 'False
+   Begin PhotoDemon.sliderTextCombo sltFragments 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   1320
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   2
+      Max             =   50
+      Value           =   4
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
       EndProperty
-      ForeColor = 0
+      ForeColor       =   0
    End
-   Begin PhotoDemon.sliderTextCombo sltAngle
-      Height = 495
-      Left = 6000
-      TabIndex = 6
-      Top = 3720
-      Width = 5775
-      _ExtentX = 10186
-      _ExtentY = 873
-      Max = 360
-      SigDigits = 2
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851}
-         Name = "Tahoma"
-         Size = 9.75
-         Charset = 0
-         Weight = 400
-         Underline = 0 'False
-         Italic = 0 'False
-         Strikethrough = 0 'False
+   Begin PhotoDemon.sliderTextCombo sltAngle 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   3720
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Max             =   360
+      SigDigits       =   2
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
       EndProperty
-      ForeColor = 0
+      ForeColor       =   0
    End
-   Begin VB.Label lblAngle
-      AutoSize = -1 'True
-      BackStyle = 0 'Transparent
-      Caption = "angle:"
-      BeginProperty Font
-         Name = "Tahoma"
-         Size = 12
-         Charset = 0
-         Weight = 400
-         Underline = 0 'False
-         Italic = 0 'False
-         Strikethrough = 0 'False
+   Begin VB.Label lblAngle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "angle:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
       EndProperty
-      ForeColor = &H00404040&
-      Height = 285
-      Left = 6000
-      TabIndex = 7
-      Top = 3360
-      Width = 660
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   3360
+      Width           =   660
    End
-   Begin VB.Label lblFragments
-      AutoSize = -1 'True
-      BackStyle = 0 'Transparent
-      Caption = "# of fragments:"
-      BeginProperty Font
-         Name = "Tahoma"
-         Size = 12
-         Charset = 0
-         Weight = 400
-         Underline = 0 'False
-         Italic = 0 'False
-         Strikethrough = 0 'False
+   Begin VB.Label lblFragments 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "# of fragments:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
       EndProperty
-      ForeColor = &H00404040&
-      Height = 285
-      Left = 6000
-      TabIndex = 5
-      Top = 960
-      Width = 1695
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   960
+      Width           =   1695
    End
-   Begin VB.Label lblDistance
-      AutoSize = -1 'True
-      BackStyle = 0 'Transparent
-      Caption = "distance:"
-      BeginProperty Font
-         Name = "Tahoma"
-         Size = 12
-         Charset = 0
-         Weight = 400
-         Underline = 0 'False
-         Italic = 0 'False
-         Strikethrough = 0 'False
+   Begin VB.Label lblDistance 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "distance:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
       EndProperty
-      ForeColor = &H00404040&
-      Height = 285
-      Left = 6000
-      TabIndex = 2
-      Top = 2160
-      Width = 945
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Left            =   6000
+      TabIndex        =   2
+      Top             =   2160
+      Width           =   945
    End
 End
 Attribute VB_Name = "FormFragment"
@@ -196,6 +196,9 @@ Attribute VB_Exposed = False
 ' distance from the origin at different positions as well as
 ' altering the angle. Then we merge them all all together.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
 '***************************************************************************
 
 Option Explicit
@@ -213,7 +216,7 @@ Dim m_ToolTip As clsToolTip
 'Apply a fragment filter to the active layer
 Public Sub Fragment(ByVal fragments As Long, ByVal distance As Long, ByVal rotationAngle As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
    
-    If Not toPreview = False Then Message "Applying beer goggles..."
+    If Not toPreview Then Message "Applying beer goggles..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -253,14 +256,14 @@ Public Sub Fragment(ByVal fragments As Long, ByVal distance As Long, ByVal rotat
     'Setup our offset points using the provided parameters
     Dim pointOffsets() As POINTAPI
     Dim n As Long
-    Dim num As Double, num2 As Double, num3 As Double
+    Dim Num As Double, num2 As Double, num3 As Double
             
-    num = PI_DOUBLE / CDbl(fragments)
+    Num = PI_DOUBLE / CDbl(fragments)
     num2 = ((rotationAngle - 90) * PI) / 180
     
     ReDim pointOffsets(0 To fragments - 1) As POINTAPI
     For n = 0 To fragments - 1
-        num3 = num2 + (num * n)
+        num3 = num2 + (Num * n)
         pointOffsets(n).x = Round(CDbl(distance * -Sin(num3)))
         pointOffsets(n).y = Round(CDbl(distance * -Cos(num3)))
     Next n
@@ -269,8 +272,8 @@ Public Sub Fragment(ByVal fragments As Long, ByVal distance As Long, ByVal rotat
     numPoints = UBound(pointOffsets)
     
     'Stores colors for each point
-    Dim colors() As LRGBQUAD
-    ReDim colors(0 To UBound(pointOffsets)) As LRGBQUAD
+    Dim Colors() As LRGBQUAD
+    ReDim Colors(0 To UBound(pointOffsets)) As LRGBQUAD
             
     'This look-up table will be used for alpha-blending. It contains the equivalent of any two color values [0,255] added
     ' together and divided by 2.
@@ -303,21 +306,13 @@ Public Sub Fragment(ByVal fragments As Long, ByVal distance As Long, ByVal rotat
             'Perform a bounds check
             If xOffset < 0 Then
                 xOffset = x
-                yOffset = y
+            ElseIf xOffset > finalX Then
+                xOffset = x
             End If
             
             If yOffset < 0 Then
-                xOffset = x
                 yOffset = y
-            End If
-            
-            If xOffset > finalX Then
-                xOffset = x
-                yOffset = y
-            End If
-            
-            If yOffset > finalY Then
-                xOffset = x
+            ElseIf yOffset > finalY Then
                 yOffset = y
             End If
             
@@ -326,24 +321,24 @@ Public Sub Fragment(ByVal fragments As Long, ByVal distance As Long, ByVal rotat
             newB = srcImageData(xOffset * qvDepth, yOffset)
             If qvDepth = 4 Then
                 newA = srcImageData(xOffset * qvDepth + 3, yOffset)
-                colors(n).rgbAlpha = newA
+                Colors(n).rgbAlpha = newA
             End If
-            colors(n).rgbRed = newR
-            colors(n).rgbGreen = newG
-            colors(n).rgbBlue = newB
+            Colors(n).rgbRed = newR
+            Colors(n).rgbGreen = newG
+            Colors(n).rgbBlue = newB
         Next n
         
         'First, blend the the original color with the first layer
         ' before looping through the rest of the color array
-        newR = hLookup(r + colors(0).rgbRed)
-        newG = hLookup(g + colors(0).rgbGreen)
-        newR = hLookup(b + colors(0).rgbBlue)
-        If qvDepth = 4 Then newA = hLookup(a + colors(0).rgbAlpha)
+        newR = hLookup(r + Colors(0).rgbRed)
+        newG = hLookup(g + Colors(0).rgbGreen)
+        newR = hLookup(b + Colors(0).rgbBlue)
+        If qvDepth = 4 Then newA = hLookup(a + Colors(0).rgbAlpha)
         For n = 1 To numPoints
-            newR = newR + hLookup(colors(n - 1).rgbRed + colors(n).rgbRed)
-            newG = newG + hLookup(colors(n - 1).rgbGreen + colors(n).rgbGreen)
-            newB = newB + hLookup(colors(n - 1).rgbBlue + colors(n).rgbBlue)
-            If qvDepth = 4 Then newA = newA + hLookup(colors(n - 1).rgbAlpha + colors(n).rgbAlpha)
+            newR = newR + hLookup(Colors(n - 1).rgbRed + Colors(n).rgbRed)
+            newG = newG + hLookup(Colors(n - 1).rgbGreen + Colors(n).rgbGreen)
+            newB = newB + hLookup(Colors(n - 1).rgbBlue + Colors(n).rgbBlue)
+            If qvDepth = 4 Then newA = newA + hLookup(Colors(n - 1).rgbAlpha + Colors(n).rgbAlpha)
         Next n
         
         newR = newR \ numPoints + 1
@@ -364,7 +359,7 @@ Public Sub Fragment(ByVal fragments As Long, ByVal distance As Long, ByVal rotat
         End If
         
     Next y
-        If Not toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
