@@ -219,10 +219,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "AUTOCROP", 3, 9      'Trim
     addMenuIcon "ROTATECW", 3, 11     'Rotate top-level
         '--> Rotate sub-menu
-        addMenuIcon "ROTATECW", 3, 11, 0    'Rotate Clockwise
-        addMenuIcon "ROTATECCW", 3, 11, 1   'Rotate Counter-clockwise
-        addMenuIcon "ROTATE180", 3, 11, 2   'Rotate 180
-        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 11, 3  'Rotate Arbitrary
+        'addMenuIcon "STRAIGHTEN", 3, 11, 0  'Straighten
+        addMenuIcon "ROTATECW", 3, 11, 2    'Rotate Clockwise
+        addMenuIcon "ROTATECCW", 3, 11, 3   'Rotate Counter-clockwise
+        addMenuIcon "ROTATE180", 3, 11, 4   'Rotate 180
+        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 11, 5  'Rotate Arbitrary
     addMenuIcon "MIRROR", 3, 12        'Mirror
     addMenuIcon "FLIP", 3, 13          'Flip
     'addMenuIcon "ISOMETRIC", 3, 12     'Isometric      'NOTE: isometric was removed in v6.4.
@@ -248,12 +249,13 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'addMenuIcon "LAYERORDER", 4, 5      'Order (top-level)
     addMenuIcon "ROTATECW", 4, 7         'Layer Orientation (top-level)
         '--> Orientation sub-menu
-        addMenuIcon "ROTATECW", 4, 7, 0     'Rotate Clockwise
-        addMenuIcon "ROTATECCW", 4, 7, 1    'Rotate Counter-clockwise
-        addMenuIcon "ROTATE180", 4, 7, 2    'Rotate 180
-        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 4, 7, 3   'Rotate Arbitrary
-        addMenuIcon "MIRROR", 4, 7, 5       'Mirror
-        addMenuIcon "FLIP", 4, 7, 6         'Flip
+        'addMenuIcon "STRAIGHTEN", 4, 7, 0   'Straighten
+        addMenuIcon "ROTATECW", 4, 7, 2     'Rotate Clockwise
+        addMenuIcon "ROTATECCW", 4, 7, 3    'Rotate Counter-clockwise
+        addMenuIcon "ROTATE180", 4, 7, 4    'Rotate 180
+        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 4, 7, 5   'Rotate Arbitrary
+        addMenuIcon "MIRROR", 4, 7, 7       'Mirror
+        addMenuIcon "FLIP", 4, 7, 8         'Flip
     addMenuIcon "RESIZE", 4, 8           'Layer Size (top-level)
         '--> Size sub-menu
         'addMenuIcon "RESETSIZE", 4, 8, 0        'Reset to original size
