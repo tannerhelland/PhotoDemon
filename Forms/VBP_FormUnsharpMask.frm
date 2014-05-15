@@ -378,7 +378,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Unsharp mask", , buildParams(sltRadius, sltAmount, sltThreshold)
+    Process "Unsharp mask", , buildParams(sltRadius, sltAmount, sltThreshold), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

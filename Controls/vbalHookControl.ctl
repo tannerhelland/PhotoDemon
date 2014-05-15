@@ -1,18 +1,18 @@
 VERSION 5.00
 Begin VB.UserControl vbalHookControl 
-   ClientHeight    =   721
+   ClientHeight    =   720
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   798
+   ClientWidth     =   795
    InvisibleAtRuntime=   -1  'True
-   ScaleHeight     =   721
-   ScaleWidth      =   798
+   ScaleHeight     =   720
+   ScaleWidth      =   795
    Begin VB.Image imgIcon 
-      Height          =   280
-      Left            =   119
+      Height          =   600
+      Left            =   120
       Picture         =   "vbalHookControl.ctx":0000
-      Top             =   63
-      Width           =   315
+      Top             =   60
+      Width           =   675
    End
 End
 Attribute VB_Name = "vbalHookControl"
@@ -45,7 +45,7 @@ Private Type tAccel
     isProcessorReady As Boolean
     requiresImage As Boolean
     procShowForm As Boolean
-    procUndo As Long
+    procUndo As PD_UNDO_TYPE
     relevantMenu As Menu
 End Type
 
@@ -74,7 +74,7 @@ Private Const HC_ACTION = 0
 '                  + requiresOpenImage: specifies that this action must be disallowed unless an image is loaded and active.
 '                  + showProcForm controls the "showDialog" parameter of processor string directives.
 '                  + recordProcUndo controls the "createUndo" parameter of processor string directives.  0 means do not create Undo data.
-Public Function AddAccelerator(ByVal KeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal vKey As Variant, Optional ByRef correspondingMenu As Menu, Optional ByVal isProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True, Optional ByVal recordProcUndo As Long = 0) As Long
+Public Function AddAccelerator(ByVal KeyCode As KeyCodeConstants, ByVal Shift As ShiftConstants, Optional ByVal vKey As Variant, Optional ByRef correspondingMenu As Menu, Optional ByVal isProcessorString As Boolean = False, Optional ByVal requiresOpenImage As Boolean = True, Optional ByVal showProcDialog As Boolean = True, Optional ByVal recordProcUndo As PD_UNDO_TYPE = UNDO_NOTHING) As Long
 Attribute AddAccelerator.VB_Description = "Adds an accelerator to the control, returning the index of the accelerator added."
     Dim i As Long
     Dim iIdx As Long
@@ -257,7 +257,7 @@ Public Property Get associatedMenu(ByVal nIndex As Long) As Menu
 End Property
 
 'Used to retrieve the processor Undo status of a given accelerator
-Public Property Get shouldCreateUndo(ByVal nIndex As Long) As Long
+Public Property Get shouldCreateUndo(ByVal nIndex As Long) As PD_UNDO_TYPE
     shouldCreateUndo = m_tAccel(nIndex).procUndo
 End Property
 

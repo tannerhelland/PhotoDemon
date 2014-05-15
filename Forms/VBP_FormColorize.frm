@@ -150,7 +150,7 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 Private Sub cmdBar_OKClick()
-    Process "Colorize", , buildParams(CDblCustom((CDblCustom(hsHue.Value) - 60) / 60), CBool(chkSaturation.Value))
+    Process "Colorize", , buildParams(CDblCustom((CDblCustom(hsHue.Value) - 60) / 60), CBool(chkSaturation.Value)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

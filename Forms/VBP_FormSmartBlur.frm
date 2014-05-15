@@ -395,7 +395,7 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Surface blur", , buildParams(sltRadius, sltThreshold, optEdges(1))
+    Process "Surface blur", , buildParams(sltRadius, sltThreshold, optEdges(1)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

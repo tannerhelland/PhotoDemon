@@ -386,7 +386,7 @@ Private Sub chkSymmetry_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Motion blur", , buildParams(sltAngle, sltDistance, CBool(chkSymmetry), OptInterpolate(0))
+    Process "Motion blur", , buildParams(sltAngle, sltDistance, CBool(chkSymmetry), OptInterpolate(0)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

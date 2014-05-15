@@ -428,16 +428,16 @@ Private Sub cmdBar_OKClick()
     
         Case PD_AT_WHOLEIMAGE
             If optRotate(0) Then
-                Process "Arbitrary image rotation", , buildParams(0, sltAngle, m_RotateTarget)
+                Process "Arbitrary image rotation", , buildParams(0, sltAngle, m_RotateTarget), UNDO_IMAGE
             Else
-                Process "Arbitrary image rotation", , buildParams(1, sltAngle, m_RotateTarget)
+                Process "Arbitrary image rotation", , buildParams(1, sltAngle, m_RotateTarget), UNDO_IMAGE
             End If
         
         Case PD_AT_SINGLELAYER
             If optRotate(0) Then
-                Process "Arbitrary layer rotation", , buildParams(0, sltAngle, m_RotateTarget)
+                Process "Arbitrary layer rotation", , buildParams(0, sltAngle, m_RotateTarget), UNDO_LAYER
             Else
-                Process "Arbitrary layer rotation", , buildParams(1, sltAngle, m_RotateTarget)
+                Process "Arbitrary layer rotation", , buildParams(1, sltAngle, m_RotateTarget), UNDO_LAYER
             End If
     
     End Select

@@ -434,7 +434,7 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Pan and zoom", , buildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Pan and zoom", , buildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

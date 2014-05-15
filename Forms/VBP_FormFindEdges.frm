@@ -164,23 +164,23 @@ Private Sub cmdBar_OKClick()
 
     Select Case LstEdgeOptions.ListIndex
         Case 0
-            Process "Find edges (Prewitt horizontal)", , Str(CBool(chkInvert.Value))
+            Process "Find edges (Prewitt horizontal)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
         Case 1
-            Process "Find edges (Prewitt vertical)", , Str(CBool(chkInvert.Value))
+            Process "Find edges (Prewitt vertical)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
         Case 2
-            Process "Find edges (Sobel horizontal)", , Str(CBool(chkInvert.Value))
+            Process "Find edges (Sobel horizontal)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
         Case 3
-            Process "Find edges (Sobel vertical)", , Str(CBool(chkInvert.Value))
+            Process "Find edges (Sobel vertical)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
         Case 4
-            Process "Find edges (Laplacian)", , Str(CBool(chkInvert.Value))
+            Process "Find edges (Laplacian)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
         Case 5
-            Process "Artistic contour", , Str(CBool(chkInvert.Value))
+            Process "Artistic contour", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
         Case 6
-            Process "Find edges (Hilite)", , Str(CBool(chkInvert.Value))
+            Process "Find edges (Hilite)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
         Case 7
-            Process "Find edges (PhotoDemon linear)", , Str(CBool(chkInvert.Value))
+            Process "Find edges (PhotoDemon linear)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
         Case 8
-            Process "Find edges (PhotoDemon cubic)", , Str(CBool(chkInvert.Value))
+            Process "Find edges (PhotoDemon cubic)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
     End Select
     
 End Sub

@@ -338,7 +338,7 @@ Private Sub chkSymmetry_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Radial blur", , buildParams(sltRadius, CBool(chkSymmetry), OptInterpolate(0))
+    Process "Radial blur", , buildParams(sltRadius, CBool(chkSymmetry), OptInterpolate(0)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -528,7 +528,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Kaleidoscope", , buildParams(sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value)
+    Process "Kaleidoscope", , buildParams(sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

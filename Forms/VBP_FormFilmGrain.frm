@@ -359,7 +359,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Add film grain", , buildParams(sltNoise.Value, sltRadius.Value)
+    Process "Add film grain", , buildParams(sltNoise.Value, sltRadius.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

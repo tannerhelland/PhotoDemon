@@ -408,7 +408,7 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Zoom blur", , buildParams(OptStyle(0), sltDistance)
+    Process "Zoom blur", , buildParams(OptStyle(0), sltDistance), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

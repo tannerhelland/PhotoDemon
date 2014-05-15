@@ -131,7 +131,7 @@ Dim m_ToolTip As clsToolTip
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "White balance", , Str(sltStrength)
+    Process "White balance", , buildParams(sltStrength), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

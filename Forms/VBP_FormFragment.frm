@@ -380,7 +380,7 @@ Public Sub Fragment(ByVal fragments As Long, ByVal distance As Long, ByVal rotat
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Fragment", False, buildParams(sltFragments.Value, sltDistance.Value, sltAngle.Value)
+    Process "Fragment", , buildParams(sltFragments.Value, sltDistance.Value, sltAngle.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

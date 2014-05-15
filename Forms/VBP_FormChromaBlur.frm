@@ -386,7 +386,7 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Chroma blur", , buildParams(sltRadius, qualityIndex)
+    Process "Chroma blur", , buildParams(sltRadius, qualityIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

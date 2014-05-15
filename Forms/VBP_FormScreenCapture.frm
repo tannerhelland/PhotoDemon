@@ -266,7 +266,7 @@ Private Sub CmdOK_Click()
     
     If optSource(0) Then
         Me.Visible = False
-        Process "Screen capture", False, buildParams(True, CBool(chkMinimize), 0, CBool(chkChrome), "Screen capture"), 0
+        Process "Screen capture", False, buildParams(True, CBool(chkMinimize), 0, CBool(chkChrome), "Screen capture"), UNDO_NOTHING
     Else
         
         'Make sure the user has selected a window to capture
@@ -276,7 +276,7 @@ Private Sub CmdOK_Click()
         End If
         
         Me.Visible = False
-        Process "Screen capture", False, buildParams(False, CBool(chkMinimize), IIf(lstWindows.ListIndex > -1, lstWindows.ItemData(lstWindows.ListIndex), 0), CBool(chkChrome), IIf(lstWindows.ListIndex > -1, lstWindows.List(lstWindows.ListIndex), "Screen capture")), 0
+        Process "Screen capture", False, buildParams(False, CBool(chkMinimize), IIf(lstWindows.ListIndex > -1, lstWindows.ItemData(lstWindows.ListIndex), 0), CBool(chkChrome), IIf(lstWindows.ListIndex > -1, lstWindows.List(lstWindows.ListIndex), "Screen capture")), UNDO_NOTHING
         
     End If
     

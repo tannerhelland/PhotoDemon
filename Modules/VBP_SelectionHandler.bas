@@ -145,7 +145,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
                 g_UserPreferences.setSelectionPath sFile
                 
                 'Call this function again, but with displayDialog set to FALSE and the path of the requested selection file
-                Process "Load selection", False, sFile, 2
+                Process "Load selection", False, sFile, UNDO_SELECTION
                     
             Else
                 pdMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.", vbOKOnly + vbExclamation + vbApplicationModal, "Selection Error", sFile
@@ -616,7 +616,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         
         Dim retRadius As Double
         If displaySelectionDialog(SEL_FEATHER, retRadius) = vbOK Then
-            Process "Feather selection", False, Str(retRadius), 2
+            Process "Feather selection", False, Str(retRadius), UNDO_SELECTION
         End If
         
     Else
@@ -665,7 +665,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         
         Dim retRadius As Double
         If displaySelectionDialog(SEL_SHARPEN, retRadius) = vbOK Then
-            Process "Sharpen selection", False, Str(retRadius), 2
+            Process "Sharpen selection", False, Str(retRadius), UNDO_SELECTION
         End If
         
     Else
@@ -707,7 +707,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         
         Dim retSize As Double
         If displaySelectionDialog(SEL_GROW, retSize) = vbOK Then
-            Process "Grow selection", False, Str(retSize), 2
+            Process "Grow selection", False, Str(retSize), UNDO_SELECTION
         End If
         
     Else
@@ -755,7 +755,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         
         Dim retSize As Double
         If displaySelectionDialog(SEL_SHRINK, retSize) = vbOK Then
-            Process "Shrink selection", False, Str(retSize), 2
+            Process "Shrink selection", False, Str(retSize), UNDO_SELECTION
         End If
         
     Else
@@ -803,7 +803,7 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         
         Dim retSize As Double
         If displaySelectionDialog(SEL_BORDER, retSize) = vbOK Then
-            Process "Border selection", False, Str(retSize), 2
+            Process "Border selection", False, Str(retSize), UNDO_SELECTION
         End If
         
     Else

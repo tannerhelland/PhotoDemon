@@ -299,7 +299,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Gaussian blur", , buildParams(sltRadius, qualityIndex)
+    Process "Gaussian blur", , buildParams(sltRadius, qualityIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

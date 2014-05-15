@@ -252,7 +252,7 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Trace contour", , buildParams(sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value))
+    Process "Trace contour", , buildParams(sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

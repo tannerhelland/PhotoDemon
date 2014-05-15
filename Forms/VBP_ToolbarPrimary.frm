@@ -244,19 +244,19 @@ Private Sub cmdOpen_Click()
 End Sub
 
 Private Sub cmdRedo_Click()
-    Process "Redo", , , False
+    Process "Redo", , , UNDO_NOTHING
 End Sub
 
 Private Sub cmdSave_Click()
-    Process "Save", , , False
+    Process "Save", , , UNDO_NOTHING
 End Sub
 
 Private Sub cmdSaveAs_Click()
-    Process "Save as", True, , False
+    Process "Save as", True, , UNDO_NOTHING
 End Sub
 
 Private Sub cmdUndo_Click()
-    Process "Undo", , , False
+    Process "Undo", , , UNDO_NOTHING
 End Sub
 
 Private Sub Form_Load()

@@ -587,7 +587,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Ripple", , buildParams(sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value)
+    Process "Ripple", , buildParams(sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

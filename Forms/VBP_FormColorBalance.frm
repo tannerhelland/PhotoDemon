@@ -393,7 +393,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Color balance", , buildParams(sltRed, sltGreen, sltBlue, True)
+    Process "Color balance", , buildParams(sltRed, sltGreen, sltBlue, True), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

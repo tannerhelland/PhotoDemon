@@ -32,7 +32,7 @@ Begin VB.Form FormTile
       Top             =   5719
       Width           =   11592
       _ExtentX        =   20452
-      _ExtentY        =   1323
+      _ExtentY        =   1429
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -493,7 +493,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Tile", , buildParams(cboTarget.ListIndex, tudWidth, tudHeight)
+    Process "Tile", , buildParams(cboTarget.ListIndex, tudWidth, tudHeight), UNDO_IMAGE
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

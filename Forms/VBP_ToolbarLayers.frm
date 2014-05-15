@@ -458,13 +458,13 @@ Private Sub cmdLayerAction_Click(Index As Integer)
     Select Case Index
     
         Case LYR_BTN_MOVE_UP
-            Process "Raise layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, 0
+            Process "Raise layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGEHEADER
         
         Case LYR_BTN_MOVE_DOWN
-            Process "Lower layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, 0
+            Process "Lower layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGEHEADER
     
         Case LYR_BTN_DELETE
-            Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex
+            Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGE
             
     End Select
     
@@ -997,20 +997,20 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single
             'Duplicate rectangle?
             ElseIf isPointInRect(x, y, m_DuplicateRect) Then
             
-                Process "Duplicate Layer", False, Str(clickedLayer)
+                Process "Duplicate Layer", False, Str(clickedLayer), UNDO_IMAGE
             
             'Merge down rectangle?
             ElseIf isPointInRect(x, y, m_MergeDownRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
-                    Process "Merge layer down", False, Str(clickedLayer)
+                    Process "Merge layer down", False, Str(clickedLayer), UNDO_IMAGE
                 End If
             
             'Merge up rectangle?
             ElseIf isPointInRect(x, y, m_MergeUpRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
-                    Process "Merge layer up", False, Str(clickedLayer)
+                    Process "Merge layer up", False, Str(clickedLayer), UNDO_IMAGE
                 End If
             
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer

@@ -289,7 +289,7 @@ Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Hue and saturation", , buildParams(sltHue.Value, sltSaturation.Value, sltLuminance.Value)
+    Process "Hue and saturation", , buildParams(sltHue.Value, sltSaturation.Value, sltLuminance.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

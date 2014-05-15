@@ -448,7 +448,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Poke", , buildParams(sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value)
+    Process "Poke", , buildParams(sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

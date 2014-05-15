@@ -547,7 +547,7 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Pinch and whirl", , buildParams(sltAmount, sltAngle, sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value)
+    Process "Pinch and whirl", , buildParams(sltAmount, sltAngle, sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

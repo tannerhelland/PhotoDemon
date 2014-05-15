@@ -229,7 +229,7 @@ Dim allowPreviews As Boolean
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Replace color", , buildParams(colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value)
+    Process "Replace color", , buildParams(colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

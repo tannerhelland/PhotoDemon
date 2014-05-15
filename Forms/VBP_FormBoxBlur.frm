@@ -245,7 +245,7 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Box blur", , buildParams(sltWidth, sltHeight)
+    Process "Box blur", , buildParams(sltWidth, sltHeight), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

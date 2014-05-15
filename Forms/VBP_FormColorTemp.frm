@@ -330,7 +330,7 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Temperature", , buildParams(sltTemperature.Value, True, sltStrength.Value / 2)
+    Process "Temperature", , buildParams(sltTemperature.Value, True, sltStrength.Value / 2), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -357,7 +357,7 @@ Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long,
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Rotate", , buildParams(sltAngle.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value)
+    Process "Rotate", , buildParams(sltAngle.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

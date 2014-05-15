@@ -406,7 +406,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Swirl", , buildParams(sltAngle, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Swirl", , buildParams(sltAngle, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

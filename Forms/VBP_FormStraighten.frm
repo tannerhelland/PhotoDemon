@@ -405,10 +405,10 @@ Private Sub cmdBar_OKClick()
     Select Case m_StraightenTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Straighten image", , buildParams(sltAngle, m_StraightenTarget)
+            Process "Straighten image", , buildParams(sltAngle, m_StraightenTarget), UNDO_IMAGE
         
         Case PD_AT_SINGLELAYER
-            Process "Straighten layer", , buildParams(sltAngle, m_StraightenTarget)
+            Process "Straighten layer", , buildParams(sltAngle, m_StraightenTarget), UNDO_LAYER
     
     End Select
     

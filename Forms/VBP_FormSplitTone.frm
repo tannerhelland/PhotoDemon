@@ -373,7 +373,7 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Split toning", , buildParams(cpHighlight.Color, cpShadow.Color, sltBalance.Value, sltStrength.Value)
+    Process "Split toning", , buildParams(cpHighlight.Color, cpShadow.Color, sltBalance.Value, sltStrength.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

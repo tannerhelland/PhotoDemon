@@ -451,7 +451,7 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Correct lens distortion", , buildParams(sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Correct lens distortion", , buildParams(sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

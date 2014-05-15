@@ -212,7 +212,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -249,13 +249,13 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         
         'Loop through each pixel in the image, converting values as we go
         For x = initX To finalX
-            quickVal = x * qvDepth
+            QuickVal = x * qvDepth
         For y = initY To finalY
             
             'Use the look-up table to perform an ultra-quick brightness adjustment
-            ImageData(quickVal, y) = BrightTable(ImageData(quickVal, y))
-            ImageData(quickVal + 1, y) = BrightTable(ImageData(quickVal + 1, y))
-            ImageData(quickVal + 2, y) = BrightTable(ImageData(quickVal + 2, y))
+            ImageData(QuickVal, y) = BrightTable(ImageData(QuickVal, y))
+            ImageData(QuickVal + 1, y) = BrightTable(ImageData(QuickVal + 1, y))
+            ImageData(QuickVal + 2, y) = BrightTable(ImageData(QuickVal + 2, y))
             
         Next y
             If toPreview = False Then
@@ -297,11 +297,11 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
                 NumOfPixels = 0
                 
                 For x = initX To finalX
-                    quickVal = x * qvDepth
+                    QuickVal = x * qvDepth
                 For y = initY To finalY
-                    rTotal = rTotal + ImageData(quickVal + 2, y)
-                    gTotal = gTotal + ImageData(quickVal + 1, y)
-                    bTotal = bTotal + ImageData(quickVal, y)
+                    rTotal = rTotal + ImageData(QuickVal + 2, y)
+                    gTotal = gTotal + ImageData(QuickVal + 1, y)
+                    bTotal = bTotal + ImageData(QuickVal, y)
                     NumOfPixels = NumOfPixels + 1
                 Next y
                 Next x
@@ -339,13 +339,13 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         
         'Loop through each pixel in the image, converting values as we go
         For x = initX To finalX
-            quickVal = x * qvDepth
+            QuickVal = x * qvDepth
         For y = initY To finalY
             
             'Use the look-up table to perform an ultra-quick brightness adjustment
-            ImageData(quickVal, y) = ContrastTable(ImageData(quickVal, y))
-            ImageData(quickVal + 1, y) = ContrastTable(ImageData(quickVal + 1, y))
-            ImageData(quickVal + 2, y) = ContrastTable(ImageData(quickVal + 2, y))
+            ImageData(QuickVal, y) = ContrastTable(ImageData(QuickVal, y))
+            ImageData(QuickVal + 1, y) = ContrastTable(ImageData(QuickVal + 1, y))
+            ImageData(QuickVal + 2, y) = ContrastTable(ImageData(QuickVal + 2, y))
             
         Next y
             If toPreview = False Then
@@ -369,7 +369,7 @@ End Sub
 
 'OK button.  Note that the command bar class handles validation, form hiding, and form unload for us.
 Private Sub cmdBar_OKClick()
-    Process "Brightness and contrast", , buildParams(sltBright, sltContrast, CBool(chkSample.Value))
+    Process "Brightness and contrast", , buildParams(sltBright, sltContrast, CBool(chkSample.Value)), UNDO_LAYER
 End Sub
 
 'Sometimes the command bar will perform actions (like loading a preset) that require an updated preview.  This function

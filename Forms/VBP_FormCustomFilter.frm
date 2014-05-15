@@ -760,7 +760,7 @@ Private Sub chkNormalize_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Custom filter", , getFilterParamString
+    Process "Custom filter", , getFilterParamString, UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
