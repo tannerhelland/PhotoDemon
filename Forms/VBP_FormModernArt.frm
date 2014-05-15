@@ -193,7 +193,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -224,12 +224,12 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To initY + mRadius '- 1
     
-        r = srcImageData(quickVal + 2, y)
-        g = srcImageData(quickVal + 1, y)
-        b = srcImageData(quickVal, y)
+        r = srcImageData(QuickVal + 2, y)
+        g = srcImageData(QuickVal + 1, y)
+        b = srcImageData(QuickVal, y)
         rValues(r) = rValues(r) + 1
         gValues(g) = gValues(g) + 1
         bValues(b) = bValues(b) + 1
@@ -243,7 +243,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
     'Loop through each pixel in the image, tallying median values as we go
     For x = initX To finalX
             
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
         
         'Determine the bounds of the current median box in the X direction
         lbX = x - mRadius
@@ -505,25 +505,25 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         highB = i + 1
         
         'Retrieve the original pixel data
-        r = srcImageData(quickVal + 2, y)
-        g = srcImageData(quickVal + 1, y)
-        b = srcImageData(quickVal, y)
+        r = srcImageData(QuickVal + 2, y)
+        g = srcImageData(QuickVal + 1, y)
+        b = srcImageData(QuickVal, y)
                 
         'Finally, apply the results to the image.
         If Abs(lowR - r) > (highR - r) Then
-            dstImageData(quickVal + 2, y) = lowR
+            dstImageData(QuickVal + 2, y) = lowR
         Else
-            dstImageData(quickVal + 2, y) = highR
+            dstImageData(QuickVal + 2, y) = highR
         End If
         If Abs(lowG - g) > (highG - g) Then
-            dstImageData(quickVal + 1, y) = lowG
+            dstImageData(QuickVal + 1, y) = lowG
         Else
-            dstImageData(quickVal + 1, y) = highG
+            dstImageData(QuickVal + 1, y) = highG
         End If
         If Abs(lowB - b) > (highB - b) Then
-            dstImageData(quickVal, y) = lowB
+            dstImageData(QuickVal, y) = lowB
         Else
-            dstImageData(quickVal, y) = highB
+            dstImageData(QuickVal, y) = highB
         End If
         
     Next y
@@ -550,7 +550,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Modern art", , Str(sltRadius.Value)
+    Process "Modern art", , buildParams(sltRadius.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -30,7 +30,7 @@ Public Type ProcessCall
     Id As String
     Dialog As Boolean
     Parameters As String
-    MakeUndo As Long
+    MakeUndo As PD_UNDO_TYPE
     Tool As Long
     Recorded As Boolean
 End Type
@@ -59,12 +59,12 @@ Private m_ProcessingTime As Double
 '                while "Blur", "False" will actually apply the blur.  If showDialog is true, no Undo will be created for the action.
 ' - *processParameters: all parameters for this function, concatenated into a single string.  The processor will automatically parse out
 '                       individual parameters as necessary.
-' - *createUndo: ID describing what kind of Undo entry to create for this action.  0 prevents Undo creation, while values > 0 correspond
-'                to a specific type of Undo.  (1 = image undo, 2 = selection undo - these values are needed because undoing a selection
-'                requires completely different code vs undoing an image filter.)  This value is set to 1 by default, but some functions
-'                - like "Count image colors" - may explicitly specify that no Undo is necessary.  NOTE: if showDialog is TRUE, this value
-'                will automatically be set to 0, which means "DO NOT CREATE UNDO", because we never create Undo data when showing a
-'                dialog (as the user may cancel the dialog).
+' - *createUndo: ID describing what kind of Undo entry to create for this action.  This value is set to "do note create Undo" by default,
+'                which is an important deviation from past PD versions.  *ANY ACTION THAT REQUIRES UNDO DATA CREATION MUST SPECIFICALLY
+'                REQUEST CREATION OF SAID DATA.*  I have chosen to make Undo creation explicit, as part of a much more performance- and
+'                memory-efficient Undo implementation.  NOTE: if showDialog is TRUE, this value will automatically be set to UNDO_NOTHING,
+'                which means "DO NOT CREATE UNDO", because we never create Undo data when showing a dialog (as the user may cancel said
+'                dialog).
 ' - *relevantTool: some Process calls are initiated by a particular tool (for example, "create selection" will be called by one of the
 '                  selection tools).  This parameter can contain the relevant tool for a given action.  If Undo is used to return to a
 '                  previous state, the relevant tool can automatically be selected, making it much easier for the user to make changes
@@ -72,7 +72,7 @@ Private m_ProcessingTime As Double
 ' - *recordAction: are macros allowed to record this action?  Actions are assumed to be recordable.  However, some PhotoDemon functions
 '                  are actually several actions strung together; when these are used, subsequent actions are marked as "not recordable"
 '                  to prevent them from being executed twice.
-Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = False, Optional processParameters As String = "", Optional createUndo As Long = 1, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = False, Optional processParameters As String = "", Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
 
     'Main error handler for the software processor is initialized by this line
     On Error GoTo MainErrHandler
@@ -108,7 +108,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
         'First things first: if the current action is NOT selection-related, but the last one was, make a backup of all selection settings.
         If (createUndo <> 2) And (LastProcess.MakeUndo = 2) And (Not (LastProcess.Id = "Finalize selection for macro")) Then
-            Process "Finalize selection for macro", False, pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2, g_CurrentTool, True
+            Process "Finalize selection for macro", False, pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool, True
         End If
     
         'Increase the process count

@@ -236,7 +236,7 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Median", , buildParams(sltRadius.Value, sltPercent.Value)
+    Process "Median", , buildParams(sltRadius.Value, sltPercent.Value), UNDO_LAYER
 End Sub
 
 'Because this dialog can be used for multiple tools, we need to clarify some behavior when resetting and randomizing

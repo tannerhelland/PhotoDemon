@@ -191,7 +191,7 @@ Private Sub chkRed_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Equalize", , buildParams(CBool(chkRed), CBool(chkGreen), CBool(chkBlue), CBool(chkLuminance))
+    Process "Equalize", , buildParams(CBool(chkRed), CBool(chkGreen), CBool(chkBlue), CBool(chkLuminance)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

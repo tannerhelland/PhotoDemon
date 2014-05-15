@@ -4,10 +4,10 @@ Begin VB.Form FormFiguredGlass
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Figured Glass"
-   ClientHeight    =   6559
-   ClientLeft      =   -14
-   ClientTop       =   224
-   ClientWidth     =   12089
+   ClientHeight    =   6555
+   ClientLeft      =   -15
+   ClientTop       =   225
+   ClientWidth     =   12090
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,22 +20,22 @@ Begin VB.Form FormFiguredGlass
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   937
+   ScaleHeight     =   437
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1727
+   ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
-      Height          =   805
+      Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5754
-      Width           =   12089
+      Top             =   5805
+      Width           =   12090
       _ExtentX        =   21325
-      _ExtentY        =   1416
+      _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   10.125
+         Size            =   10.5
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -71,8 +71,8 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   7
       Top             =   4200
       Width           =   1005
-      _ExtentX        =   2037
-      _ExtentY        =   675
+      _ExtentX        =   1773
+      _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -121,8 +121,8 @@ Begin VB.Form FormFiguredGlass
       TabIndex        =   8
       Top             =   4200
       Width           =   975
-      _ExtentX        =   1905
-      _ExtentY        =   675
+      _ExtentX        =   1720
+      _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -405,7 +405,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Figured glass", , buildParams(sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Figured glass", , buildParams(sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

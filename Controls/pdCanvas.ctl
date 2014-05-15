@@ -660,7 +660,7 @@ End Sub
 
 'If an image is loaded, double-clicking the image size label launches the resize dialog
 Private Sub lblImgSize_DblClick()
-    If g_OpenImageCount > 0 Then Process "Resize", True
+    If g_OpenImageCount > 0 Then Process "Resize image", True
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -700,14 +700,14 @@ End Sub
 'Mousekey back triggers the same thing as clicking Undo
 Private Sub cMouseEvents_MouseBackButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     If pdImages(g_CurrentImage).IsActive Then
-        If pdImages(g_CurrentImage).undoManager.getUndoState Then Process "Undo", , , False
+        If pdImages(g_CurrentImage).undoManager.getUndoState Then Process "Undo", , , UNDO_NOTHING
     End If
 End Sub
 
 'Mousekey forward triggers the same thing as clicking Redo
 Private Sub cMouseEvents_MouseForwardButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
     If pdImages(g_CurrentImage).IsActive Then
-        If pdImages(g_CurrentImage).undoManager.getRedoState Then Process "Redo", , , False
+        If pdImages(g_CurrentImage).undoManager.getRedoState Then Process "Redo", , , UNDO_NOTHING
     End If
 End Sub
 
@@ -1073,12 +1073,12 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
                     If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
-                        Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2, g_CurrentTool
+                        Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                     Else
                     
                         'Check to see if all selection coordinates are invalid.  If they are, forget about this selection.
                         If pdImages(g_CurrentImage).mainSelection.areAllCoordinatesInvalid Then
-                            Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2, g_CurrentTool
+                            Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                         Else
                         
                             'Depending on the type of transformation that may or may not have been applied, call the appropriate processor
@@ -1087,15 +1087,15 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
                             
                                 'Creating a new selection
                                 Case 0
-                                    Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2, g_CurrentTool
+                                    Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     
                                 'Moving an existing selection
                                 Case 9
-                                    Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2, g_CurrentTool
+                                    Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     
                                 'Anything else is assumed to be resizing an existing selection
                                 Case Else
-                                    Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, 2, g_CurrentTool
+                                    Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     
                             End Select
                             

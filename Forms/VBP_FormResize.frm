@@ -413,10 +413,10 @@ Private Sub cmdBar_OKClick()
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget)
+            Process "Resize image", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
         
         Case PD_AT_SINGLELAYER
-            Process "Resize layer", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget)
+            Process "Resize layer", , buildParams(ucResize.imgWidth, ucResize.imgHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
     
     End Select
     

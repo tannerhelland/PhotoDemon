@@ -249,7 +249,7 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Exposure", , buildParams(sltExposure)
+    Process "Exposure", , buildParams(sltExposure), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

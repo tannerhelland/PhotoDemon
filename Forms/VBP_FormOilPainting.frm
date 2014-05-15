@@ -553,7 +553,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Oil Painting", , buildParams(sltRadius.Value, sltPercent.Value)
+    Process "Oil Painting", , buildParams(sltRadius.Value, sltPercent.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

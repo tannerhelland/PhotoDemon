@@ -673,7 +673,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Curves", , getCurvesParamString()
+    Process "Curves", , getCurvesParamString(), UNDO_LAYER
 End Sub
 
 'Reset the curve to three points in a straight line

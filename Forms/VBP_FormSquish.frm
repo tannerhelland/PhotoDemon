@@ -405,7 +405,7 @@ Public Sub SquishImage(ByVal xRatio As Double, ByVal yRatio As Double, ByVal edg
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Squish", , buildParams(sltRatioX, sltRatioY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Squish", , buildParams(sltRatioX, sltRatioY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

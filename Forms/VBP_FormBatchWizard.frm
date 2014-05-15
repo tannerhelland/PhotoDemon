@@ -3730,12 +3730,12 @@ Private Sub prepareForBatchConversion()
                     
                         'If the user has requested automatic lighting fixes, apply it now
                         If CBool(chkActions(0)) Then
-                            Process "White balance", , "0.1"
+                            Process "White balance", , buildParams("0.1"), UNDO_LAYER
                         End If
                     
                         'If the user has requested an image resize, apply it now
                         If CBool(chkActions(1)) Then
-                            Process "Resize", , buildParams(tudWidth, tudHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, colorPicker.Color)
+                            Process "Resize", , buildParams(tudWidth, tudHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, colorPicker.Color), UNDO_IMAGE
                         End If
                     
                         'If the user has requested a macro, play it now

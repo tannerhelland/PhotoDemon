@@ -106,3 +106,18 @@ End Enum
 #If False Then
     Const PD_AT_WHOLEIMAGE = 0, PD_AT_SINGLELAYER = 1
 #End If
+
+'When an action triggers the creation of Undo/Redo data, it must specify what kind of Undo/Redo data it wants created.
+' This type is used by PD to determine the most efficient way to store/restore previous actions.
+Public Enum PD_UNDO_TYPE
+    UNDO_NOTHING = -1
+    UNDO_IMAGE = 0
+    UNDO_IMAGEHEADER = 1
+    UNDO_LAYER = 2
+    UNDO_LAYERHEADER = 3
+    UNDO_SELECTION = 4
+End Enum
+
+#If False Then
+    Const UNDO_NOTHING = -1, UNDO_IMAGE = 0, UNDO_IMAGEHEADER = 1, UNDO_LAYER = 2, UNDO_LAYERHEADER = 3, UNDO_SELECTION = 4
+#End If

@@ -153,7 +153,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Sharpen", , Str(sltStrength)
+    Process "Sharpen", , buildParams(sltStrength), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -336,7 +336,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Polar conversion", , buildParams(cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Polar conversion", , buildParams(cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -460,7 +460,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Waves", , buildParams(sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Waves", , buildParams(sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

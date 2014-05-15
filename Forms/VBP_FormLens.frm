@@ -459,7 +459,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Apply lens distortion", , buildParams(sltIndex, sltRadius, OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value)
+    Process "Apply lens distortion", , buildParams(sltIndex, sltRadius, OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -110,7 +110,7 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 Private Sub cmdBar_OKClick()
-    Process "Remove alpha channel", , buildParams(colorPicker.Color)
+    Process "Remove alpha channel", , buildParams(colorPicker.Color), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

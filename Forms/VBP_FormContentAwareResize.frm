@@ -136,7 +136,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Content-aware resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI)
+    Process "Content-aware resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI), UNDO_LAYER
 End Sub
 
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at

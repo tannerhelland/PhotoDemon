@@ -187,7 +187,7 @@ Dim allowPreviews As Boolean
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Add alpha channel", , buildParams(getRelevantAlpha())
+    Process "Add alpha channel", , buildParams(getRelevantAlpha()), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -203,7 +203,7 @@ Dim allowPreviews As Boolean
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Color to alpha", , buildParams(colorPicker.Color, sltErase.Value, sltBlend.Value)
+    Process "Color to alpha", , buildParams(colorPicker.Color, sltErase.Value, sltBlend.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

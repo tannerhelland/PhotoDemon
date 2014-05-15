@@ -221,7 +221,7 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Vibrance", , buildParams(sltVibrance)
+    Process "Vibrance", , buildParams(sltVibrance), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

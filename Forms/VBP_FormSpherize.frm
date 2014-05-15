@@ -541,7 +541,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Spherize", , buildParams(sltAngle, sltOffsetX, sltOffsetY, CBool(chkRays.Value), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Spherize", , buildParams(sltAngle, sltOffsetX, sltOffsetY, CBool(chkRays.Value), CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

@@ -59,7 +59,7 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
         'Retrieve a filepath
         Dim imgFilePath As String
         If File_Menu.PhotoDemon_OpenImageDialog_Simple(imgFilePath, FormMain.hWnd) Then
-            Process "New Layer from File", False, imgFilePath
+            Process "New Layer from File", False, imgFilePath, UNDO_IMAGE
         End If
     
     'If showDialog is FALSE, the user has already selected a file, and we just need to load it

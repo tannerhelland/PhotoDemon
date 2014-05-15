@@ -349,7 +349,7 @@ Private Sub cmdBar_OKClick()
     
     Dim i As Long
     For i = 0 To optChannel.Count - 1
-        If optChannel(i) Then Process "Rechannel", , Str(i)
+        If optChannel(i) Then Process "Rechannel", , buildParams(i), UNDO_LAYER
     Next i
     
 End Sub
@@ -415,7 +415,7 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -427,40 +427,40 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
     
     'After all that work, the Rechannel code itself is relatively small and unexciting!
     For x = initX To finalX
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
     
         Select Case rType
             'Rechannel red
             Case 0
-                ImageData(quickVal, y) = 0
-                ImageData(quickVal + 1, y) = 0
+                ImageData(QuickVal, y) = 0
+                ImageData(QuickVal + 1, y) = 0
             'Rechannel green
             Case 1
-                ImageData(quickVal, y) = 0
-                ImageData(quickVal + 2, y) = 0
+                ImageData(QuickVal, y) = 0
+                ImageData(QuickVal + 2, y) = 0
             'Rechannel blue
             Case 2
-                ImageData(quickVal + 1, y) = 0
-                ImageData(quickVal + 2, y) = 0
+                ImageData(QuickVal + 1, y) = 0
+                ImageData(QuickVal + 2, y) = 0
             'Rechannel cyan
             Case 3
-                ImageData(quickVal, y) = 255
-                ImageData(quickVal + 1, y) = 255
+                ImageData(QuickVal, y) = 255
+                ImageData(QuickVal + 1, y) = 255
             'Rechannel magenta
             Case 4
-                ImageData(quickVal, y) = 255
-                ImageData(quickVal + 2, y) = 255
+                ImageData(QuickVal, y) = 255
+                ImageData(QuickVal + 2, y) = 255
             'Rechannel yellow
             Case 5
-                ImageData(quickVal + 1, y) = 255
-                ImageData(quickVal + 2, y) = 255
+                ImageData(QuickVal + 1, y) = 255
+                ImageData(QuickVal + 2, y) = 255
             
             'Rechannel CMYK
             Case Else
-                cK = 255 - ImageData(quickVal + 2, y)
-                MK = 255 - ImageData(quickVal + 1, y)
-                yK = 255 - ImageData(quickVal, y)
+                cK = 255 - ImageData(QuickVal + 2, y)
+                MK = 255 - ImageData(QuickVal + 1, y)
+                yK = 255 - ImageData(QuickVal, y)
                 
                 cK = cK / 255
                 MK = MK / 255
@@ -473,29 +473,29 @@ Public Sub RechannelImage(ByVal rType As Byte, Optional ByVal toPreview As Boole
                 
                 If rType = 6 Then
                     cK = ((cK - bK) / invBK) * 255
-                    ImageData(quickVal + 2, y) = 255 - cK
-                    ImageData(quickVal + 1, y) = 255
-                    ImageData(quickVal, y) = 255
+                    ImageData(QuickVal + 2, y) = 255 - cK
+                    ImageData(QuickVal + 1, y) = 255
+                    ImageData(QuickVal, y) = 255
                 End If
                 
                 If rType = 7 Then
                     MK = ((MK - bK) / invBK) * 255
-                    ImageData(quickVal + 2, y) = 255
-                    ImageData(quickVal + 1, y) = 255 - MK
-                    ImageData(quickVal, y) = 255
+                    ImageData(QuickVal + 2, y) = 255
+                    ImageData(QuickVal + 1, y) = 255 - MK
+                    ImageData(QuickVal, y) = 255
                 End If
                 
                 If rType = 8 Then
                     yK = ((yK - bK) / invBK) * 255
-                    ImageData(quickVal + 2, y) = 255
-                    ImageData(quickVal + 1, y) = 255
-                    ImageData(quickVal, y) = 255 - yK
+                    ImageData(QuickVal + 2, y) = 255
+                    ImageData(QuickVal + 1, y) = 255
+                    ImageData(QuickVal, y) = 255 - yK
                 End If
                 
                 If rType = 9 Then
-                    ImageData(quickVal + 2, y) = invBK * 255
-                    ImageData(quickVal + 1, y) = invBK * 255
-                    ImageData(quickVal, y) = invBK * 255
+                    ImageData(QuickVal + 2, y) = invBK * 255
+                    ImageData(QuickVal + 1, y) = invBK * 255
+                    ImageData(QuickVal, y) = invBK * 255
                 End If
                 
         End Select

@@ -189,11 +189,11 @@ Private Sub cmdBar_OKClick()
     
     'Xiaolin Wu
     If optQuant(0).Value Then
-        Process "Reduce colors", , buildParams(REDUCECOLORS_AUTO, FIQ_WUQUANT)
+        Process "Reduce colors", , buildParams(REDUCECOLORS_AUTO, FIQ_WUQUANT), UNDO_IMAGE
         
     'NeuQuant
     Else
-        Process "Reduce colors", , buildParams(REDUCECOLORS_AUTO, FIQ_NNQUANT)
+        Process "Reduce colors", , buildParams(REDUCECOLORS_AUTO, FIQ_NNQUANT), UNDO_IMAGE
     End If
     
 End Sub

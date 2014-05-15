@@ -221,7 +221,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -249,10 +249,10 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To initY + mRadius
     
-        If srcImageData(quickVal, y) > 127 Then highValues = highValues + 1
+        If srcImageData(QuickVal, y) > 127 Then highValues = highValues + 1
         
         'Increase the pixel tally
         NumOfPixels = NumOfPixels + 1
@@ -263,7 +263,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
     'Loop through each pixel in the image, tallying median values as we go
     For x = initX To finalX
             
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
         
         'Determine the bounds of the current median box in the X direction
         lbX = x - mRadius
@@ -430,9 +430,9 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         fGray = (highValues / NumOfPixels) * 255
         
         'Finally, apply the results to the image.
-        dstImageData(quickVal + 2, y) = fGray
-        dstImageData(quickVal + 1, y) = fGray
-        dstImageData(quickVal, y) = fGray
+        dstImageData(QuickVal + 2, y) = fGray
+        dstImageData(QuickVal + 1, y) = fGray
+        dstImageData(QuickVal, y) = fGray
         
     Next y
         atBottom = Not atBottom
@@ -458,7 +458,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Monochrome to grayscale", , Str(sltRadius.Value)
+    Process "Monochrome to grayscale", , buildParams(sltRadius.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

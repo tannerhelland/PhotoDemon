@@ -408,7 +408,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Miscellaneous distort", , buildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value)
+    Process "Miscellaneous distort", , buildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

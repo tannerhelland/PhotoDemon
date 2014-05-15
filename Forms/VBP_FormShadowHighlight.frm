@@ -241,7 +241,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(colorPicker.Color))
+    Process "Shadows and highlights", , buildParams(sltShadow, sltHighlight, CLng(colorPicker.Color)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RandomizeClick()

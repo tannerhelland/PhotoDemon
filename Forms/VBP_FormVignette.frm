@@ -535,7 +535,7 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value)
+    Process "Vignetting", , buildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
