@@ -78,9 +78,9 @@ Private redoState As Boolean
 ' user to jump to any arbitrary Undo/Redo state.  (Also, to properly update the text of the Undo/Redo menu and
 ' buttons so the user knows which action they are undo/redoing.)
 Private Type undoEntry
-    processID As String     'Name of the associated action (e.g. "Gaussian blur")
-    undoType As Long        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
-    relevantTool As Long    'If a tool was associated with this action, it can be set here.  This value is not currently used.
+    processID As String      'Name of the associated action (e.g. "Gaussian blur")
+    undoType As PD_UNDO_TYPE 'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
+    relevantTool As Long     'If a tool was associated with this action, it can be set here.  This value is not currently used.
 End Type
 
 Private undoStack() As undoEntry
@@ -92,6 +92,10 @@ Private undoNumAtLastSave As Long
 
 'We need access to the parent class so we can request things like "write your current data out to file".
 Public parentPDImage As pdImage
+
+'As part of PD's Undo/Redo chain, we can write the Undo/Redo stack to an XML file.  These constants are used to help
+' us ID and parse such data correctly.
+Private Const pdUndoVersionID As Long = 64
 
 'When an image is saved, this class needs to be notified so that it can make a note of the current undo index
 Public Sub notifyImageSaved()
@@ -124,7 +128,7 @@ End Sub
 '  2) optionally, the type of Undo that needs to be created.  By default, type 1 (image pixel undo) is assumed.
 '  3) optionally, the tool associated with this action.  This value is not currently used, but in the future it could
 '     be helpful for automatically selecting the tool associated with a given Undo/Redo point.
-Public Sub createUndoData(ByVal processID As String, Optional ByVal processType As Long = 1, Optional ByVal curTool As Long = -1)
+Public Sub createUndoData(ByVal processID As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal curTool As Long = -1)
     
     'Depending on the type of process being applied, save out image or selection data to file.
     ' NOTE: this is currently disabled because I can't make it work :/.  For now, always attempt to create both
@@ -176,7 +180,11 @@ Public Sub createUndoData(ByVal processID As String, Optional ByVal processType 
     
     'If this action changed pixel data, mark the image as NOT saved (because if we're creating an Undo file, the
     ' image has changed from its saved version).
-    If processType = 1 Then parentPDImage.setSaveState False
+    If (processType <> UNDO_NOTHING) And (processType <> UNDO_SELECTION) Then parentPDImage.setSaveState False
+    
+    'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
+    ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
+    writeUndoDataToXML generateUndoHeaderFilename()
     
     Debug.Print "Undo created successfully."
     
@@ -272,6 +280,10 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     'Launch the undo bitmap loading routine
     LoadUndo getCurrentUndoFilename(), getUndoProcessType
     
+    'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
+    ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
+    writeUndoDataToXML generateUndoHeaderFilename()
+    
     'Notify the program that undo/redo data is no longer being processed.
     g_UndoRedoActive = False
     
@@ -317,6 +329,10 @@ Public Sub rollBackLastUndo()
         parentPDImage.setSaveState False
     End If
     
+    'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
+    ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
+    writeUndoDataToXML generateUndoHeaderFilename()
+    
     'Notify the program that undo/redo data is no longer being processed.
     g_UndoRedoActive = False
 
@@ -349,6 +365,10 @@ Public Sub RestoreRedoData()
     'Load the Redo bitmap file
     LoadUndo getCurrentUndoFilename(), getUndoProcessType, True
     
+    'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
+    ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
+    writeUndoDataToXML generateUndoHeaderFilename()
+    
     'Notify the program that undo/redo data is no longer being processed.
     g_UndoRedoActive = False
     
@@ -372,7 +392,21 @@ Private Function generateUndoFilename(ByVal uIndex As Long) As String
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If Not (parentPDImage Is Nothing) Then
-        generateUndoFilename = g_UserPreferences.getTempPath & "~cPDU_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
+        generateUndoFilename = g_UserPreferences.GetTempPath & "~cPDU_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
+    End If
+    
+End Function
+
+'Generate a unique Undo/Redo header filename, including full temp path.  Note that this function does *NOT* take an
+' Undo number index.  The entire stack is written out to the header file, every time.
+Private Function generateUndoHeaderFilename() As String
+    
+    'As a failsafe, all Undo/Redo files are erased when this class is unloaded.  The clearUndos function requires this
+    ' function to generate Undo filnames.  If our parent class was terminated properly, it will have already erased
+    ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
+    ' parent reference in advance.
+    If Not (parentPDImage Is Nothing) Then
+        generateUndoHeaderFilename = g_UserPreferences.GetTempPath & "~PDU_StackSummary_" & parentPDImage.imageID & "_.pdtmp"
     End If
     
 End Function
@@ -397,6 +431,9 @@ Public Sub clearUndos()
         If FileExist(generateUndoFilename(i) & ".selection") Then Kill generateUndoFilename(i) & ".selection"
         
     Next i
+    
+    'Destroy the header file, if any
+    If FileExist(generateUndoHeaderFilename()) Then Kill generateUndoHeaderFilename()
     
     'Set the current and maximum Undo number to 0
     undoNum = 0
@@ -478,4 +515,49 @@ End Sub
 'When this class is unloaded, we must make sure to delete any Undo files we created
 Private Sub Class_Terminate()
     clearUndos
+End Sub
+
+'Write the Undo stack out to file, in XML format
+Public Sub writeUndoDataToXML(ByVal dstFilename As String)
+
+    'Create a pdXML class, which will help us assemble the XML file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    xmlEngine.prepareNewXML "Undo stack"
+    
+    'Write out the XML version we're using for this macro
+    xmlEngine.writeTag "pdUndoVersion", pdUndoVersionID
+    
+    'Write out the size of the current Undo stack, including the Max and Total values
+    xmlEngine.writeTag "StackHeight", undoMax
+    xmlEngine.writeTag "StackAbsoluteMaximum", undoTotal
+    xmlEngine.writeTag "CurrentStackPointer", undoNum
+    
+    'We probably don't need the undoNumAtLastSave value, but it doesn't hurt to embed it, "just in case"
+    xmlEngine.writeTag "UndoNumAtLastSave", undoNumAtLastSave
+    
+    xmlEngine.writeBlankLine
+    
+    'Next, we're going to write out all Undo stack entries. If PD's "UndoEntry" type is ever changed, note
+    ' that this function will need to be updated to match!
+    Dim i As Long
+    For i = 0 To UBound(undoStack)
+        
+        'Start each undo entry with a unique numeric identifier (that corresponds to its location in the stack)
+        xmlEngine.writeTagWithAttribute "UndoEntry", "index", i, "", True
+        
+        'Write out all the properties of this entry
+        xmlEngine.writeTag "ProcessID", undoStack(i).processID
+        xmlEngine.writeTag "UndoType", undoStack(i).undoType
+        xmlEngine.writeTag "RelevantTool", undoStack(i).relevantTool
+        
+        'Close this undo entry
+        xmlEngine.closeTag "UndoEntry"
+        xmlEngine.writeBlankLine
+    
+    Next i
+    
+    'With all Undo data successfully written, close the XML data and write it out to file.
+    xmlEngine.writeXMLToFile dstFilename
+    
 End Sub

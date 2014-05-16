@@ -107,7 +107,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     If (MacroStatus = MacroSTART) And recordAction Then
     
         'First things first: if the current action is NOT selection-related, but the last one was, make a backup of all selection settings.
-        If (createUndo <> 2) And (LastProcess.MakeUndo = 2) And (Not (LastProcess.Id = "Finalize selection for macro")) Then
+        If (createUndo <> UNDO_SELECTION) And (LastProcess.MakeUndo = UNDO_SELECTION) And (Not (LastProcess.Id = "Finalize selection for macro")) Then
             Process "Finalize selection for macro", False, pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool, True
         End If
     
@@ -129,11 +129,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     End If
     
     'If a dialog is being displayed, disable Undo creation
-    If showDialog Then createUndo = 0
+    If showDialog Then createUndo = UNDO_NOTHING
     
     'If this action requires us to create an Undo, create it now.  (We can also use this identifier to initiate a few
     ' other, related actions.)
-    If createUndo <> 0 Then
+    If createUndo <> UNDO_NOTHING Then
         
         'Temporarily disable drag-and-drop operations for the main form
         g_AllowDragAndDrop = False
