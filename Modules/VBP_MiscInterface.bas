@@ -452,10 +452,12 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         
         'Undo (left-hand panel button AND menu item)
         Case tUndo
+        
             If FormMain.MnuEdit(0).Enabled <> newState Then
                 toolbar_File.cmdUndo.Enabled = newState
                 FormMain.MnuEdit(0).Enabled = newState
             End If
+            
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
                 toolbar_File.cmdUndo.ToolTip = pdImages(g_CurrentImage).undoManager.getUndoProcessID

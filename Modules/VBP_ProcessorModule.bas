@@ -3,8 +3,8 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 22/August/13
-'Last update: finish organizing processor calls by category.  They now match their menu order, and I will try to keep it that way.
+'Last updated: 16/May/14
+'Last update: rewrite Undo file creation to match the new Active Undo/Redo engine (vs the old Passive version)
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -138,14 +138,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Temporarily disable drag-and-drop operations for the main form
         g_AllowDragAndDrop = False
         FormMain.OLEDropMode = 0
-        
-        'By default, actions are assumed to want Undo data created.  However, there are some known exceptions:
-        ' 1) If a dialog is being displayed
-        ' 2) If recording has been disabled for this action
-        ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so drop it)
-        If MacroStatus <> MacroBATCH Then
-            If (Not showDialog) And recordAction Then pdImages(g_CurrentImage).undoManager.createUndoData processID, createUndo, relevantTool
-        End If
         
         'Save this information in the LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action.
         FormMain.MnuEdit(2).Enabled = True
@@ -1326,9 +1318,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'If the user canceled the requested action before it completed, we need to roll back the undo data we created
     If cancelCurrentAction Then
         
-        'Ask the Undo manager to roll back to a previous state
-        pdImages(g_CurrentImage).undoManager.rollBackLastUndo
-        
         'Reset any interface elements that may still be in "processing" mode.
         releaseProgressBar
         Message "Action canceled."
@@ -1336,15 +1325,29 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Reset the cancel trigger; if this is not done, the user will not be able to cancel subsequent actions.
         cancelCurrentAction = False
         
+    'If the user did not cancel the requested action, and it modified pixel data in some way, create an Undo entry now.
+    Else
+    
+        'By default, actions are assumed to want Undo data created.  However, there are some known exceptions:
+        ' 1) If a dialog is being displayed
+        ' 2) If macro recording has been disabled for this action.  (This is typically used when an internal PD function
+        '     utilizes other functions, but we only want a single Undo point created for the full set of actions.)
+        ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so drop it)
+        If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not showDialog) And recordAction Then
+            pdImages(g_CurrentImage).undoManager.createUndoData processID, createUndo, relevantTool
+        End If
+    
     End If
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
-    If (createUndo > 0) Then
+    If (createUndo <> UNDO_NOTHING) Then
+    
         If g_OpenImageCount > 0 Then activatePDImage g_CurrentImage, "processor call complete"
     
         'Also, re-enable drag and drop operations
         g_AllowDragAndDrop = True
         FormMain.OLEDropMode = 1
+        
     End If
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied,
@@ -1352,7 +1355,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     syncInterfaceToCurrentImage
         
     'Finally, after all our work is done, return focus to the main PD window
-    If MacroStatus <> MacroBATCH Then g_WindowManager.requestActivation FormMain.hWnd
+    If (MacroStatus <> MacroBATCH) Then g_WindowManager.requestActivation FormMain.hWnd
         
     'Mark the processor as ready
     Processing = False

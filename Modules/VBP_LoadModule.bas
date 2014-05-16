@@ -3,8 +3,9 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 23/March/14
-'Last update: epic rewrite to account for layers
+'Last updated: 16/May/14
+'Last update: rework image loading interactions with the Undo engine; now, all images forcibly create an initial entry
+'              on the Undo/Redo stack.
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -1101,15 +1102,17 @@ PDI_Load_Continuation:
         
         
         '*************************************************************************************************************************************
-        ' For images that don't exist on disk, create an immediate Autosave entry
+        ' As of 2014, the new Active Undo/Redo engine requires that all images save an initial pdImage copy to file.
         '*************************************************************************************************************************************
         
-        'If this is a primary image that does not already exist on the user's hard drive, as a courtesy to the user,
-        ' force an immediate Autosave entry.  This can be used to recover the file if something goes wrong before the
-        ' user is able to save it themselves.
-        
-        If isThisPrimaryImage Then
-            If Len(targetImage.locationOnDisk) = 0 Then targetImage.undoManager.writeOneOffUndoEntry
+        'If this is a primary image, force an immediate Undo/Redo entry.  This serves multiple purposes: it is our baseline
+        ' for all future Undo/Redo actions, and it can be used to recover the original file if something goes wrong before
+        ' the user performs a manual save.
+        '
+        '(Note that all Undo behavior is disabled during batch processing, to improve performance)
+        If isThisPrimaryImage And (MacroStatus <> MacroBATCH) Then
+            Message "Creating initial auto-save entry (this may take a moment)..."
+            targetImage.undoManager.createUndoData "Initial image load", UNDO_IMAGE
         End If
         
         
@@ -1479,6 +1482,8 @@ End Function
 
 'UNDO loading
 Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional ByVal isRedoData As Boolean = False)
+
+    'Debug.Print "Loading undo data from " & undoFile
 
     'Several Undo Types are supported
     'Select Case undoType
