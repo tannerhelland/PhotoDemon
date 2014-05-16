@@ -106,11 +106,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'If the macro recorder is running and this action is marked as recordable, store it in our array of processor calls
     If (MacroStatus = MacroSTART) And recordAction Then
     
-        'First things first: if the current action is NOT selection-related, but the last one was, make a backup of all selection settings.
-        If (createUndo <> UNDO_SELECTION) And (LastProcess.MakeUndo = UNDO_SELECTION) And (Not (LastProcess.Id = "Finalize selection for macro")) Then
-            Process "Finalize selection for macro", False, pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool, True
-        End If
-    
         'Increase the process count
         ProcessCount = ProcessCount + 1
         
@@ -551,12 +546,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Remove selection"
             RemoveCurrentSelection cParams.getParamString
-        
-        
-        'Backup selection settings during a recorded macro (required to avoid "lazy" tracking method used on selection changes)
-        Case "Finalize selection for macro"
-            backupSelectionSettingsForMacro cParams.getParamString
-            
+                    
         
         'Modify the existing selection in some way
         Case "Invert selection"

@@ -257,8 +257,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 03/May/14
-'Last update: lots of code refactoring to try and clean up tool interfaces
+'Last updated: 16/May/14
+'Last update: remove old specialty Selection Undo/Redo handling code
 '
 'Every time the user loads an image, one of these forms is spawned. This form also interfaces with several
 ' specialized program components in the pdWindowManager class.
@@ -909,9 +909,6 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                     
                         'If the selection type matches the current selection tool, start transforming the selection.
                         If (pdImages(g_CurrentImage).mainSelection.getSelectionShape = getSelectionTypeFromCurrentTool()) Then
-                        
-                            'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
-                            pdImages(g_CurrentImage).mainSelection.setBackupParamString
                             
                             'Initialize a selection transformation
                             pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
@@ -923,9 +920,6 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                         
                             toolbar_Tools.selectNewTool getRelevantToolFromSelectType()
                             
-                            'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
-                            pdImages(g_CurrentImage).mainSelection.setBackupParamString
-                            
                             'Initialize a selection transformation
                             pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
                             pdImages(g_CurrentImage).mainSelection.setInitialTransformCoordinates imgX, imgY
@@ -934,9 +928,6 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
                                         
                     'If it did return zero, erase any existing selection and start a new one
                     Else
-                    
-                        'Back up the current selection settings - those will be saved in a later step as part of the Undo/Redo chain
-                        pdImages(g_CurrentImage).mainSelection.setBackupParamString
                     
                         Selection_Handler.initSelectionByPoint imgX, imgY
                     
@@ -1080,17 +1071,17 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
                         If pdImages(g_CurrentImage).mainSelection.areAllCoordinatesInvalid Then
                             Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                         Else
-                        
+                            
                             'Depending on the type of transformation that may or may not have been applied, call the appropriate processor
                             ' function.  This has no practical purpose at present, except to give the user a pleasant name for this action.
                             Select Case pdImages(g_CurrentImage).mainSelection.getTransformationType
                             
                                 'Creating a new selection
-                                Case 0
+                                Case -1
                                     Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     
                                 'Moving an existing selection
-                                Case 9
+                                Case 8
                                     Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     
                                 'Anything else is assumed to be resizing an existing selection
