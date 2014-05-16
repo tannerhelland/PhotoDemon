@@ -15,11 +15,10 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 09/April/14
-'Last update: for now, Undo / Redo is always going to make a full copy of the entire pdImage structure.  I know, I know,
-'             this is extrordinarily wasteful - but cracking a lighter version of Undo/Redo is *tough*.  Sometimes a
-'             full copy of the pdImage is necessary (e.g. Flatten Image), while at other times, something much lighter
-'             would suffice.  That's another project for another day, however.
+'Last updated: 16/May/14
+'Last update: start work on a hideously complicated overhaul of the Undo / Redo engine.  The goal?  As much as
+'             possible, make PD store only the relevant minimum amount of Undo data, as opposed to the full
+'             pdImage stack.  No idea if this will work, but we're gonna try...
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in memory, allowing for a lone Undo step if necessary.  Eventually this was converted
@@ -30,19 +29,24 @@ Attribute VB_Exposed = False
 ' into a single class, and gave each pdImage a copy of said class.  This achieves a long-desired goal of making
 ' the Undo/Redo code completely self-contained, and should make future improvements much, much easier.  As part
 ' of this change, the Undo/Redo engine was largely rewritten, and all interface-related code was moved outside the
-' class.  (Specifically, it is now handled by the separate syncInterfaceToCurrentImage function.)
+' class.  (Specifically, it is now handled by the separate syncInterfaceToCurrentImage function.)  As long as future
+' updates supply valid data to the getUndoState and getRedoState functions, all interface stuff will be handled
+' just fine by external interface functions.
 '
-'(NOTE: the following paragraph is currently irrelevant; I may revisit an active engine in the future, but it has
-' been placed on hold due to some nasty interactions elsewhere in the project.)
-'In 2014, as part of adding Layers support, the Undo/Redo engine was changed from a lazy implementation to an active
-' one.  Basically, the previous "lazy" implementation did not create Undo/Redo data until absolutely necessary.  This
-' had some benefits; for example, Undo data was not created until an image was actually edited, improving image load
-' time, and Redo data was never created until Undo was pressed.  While good for conserving memory, this system
-' ultimately proved untenable, as it required the storage of a lot of "what happened previously" data in order to
-' handle Undo creation correctly for odd cases (like when an image edit is applied after a selection modification).
-' To work around this, Undo/Redo data is now created immediately for the active function.
+'In 2014, as part of adding Layers support, the Undo/Redo engine was further modified from a lazy implementation to
+' an active one.  What does this mean?  Basically, the previous "lazy" implementation did not create Undo/Redo data
+' until absolutely necessary (e.g. after at least one image-changing action had been initiated, and right before a
+' new actions was about to occur).  This ultra-conservative approach had some benefits; for example, Undo data was
+' never created until an image was actually edited, improving image load time, and Redo data was never created
+' unless Undo was actuall pressed.  While good for conserving memory, this system ultimately proved untenable, as it
+' requires the storage of a lot of "what happened previously" data in order to handle Undo creation correctly for odd
+' edge cases (like when an image edit is applied after a selection modification). To simplify the engine and make it
+' possible to store Undo/Redo data other than just the full pdImage stack, Undo/Redo data is now created immediately
+' for the active function, using the passed PD_UNDO_TYPE as its guide to what data should be stored.
 '
-'As an added benefit, the Active system also works much better with PD's Autosave engine.
+'As an added benefit, the Active system also works much better with PD's Autosave engine.  It also simplifies things
+' like the user cancelling an operation before it has completed, because instead of rolling back to some previous
+' Undo state, the current action's changes simply don't get written to file.
 '
 'Undo/Redo data is still saved to the HDD, and will remain that way for the forseeable future.  Unlimited operations
 ' are allowed.  This class does not check HDD space availability, so errors may be thrown if you run out of free
@@ -57,9 +61,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Undo/Redo currently works as a stack, and entries can only be traversed sequentially.  In the future, we will be
-' reworking this to allow the program to "jump" to any Undo entry arbitrarily.  To that end, I am implementing
-' Undo/Redo tracking in a more comprehensive way than may seem necessary for the current implementation.
+'Undo/Redo currently works as a stack, and entries can only be traversed sequentially.  In the future, I plan to
+' rework this to allow the program to "jump" to any Undo entry arbitrarily (e.g. as part of an Undo History browser).
+' To that end, I am implementing Undo/Redo tracking in a more comprehensive way than may seem necessary for the
+' current stack-only implementation.
 
 'In the Undo/Redo stack, which entry is this image currently on?
 Private undoNum As Long
@@ -110,22 +115,11 @@ Public Function getRedoState() As Boolean
     getRedoState = redoState
 End Function
 
-'With the creation of PD's Autosave engine, it became helpful to write some Undo immediately, outside of the
-' traditional Undo/Redo stack.  This function can be used to do so.
-Public Sub writeOneOffUndoEntry()
-
-    'Ask the parent PD image to write itself out to file
-    Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
-    parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
-    
-    Debug.Print "Saved " & getCurrentUndoFilename() & " at the request of PD's Autosave engine."
-
-End Sub
-
 'Create an Undo entry (e.g. save a copy of the present image or selection to the temp directory)
 ' Inputs:
 '  1) the ID string of the process that called this action (e.g. "Gaussian blur")
-'  2) optionally, the type of Undo that needs to be created.  By default, type 1 (image pixel undo) is assumed.
+'  2) optionally, the type of Undo that needs to be created.  Make absolutely certain that this value is correct, because
+'     it determines what type of Undo data is saved (e.g. full layers stack, single layer, selection, etc).
 '  3) optionally, the tool associated with this action.  This value is not currently used, but in the future it could
 '     be helpful for automatically selecting the tool associated with a given Undo/Redo point.
 Public Sub createUndoData(ByVal processID As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal curTool As Long = -1)
@@ -156,10 +150,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal processType As PD_UND
         .undoType = processType
         .relevantTool = curTool
     End With
-    
-    'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'debugUndo
-    
+        
     'If the present image is NOT the last image in the undo train (i.e., the user pressed Undo before running
     ' the current operation), treat this action as the new "last" Undo entry in the stack.  However, we still need
     ' to remember that Undo files exist past this point, so we can clean them up when we exit - hence the need for
@@ -174,17 +165,22 @@ Public Sub createUndoData(ByVal processID As String, ByVal processType As PD_UND
     ' when our parent is unloaded.
     If undoMax > undoTotal Then undoTotal = undoMax
     
-    'Make a note that at this point, the user should be allowed to Undo, but not Redo
-    undoState = True
+    'If this is not the first Undo entry, make a note that the user is now allowed to initiate Undo actions.
+    If undoNum > 1 Then undoState = True
+    
+    'Because we have just created Undo data, the user is not allowed to initiate Redo actions.
     redoState = False
     
-    'If this action changed pixel data, mark the image as NOT saved (because if we're creating an Undo file, the
-    ' image has changed from its saved version).
+    'If this action changed pixel data, mark the image as NOT being saved in its current state.
     If (processType <> UNDO_NOTHING) And (processType <> UNDO_SELECTION) Then parentPDImage.setSaveState False
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
-    ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
+    ' for both regular Undo/Redo behavior, as well as AutoSave recreation.  We always create a copy of the Undo
+    ' stack, in XML format, in the temporary folder.
     writeUndoDataToXML generateUndoHeaderFilename()
+    
+    'To inspect the current state of the Undo/Redo stack, uncomment this line.
+    debugUndo "new Undo entry created"
     
     Debug.Print "Undo created successfully."
     
@@ -193,10 +189,10 @@ End Sub
 'This special command can be used to revert the image to its last saved state.  For images that have never been
 ' saved (e.g. those pasted from the clipboard, etc), it will undo to the image's original state.
 Public Sub revertToLastSavedState()
-    If undoNumAtLastSave > 0 Then
+    If undoNumAtLastSave > 1 Then
         restoreUndoData undoNumAtLastSave
     Else
-        restoreUndoData 0
+        restoreUndoData 1
     End If
 End Sub
 
@@ -206,41 +202,10 @@ End Sub
 ' with an undoPosition of 0.)
 Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     
-    'Some external actions are deactivated while Undo/Redo processing occurs.  Such functions can check this global
-    ' variable to determine if they should fire - so set it before doing anything else.
+    'Some external actions must be deactivated while Undo/Redo processing occurs.  Such asynchronous functions can check
+    ' this global variable to determine if they should fire, so we must set it before doing anything else.
     g_UndoRedoActive = True
-    
-    'If we're at the top of the Undo stack, save the image's current state - this allows the user to Redo whichever
-    ' action they're about to Undo.
-    If undoNum = undoMax Then
         
-        'Depending on the last action, write out a Redo file for that action
-        'Select Case UndoTypes(UndoNum - 1)
-        
-            'Pixel undo data
-            'Case 1
-                Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
-            
-            'Selection undo data
-            'Case 2
-                parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
-            
-        'End Select
-        
-        'Previously, we notified the user when undo/redo data was saved.  This was stupid, but it is helpful to
-        ' display the info in the debug window.
-        Debug.Print "Undo initiated by user. Saved " & getCurrentUndoFilename() & " for Redo purposes."
-        
-        'Move neighboring values into the current Undo location (this makes Redo work properly)
-        ReDim Preserve undoStack(0 To undoNum) As undoEntry
-        With undoStack(undoNum)
-            .processID = undoStack(undoNum - 1).processID
-            .undoType = undoStack(undoNum - 1).undoType
-            .relevantTool = undoStack(undoNum - 1).relevantTool
-        End With
-        
-    End If
-    
     'If the user supplied an undoPosition, apply it now.  Otherwise, decrement it from its current position.
     If undoPosition <> -1 Then
         undoNum = undoPosition
@@ -250,13 +215,16 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     End If
     
     'If this is not the last Undo state, still allow the user to Undo.
-    If undoNum > 0 Then undoState = True
+    If undoNum > 1 Then
+        undoState = True
+    
+    'If we are at the bottom of the Undo stack (e.g. the image is in its original state), disable further Undo-ing
+    Else
+        undoState = False
+    End If
     
     'If we are not at the top of the Undo stack, also enable Redo-ing
     If undoNum < undoMax Then redoState = True
-    
-    'If we are at the bottom of the Undo stack (e.g. the image is in its original state), disable further Undo-ing
-    If undoNum = 0 Then undoState = False
     
     'If this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
     ' some other source), note that the image has now BEEN SAVED (because it has not changed at all from its original
@@ -264,7 +232,7 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     If undoNum = undoNumAtLastSave Then
     
         'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
-        If parentPDImage.locationOnDisk = "" Then parentPDImage.setSaveState False Else parentPDImage.setSaveState True
+        If Len(parentPDImage.locationOnDisk) > 0 Then parentPDImage.setSaveState True Else parentPDImage.setSaveState False
         
     'If the image was imported (e.g. from a scanner or the clipboard), note that it has NOT BEEN SAVED just because
     ' the user Undo'd all the way back to its original state.
@@ -278,98 +246,57 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     End If
         
     'Launch the undo bitmap loading routine
-    LoadUndo getCurrentUndoFilename(), getUndoProcessType
+    LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType
+    
+    'To inspect the current state of the Undo/Redo stack, uncomment this line.
+    debugUndo "user clicked Undo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
     writeUndoDataToXML generateUndoHeaderFilename()
     
-    'Notify the program that undo/redo data is no longer being processed.
+    'Notify the program that undo/redo data is no longer being processed, so asynchronous functions can resume their behavior.
     g_UndoRedoActive = False
     
 End Sub
 
-'When an action is canceled, use this to roll back any Undo data that was created for the canceled action
-Public Sub rollBackLastUndo()
-
-    'Some external actions are deactivated while Undo/Redo processing occurs.  Such functions can check this global
-    ' variable to determine if they should fire - so set it before doing anything else.
-    g_UndoRedoActive = True
-    
-    'Kill the Undo file created by the terminated action
-    If FileExist(generateUndoFilename(undoMax)) Then Kill generateUndoFilename(undoMax)
-    
-    'Roll back the undo counter
-    undoNum = undoNum - 1
-    undoMax = undoMax - 1
-
-    Debug.Print "Undo rolled back. No Redo information saved."
-        
-    'Rebuild the Undo array (not technically necessary, but it doesn't hurt)
-    ReDim Preserve undoStack(0 To undoNum) As undoEntry
-    
-    'If Undos exist before this point, allow the user to access them, but if we are at the end of our Undo chain,
-    ' disable further undo-ing.
-    If undoNum > 0 Then undoState = True Else undoState = False
-    
-    'Regardless of Undo status, DO NOT ALLOW REDOING.  The Redo copy has been erased (because the action was terminated).
-    redoState = False
-    
-    'If this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
-    ' some other source), note that the image has now BEEN SAVED (because it has not changed at all from its original
-    ' appearance).
-    If undoNum = undoNumAtLastSave Then
-    
-        'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
-        If parentPDImage.locationOnDisk = "" Then parentPDImage.setSaveState False Else parentPDImage.setSaveState True
-        
-    'If the image was imported (e.g. from a scanner or the clipboard), note that it has NOT BEEN SAVED just because
-    ' the user Undo'd all the way back to its original state.
-    Else
-        parentPDImage.setSaveState False
-    End If
-    
-    'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
-    ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
-    writeUndoDataToXML generateUndoHeaderFilename()
-    
-    'Notify the program that undo/redo data is no longer being processed.
-    g_UndoRedoActive = False
-
-End Sub
-
-'Restore an undo entry : "Redo"
+'Restore a redo entry, e.g. "the user just clicked Redo"
 Public Sub RestoreRedoData()
     
-    'Some external actions are deactivated while Undo/Redo processing occurs.  Such functions can check this global
-    ' variable to determine if they should fire - so set it before doing anything else.
+    'Some external actions must be deactivated while Undo/Redo processing occurs.  Such asynchronous functions can check
+    ' this global variable to determine if they should fire, so we must set it before doing anything else.
     g_UndoRedoActive = True
     
     'If we're not at the top of the Undo stack, advance the stack index by one
     If undoNum < undoMax Then
-    
+        
         undoNum = undoNum + 1
-        undoState = True
         
         'Allow saving contingent on the image's state
         If undoNum = undoNumAtLastSave Then parentPDImage.setSaveState True Else parentPDImage.setSaveState False
-        
+    
     End If
+    
+    'Undoing is always allowed after the user has Redone something
+    undoState = True
     
     'If we're at the end of our action chain, disable any further Redo-ing
     If undoNum = undoMax Then redoState = False Else redoState = True
     
     'Select the relevant tool for this action, if one is provided
     If getUndoTool > -1 Then toolbar_Tools.selectNewTool getUndoTool
-        
+    
     'Load the Redo bitmap file
-    LoadUndo getCurrentUndoFilename(), getUndoProcessType, True
+    LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType, True
+    
+    'To inspect the current state of the Undo/Redo stack, uncomment this line.
+    debugUndo "user clicked Redo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
     writeUndoDataToXML generateUndoHeaderFilename()
     
-    'Notify the program that undo/redo data is no longer being processed.
+    'Notify the program that undo/redo data is no longer being processed, so asynchronous functions can resume their behavior.
     g_UndoRedoActive = False
     
 End Sub
@@ -444,24 +371,24 @@ End Sub
 
 'Return the tool associated with the current Undo state
 Public Function getUndoTool() As Long
-    getUndoTool = undoStack(undoNum).relevantTool
+    getUndoTool = undoStack(undoNum - 1).relevantTool
 End Function
 
 'Return the process type associated with the current Undo state
-Public Function getUndoProcessType() As Long
+Public Function getUndoProcessType() As PD_UNDO_TYPE
     If undoState Then
         getUndoProcessType = undoStack(undoNum - 1).undoType
     Else
-        getUndoProcessType = -1
+        getUndoProcessType = UNDO_NOTHING
     End If
 End Function
 
 'Return the process type associated with the current Redo state
-Public Function getRedoProcessType() As Long
+Public Function getRedoProcessType() As PD_UNDO_TYPE
     If redoState Then
         getRedoProcessType = undoStack(undoNum).undoType
     Else
-        getRedoProcessType = -1
+        getRedoProcessType = UNDO_NOTHING
     End If
 End Function
 
@@ -485,17 +412,20 @@ End Function
 
 'Undo/redo data handling is complex.  Sometimes it is helpful to see how our Undo/Redo stack looks - use this sub
 ' to print out a full list to the debug window.
-Public Sub debugUndo()
+Public Sub debugUndo(ByVal sourceOfDebugRequest As String)
 
     Dim i As Long
     Debug.Print "---"
+    Debug.Print " Current Undo stack:"
+    Debug.Print "  (Displaying because " & sourceOfDebugRequest & ")"
     For i = 0 To UBound(undoStack)
-        If i = undoNum Then
-            Debug.Print "* " & i & ": " & undoStack(i).processID & "," & undoStack(i).undoType
+        If i = undoNum - 1 Then
+            Debug.Print "  * " & i & ": " & undoStack(i).processID & ", " & undoStack(i).undoType
         Else
-            Debug.Print i & ": " & undoStack(i).processID & "," & undoStack(i).undoType
+            Debug.Print "  " & i & ": " & undoStack(i).processID & ", " & undoStack(i).undoType
         End If
     Next i
+    Debug.Print "---"
 
 End Sub
 
@@ -561,3 +491,15 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
     xmlEngine.writeXMLToFile dstFilename
     
 End Sub
+
+''With the creation of PD's Autosave engine, it became helpful to write some Undo immediately, outside of the
+'' traditional Undo/Redo stack.  This function can be used to do so.
+'Public Sub writeOneOffUndoEntry()
+'
+'    'Ask the parent PD image to write itself out to file
+'    Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
+'    parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
+'
+'    Debug.Print "Saved " & getCurrentUndoFilename() & " at the request of PD's Autosave engine."
+'
+'End Sub
