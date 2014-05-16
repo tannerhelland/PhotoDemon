@@ -241,7 +241,7 @@ Public Sub StripDirectory(ByRef sString As String)
     
     Dim x As Long
     
-    For x = Len(sString) - 1 To 1 Step -1
+    For x = Len(sString) To 1 Step -1
         If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
             sString = Left$(sString, x)
             Exit Sub

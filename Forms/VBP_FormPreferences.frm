@@ -2930,7 +2930,7 @@ Private Sub CmdOK_Click()
         'END log program messages or not
     
         'START/END store the temporary path (but only if it's changed)
-            If LCase(TxtTempPath) <> LCase(g_UserPreferences.getTempPath) Then g_UserPreferences.setTempPath TxtTempPath
+            If LCase(TxtTempPath) <> LCase(g_UserPreferences.GetTempPath) Then g_UserPreferences.setTempPath TxtTempPath
     
     'END Advanced preferences
     
@@ -2972,7 +2972,7 @@ End Sub
 Private Sub CmdTmpPath_Click()
     Dim tString As String
     tString = BrowseForFolder(Me.hWnd)
-    If tString <> "" Then TxtTempPath.Text = FixPath(tString)
+    If Len(tString) > 0 Then TxtTempPath.Text = FixPath(tString)
 End Sub
 
 'Load all relevant values from the preferences file, and populate their corresponding controls with the user's current settings
@@ -3387,7 +3387,7 @@ Private Sub LoadAllPreferences()
         'END log program messages
             
         'Display the current temporary file path
-            TxtTempPath.Text = g_UserPreferences.getTempPath
+            TxtTempPath.Text = g_UserPreferences.GetTempPath
     
         'Display what we know about this PC's hardware acceleration capabilities
             txtHardware = getDeviceCapsString()
