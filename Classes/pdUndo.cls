@@ -83,9 +83,10 @@ Private redoState As Boolean
 ' user to jump to any arbitrary Undo/Redo state.  (Also, to properly update the text of the Undo/Redo menu and
 ' buttons so the user knows which action they are undo/redoing.)
 Private Type undoEntry
-    processID As String      'Name of the associated action (e.g. "Gaussian blur")
-    undoType As PD_UNDO_TYPE 'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
-    relevantTool As Long     'If a tool was associated with this action, it can be set here.  This value is not currently used.
+    processID As String             'Name of the associated action (e.g. "Gaussian blur")
+    processParamString As String    'Processor string supplied to the action
+    undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
+    relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
 End Type
 
 Private undoStack() As undoEntry
@@ -122,7 +123,7 @@ End Function
 '     it determines what type of Undo data is saved (e.g. full layers stack, single layer, selection, etc).
 '  3) optionally, the tool associated with this action.  This value is not currently used, but in the future it could
 '     be helpful for automatically selecting the tool associated with a given Undo/Redo point.
-Public Sub createUndoData(ByVal processID As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal curTool As Long = -1)
+Public Sub createUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal curTool As Long = -1)
     
     'Depending on the type of process being applied, save out image or selection data to file.
     ' NOTE: this is currently disabled because I can't make it work :/.  For now, always attempt to create both
@@ -141,12 +142,13 @@ Public Sub createUndoData(ByVal processID As String, ByVal processType As PD_UND
     
     'Previously, we notified the user when undo/redo data was saved.  This was stupid, but it is helpful to
     ' display the info in the debug window.
-    Debug.Print "Saved " & getCurrentUndoFilename() & " as Undo file #" & undoNum & "."
+    'Debug.Print "Saved " & getCurrentUndoFilename() & " as Undo file #" & undoNum & "."
     
     'Store all relevant information about this Undo action, so we can access it in the future if necessary
     ReDim Preserve undoStack(0 To undoNum) As undoEntry
     With undoStack(undoNum)
         .processID = processID
+        .processParamString = pParamString
         .undoType = processType
         .relevantTool = curTool
     End With
@@ -410,6 +412,32 @@ Public Function getRedoProcessID() As String
     End If
 End Function
 
+'Given a type of Undo action, find the last relevant parameter string.  This is used by PD's central processor to detect on-canvas
+' changes to the image since the last Undo was created.
+Public Function getLastParamString(ByVal requestedUndoType As PD_UNDO_TYPE) As String
+
+    'If no Undos have been created, exit immediately
+    If undoNum = 0 Then
+        getLastParamString = ""
+        Exit Function
+    End If
+
+    'Loop backward through the Undo stack, looking for a matching Undo type.  If found, return the associated
+    ' param string and exit immediately.
+    Dim i As Long
+    
+    For i = undoNum - 1 To 0 Step -1
+        If undoStack(i).undoType = requestedUndoType Then
+            getLastParamString = undoStack(i).processParamString
+            Exit Function
+        End If
+    Next i
+    
+    'If we made it all the way here, no matching function was found.  Return nothing.
+    getLastParamString = ""
+
+End Function
+
 'Undo/redo data handling is complex.  Sometimes it is helpful to see how our Undo/Redo stack looks - use this sub
 ' to print out a full list to the debug window.
 Public Sub debugUndo(ByVal sourceOfDebugRequest As String)
@@ -478,6 +506,7 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
         
         'Write out all the properties of this entry
         xmlEngine.writeTag "ProcessID", undoStack(i).processID
+        xmlEngine.writeTag "ProcessParameters", undoStack(i).processParamString
         xmlEngine.writeTag "UndoType", undoStack(i).undoType
         xmlEngine.writeTag "RelevantTool", undoStack(i).relevantTool
         

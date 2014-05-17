@@ -1112,7 +1112,7 @@ PDI_Load_Continuation:
         '(Note that all Undo behavior is disabled during batch processing, to improve performance)
         If isThisPrimaryImage And (MacroStatus <> MacroBATCH) Then
             Message "Creating initial auto-save entry (this may take a moment)..."
-            targetImage.undoManager.createUndoData "Initial image load", UNDO_IMAGE
+            targetImage.undoManager.createUndoData "Initial image load", "", UNDO_IMAGE
         End If
         
         

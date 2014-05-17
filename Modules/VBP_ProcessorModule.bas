@@ -83,17 +83,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'Disable the main form to prevent the user from clicking additional menus or tools while this action is processing
     FormMain.Enabled = False
     
-    'If we need to display an additional dialog, restore the default mouse cursor.  Otherwise, set the cursor to busy.
-    If showDialog Then
-        'If g_OpenImageCount > 0 Then
-        '    If Not (pdImages(g_CurrentImage).containingForm Is Nothing) Then setArrowCursor pdImages(g_CurrentImage).containingForm
-        'End If
-    Else
-        Screen.MousePointer = vbHourglass
-    End If
+    'If we are applying an action to the image (e.g. not just showing a dialog), display a busy cursor.
+    If Not showDialog Then Screen.MousePointer = vbHourglass
         
-    'If we are to perform the last command, simply replace all the method parameters using data from the
-    ' LastEffectsCall object, then let the routine carry on as usual
+    'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data from the
+    ' LastEffectsCall object; this simple approach lets us repeat the last action effortlessly!
     If processID = "Repeat last action" Then
         processID = LastProcess.Id
         showDialog = LastProcess.Dialog
@@ -103,7 +97,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         recordAction = LastProcess.Recorded
     End If
     
-    'If the macro recorder is running and this action is marked as recordable, store it in our array of processor calls
+    'If the macro recorder is running and this action is marked as recordable, store it in our running stack of processor calls
     If (MacroStatus = MacroSTART) And recordAction Then
     
         'Increase the process count
@@ -123,18 +117,18 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
     End If
     
-    'If a dialog is being displayed, disable Undo creation
+    'If a dialog is being displayed, forcibly disable Undo creation
     If showDialog Then createUndo = UNDO_NOTHING
     
-    'If this action requires us to create an Undo, create it now.  (We can also use this identifier to initiate a few
+    'If this action requires us to create an Undo entry, do so now.  (We can also use this identifier to initiate a few
     ' other, related actions.)
     If createUndo <> UNDO_NOTHING Then
         
-        'Temporarily disable drag-and-drop operations for the main form
+        'Temporarily disable drag-and-drop operations for the main form while external actions are processing
         g_AllowDragAndDrop = False
         FormMain.OLEDropMode = 0
         
-        'Save this information in the LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action.
+        'Save this action's information in the LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action)
         FormMain.MnuEdit(2).Enabled = True
         With LastProcess
             .Id = processID
@@ -146,9 +140,31 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         End With
         
         'If the user wants us to time how long this action takes, mark the current time now
-        If Not showDialog Then
-            If DISPLAY_TIMINGS Then m_ProcessingTime = Timer
+        If DISPLAY_TIMINGS Then m_ProcessingTime = Timer
+        
+        'Finally, perform a check for any on-canvas modifications that have not yet had their Undo data saved.
+        
+        'First, check for on-canvas modifications to the selection (e.g. feathering slider changes, etc)
+        If pdImages(g_CurrentImage).selectionActive Then
+        
+            'Ask the Undo engine to return the last selection param string it has on file
+            Dim lastSelParamString As String
+            lastSelParamString = pdImages(g_CurrentImage).undoManager.getLastParamString(UNDO_SELECTION)
+            
+            'If such a param string exists, compare it against the current selection param string
+            If Len(lastSelParamString) > 0 Then
+            
+                'If the last selection Undo param string does not match the current selection param string, the user has
+                ' modified the selection in some way since the last Undo was created.  Create a new entry now.
+                If StrComp(lastSelParamString, pdImages(g_CurrentImage).mainSelection.getSelectionParamString, vbTextCompare) <> 0 Then
+                    pdImages(g_CurrentImage).undoManager.createUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, -1
+                End If
+            
+            End If
+        
         End If
+        
+        'In the future, additional on-canvas modifications can be checked here.
         
     End If
     
@@ -1315,16 +1331,17 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Reset the cancel trigger; if this is not done, the user will not be able to cancel subsequent actions.
         cancelCurrentAction = False
         
-    'If the user did not cancel the requested action, and it modified pixel data in some way, create an Undo entry now.
+    'If the user did not cancel the action, and the action modified the image in any way, create an Undo entry now.
     Else
     
-        'By default, actions are assumed to want Undo data created.  However, there are some known exceptions:
-        ' 1) If a dialog is being displayed
+        'Generally, we assume that actions want us to create Undo data for them.  However, there are a few known exceptions:
+        ' 1) If this processor request was just for displaying a dialog
         ' 2) If macro recording has been disabled for this action.  (This is typically used when an internal PD function
         '     utilizes other functions, but we only want a single Undo point created for the full set of actions.)
-        ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so drop it)
+        ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so we ignore it
+        '     during macro playback)
         If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not showDialog) And recordAction Then
-            pdImages(g_CurrentImage).undoManager.createUndoData processID, createUndo, relevantTool
+            pdImages(g_CurrentImage).undoManager.createUndoData processID, processParameters, createUndo, relevantTool
         End If
     
     End If
