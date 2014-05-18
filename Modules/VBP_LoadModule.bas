@@ -3,9 +3,9 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 16/May/14
-'Last update: rework image loading interactions with the Undo engine; now, all images forcibly create an initial entry
-'              on the Undo/Redo stack.
+'Last updated: 18/May/14
+'Last update: commit 100% to making all layers 32bpp by default.  This means that incoming alpha channel verification
+'              is no longer applied to images.
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -1038,8 +1038,10 @@ PDI_Load_Continuation:
                     
                     'If the user shuts down the program while we are still waiting for input, exit immediately
                     If g_ProgramShuttingDown Then Exit Sub
-                    
-                Loop While (Not isMetadataFinished) And ((Timer - timeWaitMetadata) < 4)
+                
+                'Give ExifTool 3.5 seconds to complete its work.  If it hasn't succeeded within 3.5 seconds, assume
+                ' some kind of internal failure and abandon metadata importing.
+                Loop While (Not isMetadataFinished) And ((Timer - timeWaitMetadata) < 3.5)
                 
                 'Re-enable the main form
                 FormMain.Enabled = True
@@ -1067,17 +1069,17 @@ PDI_Load_Continuation:
         
         
         '*************************************************************************************************************************************
-        ' As of 2014, the new Active Undo/Redo engine requires that all images save an initial pdImage copy to file.
+        ' As of 2014, the new Active Undo/Redo engine requires a base pdImage copy as the starting point for Undo/Redo diffs.
         '*************************************************************************************************************************************
         
-        'If this is a primary image, force an immediate Undo/Redo entry.  This serves multiple purposes: it is our baseline
-        ' for all future Undo/Redo actions, and it can be used to recover the original file if something goes wrong before
-        ' the user performs a manual save.
+        'If this is a primary image, force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our
+        ' baseline for calculating future Undo/Redo diffs, and it can be used to recover the original file if something
+        ' goes wrong before the user performs a manual save (e.g. AutoSave).
         '
-        '(Note that all Undo behavior is disabled during batch processing, to improve performance)
+        '(Note that all Undo behavior is disabled during batch processing, to improve performance, so we can skip this step.)
         If isThisPrimaryImage And (MacroStatus <> MacroBATCH) Then
             Message "Creating initial auto-save entry (this may take a moment)..."
-            targetImage.undoManager.createUndoData "Initial image load", "", UNDO_IMAGE
+            targetImage.undoManager.createUndoData "Initial image load", "", UNDO_EVERYTHING
         End If
         
         
