@@ -1816,55 +1816,55 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
     If toRelativeFormat Then
     
         '08 - left
-        tmpParser.setNewValueAtLocation 8, Str(CDbl(tmpParser.GetLong(8)) / CDbl(containingPDImage.Width))
+        tmpParser.setNewValueAtLocation 8, Trim$(Str(CDbl(tmpParser.GetLong(8)) / CDbl(containingPDImage.Width)))
         
         '09 - top
-        tmpParser.setNewValueAtLocation 9, Str(CDbl(tmpParser.GetLong(9)) / CDbl(containingPDImage.Height))
+        tmpParser.setNewValueAtLocation 9, Trim$(Str(CDbl(tmpParser.GetLong(9)) / CDbl(containingPDImage.Height)))
         
         '10 - width
-        tmpParser.setNewValueAtLocation 10, Str(CDbl(tmpParser.GetLong(10)) / CDbl(containingPDImage.Width))
+        tmpParser.setNewValueAtLocation 10, Trim$(Str(CDbl(tmpParser.GetLong(10)) / CDbl(containingPDImage.Width)))
         
         '11 - height
-        tmpParser.setNewValueAtLocation 11, Str(CDbl(tmpParser.GetLong(11)) / CDbl(containingPDImage.Height))
+        tmpParser.setNewValueAtLocation 11, Trim$(Str(CDbl(tmpParser.GetLong(11)) / CDbl(containingPDImage.Height)))
         
         '12 - x1
-        tmpParser.setNewValueAtLocation 12, Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width))
+        tmpParser.setNewValueAtLocation 12, Trim$(Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width)))
         
         '13 - y1
-        tmpParser.setNewValueAtLocation 13, Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height))
+        tmpParser.setNewValueAtLocation 13, Trim$(Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height)))
         
         '14 - x2
-        tmpParser.setNewValueAtLocation 14, Str(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width))
+        tmpParser.setNewValueAtLocation 14, Trim$(Str(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width)))
         
         '15 - y2
-        tmpParser.setNewValueAtLocation 15, Str(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height))
+        tmpParser.setNewValueAtLocation 15, Trim$(Str(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height)))
     
     'Convert relative values to absolute values (typically used when READING a selection file)
     Else
     
         '08 - left
-        tmpParser.setNewValueAtLocation 8, Str(CLng(tmpParser.GetDouble(8) * CDbl(containingPDImage.Width)))
+        tmpParser.setNewValueAtLocation 8, Trim$(Str(CLng(tmpParser.GetDouble(8) * CDbl(containingPDImage.Width))))
         
         '09 - top
-        tmpParser.setNewValueAtLocation 9, Str(CLng(tmpParser.GetDouble(9) * CDbl(containingPDImage.Height)))
+        tmpParser.setNewValueAtLocation 9, Trim$(Str(CLng(tmpParser.GetDouble(9) * CDbl(containingPDImage.Height))))
         
         '10 - width
-        tmpParser.setNewValueAtLocation 10, Str(CLng(tmpParser.GetDouble(10) * CDbl(containingPDImage.Width)))
+        tmpParser.setNewValueAtLocation 10, Trim$(Str(CLng(tmpParser.GetDouble(10) * CDbl(containingPDImage.Width))))
         
         '11 - height
-        tmpParser.setNewValueAtLocation 11, Str(CLng(tmpParser.GetDouble(11) * CDbl(containingPDImage.Height)))
+        tmpParser.setNewValueAtLocation 11, Trim$(Str(CLng(tmpParser.GetDouble(11) * CDbl(containingPDImage.Height))))
         
         '12 - x1
-        tmpParser.setNewValueAtLocation 12, Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width)))
+        tmpParser.setNewValueAtLocation 12, Trim$(Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width))))
         
         '13 - y1
-        tmpParser.setNewValueAtLocation 13, Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height)))
+        tmpParser.setNewValueAtLocation 13, Trim$(Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height))))
         
         '14 - x2
-        tmpParser.setNewValueAtLocation 14, Str(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width)))
+        tmpParser.setNewValueAtLocation 14, Trim$(Str(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width))))
         
         '15 - y2
-        tmpParser.setNewValueAtLocation 15, Str(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height)))
+        tmpParser.setNewValueAtLocation 15, Trim$(Str(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height))))
     
     End If
     

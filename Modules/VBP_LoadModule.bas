@@ -1447,36 +1447,62 @@ LoadVBImageFail:
     
 End Function
 
-'UNDO loading
-Public Sub LoadUndo(ByVal undoFile As String, ByVal undoType As Long, Optional ByVal isRedoData As Boolean = False)
+'Load data from a PD-generated Undo file.  This function is fairly complex, on account of PD's new diff-based Undo engine.
+' Note that two types of Undo data must be specified: the Undo type of the file requested (because this function has no
+' knowledge of that, by design), and what type of Undo data the caller wants extracted from the file.
+Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVal undoTypeOfAction As Long)
 
     'Debug.Print "Loading undo data from " & undoFile
-
-    'Several Undo Types are supported
-    'Select Case undoType
     
-        'Pixel data
-        'Case 1
-        
-            'The DIB handles the actual loading of the undo data
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
+    'Certain load functions require access to a DIB, so declare a generic one in advance
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    'If selection data was loaded as part of this diff, this value will be set to TRUE.  We check it at the end of
+    ' the load function, and activate various selection-related items as necessary.
+    Dim selectionDataLoaded As Boolean
+    selectionDataLoaded = False
+    
+    'Depending on the Undo data requested, we may end up loading one or more diff files at this location
+    Select Case undoTypeOfAction
+    
+        'UNDO_EVERYTHING: a full copy of both the pdImage stack and all selection data is wanted
+        Case UNDO_EVERYTHING
+            Loading.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
+            pdImages(g_CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
+            selectionDataLoaded = True
+            
+        'UNDO_IMAGE: a full copy of the pdImage stack is wanted
+        '             Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_IMAGE, we don't have to do
+        '             any special processing to the file - just load the whole damn thing.
+        Case UNDO_IMAGE
             Loading.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             
-            
-        'Selection data
-        'Case 2
-        
-            'Load the previous selection from file
+        'UNDO_SELECTION: a full copy of the saved selection data is wanted
+        '                 Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_SELECTION, we don't have to do
+        '                 any special processing.
+        Case UNDO_SELECTION
             pdImages(g_CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
+            selectionDataLoaded = True
             
-            'Activate the selection as necessary
-            pdImages(g_CurrentImage).selectionActive = pdImages(g_CurrentImage).mainSelection.isLockedIn
+        'For now, any unhandled selection types result in a request for the full pdImage stack.  This line can be removed when
+        ' all Undo types have had their own custom handling implemented.
+        Case Else
+            Loading.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             
-            'Synchronize the text boxes as necessary
-            syncTextToCurrentSelection g_CurrentImage
         
-    'End Select
+    End Select
+    
+    'If a selection was loaded, activate all selection-related stuff now
+    If selectionDataLoaded Then
+    
+        'Activate the selection as necessary
+        pdImages(g_CurrentImage).selectionActive = pdImages(g_CurrentImage).mainSelection.isLockedIn
+        
+        'Synchronize the text boxes as necessary
+        syncTextToCurrentSelection g_CurrentImage
+    
+    End If
     
     'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
     ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render

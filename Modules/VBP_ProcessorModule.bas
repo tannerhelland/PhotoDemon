@@ -145,7 +145,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Finally, perform a check for any on-canvas modifications that have not yet had their Undo data saved.
         
         'First, check for on-canvas modifications to the selection (e.g. feathering slider changes, etc)
-        If pdImages(g_CurrentImage).selectionActive Then
+        If pdImages(g_CurrentImage).selectionActive And (createUndo <> UNDO_SELECTION) Then
         
             'Ask the Undo engine to return the last selection param string it has on file
             Dim lastSelParamString As String
