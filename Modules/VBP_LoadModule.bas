@@ -763,160 +763,125 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         
         '*************************************************************************************************************************************
-        ' If the loaded image was in PDI format (PhotoDemon's internal format), skip a number of processing steps.
+        ' If the loaded image was in PDI format (PhotoDemon's internal format), skip a number of additional processing steps.
         '*************************************************************************************************************************************
         
-        If targetImage.originalFileFormat = 100 Then GoTo PDI_Load_Continuation
-        
-        
-        '*************************************************************************************************************************************
-        ' If GDI+ or VB's LoadPicture was used to load the file, populate some data fields manually (filetype, color depth, etc)
-        '*************************************************************************************************************************************
-        
-        If loadedByOtherMeans Then
-        
-            Select Case FileExtension
-                
-                Case "GIF"
-                    targetImage.originalFileFormat = FIF_GIF
-                    targetImage.originalColorDepth = 8
+        '100 is the magic number for PDI files.  I don't generally like using magic numbers in place of enums, but as our
+        ' file format enum list is declared in the external FreeImage module - which is occasionally overwritten by official
+        ' FreeImage updates - I can't easily add my own enums to theirs.  So this will do, for now...
+        If targetImage.originalFileFormat <> 100 Then
+            
+            
+            '*************************************************************************************************************************************
+            ' If GDI+ or VB's LoadPicture was used to load the file, populate some data fields manually (filetype, color depth, etc)
+            '*************************************************************************************************************************************
+            
+            If loadedByOtherMeans Then
+            
+                Select Case FileExtension
                     
-                Case "ICO"
-                    targetImage.originalFileFormat = FIF_ICO
-                
-                Case "JIF", "JPG", "JPEG", "JPE"
-                    targetImage.originalFileFormat = FIF_JPEG
-                    targetImage.originalColorDepth = 24
-                    
-                Case "PNG"
-                    targetImage.originalFileFormat = FIF_PNG
-                
-                Case "TIF", "TIFF"
-                    targetImage.originalFileFormat = FIF_TIFF
-                    
-                'Treat anything else as a BMP file
-                Case Else
-                    targetImage.originalFileFormat = FIF_BMP
-                    
-            End Select
-        
-        End If
-        
-        DoEvents
-        
-        
-        
-        '*************************************************************************************************************************************
-        ' If the loaded image contains alpha data, verify it.  If the alpha channel is blank (e.g. all 0 or all 255), convert it to 24bpp
-        '*************************************************************************************************************************************
-        
-        If targetDIB.getDIBColorDepth = 32 Then
-            
-            'Make sure the user hasn't disabled alpha channel validation
-            If g_UserPreferences.GetPref_Boolean("Transparency", "Validate Alpha Channels", True) Then
-            
-                If isThisPrimaryImage Then Message "Verfiying alpha channel..."
-            
-                'Verify the alpha channel.  If this function returns FALSE, the current alpha channel is unnecessary.
-                If Not targetImage.getActiveDIB().verifyAlphaChannel Then
-                
-                    If isThisPrimaryImage Then Message "Alpha channel deemed unnecessary.  Converting image to 24bpp..."
-                
-                    'Transparently convert the main DIB to 24bpp
-                    targetDIB.convertTo24bpp
-                
-                Else
-                    If isThisPrimaryImage Then Message "Alpha channel verified.  Leaving image in 32bpp mode."
-                End If
-                
-            Else
-                If isThisPrimaryImage Then Message "Alpha channel validation ignored at user's request."
-            End If
-        
-        End If
-        
-        DoEvents
-        
-        'TODO: at present, I'm running some optimization tests on a new model: all layers 32bpp by default.  This has some trade-offs.  First
-        '      is memory usage - 24bpp layers will consume an extra 33% space under this model.  Various edit actions will also take longer,
-        '      because the alpha channel must be processed (in most cases).  BitBlt and StretchBlt for various actions is also off the table.
-        '
-        '      That said, there are some big benefits for always using 32bpp layers.  First is the ease of implementing stuff like erase tools
-        '      and/or layer adjustments.  32bpp also plays nicer than 24bpp with various alpha-related APIs (e.g. AlphaBlend).  All modern
-        '      displays are in 32bpp anyway, so there will no longer be 24/32bpp conversions when rendering to/from the screen.
-        '
-        '      I'm going to try running the program in 32bpp mode while I get layers working.  If it looks good and runs well, I may look at
-        '      always forcing layers to 32bpp.  To that end, this ugly line of code (which will be optimized if kept) will forcibly convert
-        '      all incoming 24bpp images to 32bpp.
-        If targetDIB.getDIBColorDepth = 24 Then targetDIB.convertTo32bpp
-                
-        
-        '*************************************************************************************************************************************
-        ' If the image contained an embedded ICC profile, apply it now (before counting colors, etc).
-        '*************************************************************************************************************************************
-        
-        'Note that we now need to see if the ICC profile has already been applied.  For CMYK images, the ICC profile will be applied by
-        ' the image load function.  If we don't do this, we'll be left with a 32bpp image that contains CMYK data instead of RGBA!
-        If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) Then
-            
-            '32bpp images must be un-premultiplied before the transformation
-            If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha
-            
-            'Apply the ICC transform
-            targetDIB.ICCProfile.applyICCtoSelf targetDIB
-            
-            '32bpp images must be re-premultiplied after the transformation
-            If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha True
-            
-        End If
-        
-        DoEvents
-        
-        
-        '*************************************************************************************************************************************
-        ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
-        '*************************************************************************************************************************************
-        
-        If isThisPrimaryImage Then
-            If Len(imgName) = 0 Then
-                targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, getFilenameWithoutExtension(sFile(thisImage))
-            Else
-                targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, imgName
-            End If
-        End If
-        
-        'Update the pdImage container to be the same size as its (newly created) base layer
-        targetImage.updateSize
-        
-        DoEvents
-        
-        
-        '*************************************************************************************************************************************
-        ' If requested by the user, manually count the number of unique colors in the image (to accurately determine color depth)
-        '*************************************************************************************************************************************
-                
-        'At this point, we now have loaded image data in 24 or 32bpp format.  For future reference, let's count
-        ' the number of colors present in the image (if the user has allowed it).  If the user HASN'T allowed
-        ' it, we have no choice but to rely on whatever color depth was returned by FreeImage or GDI+ (or was
-        ' inferred by us for this format, e.g. we know that GIFs are 8bpp).
-        
-        If isThisPrimaryImage And (g_UserPreferences.GetPref_Boolean("Loading", "Verify Initial Color Depth", True) Or mustCountColors) Then
-            
-            colorCountCheck = getQuickColorCount(targetImage, g_CurrentImage)
-        
-            'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
-            targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.getActiveDIB())
-            
-            If g_IsImageGray Then
-                Message "Color count successful (%1 BPP, grayscale)", targetImage.originalColorDepth
-            Else
-                Message "Color count successful (%1 BPP, indexed color)", targetImage.originalColorDepth
-            End If
+                    Case "GIF"
+                        targetImage.originalFileFormat = FIF_GIF
+                        targetImage.originalColorDepth = 8
                         
+                    Case "ICO"
+                        targetImage.originalFileFormat = FIF_ICO
+                    
+                    Case "JIF", "JPG", "JPEG", "JPE"
+                        targetImage.originalFileFormat = FIF_JPEG
+                        targetImage.originalColorDepth = 24
+                        
+                    Case "PNG"
+                        targetImage.originalFileFormat = FIF_PNG
+                    
+                    Case "TIF", "TIFF"
+                        targetImage.originalFileFormat = FIF_TIFF
+                        
+                    'Treat anything else as a BMP file
+                    Case Else
+                        targetImage.originalFileFormat = FIF_BMP
+                        
+                End Select
+            
+            End If
+            
+            DoEvents
+            
+            
+            '*************************************************************************************************************************************
+            ' If the incoming image is 24bpp, convert it to 32bpp.  PD assumes an available alpha channel for all layers.
+            '*************************************************************************************************************************************
+            
+            If targetDIB.getDIBColorDepth = 24 Then targetDIB.convertTo32bpp
+                    
+            
+            '*************************************************************************************************************************************
+            ' If the image contained an embedded ICC profile, apply it now (before counting colors, etc).
+            '*************************************************************************************************************************************
+            
+            'Note that we now need to see if the ICC profile has already been applied.  For CMYK images, the ICC profile will be applied by
+            ' the image load function.  If we don't do this, we'll be left with a 32bpp image that contains CMYK data instead of RGBA!
+            If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) Then
+                
+                '32bpp images must be un-premultiplied before the transformation
+                If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha
+                
+                'Apply the ICC transform
+                targetDIB.ICCProfile.applyICCtoSelf targetDIB
+                
+                '32bpp images must be re-premultiplied after the transformation
+                If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha True
+                
+            End If
+            
+            DoEvents
+            
+            
+            '*************************************************************************************************************************************
+            ' The target DIB has been loaded successfully, so copy its contents into the main layer of the targetImage
+            '*************************************************************************************************************************************
+            
+            If isThisPrimaryImage Then
+                If Len(imgName) = 0 Then
+                    targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, getFilenameWithoutExtension(sFile(thisImage))
+                Else
+                    targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, imgName
+                End If
+            End If
+            
+            'Update the pdImage container to be the same size as its (newly created) base layer
+            targetImage.updateSize
+            
+            DoEvents
+            
+            
+            '*************************************************************************************************************************************
+            ' If requested by the user, manually count the number of unique colors in the image (to accurately determine color depth)
+            '*************************************************************************************************************************************
+                    
+            'At this point, we now have loaded image data in 24 or 32bpp format.  For future reference, let's count
+            ' the number of colors present in the image (if the user has allowed it).  If the user HASN'T allowed
+            ' it, we have no choice but to rely on whatever color depth was returned by FreeImage or GDI+ (or was
+            ' inferred by us for this format, e.g. we know that GIFs are 8bpp).
+            
+            If isThisPrimaryImage And (g_UserPreferences.GetPref_Boolean("Loading", "Verify Initial Color Depth", True) Or mustCountColors) Then
+                
+                colorCountCheck = getQuickColorCount(targetImage, g_CurrentImage)
+            
+                'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
+                targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.getActiveDIB())
+                
+                If g_IsImageGray Then
+                    Message "Color count successful (%1 BPP, grayscale)", targetImage.originalColorDepth
+                Else
+                    Message "Color count successful (%1 BPP, indexed color)", targetImage.originalColorDepth
+                End If
+                            
+            End If
+            
+            DoEvents
+        
         End If
-        
-        DoEvents
-        
                 
         '*************************************************************************************************************************************
         ' Determine a name for this image, and store it (along with any other relevant bits) inside the parent pdImage object
