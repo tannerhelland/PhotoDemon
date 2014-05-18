@@ -111,13 +111,14 @@ End Enum
 ' This type is used by PD to determine the most efficient way to store/restore previous actions.
 Public Enum PD_UNDO_TYPE
     UNDO_NOTHING = -1
-    UNDO_IMAGE = 0
-    UNDO_IMAGEHEADER = 1
-    UNDO_LAYER = 2
-    UNDO_LAYERHEADER = 3
-    UNDO_SELECTION = 4
+    UNDO_EVERYTHING = 0
+    UNDO_IMAGE = 1
+    UNDO_IMAGEHEADER = 2
+    UNDO_LAYER = 3
+    UNDO_LAYERHEADER = 4
+    UNDO_SELECTION = 5
 End Enum
 
 #If False Then
-    Const UNDO_NOTHING = -1, UNDO_IMAGE = 0, UNDO_IMAGEHEADER = 1, UNDO_LAYER = 2, UNDO_LAYERHEADER = 3, UNDO_SELECTION = 4
+    Const UNDO_NOTHING = -1, UNDO_EVERYTHING = 0, UNDO_IMAGE = 1, UNDO_IMAGEHEADER = 2, UNDO_LAYER = 3, UNDO_LAYERHEADER = 4, UNDO_SELECTION = 5
 #End If
