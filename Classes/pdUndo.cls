@@ -15,10 +15,9 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 16/May/14
-'Last update: start work on a hideously complicated overhaul of the Undo / Redo engine.  The goal?  As much as
-'             possible, make PD store only the relevant minimum amount of Undo data, as opposed to the full
-'             pdImage stack.  No idea if this will work, but we're gonna try...
+'Last updated: 18/May/14
+'Last update: first successful implementation of diff-based Undo/Redo behavior!!  Selection undoing is now handled
+'              exclusively by diffs, which makes selection Undo/Redo behavior extremely snappy and lightweight.
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in memory, allowing for a lone Undo step if necessary.  Eventually this was converted
@@ -126,22 +125,30 @@ End Function
 Public Sub createUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal curTool As Long = -1)
     
     'Depending on the type of process being applied, save out image or selection data to file.
-    ' NOTE: this is currently disabled because I can't make it work :/.  For now, always attempt to create both
-    '       selection and image undo data.  If a selection is not available, that function will simply exit.
-    'Select Case processType
+    Select Case processType
     
-        'Pixel data
-        'Case 1
+        'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
+        Case UNDO_EVERYTHING
             Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
+            parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
             
-        'Selection data
-        'Case 2
+        'A full copy of the pdImage stack
+        Case UNDO_IMAGE
+            Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
+        
+        'Selection data only
+        Case UNDO_SELECTION
             parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
         
-    'End Select
+        'Anything else (for now, default to the full pdImage stack until all other undo types are covered!)
+        Case Else
+            Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
+            
+        
+    End Select
     
-    'Previously, we notified the user when undo/redo data was saved.  This was stupid, but it is helpful to
-    ' display the info in the debug window.
+    'Previously, we notified the user when undo/redo data was saved.  This was stupid, but it is sometimes helpful to
+    ' display that info in the debug window.
     'Debug.Print "Saved " & getCurrentUndoFilename() & " as Undo file #" & undoNum & "."
     
     'Store all relevant information about this Undo action, so we can access it in the future if necessary
@@ -190,11 +197,12 @@ End Sub
 
 'This special command can be used to revert the image to its last saved state.  For images that have never been
 ' saved (e.g. those pasted from the clipboard, etc), it will undo to the image's original state.
+' TODO: as of May '14, I still need to make sure this works with the recent Undo/Redo overhaul
 Public Sub revertToLastSavedState()
-    If undoNumAtLastSave > 1 Then
+    If undoNumAtLastSave > 0 Then
         restoreUndoData undoNumAtLastSave
     Else
-        restoreUndoData 1
+        restoreUndoData 0
     End If
 End Sub
 
@@ -246,9 +254,19 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     If getUndoTool > -1 Then
         toolbar_Tools.selectNewTool getUndoTool
     End If
-        
-    'Launch the undo bitmap loading routine
-    LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType
+    
+    'With all prep work complete, we now need to figure out the most recent diff file that possesses data we need.  We handle
+    ' this in two steps.
+    
+    'First, we ask our search routine to find the nearest relevant diff for this Undo type
+    Dim nearestDiffIndex As Long
+    nearestDiffIndex = findNearestDiffIndex(undoNum)
+    
+    Debug.Print "Nearest diff index: " & nearestDiffIndex & "; undo type: " & undoStack(nearestDiffIndex).undoType
+    
+    'With the most recent relevant diff file identified, we can now launch the undo loading routine for that diff.  It will
+    ' automatically apply any changes against the relevant parts of the current image.
+    LoadUndo generateUndoFilename(nearestDiffIndex), undoStack(nearestDiffIndex).undoType, undoStack(undoNum).undoType
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     debugUndo "user clicked Undo"
@@ -261,6 +279,69 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     g_UndoRedoActive = False
     
 End Sub
+
+'Given an undo Index, find the nearest Diff file that contains the information we need to reconstruct the image's state
+' at that point in time.
+Private Function findNearestDiffIndex(ByVal undoIndex As Long) As Long
+
+    'PD Undo files attempt to save only the minimum amount of data needed to reconstruct an image at any given point in time.
+    ' I call these files "diffs" because they contain only the image information that has changed as a result of that
+    ' undo entry's actions.  When it comes time to Undo an action, we must scan backward through all available diffs, and find
+    ' the nearest entry that contains a backup of the changes made.
+    '
+    'No matter what, the loop below will always terminate at position 0 if no available diffs are found.  This is why we must
+    ' always create a full image copy after the image is loaded, as it serves as our baseline for all subsequent diffs.
+    
+    'Start by noting the Undo type of the undoIndex we are attempting to undo
+    Dim undoTypeCheck As PD_UNDO_TYPE
+    undoTypeCheck = undoStack(undoIndex).undoType
+    
+    Debug.Print "Searching for undo type: " & undoTypeCheck
+    
+    Dim i As Long
+    For i = undoIndex - 1 To 0 Step -1
+    
+        'Diff files can cover multiple types of data.  For example, some actions - like flattening the image - make a copy
+        ' of the full pdImage stack.  This can be used to recover the pdImage header, individual layer headers, or individual
+        ' layer data, which means such an entry works for multiple types of Undo requests.
+        '
+        'This select case statement matches the requested undoIndex against any valid diff file for that type of Undo data.
+        Select Case undoStack(i).undoType
+        
+            'UNDO_EVERYTHING works for all possible Undo types, as it has a copy of everything we would ever need!
+            Case UNDO_EVERYTHING
+                findNearestDiffIndex = i
+                Exit For
+            
+            'UNDO_IMAGE contains relevant diff information for everything but selections
+            Case UNDO_IMAGE
+                If (undoTypeCheck <> UNDO_SELECTION) Then
+                    findNearestDiffIndex = i
+                    Exit For
+                End If
+        
+            'UNDO_SELECTION contains relevant diff information for selections only
+            Case UNDO_SELECTION
+                If (undoTypeCheck = UNDO_SELECTION) Then
+                    findNearestDiffIndex = i
+                    Exit For
+                End If
+                
+            'This CaseElse statement will not be necessary when we have implemented all Diff types.  Until that happens,
+            ' however, we can treat it the same as UNDO_IMAGE.
+            Case Else
+                If (undoTypeCheck <> UNDO_SELECTION) Then
+                    findNearestDiffIndex = i
+                    Exit For
+                End If
+        
+        End Select
+    
+    Next i
+    
+    'The function value will have been correctly set within the For loop, so we can now exit immediately.
+
+End Function
 
 'Restore a redo entry, e.g. "the user just clicked Redo"
 Public Sub RestoreRedoData()
@@ -288,8 +369,10 @@ Public Sub RestoreRedoData()
     'Select the relevant tool for this action, if one is provided
     If getUndoTool > -1 Then toolbar_Tools.selectNewTool getUndoTool
     
-    'Load the Redo bitmap file
-    LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType, True
+    'The great thing about Redo is that it chronogically moves in the same direction as PD's Undo diff files.  So unlike
+    ' Undo - which requires us to traverse the undo timeline in reverse, looking for a relevant diff file - we can simply
+    ' apply the next valid diff in line, no extra work required!
+    LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType, getUndoProcessType
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     debugUndo "user clicked Redo"
