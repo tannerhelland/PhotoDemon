@@ -3,8 +3,8 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 09/April/14
-'Last update: Added support for saving layered PDI images, using the new pdPackager class.
+'Last updated: 19/May/14
+'Last update: new function for writing individual pdLayer objects to file, using a modified PDI struct.
 '
 'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in the GDI+ module
 ' for consistency's sake).  Export functions are sorted by file type, and most serve as relatively lightweight wrappers to corresponding
@@ -691,11 +691,11 @@ SavePDIError:
     
 End Function
 
-'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal-only (it is used by the
+'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal (it is used by the
 ' Undo/Redo engine only), it is not as fleshed-out as the actual SavePhotoDemonImage function.
 Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True) As Boolean
     
-    On Error GoTo SavePDILayerError
+    On Error GoTo SavePDLayerError
     
     Dim sFileType As String
     sFileType = "PDI"
@@ -743,7 +743,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     
     Exit Function
     
-SavePDILayerError:
+SavePDLayerError:
 
     SavePhotoDemonLayer = False
     
@@ -2344,6 +2344,11 @@ Public Function saveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'Selection data only
         Case UNDO_SELECTION
             srcPDImage.mainSelection.writeSelectionToFile dstUndoFilename & ".selection"
+        
+        'Layer data only (header + DIB).  Layer header's have been temporarily added to this function, but they will
+        ' shortly receive their own entry.
+        Case UNDO_LAYER, UNDO_LAYERHEADER
+            Saving.SavePhotoDemonLayer srcPDImage.getLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, False, False
         
         'Anything else (for now, default to the full pdImage stack until all other undo types are covered!)
         Case Else

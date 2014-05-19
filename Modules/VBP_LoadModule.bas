@@ -3,9 +3,9 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 18/May/14
-'Last update: commit 100% to making all layers 32bpp by default.  This means that incoming alpha channel verification
-'              is no longer applied to images.
+'Last updated: 19/May/14
+'Last update: new functions for loading individual layers from either standalone layer files, or full pdImage stacks.
+'              These functions are required by the new Undo/Redo engine.
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -1298,8 +1298,10 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
 
 End Function
 
-'PDI loading.  "PhotoDemon Image" files are basically just bitmap files ran through zLib compression.
-' Note the unique "sourceIsUndoFile" parameter for this load function.  PDI files are used to store undo/redo data, and when one of their
+'PDI loading.  "PhotoDemon Image" files are the only format PD supports for saving layered images.  PDI to PhotoDemon is like
+' PSD to PhotoShop, or XCF to Gimp.
+'
+'Note the unique "sourceIsUndoFile" parameter for this load function.  PDI files are used to store undo/redo data, and when one of their
 ' kind is loaded as part of an Undo/Redo action, we must ignore certain elements stored in the file (e.g. settings like "LastSaveFormat"
 ' which we do not want to Undo/Redo).  This parameter is passed to the pdImage initializer, and it tells it to ignore certain settings.
 Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
@@ -1402,6 +1404,170 @@ LoadPDIFail:
 
 End Function
 
+'Load a single layer from a standard PDI file.
+' At present, this function is only used internally by the Undo/Redo engine.  If the nearest diff to a layer-specific change is a
+' full pdImage stack, this function is used to extract only the relevant layer from the PDI file.
+Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer As pdLayer, ByVal targetLayerID As Long) As Boolean
+    
+    On Error GoTo LoadLayerFromPDIFail
+    
+    'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
+    ' from the source file.
+    Dim pdiReader As pdPackager
+    Set pdiReader = New pdPackager
+    If g_ZLibEnabled Then pdiReader.init_ZLib g_PluginPath & "zlibwapi.dll"
+    
+    'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
+    ' Note that this step will also validate the incoming file.
+    If pdiReader.readPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    
+        'PDI files all follow a standard format: a pdImage node at the top, which contains the full pdImage header,
+        ' followed by individual nodes for each layer.  Layers are stored in stack order, which makes it very fast and easy
+        ' to reconstruct the layer stack.
+        
+        'Unfortunately, stack order is not helpful in this function, because the target layer's position may have changed
+        ' since the time this pdImage file was created.  To work around that, we must located the layer using its cardinal
+        ' ID value, which is helpfully stored as the node ID parameter for a given layer node.
+        
+        Dim retBytes() As Byte, retString As String
+        
+        If pdiReader.getNodeDataByID(targetLayerID, True, retBytes, True) Then
+        
+            'Convert the received bytes into a string
+            retString = StrConv(retBytes, vbUnicode)
+            
+            'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
+            If Not dstLayer.CreateNewImageLayerFromXML(retString) Then
+                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+            End If
+        
+        'Bytes could not be read, or alternately, checksums didn't match for the first node.
+        Else
+            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+        End If
+        
+        'Repeat the above steps, but for the layer DIB this time
+        If pdiReader.getNodeDataByID(targetLayerID, False, retBytes, True) Then
+        
+            'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
+            dstLayer.layerDIB.copyStreamOverImageArray retBytes
+        
+        'Bytes could not be read, or alternately, checksums didn't match for the first node.
+        Else
+            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+        End If
+        
+        'That's all there is to it!  Mark the load as successful and carry on.
+        LoadSingleLayerFromPDI = True
+    
+    Else
+    
+        'If we made it to this block, the first stage of PDI validation failed, meaning this file isn't in PDI format.
+        Message "Selected file is not in PDI format.  Load abandoned."
+        LoadSingleLayerFromPDI = False
+    
+    End If
+    
+    Exit Function
+    
+LoadLayerFromPDIFail:
+
+    Select Case Err.Number
+    
+        Case PDP_GENERIC_ERROR
+            Message "PDI node could not be read; file may be invalid or corrupted.  Load abandoned."
+            
+        Case Else
+
+        Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI load abandoned."
+        
+    End Select
+    
+    LoadSingleLayerFromPDI = False
+    Exit Function
+
+End Function
+
+'Load a single PhotoDemon layer from a standalone pdLayer file (which is really just a modified PDI file).
+' At present, this function is only used internally by the Undo/Redo engine.  Its counterpart is SavePhotoDemonLayer in
+' the Saving module; any changes there should be mirrored here.
+Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As pdLayer) As Boolean
+    
+    On Error GoTo LoadPDLayerFail
+    
+    'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
+    ' from the source file.
+    Dim pdiReader As pdPackager
+    Set pdiReader = New pdPackager
+    If g_ZLibEnabled Then pdiReader.init_ZLib g_PluginPath & "zlibwapi.dll"
+    
+    'Load the file into the pdPackager instance.  pdPackager It will cache the file contents, so we only have to do this once.
+    ' Note that this step will also validate the incoming file.
+    If pdiReader.readPackageFromFile(PDIPath, PD_LAYER_IDENTIFIER) Then
+    
+        'Layer variants of PDI files contain a single node.  The layer's header is stored to the node's header chunk
+        ' (in XML format, as expected).  The layer's DIB data is stored to the node's data chunk (in binary format, as expected).
+        'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
+        ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
+        Dim retBytes() As Byte, retString As String
+        
+        If pdiReader.getNodeDataByIndex(0, True, retBytes, True) Then
+        
+            'Convert the received bytes into a string
+            retString = StrConv(retBytes, vbUnicode)
+            
+            'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
+            dstLayer.CreateNewImageLayerFromXML retString
+            
+        'Bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently disabled
+        ' for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
+        Else
+            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+        End If
+        
+        'Now repeat the steps above, but for the layer's DIB data
+        If pdiReader.getNodeDataByIndex(0, False, retBytes, True) Then
+        
+            'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
+            dstLayer.layerDIB.copyStreamOverImageArray retBytes
+            
+        'Bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently disabled
+        ' for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
+        Else
+            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+        End If
+        
+        'That's all there is to it!  Mark the load as successful and carry on.
+        LoadPhotoDemonLayer = True
+    
+    Else
+    
+        'If we made it to this block, the first stage of PDI validation failed, meaning this file isn't in PDI format.
+        Message "Selected file is not in PDI format.  Load abandoned."
+        LoadPhotoDemonLayer = False
+    
+    End If
+    
+    Exit Function
+    
+LoadPDLayerFail:
+
+    Select Case Err.Number
+    
+        Case PDP_GENERIC_ERROR
+            Message "PDI node could not be read; file may be invalid or corrupted.  Load abandoned."
+            
+        Case Else
+
+        Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI load abandoned."
+        
+    End Select
+    
+    LoadPhotoDemonLayer = False
+    Exit Function
+
+End Function
+
 'Use GDI+ to load an image.  This does very minimal error checking (which is a no-no with GDI+) but because it's only a
 ' fallback when FreeImage can't be found, I'm postponing further debugging for now.
 'Used for PNG and TIFF files if FreeImage cannot be located.
@@ -1450,7 +1616,7 @@ End Function
 'Load data from a PD-generated Undo file.  This function is fairly complex, on account of PD's new diff-based Undo engine.
 ' Note that two types of Undo data must be specified: the Undo type of the file requested (because this function has no
 ' knowledge of that, by design), and what type of Undo data the caller wants extracted from the file.
-Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVal undoTypeOfAction As Long, Optional ByVal targetLayerID As Long = -1)
+Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVal undoTypeOfAction As Long, Optional ByVal targetLayerID As Long = -1, Optional ByVal suspendRedraw As Boolean = False)
 
     'Debug.Print "Loading undo data from " & undoFile
     
@@ -1478,13 +1644,38 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         Case UNDO_IMAGE
             Loading.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             
+            'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
+            ' Unfortunately, subsequent changes to the pdImage header (or individual layers/layer headers) still need
+            ' to be manually reconstructed, because they may have changed between the last full pdImage write and the
+            ' current image state.  This step is handled by the Undo/Redo engine, which will call this LoadUndo function
+            ' as many times as necessary to reconstruct the full image at some later point in time.
+            
         'UNDO_SELECTION: a full copy of the saved selection data is wanted
         '                 Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_SELECTION, we don't have to do
         '                 any special processing.
         Case UNDO_SELECTION
             pdImages(g_CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
+        
+        'UNDO_LAYER: a full copy of the saved layer data at this position.
+        '             Because the underlying file data can be different types (layer data can be loaded from standalone layer saves,
+        '             or from a full pdImage stack save), we must check the undo type of the saved file, and modify our load
+        '             behavior accordingly.
+        Case UNDO_LAYER, UNDO_LAYERHEADER
             
+            'Layer data can appear in multiple types of Undo files
+            Select Case undoTypeOfFile
+            
+                'The underlying save file is a standalone layer entry.  Simply overwrite the target layer with the data from the file.
+                Case UNDO_LAYER
+                    Loading.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).getLayerByID(targetLayerID)
+            
+                'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
+                Case UNDO_EVERYTHING, UNDO_IMAGE
+                    Loading.LoadSingleLayerFromPDI undoFile, pdImages(g_CurrentImage).getLayerByID(targetLayerID), targetLayerID
+                
+            End Select
+        
         'For now, any unhandled selection types result in a request for the full pdImage stack.  This line can be removed when
         ' all Undo types have had their own custom handling implemented.
         Case Else
@@ -1509,8 +1700,8 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     ' it before rendering the image or OOB errors may occur.)
     If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestNewMask
         
-    'Render the image to the screen
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "LoadUndo"
+    'Render the image to the screen, if requested
+    If Not suspendRedraw Then PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "LoadUndo"
     
 End Sub
 

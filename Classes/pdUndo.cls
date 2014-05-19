@@ -15,9 +15,9 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 18/May/14
-'Last update: first successful implementation of diff-based Undo/Redo behavior!!  Selection undoing is now handled
-'              exclusively by diffs, which makes selection Undo/Redo behavior extremely snappy and lightweight.
+'Last updated: 19/May/14
+'Last update: implement diffs for individual layers.  Lots of unforeseen interactions with this approach, but I
+'              *think* we've covered all our bases.
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in memory, allowing for a lone Undo step if necessary.  Eventually this was converted
@@ -41,7 +41,7 @@ Attribute VB_Exposed = False
 ' requires the storage of a lot of "what happened previously" data in order to handle Undo creation correctly for odd
 ' edge cases (like when an image edit is applied after a selection modification). To simplify the engine and make it
 ' possible to store Undo/Redo data other than just the full pdImage stack, Undo/Redo data is now created immediately
-' for the active function, using the passed PD_UNDO_TYPE as its guide to what data should be stored.
+' for the active function, using the passed PD_UNDO_TYPE as the guide for what data should be stored.
 '
 'As an added benefit, the Active system also works much better with PD's Autosave engine.  It also simplifies things
 ' like the user cancelling an operation before it has completed, because instead of rolling back to some previous
@@ -50,8 +50,8 @@ Attribute VB_Exposed = False
 'Undo/Redo data is still saved to the HDD, and will remain that way for the forseeable future.  Unlimited operations
 ' are allowed.  This class does not check HDD space availability, so errors may be thrown if you run out of free
 ' space.  Similarly, clearing your TEMP folder in the middle of program operation could cause a lot of bad things,
-' including hard crashes.  I should probably fix this at some point in the future, but as no one has ever complained,
-' it remains a low priority for me.
+' including hard crashes.  I should probably fix this at some point in the future, but no one has ever complained,
+' so it remains a low priority for me.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -241,15 +241,74 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     'With all prep work complete, we now need to figure out the most recent diff file that possesses data we need.  We handle
     ' this in two steps.
     
-    'First, we ask our search routine to find the nearest relevant diff for this Undo type
+    'First, we ask our search routine to find the nearest relevant diff for this Undo type.  Some parameters (like the undoLayerID)
+    ' will be ignored if this undo entry isn't layer-specific.
     Dim nearestDiffIndex As Long
-    nearestDiffIndex = findNearestDiffIndex(undoNum)
+    nearestDiffIndex = findNearestDiffIndex(undoNum, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID)
     
     Debug.Print "Nearest diff index: " & nearestDiffIndex & "; undo type: " & undoStack(nearestDiffIndex).undoType
     
+    'We now have to handle some tricky diff-related business.  If the Undo type is a full pdImage reconstruction (meaning the entire
+    ' layer stack is being recreated from scratch), we have to re-apply all diffs in two steps: first, we have to reconstruct the
+    ' layer stack.  Then, we have to update each layer against its most recent diff patch.  To prevent the screen from flickering
+    ' like crazy while we do all this background processing, we suspend redraws until our work is complete.
+    Dim suspendRedraws As Boolean
+    If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or ((undoStack(undoNum).undoType = UNDO_IMAGEHEADER)) Then
+        
+        'If we are reverting the image to its original state, we do not need to process any extra layer data, as we already know
+        ' the the source file is accurate.
+        If undoNum > 0 Then
+            suspendRedraws = True
+        Else
+            suspendRedraws = False
+        End If
+        
+    Else
+        suspendRedraws = False
+    End If
+    
     'With the most recent relevant diff file identified, we can now launch the undo loading routine for that diff.  It will
     ' automatically apply any changes against the relevant parts of the current image.
-    LoadUndo generateUndoFilename(nearestDiffIndex), undoStack(nearestDiffIndex).undoType, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID
+    LoadUndo generateUndoFilename(nearestDiffIndex), undoStack(nearestDiffIndex).undoType, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID, suspendRedraws
+    
+    
+    'If redraws have been suspended, we know that we need to reconstruct all layers in the image against their most recent diff.
+    If suspendRedraws Then
+    
+        Dim nearestLayerDiffDIB As Long, nearestLayerDiffHeader As Long, curLayerID As Long
+    
+        'Loop through each layer in the image, finding nearest diffs as we go
+        Dim i As Long
+        For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+        
+            'Grab the current layer ID (all undo functions operate on layer ID, not index, as index may change unexpectedly)
+            curLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
+        
+            'Start by reconstructing the layer DIB
+            nearestLayerDiffDIB = findNearestDiffIndex(undoNum, UNDO_LAYER, curLayerID)
+            
+            'If the nearest diff for this layer is *not* the same as the nearest diff for the full image, apply this diff
+            ' to the layer in question.
+            If (nearestLayerDiffDIB > nearestDiffIndex) Then
+                LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER, curLayerID, suspendRedraws
+            End If
+            
+            'Next, we must reconstruct the layer header, as it too may have changed (for example, if the user moved the layer
+            ' since the last action)
+            nearestLayerDiffHeader = findNearestDiffIndex(undoNum, UNDO_LAYERHEADER, curLayerID)
+            
+            'If a more recent layer header was found, apply it now.
+            If (nearestLayerDiffHeader > nearestLayerDiffDIB) Then
+                LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
+            End If
+            
+        Next i
+        
+        'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
+        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "LoadUndo + full layer reconstruction"
+    
+    End If
+    
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     debugUndo "user clicked Undo"
@@ -265,7 +324,7 @@ End Sub
 
 'Given an undo Index, find the nearest Diff file that contains the information we need to reconstruct the image's state
 ' at that point in time.
-Private Function findNearestDiffIndex(ByVal undoIndex As Long) As Long
+Private Function findNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeCheck As PD_UNDO_TYPE, Optional ByVal relevantLayerID As Long = -1) As Long
 
     'PD Undo files attempt to save only the minimum amount of data needed to reconstruct an image at any given point in time.
     ' I call these files "diffs" because they contain only the image information that has changed as a result of that
@@ -274,11 +333,7 @@ Private Function findNearestDiffIndex(ByVal undoIndex As Long) As Long
     '
     'No matter what, the loop below will always terminate at position 0 if no available diffs are found.  This is why we must
     ' always create a full image copy after the image is loaded, as it serves as our baseline for all subsequent diffs.
-    
-    'Start by noting the Undo type of the undoIndex we are attempting to undo
-    Dim undoTypeCheck As PD_UNDO_TYPE
-    undoTypeCheck = undoStack(undoIndex).undoType
-    
+        
     Debug.Print "Searching for undo type: " & undoTypeCheck
     
     Dim i As Long
@@ -302,7 +357,15 @@ Private Function findNearestDiffIndex(ByVal undoIndex As Long) As Long
                     findNearestDiffIndex = i
                     Exit For
                 End If
-        
+            
+            'UNDO_LAYER contains relevant diff information for matching UNDO_LAYER and UNDO_LAYER_HEADER actions,
+            ' but *only if the layer ID matches the requested one!*
+            Case UNDO_LAYER, UNDO_LAYERHEADER
+                If ((undoTypeCheck = UNDO_LAYER) Or (undoTypeCheck = UNDO_LAYERHEADER)) And (relevantLayerID = undoStack(i).undoLayerID) Then
+                    findNearestDiffIndex = i
+                    Exit For
+                End If
+            
             'UNDO_SELECTION contains relevant diff information for selections only
             Case UNDO_SELECTION
                 If (undoTypeCheck = UNDO_SELECTION) Then
@@ -421,6 +484,9 @@ Public Sub clearUndos()
         
         'Check image data first...
         If FileExist(generateUndoFilename(i)) Then Kill generateUndoFilename(i)
+        
+        '...followed by layer data
+        If FileExist(generateUndoFilename(i) & ".layer") Then Kill generateUndoFilename(i) & ".layer"
         
         '...followed by selection data
         If FileExist(generateUndoFilename(i) & ".selection") Then Kill generateUndoFilename(i) & ".selection"
