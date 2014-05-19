@@ -125,28 +125,9 @@ End Function
 '     be helpful for automatically selecting the tool associated with a given Undo/Redo point.
 Public Sub createUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1)
     
-    'Depending on the type of process being applied, save out image or selection data to file.
-    Select Case processType
-    
-        'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
-        Case UNDO_EVERYTHING
-            Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
-            parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
-            
-        'A full copy of the pdImage stack
-        Case UNDO_IMAGE
-            Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
-        
-        'Selection data only
-        Case UNDO_SELECTION
-            parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
-        
-        'Anything else (for now, default to the full pdImage stack until all other undo types are covered!)
-        Case Else
-            Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
-            
-        
-    End Select
+    'Forward a save request to the actual saveUndoData function.  It handles the messy business of actually writing the correct
+    ' filetypes (which it determines based on the current processType and targetLayer)
+    Saving.saveUndoData parentPDImage, getCurrentUndoFilename(), processType, targetLayerID
     
     'Previously, we notified the user when undo/redo data was saved.  This was stupid, but it is sometimes helpful to
     ' display that info in the debug window.

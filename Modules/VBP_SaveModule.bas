@@ -664,8 +664,9 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     Dim i As Long
     For i = 0 To srcPDImage.getNumOfLayers - 1
     
-        'Create a new node for this layer
-        nodeIndex = pdiWriter.addNode("pdLayer " & i, i, 1)
+        'Create a new node for this layer.  Note that the index is stored directly in the node name ("pdLayer (n)")
+        ' while the layerID is stored as the nodeID.
+        nodeIndex = pdiWriter.addNode("pdLayer " & i, srcPDImage.getLayerByIndex(i).getLayerID, 1)
         
         'Retrieve the layer header and add it to the header section of this node
         layerXMLHeader = srcPDImage.getLayerByIndex(i).getLayerHeaderAsXML(True)
@@ -687,6 +688,64 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
 SavePDIError:
 
     SavePhotoDemonImage = False
+    
+End Function
+
+'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal-only (it is used by the
+' Undo/Redo engine only), it is not as fleshed-out as the actual SavePhotoDemonImage function.
+Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True) As Boolean
+    
+    On Error GoTo SavePDILayerError
+    
+    Dim sFileType As String
+    sFileType = "PDI"
+    
+    If Not suppressMessages Then Message "Saving %1 layer...", sFileType
+    
+    'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
+    Dim pdiWriter As pdPackager
+    Set pdiWriter = New pdPackager
+    If g_ZLibEnabled Then pdiWriter.init_ZLib g_PluginPath & "zlibwapi.dll"
+    
+    'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
+    ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
+    pdiWriter.prepareNewPackage 1, PD_LAYER_IDENTIFIER
+    
+    'We will use a temporary array for two main purposes: storing the byte equivalent of various XML strings returned by
+    ' PhotoDemon objects, and for storing temporary copies of byte arrays of binary DIB data.
+    Dim tmpData() As Byte
+    
+    'The first (and only) node we'll add is the specific pdLayer header and DIB data.
+    ' To help us reconstruct the node later, we also note the current layer's ID (stored as the node ID)
+    '  and the current layer's index (stored as the node type).
+    
+    'Start by creating the node entry; if successful, this will return the index of the node, which we can use
+    ' to supply the actual header and DIB data.
+    Dim nodeIndex As Long
+    nodeIndex = pdiWriter.addNode("pdLayer", srcLayer.getLayerID, pdImages(g_CurrentImage).getLayerIndexFromID(srcLayer.getLayerID))
+    
+    'Retrieve the layer header (in XML format), then write the XML stream to the pdPackage instance
+    Dim dataString As String
+    dataString = srcLayer.getLayerHeaderAsXML(True)
+    
+    pdiWriter.addNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
+    
+    'Retrieve the layer DIB (as a byte array), then copy the array into the pdPackage instance
+    Dim layerDIBCopy() As Byte
+    
+    srcLayer.layerDIB.copyImageBytesIntoStream layerDIBCopy
+    pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, compressLayers, , embedChecksums
+    
+    'That's all there is to it!  Write the completed pdPackage out to file.
+    SavePhotoDemonLayer = pdiWriter.writePackageToFile(PDIPath)
+    
+    If Not suppressMessages Then Message "%1 save complete.", sFileType
+    
+    Exit Function
+    
+SavePDILayerError:
+
+    SavePhotoDemonLayer = False
     
 End Function
 
@@ -2262,3 +2321,34 @@ Public Sub fillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
 
 End Sub
 
+'Save a new Undo/Redo entry to file.  This function is only called by the createUndoData function in the pdUndo class.
+' For the most part, this function simply wraps other save functions; however, certain odd types of Undo diff files (e.g. layer headers)
+' may be directly processed and saved by this function.
+'
+'Note that this function interacts closely with the matching LoadUndo function in the Loading module.  Any novel Undo diff types added
+' here must also be mirrored there.
+Public Function saveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1) As Boolean
+
+    'What kind of Undo data we save is determined by the current processType.
+    Select Case processType
+    
+        'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
+        Case UNDO_EVERYTHING
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False
+            srcPDImage.mainSelection.writeSelectionToFile dstUndoFilename & ".selection"
+            
+        'A full copy of the pdImage stack
+        Case UNDO_IMAGE
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False
+        
+        'Selection data only
+        Case UNDO_SELECTION
+            srcPDImage.mainSelection.writeSelectionToFile dstUndoFilename & ".selection"
+        
+        'Anything else (for now, default to the full pdImage stack until all other undo types are covered!)
+        Case Else
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False
+        
+    End Select
+    
+End Function
