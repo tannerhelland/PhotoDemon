@@ -11,6 +11,9 @@ Public Const PD_EXPERIMENTAL_MODE As Boolean = False
 'Identifier for pdImage data saved to file.  (ASCII characters "PDID", as hex, listed here in little-endian notation.)
 Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450
 
+'Identifier for pdLayer data saved to file.  (ASCII characters "PDIL", as hex, listed here in little-endian notation.)
+Public Const PD_LAYER_IDENTIFIER As Long = &H4C494450
+
 'Magic number for errors that arise during pdPackage interactions
 Public Const PDP_GENERIC_ERROR As Long = 9001
 
