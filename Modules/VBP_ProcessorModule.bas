@@ -157,7 +157,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 'If the last selection Undo param string does not match the current selection param string, the user has
                 ' modified the selection in some way since the last Undo was created.  Create a new entry now.
                 If StrComp(lastSelParamString, pdImages(g_CurrentImage).mainSelection.getSelectionParamString, vbTextCompare) <> 0 Then
-                    pdImages(g_CurrentImage).undoManager.createUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, -1
+                    pdImages(g_CurrentImage).undoManager.createUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, , -1
                 End If
             
             End If
@@ -1341,7 +1341,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so we ignore it
         '     during macro playback)
         If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not showDialog) And recordAction Then
-            pdImages(g_CurrentImage).undoManager.createUndoData processID, processParameters, createUndo, relevantTool
+            pdImages(g_CurrentImage).undoManager.createUndoData processID, processParameters, createUndo, pdImages(g_CurrentImage).getActiveLayerID, relevantTool
         End If
     
     End If

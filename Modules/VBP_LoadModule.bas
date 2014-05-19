@@ -1450,7 +1450,7 @@ End Function
 'Load data from a PD-generated Undo file.  This function is fairly complex, on account of PD's new diff-based Undo engine.
 ' Note that two types of Undo data must be specified: the Undo type of the file requested (because this function has no
 ' knowledge of that, by design), and what type of Undo data the caller wants extracted from the file.
-Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVal undoTypeOfAction As Long)
+Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVal undoTypeOfAction As Long, Optional ByVal targetLayerID As Long = -1)
 
     'Debug.Print "Loading undo data from " & undoFile
     

@@ -85,6 +85,7 @@ Private Type undoEntry
     processID As String             'Name of the associated action (e.g. "Gaussian blur")
     processParamString As String    'Processor string supplied to the action
     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
+    undoLayerID As Long             'If the undoType is UNDO_LAYER or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
     relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
 End Type
 
@@ -122,7 +123,7 @@ End Function
 '     it determines what type of Undo data is saved (e.g. full layers stack, single layer, selection, etc).
 '  3) optionally, the tool associated with this action.  This value is not currently used, but in the future it could
 '     be helpful for automatically selecting the tool associated with a given Undo/Redo point.
-Public Sub createUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal curTool As Long = -1)
+Public Sub createUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1)
     
     'Depending on the type of process being applied, save out image or selection data to file.
     Select Case processType
@@ -157,6 +158,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
         .processID = processID
         .processParamString = pParamString
         .undoType = processType
+        .undoLayerID = targetLayerID
         .relevantTool = curTool
     End With
         
@@ -266,7 +268,7 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     
     'With the most recent relevant diff file identified, we can now launch the undo loading routine for that diff.  It will
     ' automatically apply any changes against the relevant parts of the current image.
-    LoadUndo generateUndoFilename(nearestDiffIndex), undoStack(nearestDiffIndex).undoType, undoStack(undoNum).undoType
+    LoadUndo generateUndoFilename(nearestDiffIndex), undoStack(nearestDiffIndex).undoType, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     debugUndo "user clicked Undo"
@@ -372,7 +374,7 @@ Public Sub RestoreRedoData()
     'The great thing about Redo is that it chronogically moves in the same direction as PD's Undo diff files.  So unlike
     ' Undo - which requires us to traverse the undo timeline in reverse, looking for a relevant diff file - we can simply
     ' apply the next valid diff in line, no extra work required!
-    LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType, getUndoProcessType
+    LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType, getUndoProcessType, undoStack(undoNum - 1).undoLayerID
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     debugUndo "user clicked Redo"
@@ -591,6 +593,7 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
         xmlEngine.writeTag "ProcessID", undoStack(i).processID
         xmlEngine.writeTag "ProcessParameters", undoStack(i).processParamString
         xmlEngine.writeTag "UndoType", undoStack(i).undoType
+        xmlEngine.writeTag "RelevantLayerID", undoStack(i).undoLayerID
         xmlEngine.writeTag "RelevantTool", undoStack(i).relevantTool
         
         'Close this undo entry
