@@ -1204,14 +1204,21 @@ Public Function buildParams(ParamArray allParams() As Variant) As String
 
     If Not IsMissing(allParams) Then
     
+        Dim tmpString As String
+        
         Dim i As Long
         For i = LBound(allParams) To UBound(allParams)
-            If Len(Trim$(allParams(i))) > 0 Then
-                buildParams = buildParams & Str(allParams(i))
+        
+            tmpString = Trim$(Str(allParams(i)))
+        
+            If Len(tmpString) > 0 Then
+                buildParams = buildParams & tmpString
             Else
                 buildParams = buildParams & " "
             End If
+            
             If i < UBound(allParams) Then buildParams = buildParams & "|"
+            
         Next i
     
     End If

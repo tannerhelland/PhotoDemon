@@ -180,7 +180,7 @@ End Sub
 
 'This special command can be used to revert the image to its last saved state.  For images that have never been
 ' saved (e.g. those pasted from the clipboard, etc), it will undo to the image's original state.
-' TODO: as of May '14, I still need to make sure this works with the recent Undo/Redo overhaul
+' TODO: as of May '14, I still need to make this work with the recent Undo/Redo overhaul.
 Public Sub revertToLastSavedState()
     If undoNumAtLastSave > 0 Then
         restoreUndoData undoNumAtLastSave
@@ -252,8 +252,12 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     ' layer stack is being recreated from scratch), we have to re-apply all diffs in two steps: first, we have to reconstruct the
     ' layer stack.  Then, we have to update each layer against its most recent diff patch.  To prevent the screen from flickering
     ' like crazy while we do all this background processing, we suspend redraws until our work is complete.
+    '
+    'Similarly, if we are undoing a single layer action (UNDO_LAYER), we may need to apply an optional UNDO_LAYERHEADER diff after
+    ' the fact, to make sure the layer's header is up-to-date against any header-only changes that occurred since the latest full
+    ' DIB write.
     Dim suspendRedraws As Boolean
-    If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or ((undoStack(undoNum).undoType = UNDO_IMAGEHEADER)) Then
+    If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or ((undoStack(undoNum).undoType = UNDO_IMAGEHEADER)) Or (undoStack(undoNum).undoType = UNDO_LAYER) Then
         
         'If we are reverting the image to its original state, we do not need to process any extra layer data, as we already know
         ' the the source file is accurate.
@@ -271,38 +275,61 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     ' automatically apply any changes against the relevant parts of the current image.
     LoadUndo generateUndoFilename(nearestDiffIndex), undoStack(nearestDiffIndex).undoType, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID, suspendRedraws
     
-    
-    'If redraws have been suspended, we know that we need to reconstruct all layers in the image against their most recent diff.
+    'If redraws have been suspended, we know that we need to reconstruct one or more layers in the image against their
+    ' most recent diff.
     If suspendRedraws Then
     
         Dim nearestLayerDiffDIB As Long, nearestLayerDiffHeader As Long, curLayerID As Long
-    
-        'Loop through each layer in the image, finding nearest diffs as we go
         Dim i As Long
-        For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+        
+        'The amount of diffs we need to reconstruct varies by Undo type.
+        
+        'If this is a full image Undo, all layers need to be checked against their most recent diffs.
+        If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or ((undoStack(undoNum).undoType = UNDO_IMAGEHEADER)) Then
+        
+            'Loop through each layer in the image, finding nearest diffs as we go
+            For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+            
+                'Grab the current layer ID (all undo functions operate on layer ID, not index, as index may change unexpectedly)
+                curLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
+            
+                'Start by reconstructing the layer DIB
+                nearestLayerDiffDIB = findNearestDiffIndex(undoNum, UNDO_LAYER, curLayerID)
+                
+                'If the nearest diff for this layer is *not* the same as the nearest diff for the full image, apply this diff
+                ' to the layer in question.
+                If (nearestLayerDiffDIB > nearestDiffIndex) Then
+                    LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER, curLayerID, suspendRedraws
+                End If
+                
+                'Next, we must reconstruct the layer header, as it too may have changed (for example, if the user moved the layer
+                ' since the last action)
+                nearestLayerDiffHeader = findNearestDiffIndex(undoNum, UNDO_LAYERHEADER, curLayerID)
+                
+                'If a more recent layer header was found, apply it now.
+                If (nearestLayerDiffHeader > nearestLayerDiffDIB) Then
+                    LoadUndo generateUndoFilename(nearestLayerDiffHeader), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
+                End If
+                
+            Next i
+        
+        'If this is a just a layer Undo, we simply need to verify the layer header against any diffs more recent than the last
+        ' full DIB reconstruction for this layer.
+        ElseIf (undoStack(undoNum).undoType = UNDO_LAYER) Then
         
             'Grab the current layer ID (all undo functions operate on layer ID, not index, as index may change unexpectedly)
-            curLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
-        
-            'Start by reconstructing the layer DIB
-            nearestLayerDiffDIB = findNearestDiffIndex(undoNum, UNDO_LAYER, curLayerID)
+            curLayerID = undoStack(undoNum).undoLayerID
             
-            'If the nearest diff for this layer is *not* the same as the nearest diff for the full image, apply this diff
-            ' to the layer in question.
-            If (nearestLayerDiffDIB > nearestDiffIndex) Then
-                LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER, curLayerID, suspendRedraws
-            End If
-            
-            'Next, we must reconstruct the layer header, as it too may have changed (for example, if the user moved the layer
-            ' since the last action)
+            'Next, look for the most recent layer header diff, as it may have changed independent of the layer DIB
+            ' (for example, if the user moves a layer after painting on it)
             nearestLayerDiffHeader = findNearestDiffIndex(undoNum, UNDO_LAYERHEADER, curLayerID)
-            
+                
             'If a more recent layer header was found, apply it now.
             If (nearestLayerDiffHeader > nearestLayerDiffDIB) Then
-                LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
+                LoadUndo generateUndoFilename(nearestLayerDiffHeader), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
             End If
-            
-        Next i
+        
+        End If
         
         'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
         PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "LoadUndo + full layer reconstruction"
@@ -360,8 +387,16 @@ Private Function findNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
             
             'UNDO_LAYER contains relevant diff information for matching UNDO_LAYER and UNDO_LAYER_HEADER actions,
             ' but *only if the layer ID matches the requested one!*
-            Case UNDO_LAYER, UNDO_LAYERHEADER
+            Case UNDO_LAYER
                 If ((undoTypeCheck = UNDO_LAYER) Or (undoTypeCheck = UNDO_LAYERHEADER)) And (relevantLayerID = undoStack(i).undoLayerID) Then
+                    findNearestDiffIndex = i
+                    Exit For
+                End If
+                
+            'UNDO_LAYERHEADER contains relevant diff information for matching UNDO_LAYER_HEADER actions,
+            ' but *only if the layer ID matches the requested one!*
+            Case UNDO_LAYERHEADER
+                If (undoTypeCheck = UNDO_LAYERHEADER) And (relevantLayerID = undoStack(i).undoLayerID) Then
                     findNearestDiffIndex = i
                     Exit For
                 End If
@@ -373,7 +408,7 @@ Private Function findNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
                     Exit For
                 End If
                 
-            'This CaseElse statement will not be necessary when we have implemented all Diff types.  Until that happens,
+            'This Case Else statement will not be necessary when we have implemented all Diff types.  Until that happens,
             ' however, we can treat it the same as UNDO_IMAGE.
             Case Else
                 If (undoTypeCheck <> UNDO_SELECTION) Then

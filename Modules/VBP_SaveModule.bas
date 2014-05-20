@@ -693,7 +693,7 @@ End Function
 
 'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal (it is used by the
 ' Undo/Redo engine only), it is not as fleshed-out as the actual SavePhotoDemonImage function.
-Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True) As Boolean
+Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False) As Boolean
     
     On Error GoTo SavePDLayerError
     
@@ -730,11 +730,15 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     
     pdiWriter.addNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
     
-    'Retrieve the layer DIB (as a byte array), then copy the array into the pdPackage instance
-    Dim layerDIBCopy() As Byte
+    'If this is not a header-only request, retrieve the layer DIB (as a byte array), then copy the array
+    ' into the pdPackage instance
+    If Not writeHeaderOnlyFile Then
     
-    srcLayer.layerDIB.copyImageBytesIntoStream layerDIBCopy
-    pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, compressLayers, , embedChecksums
+        Dim layerDIBCopy() As Byte
+        srcLayer.layerDIB.copyImageBytesIntoStream layerDIBCopy
+        pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, compressLayers, , embedChecksums
+        
+    End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
     SavePhotoDemonLayer = pdiWriter.writePackageToFile(PDIPath)
@@ -2341,15 +2345,18 @@ Public Function saveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         Case UNDO_IMAGE
             Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False
         
+        'Layer data only (full layer header + full layer DIB).
+        Case UNDO_LAYER
+            Saving.SavePhotoDemonLayer srcPDImage.getLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, False, False, False
+        
+        'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
+        Case UNDO_LAYERHEADER
+            Saving.SavePhotoDemonLayer srcPDImage.getLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, False, False, True
+            
         'Selection data only
         Case UNDO_SELECTION
             srcPDImage.mainSelection.writeSelectionToFile dstUndoFilename & ".selection"
-        
-        'Layer data only (header + DIB).  Layer header's have been temporarily added to this function, but they will
-        ' shortly receive their own entry.
-        Case UNDO_LAYER, UNDO_LAYERHEADER
-            Saving.SavePhotoDemonLayer srcPDImage.getLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, False, False
-        
+            
         'Anything else (for now, default to the full pdImage stack until all other undo types are covered!)
         Case Else
             Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False

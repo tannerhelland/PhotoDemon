@@ -358,10 +358,10 @@ End Function
 
 'The sister function to "getLayerHeaderAsXML" above, this function will initialize a layer header from an XML-format string.
 '
-'Note that this function will create a blank DIB for the layer DIB, using the dimensions and color depth stored in the
-' XML string.  However, it will obviously NOT apply any stored image data.  That must be handled separately, via binary
-' data interactions.
-Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1) As Boolean
+'Note that if the optional createNonDestructively parameter is FALSE (as it is by default), this function will create a
+' blank DIB for the layer DIB, using the dimensions and color depth stored in the XML string.  However, it will obviously
+' NOT apply any stored image data.  That must be handled separately, via binary data interactions.
+Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
 
     'Prepare an XML engine, which greatly simplifies the process of parsing XML data
     Dim xmlEngine As pdXML
@@ -398,10 +398,18 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
         'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
         ' using the DIB header supplied in the XML, but we're *not* going to fill the DIB!  An external function will
         ' handle that, because the actual DIB bits are stored in binary format.
-        Set layerDIB = New pdDIB
-        With xmlEngine
-            layerDIB.createBlank .getUniqueTag_Long("DIB_Width", 1), .getUniqueTag_Long("DIB_Height", 1), .getUniqueTag_Long("DIB_ColorDepth", 32)
-        End With
+        '
+        'Note that this behavior can be overridden by setting the optional createNonDestructively parameter to TRUE.
+        ' This is used by the Undo/Redo engine to re-load an image's header data, without actually overwriting the
+        ' current layer DIB.
+        If Not createNonDestructively Then
+        
+            Set layerDIB = New pdDIB
+            With xmlEngine
+                layerDIB.createBlank .getUniqueTag_Long("DIB_Width", 1), .getUniqueTag_Long("DIB_Height", 1), .getUniqueTag_Long("DIB_ColorDepth", 32)
+            End With
+            
+        End If
         
         CreateNewImageLayerFromXML = True
     

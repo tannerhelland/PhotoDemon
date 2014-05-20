@@ -127,8 +127,11 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
 
 End Sub
 
-'The nav tool uses this function to move and/or resize the current layer
-Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas, Optional ByVal isShiftDown As Boolean = False)
+'The nav tool uses this function to move and/or resize the current layer.
+' If this action occurs during a Mouse_Up event, the finalizeTransform parameter should be set to TRUE.
+' This will instruct the function to forward the request to PD's central processor, so it can generate
+' Undo/Redo data, be recorded as part of macros, etc.
+Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas, Optional ByVal isShiftDown As Boolean = False, Optional ByVal finalizeTransform As Boolean = False)
     
     'Prevent the canvas from redrawing itself until our movement calculations are complete.
     ' (This prevents juddery movement.)
@@ -229,8 +232,35 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
     'Reinstate canvas redraws
     srcCanvas.setRedrawSuspension False
     
-    'Manually request a canvas redraw
-    ScrollViewport srcImage, srcCanvas
-
+    'If this is the final step of a transform (e.g. if the user has just released the mouse), forward this
+    ' request to PD's central processor, so an Undo/Redo entry can be generated.
+    If finalizeTransform Then
+    
+        'As a convenience to the user, layer resize and move operations are listed separately.
+        Select Case curPOI
+        
+            'Resize transformations.  (Note that resize transformations include some layer movement as well.)
+            Case 0, 1, 2, 3
+            
+                With srcImage.getActiveLayer
+                    Process "Resize layer (on-canvas)", False, buildParams(.getLayerOffsetX, .getLayerOffsetY, .getLayerCanvasXModifier, .getLayerCanvasYModifier), UNDO_LAYERHEADER
+                End With
+            
+            'Move-only transformations
+            Case 4
+                
+                With srcImage.getActiveLayer
+                    Process "Move layer", False, buildParams(.getLayerOffsetX, .getLayerOffsetY), UNDO_LAYERHEADER
+                End With
+        
+        End Select
+    
+    Else
+    
+        'Manually request a canvas redraw
+        ScrollViewport srcImage, srcCanvas
+    
+    End If
+    
 End Sub
 

@@ -528,6 +528,46 @@ Public Sub resetLayerSize(ByVal srcLayerIndex As Long)
 
 End Sub
 
+'Resize a layer non-destructively, e.g. by only changing its position and on-canvas x/y modifiers
+Public Sub resizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
+
+    'Create a parameter parser to help us interpret the passed param string
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString resizeParams
+    
+    'Apply the passed parameters to the specified layer
+    With pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex)
+        .setLayerOffsetX cParams.GetDouble(1)
+        .setLayerOffsetY cParams.GetDouble(2)
+        .setLayerCanvasXModifier cParams.GetDouble(3)
+        .setLayerCanvasYModifier cParams.GetDouble(4)
+    End With
+    
+    'Redraw the viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
+'Move a layer to a new x/y position on the canvas
+Public Sub moveLayerOnCanvas(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
+
+    'Create a parameter parser to help us interpret the passed param string
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString resizeParams
+    
+    'Apply the passed parameters to the specified layer
+    With pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex)
+        .setLayerOffsetX cParams.GetDouble(1)
+        .setLayerOffsetY cParams.GetDouble(2)
+    End With
+    
+    'Redraw the viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
 'Given a layer, populate a rect with its coordinates (relative to the main image coordinates, always)
 Public Sub fillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT, Optional ByVal useCanvasModifiers As Boolean = False)
 

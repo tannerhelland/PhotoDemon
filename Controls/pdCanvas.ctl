@@ -1053,6 +1053,12 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
                 
             'Move stuff around
             Case NAV_MOVE
+            
+                'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation,
+                ' among other things.
+                If (hasMouseMoved > 0) Then transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                
+                'Reset the generic tool mouse tracking function
                 Tool_Support.terminateGenericToolTracking
                 
             'Selection tools
