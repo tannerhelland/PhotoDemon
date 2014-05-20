@@ -170,7 +170,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     redoState = False
     
     'If this action changed pixel data, mark the image as NOT being saved in its current state.
-    If (processType <> UNDO_NOTHING) And (processType <> UNDO_SELECTION) Then parentPDImage.setSaveState False
+    If (processType <> UNDO_NOTHING) And (processType <> UNDO_SELECTION) And (undoNum - 1 > 0) Then parentPDImage.setSaveState False
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.  We always create a copy of the Undo
@@ -188,10 +188,10 @@ End Sub
 ' saved (e.g. those pasted from the clipboard, etc), it will undo to the image's original state.
 ' TODO: as of May '14, I still need to make this work with the recent Undo/Redo overhaul.
 Public Sub revertToLastSavedState()
-    If undoNumAtLastSave > 0 Then
+    If undoNumAtLastSave > 1 Then
         restoreUndoData undoNumAtLastSave
     Else
-        restoreUndoData 0
+        restoreUndoData 1
     End If
 End Sub
 
@@ -207,7 +207,7 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
         
     'If the user supplied an undoPosition, apply it now.  Otherwise, decrement it from its current position.
     If undoPosition <> -1 Then
-        undoNum = undoPosition
+        undoNum = undoPosition - 1
     Else
         undoNum = undoNum - 1
         If undoNum < 0 Then undoNum = 0
@@ -228,7 +228,7 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     'If this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
     ' some other source), note that the image has now BEEN SAVED (because it has not changed at all from its original
     ' appearance).
-    If undoNum = undoNumAtLastSave Then
+    If undoNum - 1 = undoNumAtLastSave Then
     
         'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
         If Len(parentPDImage.locationOnDisk) > 0 Then parentPDImage.setSaveState True Else parentPDImage.setSaveState False
