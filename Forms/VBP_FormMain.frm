@@ -1422,11 +1422,11 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Merge up
         Case 3
-            Process "Merge layer up", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+            Process "Merge layer up", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
         
         'Merge down
         Case 4
-            Process "Merge layer down", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+            Process "Merge layer down", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
         
         'Order (top-level)
         Case 5

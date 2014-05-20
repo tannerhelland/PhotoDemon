@@ -1406,8 +1406,8 @@ End Function
 
 'Load a single layer from a standard PDI file.
 ' At present, this function is only used internally by the Undo/Redo engine.  If the nearest diff to a layer-specific change is a
-' full pdImage stack, this function is used to extract only the relevant layer from the PDI file.
-Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer As pdLayer, ByVal targetLayerID As Long) As Boolean
+' full pdImage stack, this function is used to extract only the relevant layer (or layer header) from the PDI file.
+Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer As pdLayer, ByVal targetLayerID As Long, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
     
     On Error GoTo LoadLayerFromPDIFail
     
@@ -1436,8 +1436,10 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
             'Convert the received bytes into a string
             retString = StrConv(retBytes, vbUnicode)
             
-            'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-            If Not dstLayer.CreateNewImageLayerFromXML(retString) Then
+            'Pass the string to the target layer, which will read the XML data and initialize itself accordingly.
+            ' Note that we also pass along the loadHeaderOnly flag, which will instruct the layer to erase its current
+            ' DIB as necessary.
+            If Not dstLayer.CreateNewImageLayerFromXML(retString, , loadHeaderOnly) Then
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
             End If
         
@@ -1446,15 +1448,19 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
             Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
         End If
         
-        'Repeat the above steps, but for the layer DIB this time
-        If pdiReader.getNodeDataByID(targetLayerID, False, retBytes, True) Then
+        'If this is not a header-only operation, repeat the above steps, but for the layer DIB this time
+        If Not loadHeaderOnly Then
         
-            'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
-            dstLayer.layerDIB.copyStreamOverImageArray retBytes
-        
-        'Bytes could not be read, or alternately, checksums didn't match for the first node.
-        Else
-            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+            If pdiReader.getNodeDataByID(targetLayerID, False, retBytes, True) Then
+            
+                'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
+                dstLayer.layerDIB.copyStreamOverImageArray retBytes
+            
+            'Bytes could not be read, or alternately, checksums didn't match for the first node.
+            Else
+                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+            End If
+                
         End If
         
         'That's all there is to it!  Mark the load as successful and carry on.
@@ -1491,7 +1497,7 @@ End Function
 'Load a single PhotoDemon layer from a standalone pdLayer file (which is really just a modified PDI file).
 ' At present, this function is only used internally by the Undo/Redo engine.  Its counterpart is SavePhotoDemonLayer in
 ' the Saving module; any changes there should be mirrored here.
-Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As pdLayer) As Boolean
+Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As pdLayer, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
     
     On Error GoTo LoadPDLayerFail
     
@@ -1516,8 +1522,10 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
             'Convert the received bytes into a string
             retString = StrConv(retBytes, vbUnicode)
             
-            'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-            dstLayer.CreateNewImageLayerFromXML retString
+            'Pass the string to the target layer, which will read the XML data and initialize itself accordingly.
+            ' Note that we pass the loadHeaderOnly request to this function; if this is a header-only load, the target
+            ' layer must retain its current DIB.  This functionality is used by PD's Undo/Redo engine.
+            dstLayer.CreateNewImageLayerFromXML retString, , loadHeaderOnly
             
         'Bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently disabled
         ' for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
@@ -1525,16 +1533,20 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
             Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
         End If
         
-        'Now repeat the steps above, but for the layer's DIB data
-        If pdiReader.getNodeDataByIndex(0, False, retBytes, True) Then
+        'Unless a header-only load was requested, we will now repeat the steps above, but for the layer's DIB data
+        If Not loadHeaderOnly Then
         
-            'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
-            dstLayer.layerDIB.copyStreamOverImageArray retBytes
+            If pdiReader.getNodeDataByIndex(0, False, retBytes, True) Then
             
-        'Bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently disabled
-        ' for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
-        Else
-            Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+                'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
+                dstLayer.layerDIB.copyStreamOverImageArray retBytes
+                
+            'Bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently disabled
+            ' for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
+            Else
+                Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
+            End If
+            
         End If
         
         'That's all there is to it!  Mark the load as successful and carry on.
@@ -1648,36 +1660,57 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
             ' Unfortunately, subsequent changes to the pdImage header (or individual layers/layer headers) still need
             ' to be manually reconstructed, because they may have changed between the last full pdImage write and the
             ' current image state.  This step is handled by the Undo/Redo engine, which will call this LoadUndo function
-            ' as many times as necessary to reconstruct the full image at some later point in time.
-            
-        'UNDO_SELECTION: a full copy of the saved selection data is wanted
-        '                 Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_SELECTION, we don't have to do
-        '                 any special processing.
-        Case UNDO_SELECTION
-            pdImages(g_CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
-            selectionDataLoaded = True
+            ' as many times as necessary to reconstruct each individual layer against its most recent diff.
         
         'UNDO_LAYER: a full copy of the saved layer data at this position.
         '             Because the underlying file data can be different types (layer data can be loaded from standalone layer saves,
         '             or from a full pdImage stack save), we must check the undo type of the saved file, and modify our load
         '             behavior accordingly.
-        Case UNDO_LAYER, UNDO_LAYERHEADER
+        Case UNDO_LAYER
             
             'Layer data can appear in multiple types of Undo files
             Select Case undoTypeOfFile
             
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer with the data from the file.
                 Case UNDO_LAYER
-                    Loading.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).getLayerByID(targetLayerID)
+                    Loading.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).getLayerByID(targetLayerID), False
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
                 Case UNDO_EVERYTHING, UNDO_IMAGE
-                    Loading.LoadSingleLayerFromPDI undoFile, pdImages(g_CurrentImage).getLayerByID(targetLayerID), targetLayerID
+                    Loading.LoadSingleLayerFromPDI undoFile, pdImages(g_CurrentImage).getLayerByID(targetLayerID), targetLayerID, False
                 
             End Select
         
-        'For now, any unhandled selection types result in a request for the full pdImage stack.  This line can be removed when
-        ' all Undo types have had their own custom handling implemented.
+        'UNDO_LAYERHEADER: a full copy of the saved layer header data at this position.  Layer DIB data is ignored.
+        '             Because the underlying file data can be many different types (layer data header can be loaded from
+        '             standalone layer header saves, or full layer saves, or even a full pdImage stack), we must check the
+        '             undo type of the saved file, and modify our load behavior accordingly.
+        Case UNDO_LAYERHEADER
+            
+            'Layer header data can appear in multiple types of Undo files
+            Select Case undoTypeOfFile
+            
+                'The underlying save file is a standalone layer entry.  Simply overwrite the target layer header with the
+                ' header data from this file.
+                Case UNDO_LAYER, UNDO_LAYERHEADER
+                    Loading.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).getLayerByID(targetLayerID), True
+            
+                'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
+                Case UNDO_EVERYTHING, UNDO_IMAGE
+                    Loading.LoadSingleLayerFromPDI undoFile, pdImages(g_CurrentImage).getLayerByID(targetLayerID), targetLayerID, True
+                
+            End Select
+        
+        'UNDO_SELECTION: a full copy of the saved selection data is wanted
+        '                 Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_SELECTION, we don't have to do
+        '                 any special processing.
+        Case UNDO_SELECTION
+            pdImages(g_CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
+            selectionDataLoaded = True
+            
+            
+        'For now, any unhandled Undo types result in a request for the full pdImage stack.  This line can be removed when
+        ' all Undo types finally have their own custom handling implemented.
         Case Else
             Loading.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             

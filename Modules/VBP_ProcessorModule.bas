@@ -83,8 +83,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'Disable the main form to prevent the user from clicking additional menus or tools while this action is processing
     FormMain.Enabled = False
     
-    'If we are applying an action to the image (e.g. not just showing a dialog), display a busy cursor.
-    If Not showDialog Then Screen.MousePointer = vbHourglass
+    'If we are applying an action to the image (e.g. not just showing a dialog), and the action is likely to take awhile
+    ' (e.g. it is processing an image, and not just modifying a layer header) display a busy cursor.
+    If (Not showDialog) And (createUndo <> UNDO_NOTHING) And (createUndo <> UNDO_LAYERHEADER) Then Screen.MousePointer = vbHourglass
         
     'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data from the
     ' LastEffectsCall object; this simple approach lets us repeat the last action effortlessly!
@@ -550,6 +551,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Merge visible layers
         Case "Merge visible layers"
             Layer_Handler.mergeVisibleLayers
+            
+        'On-canvas layer modifications (moving, non-destructive resizing, etc)
+        Case "Resize layer (on-canvas)"
+            Layer_Handler.resizeLayerNonDestructive pdImages(g_CurrentImage).getActiveLayerIndex, cParams.getParamString
+        
+        Case "Move layer"
+            Layer_Handler.moveLayerOnCanvas pdImages(g_CurrentImage).getActiveLayerIndex, cParams.getParamString
             
         
         'SELECTION FUNCTIONS
@@ -1283,14 +1291,16 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If the user wants us to time this action, display the results now.  (Note - only do this for actions that will change the image
     ' in some way, as determined by the createUndo param)
-    If createUndo > 0 Then
-        If DISPLAY_TIMINGS Then
-            Dim timingString As String
-            timingString = g_Language.TranslateMessage("Time taken")
-            timingString = timingString & ": " & Format$(Timer - m_ProcessingTime, "#0.####") & " "
-            timingString = timingString & g_Language.TranslateMessage("seconds")
-            Message timingString
-        End If
+    If (createUndo <> UNDO_NOTHING) And DISPLAY_TIMINGS Then
+        
+        Dim timingString As String
+        
+        timingString = g_Language.TranslateMessage("Time taken")
+        timingString = timingString & ": " & Format$(Timer - m_ProcessingTime, "#0.####") & " "
+        timingString = timingString & g_Language.TranslateMessage("seconds")
+        
+        Message timingString
+        
     End If
     
     'Restore the mouse pointer to its default value.
@@ -1313,7 +1323,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
-    If (createUndo > 0) And (MacroStatus <> MacroBATCH) Then
+    If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) Then
         createCustomFormIcon pdImages(g_CurrentImage)
         toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
     End If
