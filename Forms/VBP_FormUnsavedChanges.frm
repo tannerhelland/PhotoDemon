@@ -296,7 +296,9 @@ Private Sub Form_Activate()
     'Draw the image being closed to the preview box
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    If (Not pdImages(imageBeingClosed) Is Nothing) Then pdImages(imageBeingClosed).getCompositedImage tmpDIB, True
+    If (Not pdImages(imageBeingClosed) Is Nothing) Then
+        pdImages(imageBeingClosed).requestThumbnail tmpDIB, IIf(picPreview.ScaleWidth > picPreview.ScaleHeight, picPreview.ScaleHeight, picPreview.ScaleWidth)
+    End If
     
     If (Not pdImages(imageBeingClosed) Is Nothing) And (Not tmpDIB Is Nothing) Then
         tmpDIB.renderToPictureBox picPreview
