@@ -741,8 +741,8 @@ End Sub
 Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
     'Uncomment the two lines below (and another at the end of the function) to profile different thumbnail resize strategies
-    Dim startTime As Double
-    startTime = Timer
+    'Dim startTime As Double
+    'startTime = Timer
     
     'If the layer has not been instantiated properly, reject the thumbnail request
     If (layerDIB Is Nothing) Or (layerDIB.getDIBWidth = 0) Or (layerDIB.getDIBHeight = 0) Then
@@ -783,7 +783,7 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     End If
     
     'Uncomment the line below to profile different thumbnail resize strategies
-    Debug.Print "Time taken for layer thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
+    'Debug.Print "Time taken for layer thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
     
 End Function
 
