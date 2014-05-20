@@ -13,12 +13,29 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layers class
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright ©2012-2014 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 05/May/14
-'Last update: new function for permanently applying any on-canvas layer transforms to the layer's DIB
+'Last updated: 20/May/14
+'Last update: optimize layer thumbnail creation against new resize functions
 '
-'Description forthcoming once more features have been implemented...
+'Once upon a time, the pdLayer class was simply a DIB wrapper.  Once PhotoDemon moved to a fully layer-compatible
+' image editor, however, it became necessary to separate Layer-specific functions from generic DIB functions.
+'
+'The current pdLayer class is a comprehensive wrapper for all types of PhotoDemon layers.  All layers share a few
+' key components: position, blend mode, etc, and all (except adjustment layers) are expected to provide a copy of
+' the layer's contents in DIB format.  The main viewport renderer doesn't care how this DIB is created - e.g.
+' whether it comes from text or images or something fancy like vector rendering - it just cares that the DIB is
+' present and appropriately sized for its contents.
+'
+'Because layers interact heavily with PDI files (PhotoDemon's custom file format), each layer must be capable of
+' writing its relevant header data into an XML string, and recreating itself from such a string if necessary.
+' Layer DIB data is always handled separately, as some layer types may need to recreate their DIBs on-the-fly.
+'
+'Layer blend modes are declared here, but the actual blending of layers happens in the pdCompositor class.  This was
+' done to enable the blending of arbitrary DIBs not attached to layers, and to simplify this class (which is
+' already quite large).  Note also that pdLayer objects have no knowledge of their parent pdImage object.  If
+' interaction with the parent object is important, functions will explicitly request a pdImage reference as part
+' of their function parameters.
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
@@ -723,6 +740,10 @@ End Sub
 'FreeImage is preferred for thumbnail resizing, but if it's not available, GDI+ will be used.
 Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
+    'Uncomment the two lines below (and another at the end of the function) to profile different thumbnail resize strategies
+    Dim startTime As Double
+    startTime = Timer
+    
     'If the layer has not been instantiated properly, reject the thumbnail request
     If (layerDIB Is Nothing) Or (layerDIB.getDIBWidth = 0) Or (layerDIB.getDIBHeight = 0) Then
         requestThumbnail = False
@@ -732,90 +753,37 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
     
-    'Start by determining an aspect ratio for the current image.
-    Dim aspectRatio As Double
-    aspectRatio = CDbl(layerDIB.getDIBWidth) / CDbl(layerDIB.getDIBHeight)
-    
     'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
     ' aspect ratio and center the image on the thumbnail.
-    Dim tIcoWidth As Double, tIcoHeight As Double, tX As Double, tY As Double
+    Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
-    'If the form is wider than it is tall...
-    If aspectRatio > 1 Then
-        
-        'Determine proper sizes and (x, y) positioning so the icon will be centered
-        tIcoWidth = thumbnailSize
-        tIcoHeight = thumbnailSize * (1 / aspectRatio)
+    'Start by determining proper dimensions for the resized thumbnail image.
+    convertAspectRatio layerDIB.getDIBWidth, layerDIB.getDIBHeight, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
+    
+    'If the form is wider than it is tall, center the thumbnail vertically
+    If tIcoWidth > tIcoHeight Then
         tX = 0
         tY = (thumbnailSize - tIcoHeight) / 2
-        
-    Else
     
-        'Same thing, but with the math adjusted for images taller than they are wide
-        tIcoHeight = thumbnailSize
-        tIcoWidth = thumbnailSize * aspectRatio
+    '...otherwise, center it horizontally
+    Else
         tY = 0
         tX = (thumbnailSize - tIcoWidth) / 2
-        
     End If
+    
+    'Prepare the destination DIB
+    dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
     
     'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
-    ' provides superior results, but if it is not available, GDI+ will suffice.
+    ' is faster (I've actually profiled it!), but if FreeImage is not available, GDI+ will suffice.
     If g_ImageFormats.FreeImageEnabled Then
-        
-        'Convert our current DIB to a FreeImage-type DIB
-        Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(layerDIB.getDIBDC)
-        
-        'Use that handle to request an image resize
-        If fi_DIB <> 0 Then
-            
-            'Rescale the image
-            Dim returnDIB As Long
-            returnDIB = FreeImage_RescaleByPixel(fi_DIB, CLng(tIcoWidth), CLng(tIcoHeight), True, FILTER_BILINEAR)
-            
-            'Make sure the image is 32bpp (returns a clone of the image if it's already 32bpp, so no harm done)
-            Dim newDIB32 As Long
-            newDIB32 = FreeImage_ConvertTo32Bits(returnDIB)
-            
-            'Unload the original DIB
-            If newDIB32 <> returnDIB Then FreeImage_UnloadEx returnDIB
-            'If the image isn't square-shaped, we need to enlarge the DIB accordingly. FreeImage provides a function for that.
-            
-            'Start by preparing a transparent quad, which we'll assign to the background of the enlarged area
-            Dim newColor As RGBQUAD
-            With newColor
-                .rgbBlue = 255
-                .rgbGreen = 255
-                .rgbRed = 255
-                .rgbReserved = 0
-            End With
-                
-            'Enlarge the canvas as necessary
-            Dim finalDIB As Long
-            finalDIB = FreeImage_EnlargeCanvas(newDIB32, tX, tY, tX, tY, newColor, FI_COLOR_IS_RGBA_COLOR)
-            
-            'Unload the original DIB
-            If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
-                
-            'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.  Copy it into the destination DIB.
-            dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32
-            SetDIBitsToDevice dstThumbnailDIB.getDIBDC, 0, 0, thumbnailSize, thumbnailSize, 0, 0, 0, thumbnailSize, ByVal FreeImage_GetBits(finalDIB), ByVal FreeImage_GetInfo(finalDIB), 0&
-                
-            'With the transfer complete, release the FreeImage DIB and unload the library
-            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
-            requestThumbnail = True
-        
-        Else
-            requestThumbnail = False
-        End If
-        
+        requestThumbnail = FreeImageResizeDIBFast(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, layerDIB, FILTER_BILINEAR, True)
     Else
-    
-        dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
         requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic)
-        
     End If
+    
+    'Uncomment the line below to profile different thumbnail resize strategies
+    Debug.Print "Time taken for layer thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
     
 End Function
 
