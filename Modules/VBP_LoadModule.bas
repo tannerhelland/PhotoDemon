@@ -865,15 +865,15 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             If isThisPrimaryImage And (g_UserPreferences.GetPref_Boolean("Loading", "Verify Initial Color Depth", True) Or mustCountColors) Then
                 
-                colorCountCheck = getQuickColorCount(targetImage, g_CurrentImage)
+                colorCountCheck = getQuickColorCount(targetDIB, g_CurrentImage)
             
                 'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
-                targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetImage.getActiveDIB())
+                targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetDIB)
                 
                 If g_IsImageGray Then
                     Message "Color count successful (%1 BPP, grayscale)", targetImage.originalColorDepth
                 Else
-                    Message "Color count successful (%1 BPP, indexed color)", targetImage.originalColorDepth
+                    Message "Color count successful (%1 BPP, color)", targetImage.originalColorDepth
                 End If
                             
             End If

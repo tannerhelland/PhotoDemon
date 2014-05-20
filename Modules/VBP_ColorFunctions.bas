@@ -76,26 +76,14 @@ Public Function convertEntireDIBToLabColor(ByRef srcDIB As pdDIB, ByRef dstArray
 
 End Function
 
-'Present the user with a color selection dialog.  At present, this is just a thin wrapper to the stock Windows color
-' selector, but in the future it will link to a custom PhotoDemon one.
-' INPUTS:  1) a Long-type variable that will receive the new color
+'Present the user with PD's custom color selection dialog.
+' INPUTS:  1) a Long-type variable (ByRef, of course) which will receive the new color
 '          2) an optional initial color
+'          3) an optional colorSelector control reference, if this dialog is being raised by a colorSelector control.
+'             (This reference will be used to provide live updates as the user plays with the color dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
 Public Function showColorDialog(ByRef colorReceive As Long, Optional ByVal initialColor As Long = vbWhite, Optional ByRef callingControl As colorSelector) As Boolean
-
-    'Uncomment this code to use the system color selector
-    'Dim retColor As Long
-    'Dim CD1 As cCommonDialog
-    'Set CD1 = New cCommonDialog
-    'retColor = initialColor
-    '
-    'If CD1.VBChooseColor(retColor, True, True, False, getModalOwner(True).hWnd) Then
-    '    colorReceive = retColor
-    '    showColorDialog = True
-    'Else
-    '    showColorDialog = False
-    'End If
     
     'As of November 2014, PhotoDemon has its own color selector!
     If choosePDColor(initialColor, colorReceive, callingControl) = vbOK Then
@@ -111,6 +99,7 @@ End Function
 Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refDIB As pdDIB) As Long
     
     If srcColors <= 256 Then
+    
         If srcColors > 16 Then
             getColorDepthFromColorCount = 8
         Else
@@ -132,45 +121,43 @@ Public Function getColorDepthFromColorCount(ByVal srcColors As Long, ByRef refDI
             End If
             
         End If
+        
     Else
+    
         If refDIB.getDIBColorDepth = 24 Then
             getColorDepthFromColorCount = 24
         Else
             getColorDepthFromColorCount = 32
         End If
+        
     End If
 
 End Function
 
 'When images are loaded, this function is used to quickly determine the image's color count. It stops once 257 is reached,
 ' as at that point the program will automatically treat the image as 24 or 32bpp (contingent on presence of an alpha channel).
-Public Function getQuickColorCount(ByVal srcImage As pdImage, Optional ByVal imageID As Long = -1) As Long
+Public Function getQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID As Long = -1) As Long
     
     Message "Verifying image color count..."
     
     'Mark the image ID to the global tracking variable
     g_LastImageScanned = imageID
     
-    'Retrieve a composited version of the target image
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    srcImage.getCompositedImage tmpDIB, True
-    
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, tmpDIB
+    prepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, finalX As Long, finalY As Long
-    finalX = srcImage.Width - 1
-    finalY = srcImage.Height - 1
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
-    qvDepth = (srcImage.getActiveDIB().getDIBColorDepth) \ 8
+    qvDepth = (srcDIB.getDIBColorDepth) \ 8
     
     'This array will track whether or not a given color has been detected in the image. (I don't know if powers of two
     ' are allocated more efficiently, but it doesn't hurt to stick to that rule.)
@@ -330,7 +317,7 @@ End Function
 Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, l As Double)
     
     Dim Max As Double, Min As Double
-    Dim delta As Double
+    Dim Delta As Double
     Dim rR As Double, rG As Double, rB As Double
     
     rR = r / 255
@@ -354,23 +341,23 @@ Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, 
         h = 0
     Else
         
-        delta = Max - Min
+        Delta = Max - Min
         
         'Calculate saturation
         If l <= 0.5 Then
-            s = delta / (Max + Min)
+            s = Delta / (Max + Min)
         Else
-            s = delta / (2 - Max - Min)
+            s = Delta / (2 - Max - Min)
         End If
         
         'Calculate hue
         
         If rR = Max Then
-            h = (rG - rB) / delta    '{Resulting color is between yellow and magenta}
+            h = (rG - rB) / Delta    '{Resulting color is between yellow and magenta}
         ElseIf rG = Max Then
-            h = 2 + (rB - rR) / delta '{Resulting color is between cyan and yellow}
+            h = 2 + (rB - rR) / Delta '{Resulting color is between cyan and yellow}
         ElseIf rB = Max Then
-            h = 4 + (rR - rG) / delta '{Resulting color is between magenta and cyan}
+            h = 4 + (rR - rG) / Delta '{Resulting color is between magenta and cyan}
         End If
         
         'If you prefer hue in the [0,360] range instead of [-1, 5] you can use this code
@@ -460,16 +447,16 @@ End Sub
 'Floating-point conversion between RGB [0, 1] and HSL [0, 1]
 Public Sub fRGBtoHSL(ByVal r As Double, ByVal g As Double, ByVal b As Double, ByRef h As Double, ByRef s As Double, ByRef l As Double)
 
-    Dim minVal As Double, maxVal As Double, delta As Double
+    Dim minVal As Double, maxVal As Double, Delta As Double
     
     minVal = fMin3(r, g, b)
     maxVal = fMax3(r, g, b)
-    delta = maxVal - minVal
+    Delta = maxVal - minVal
 
     l = (maxVal + minVal) / 2
 
     'Check the achromatic case
-    If delta = 0 Then
+    If Delta = 0 Then
 
         'Hue is technically undefined, but we have to return SOME value...
         h = 0
@@ -479,17 +466,17 @@ Public Sub fRGBtoHSL(ByVal r As Double, ByVal g As Double, ByVal b As Double, By
     Else
         
         If (l < 0.5) Then
-            s = delta / (maxVal + minVal)
+            s = Delta / (maxVal + minVal)
         Else
-            s = delta / (2 - maxVal - minVal)
+            s = Delta / (2 - maxVal - minVal)
         End If
         
         Dim deltaR As Double, deltaG As Double, deltaB As Double, halfDelta As Double
-        halfDelta = delta / 2
+        halfDelta = Delta / 2
 
-        deltaR = (((maxVal - r) / 6) + halfDelta) / delta
-        deltaG = (((maxVal - g) / 6) + halfDelta) / delta
-        deltaB = (((maxVal - b) / 6) + halfDelta) / delta
+        deltaR = (((maxVal - r) / 6) + halfDelta) / Delta
+        deltaG = (((maxVal - g) / 6) + halfDelta) / Delta
+        deltaB = (((maxVal - b) / 6) + halfDelta) / Delta
 
         If (r = maxVal) Then
             h = deltaB - deltaG
