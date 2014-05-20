@@ -772,22 +772,19 @@ End Function
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
 ' This function is also declared identically to PD's GDI+ equivalent, specifically GDIPlusResizeDIB.  This was done
 ' so that the two functions can be used interchangeably.
-Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As FREE_IMAGE_FILTER) As Boolean
+Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As FREE_IMAGE_FILTER, Optional ByVal destinationIsBlank As Boolean = False) As Boolean
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
     ' have timing reports sent to the debug window.
-    Dim profileTime As Double
-    profileTime = Timer
+    'Dim profileTime As Double
+    'profileTime = Timer
 
     FreeImageResizeDIB = True
 
     'Double-check that FreeImage exists
     If g_ImageFormats.FreeImageEnabled Then
-        
-        'If the original image is 32bpp, remove premultiplication now
-        'If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha
-        
+                
         'Create a temporary DIB at the size of the source image
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
@@ -805,30 +802,83 @@ Public Function FreeImageResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, By
             
             Dim returnDIB As Long
             returnDIB = FreeImage_RescaleByPixel(fi_DIB, dstWidth, dstHeight, True, interpolationType)
-            
-            'Resize the destination DIB in preparation for the transfer
-            'dstDIB.createBlank iWidth, iHeight, srcDIB.getDIBColorDepth
-            
+                        
             'Copy the bits from the FreeImage DIB to our DIB
             tmpDIB.createBlank dstWidth, dstHeight, 32, 0
             SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 0, 0, 0, srcHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             
-            'AlphaBlend the result onto the destination DIB
-            AlphaBlend dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
+            'If the destinationIsBlank flag is true, we can use BitBlt in place of AlphaBlend to copy the result
+            ' onto the destination DIB; this shaves off a tiny bit of time.
+            If destinationIsBlank Then
+                BitBlt dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+            Else
+                AlphaBlend dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
+            End If
             
             'With the transfer complete, release the FreeImage DIB and unload the library
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
             
         End If
-        
-        'If the original image is 32bpp, add back in premultiplication now
-        'If srcDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
-        
+                
     Else
         FreeImageResizeDIB = False
     End If
     
     'Uncomment the line below to receive timing reports
-    Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
     
 End Function
+
+'Use FreeImage to resize a DIB, optimized against the use case where the full source image is being used.
+' (Basically, something closer to BitBlt than StretchBlt, but without sourceX/Y parameters for an extra boost.)
+Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal interpolationType As FREE_IMAGE_FILTER, Optional ByVal destinationIsBlank As Boolean = False) As Boolean
+
+    'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
+    ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
+    ' have timing reports sent to the debug window.
+    'Dim profileTime As Double
+    'profileTime = Timer
+
+    FreeImageResizeDIBFast = True
+
+    'Double-check that FreeImage exists
+    If g_ImageFormats.FreeImageEnabled Then
+        
+        'Create a FreeImage copy of the source DIB
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+        
+        'Use that handle to request an image resize
+        If fi_DIB <> 0 Then
+            
+            Dim returnDIB As Long
+            returnDIB = FreeImage_RescaleByPixel(fi_DIB, dstWidth, dstHeight, True, interpolationType)
+                        
+            'Copy the bits from the FreeImage DIB to a temporary DIB
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createBlank dstWidth, dstHeight, 32, 0
+            SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 0, 0, 0, srcDIB.getDIBHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+            
+            'If the destinationIsBlank flag is true, we can use BitBlt in place of AlphaBlend to copy the result
+            ' onto the destination DIB; this shaves off a tiny bit of time.
+            If destinationIsBlank Then
+                BitBlt dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+            Else
+                AlphaBlend dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 255 * &H10000 Or &H1000000
+            End If
+            
+            'With the transfer complete, release the FreeImage DIB and unload the library
+            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+            
+        End If
+                
+    Else
+        FreeImageResizeDIBFast = False
+    End If
+    
+    'Uncomment the line below to receive timing reports
+    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    
+End Function
+
