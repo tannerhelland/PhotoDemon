@@ -612,109 +612,54 @@ Public Function getSaveState() As Boolean
     getSaveState = hasBeenSaved
 End Function
 
-'External functions can use this function to request a thumbnail version of the contained image.  Previously, thumbnail
-' generation was handled externally, but to prepare for the addition of layers, I will be rewriting all thumbnail-related
-' functions to use this function.  (This is necessary so that this pdImage object can composite a multi-layer image
-' before passing along a thumbnail version.)
-'
-'FreeImage is required for thumbnail resizing.
+'External functions can use this function to request a thumbnail version of the contained image.  Note that the full
+' image must be re-composited on every request, so please do not call this function unless absolutely necessary!
 Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+    
+    'Uncomment the two lines below (and another at the end of the function) to profile different thumbnail resize strategies
+    'Dim startTime As Double
+    'startTime = Timer
     
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
     
-    'Start by determining an aspect ratio for the current image.
-    Dim aspectRatio As Double
-    aspectRatio = CSng(Width) / CSng(Height)
-    
     'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
     ' aspect ratio and center the image on the thumbnail.
-    Dim tIcoWidth As Double, tIcoHeight As Double, tX As Double, tY As Double
+    Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
-    'If the form is wider than it is tall...
-    If aspectRatio > 1 Then
-        
-        'Determine proper sizes and (x, y) positioning so the icon will be centered
-        tIcoWidth = thumbnailSize
-        tIcoHeight = thumbnailSize * (1 / aspectRatio)
+    'Start by determining proper dimensions for the resized thumbnail image.
+    convertAspectRatio Me.Width, Me.Height, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
+    
+    'If the form is wider than it is tall, center the thumbnail vertically
+    If tIcoWidth > tIcoHeight Then
         tX = 0
         tY = (thumbnailSize - tIcoHeight) / 2
-        
-    Else
     
-        'Same thing, but with the math adjusted for images taller than they are wide
-        tIcoHeight = thumbnailSize
-        tIcoWidth = thumbnailSize * aspectRatio
+    '...otherwise, center it horizontally
+    Else
         tY = 0
         tX = (thumbnailSize - tIcoWidth) / 2
-        
     End If
     
     'Retrieve a composite version of the image
     Dim compositeImage As pdDIB
     Set compositeImage = New pdDIB
-    Me.getCompositedImage compositeImage, True
+    compositeImage.createBlank tIcoWidth, tIcoHeight, 32, 0
+    Me.getCompositedRect compositeImage, 0, 0, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, InterpolationModeHighQualityBicubic
+    
+    'Prepare the destination DIB
+    dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
     
     'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
-    ' provides superior results, but if it is not available, GDI+ will suffice.
+    ' provides superior results with better performance, but if it is not available, GDI+ will suffice.
     If g_ImageFormats.FreeImageEnabled Then
-        
-        'Convert our current DIB to a FreeImage-type DIB
-        Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(compositeImage.getDIBDC)
-        
-        'Release our copy of the composite image
-        Set compositeImage = Nothing
-        
-        'Use that handle to request an image resize
-        If fi_DIB <> 0 Then
-            
-            'Rescale the image
-            Dim returnDIB As Long
-            returnDIB = FreeImage_RescaleByPixel(fi_DIB, CLng(tIcoWidth), CLng(tIcoHeight), True, FILTER_BILINEAR)
-            
-            'Make sure the image is 32bpp (returns a clone of the image if it's already 32bpp, so no harm done)
-            Dim newDIB32 As Long
-            newDIB32 = FreeImage_ConvertTo32Bits(returnDIB)
-            
-            'Unload the original DIB
-            If newDIB32 <> returnDIB Then FreeImage_UnloadEx returnDIB
-            'If the image isn't square-shaped, we need to enlarge the DIB accordingly. FreeImage provides a function for that.
-            
-            'Start by preparing a transparent quad, which we'll assign to the background of the enlarged area
-            Dim newColor As RGBQUAD
-            With newColor
-                .rgbBlue = 255
-                .rgbGreen = 255
-                .rgbRed = 255
-                .rgbReserved = 0
-            End With
-                
-            'Enlarge the canvas as necessary
-            Dim finalDIB As Long
-            finalDIB = FreeImage_EnlargeCanvas(newDIB32, tX, tY, tX, tY, newColor, FI_COLOR_IS_RGBA_COLOR)
-            
-            'Unload the original DIB
-            If finalDIB <> newDIB32 Then FreeImage_UnloadEx newDIB32
-                
-            'At this point, finalDIB contains the 32bpp alpha icon exactly how we want it.  Copy it into the destination DIB.
-            dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32
-            SetDIBitsToDevice dstThumbnailDIB.getDIBDC, 0, 0, thumbnailSize, thumbnailSize, 0, 0, 0, thumbnailSize, ByVal FreeImage_GetBits(finalDIB), ByVal FreeImage_GetInfo(finalDIB), 0&
-                
-            'With the transfer complete, release the FreeImage DIB and unload the library
-            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
-            requestThumbnail = True
-        
-        Else
-            requestThumbnail = False
-        End If
-        
+        requestThumbnail = FreeImageResizeDIBFast(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, compositeImage, FILTER_BILINEAR, True)
     Else
-    
-        dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
         requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, compositeImage, 0, 0, compositeImage.getDIBWidth, compositeImage.getDIBHeight, InterpolationModeHighQualityBicubic)
-        
     End If
+    
+    'Uncomment the line below to profile different thumbnail resize strategies
+    'Debug.Print "Time taken for image thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
     
 End Function
 
