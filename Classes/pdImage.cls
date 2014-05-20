@@ -369,17 +369,17 @@ Public Sub moveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Bo
 End Sub
 
 'Used by various layer movement functions.  Given two layer indices, swap them.
-Public Sub swapTwoLayers(ByVal srcLayerID_1 As Long, ByVal srcLayerID_2 As Long)
+Public Sub swapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As Long)
 
     'Create a temporary reference to the first layer
     Dim tmpLayerRef As pdLayer
-    Set tmpLayerRef = imgLayers(srcLayerID_1)
+    Set tmpLayerRef = imgLayers(srcLayerIndex_1)
     
     'Overwrite the first layer's reference with the second one
-    Set imgLayers(srcLayerID_1) = imgLayers(srcLayerID_2)
+    Set imgLayers(srcLayerIndex_1) = imgLayers(srcLayerIndex_2)
     
     'Overwrite the second layer's reference with our temporary copy of the first layer
-    Set imgLayers(srcLayerID_2) = tmpLayerRef
+    Set imgLayers(srcLayerIndex_2) = tmpLayerRef
     
     'Release our temporary reference
     Set tmpLayerRef = Nothing
@@ -484,8 +484,10 @@ End Function
 ' Mark "filePathIsActuallyString" as TRUE to treat the filename string as actual XML data instead.
 '
 'Finally, if this function is being called as part of an Undo/Redo action, we can safely ignore certain entries in the file, in favor
-' of the values we already have stored for this image.
-Public Function readExternalData(ByRef srcFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
+' of the values we already have stored for this image.  The Undo/Redo engine may also specify non-destructive loading, in which case
+' we assume that our existing layer stack is valid, but in the wrong order - so simply reorder the stack according to the data in the
+' XML, instead of full-on recreating it from scratch.
+Public Function readExternalData(ByRef srcFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False, Optional ByVal sourceIsUndoFile As Boolean = False, Optional ByVal loadNonDestructively As Boolean = False) As Boolean
 
     On Error GoTo failedDataRead
     
@@ -537,14 +539,20 @@ Public Function readExternalData(ByRef srcFilename As String, Optional ByVal fil
         numOfLayers = xmlEngine.getUniqueTag_Long("numOfLayers")
         curLayer = xmlEngine.getUniqueTag_Long("curLayer")
         
-        'Now that all data has been read, we can initialize our layers array.  (The calling function will presumably proceed to
-        ' fill each layer with usable data, because we can't do that here!)
-        ReDim imgLayers(0 To numOfLayers - 1) As pdLayer
+        'If this is a standard, destructive load, prepare our image layer array to receive the upcoming layer data.
+        ' (Otherwise, leave it as it is, because the calling function will simply reorder it for us.)
+        If Not loadNonDestructively Then
         
-        Dim i As Long
-        For i = 0 To numOfLayers - 1
-            Set imgLayers(i) = New pdLayer
-        Next i
+            'Now that all data has been read, we can initialize our layers array.  (The calling function will presumably proceed to
+            ' fill each layer with usable data, because we can't do that here!)
+            ReDim imgLayers(0 To numOfLayers - 1) As pdLayer
+            
+            Dim i As Long
+            For i = 0 To numOfLayers - 1
+                Set imgLayers(i) = New pdLayer
+            Next i
+            
+        End If
     
     Else
         GoTo failedDataRead

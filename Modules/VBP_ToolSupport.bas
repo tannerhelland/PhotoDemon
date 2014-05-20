@@ -240,7 +240,7 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
         Select Case curPOI
         
             'Resize transformations.  (Note that resize transformations include some layer movement as well.)
-            Case 0, 1, 2, 3
+            Case 0 To 3
             
                 With srcImage.getActiveLayer
                     Process "Resize layer (on-canvas)", False, buildParams(.getLayerOffsetX, .getLayerOffsetY, .getLayerCanvasXModifier, .getLayerCanvasYModifier), UNDO_LAYERHEADER
