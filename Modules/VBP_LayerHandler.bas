@@ -440,6 +440,9 @@ Public Sub flattenImage()
     'Note that the delete operation does not allow us to delete all layers.  (If there is only one layer present,
     ' it will exit without modifying the image.)  Because of that, the image will still retain one layer, which
     ' we will have to manually overwrite.
+        
+    'Reset any optional layer parameters to their default state
+    pdImages(g_CurrentImage).getLayerByIndex(0).resetLayerParameters
     
     'Overwrite the final layer with the composite DIB.
     pdImages(g_CurrentImage).getLayerByIndex(0).CreateNewImageLayer compositeDIB, , flattenedName
