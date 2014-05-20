@@ -46,7 +46,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     
     
     '****************************************************************************************************
-    ' Determine exported color depth
+    ' Determine exported color depth (for non-PDI formats)
     '****************************************************************************************************
 
     'The user is allowed to set a persistent preference for output color depth.  This setting affects a "color depth"
@@ -55,130 +55,141 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     ' 1) Count the number of colors used, and save the file based on that (again, if possible)
     ' 2) Prompt the user for their desired export color depth
     '
-    'Batch processing allows the user to overwrite their default preference with a specific preference for that batch process;
-    ' if this occurs, the "forceColorDepthMethod" is utilized.
+    'Note that batch processing allows the user to overwrite their default preference with a specific preference for that
+    ' batch process; if this occurs, the "forceColorDepthMethod" is utilized.
+    
     Dim outputColorDepth As Long
     
-    'Finally, note that JPEG exporting, on account of it being somewhat specialized, ignores this step completely.
-    ' The JPEG routine will do its own scan for grayscale/color and save the proper format automatically.
-    If saveFormat <> FIF_JPEG Then
-    
-        Dim colorDepthMode As Long
-        If forceColorDepthMethod = -1 Then
-            colorDepthMode = g_UserPreferences.GetPref_Long("Saving", "Outgoing Color Depth", 1)
-        Else
-            colorDepthMode = forceColorDepthMethod
-        End If
-    
-        Select Case colorDepthMode
+    '100 is the magic number for saving PDI files (PhotoDemon's internal format).  PDI files do not need color depth checked,
+    ' as the writer handles color depth independently for each layer.
+    If saveFormat = 100 Then
+        outputColorDepth = 32
         
-            'Maintain the file's original color depth (if possible)
-            Case 0
-                
-                'Check to see if this format supports the image's original color depth
-                If g_ImageFormats.isColorDepthSupported(saveFormat, srcPDImage.originalColorDepth) Then
-                    
-                    'If it IS supported, set the original color depth as the output color depth for this save
-                    outputColorDepth = srcPDImage.originalColorDepth
-                    Message "Original color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
-                
-                'If it IS NOT supported, we need to find the closest available color depth for this format.
-                Else
-                    outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.originalColorDepth)
-                    Message "Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
-                
-                End If
+    'The save format is not PDI.  Determine the ideal color depth.
+    Else
+    
+        'Finally, note that JPEG exporting, on account of it being somewhat specialized, ignores this step completely.
+        ' The JPEG routine will do its own scan for grayscale/color and save the proper format automatically.
+        If saveFormat <> FIF_JPEG Then
+        
+            Dim colorDepthMode As Long
+            If forceColorDepthMethod = -1 Then
+                colorDepthMode = g_UserPreferences.GetPref_Long("Saving", "Outgoing Color Depth", 1)
+            Else
+                colorDepthMode = forceColorDepthMethod
+            End If
+        
+            Select Case colorDepthMode
             
-            'Count colors used
-            Case 1
-            
-                'Count the number of colors in the image.  (The function will automatically cease if it hits 257 colors,
-                ' as anything above 256 colors is treated as 24bpp.)
-                Dim colorCountCheck As Long
-                Message "Counting image colors to determine optimal exported color depth..."
-                If imageID <> -1 Then
-                    colorCountCheck = getQuickColorCount(srcPDImage, imageID)
-                Else
-                    colorCountCheck = getQuickColorCount(srcPDImage)
-                End If
-                
-                'Retrieve a composited copy of the current image
-                Dim tmpCompositeDIB As pdDIB
-                Set tmpCompositeDIB = New pdDIB
-                srcPDImage.getCompositedImage tmpCompositeDIB, False
-                
-                'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
-                outputColorDepth = getColorDepthFromColorCount(colorCountCheck, tmpCompositeDIB)
-                
-                'A special case arises when an image has <= 256 colors, but a non-binary alpha channel.  PNG allows for
-                ' this, but other formats do not.  Because even the PNG transformation is not lossless, set these types of
-                ' images to be exported as 32bpp.
-                If (outputColorDepth <= 8) And (tmpCompositeDIB.getDIBColorDepth = 32) Then
-                    If (Not tmpCompositeDIB.isAlphaBinary) Then outputColorDepth = 32
-                End If
-                
-                Message "Color count successful (%1 bpp recommended)", outputColorDepth
-                
-                'As with case 0, we now need to see if this format supports the suggested color depth
-                If g_ImageFormats.isColorDepthSupported(saveFormat, outputColorDepth) Then
+                'Maintain the file's original color depth (if possible)
+                Case 0
                     
-                    'If it IS supported, set the original color depth as the output color depth for this save
-                    Message "Recommended color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
-                
-                'If it IS NOT supported, we need to find the closest available color depth for this format.
-                Else
-                    outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
-                    Message "Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
-                
-                End If
-            
-            'Prompt the user (but only if necessary)
-            Case 2
-            
-                'First, check to see if the save format in question supports multiple color depths
-                If g_ImageFormats.doesFIFSupportMultipleColorDepths(saveFormat) Then
-                    
-                    'If it does, provide the user with a prompt to choose whatever color depth they'd like
-                    Dim dCheck As VbMsgBoxResult
-                    dCheck = promptColorDepth(saveFormat)
-                    
-                    If dCheck = vbOK Then
-                        outputColorDepth = g_ColorDepth
-                    Else
-                        PhotoDemon_SaveImage = False
-                        Message "Save canceled."
+                    'Check to see if this format supports the image's original color depth
+                    If g_ImageFormats.isColorDepthSupported(saveFormat, srcPDImage.originalColorDepth) Then
                         
-                        Exit Function
+                        'If it IS supported, set the original color depth as the output color depth for this save
+                        outputColorDepth = srcPDImage.originalColorDepth
+                        Message "Original color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
+                    
+                    'If it IS NOT supported, we need to find the closest available color depth for this format.
+                    Else
+                        outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.originalColorDepth)
+                        Message "Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
+                    
                     End If
                 
-                'If this format only supports a single output color depth, don't bother the user with a prompt
-                Else
-            
-                    outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.originalColorDepth)
-            
-                End If
+                'Count colors used
+                Case 1
                 
-            'A color depth has been explicitly specified by the forceColorDepthMethod parameter.  We can find the color depth
-            ' by subtracting 16 from the parameter value.
-            Case Else
-            
-                outputColorDepth = forceColorDepthMethod - 16
-                
-                'As a failsafe, make sure this format supports the suggested color depth
-                If g_ImageFormats.isColorDepthSupported(saveFormat, outputColorDepth) Then
+                    'Count the number of colors in the image.  (The function will automatically cease if it hits 257 colors,
+                    ' as anything above 256 colors is treated as 24bpp.)
+                    Dim colorCountCheck As Long
+                    Message "Counting image colors to determine optimal exported color depth..."
+                    If imageID <> -1 Then
+                        colorCountCheck = getQuickColorCount(srcPDImage, imageID)
+                    Else
+                        colorCountCheck = getQuickColorCount(srcPDImage)
+                    End If
                     
-                    'If it IS supported, set the original color depth as the output color depth for this save
-                    Message "Requested color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
+                    'Retrieve a composited copy of the current image
+                    Dim tmpCompositeDIB As pdDIB
+                    Set tmpCompositeDIB = New pdDIB
+                    srcPDImage.getCompositedImage tmpCompositeDIB, False
+                    
+                    'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
+                    outputColorDepth = getColorDepthFromColorCount(colorCountCheck, tmpCompositeDIB)
+                    
+                    'A special case arises when an image has <= 256 colors, but a non-binary alpha channel.  PNG allows for
+                    ' this, but other formats do not.  Because even the PNG transformation is not lossless, set these types of
+                    ' images to be exported as 32bpp.
+                    If (outputColorDepth <= 8) And (tmpCompositeDIB.getDIBColorDepth = 32) Then
+                        If (Not tmpCompositeDIB.isAlphaBinary) Then outputColorDepth = 32
+                    End If
+                    
+                    Message "Color count successful (%1 bpp recommended)", outputColorDepth
+                    
+                    'As with case 0, we now need to see if this format supports the suggested color depth
+                    If g_ImageFormats.isColorDepthSupported(saveFormat, outputColorDepth) Then
+                        
+                        'If it IS supported, set the original color depth as the output color depth for this save
+                        Message "Recommended color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
+                    
+                    'If it IS NOT supported, we need to find the closest available color depth for this format.
+                    Else
+                        outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
+                        Message "Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
+                    
+                    End If
                 
-                'If it IS NOT supported, we need to find the closest available color depth for this format.
-                Else
-                    outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
-                    Message "Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
+                'Prompt the user (but only if necessary)
+                Case 2
                 
-                End If
-            
-        End Select
-    
+                    'First, check to see if the save format in question supports multiple color depths
+                    If g_ImageFormats.doesFIFSupportMultipleColorDepths(saveFormat) Then
+                        
+                        'If it does, provide the user with a prompt to choose whatever color depth they'd like
+                        Dim dCheck As VbMsgBoxResult
+                        dCheck = promptColorDepth(saveFormat)
+                        
+                        If dCheck = vbOK Then
+                            outputColorDepth = g_ColorDepth
+                        Else
+                            PhotoDemon_SaveImage = False
+                            Message "Save canceled."
+                            
+                            Exit Function
+                        End If
+                    
+                    'If this format only supports a single output color depth, don't bother the user with a prompt
+                    Else
+                
+                        outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, srcPDImage.originalColorDepth)
+                
+                    End If
+                    
+                'A color depth has been explicitly specified by the forceColorDepthMethod parameter.  We can find the color depth
+                ' by subtracting 16 from the parameter value.
+                Case Else
+                
+                    outputColorDepth = forceColorDepthMethod - 16
+                    
+                    'As a failsafe, make sure this format supports the suggested color depth
+                    If g_ImageFormats.isColorDepthSupported(saveFormat, outputColorDepth) Then
+                        
+                        'If it IS supported, set the original color depth as the output color depth for this save
+                        Message "Requested color depth of %1 bpp is supported by this format.  Proceeding with save...", outputColorDepth
+                    
+                    'If it IS NOT supported, we need to find the closest available color depth for this format.
+                    Else
+                        outputColorDepth = g_ImageFormats.getClosestColorDepth(saveFormat, outputColorDepth)
+                        Message "Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp...", srcPDImage.originalColorDepth, outputColorDepth
+                    
+                    End If
+                
+            End Select
+        
+        End If
+        
     End If
     
     
