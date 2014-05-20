@@ -1291,7 +1291,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If the user wants us to time this action, display the results now.  (Note - only do this for actions that will change the image
     ' in some way, as determined by the createUndo param)
-    If (createUndo <> UNDO_NOTHING) And DISPLAY_TIMINGS Then
+    If DISPLAY_TIMINGS And (createUndo <> UNDO_NOTHING) Then
         
         Dim timingString As String
         

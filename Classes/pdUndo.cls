@@ -16,42 +16,48 @@ Attribute VB_Exposed = False
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 2/April/01
 'Last updated: 19/May/14
-'Last update: implement diffs for individual layers.  Lots of unforeseen interactions with this approach, but I
-'              *think* we've covered all our bases.
+'Last update: finish work on diff-based Undo/Redo engine.  This is one of the toughest challenges we've ever
+'              tackled in PD, and I am *very* happy to have it done.
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
-' byte-array copy of the image in memory, allowing for a lone Undo step if necessary.  Eventually this was converted
+' byte-array copy of the image in RAM, allowing for a lone Undo step if necessary.  Eventually this was converted
 ' to a more robust HDD-based solution, and further updates have tacked on features to (the very poor) original
 ' Undo/Redo framework.
 '
 'In 2013, I finally had enough of the program's shoddy Undo/Redo code, so I merged all the various Undo/Redo subs
-' into a single class, and gave each pdImage a copy of said class.  This achieves a long-desired goal of making
-' the Undo/Redo code completely self-contained, and should make future improvements much, much easier.  As part
-' of this change, the Undo/Redo engine was largely rewritten, and all interface-related code was moved outside the
-' class.  (Specifically, it is now handled by the separate syncInterfaceToCurrentImage function.)  As long as future
-' updates supply valid data to the getUndoState and getRedoState functions, all interface stuff will be handled
-' just fine by external interface functions.
+' into a single class, and gave each pdImage a copy of said class.  As part of the rewrite, the Undo/Redo engine
+' itself was rewritten in a much cleaner fashion, including moving all interface-related code outside the class.
+' (Specifically, UI considerations were handed off to PD's central syncInterfaceToCurrentImage function.)
 '
 'In 2014, as part of adding Layers support, the Undo/Redo engine was further modified from a lazy implementation to
 ' an active one.  What does this mean?  Basically, the previous "lazy" implementation did not create Undo/Redo data
 ' until absolutely necessary (e.g. after at least one image-changing action had been initiated, and right before a
-' new actions was about to occur).  This ultra-conservative approach had some benefits; for example, Undo data was
+' new action was about to occur).  Such an ultra-conservative approach had benefits; for example, Undo data was
 ' never created until an image was actually edited, improving image load time, and Redo data was never created
-' unless Undo was actuall pressed.  While good for conserving memory, this system ultimately proved untenable, as it
-' requires the storage of a lot of "what happened previously" data in order to handle Undo creation correctly for odd
-' edge cases (like when an image edit is applied after a selection modification). To simplify the engine and make it
-' possible to store Undo/Redo data other than just the full pdImage stack, Undo/Redo data is now created immediately
-' for the active function, using the passed PD_UNDO_TYPE as the guide for what data should be stored.
+' unless Undo was actually pressed.  While good for conserving memory, this system ultimately proved untenable, as it
+' required a lot of special handling re: "what happened previously", which was necessary for handling Undo creation
+' correctly for odd edge cases (like when an image edit is applied after a selection modification). To simplify the
+' engine and make it capable of storing Undo/Redo data other than just the full pdImage stack, the engine was
+' converted to an Active implementation.  Now, any time the image is modified, Undo data is immediately written
+' to file following the completion of the modification action.
 '
-'As an added benefit, the Active system also works much better with PD's Autosave engine.  It also simplifies things
-' like the user cancelling an operation before it has completed, because instead of rolling back to some previous
-' Undo state, the current action's changes simply don't get written to file.
+'Similarly, when an image is first loaded, a full backup of the image is immediately written to a temp file.  This
+' incurs a slight penalty in load-time performance, but I believe the trade-off is worth it because this backup file
+' is also useful for the Autosave engine, as it gives us something to work from in the event of an unsafe shutdown.
+'
+'Later in 2014, writing a full pdImage stack for each program action proved a terrible idea, due to the size,
+' slowness, and complexity of each Undo/Redo file.  To combat this, the Undo/Redo engine was rewritten yet again -
+' but this time, as a full-featured "diff engine", not unlike what powers Git.  Specifically, PD's Undo/Redo engine
+' now saves only the minimum amount of data necessary to reconstruct an image from its immediately previous Undo/Redo
+' entry.  This allows for very tiny Undo/Redo files, at a trade-off with a large amount of new complexity in the
+' Undo/Redo engine itself.  I believe this approach is the best one possible, so I'm hoping 2014 marks the end of
+' massive Undo/Redo engine rewrites.  (Fingers crossed.)
 '
 'Undo/Redo data is still saved to the HDD, and will remain that way for the forseeable future.  Unlimited operations
-' are allowed.  This class does not check HDD space availability, so errors may be thrown if you run out of free
-' space.  Similarly, clearing your TEMP folder in the middle of program operation could cause a lot of bad things,
-' including hard crashes.  I should probably fix this at some point in the future, but no one has ever complained,
-' so it remains a low priority for me.
+' are allowed.  This class does not check HDD space availability, so errors may be thrown if the user runs out of free
+' space.  Similarly, clearing the specified TEMP folder in the middle of program operation could cause a lot of bad
+' things to happen, including hard crashes.  I should probably handle such a case at some point in the future, but no
+' one has ever complained, so it remains a low priority for me.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -172,7 +178,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     writeUndoDataToXML generateUndoHeaderFilename()
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    debugUndo "new Undo entry created"
+    'debugUndo "new Undo entry created"
     
     Debug.Print "Undo created successfully."
     
@@ -246,21 +252,23 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     Dim nearestDiffIndex As Long
     nearestDiffIndex = findNearestDiffIndex(undoNum, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID)
     
-    Debug.Print "Nearest diff index: " & nearestDiffIndex & "; undo type: " & undoStack(nearestDiffIndex).undoType
+    'Debug.Print "Nearest diff index: " & nearestDiffIndex & "; undo type: " & undoStack(nearestDiffIndex).undoType
     
     'We now have to handle some tricky diff-related business.  If the Undo type is a full pdImage reconstruction (meaning the entire
-    ' layer stack is being recreated from scratch), we have to re-apply all diffs in two steps: first, we have to reconstruct the
-    ' layer stack.  Then, we have to update each layer against its most recent diff patch.  To prevent the screen from flickering
-    ' like crazy while we do all this background processing, we suspend redraws until our work is complete.
+    ' layer stack is being recreated as part of the Undo process), we have to re-apply all diffs in two steps: first, we have to
+    ' reconstruct the layer stack by finding a diff that contains full layer data, e.g. a file of type UNDO_IMAGE (or in some special
+    ' cases, UNDO_IMAGEHEADER).  Once the layer stack has been properly recreated, we have to update each layer and layer header
+    ' against their most recent diff patch(es).  To prevent the screen from flickering like crazy while we do all this background
+    ' processing, we forcibly suspend all screen redraws until our work is complete.
     '
     'Similarly, if we are undoing a single layer action (UNDO_LAYER), we may need to apply an optional UNDO_LAYERHEADER diff after
     ' the fact, to make sure the layer's header is up-to-date against any header-only changes that occurred since the latest full
-    ' DIB write.
+    ' layer DIB write-to-file.
     Dim suspendRedraws As Boolean
-    If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or ((undoStack(undoNum).undoType = UNDO_IMAGEHEADER)) Or (undoStack(undoNum).undoType = UNDO_LAYER) Then
+    If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGEHEADER) Or (undoStack(undoNum).undoType = UNDO_LAYER) Then
         
         'If we are reverting the image to its original state, we do not need to process any extra layer data, as we already know
-        ' the the source file is accurate.
+        ' the the source file will be accurate (because a full copy of the image is always created at Undo point 0).
         If undoNum > 0 Then
             suspendRedraws = True
         Else
@@ -272,22 +280,42 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     End If
     
     'With the most recent relevant diff file identified, we can now launch the undo loading routine for that diff.  It will
-    ' automatically apply any changes against the relevant parts of the current image.
+    ' automatically apply any changes against the relevant parts of the current pdImage object.
     LoadUndo generateUndoFilename(nearestDiffIndex), undoStack(nearestDiffIndex).undoType, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID, suspendRedraws
     
     'If redraws have been suspended, we know that we need to reconstruct one or more layers in the image against their
     ' most recent diff.
     If suspendRedraws Then
     
-        Dim nearestLayerDiffDIB As Long, nearestLayerDiffHeader As Long, curLayerID As Long
+        Dim nearestLayerDiffDIB As Long, nearestLayerDiffHeader As Long, nearestImageDiffHeader As Long, curLayerID As Long
         Dim i As Long
         
         'The amount of diffs we need to reconstruct varies by Undo type.
         
         'If this is a full image Undo, all layers need to be checked against their most recent diffs.
-        If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or ((undoStack(undoNum).undoType = UNDO_IMAGEHEADER)) Then
+        If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGEHEADER) Then
         
-            'Loop through each layer in the image, finding nearest diffs as we go
+            'For UNDO_EVERYTHING and UNDO_IMAGE entries, we may need to reconstruct the layer stack before any further processing occurs.
+            If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Then
+            
+                'Search for the nearest relevant pdImage header diff, as it may have changed independent of the rest
+                ' of the pdImage stack (for example, if the user has rearranged layer order)
+                nearestImageDiffHeader = findNearestDiffIndex(undoNum, UNDO_IMAGEHEADER)
+                
+                'If a more recent layer header was found, apply it now.
+                If (nearestImageDiffHeader > nearestDiffIndex) Then
+                    LoadUndo generateUndoFilename(nearestImageDiffHeader), undoStack(nearestImageDiffHeader).undoType, UNDO_IMAGEHEADER, , suspendRedraws
+                End If
+                
+                'Also reset the nearestDiffIndex value to match the header's location; subsequent layer checks
+                ' will use this as their baseline for determining whether they need to load additional data for that layer.
+                nearestDiffIndex = nearestImageDiffHeader
+            
+            End If
+                        
+            'Now we know that the layer stack has the correct number of layers, in the correct order.
+            ' Loop through each layer in the image, searching for more recent diffs for either the layer itself or the
+            ' layer header (relevant if the user has made on-canvas changes that don't necessarily affect the layer DIB).
             For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
             
                 'Grab the current layer ID (all undo functions operate on layer ID, not index, as index may change unexpectedly)
@@ -307,7 +335,7 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
                 nearestLayerDiffHeader = findNearestDiffIndex(undoNum, UNDO_LAYERHEADER, curLayerID)
                 
                 'If a more recent layer header was found, apply it now.
-                If (nearestLayerDiffHeader > nearestLayerDiffDIB) Then
+                If (nearestLayerDiffHeader > nearestDiffIndex) And (nearestLayerDiffHeader > nearestLayerDiffDIB) Then
                     LoadUndo generateUndoFilename(nearestLayerDiffHeader), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
                 End If
                 
@@ -325,7 +353,7 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
             nearestLayerDiffHeader = findNearestDiffIndex(undoNum, UNDO_LAYERHEADER, curLayerID)
                 
             'If a more recent layer header was found, apply it now.
-            If (nearestLayerDiffHeader > nearestLayerDiffDIB) Then
+            If (nearestLayerDiffHeader > nearestDiffIndex) Then
                 LoadUndo generateUndoFilename(nearestLayerDiffHeader), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
             End If
         
@@ -336,9 +364,8 @@ Public Sub restoreUndoData(Optional ByVal undoPosition As Long = -1)
     
     End If
     
-    
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    debugUndo "user clicked Undo"
+    'debugUndo "user clicked Undo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
@@ -361,7 +388,7 @@ Private Function findNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
     'No matter what, the loop below will always terminate at position 0 if no available diffs are found.  This is why we must
     ' always create a full image copy after the image is loaded, as it serves as our baseline for all subsequent diffs.
         
-    Debug.Print "Searching for undo type: " & undoTypeCheck
+    'Debug.Print "Searching for undo type: " & undoTypeCheck
     
     Dim i As Long
     For i = undoIndex - 1 To 0 Step -1
@@ -381,6 +408,13 @@ Private Function findNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
             'UNDO_IMAGE contains relevant diff information for everything but selections
             Case UNDO_IMAGE
                 If (undoTypeCheck <> UNDO_SELECTION) Then
+                    findNearestDiffIndex = i
+                    Exit For
+                End If
+            
+            'UNDO_IMAGEHEADER contains relevant diff information for itself, and UNDO_LAYERHEADER only.
+            Case UNDO_IMAGEHEADER
+                If (undoTypeCheck = UNDO_IMAGEHEADER) Or (undoTypeCheck = UNDO_LAYERHEADER) Then
                     findNearestDiffIndex = i
                     Exit For
                 End If
@@ -456,7 +490,7 @@ Public Sub RestoreRedoData()
     LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType, getUndoProcessType, undoStack(undoNum - 1).undoLayerID
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    debugUndo "user clicked Redo"
+    'debugUndo "user clicked Redo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.

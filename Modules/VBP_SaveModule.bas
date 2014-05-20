@@ -4,7 +4,7 @@ Attribute VB_Name = "Saving"
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 19/May/14
-'Last update: new function for writing individual pdLayer objects to file, using a modified PDI struct.
+'Last update: final work on custom Undo/Redo saving
 '
 'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in the GDI+ module
 ' for consistency's sake).  Export functions are sorted by file type, and most serve as relatively lightweight wrappers to corresponding
@@ -621,7 +621,7 @@ End Function
 '    the header represents a larger portion of the file.
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -646,7 +646,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     'The first node we'll add is the pdImage header, in XML format.
     Dim nodeIndex As Long
-    nodeIndex = pdiWriter.addNode("pdImage Header", 0, 0)
+    nodeIndex = pdiWriter.addNode("pdImage Header", -1, 0)
     
     Dim dataString As String
     srcPDImage.writeExternalData dataString, True
@@ -672,9 +672,11 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         layerXMLHeader = srcPDImage.getLayerByIndex(i).getLayerHeaderAsXML(True)
         pdiWriter.addNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , embedChecksums
         
-        'Retrieve the layer's DIB and add it to the data section of this node
-        srcPDImage.getLayerByIndex(i).layerDIB.copyImageBytesIntoStream layerDIBCopy
-        pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, compressLayers, , embedChecksums
+        'If this is not a header-only file, retrieve the layer's DIB and add it to the data section of this node
+        If Not writeHeaderOnlyFile Then
+            srcPDImage.getLayerByIndex(i).layerDIB.copyImageBytesIntoStream layerDIBCopy
+            pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, compressLayers, , embedChecksums
+        End If
     
     Next i
     
@@ -2344,6 +2346,10 @@ Public Function saveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'A full copy of the pdImage stack
         Case UNDO_IMAGE
             Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False
+        
+        'A full copy of the pdImage stack, *without any layer DIB data*
+        Case UNDO_IMAGEHEADER
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False, True
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_LAYER
