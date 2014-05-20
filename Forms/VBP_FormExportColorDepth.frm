@@ -289,9 +289,27 @@ Public Sub showDialog()
     If g_ImageFormats.isColorDepthSupported(outputFormat, 32) Then optColorDepth(4).Enabled = True Else optColorDepth(4).Enabled = False
         
     'Out of politeness, set the default color depth to the current image's color depth
-    If (pdImages(g_CurrentImage).getCompositeImageColorDepth = 24) And (optColorDepth(3).Enabled) Then
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    'Retrieve a composite copy of the image no larger than 512x512 pixels
+    If pdImages(g_CurrentImage).Width > 512 Or pdImages(g_CurrentImage).Height > 512 Then
+        
+        Dim imgWidth As Long, imgHeight As Long
+        convertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 512, 512, imgWidth, imgHeight
+        pdImages(g_CurrentImage).getCompositedRect tmpDIB, 0, 0, imgWidth, imgHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, InterpolationModeHighQualityBicubic
+        
+    Else
+        pdImages(g_CurrentImage).getCompositedImage tmpDIB
+    End If
+    
+    'If the image has a useless alpha channel, blank it out now.
+    If Not tmpDIB.verifyAlphaChannel Then tmpDIB.convertTo24bpp
+    
+    'Select 24bpp or 32bpp by default, depending on the alpha channel status of the composited DIB.
+    If (tmpDIB.getDIBColorDepth = 24) And (optColorDepth(3).Enabled) Then
         optColorDepth(3).Value = True
-    ElseIf (pdImages(g_CurrentImage).getCompositeImageColorDepth = 32) And (optColorDepth(4).Enabled) Then
+    ElseIf (tmpDIB.getDIBColorDepth = 32) And (optColorDepth(4).Enabled) Then
         optColorDepth(4).Value = True
     Else
         'If both 24 and 32bpp are disabled (not possible at present, but whatever), select the highest possible

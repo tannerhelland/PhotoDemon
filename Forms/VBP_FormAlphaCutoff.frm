@@ -164,7 +164,7 @@ Begin VB.Form dialog_AlphaCutoff
       Left            =   975
       TabIndex        =   2
       Top             =   270
-      Width           =   7320
+      Width           =   10440
       WordWrap        =   -1  'True
    End
    Begin VB.Label lblTitle 

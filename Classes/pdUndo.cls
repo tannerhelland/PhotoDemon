@@ -194,11 +194,11 @@ End Sub
 ' saved (e.g. those pasted from the clipboard, etc), it will undo to the image's original state.
 ' TODO: as of May '14, I still need to make this work with the recent Undo/Redo overhaul.
 Public Sub revertToLastSavedState()
-    If undoNumAtLastSave > 1 Then
-        restoreUndoData undoNumAtLastSave
-    Else
-        restoreUndoData 1
-    End If
+    'If undoNumAtLastSave > 1 Then
+    '    restoreUndoData undoNumAtLastSave
+    'Else
+        restoreUndoData
+    'End If
 End Sub
 
 'Restore an undo entry, e.g. "the user just clicked Undo".

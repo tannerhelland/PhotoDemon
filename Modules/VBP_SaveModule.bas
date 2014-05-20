@@ -101,20 +101,25 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 'Count colors used
                 Case 1
                 
+                    'Retrieve a composited copy of the current image, which we will use to determine output color depth.
+                    Dim tmpCompositeDIB As pdDIB
+                    Set tmpCompositeDIB = New pdDIB
+                    
+                    srcPDImage.getCompositedImage tmpCompositeDIB, False
+                    
+                    'Validate the composited image's alpha channel; if it is pointless, we can request 24bpp output depth.
+                    If Not tmpCompositeDIB.verifyAlphaChannel Then tmpCompositeDIB.convertTo24bpp
+                    
                     'Count the number of colors in the image.  (The function will automatically cease if it hits 257 colors,
                     ' as anything above 256 colors is treated as 24bpp.)
                     Dim colorCountCheck As Long
                     Message "Counting image colors to determine optimal exported color depth..."
-                    If imageID <> -1 Then
-                        colorCountCheck = getQuickColorCount(srcPDImage, imageID)
-                    Else
-                        colorCountCheck = getQuickColorCount(srcPDImage)
-                    End If
                     
-                    'Retrieve a composited copy of the current image
-                    Dim tmpCompositeDIB As pdDIB
-                    Set tmpCompositeDIB = New pdDIB
-                    srcPDImage.getCompositedImage tmpCompositeDIB, False
+                    If imageID <> -1 Then
+                        colorCountCheck = getQuickColorCount(tmpCompositeDIB, imageID)
+                    Else
+                        colorCountCheck = getQuickColorCount(tmpCompositeDIB)
+                    End If
                     
                     'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
                     outputColorDepth = getColorDepthFromColorCount(colorCountCheck, tmpCompositeDIB)
@@ -829,6 +834,8 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     
     End If
     
+    Message "Writing %1 file...", sFileType
+    
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
@@ -943,7 +950,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         'Check to see if the current image had its colors counted before coming here.  If not, count it.
         Dim numColors As Long
         If g_LastImageScanned <> srcPDImage.imageID Then
-            numColors = getQuickColorCount(srcPDImage, srcPDImage.imageID)
+            numColors = getQuickColorCount(tmpDIB, srcPDImage.imageID)
         Else
             numColors = g_LastColorCount
         End If
@@ -999,6 +1006,8 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         If (tmpDIB.getDIBColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngnqEnabled Then outputColorDepth = 24
     
     End If
+    
+    Message "Writing %1 file...", sFileType
     
     'Convert our current DIB to a FreeImage-type DIB
     Dim fi_DIB As Long
