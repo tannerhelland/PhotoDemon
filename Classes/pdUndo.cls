@@ -192,13 +192,68 @@ End Sub
 
 'This special command can be used to revert the image to its last saved state.  For images that have never been
 ' saved (e.g. those pasted from the clipboard, etc), it will undo to the image's original state.
-' TODO: as of May '14, I still need to make this work with the recent Undo/Redo overhaul.
 Public Sub revertToLastSavedState()
-    'If undoNumAtLastSave > 1 Then
-    '    restoreUndoData undoNumAtLastSave
-    'Else
-        restoreUndoData
-    'End If
+    moveToSpecificUndoPoint undoNumAtLastSave
+End Sub
+
+'Move to a specific location in the Undo/Redo chain.  Note that this function may take some time if the requested
+' point is quite far into the Undo/Redo chain.
+Public Sub moveToSpecificUndoPoint(ByVal undoIndex As Long)
+    
+    'Some external actions must be deactivated while Undo/Redo processing occurs.  Such asynchronous functions can check
+    ' this global variable to determine if they should fire, so we must set it before doing anything else.
+    g_UndoRedoActive = True
+    
+    Message "Reconstructing image..."
+    
+    'Start by resetting the image to its default state, e.g. Undo 0.
+    LoadUndo generateUndoFilename(0), UNDO_EVERYTHING, UNDO_EVERYTHING, , True
+    
+    'From this point, we now want to advance the Undo stack to the requested index by applying successive diff entries
+    ' until the final index is reached.
+    If undoIndex > 1 Then
+    
+        Dim i As Long
+        For i = 1 To undoIndex - 1
+            LoadUndo generateUndoFilename(i), undoStack(i).undoType, undoStack(i).undoType, undoStack(i).undoLayerID, True
+        Next i
+    
+    End If
+    
+    'Our parent pdImage object has now been successively reconstructed.  Set all Undo variables to their proper values, then
+    ' redraw the screen and exit.
+    
+    'undoNum is always one higher than the state of the image.  (This is easily remembered because the base Undo copy is created at
+    ' point 0 right when an image is loaded, and because the undoNum is immediately advanced, it starts at value 1.)
+    undoNum = undoIndex
+    
+    'Allow saving contingent on the image's state
+    If undoNum = undoNumAtLastSave Then parentPDImage.setSaveState True Else parentPDImage.setSaveState False
+    
+    'See if Undoing is allowed
+    If undoNum > 1 Then undoState = True Else undoState = False
+    
+    'See if redoing is allowed
+    If undoNum = undoMax Then redoState = False Else redoState = True
+    
+    'Select the relevant tool for this action, if one is provided
+    If getUndoTool > -1 Then toolbar_Tools.selectNewTool getUndoTool
+    
+    'To inspect the current state of the Undo/Redo stack, uncomment this line.
+    'debugUndo "Undo pointer moved by request to a specific location"
+    
+    'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
+    ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
+    writeUndoDataToXML generateUndoHeaderFilename()
+    
+    'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Undo Pointer moved to arbitary location"
+    
+    Message "Image successfully restored."
+    
+    'Notify the program that undo/redo data is no longer being processed, so asynchronous functions can resume their behavior.
+    g_UndoRedoActive = False
+    
 End Sub
 
 'Restore an undo entry, e.g. "the user just clicked Undo".
