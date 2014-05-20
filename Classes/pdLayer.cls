@@ -869,3 +869,22 @@ Public Function checkForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
     End Select
 
 End Function
+
+'Sometimes, it is helpful to reset all non-destructive parameters to their default values.  (For example, after flattening
+' an image, we want to reset the base layer.)  Use this function to do so.
+Public Sub resetLayerParameters()
+
+    'Assign default values to this instance
+    With myLayerData
+        .l_GroupID = 0
+        .l_Opacity = 100
+        .l_BlendMode = BL_NORMAL
+        .l_OffsetX = 0
+        .l_OffsetY = 0
+        .l_CanvasXModifier = 1
+        .l_CanvasYModifier = 1
+        .l_Angle = 0
+        .l_Visibility = True
+    End With
+
+End Sub
