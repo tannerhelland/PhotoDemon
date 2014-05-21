@@ -24,6 +24,25 @@ Begin VB.Form FormFragment
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
+   Begin VB.ComboBox cmbEdges 
+      BackColor       =   &H00FFFFFF&
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00800000&
+      Height          =   360
+      Left            =   6120
+      Style           =   2  'Dropdown List
+      TabIndex        =   8
+      Top             =   3975
+      Width           =   5700
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -57,11 +76,12 @@ Begin VB.Form FormFragment
       Height          =   495
       Left            =   6000
       TabIndex        =   3
-      Top             =   2520
+      Top             =   1680
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      Max             =   100
+      Max             =   200
+      SigDigits       =   1
       Value           =   8
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -78,11 +98,11 @@ Begin VB.Form FormFragment
       Height          =   495
       Left            =   6000
       TabIndex        =   4
-      Top             =   1320
+      Top             =   600
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   2
+      Min             =   1
       Max             =   50
       Value           =   4
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -100,7 +120,7 @@ Begin VB.Form FormFragment
       Height          =   495
       Left            =   6000
       TabIndex        =   6
-      Top             =   3720
+      Top             =   2760
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
@@ -116,6 +136,91 @@ Begin VB.Form FormFragment
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   0
+   End
+   Begin PhotoDemon.smartOptionButton OptInterpolate 
+      Height          =   330
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   9
+      Top             =   4920
+      Width           =   1005
+      _ExtentX        =   1773
+      _ExtentY        =   635
+      Caption         =   "quality"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartOptionButton OptInterpolate 
+      Height          =   330
+      Index           =   1
+      Left            =   7920
+      TabIndex        =   10
+      Top             =   4920
+      Width           =   975
+      _ExtentX        =   1720
+      _ExtentY        =   635
+      Caption         =   "speed"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblTitle 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "render emphasis:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   2
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   4530
+      Width           =   1845
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "if pixels lie outside the image..."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   3540
+      Width           =   3315
    End
    Begin VB.Label lblAngle 
       AutoSize        =   -1  'True
@@ -134,13 +239,13 @@ Begin VB.Form FormFragment
       Height          =   285
       Left            =   6000
       TabIndex        =   7
-      Top             =   3360
+      Top             =   2400
       Width           =   660
    End
    Begin VB.Label lblFragments 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "# of fragments:"
+      Caption         =   "number of fragments:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -154,8 +259,8 @@ Begin VB.Form FormFragment
       Height          =   285
       Left            =   6000
       TabIndex        =   5
-      Top             =   960
-      Width           =   1695
+      Top             =   240
+      Width           =   2340
    End
    Begin VB.Label lblDistance 
       AutoSize        =   -1  'True
@@ -174,7 +279,7 @@ Begin VB.Form FormFragment
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   2160
+      Top             =   1320
       Width           =   945
    End
 End
@@ -185,16 +290,23 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fragment Filter Dialog
-'Copyright ©2014 by Audioglider
+'Copyright ©2014 by Audioglider and Tanner Helland
 'Created: 10/May/14
 'Last updated: 10/May/14
-'Last update: converted fragments to point-based system and added adjustable
-' # of fragments and angle.
+'Last update: lots of minor updates, fixes, and optimizations
 '
-'Similar to the Fragment effect from Photoshop except much more adjustable.
-' We allow the user to set the number of layers and offset them the same
-' distance from the origin at different positions as well as
-' altering the angle. Then we merge them all all together.
+'PD's Fragment effect is similar in concept to Paint.NET's Fragment tool, which is in turn much more customizable
+' than Photoshop's version.
+'
+'Specifically, PD's Fragment tool allows the user to specify any number of fragments, their distance from the
+' original pixel position, and the angle at which the fragments appear.  (Note that angle is more relevant when
+' the number of fragments is low; as the fragment count increases, angle becomes less important.)  Like other
+' coordinate-transform tools in the project, additional options are provided for edge handling and interpolation
+' of pixel positions.
+'
+'Look-up tables are used to improve performance, which is especially important when the fragment count is high.
+'
+'Many thanks to pro developer Audioglider for contributing this great tool to PhotoDemon.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -203,18 +315,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Type LRGBQUAD
-   rgbBlue As Long
-   rgbGreen As Long
-   rgbRed As Long
-   rgbAlpha As Long
-End Type
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
 'Apply a fragment filter to the active layer
-Public Sub Fragment(ByVal fragments As Long, ByVal distance As Long, ByVal rotationAngle As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal rotationAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
    
     If Not toPreview Then Message "Applying beer goggles..."
     
@@ -242,120 +347,106 @@ Public Sub Fragment(ByVal fragments As Long, ByVal distance As Long, ByVal rotat
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
+    
+    'If this is a preview, we need to adjust the distance values to match the size of the preview box
+    If toPreview Then
+        fragDistance = fragDistance * curDIBValues.previewModifier
+        If fragDistance = 0 Then fragDistance = 1
+    End If
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
     
-    'Setup our offset points using the provided parameters
-    Dim pointOffsets() As POINTAPI
+    'Rather than recalculating fragment positions for each pixel, calculate them as offsets from (0, 0)
+    ' and store those values in x/y lookup tables.
     Dim n As Long
-    Dim Num As Double, num2 As Double, num3 As Double
-            
-    Num = PI_DOUBLE / CDbl(fragments)
+    Dim num As Double, num2 As Double, num3 As Double
+    
+    num = PI_DOUBLE / CDbl(fragCount)
     num2 = ((rotationAngle - 90) * PI) / 180
     
-    ReDim pointOffsets(0 To fragments - 1) As POINTAPI
-    For n = 0 To fragments - 1
-        num3 = num2 + (Num * n)
-        pointOffsets(n).x = Round(CDbl(distance * -Sin(num3)))
-        pointOffsets(n).y = Round(CDbl(distance * -Cos(num3)))
+    Dim xOffsetLookup() As Double
+    Dim yOffsetLookup() As Double
+    ReDim xOffsetLookup(0 To fragCount - 1) As Double
+    ReDim yOffsetLookup(0 To fragCount - 1) As Double
+    
+    For n = 0 To UBound(xOffsetLookup)
+        num3 = num2 + (num * n)
+        xOffsetLookup(n) = CDbl(fragDistance * -Sin(num3))
+        yOffsetLookup(n) = CDbl(fragDistance * -Cos(num3))
     Next n
     
+    'numPoints is the loop termination value for the fragment array (which is one less than the number of fragments,
+    ' because they are stored in a zero-based array.
     Dim numPoints As Long
-    numPoints = UBound(pointOffsets)
+    numPoints = fragCount - 1
     
-    'Stores colors for each point
-    Dim Colors() As LRGBQUAD
-    ReDim Colors(0 To UBound(pointOffsets)) As LRGBQUAD
-            
-    'This look-up table will be used for alpha-blending. It contains the equivalent of any two color values [0,255] added
-    ' together and divided by 2.
-    Dim hLookup(0 To 510) As Byte
-    For x = 0 To 510
-        hLookup(x) = x \ 2
-    Next x
+    'numPointsCalc is the number of fragments actually being processed.  This is the number of fragments + 1, because
+    ' the original pixel is also considered a fragment.
+    Dim numPointsCalc As Long
+    numPointsCalc = fragCount + 1
     
     'Color variables
     Dim r As Long, g As Long, b As Long, a As Long
     Dim newR As Long, newG As Long, newB As Long, newA As Long
     
-    Dim yOffset As Long, xOffset As Long
+    'Pixel offsets
+    Dim xOffset As Double, yOffset As Double
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Grab the current pixel values
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
-        If qvDepth = 4 Then a = srcImageData(QuickVal + 3, y)
+        newR = srcImageData(quickVal + 2, y)
+        newG = srcImageData(quickVal + 1, y)
+        newB = srcImageData(quickVal, y)
+        If qvDepth = 4 Then newA = srcImageData(quickVal + 3, y)
         
+        'Iterate through each fragment in turn, adding together their values as we go
         For n = 0 To numPoints
-            xOffset = x - pointOffsets(n).x
-            yOffset = y - pointOffsets(n).y
+        
+            'Calculate an offset for this fragment.
+            xOffset = x - xOffsetLookup(n)
+            yOffset = y - yOffsetLookup(n)
+                        
+            'Use the filter support class to interpolate and edge-wrap pixels as necessary
+            fSupport.getColorsFromSource r, g, b, a, xOffset, yOffset, srcImageData
             
-            'Perform a bounds check
-            If xOffset < 0 Then
-                xOffset = x
-            ElseIf xOffset > finalX Then
-                xOffset = x
-            End If
+            'Add the retrieved values to our running average
+            newR = newR + r
+            newG = newG + g
+            newB = newB + b
+            If qvDepth = 4 Then newA = newA + a
             
-            If yOffset < 0 Then
-                yOffset = y
-            ElseIf yOffset > finalY Then
-                yOffset = y
-            End If
-            
-            newR = srcImageData(xOffset * qvDepth + 2, yOffset)
-            newG = srcImageData(xOffset * qvDepth + 1, yOffset)
-            newB = srcImageData(xOffset * qvDepth, yOffset)
-            If qvDepth = 4 Then
-                newA = srcImageData(xOffset * qvDepth + 3, yOffset)
-                Colors(n).rgbAlpha = newA
-            End If
-            Colors(n).rgbRed = newR
-            Colors(n).rgbGreen = newG
-            Colors(n).rgbBlue = newB
         Next n
         
-        'First, blend the the original color with the first layer
-        ' before looping through the rest of the color array
-        newR = hLookup(r + Colors(0).rgbRed)
-        newG = hLookup(g + Colors(0).rgbGreen)
-        newR = hLookup(b + Colors(0).rgbBlue)
-        If qvDepth = 4 Then newA = hLookup(a + Colors(0).rgbAlpha)
-        For n = 1 To numPoints
-            newR = newR + hLookup(Colors(n - 1).rgbRed + Colors(n).rgbRed)
-            newG = newG + hLookup(Colors(n - 1).rgbGreen + Colors(n).rgbGreen)
-            newB = newB + hLookup(Colors(n - 1).rgbBlue + Colors(n).rgbBlue)
-            If qvDepth = 4 Then newA = newA + hLookup(Colors(n - 1).rgbAlpha + Colors(n).rgbAlpha)
-        Next n
+        'Take the average of all fragments, and apply them to the image
+        newR = newR \ numPointsCalc
+        newG = newG \ numPointsCalc
+        newB = newB \ numPointsCalc
+                
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal, y) = newB
         
-        newR = newR \ numPoints + 1
-        newG = newG \ numPoints + 1
-        newB = newB \ numPoints + 1
-        
-        If newR > 255 Then newR = 255
-        If newG > 255 Then newG = 255
-        If newB > 255 Then newB = 255
-        
-        dstImageData(QuickVal + 2, y) = newR
-        dstImageData(QuickVal + 1, y) = newG
-        dstImageData(QuickVal, y) = newB
+        'If the image has an alpha channel, repeat the calculation there too
         If qvDepth = 4 Then
-            newA = newA \ numPoints + 1
-            If newA > 255 Then newA = 255
-            dstImageData(QuickVal + 3, y) = newA
+            newA = newA \ numPointsCalc
+            dstImageData(quickVal + 3, y) = newA
         End If
         
     Next y
@@ -379,8 +470,12 @@ Public Sub Fragment(ByVal fragments As Long, ByVal distance As Long, ByVal rotat
         
 End Sub
 
+Private Sub cmbEdges_Click()
+    updatePreview
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Fragment", , buildParams(sltFragments.Value, sltDistance.Value, sltAngle.Value), UNDO_LAYER
+    Process "Fragment", , buildParams(sltFragments.Value, sltDistance.Value, sltAngle.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -391,6 +486,7 @@ Private Sub cmdBar_ResetClick()
     sltFragments.Value = 4
     sltDistance.Value = 8
     sltAngle.Value = 0
+    cmbEdges.ListIndex = EDGE_CLAMP
 End Sub
 
 Private Sub Form_Activate()
@@ -398,10 +494,22 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    
-    'Render an image preview
+        
+    'Create the preview
+    cmdBar.markPreviewStatus True
     updatePreview
     
+End Sub
+
+Private Sub Form_Load()
+
+    'Disable previews until the dialog has been fully initialized
+    cmdBar.markPreviewStatus False
+    
+    'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
+    ' them immediately available to all distort functions.
+    popDistortEdgeBox cmbEdges, EDGE_CLAMP
+
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -409,10 +517,14 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then Fragment sltFragments, sltDistance, sltAngle, True, fxPreview
+    If cmdBar.previewsAllowed Then Fragment sltFragments, sltDistance, sltAngle, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
 
 Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
+Private Sub OptInterpolate_Click(Index As Integer)
     updatePreview
 End Sub
 

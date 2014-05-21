@@ -15,10 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Filter Support Class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 15/January/13
-'Last updated: 08/August/13
-'Last update: improve edge interpolation for certain edge handling modes (wrap, most notably).  Instead of a harsh
-'             line at edge boundaries for wrap/reflect modes, the edge results will now be interpolated.  This does
-'             slow filter processing somewhat, but only when AA is enabled - so the trade-off seems reasonable to me.
+'Last updated: 21/May/14
+'Last update: add new getColorsFromSource function, which can be used to RGB values from anywhere in the image,
+'              but with all the usual support for edge wrapping, interpolation, and more.  The updated Fragment
+'              tool makes use of these capabilities.
 '
 'Per its name, this class provides support routines for certain types of image filters, namely: filters
 ' that move pixels.  Automated edge-handling (with a variety of approaches) and interpolation are key features.
@@ -40,15 +40,61 @@ Private m_DstX As Long, m_DstY As Long
 'A function may want to force parts of an image to a certain color.  This simplified function can be used to do that.
 Public Sub forcePixels(ByRef x As Long, ByRef y As Long, ByRef newR As Long, ByRef newG As Long, ByRef newB As Long, ByRef newA As Long, ByRef dstData() As Byte)
 
-    Dim QuickVal As Long
-    QuickVal = x * m_ColorDepth
-    dstData(QuickVal, y) = newB
-    dstData(QuickVal + 1, y) = newG
-    dstData(QuickVal + 2, y) = newR
-    If m_ColorDepth = 4 Then dstData(QuickVal + 3, y) = newA
+    Dim quickVal As Long
+    quickVal = x * m_ColorDepth
+    dstData(quickVal, y) = newB
+    dstData(quickVal + 1, y) = newG
+    dstData(quickVal + 2, y) = newR
+    If m_ColorDepth = 4 Then dstData(quickVal + 3, y) = newA
 
 End Sub
 
+'If a function simply wants RGB/A values returned for a given source position, then can use this function to capture
+' those values.  This is helpful for tools that calculate multiple source positions (like a Blur tool), and need to
+' do something with the colors from those various positions.
+'
+'Said another way, the caller need only calculate srcX and srcY, then this class will do the rest!
+Public Sub getColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByRef a As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte)
+    
+    'First, fix any coordinates that lie outside the image
+    Dim fixDistort As Boolean
+    fixDistort = FixDistortEdges(srcX, srcY)
+    
+    'Now, interpolate as necessary
+    Dim quickValX As Long, quickValY As Long
+    
+    'fixDistort will only be set to TRUE when the current pixel needs to be erased
+    If fixDistort Then
+        r = 0
+        g = 0
+        b = 0
+        If m_ColorDepth = 4 Then a = 0
+    Else
+    
+        'Interpolate a new pixel value
+        If m_Interpolate Then
+            
+            r = pInterpolate(srcX, srcY, srcData, 2)
+            g = pInterpolate(srcX, srcY, srcData, 1)
+            b = pInterpolate(srcX, srcY, srcData, 0)
+            If m_ColorDepth = 4 Then a = pInterpolate(srcX, srcY, srcData, 3)
+        
+        'Round to the nearest coordinate value
+        Else
+    
+            quickValX = Int(srcX) * m_ColorDepth
+            quickValY = Int(srcY)
+            
+            r = srcData(quickValX + 2, quickValY)
+            g = srcData(quickValX + 1, quickValY)
+            b = srcData(quickValX, quickValY)
+            If m_ColorDepth = 4 Then a = srcData(quickValX + 3, quickValY)
+            
+        End If
+        
+    End If
+
+End Sub
 
 'After a transform has generate a set of reverse-mapped pixel coordinates, they are passed to this function.
 ' Based on already established parameters (such as interpolation, edge handling, etc), new pixel values are set.
@@ -65,26 +111,26 @@ Public Sub setPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByR
     fixDistort = FixDistortEdges(srcX, srcY)
     
     'Now, interpolate as necessary
-    Dim i As Long, QuickVal As Long, QuickVal2 As Long
+    Dim i As Long, quickVal As Long, QuickVal2 As Long
     
-    QuickVal = x * m_ColorDepth
+    quickVal = x * m_ColorDepth
     
     'fixDistort will only be set to TRUE when the current pixel needs to be erased
     If fixDistort Then
         For i = 0 To m_ColorDepthLoop
-            dstData(QuickVal + i, y) = 0
+            dstData(quickVal + i, y) = 0
         Next i
     Else
         If m_Interpolate Then
             For i = 0 To m_ColorDepthLoop
-                dstData(QuickVal + i, y) = pInterpolate(srcX, srcY, srcData, i)
+                dstData(quickVal + i, y) = pInterpolate(srcX, srcY, srcData, i)
             Next i
         Else
     
             QuickVal2 = Int(srcX) * m_ColorDepth
         
             For i = 0 To m_ColorDepthLoop
-                dstData(QuickVal + i, y) = srcData(QuickVal2 + i, Int(srcY))
+                dstData(quickVal + i, y) = srcData(QuickVal2 + i, Int(srcY))
             Next i
         End If
     End If
