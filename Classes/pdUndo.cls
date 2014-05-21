@@ -93,6 +93,8 @@ Private Type undoEntry
     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
     undoLayerID As Long             'If the undoType is UNDO_LAYER or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
     relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
+    thumbnailSmall As pdDIB         'A small thumbnail associated with the current action.  In the future, this will be used by the Undo History window.
+    thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
 End Type
 
 Private undoStack() As undoEntry
@@ -108,6 +110,10 @@ Public parentPDImage As pdImage
 'As part of PD's Undo/Redo chain, we can write the Undo/Redo stack to an XML file.  These constants are used to help
 ' us ID and parse such data correctly.
 Private Const pdUndoVersionID As Long = 64
+
+'The size of the Undo/Redo Thumbnail
+Private Const UNDO_THUMB_SMALL As Long = 48
+Private Const UNDO_THUMB_LARGE As Long = 256
 
 'When an image is saved, this class needs to be notified so that it can make a note of the current undo index
 Public Sub notifyImageSaved()
@@ -158,6 +164,24 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     ' to remember that Undo files exist past this point, so we can clean them up when we exit - hence the need for
     ' a separate undoTotal variable.
     undoMax = undoNum
+    
+    'Store a copy of the current image thumbnail, which we will eventually use as part of the Undo/Redo browser
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    'First, obtain a large copy of the thumbnail
+    Set undoStack(undoNum).thumbnailLarge = New pdDIB
+    parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+    
+    'Next, create a smaller copy of the thumbnail using FreeImage resize.  (This is much faster than regenerating
+    ' the thumbnail from scratch, especially if an image has many layers.)
+    tmpDIB.createBlank fixDPI(UNDO_THUMB_SMALL), fixDPI(UNDO_THUMB_SMALL), 32, 0
+    FreeImageResizeDIBFast tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, undoStack(undoNum).thumbnailLarge, FILTER_BILINEAR, True
+    
+    'Copy the small resized thumbnail into the Undo thumbnail stack
+    Set undoStack(undoNum).thumbnailSmall = New pdDIB
+    undoStack(undoNum).thumbnailSmall.createFromExistingDIB tmpDIB
+    Set tmpDIB = Nothing
     
     'Increase our Undo count
     undoNum = undoNum + 1
@@ -581,6 +605,12 @@ Private Function generateUndoFilename(ByVal uIndex As Long) As String
     
 End Function
 
+'Publicly accessible mechanism for generating a unique Undo/Redo file name.  Any changes to the private function, above,
+' should be mirrored here.
+Public Function generateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long) As String
+    generateUndoFilenameExternal = g_UserPreferences.GetTempPath & "~cPDU_" & imageID & "_" & uIndex & "_.pdtmp"
+End Function
+
 'Generate a unique Undo/Redo header filename, including full temp path.  Note that this function does *NOT* take an
 ' Undo number index.  The entire stack is written out to the header file, every time.
 Private Function generateUndoHeaderFilename() As String
@@ -619,8 +649,9 @@ Public Sub clearUndos()
         
     Next i
     
-    'Destroy the header file, if any
+    'Destroy the header file and preview image, if any
     If FileExist(generateUndoHeaderFilename()) Then Kill generateUndoHeaderFilename()
+    If FileExist(generateUndoHeaderFilename() & ".asp") Then Kill generateUndoHeaderFilename() & ".asp"
     
     'Set the current and maximum Undo number to 0
     undoNum = 0
@@ -743,6 +774,13 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
     
     'Write out the XML version we're using for this macro
     xmlEngine.writeTag "pdUndoVersion", pdUndoVersionID
+    xmlEngine.writeBlankLine
+    
+    'Write out some basic information about our parent pdImage object.  In the event of a critical program crash,
+    ' the AutoSave engine can use this information to reconstruct any missing images.
+    xmlEngine.writeTag "imageID", parentPDImage.imageID
+    xmlEngine.writeTag "friendlyName", parentPDImage.originalFileNameAndExtension
+    xmlEngine.writeBlankLine
     
     'Write out the size of the current Undo stack, including the Max and Total values
     xmlEngine.writeTag "StackHeight", undoMax
@@ -778,16 +816,8 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
     'With all Undo data successfully written, close the XML data and write it out to file.
     xmlEngine.writeXMLToFile dstFilename
     
+    'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
+    ' will use this as an image preview if something goes horribly wrong.
+    Saving.QuickSaveDIBAsPNG generateUndoHeaderFilename & ".asp", undoStack(undoNum - 1).thumbnailLarge
+    
 End Sub
-
-''With the creation of PD's Autosave engine, it became helpful to write some Undo immediately, outside of the
-'' traditional Undo/Redo stack.  This function can be used to do so.
-'Public Sub writeOneOffUndoEntry()
-'
-'    'Ask the parent PD image to write itself out to file
-'    Saving.SavePhotoDemonImage parentPDImage, getCurrentUndoFilename(), True, False, False, False
-'    parentPDImage.mainSelection.writeSelectionToFile getCurrentUndoFilename() & ".selection"
-'
-'    Debug.Print "Saved " & getCurrentUndoFilename() & " at the request of PD's Autosave engine."
-'
-'End Sub
