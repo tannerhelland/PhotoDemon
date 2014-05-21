@@ -3,8 +3,10 @@ Attribute VB_Name = "Image_Autosave_Handler"
 'Image Autosave Handler
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 18/January/14
-'Last updated: 20/May/14
-'Last update: rewrite everything Autosave-related against PD's new Undo/Redo engine.
+'Last updated: 21/May/14
+'Last update: finish work on Autosave engine rewrite.  The Autosave engine can now do something absolutely kick-ass:
+'              it can restruct the entire original image state, including the full Undo/Redo stack (allowing the user
+'              to quite literally pick up wherever they left off).
 '
 'PhotoDemon's Autosave engine is closely tied to the pdUndo class, so some understanding of that class is necessary
 ' to appreciate how this module operates.
@@ -27,14 +29,6 @@ Attribute VB_Name = "Image_Autosave_Handler"
 
 Option Explicit
 
-'Binary autosave entries.  These are raw image buffers dumped to the user's temp folder as part of normal
-' PD processing.
-Public Type autosaveBinary
-    fullPath As String
-    origImageID As Long
-    origUndoID As Long
-End Type
-
 'A collection of valid Autosave XML entries in the user's Data\Autosave folder.  In all but the worst-case
 ' scenarios (e.g. program failure during generating Undo/Redo data), these *should* correspond to raw image
 ' data in the Undo/Redo list.
@@ -42,6 +36,7 @@ Public Type AutosaveXML
     xmlPath As String
     parentImageID As Long
     friendlyName As String
+    originalPath As String
     undoStackHeight As Long
     undoStackAbsoluteMaximum As Long
     undoStackPointer As Long
@@ -135,6 +130,7 @@ Public Function saveableImagesPresent() As Long
                 With m_XmlEntries(m_numOfXMLFound)
                     .xmlPath = g_UserPreferences.GetTempPath & chkFile
                     .friendlyName = xmlEngine.getUniqueTag_String("friendlyName")
+                    .originalPath = xmlEngine.getUniqueTag_String("originalPath")
                     .parentImageID = xmlEngine.getUniqueTag_Long("imageID", -1)
                     .undoNumAtLastSave = xmlEngine.getUniqueTag_Long("UndoNumAtLastSave", 0)
                     .undoStackAbsoluteMaximum = xmlEngine.getUniqueTag_Long("StackAbsoluteMaximum", 0)
@@ -179,8 +175,6 @@ Public Sub purgeOldAutosaveData()
     'Loop through all XML files found.  We will not only be deleting the XML files themselves, but also any child
     ' files they may reference
     For i = 0 To m_numOfXMLFound - 1
-    
-        Debug.Print "Attempting to delete " & m_XmlEntries(i).undoStackAbsoluteMaximum & " files..."
     
         'Delete all possible child references for this image.
         For j = 0 To m_XmlEntries(i).undoStackAbsoluteMaximum
@@ -252,4 +246,105 @@ Public Sub alignLoadedImageWithAutosave(ByRef srcPDImage As pdImage)
     
     End If
     
+End Sub
+
+'If the user opts to restore one (or more) autosave entries, PD's main form will pass the list of XML files
+' to this function.  It is our job to then load those files.
+Public Sub loadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
+
+    Dim i As Long, newImageID As Long, oldImageID As Long
+    Dim autosaveFile(0) As String
+    
+    'Before starting our processing loop, create a dummy pdUndo object.  This object will help us generate
+    ' relevant filenames using PD's standard Undo filename formula.
+    Dim tmpUndoEngine As pdUndo
+    Set tmpUndoEngine = New pdUndo
+    
+    'An XML engine will be used to update each image's new Undo/Redo engine so that it exactly matches the
+    ' state of its original Undo/Redo engine.
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Process each XML entry in turn.  Because of the way we are reconstructing the Undo entries, we can't load
+    ' all the files in a single LoadFileAsNewImage request (despite it supporting an array of filenames).  Instead,
+    ' we must load each image individually, do a bunch of processing to the image (and its Undo files) to restore
+    ' it's proper image state, *then* move on to the next image.
+    For i = 0 To UBound(fullXMLList)
+    
+        'Before doing anything else, we are going to rename the Undo files associated with this Autosave entry.
+        ' PD assigns image IDs sequentially in each session, starting with image ID #1.  Because the image ID is immutable
+        ' (it corresponds to the image's location in the master pdImages() array), we cannot simply change it to match
+        ' the ID of the Undo files - instead, we must rename the Undo files to match the new image ID.
+        newImageID = i + 1
+        oldImageID = fullXMLList(i).parentImageID
+        
+        'If the image's new ID does not match its original one, rename all Undo files to match
+        If newImageID <> oldImageID Then renameAllUndoFiles fullXMLList(i), newImageID, oldImageID
+        
+        'Make a copy of the current Undo XML file for this image, as it will be overwritten as soon as we load the first
+        ' Undo entry as a new image.
+        xmlEngine.loadXMLFile fullXMLList(i).xmlPath
+        
+        'We now have everything we need.  Load the base Undo entry as a new image.
+        autosaveFile(0) = tmpUndoEngine.generateUndoFilenameExternal(newImageID, 0)
+        LoadFileAsNewImage autosaveFile, False, fullXMLList(i).friendlyName, fullXMLList(i).friendlyName
+        
+        'The new image has been successfully noted, but we must now overwrite some of the data PD has assigned it with
+        ' its original data (such as its "location on disk", which should reflect its original location - not its
+        ' temporary file location!)
+        pdImages(g_CurrentImage).locationOnDisk = fullXMLList(i).originalPath
+        pdImages(g_CurrentImage).originalFileNameAndExtension = fullXMLList(i).friendlyName
+        
+        'It is now time to artificially reconstruct the image's Undo/Redo stack, using the data from the autosave file.
+        ' The Undo engine itself handles this step.
+        If pdImages(g_CurrentImage).undoManager.reconstructStackFromExternalSource(xmlEngine.returnCurrentXMLString) Then
+        
+            'The Undo stack was reconstructed successfully.  Ask it to advance the stack pointer to its location from
+            ' the last session.
+            pdImages(g_CurrentImage).undoManager.moveToSpecificUndoPoint fullXMLList(i).undoStackPointer
+            
+            Message "Autosave reconstruction complete for %1", fullXMLList(i).friendlyName
+        
+        Else
+            Message "Autosave could not be fully reconstructed.  Partial reconstruction attempted instead."
+        End If
+    
+    Next i
+    
+End Sub
+
+'loadTheseAutosaveFiles(), above, uses this function to rename Undo files so that they match a new image ID.
+Private Sub renameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImageID As Long, ByVal oldImageID As Long)
+
+    Dim oldFilename As String, newFilename As String
+    
+    'Before starting our processing loop, create a dummy pdUndo object.  This object will help us generate
+    ' relevant filenames using PD's standard Undo filename formula.
+    Dim tmpUndoEngine As pdUndo
+    Set tmpUndoEngine = New pdUndo
+    
+    'The autosaveData object knows how many autosave files are available
+    Dim i As Long
+    For i = 0 To autosaveData.undoStackAbsoluteMaximum
+    
+        oldFilename = tmpUndoEngine.generateUndoFilenameExternal(oldImageID, i)
+        newFilename = tmpUndoEngine.generateUndoFilenameExternal(newImageID, i)
+        
+        'Check image data first...
+        If FileExist(oldFilename) Then
+            Name oldFilename As newFilename
+        End If
+        
+        '...followed by layer data
+        If FileExist(oldFilename & ".layer") Then
+            Name oldFilename & ".layer" As newFilename & ".layer"
+        End If
+        
+        '...followed by selection data
+        If FileExist(oldFilename & ".selection") Then
+            Name oldFilename & ".selection" As newFilename & ".selection"
+        End If
+        
+    Next i
+
 End Sub

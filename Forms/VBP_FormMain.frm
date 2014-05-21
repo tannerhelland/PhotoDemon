@@ -39,7 +39,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
@@ -50,9 +50,9 @@ Begin VB.Form FormMain
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
       Top             =   360
-      _extentx        =   635
-      _extenty        =   635
-      pollinterval    =   5
+      _ExtentX        =   635
+      _ExtentY        =   635
+      PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1327,8 +1327,8 @@ Attribute VB_Exposed = False
 'Main Program Form
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 28/April/14
-'Last update: new Layer-related menu items added
+'Last updated: 21/May/14
+'Last update: update interactions with Autosave handler to reflect recent Autosave engine overhaul
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its
 ' primary purpose is sending parameters to other, more interesting sections of the program.
@@ -1708,19 +1708,15 @@ Private Sub Form_Load()
             userWantsAutosaves = displayAutosaveWarning(listOfFilesToSave)
             
             'If the user wants to restore old Autosave data, do so now.
-            If userWantsAutosaves = vbYes Then
+            If (userWantsAutosaves = vbYes) Then
             
-                'listOfFilesToSave now contains the list of files the user wants saved.  Load them all now.
-                Dim autosaveEntries() As String
-                ReDim autosaveEntries(0 To UBound(listOfFilesToSave)) As String
+                'listOfFilesToSave contains the list of Autosave files the user wants restored.
+                ' Hand them off to the autosave handler, which will load and restore each file in turn.
+                Image_Autosave_Handler.loadTheseAutosaveFiles listOfFilesToSave
                 
-                Dim i As Long
-                For i = 0 To UBound(listOfFilesToSave)
-                    'autosaveEntries(i) = listOfFilesToSave(i).latestUndoPath
-                Next i
+                'Synchronize the interface to the restored files
+                syncInterfaceToCurrentImage
                 
-                LoadFileAsNewImage autosaveEntries
-                                
                 'With all data successfully loaded, purge the now-unnecessary Autosave entries.
                 Image_Autosave_Handler.purgeOldAutosaveData
             
@@ -1750,7 +1746,7 @@ Private Sub Form_Load()
     
     Message "Checking command line..."
     
-    If g_CommandLine <> "" Then
+    If Len(g_CommandLine) > 0 Then
         Message "Loading requested images..."
         Loading.LoadImagesFromCommandLine
     End If
