@@ -1337,6 +1337,88 @@ GDIPlusSaveError:
     
 End Function
 
+'Quickly export a DIB to PNG format using GDI+.
+Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As pdDIB) As Boolean
+
+    On Error GoTo GDIPlusQuickSaveError
+    
+    'Begin by creating a generic bitmap header for the current DIB
+    Dim imgHeader As BITMAPINFO
+    
+    With imgHeader.Header
+        .Size = Len(imgHeader.Header)
+        .Planes = 1
+        .BitCount = srcDIB.getDIBColorDepth
+        .Width = srcDIB.getDIBWidth
+        .Height = -srcDIB.getDIBHeight
+    End With
+
+    'Use GDI+ to create a GDI+-compatible bitmap
+    Dim GDIPlusReturn As Long
+    Dim hImage As Long
+        
+    'Different GDI+ calls are required for different color depths. GdipCreateBitmapFromGdiDib leads to a blank
+    ' alpha channel for 32bpp images, so use GdipCreateBitmapFromScan0 in that case.
+    If srcDIB.getDIBColorDepth = 32 Then
+        
+        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
+        GDIPlusReturn = GdipCreateBitmapFromScan0(srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBWidth * 4, PixelFormat32bppARGB, ByVal srcDIB.getActualDIBBits, hImage)
+    
+    Else
+        GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal srcDIB.getActualDIBBits, hImage)
+    End If
+    
+    If (GDIPlusReturn <> [OK]) Then
+        GdipDisposeImage hImage
+        GDIPlusQuickSavePNG = False
+        Exit Function
+    End If
+        
+    'Request a PNG encoder from GDI+
+    Dim uEncCLSID As CLSID
+    Dim uEncParams As EncoderParameters
+    Dim aEncParams() As Byte
+        
+    pvGetEncoderClsID "image/png", uEncCLSID
+    uEncParams.Count = 1
+    ReDim aEncParams(1 To Len(uEncParams))
+    
+    Dim gdipColorDepth As Long
+    gdipColorDepth = srcDIB.getDIBColorDepth
+    
+    With uEncParams.Parameter
+        .NumberOfValues = 1
+        .encType = EncoderParameterValueTypeLong
+        .Guid = pvDEFINE_GUID(EncoderColorDepth)
+        .Value = VarPtr(gdipColorDepth)
+    End With
+    
+    CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
+    
+    'Check to see if a file already exists at this location
+    If FileExist(dstFilename) Then Kill dstFilename
+    
+    'Perform the encode and save
+    GDIPlusReturn = GdipSaveImageToFile(hImage, StrConv(dstFilename, vbUnicode), uEncCLSID, aEncParams(1))
+    
+    If (GDIPlusReturn <> [OK]) Then
+        GdipDisposeImage hImage
+        GDIPlusQuickSavePNG = False
+        Exit Function
+    End If
+    
+    'Release the GDI+ copy of the image
+    GDIPlusReturn = GdipDisposeImage(hImage)
+    
+    GDIPlusQuickSavePNG = True
+    Exit Function
+    
+GDIPlusQuickSaveError:
+
+    GDIPlusQuickSavePNG = False
+    
+End Function
+
 'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.
 Public Function isGDIPlusAvailable() As Boolean
 

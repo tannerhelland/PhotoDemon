@@ -2390,3 +2390,42 @@ Public Function saveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     End Select
     
 End Function
+
+'Quickly save a DIB to file in PNG format.  Things like PD's Recent File manager use this function to quickly write DIBs out to file.
+Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As pdDIB) As Boolean
+
+    'If FreeImage is available, use it to save the PNG; otherwise, fall back to GDI+
+    If g_ImageFormats.FreeImageEnabled Then
+        
+        'Convert the temporary DIB to a FreeImage-type DIB
+        Dim fi_DIB As Long
+        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+    
+        'Use that handle to save the image to PNG format
+        If fi_DIB <> 0 Then
+            Dim fi_Check As Long
+            
+            'Output the PNG file at the proper color depth
+            Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
+            If srcDIB.getDIBColorDepth = 24 Then
+                fi_OutputColorDepth = FICD_24BPP
+            Else
+                fi_OutputColorDepth = FICD_32BPP
+            End If
+            
+            'Ask FreeImage to write the thumbnail out to file
+            fi_Check = FreeImage_SaveEx(fi_DIB, dstFilename, FIF_PNG, FISO_PNG_Z_BEST_SPEED, fi_OutputColorDepth, , , , , True)
+            If Not fi_Check Then Message "Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
+            
+        Else
+            Message "Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
+        End If
+        
+    'FreeImage is not available; try to use GDI+ to save a PNG thumbnail
+    Else
+        
+        If Not GDIPlusQuickSavePNG(dstFilename, srcDIB) Then Message "Thumbnail save failed (unspecified GDI+ error)."
+        
+    End If
+
+End Function

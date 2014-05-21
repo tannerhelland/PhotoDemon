@@ -307,8 +307,8 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dx As Long, _
-    ByVal dy As Long, _
+    ByVal dX As Long, _
+    ByVal dY As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal Scan As Long, _
@@ -321,8 +321,8 @@ Private Declare Function StretchDIBits Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dx As Long, _
-    ByVal dy As Long, _
+    ByVal dX As Long, _
+    ByVal dY As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal wSrcWidth As Long, _
@@ -4998,7 +4998,8 @@ Dim strExtension As String
              (FreeImage_FIFSupportsExportType(Format, FIT_BITMAP))) Then
             
             If (Not FreeImage_IsFilenameValidForFIF(Format, FileName)) Then
-               strExtension = "." & FreeImage_GetPrimaryExtensionFromFIF(Format)
+               'Edit by Tanner: don't prevent me from writing whatever file extensions I damn well please!  ;)
+               'strExtension = "." & FreeImage_GetPrimaryExtensionFromFIF(Format)
             End If
             
             ' check color depth

@@ -15,11 +15,8 @@ Attribute VB_Exposed = False
 'MRU (Most Recently Used) List Handler
 'Copyright ©2005-2014 by Tanner Helland
 'Created: 22/May/05
-'Last updated: 31/October/13
-'Last update: move all code to a standalone class, and rewrite to fix some long-standing inefficiencies and bugs.
-'              Recent file entries are now saved to their own special preset file, separate from the main user
-'              preferences XML.  Also, I wrote a small GDI+ fallback for saving thumbnails (used only if FreeImage
-'              cannot be found).
+'Last updated: 20/May/14
+'Last update: replace custom PNG export code with a newly created "QuickSaveDIBAsPNG" function in the Saving module.
 '
 'This class is responsible for the creation and maintenance of the program's Recent Files list, which is commonly
 ' referred to as an MRU or "Most Recently Used" list.
@@ -475,47 +472,8 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
         tImage.requestThumbnail mruThumb, 16
     End If
     
-    'If FreeImage is available, use it to save the PNG; otherwise, fall back to GDI+
-    If g_ImageFormats.FreeImageEnabled Then
-        
-        'Convert the temporary DIB to a FreeImage-type DIB
-        Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(mruThumb.getDIBDC)
-    
-        'Use that handle to save the image to PNG format
-        If fi_DIB <> 0 Then
-            Dim fi_Check As Long
-            
-            'Output the PNG file at the proper color depth
-            Dim fi_OutputColorDepth As FREE_IMAGE_COLOR_DEPTH
-            If mruThumb.getDIBColorDepth = 24 Then
-                fi_OutputColorDepth = FICD_24BPP
-            Else
-                fi_OutputColorDepth = FICD_32BPP
-            End If
-            
-            'Ask FreeImage to write teh thumbnail out to file
-            fi_Check = FreeImage_SaveEx(fi_DIB, sFilename, FIF_PNG, FISO_PNG_Z_BEST_SPEED, fi_OutputColorDepth, , , , , True)
-            If fi_Check Then Message "Thumbnail saved successfully." Else Message "MRU thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report."
-            
-        Else
-            Message "Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report."
-        End If
-        
-    'FreeImage is not available; try to use GDI+ to save a PNG thumbnail
-    Else
-        Dim tmpImage As pdImage
-        Set tmpImage = New pdImage
-        'Set tmpImage.getActiveDIB = mruThumb
-        
-        If GDIPlusSavePicture(tmpImage, sFilename, ImagePNG, 32) Then
-            Message "Thumbnail saved successfully."
-        Else
-            Message "Thumbnail save failed (unspecified GDI+ error)."
-        End If
-        
-        Set tmpImage = Nothing
-    End If
+    'Write the PNG file.  (FreeImage and GDI+ are both supported by this function, FYI)
+    Saving.QuickSaveDIBAsPNG sFilename, mruThumb
     
     'Regardless of how our thumbnail was saved, we can now delete the temporary thumbnail DIB
     mruThumb.eraseDIB
