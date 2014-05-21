@@ -3,9 +3,8 @@ Attribute VB_Name = "Image_Autosave_Handler"
 'Image Autosave Handler
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 18/January/14
-'Last updated: 08/April/14
-'Last update: change wrapper functions for pdImage access to account for new layered behavior.  This class is going to
-'              be woefully broken for some time due to Layers changes, but I will fix it... eventually.
+'Last updated: 20/May/14
+'Last update: rewrite everything Autosave-related against PD's new Undo/Redo engine.
 '
 'PhotoDemon's Autosave engine is closely tied to the pdUndo class, so some understanding of that class is necessary
 ' to appreciate how this module operates.
@@ -39,23 +38,19 @@ End Type
 'A collection of valid Autosave XML entries in the user's Data\Autosave folder.  In all but the worst-case
 ' scenarios (e.g. program failure during generating Undo/Redo data), these *should* correspond to raw image
 ' data in the Undo/Redo list.
-Public Type autosaveXML
+Public Type AutosaveXML
     xmlPath As String
+    parentImageID As Long
     friendlyName As String
-    idValue As Long
-    isDisplayed As Boolean
-    latestUndoFound As Long
-    latestUndoPath As String
-    isBufferOnly As Boolean
+    undoStackHeight As Long
+    undoStackAbsoluteMaximum As Long
+    undoStackPointer As Long
+    undoNumAtLastSave As Long
 End Type
-
-'For performance reasons, we cache the list of Autosave files found during our initial search (if any)
-Private m_BinaryEntries() As autosaveBinary
-Private m_numOfBinaryFound As Long
 
 'Collection of Autosave XML entries found
 Private m_numOfXMLFound As Long
-Private m_XmlEntries() As autosaveXML
+Private m_XmlEntries() As AutosaveXML
 
 'Check to make sure the last program shutdown was clean.  If it was, return TRUE (and write out a new safe shutdown file).
 ' If it was not, return FALSE.
@@ -108,38 +103,52 @@ End Sub
 ' It will return a value larger than 0 if Undo/Redo data was found.
 Public Function saveableImagesPresent() As Long
 
-    'Search the temporary folder for any files matching PhotoDemon's Undo/Redo file pattern.  The pattern we currently use is:
-    ' g_UserPreferences.getTempPath & "~cPDU_" & parentPDImage.imageID & "_" & uIndex & ".pdtmp"
+    'Search the temporary folder for any files matching PhotoDemon's Undo/Redo file pattern.  Because PD's Undo/Redo engine
+    ' is awesome, it automatically saves very nice Undo XML files that contain key data for each pdImage opened by the program.
+    ' In the event of an unsafe shutdown, these XML files help us easily reconstruct any "lost" images.
     
-    'This is going to change in the future, as some kind of Layer ID will also be necessary.
+    'Note: the pattern of PhotoDemon's Undo XML summary files is:
+    ' g_UserPreferences.GetTempPath & "~PDU_StackSummary_" & parentPDImage.imageID & "_.pdtmp"
     
-    Dim numOfImagesFound As Long
-    numOfImagesFound = 0
-    m_numOfBinaryFound = 0
-    ReDim m_BinaryEntries(0 To 9) As autosaveBinary
+    'Reset our XML detection arrays
+    m_numOfXMLFound = 0
+    ReDim m_XmlEntries(0 To 9) As AutosaveXML
     
-    Dim imgIDCheck As Long, undoIDCheck As Long
+    'We'll use PD's standard XML engine to validate any discovered autosave entries
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
     
-    'Retrieve the first image from the list (if any)
+    'Retrieve the first matching file from the folder (if any)
     Dim chkFile As String
-    chkFile = Dir(g_UserPreferences.getTempPath & "~cPDU_*_*.pdtmp", vbNormal)
-        
+    chkFile = Dir(g_UserPreferences.GetTempPath & "~PDU_StackSummary_*_.pdtmp", vbNormal)
+    
+    'Continue checking potential autosave XML entries until all have been analyzed
     Do While Len(chkFile) > 0
     
-        'Do some processing on said file to make sure it is valid; if it is, increment the "images found" counter
-        If getIDValuesFromUndoPath(chkFile, imgIDCheck, undoIDCheck) Then
-            numOfImagesFound = numOfImagesFound + 1
+        'First, make sure the file actually contains XML data
+        If xmlEngine.loadXMLFile(g_UserPreferences.GetTempPath & chkFile) Then
+        
+            'If it does, make sure the XML data is valid, and that at least one Undo entry is listed in the file
+            If xmlEngine.isPDDataType("Undo stack") And xmlEngine.validateLoadedXMLData("pdUndoVersion") Then
             
-            'Also, cache this path in a module-level array, which we'll use externally to interact with the user
-            m_numOfBinaryFound = m_numOfBinaryFound + 1
-            
-            If (m_numOfBinaryFound - 1) > UBound(m_BinaryEntries) Then
-                ReDim Preserve m_BinaryEntries(0 To UBound(m_BinaryEntries) * 2) As autosaveBinary
+                'The file checks out!  Add it to our XML entries array
+                With m_XmlEntries(m_numOfXMLFound)
+                    .xmlPath = g_UserPreferences.GetTempPath & chkFile
+                    .friendlyName = xmlEngine.getUniqueTag_String("friendlyName")
+                    .parentImageID = xmlEngine.getUniqueTag_Long("imageID", -1)
+                    .undoNumAtLastSave = xmlEngine.getUniqueTag_Long("UndoNumAtLastSave", 0)
+                    .undoStackAbsoluteMaximum = xmlEngine.getUniqueTag_Long("StackAbsoluteMaximum", 0)
+                    .undoStackHeight = xmlEngine.getUniqueTag_Long("StackHeight", 1)
+                    .undoStackPointer = xmlEngine.getUniqueTag_Long("CurrentStackPointer", 0)
+                End With
+                
+                'Increment the "number found" counter and resize the array as necessary
+                m_numOfXMLFound = m_numOfXMLFound + 1
+                If m_numOfXMLFound > UBound(m_XmlEntries) Then
+                    ReDim Preserve m_XmlEntries(0 To (UBound(m_XmlEntries) + 1) * 2) As AutosaveXML
+                End If
+                
             End If
-            
-            m_BinaryEntries(m_numOfBinaryFound - 1).fullPath = g_UserPreferences.getTempPath & chkFile
-            m_BinaryEntries(m_numOfBinaryFound - 1).origImageID = imgIDCheck
-            m_BinaryEntries(m_numOfBinaryFound - 1).origUndoID = undoIDCheck
             
         End If
         
@@ -148,131 +157,63 @@ Public Function saveableImagesPresent() As Long
         
     Loop
     
-    saveableImagesPresent = numOfImagesFound
+    'Trim the XML array to its smallest relevant size, then return the number of images found
+    ReDim Preserve m_XmlEntries(0 To m_numOfXMLFound) As AutosaveXML
+    
+    saveableImagesPresent = m_numOfXMLFound
 
 End Function
 
 'If the user declines to restore old AutoSave data, purge it from the system (to prevent it from showing up in future searches).
 Public Sub purgeOldAutosaveData()
-
-    Dim i As Long
     
-    'Release binary autosave entries first
-    If m_numOfBinaryFound > 0 Then
+    Message "Purging old autosave data..."
     
-        For i = 0 To m_numOfBinaryFound - 1
-        
-            'Validate each path before removing it from the system (just to be safe!)
-            If i < UBound(m_BinaryEntries) Then
-            
-                If Len(m_BinaryEntries(i).fullPath) > 0 Then
-                    If FileExist(m_BinaryEntries(i).fullPath) Then Kill m_BinaryEntries(i).fullPath
-                    
-                    'Also check for selection data matching this file, and remove it if present
-                    If FileExist(m_BinaryEntries(i).fullPath & ".selection") Then Kill m_BinaryEntries(i).fullPath & ".selection"
-                    
-                End If
-                
-            End If
-        
-        Next i
-        
-        'Release any memory associated with autosaves
-        m_numOfBinaryFound = 0
-        ReDim m_BinaryEntries(0) As autosaveBinary
+    'Create a dummy pdUndo object.  This object will help us generate relevant filenames using PD's standard Undo filename formula.
+    Dim tmpUndoEngine As pdUndo
+    Set tmpUndoEngine = New pdUndo
     
-    End If
+    Dim tmpFilename As String
+    Dim i As Long, j As Long
     
-    'Follow it with XML entries
-    If m_numOfXMLFound > 0 Then
+    'Loop through all XML files found.  We will not only be deleting the XML files themselves, but also any child
+    ' files they may reference
+    For i = 0 To m_numOfXMLFound - 1
     
-        For i = 0 To m_numOfXMLFound - 1
-        
-            'Validate each path before removing it from the system (just to be safe!)
-            If i < UBound(m_XmlEntries) Then
-                If Len(m_XmlEntries(i).xmlPath) > 0 Then
-                    If FileExist(m_XmlEntries(i).xmlPath) Then Kill m_XmlEntries(i).xmlPath
-                End If
-            End If
-        
-        Next i
-        
-        'Release any memory associated with autosaves
-        m_numOfXMLFound = 0
-        ReDim m_XmlEntries(0) As autosaveXML
+        Debug.Print "Attempting to delete " & m_XmlEntries(i).undoStackAbsoluteMaximum & " files..."
     
-    End If
+        'Delete all possible child references for this image.
+        For j = 0 To m_XmlEntries(i).undoStackAbsoluteMaximum
+        
+            tmpFilename = tmpUndoEngine.generateUndoFilenameExternal(m_XmlEntries(i).parentImageID, j)
+        
+            'Check image data first...
+            If FileExist(tmpFilename) Then Kill tmpFilename
+        
+            '...followed by layer data
+            If FileExist(tmpFilename & ".layer") Then Kill tmpFilename & ".layer"
+        
+            '...followed by selection data
+            If FileExist(tmpFilename & ".selection") Then Kill tmpFilename & ".selection"
+        
+        Next j
+        
+        'Finally, kill the Autosave XML file and preview image associated with this entry
+        If FileExist(m_XmlEntries(i).xmlPath) Then Kill m_XmlEntries(i).xmlPath
+        If FileExist(m_XmlEntries(i).xmlPath & ".asp") Then Kill m_XmlEntries(i).xmlPath & ".asp"
+    
+    Next i
+    
+    'As a nice gesture, release any module-level data associated with the Autosave engine
+    m_numOfXMLFound = 0
+    ReDim m_XmlEntries(0) As AutosaveXML
     
 End Sub
 
-'Given a path to an Undo file, retrieve the image ID and undo ID from it.  Returns TRUE if successful, FALSE if the file in
-' question does not appear to be a PD Undo/Redo file after all.
-Private Function getIDValuesFromUndoPath(ByVal undoPath As String, ByRef imgID As Long, ByRef undoID As Long) As Boolean
-
-    Dim pCheck() As String
-    pCheck = Split(undoPath, "_")
-    
-    'pCheck() now contains the contents of undoPath, separated by underscore.  Make sure it generated at least three entries.
-    If UBound(pCheck) < 2 Then
-        getIDValuesFromUndoPath = False
-        Exit Function
-    End If
-    
-    'Search from the BACK of the string (as the path could have underscores, and we don't care about those), while checking
-    ' to make sure the entry is 1) numeric, and 2) above 0
-    If Not checkNumberAtPosition(pCheck, UBound(pCheck) - 1, undoID, -10) Then
-        getIDValuesFromUndoPath = False
-        Exit Function
-    End If
-    
-    'Repeat the steps above, but for the imageID
-    If Not checkNumberAtPosition(pCheck, UBound(pCheck) - 2, imgID, -10) Then
-        getIDValuesFromUndoPath = False
-        Exit Function
-    End If
-    
-    'If we made it all the way here, the search was successful.  Return TRUE.
-    getIDValuesFromUndoPath = True
-    
-End Function
-
-'Used by getIDValuesFromUndoPath, above, to retrieve numeric identifiers from an Undo string
-Private Function checkNumberAtPosition(ByRef srcString() As String, ByRef sArrayPosition As Long, ByRef dstNumber As Long, Optional ByVal lowBound As Long = 0) As Boolean
-
-    If IsNumeric(srcString(sArrayPosition)) Then
-        dstNumber = CLng(srcString(sArrayPosition))
-        
-        If dstNumber < lowBound Then
-            checkNumberAtPosition = False
-        Else
-            checkNumberAtPosition = True
-        End If
-        
-    Else
-        checkNumberAtPosition = False
-    End If
-    
-End Function
-
-'External functions can retrieve a copy of the binary autosave entries we've found by using this function.
-Public Function getBinaryAutosaveEntries(ByRef autosaveArray() As autosaveBinary, ByRef autosaveCount As Long) As Boolean
-
-    ReDim autosaveArray(0 To m_numOfBinaryFound - 1) As autosaveBinary
-    autosaveCount = m_numOfBinaryFound
-    
-    Dim i As Long
-    For i = 0 To autosaveCount - 1
-        autosaveArray(i) = m_BinaryEntries(i)
-    Next i
-    
-    getBinaryAutosaveEntries = True
-    
-End Function
-
 'External functions can retrieve a copy of the XML autosave entries we've found by using this function.
-Public Function getXMLAutosaveEntries(ByRef autosaveArray() As autosaveXML, ByRef autosaveCount As Long) As Boolean
+Public Function getXMLAutosaveEntries(ByRef autosaveArray() As AutosaveXML, ByRef autosaveCount As Long) As Boolean
 
-    ReDim autosaveArray(0 To m_numOfXMLFound - 1) As autosaveXML
+    ReDim autosaveArray(0 To m_numOfXMLFound - 1) As AutosaveXML
     autosaveCount = m_numOfXMLFound
     
     Dim i As Long
@@ -283,143 +224,6 @@ Public Function getXMLAutosaveEntries(ByRef autosaveArray() As autosaveXML, ByRe
     getXMLAutosaveEntries = True
     
 End Function
-
-'Retrieve all XML autosave entries from the user's /Data/Autosave folder.
-Public Function findAllAutosaveXML() As Boolean
-
-    m_numOfXMLFound = 0
-    ReDim m_XmlEntries(0) As autosaveXML
-    
-    'Retrieve the first image from the list (if any)
-    Dim chkFile As String
-    chkFile = Dir(g_UserPreferences.getAutosavePath & "*.xml", vbNormal)
-    
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    
-    Do While Len(chkFile) > 0
-    
-        'Do some processing on said XML to make sure it is valid
-        If xmlEngine.loadXMLFile(g_UserPreferences.getAutosavePath & chkFile) Then
-        
-            'Make sure the XML type is valid, and an ID value is present in the file
-            If xmlEngine.isPDDataType("pdImage Backup") And xmlEngine.validateLoadedXMLData("ID") Then
-            
-                'The file checks out.  Add it to our XML entries array
-                With m_XmlEntries(m_numOfXMLFound)
-                    .xmlPath = g_UserPreferences.getAutosavePath & chkFile
-                    .friendlyName = xmlEngine.getUniqueTag_String("OriginalFileNameAndExtension")
-                    .idValue = xmlEngine.getUniqueTag_Long("ID", -1)
-                    .isDisplayed = False
-                    .latestUndoFound = 0
-                    .latestUndoPath = ""
-                End With
-                
-                'Increment the "number found" counter and resize the array as necessary
-                m_numOfXMLFound = m_numOfXMLFound + 1
-                If m_numOfXMLFound > UBound(m_XmlEntries) Then
-                    ReDim Preserve m_XmlEntries(0 To (UBound(m_XmlEntries) + 1) * 2) As autosaveXML
-                End If
-            
-            End If
-        
-        End If
-        
-        'Check the next file in the list
-        chkFile = Dir
-    
-    Loop
-    
-    'All entries have been found.  Return TRUE if more than one entry was discovered.
-    If m_numOfXMLFound > 0 Then
-        findAllAutosaveXML = True
-    Else
-        findAllAutosaveXML = False
-    End If
-
-End Function
-
-'Once Binary and XML autosave data has been retrieved, this function can be used to align the two.  The latest binary image buffer
-' for each XML entry will be marked, and the resulting XML array will contain a full collection of relevant autosave data.
-Public Sub alignXMLandBinaryAutosaves()
-
-    Dim i As Long, j As Long
-    Dim curImage As Long, curImageExists As Boolean
-    
-    Dim unfoundImages As Long
-    unfoundImages = 0
-    
-    'For each raw image buffer found, we are now going to attempt to align it with an XML entry.  If we can, we
-    ' will load a single copy of that image into the list box.
-    For i = 0 To m_numOfBinaryFound - 1
-        
-        curImage = m_BinaryEntries(i).origImageID
-        curImageExists = False
-        
-        'Find a matching entry in the xmlEntries list
-        For j = 0 To m_numOfXMLFound - 1
-        
-            If m_XmlEntries(j).idValue = curImage Then
-                
-                'A matching XML entry was found!  See if this entry has already been matched up with a raw
-                ' image buffer.
-                
-                If m_XmlEntries(j).isDisplayed Then
-                
-                    curImageExists = True
-                
-                    'This XML entry has already been matched up with a raw buffer.  See if this Undo value is
-                    ' more recent than the previous one.
-                    If m_XmlEntries(j).latestUndoFound < m_BinaryEntries(i).origUndoID Then
-                    
-                        'This entry is newer.  Update accordingly.
-                        m_XmlEntries(j).latestUndoFound = m_BinaryEntries(i).origUndoID
-                        m_XmlEntries(j).latestUndoPath = m_BinaryEntries(i).fullPath
-                    
-                    End If
-                
-                Else
-                
-                    'This XML entry has not yet been matched up with a raw buffer.  Match it now.
-                    curImageExists = True
-                    m_XmlEntries(j).latestUndoFound = m_BinaryEntries(i).origUndoID
-                    m_XmlEntries(j).latestUndoPath = m_BinaryEntries(i).fullPath
-                    m_XmlEntries(j).isDisplayed = True
-                
-                End If
-                
-            End If
-        
-            'If we've already found a matching entry, exit the search loop
-            If curImageExists Then Exit For
-        
-        Next j
-        
-        'If this buffer did not have a corresponding entry in the XML array, let's add one now.  The entry will
-        ' be necessarily incomplete due to not knowing things like the file's original name, but at least the
-        ' user can recover the raw image data - which is certainly better than nothing at all!
-        If Not curImageExists Then
-        
-            'Add a new spot to the XML array
-            m_numOfXMLFound = m_numOfXMLFound + 1
-            ReDim Preserve m_XmlEntries(0 To m_numOfXMLFound - 1) As autosaveXML
-            
-            'Fill the new spot with data corresponding to this set of raw image data
-            unfoundImages = unfoundImages + 1
-            With m_XmlEntries(m_numOfXMLFound - 1)
-                .idValue = m_BinaryEntries(i).origImageID
-                .isBufferOnly = True
-                .isDisplayed = True
-                .latestUndoFound = m_BinaryEntries(i).origUndoID
-                .latestUndoPath = m_BinaryEntries(i).fullPath
-                .friendlyName = g_Language.TranslateMessage("unknown image %1", Str(unfoundImages))
-            End With
-            
-        End If
-        
-    Next i
-
-End Sub
 
 'After any autosave images have been loaded into PD, call this function to replace those images' data (such as "location on disk")
 ' with information from the Autosave XML files.
@@ -437,7 +241,7 @@ Public Sub alignLoadedImageWithAutosave(ByRef srcPDImage As pdImage)
             
                 'If this file's location on disk matches the binary buffer associated with a given XML entry,
                 ' ask the pdImage object to rewrite its internal data to match the XML file.
-                If StrComp(srcPDImage.locationOnDisk, m_XmlEntries(i).latestUndoPath, vbTextCompare) = 0 Then
+                If StrComp(srcPDImage.locationOnDisk, m_XmlEntries(i).xmlPath, vbTextCompare) = 0 Then
                     srcPDImage.readExternalData m_XmlEntries(i).xmlPath
                     Exit For
                 End If

@@ -5,7 +5,7 @@ Begin VB.Form dialog_AutosaveWarning
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Autosave data detected"
-   ClientHeight    =   6885
+   ClientHeight    =   6975
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9165
@@ -21,7 +21,7 @@ Begin VB.Form dialog_AutosaveWarning
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   459
+   ScaleHeight     =   465
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   611
    ShowInTaskbar   =   0   'False
@@ -203,8 +203,8 @@ Attribute VB_Exposed = False
 'Autosave (unsafe shutdown) Prompt/Dialog
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/January/14
-'Last updated: 22/January/14
-'Last update: wrapped up initial build
+'Last updated: 21/May/14
+'Last update: rewrote the entire dialog against the new Undo/Redo engine
 '
 'PhotoDemon now provides AutoSave functionality.  If the program terminates unexpectedly, this dialog will be raised,
 ' which gives the user an option to restore any in-progress image edits.
@@ -226,10 +226,10 @@ Dim m_ToolTip As clsToolTip
 
 'Collection of Autosave XML entries found
 Private m_numOfXMLFound As Long
-Private m_XmlEntries() As autosaveXML
+Private m_XmlEntries() As AutosaveXML
 
 'When this dialog finally closes, the calling function can use this sub to retrieve the entries the user wants saved.
-Friend Sub fillArrayWithSaveResults(ByRef dstArray() As autosaveXML)
+Friend Sub fillArrayWithSaveResults(ByRef dstArray() As AutosaveXML)
     
     Dim numOfEntriesBeingSaved As Long
     numOfEntriesBeingSaved = 0
@@ -241,7 +241,7 @@ Friend Sub fillArrayWithSaveResults(ByRef dstArray() As autosaveXML)
     Next i
     
     'Prepare the destination array
-    ReDim dstArray(0 To numOfEntriesBeingSaved - 1) As autosaveXML
+    ReDim dstArray(0 To numOfEntriesBeingSaved - 1) As AutosaveXML
     
     'Fill the array with all selected entries
     numOfEntriesBeingSaved = 0
@@ -267,7 +267,11 @@ Public Sub showDialog()
     If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
     DrawSystemIcon IDI_EXCLAMATION, Me.hDC, fixDPI(22), iconY
     
+    'Display a brief explanation of the dialog at the top of the window
     lblWarning(1).Caption = g_Language.TranslateMessage("A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?")
+    
+    'Display a brief disclaimer about image previews at the bottom of the window
+    lblWarning(2).Caption = g_Language.TranslateMessage("Note: the preview window reflects each image as it appeared when it was first loaded into PhotoDemon.  As part of the Autosave restoration process, the images will be reconstructed to match their last known state in the program, so don't worry if some details are missing in the preview.")
     
     'Provide a default answer of "restore all images" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbOK
@@ -311,15 +315,12 @@ End Sub
 Private Sub updatePreview(ByVal srcImagePath As String)
     
     'Display a preview of the selected image
-    Dim tmpImagePath(0) As String
-    tmpImagePath(0) = srcImagePath
-        
-    Dim tmpImage As pdImage
-    Set tmpImage = New pdImage
-    LoadFileAsNewImage tmpImagePath, False, "", "", False, tmpImage, tmpImage.getActiveDIB, -1
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    QuickLoadImageToDIB srcImagePath, tmpDIB
     
-    If Not (tmpImage.getActiveDIB Is Nothing) And (tmpImage.getActiveDIB.getDIBWidth > 0) And (tmpImage.getActiveDIB.getDIBHeight > 0) Then
-        tmpImage.getActiveDIB.renderToPictureBox picPreview
+    If Not (tmpDIB Is Nothing) And (tmpDIB.getDIBWidth > 0) And (tmpDIB.getDIBHeight > 0) Then
+        tmpDIB.renderToPictureBox picPreview
     Else
         picPreview.Picture = LoadPicture("")
         Dim strToPrint As String
@@ -335,18 +336,11 @@ End Sub
 Private Function displayAutosaveEntries() As Boolean
 
     'Because we've arrived at this point, we know that the Autosave engine has found at least *some* usable image data.
+    ' Our goal now is to present that image data to the user, so they can select which images (if any) they want us
+    ' to restore.
     
-    'Image data is just raw image bytes stored in the temp folder, so the goal now is to see if we can align that
-    ' raw data with human-friendly XML data in the AutoSave folder.
-    
-    'Start by searching the Autosave folder for valid XML entries.
-    Dim xmlPresent As Boolean
-    xmlPresent = Image_Autosave_Handler.findAllAutosaveXML()
-    
-    'Ask the Autosave engine to align any discovered XML and binary data as best it can
-    Image_Autosave_Handler.alignXMLandBinaryAutosaves
-    
-    'Retrieve the final XML list
+    'The Image_Autosave_Handler module will already contain a list of all Undo XML files found by the Autosave engine.
+    ' It has stored this data in its private m_XmlEntries() array.  We can request a copy of this array as follows:
     Image_Autosave_Handler.getXMLAutosaveEntries m_XmlEntries(), m_numOfXMLFound
     
     'All XML entries will now have been matched up with their latest Undo entry.  Fill the listbox with their data,
@@ -355,11 +349,9 @@ Private Function displayAutosaveEntries() As Boolean
     
     Dim i As Long
     For i = 0 To m_numOfXMLFound - 1
-        If Len(m_XmlEntries(i).latestUndoPath) > 0 Then
-            lstAutosaves.AddItem m_XmlEntries(i).friendlyName
-            lstAutosaves.ItemData(lstAutosaves.newIndex) = i
-            lstAutosaves.Selected(lstAutosaves.newIndex) = True
-        End If
+        lstAutosaves.AddItem m_XmlEntries(i).friendlyName
+        lstAutosaves.ItemData(lstAutosaves.newIndex) = i
+        lstAutosaves.Selected(lstAutosaves.newIndex) = True
     Next i
     
     'Select the entry at the top of the list by default
@@ -369,10 +361,13 @@ End Function
 
 Private Sub lstAutosaves_Click()
 
+    'It's a bit ridiculous, but PD always saves a thumbnail of the latest image state to the same Undo path
+    ' as the XML file, but with an "asp" extension.  I realize what "asp" is usually used for, but in this case,
+    ' it means "autosave preview".  The confusing extension also provides a nice bit of obscuring to the underlying
+    ' PNG, for added privacy.
     Dim previewPath As String
-    previewPath = m_XmlEntries(lstAutosaves.ItemData(lstAutosaves.ListIndex)).latestUndoPath
+    previewPath = m_XmlEntries(lstAutosaves.ItemData(lstAutosaves.ListIndex)).xmlPath & ".asp"
     
     updatePreview previewPath
-    Debug.Print "Preview requested of the raw image buffer located at: " & previewPath
     
 End Sub
