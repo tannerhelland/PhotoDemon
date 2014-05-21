@@ -701,10 +701,7 @@ Public Sub deactivateImage()
     originalFileName = ""
     originalFileNameAndExtension = ""
     locationOnDisk = ""
-    
-    'Delete the file's Autosave entry, if any
-    If FileExist(g_UserPreferences.getAutosavePath & imageID & ".xml") Then Kill g_UserPreferences.getAutosavePath & imageID & ".xml"
-    
+        
     'Mark this image as inactive
     IsActive = False
     
@@ -725,18 +722,15 @@ Public Sub setSaveState(ByVal newSaveState As Boolean)
     Else
         hasBeenSaved = False
     End If
-    
-    'Any time the save state is modified, write a new AutoSave entry out to file.
-    If IsActive And (Not forInternalUseOnly) Then writeExternalData g_UserPreferences.getAutosavePath & imageID & ".xml"
-    
+        
 End Sub
 
 'If the images's size has somehow changed, this can be called to update it.
 '
 'The first optional parameter, assumed to be TRUE, makes the image the same size as its base layer.  This is helpful when
-' an image file is first loaded, as the pdImage container should be made to be the same size.
+' an image file is first loaded, as the pdImage container should be set to an identical size.
 '
-'If this is another type of resize action, the caller must supply the new width/height values desired.
+'If this is another type of resize action, such as a canvas resize, the caller must supply the new width/height values desired.
 '
 'Note that this function performs NO VALIDATION on the passed width/height values.  Make sure they are correct in advance!
 Public Function updateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)

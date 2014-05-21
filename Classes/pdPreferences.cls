@@ -80,12 +80,6 @@ Private LanguagePath As String
 Private UserLanguagePath As String
 Private SelectionPath As String
 Private PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
-Private AutosavePath As String
-
-'Get the current Autosave path
-Public Function getAutosavePath() As String
-    getAutosavePath = AutosavePath
-End Function
 
 'Get the current Preset path
 Public Function getPresetPath() As String
@@ -204,10 +198,7 @@ Public Sub initializePaths()
     
     IconPath = DataPath & "Icons\"
     If Not DirectoryExist(IconPath) Then MkDir IconPath
-    
-    AutosavePath = DataPath & "Autosave\"
-    If Not DirectoryExist(AutosavePath) Then MkDir AutosavePath
-    
+        
     'The user preferences file is also located in the \Data subdirectory
     PreferencesPath = DataPath & PROGRAMNAME & "_settings.xml"
     
