@@ -2394,6 +2394,11 @@ End Function
 'Quickly save a DIB to file in PNG format.  Things like PD's Recent File manager use this function to quickly write DIBs out to file.
 Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As pdDIB) As Boolean
 
+    If (srcDIB Is Nothing) Or (srcDIB.getDIBWidth = 0) Or (srcDIB.getDIBHeight = 0) Then
+        QuickSaveDIBAsPNG = False
+        Exit Function
+    End If
+
     'If FreeImage is available, use it to save the PNG; otherwise, fall back to GDI+
     If g_ImageFormats.FreeImageEnabled Then
         

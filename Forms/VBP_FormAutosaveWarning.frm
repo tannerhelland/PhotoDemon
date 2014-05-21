@@ -269,10 +269,7 @@ Public Sub showDialog()
     
     'Display a brief explanation of the dialog at the top of the window
     lblWarning(1).Caption = g_Language.TranslateMessage("A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?")
-    
-    'Display a brief disclaimer about image previews at the bottom of the window
-    lblWarning(2).Caption = g_Language.TranslateMessage("Note: the preview window reflects each image as it appeared when it was first loaded into PhotoDemon.  As part of the Autosave restoration process, the images will be reconstructed to match their last known state in the program, so don't worry if some details are missing in the preview.")
-    
+        
     'Provide a default answer of "restore all images" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbOK
 
@@ -362,9 +359,9 @@ End Function
 Private Sub lstAutosaves_Click()
 
     'It's a bit ridiculous, but PD always saves a thumbnail of the latest image state to the same Undo path
-    ' as the XML file, but with an "asp" extension.  I realize what "asp" is usually used for, but in this case,
-    ' it means "autosave preview".  The confusing extension also provides a nice bit of obscuring to the underlying
-    ' PNG, for added privacy.
+    ' as the XML file, but with an "asp" extension.  I know what "asp" is usually used for, but in this case,
+    ' it means "autosave preview".  The confusing extension also provides a bit of obfuscation about the file's
+    ' true contents (PNG data), which never hurts when sticking stuff in the temp folder.
     Dim previewPath As String
     previewPath = m_XmlEntries(lstAutosaves.ItemData(lstAutosaves.ListIndex)).xmlPath & ".asp"
     

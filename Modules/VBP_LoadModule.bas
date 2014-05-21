@@ -612,7 +612,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         Select Case FileExtension
         
             'PhotoDemon's custom file format must be handled specially (as obviously, FreeImage and GDI+ won't handle it!)
-            Case "PDI"
+            Case "PDI", "PDTMP"
             
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
                 loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetDIB, targetImage)
@@ -620,9 +620,9 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 targetImage.originalFileFormat = 100
                 targetImage.currentFileFormat = 100
                 mustCountColors = False
-        
-            'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable for loading these, as it handles
-            ' 32bpp images as well, but if we must, we can use VB's internal .LoadPicture command.
+            
+            'Straight TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable for loading these, as
+            ' it handles 32bpp images well, but if we must, we can resort to VB's internal .LoadPicture command.
             Case "TMP"
             
                 If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB)
@@ -632,14 +632,6 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 'Lie and say that the original file format of this image was JPEG.  We do this because tmp images are typically images
                 ' captured via non-traditional means (screenshot's, scans), and when the user tries to save the file, they should not
                 ' be prompted to save it as a BMP.
-                targetImage.originalFileFormat = FIF_JPEG
-                mustCountColors = True
-            
-            'PDTMP files are raw image buffers saved as part of Undo/Redo or Autosaving.
-            Case "PDTMP"
-            
-                loadSuccessful = LoadRawImageBuffer(sFile(thisImage), targetDIB, targetImage)
-                
                 targetImage.originalFileFormat = FIF_JPEG
                 mustCountColors = True
             
