@@ -1522,15 +1522,10 @@ Public Sub evaluateImageCheckpoint()
     ' trigger an Undo/Redo point to capture those changes.
     If (Not pdImages(previousImageID) Is Nothing) Then
     If (Not pdImages(previousImageID).getLayerByID(previousLayerID) Is Nothing) Then
-    
-        Debug.Print "layer comp pre: " & previousLayerParamString
-        Debug.Print "layer comp cur: " & pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString
         
+        'If the layer param strings don't match, trigger immediate creation of an Undo entry.
         If StrComp(pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, previousLayerParamString, vbTextCompare) <> 0 Then
-            
-            'The layer param strings don't match.  Trigger an immediate Undo entry.
             pdImages(g_CurrentImage).undoManager.createUndoData "Modify layer settings", pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, UNDO_LAYERHEADER, previousLayerID, -1
-                
         End If
     
     End If
