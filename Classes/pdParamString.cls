@@ -74,10 +74,14 @@ Public Sub setParamString(ByVal pString As String)
     End If
     
     'If any characters have been escaped, fix them now
-    Dim i As Long
-    For i = 0 To UBound(m_Params)
-        m_Params(i) = unEscapeParamCharacters(m_Params(i))
-    Next i
+    If m_numOfParams > 0 Then
+        
+        Dim i As Long
+        For i = 0 To UBound(m_Params)
+            m_Params(i) = unEscapeParamCharacters(m_Params(i))
+        Next i
+        
+    End If
     
 End Sub
 
