@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 20/May/14
-'Last update: optimize layer thumbnail creation against new resize functions
+'Last updated: 21/May/14
+'Last update: add support for getting/setting layer properties by param string
 '
 'Once upon a time, the pdLayer class was simply a DIB wrapper.  Once PhotoDemon moved to a fully layer-compatible
 ' image editor, however, it became necessary to separate Layer-specific functions from generic DIB functions.
@@ -99,7 +99,7 @@ End Enum
 Private layerID As Long
 
 'Layers store a lot of layer-type-agnostic metadata. **All of these entries can be changed by the user at run-time.**
-' Default values will be set at creation time, but never assume that those values are constant, and never attempt to reference
+' Default values will be set at creation time, but never assume that these values are constant, and never attempt to reference
 '  a layer by one of these properties (INCLUDING NAME, as it can be modified without warning)
 Private Type LayerData
     l_Name As String                'Layer name, as entered by the user
@@ -122,13 +122,13 @@ Private myLayerData As LayerData
 
 'A DIB that stores the contents of the layer, in DIB format.
 ' - For image layers, the layer contents will be stored in this DIB.
-' - For non-image layers, a rendering of the layer contents will be stored in this DIB.  This DIB is used to render the layer,
-'    rather than constantly redrawing whatever the layer's contents may be (text, etc)
+' - For non-image layers, a rendering of the layer contents will be stored in this DIB.  This DIB is used to render the layer
+'    onto the viewport, rather than constantly recreating whatever the layer's contents may be (text, etc)
 ' - For adjustment and other non-data layers, this DIB will remain unused.
 '
-'For performance reasons, I have made this DIB publicly accessible.  This allows edit functions to directly modify it as necessary.
-' That said, any function that directly modifies the DIB must also take care of any management functions as well (e.g. redrawing
-' the viewport), as layers have no way to propagate commands up to their parent image.
+'For performance reasons, I have chosen to make layer DIBs publicly accessible.  This allows edit functions to directly modify
+' them as necessary.  That said, any function that directly modifies the DIB must also take care of any management functions
+' as well (e.g. redrawing the viewport), because layers have no way to propagate change notifications up to their parent image.
 Public layerDIB As pdDIB
 
 'Get/set this layer's canonical ID value.  Note that this value is valid for both the life of the layer, and the life of its
@@ -316,7 +316,8 @@ End Sub
 ' handled separately, in binary format.
 '
 'If the optional parameter "avoidFluffEntries" is set, descriptive comments and pretty formatting will not be
-' applied to the XML string.  This helpful for improving read/write performance for the data.
+' applied to the XML string.  This helpful for improving read/write performance of the data, such as when writing
+' Undo/Redo entries.
 Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
 
     'Prepare an XML engine, which greatly simplifies the process of assembling XML data
@@ -372,6 +373,44 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
     getLayerHeaderAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
 
 End Function
+
+'Retrieve the layer's key data bits, but in PD's native param-string format.  This is used internally to check for
+' non-destructive changes to layer data; if any are found, the Undo/Redo engine knows to create a new point on the stack.
+Public Function getLayerHeaderAsParamString() As String
+
+    With myLayerData
+        getLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility)
+    End With
+    
+End Function
+
+'Given a param string, recreate the layer header accordingly.  Note that BY DESIGN, immutable layer parameters - including
+' layer ID and layer type - are never stored in param strings, and thus cannot be changed by this function.
+Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
+
+    'Create a param string parser
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString srcParamString
+    
+    'Assign all params to the layer header
+    With myLayerData
+        .l_Name = cParams.GetString(1)
+        .l_GroupID = cParams.GetLong(2)
+        .l_Opacity = cParams.GetLong(3)
+        .l_BlendMode = cParams.GetLong(4)
+        .l_OffsetX = cParams.GetDouble(5)
+        .l_OffsetY = cParams.GetDouble(6)
+        .l_CanvasXModifier = cParams.GetDouble(7)
+        .l_CanvasYModifier = cParams.GetDouble(8)
+        .l_Angle = cParams.GetDouble(9)
+        .l_Visibility = cParams.GetBool(10)
+    End With
+    
+    'Per PD convention, this class has no way to notify outsiders of updates, so the calling function must handle any
+    ' viewport redraws or other interface changes resulting from this assignment.
+
+End Sub
 
 'The sister function to "getLayerHeaderAsXML" above, this function will initialize a layer header from an XML-format string.
 '
