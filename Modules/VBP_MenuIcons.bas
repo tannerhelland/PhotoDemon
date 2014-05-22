@@ -219,7 +219,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "AUTOCROP", 3, 9      'Trim
     addMenuIcon "ROTATECW", 3, 11     'Rotate top-level
         '--> Rotate sub-menu
-        'addMenuIcon "STRAIGHTEN", 3, 11, 0  'Straighten
+        addMenuIcon "STRAIGHTEN", 3, 11, 0  'Straighten
         addMenuIcon "ROTATECW", 3, 11, 2    'Rotate Clockwise
         addMenuIcon "ROTATECCW", 3, 11, 3   'Rotate Counter-clockwise
         addMenuIcon "ROTATE180", 3, 11, 4   'Rotate 180
@@ -237,19 +237,27 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
     
     'Layer menu
-    'addMenuIcon "ADDLAYER", 4, 0        'Add layer (top-level)
+    addMenuIcon "ADDLAYER", 4, 0        'Add layer (top-level)
         '--> Add layer sub-menu
-        'addMenuIcon "", 4, 0, 0             'Add blank layer
+        addMenuIcon "ADDLAYER", 4, 0, 0             'Add blank layer
         addMenuIcon "DUPL_LAYER", 4, 0, 1          'Add duplicate layer
         addMenuIcon "PASTE_LAYER", 4, 0, 3          'Add layer from clipboard
-        'addMenuIcon "", 4, 0, 4             'Add layer from file
-    'addMenuIcon "DELLAYER", 4, 1        'Delete layer (top-level)
-    'addMenuIcon "MERGEUP", 4, 3         'Merge up
-    'addMenuIcon "MERGEDOWN", 4, 4       'Merge down
-    'addMenuIcon "LAYERORDER", 4, 5      'Order (top-level)
+        addMenuIcon "ADDLAYERFILE", 4, 0, 4             'Add layer from file
+    addMenuIcon "DELLAYER", 4, 1        'Delete layer (top-level)
+        '--> Delete layer sub-menu
+        addMenuIcon "DELLAYER", 4, 1, 0       'Delete current layer
+        addMenuIcon "DELLAYERHDN", 4, 1, 1       'Delete all hidden layers
+    addMenuIcon "MERGE_UP", 4, 3         'Merge up
+    addMenuIcon "MERGE_DOWN", 4, 4       'Merge down
+    addMenuIcon "LAYERORDER", 4, 5      'Order (top-level)
+        '--> Order layer sub-menu
+        addMenuIcon "LAYERUP", 4, 5, 0     'Raise layer
+        addMenuIcon "LAYERDOWN", 4, 5, 1     'Lower layer
+        addMenuIcon "LAYERTOTOP", 4, 5, 3     'Raise to top
+        addMenuIcon "LAYERTOBTM", 4, 5, 4     'Lower to bottom
     addMenuIcon "ROTATECW", 4, 7         'Layer Orientation (top-level)
         '--> Orientation sub-menu
-        'addMenuIcon "STRAIGHTEN", 4, 7, 0   'Straighten
+        addMenuIcon "STRAIGHTEN", 4, 7, 0   'Straighten
         addMenuIcon "ROTATECW", 4, 7, 2     'Rotate Clockwise
         addMenuIcon "ROTATECCW", 4, 7, 3    'Rotate Counter-clockwise
         addMenuIcon "ROTATE180", 4, 7, 4    'Rotate 180
@@ -258,7 +266,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "FLIP", 4, 7, 8         'Flip
     addMenuIcon "RESIZE", 4, 8           'Layer Size (top-level)
         '--> Size sub-menu
-        'addMenuIcon "RESETSIZE", 4, 8, 0        'Reset to original size
+        addMenuIcon "RESETSIZE", 4, 8, 0        'Reset to original size
         addMenuIcon "RESIZE", 4, 8, 2        'Resize
         addMenuIcon "SMRTRESIZE", 4, 8, 3    'Content-aware resize
     addMenuIcon "TRANSPARENCY", 4, 10    'Layer Transparency
@@ -266,8 +274,8 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "ADDTRANS", 4, 10, 0     'Add alpha channel
         addMenuIcon "GREENSCREEN", 4, 10, 1  'Color to alpha
         addMenuIcon "REMOVETRANS", 4, 10, 3  'Remove alpha channel
-    'addMenuIcon "FLATTENIMG", 4, 12     'Flatten image
-    'addMenuIcon "MERGEVISIBLE", 4, 13   'Merge visible layers
+    addMenuIcon "FLATTEN", 4, 12         'Flatten image
+    addMenuIcon "MERGEVISIBLE", 4, 13   'Merge visible layers
     
     'Select Menu
     addMenuIcon "SELECTALL", 5, 0       'Select all
@@ -347,11 +355,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "PHOTOFILTER", 6, 14      'Photography top-level
         addMenuIcon "EXPOSURE", 6, 14, 0     'Exposure
         addMenuIcon "PHOTOFILTER", 6, 14, 1  'Photo filters
-        'addMenuIcon "SPLITTONING", 6, 14, 2  'Split-toning
+        addMenuIcon "SPLITTONE", 6, 14, 2    'Split-toning
     
     
     'Effects (Filters) Menu
-    addMenuIcon "FADELAST", 7, 0        'Fade Last
+    'addMenuIcon "FADELAST", 7, 0        'Fade Last
     addMenuIcon "ARTISTIC", 7, 2        'Artistic
         '--> Artistic sub-menu
         addMenuIcon "COMICBOOK", 7, 2, 0      'Comic book
@@ -372,9 +380,9 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "RADIALBLUR", 7, 3, 5     'Radial Blur
         addMenuIcon "ZOOMBLUR", 7, 3, 6       'Zoom Blur
         addMenuIcon "CHROMABLUR", 7, 3, 8     'Chroma Blur
-        'addMenuIcon "FRAGMENT", 7, 3, 9       'Fragment
-        addMenuIcon "GRIDBLUR", 7, 3, 10       'Grid Blur
-        addMenuIcon "PIXELATE", 7, 3, 11       'Pixelate (formerly Mosaic)
+        addMenuIcon "FRAGMENT", 7, 3, 9       'Fragment
+        addMenuIcon "GRIDBLUR", 7, 3, 10      'Grid Blur
+        addMenuIcon "PIXELATE", 7, 3, 11      'Pixelate (formerly Mosaic)
         
     addMenuIcon "DISTORT", 7, 4         'Distort
         '--> Distort sub-menu
@@ -451,8 +459,8 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "PLUGIN", 8, 6          'Plugin Manager
     
     'Window Menu
-    addMenuIcon "NEXTIMAGE", 9, 6       'Next image
-    addMenuIcon "PREVIMAGE", 9, 7       'Previous image
+    addMenuIcon "NEXTIMAGE", 9, 7       'Next image
+    addMenuIcon "PREVIMAGE", 9, 8       'Previous image
     
     'Help Menu
     addMenuIcon "FAVORITE", 10, 0        'Donate
@@ -520,8 +528,8 @@ Public Sub resetMenuIcons()
     addMenuIcon "REDO", 1, 1     'Redo
     
     'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
-    addMenuIcon "NEXTIMAGE", 9, 6       'Next image
-    addMenuIcon "PREVIMAGE", 9, 7       'Previous image
+    addMenuIcon "NEXTIMAGE", 9, 7       'Next image
+    addMenuIcon "PREVIMAGE", 9, 8       'Previous image
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     Dim numOfMRUFiles As Long

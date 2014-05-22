@@ -65,6 +65,7 @@ CANVASSIZE   CUSTOM  MOVEABLE        LOADONCALL      canvas_resize.png
 CROPSEL      CUSTOM  MOVEABLE        LOADONCALL      image_crop.png
 AUTOCROP     CUSTOM  MOVEABLE        LOADONCALL      image_resize_actual.png
 //--> Rotate sub-menu
+STRAIGHTEN   CUSTOM  MOVEABLE        LOADONCALL      arrow_retweet.png
 ROTATECW     CUSTOM  MOVEABLE        LOADONCALL      image_rotate_90.png
 ROTATECCW    CUSTOM  MOVEABLE        LOADONCALL      image_rotate_270.png
 ROTATE180    CUSTOM  MOVEABLE        LOADONCALL      image_rotate_180.png
@@ -79,15 +80,26 @@ COUNTCOLORS  CUSTOM  MOVEABLE        LOADONCALL      counter.png
 
 
 //Layer menu
-
+ADDLAYER     CUSTOM  MOVEABLE        LOADONCALL      layer_plus.png
 //--> Add new sub-menu
-DUPL_LAYER   CUSTOM  MOVEABLE        LOADONCALL      duplicate_layer.png
-
-//--> Order sub-menu
+DUPL_LAYER   CUSTOM  MOVEABLE        LOADONCALL      layers.png
+ADDLAYERFILE CUSTOM  MOVEABLE        LOADONCALL      layer_arrow.png
+//
+DELLAYER     CUSTOM  MOVEABLE        LOADONCALL      layer_minus.png
+//--> Delete sub-menu
+DELLAYERHDN  CUSTOM  MOVEABLE        LOADONCALL      layer_minus_hidden.png
+//
 MERGE_UP     CUSTOM  MOVEABLE        LOADONCALL      merge_up.png
 MERGE_DOWN   CUSTOM  MOVEABLE        LOADONCALL      merge_down.png
-
-
+LAYERORDER   CUSTOM  MOVEABLE        LOADONCALL      layers_stack.png
+//--> Order sub-menu
+LAYERUP      CUSTOM  MOVEABLE        LOADONCALL      layers_arrange.png
+LAYERDOWN    CUSTOM  MOVEABLE        LOADONCALL      layers_arrange_back.png
+LAYERTOTOP   CUSTOM  MOVEABLE        LOADONCALL      layers_stack_arrange.png
+LAYERTOBTM   CUSTOM  MOVEABLE        LOADONCALL      layers_stack_arrange_back.png
+RESETSIZE    CUSTOM  MOVEABLE        LOADONCALL      layer_resize_actual.png
+FLATTEN      CUSTOM  MOVEABLE        LOADONCALL      hammer.png
+MERGEVISIBLE CUSTOM  MOVEABLE        LOADONCALL      eye_arrow_down.png
 
 //Select menu
 SELECTALL    CUSTOM  MOVEABLE        LOADONCALL      select_all.png
@@ -157,10 +169,10 @@ MONOCHROME   CUSTOM  MOVEABLE        LOADONCALL      checkerboard.png
 COLORTOMONO  CUSTOM  MOVEABLE        LOADONCALL      color_to_monochrome.png
 MONOTOCOLOR  CUSTOM  MOVEABLE        LOADONCALL      monochrome_to_color.png
 //
-
+SPLITTONE    CUSTOM  MOVEABLE        LOADONCALL      split_tone.png
 
 //Filters menu
-FADELAST     CUSTOM  MOVEABLE        LOADONCALL      layers_arrange_back.png
+//FADELAST     CUSTOM  MOVEABLE        LOADONCALL      layers_arrange_back.png
 ARTISTIC     CUSTOM  MOVEABLE        LOADONCALL      paintbrush.png
 //--> Artistic sub-menu
 COMICBOOK    CUSTOM  MOVEABLE        LOADONCALL      book_open_text_image.png
@@ -177,6 +189,7 @@ BLUR         CUSTOM  MOVEABLE        LOADONCALL      glass.png
 //--> Blur sub-menu
 BOXBLUR      CUSTOM  MOVEABLE        LOADONCALL      box.png
 CHROMABLUR   CUSTOM  MOVEABLE        LOADONCALL      category_group_select.png
+FRAGMENT     CUSTOM  MOVEABLE        LOADONCALL      puzzle.png
 GAUSSBLUR    CUSTOM  MOVEABLE        LOADONCALL      image_blur.png
 GRIDBLUR     CUSTOM  MOVEABLE        LOADONCALL      image_empty.png
 MOTIONBLUR   CUSTOM  MOVEABLE        LOADONCALL      weather_wind.png
