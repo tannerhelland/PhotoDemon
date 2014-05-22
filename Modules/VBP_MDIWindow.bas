@@ -458,6 +458,10 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     'If this form is already the active image, don't waste time re-activating it
     If g_CurrentImage <> imageID Then
     
+        'Before switching to a new image, check for any non-destructive edits on the current image.  If any have occurred,
+        ' add them to the Undo/Redo chain before switching.
+        Processor.evaluateImageCheckpoint
+    
         'Update the current form variable
         g_CurrentImage = imageID
     
@@ -482,6 +486,10 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         
         'Synchronize various interface elements to match values stored in this image.
         syncInterfaceToCurrentImage
+        
+        'As we have not invoked PD's central processor, we need to manually add an image checkpoint now.  This allows the processor
+        ' to capture any non-destructive edits that occur before the next processor request.
+        Processor.evaluateImageCheckpoint
         
     End If
     

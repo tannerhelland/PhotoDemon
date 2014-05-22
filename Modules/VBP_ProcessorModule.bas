@@ -3,8 +3,9 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 16/May/14
-'Last update: rewrite Undo file creation to match the new Active Undo/Redo engine (vs the old Passive version)
+'Last updated: 22/May/14
+'Last update: add image checkpoint functions so that non-destructive edits are properly added to the Undo/Redo chain
+'              when necessary (e.g. before a destructive edit occurs).
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -50,6 +51,13 @@ Public Processing As Boolean
 'Elapsed time of this processor request (to enable this, see the top constant in the Public_Constants module)
 Private m_ProcessingTime As Double
 
+'To help keep track of on-canvas layer changes (like toggling visibility, or changing opacity/blend mode), the processor
+' keeps track of the active layer's param string via this variable.  If it detects a change in layer parameters between
+' processor requests, it will automatically request a new entry in the Undo stack.  (To avoid confusion if the user
+' switches between images, the current image and layer IDs are also tracked.)
+Private previousImageID As Long, previousLayerID As Long
+Private previousLayerParamString As String
+
 'PhotoDemon's software processor.  (Almost) every action the program takes is first routed through this method.  This processor is what
 ' makes recording and playing back macros possible, as well as a host of other features.  (See comment at top of page for more details.)
 '
@@ -59,7 +67,7 @@ Private m_ProcessingTime As Double
 '                while "Blur", "False" will actually apply the blur.  If showDialog is true, no Undo will be created for the action.
 ' - *processParameters: all parameters for this function, concatenated into a single string.  The processor will automatically parse out
 '                       individual parameters as necessary.
-' - *createUndo: ID describing what kind of Undo entry to create for this action.  This value is set to "do note create Undo" by default,
+' - *createUndo: ID describing what kind of Undo entry to create for this action.  This value is set to "do not create Undo" by default,
 '                which is an important deviation from past PD versions.  *ANY ACTION THAT REQUIRES UNDO DATA CREATION MUST SPECIFICALLY
 '                REQUEST CREATION OF SAID DATA.*  I have chosen to make Undo creation explicit, as part of a much more performance- and
 '                memory-efficient Undo implementation.  NOTE: if showDialog is TRUE, this value will automatically be set to UNDO_NOTHING,
@@ -166,6 +174,19 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         End If
         
         'In the future, additional on-canvas modifications can be checked here.
+        
+    End If
+    
+    'To capture any non-destructive changes made to layer parameters (opacity, blend mode, visibility, etc), check for layer
+    ' state changes before applying any new changes to the image.
+    If (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+        
+        'Non-destructive layer state changes only ever affect the layer header.  (If a change affects a layer's DIB data, it is
+        ' destructive by definition!)  As such, do not evaluate header checkpoints if the current layerID matches the previous
+        ' one, and a layer header change is already being applied; the layer header will automatically be backed up in this case.)
+        If (pdImages(g_CurrentImage).getActiveLayerID <> previousLayerID) Or (createUndo <> UNDO_LAYERHEADER) Then
+            evaluateImageCheckpoint
+        End If
         
     End If
     
@@ -1281,7 +1302,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Fade last effect"
             MenuFadeLastEffect
             
-            
+        'This secret action is used internally by PD when we need some response from the processor engine - like checking for
+        ' non-destructive layer changes - but the user is not actually modifying the image.
+        Case "Do nothing"
+        
+        
         'DEBUG FAILSAFE
         ' This function should never be passed a process ID it can't parse, but if that happens, ask the user to report the unparsed ID
         Case Else
@@ -1366,6 +1391,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         FormMain.OLEDropMode = 1
         
     End If
+    
+    'Make a note of the current layer settings.  If the user makes on-canvas non-destructive changes (like toggling opacity or blend mode),
+    ' we can use this value to detect those changes and trigger Undo/Redo creation.  Note that we do this even for UNDO_NOTHING requests,
+    ' because actions like changing the active layer won't trigger Undo creation for themselves, but they do need to trigger Undo creation
+    ' for any non-destructive actions that have occurred on the present layer.
+    setImageCheckpoint
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied,
     ' but if either of those did not occur, sync the interface now
@@ -1465,4 +1496,44 @@ MainErrHandler:
     
     End If
         
+End Sub
+
+'Sometimes, external functions may want to trigger Undo/Redo creation without the rigamarole of a full processor call.  This is often
+' necesssary when the user has made one or more non-destructive changes to an image, and they are about to apply a destructive edit,
+' or they are switching image/layers and we need to process the current one first.
+'
+'Undo handling for such functions happens in two steps: setting a checkpoint (which the Process function will do automatically after
+' any process call), then looking for checkpoints and evaluating them before applying destructive changes to an image (which the Process
+' function will do automatically before applying a new process call).  For non-destructive edits that occur outside PD's central processor,
+' the following two functions can be used to add or evaluate such checkpoints outside of the central processor.
+Public Sub setImageCheckpoint()
+
+    If (Not pdImages(g_CurrentImage) Is Nothing) Then
+        previousImageID = g_CurrentImage
+        previousLayerID = pdImages(g_CurrentImage).getActiveLayerID
+        If (Not pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then previousLayerParamString = pdImages(g_CurrentImage).getActiveLayer.getLayerHeaderAsParamString
+    End If
+
+End Sub
+
+Public Sub evaluateImageCheckpoint()
+
+    'See if the specified layer's settings have changed since the last time a processor request was made.  If they have,
+    ' trigger an Undo/Redo point to capture those changes.
+    If (Not pdImages(previousImageID) Is Nothing) Then
+    If (Not pdImages(previousImageID).getLayerByID(previousLayerID) Is Nothing) Then
+    
+        Debug.Print "layer comp pre: " & previousLayerParamString
+        Debug.Print "layer comp cur: " & pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString
+        
+        If StrComp(pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, previousLayerParamString, vbTextCompare) <> 0 Then
+            
+            'The layer param strings don't match.  Trigger an immediate Undo entry.
+            pdImages(g_CurrentImage).undoManager.createUndoData "Modify layer settings", pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, UNDO_LAYERHEADER, previousLayerID, -1
+                
+        End If
+    
+    End If
+    End If
+
 End Sub

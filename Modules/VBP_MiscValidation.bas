@@ -218,7 +218,11 @@ Public Function buildParams(ParamArray allParams() As Variant) As String
         Dim i As Long
         For i = LBound(allParams) To UBound(allParams)
         
-            tmpString = Trim$(Str(allParams(i)))
+            If IsNumeric(allParams(i)) Then
+                tmpString = Trim$(Str(allParams(i)))
+            Else
+                tmpString = Trim$(allParams(i))
+            End If
         
             If Len(tmpString) > 0 Then
                 

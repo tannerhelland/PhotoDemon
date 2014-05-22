@@ -108,11 +108,20 @@ End Sub
 ' synchronize the UI to match.
 Public Sub setActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedrawViewport As Boolean = False)
 
+    'If this layer is already active, ignore the request
+    If pdImages(g_CurrentImage).getActiveLayerID = newLayerID Then Exit Sub
+    
+    'Before changing to the new active layer, see if the previously active layer has had any non-destructive changes made.
+    Processor.evaluateImageCheckpoint
+
     'Notify the parent PD image of the change
     pdImages(g_CurrentImage).setActiveLayerByID newLayerID
     
     'Sync the interface to the new layer
     syncInterfaceToCurrentImage
+    
+    'Set a new image checkpoint (necessary to do this manually, as we haven't invoked PD's central processor)
+    Processor.setImageCheckpoint
     
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -122,11 +131,20 @@ End Sub
 'Same idea as setActiveLayerByID, above
 Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal alsoRedrawViewport As Boolean = False)
 
+    'If this layer is already active, ignore the request
+    If pdImages(g_CurrentImage).getActiveLayerID = pdImages(g_CurrentImage).getLayerByIndex(newLayerIndex).getLayerID Then Exit Sub
+    
+    'Before changing to the new active layer, see if the previously active layer has had any non-destructive changes made.
+    Processor.evaluateImageCheckpoint
+    
     'Notify the parent PD image of the change
     pdImages(g_CurrentImage).setActiveLayerByIndex newLayerIndex
     
     'Sync the interface to the new layer
     syncInterfaceToCurrentImage
+    
+    'Set a new image checkpoint (necessary to do this manually, as we haven't invoked PD's central processor)
+    Processor.setImageCheckpoint
     
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -591,3 +609,21 @@ Public Sub fillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT, Op
 
 End Sub
 
+'Given a param string (where the first entry denotes the target layer, and the subsequent parameters were set by
+' a pdLayer object's getLayerHeaderAsParamString function), apply any changes to the specified layer.
+Public Sub modifyLayerByParamString(ByVal pString As String)
+
+    'Create a param string parser
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString pString
+    
+    'Retrieve the ID of the layer in question
+    Dim curLayerID As Long
+    curLayerID = cParams.GetLong(1)
+    
+    'Remove that initial entry from the param string, then forward the rest of the string on to the specified layer class
+    cParams.removeParamAtPosition 1
+    pdImages(g_CurrentImage).getLayerByID(curLayerID).setLayerHeaderFromParamString cParams.getParamString
+
+End Sub
