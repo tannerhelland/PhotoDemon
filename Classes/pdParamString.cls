@@ -76,7 +76,7 @@ Public Sub setParamString(ByVal pString As String)
     'If any characters have been escaped, fix them now
     Dim i As Long
     For i = 0 To UBound(m_Params)
-        m_Params(i) = escapeParamCharacters(m_Params(i))
+        m_Params(i) = unEscapeParamCharacters(m_Params(i))
     Next i
     
 End Sub
@@ -119,6 +119,25 @@ Public Sub reassembleModifiedParamString()
     
     'Re-initialize this object with that string
     setParamString tmpString
+
+End Sub
+
+'Remove a parameter from the current param string.  This is typically used when a function needs to preface a param string
+' with some kind of target ID (e.g. layer ID for actions that affect layers), but then it needs to forward the rest of
+' the param string onto that target for additional handling.
+Public Sub removeParamAtPosition(ByVal pIndex As Long)
+
+    'If there's only one parameter in the list, we can't remove it!
+    If m_numOfParams = 1 Then Exit Sub
+    
+    'Loop through the current param array, shifting array entries down as necessary
+    Dim i As Long
+    For i = pIndex - 1 To m_numOfParams - 2
+        m_Params(i) = m_Params(i + 1)
+    Next i
+    
+    'Reassemble the modified param string
+    reassembleModifiedParamString
 
 End Sub
 
