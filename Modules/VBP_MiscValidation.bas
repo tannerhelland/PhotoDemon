@@ -201,7 +201,7 @@ Public Function incrementTrailingNumber(ByVal srcString As String) As String
         numToAppend = 2
     End If
     
-    incrementTrailingNumber = srcString & " (" & Trim$(Str(numToAppend)) & ")"
+    incrementTrailingNumber = srcString & " (" & Trim$(CStr(numToAppend)) & ")"
 
 End Function
 
