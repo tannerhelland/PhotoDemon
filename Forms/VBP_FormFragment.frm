@@ -103,7 +103,7 @@ Begin VB.Form FormFragment
       _ExtentX        =   10186
       _ExtentY        =   873
       Min             =   1
-      Max             =   50
+      Max             =   25
       Value           =   4
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -356,7 +356,7 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
@@ -372,9 +372,9 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     'Rather than recalculating fragment positions for each pixel, calculate them as offsets from (0, 0)
     ' and store those values in x/y lookup tables.
     Dim n As Long
-    Dim num As Double, num2 As Double, num3 As Double
+    Dim Num As Double, num2 As Double, num3 As Double
     
-    num = PI_DOUBLE / CDbl(fragCount)
+    Num = PI_DOUBLE / CDbl(fragCount)
     num2 = ((rotationAngle - 90) * PI) / 180
     
     Dim xOffsetLookup() As Double
@@ -383,7 +383,7 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     ReDim yOffsetLookup(0 To fragCount - 1) As Double
     
     For n = 0 To UBound(xOffsetLookup)
-        num3 = num2 + (num * n)
+        num3 = num2 + (Num * n)
         xOffsetLookup(n) = CDbl(fragDistance * -Sin(num3))
         yOffsetLookup(n) = CDbl(fragDistance * -Cos(num3))
     Next n
@@ -407,14 +407,14 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
     
         'Grab the current pixel values
-        newR = srcImageData(quickVal + 2, y)
-        newG = srcImageData(quickVal + 1, y)
-        newB = srcImageData(quickVal, y)
-        If qvDepth = 4 Then newA = srcImageData(quickVal + 3, y)
+        newR = srcImageData(QuickVal + 2, y)
+        newG = srcImageData(QuickVal + 1, y)
+        newB = srcImageData(QuickVal, y)
+        If qvDepth = 4 Then newA = srcImageData(QuickVal + 3, y)
         
         'Iterate through each fragment in turn, adding together their values as we go
         For n = 0 To numPoints
@@ -439,14 +439,14 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
         newG = newG \ numPointsCalc
         newB = newB \ numPointsCalc
                 
-        dstImageData(quickVal + 2, y) = newR
-        dstImageData(quickVal + 1, y) = newG
-        dstImageData(quickVal, y) = newB
+        dstImageData(QuickVal + 2, y) = newR
+        dstImageData(QuickVal + 1, y) = newG
+        dstImageData(QuickVal, y) = newB
         
         'If the image has an alpha channel, repeat the calculation there too
         If qvDepth = 4 Then
             newA = newA \ numPointsCalc
-            dstImageData(quickVal + 3, y) = newA
+            dstImageData(QuickVal + 3, y) = newA
         End If
         
     Next y
@@ -487,6 +487,7 @@ Private Sub cmdBar_ResetClick()
     sltDistance.Value = 8
     sltAngle.Value = 0
     cmbEdges.ListIndex = EDGE_CLAMP
+    OptInterpolate(1).Value = True
 End Sub
 
 Private Sub Form_Activate()
