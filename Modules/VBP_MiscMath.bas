@@ -3,8 +3,8 @@ Attribute VB_Name = "Math_Functions"
 'Specialized Math Routines
 'Copyright ©2013-2014 by Tanner Helland and Audioglider
 'Created: 13/June/13
-'Last updated: 08/May/14
-'Last update: added convertRange function from audioglider
+'Last updated: 22/May/14
+'Last update: fixed convertToFraction() function to work with non-English locales
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
 ' until June 2013.  This module is now used to store all the random bits of specialized math required by the program.
@@ -53,7 +53,7 @@ Public Sub convertToFraction(ByVal v As Double, w As Double, n As Double, d As D
     w = Abs(Fix(v))
     'V = Abs(V) - W << subtracting doubles can change the decimal portion by adding more numeral at end
     'TANNER'S NOTE: the original version of this included +1 to the string length, which gave me consistent errors.  So I removed it.
-    v = CDbl(Mid$(Str(Abs(v)), Len(Str(w))))
+    v = CDbl(Mid$(CStr(Abs(v)), Len(CStr(w))))
     
     ' check for no decimal or zero
     If v = 0 Then GoTo RtnResult
