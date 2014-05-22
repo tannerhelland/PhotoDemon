@@ -3,9 +3,8 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 23/October/13
-'Last update: new syncInterfaceToCurrentImage function, which should be universally used throughout PD in place of
-'              the old metaToggle events.
+'Last updated: 21/May/14
+'Last update: move paramString-related functions to the Text_Support module
 '
 'Miscellaneous routines related to rendering and handling PhotoDemon's interface.  As the program's complexity has
 ' increased, so has the need for specialized handling of certain UI elements.
@@ -1195,35 +1194,6 @@ Public Sub DisplaySize(ByRef srcImage As pdImage)
     End If
     
 End Sub
-
-'PhotoDemon's software processor requires that all parameters be passed as a string, with individual parameters separated by
-' the "|" character.  This function can be used to automatically assemble any number of parameters into such a string.
-Public Function buildParams(ParamArray allParams() As Variant) As String
-
-    buildParams = ""
-
-    If Not IsMissing(allParams) Then
-    
-        Dim tmpString As String
-        
-        Dim i As Long
-        For i = LBound(allParams) To UBound(allParams)
-        
-            tmpString = Trim$(Str(allParams(i)))
-        
-            If Len(tmpString) > 0 Then
-                buildParams = buildParams & tmpString
-            Else
-                buildParams = buildParams & " "
-            End If
-            
-            If i < UBound(allParams) Then buildParams = buildParams & "|"
-            
-        Next i
-    
-    End If
-
-End Function
 
 'This wrapper is used in place of the standard MsgBox function.  At present it's just a wrapper around MsgBox, but
 ' in the future I may replace the dialog function with something custom.
