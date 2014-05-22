@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Specialized String Parameter Handler
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 25/March/13
-'Last updated: 07/June/13
-'Last update: added support for String-type params
+'Last updated: 21/May/14
+'Last update: add character escaping for the rare case that the pipe "|" character shows up in a param string entry
 '
 'PhotoDemon has unique needs regarding parameter passing.  Because it allows the user to record all actions as part of
 ' macros, the program needs a way to not only trade around parameters, but also store them in a file.
@@ -53,10 +53,16 @@ End Function
 
 'Assign the class a parameter string, and parse it as necessary into its individual components
 Public Sub setParamString(ByVal pString As String)
+
     m_ParamString = pString
+    
+    'If multiple parameters are present, parse them out now; this improves performance when a function comes
+    ' asking for specific params
     If InStr(1, m_ParamString, "|", vbBinaryCompare) > 0 Then
         m_Params() = Split(m_ParamString, "|")
         m_numOfParams = UBound(m_Params) + 1
+    
+    'If only one param is present, handle it specially
     Else
         If Len(pString) > 0 Then
             ReDim m_Params(0) As String
@@ -66,6 +72,13 @@ Public Sub setParamString(ByVal pString As String)
             m_numOfParams = 0
         End If
     End If
+    
+    'If any characters have been escaped, fix them now
+    Dim i As Long
+    For i = 0 To UBound(m_Params)
+        m_Params(i) = escapeParamCharacters(m_Params(i))
+    Next i
+    
 End Sub
 
 'Does the parameter at location X exist?
@@ -83,7 +96,8 @@ End Function
 
 'Change the value at a given location.  (This assumes setParamString has already been called, obviously.)
 Public Sub setNewValueAtLocation(ByVal pIndex As Long, ByVal newValue As String)
-
+    
+    'Replace the entry at pIndex with the new string value
     If pIndex <= m_numOfParams Then
         m_Params(pIndex - 1) = newValue
     End If
@@ -99,7 +113,7 @@ Public Sub reassembleModifiedParamString()
     
     Dim i As Long
     For i = 0 To m_numOfParams - 1
-        tmpString = tmpString & m_Params(i)
+        tmpString = tmpString & escapeParamCharacters(m_Params(i))
         If i < (m_numOfParams - 1) Then tmpString = tmpString & "|"
     Next i
     
