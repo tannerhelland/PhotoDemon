@@ -874,7 +874,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Film noir"
             MenuFilmNoir
-            
+        
+        Case "Glass tiles"
+            If showDialog Then
+                showPDDialog vbModal, FormGlassTiles
+            Else
+                FormGlassTiles.GlassTiles cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetLong(5)
+            End If
+        
         Case "Kaleidoscope"
             If showDialog Then
                 showPDDialog vbModal, FormKaleidoscope

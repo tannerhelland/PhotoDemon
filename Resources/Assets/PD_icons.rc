@@ -178,6 +178,7 @@ ARTISTIC     CUSTOM  MOVEABLE        LOADONCALL      paintbrush.png
 COMICBOOK    CUSTOM  MOVEABLE        LOADONCALL      book_open_text_image.png
 FIGGLASS     CUSTOM  MOVEABLE        LOADONCALL      jar_empty.png
 FILMNOIR     CUSTOM  MOVEABLE        LOADONCALL      user_detective_gray.png
+GLASSTILES   CUSTOM  MOVEABLE        LOADONCALL      glass_tiles.png
 KALEIDOSCOPE CUSTOM  MOVEABLE        LOADONCALL      flower_modified.png
 MODERNART    CUSTOM  MOVEABLE        LOADONCALL      stickman_smiley.png
 OILPAINTING  CUSTOM  MOVEABLE        LOADONCALL      palette_paintbrush.png

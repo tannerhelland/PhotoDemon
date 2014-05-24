@@ -365,12 +365,13 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "COMICBOOK", 7, 2, 0      'Comic book
         addMenuIcon "FIGGLASS", 7, 2, 1       'Figured glass
         addMenuIcon "FILMNOIR", 7, 2, 2       'Film Noir
-        addMenuIcon "KALEIDOSCOPE", 7, 2, 3   'Kaleidoscope
-        addMenuIcon "MODERNART", 7, 2, 4      'Modern Art
-        addMenuIcon "OILPAINTING", 7, 2, 5    'Oil painting
-        addMenuIcon "PENCIL", 7, 2, 6         'Pencil
-        addMenuIcon "POSTERIZE", 7, 2, 7      'Posterize
-        addMenuIcon "RELIEF", 7, 2, 8         'Relief
+        addMenuIcon "GLASSTILES", 7, 2, 3     'Glass tiles
+        addMenuIcon "KALEIDOSCOPE", 7, 2, 4   'Kaleidoscope
+        addMenuIcon "MODERNART", 7, 2, 5      'Modern Art
+        addMenuIcon "OILPAINTING", 7, 2, 6    'Oil painting
+        addMenuIcon "PENCIL", 7, 2, 7         'Pencil
+        addMenuIcon "POSTERIZE", 7, 2, 8      'Posterize
+        addMenuIcon "RELIEF", 7, 2, 9         'Relief
     addMenuIcon "BLUR", 7, 3            'Blur
         '--> Blur sub-menu
         addMenuIcon "BOXBLUR", 7, 3, 0        'Box Blur
