@@ -332,16 +332,19 @@ Private Sub renameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImage
         
         'Check image data first...
         If FileExist(oldFilename) Then
+            If FileExist(newFilename) Then Kill newFilename
             Name oldFilename As newFilename
         End If
         
         '...followed by layer data
         If FileExist(oldFilename & ".layer") Then
+            If FileExist(newFilename & ".layer") Then Kill newFilename & ".layer"
             Name oldFilename & ".layer" As newFilename & ".layer"
         End If
         
         '...followed by selection data
         If FileExist(oldFilename & ".selection") Then
+            If FileExist(newFilename & ".selection") Then Kill newFilename & ".selection"
             Name oldFilename & ".selection" As newFilename & ".selection"
         End If
         
