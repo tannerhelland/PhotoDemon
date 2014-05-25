@@ -244,7 +244,11 @@ End Function
 
 'Get the currently active layer canonical ID
 Public Function getActiveLayerID() As Long
-    getActiveLayerID = imgLayers(curLayer).getLayerID
+    If curLayer > UBound(imgLayers) Then
+        getActiveLayerID = imgLayers(0).getLayerID
+    Else
+        getActiveLayerID = imgLayers(curLayer).getLayerID
+    End If
 End Function
 
 'Get the number of layers in this image.  (Note: this function might return zero, so handle that condition correctly
@@ -266,7 +270,11 @@ End Function
 'Retrieve the currently active layer
 Public Function getActiveLayer() As pdLayer
     If numOfLayers > 0 Then
+        
+        'Failsafe check for a valid current layer
+        If curLayer > UBound(imgLayers) Then curLayer = 0
         Set getActiveLayer = imgLayers(curLayer)
+        
     Else
         Set getActiveLayer = Nothing
     End If
