@@ -773,12 +773,16 @@ Private Sub cMouseEvents_MouseOut()
     
     m_IsMouseOverCanvas = False
     
-    'If the user did not interact with anything on the canvas, restore the original active layer
-    If Not m_UserInteractedWithCanvas And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    'If the user did not interact with anything on the canvas, restore the original active layer.
+    ' (Similarly, if the user *did* interact with the canvas but the mouse passed over other layers on the way out, restore
+    '  focus to the last layer the user interacted with.)
+    If (Not pdImages(g_CurrentImage) Is Nothing) Then
+        
         If pdImages(g_CurrentImage).getActiveLayerIndex <> m_OriginalActiveLayerIndex Then
             Layer_Handler.setActiveLayerByIndex m_OriginalActiveLayerIndex, False
             RenderViewport pdImages(g_CurrentImage), Me
         End If
+    
     End If
     
     If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
@@ -889,6 +893,9 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
     
     'Note that the user has attempted to interact with the canvas.
     m_UserInteractedWithCanvas = True
+    
+    'Because the user has interacted with the canvas, we want to make the currently active layer permanent.
+    m_OriginalActiveLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
     
     'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
     ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
