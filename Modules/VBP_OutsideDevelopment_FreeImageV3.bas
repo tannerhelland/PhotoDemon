@@ -1252,14 +1252,6 @@ Private Const ITOF_USE_COLOR_BITMASK As Long = ITOF_USE_COLOR_TOP_RIGHT_PIXEL Or
                                                ITOF_USE_COLOR_BOTTOM_RIGHT_PIXEL Or _
                                                ITOF_USE_COLOR_SPECIFIED
 
-
-Public Type RGBQUAD
-   rgbBlue As Byte
-   rgbGreen As Byte
-   rgbRed As Byte
-   rgbReserved As Byte
-End Type
-
 'TANNER'S NOTE: this is publicly declared elsewhere in this project, so I've commented it out here
 'Public Type RGBTRIPLE
 '   rgbtBlue As Byte
@@ -2591,10 +2583,10 @@ Dim bkcolor As RGBQUAD
                                               
    FreeImage_GetBackgroundColorEx = (FreeImage_GetBackgroundColorInt(BITMAP, bkcolor) = 1)
    With bkcolor
-      Alpha = .rgbReserved
-      Red = .rgbRed
-      Green = .rgbGreen
-      Blue = .rgbBlue
+      Alpha = .Alpha
+      Red = .Red
+      Green = .Green
+      Blue = .Blue
    End With
 
 End Function
@@ -2631,10 +2623,10 @@ Dim tColor As RGBQUAD
    ' color component.
                                              
    With tColor
-      .rgbReserved = Alpha
-      .rgbRed = Red
-      .rgbGreen = Green
-      .rgbBlue = Blue
+      .Alpha = Alpha
+      .Red = Red
+      .Green = Green
+      .Blue = Blue
    End With
    FreeImage_SetBackgroundColorEx = (FreeImage_SetBackgroundColorInt(BITMAP, tColor) = 1)
 
@@ -3727,7 +3719,7 @@ Dim i As Long
       FreeImage_IsGreyscaleImage = True
       For i = 0 To UBound(atRGB)
          With atRGB(i)
-            If ((.rgbRed <> .rgbGreen) Or (.rgbRed <> .rgbBlue)) Then
+            If ((.Red <> .Green) Or (.Red <> .Blue)) Then
                FreeImage_IsGreyscaleImage = False
                Exit For
             End If

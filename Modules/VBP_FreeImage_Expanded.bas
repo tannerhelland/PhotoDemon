@@ -269,14 +269,14 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
             'Normally, we can reassemble the .r/g/b values in the object, but paletted images work a bit differently - the
             ' palette index is stored in .rgbReserved.  Check for that, and if it's non-zero, retrieve the palette value instead.
-            If rQuad.rgbReserved <> 0 Then
+            If rQuad.Alpha <> 0 Then
                 Dim fi_Palette() As Long
                 fi_Palette = FreeImage_GetPaletteExLong(fi_hDIB)
-                dstDIB.setBackgroundColor fi_Palette(rQuad.rgbReserved)
+                dstDIB.setBackgroundColor fi_Palette(rQuad.Alpha)
                 
             'Otherwise it's easy - just reassemble the RGB values from the quad
             Else
-                dstDIB.setBackgroundColor RGB(rQuad.rgbRed, rQuad.rgbGreen, rQuad.rgbBlue)
+                dstDIB.setBackgroundColor RGB(rQuad.Red, rQuad.Green, rQuad.Blue)
             End If
         
         End If

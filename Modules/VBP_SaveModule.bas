@@ -1049,9 +1049,9 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         If pngPreserveBKGD And srcPDImage.pngBackgroundColor <> -1 Then
             
             Dim rQuad As RGBQUAD
-            rQuad.rgbRed = ExtractR(srcPDImage.pngBackgroundColor)
-            rQuad.rgbGreen = ExtractG(srcPDImage.pngBackgroundColor)
-            rQuad.rgbBlue = ExtractB(srcPDImage.pngBackgroundColor)
+            rQuad.Red = ExtractR(srcPDImage.pngBackgroundColor)
+            rQuad.Green = ExtractG(srcPDImage.pngBackgroundColor)
+            rQuad.Blue = ExtractB(srcPDImage.pngBackgroundColor)
             FreeImage_SetBackgroundColor fi_DIB, rQuad
         
         End If
