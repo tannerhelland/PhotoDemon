@@ -44,7 +44,7 @@ Begin VB.Form toolbar_Tools
       Width           =   13770
       Begin PhotoDemon.smartCheckBox chkLayerBorder 
          Height          =   480
-         Left            =   120
+         Left            =   6480
          TabIndex        =   27
          Top             =   360
          Width           =   2025
@@ -64,7 +64,7 @@ Begin VB.Form toolbar_Tools
       End
       Begin PhotoDemon.smartCheckBox chkLayerNodes 
          Height          =   480
-         Left            =   120
+         Left            =   6480
          TabIndex        =   28
          Top             =   780
          Width           =   2775
@@ -81,6 +81,69 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
+         Height          =   480
+         Left            =   120
+         TabIndex        =   30
+         Top             =   360
+         Width           =   4080
+         _ExtentX        =   7197
+         _ExtentY        =   847
+         Caption         =   "automatically activate layer beneath mouse"
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
+         Height          =   480
+         Left            =   120
+         TabIndex        =   31
+         Top             =   780
+         Visible         =   0   'False
+         Width           =   4920
+         _ExtentX        =   8678
+         _ExtentY        =   847
+         Caption         =   "ignore transparent pixels when auto-activating layers"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblOptions 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "interaction options:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   1
+         Left            =   120
+         TabIndex        =   29
+         Top             =   60
+         Width           =   1650
       End
       Begin VB.Label lblOptions 
          Appearance      =   0  'Flat
@@ -100,7 +163,7 @@ Begin VB.Form toolbar_Tools
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   0
-         Left            =   120
+         Left            =   6480
          TabIndex        =   26
          Top             =   60
          Width           =   1335
@@ -745,6 +808,14 @@ Dim m_ToolTip As clsToolTip
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
+
+Private Sub chkAutoActivateLayer_Click()
+    If CBool(chkAutoActivateLayer) Then
+        If Not chkIgnoreTransparent.Enabled Then chkIgnoreTransparent.Enabled = True
+    Else
+        If chkIgnoreTransparent.Enabled Then chkIgnoreTransparent.Enabled = False
+    End If
+End Sub
 
 'Show/hide layer borders while using the move tool
 Private Sub chkLayerBorder_Click()

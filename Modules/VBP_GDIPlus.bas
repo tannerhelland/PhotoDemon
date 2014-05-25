@@ -229,13 +229,6 @@ Private Type PictDesc
 End Type
 
 'BITMAP types
-Private Type RGBQUAD
-    Blue As Byte
-    Green As Byte
-    Red As Byte
-    Alpha As Byte
-End Type
-
 Private Type BITMAPINFOHEADER
     Size As Long
     Width As Long

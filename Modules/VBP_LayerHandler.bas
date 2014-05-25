@@ -3,8 +3,8 @@ Attribute VB_Name = "Layer_Handler"
 'Layer Interface
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 24/March/14
-'Last updated: 28/April/14
-'Last update: add new function "addBlankLayer"
+'Last updated: 24/May/14
+'Last update: add support for auto-activating the layer beneath a given mouse position
 '
 'This module provides all layer-related functions that interact with PhotoDemon's central processor.  Most of these
 ' functions are triggered by either the Layer menu, or the Layer toolbox.
@@ -15,6 +15,9 @@ Attribute VB_Name = "Layer_Handler"
 '***************************************************************************
 
 Option Explicit
+
+'Helper API for enlarging a given rect
+Private Declare Function InflateRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 
 'Add a blank 32bpp layer above the specified layer index (typically the currently active layer)
 Public Sub addBlankLayer(ByVal dLayerIndex As Long)
@@ -627,3 +630,147 @@ Public Sub modifyLayerByParamString(ByVal pString As String)
     pdImages(g_CurrentImage).getLayerByID(curLayerID).setLayerHeaderFromParamString cParams.getParamString
 
 End Sub
+
+'Given a layer index and an x/y position (IMAGE COORDINATE SPACE - necessary because we have to adjust the coordinates if the
+' current layer has non-destructive resize modifiers applied), return an RGBQUAD for the pixel at that location.
+'
+'If the pixel lies outside the layer boundaries, the function will return FALSE.  Make sure to check this before evaluating
+' the RGBQUAD.
+Public Function getRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long, ByVal y As Long, ByRef dstQuad As RGBQUAD, Optional ByVal enlargeForInteractionPadding As Boolean = True) As Boolean
+
+    'Before doing anything else, check to see if the x/y coordinate even lies inside the image
+    Dim tmpLayerRef As pdLayer
+    Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
+    
+    Dim layerRect As RECT
+    fillRectForLayer tmpLayerRef, layerRect, True
+    
+    If isPointInRect(x, y, layerRect) Then
+        
+        'The point lies inside the layer, which means we need to figure out the color at this position
+        getRGBAPixelFromLayer = True
+        
+        'Re-calculate x and y to layer coordinates
+        x = x - tmpLayerRef.getLayerOffsetX
+        y = y - tmpLayerRef.getLayerOffsetY
+        
+        'If a non-destructive resize is active, remap the x/y coordinates to match
+        If tmpLayerRef.getLayerCanvasXModifier <> 1 Then x = x / tmpLayerRef.getLayerCanvasXModifier
+        If tmpLayerRef.getLayerCanvasYModifier <> 1 Then y = y / tmpLayerRef.getLayerCanvasYModifier
+        
+        'X and Y now represent the passed coordinate, but translated into the specified layer's coordinate space.
+        ' Retrieve the color (and alpha, if relevant) at that point.
+        Dim tmpData() As Byte
+        Dim tSA As SAFEARRAY2D
+        prepSafeArray tSA, tmpLayerRef.layerDIB
+        CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
+        
+        Dim QuickX As Long
+        QuickX = x * (tmpLayerRef.layerDIB.getDIBColorDepth \ 8)
+        
+        With dstQuad
+            .Red = tmpData(QuickX + 2, y)
+            .Green = tmpData(QuickX + 1, y)
+            .Blue = tmpData(QuickX, y)
+            If tmpLayerRef.layerDIB.getDIBColorDepth = 32 Then .Alpha = tmpData(QuickX + 3, y)
+        End With
+        
+        CopyMemory ByVal VarPtrArray(tmpData), 0&, 4
+    
+    'This coordinate does not lie inside the layer.
+    Else
+    
+        'If the "enlarge for interaction padding" option is set, make our rect a bit larger and then check again for validity.
+        ' If this check succeeds, return TRUE, despite us not having a valid RGB coord for that location.
+        If enlargeForInteractionPadding Then
+        
+            'Calculate PD's global mouse accuracy value, per the current image's zoom
+            Dim mouseAccuracy As Double
+            mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.getZoomValue(pdImages(g_CurrentImage).currentZoomValue))
+            
+            'Inflate the rect we were passed
+            InflateRect layerRect, mouseAccuracy, mouseAccuracy
+            
+            'Check the point again
+            If isPointInRect(x, y, layerRect) Then
+            
+                'Return TRUE, but the caller should know that the rgbQuad value is *not necessarily accurate*!
+                getRGBAPixelFromLayer = True
+            
+            Else
+                getRGBAPixelFromLayer = False
+            End If
+        
+        Else
+            getRGBAPixelFromLayer = False
+        End If
+    
+    End If
+
+End Function
+
+'Given an x/y pair (in IMAGE COORDINATES), return the top-most layer under that position, if any.
+' The long-named final parameter, "enlargeForInteractionPadding", will instruct the function to add a few pixels worth of padding
+' to its search, to account for the space around a layer where things like resize nodes can appear.
+Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optional ByVal enlargeForInteractionPadding As Boolean = True) As Long
+
+    Dim tmpRGBA As RGBQUAD
+
+    'Iterate through all layers in reverse (e.g. top-to-bottom)
+    Dim i As Long
+    For i = pdImages(g_CurrentImage).getNumOfLayers - 1 To 0 Step -1
+    
+        'Only evaluate the current layer if it is visible
+        If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
+        
+            'Only evaluate the current layer if the mouse is over it
+            If getRGBAPixelFromLayer(i, curX, curY, tmpRGBA) Then
+            
+                'A layer was identified beneath the mouse!  Now things get a bit tricky.
+                ' NOTE: I have disabled this behavior until I can come up with a good solution on how to handle layer resizing
+                '       while this "feature" is active.  If a layer has transparent pixels around its edges, resizing it becomes
+                '       nearly impossible, because you have to blindly guess where the resize nodes are located, as they don't
+                '       appear until the mouse is actually over them.  This is stupid.  As such, I'm disabling the transparent
+                '       pixel modifier for now, and simply returning the layer beneath the mouse regardless of its transparency
+                '       at the current point.
+                
+                'If the user doesn't want us to ignore transparent pixels, this is easy - just return true.
+                'If Not CBool(toolbar_Tools.chkIgnoreTransparent) Then
+                    getLayerUnderMouse = i
+                    Exit Function
+                
+                'The user wants to ignore transparent pixels when auto-activating layers.  Before doing this, stop to see if
+                ' the mouse is currently over a POI for this layer.  If it is, return the layer regardless of pixel transparency.
+                'Else
+                '
+                '    Dim curPOI As Long
+                '    curPOI = pdImages(g_CurrentImage).getLayerByIndex(i).checkForPointOfInterest(curX, curY)
+                '
+                '    'If the mouse is over a point of interest, return this layer regardless of underlying alpha
+                '    If curPOI >= 0 And curPOI <= 3 Then
+                '        getLayerUnderMouse = i
+                '        Exit Function
+                '
+                '    'If the mouse is not over a point of interest, actually check alpha, and return this layer conditionally
+                '    ' if the layer is NOT fully transparent at this point.
+                '    Else
+                '
+                '        If tmpRGBA.Alpha > 0 Then
+                '            getLayerUnderMouse = i
+                '            Exit Function
+                '        End If
+                '
+                '    End If
+                '
+                'End If
+                            
+            End If
+        
+        End If
+    
+    Next i
+    
+    'If we made it all the way here, there is no layer under this position.  Return -1 to signify failure.
+    getLayerUnderMouse = -1
+
+End Function

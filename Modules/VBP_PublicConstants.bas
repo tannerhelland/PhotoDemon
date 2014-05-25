@@ -125,3 +125,10 @@ End Enum
 #If False Then
     Const UNDO_NOTHING = -1, UNDO_EVERYTHING = 0, UNDO_IMAGE = 1, UNDO_IMAGEHEADER = 2, UNDO_LAYER = 3, UNDO_LAYERHEADER = 4, UNDO_SELECTION = 5
 #End If
+
+Public Type RGBQUAD
+   Blue As Byte
+   Green As Byte
+   Red As Byte
+   Alpha As Byte
+End Type

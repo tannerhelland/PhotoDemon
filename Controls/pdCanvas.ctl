@@ -294,8 +294,16 @@ Private lMouseDown As Boolean, rMouseDown As Boolean
 'Track mouse movement on this canvas
 Private hasMouseMoved As Long
 
+'If the mouse is currently over the canvas, this will be set to TRUE.
+Private m_IsMouseOverCanvas As Boolean
+
 'Track initial mouse button locations
 Private m_initMouseX As Double, m_initMouseY As Double
+
+'Because the active layer may be automatically changed when the user hovers over a new layer, we track the original
+' layer when the mouse enters the canvas.  If the user hasn't interacted with anything by the time the mouse leaves,
+' we reinstate the original layer.
+Private m_OriginalActiveLayerIndex As Long, m_UserInteractedWithCanvas As Boolean
 
 'On the canvas's MouseDown event, mark the relevant point of interest index for this layer (if any).
 ' If a point of interest has not been selected, this value will be reset to -1.
@@ -646,18 +654,6 @@ Private Sub cmdZoomOut_Click()
     FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex + 1
 End Sub
 
-Private Sub cMouseEvents_MouseIn()
-
-    'Notify the window manager that toolbars need to be made translucent
-    g_WindowManager.notifyMouseMoveOverCanvas
-    
-    'If no images have been loaded, reset the cursor
-    If g_OpenImageCount = 0 Then
-        setArrowCursorToHwnd Me.hWnd
-    End If
-
-End Sub
-
 'If an image is loaded, double-clicking the image size label launches the resize dialog
 Private Sub lblImgSize_DblClick()
     If g_OpenImageCount > 0 Then Process "Resize image", True
@@ -750,10 +746,43 @@ Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button
   
 End Sub
 
+'When the mouse enters the canvas, any floating toolbars must be automatically dimmed.
+Private Sub cMouseEvents_MouseIn()
+
+    m_IsMouseOverCanvas = True
+    
+    'Note the currently active layer ID.  We may need to reset this when the mouse leaves the canvas.
+    If Not (pdImages(g_CurrentImage) Is Nothing) Then m_OriginalActiveLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
+    
+    'Note that the user has yet to interact with anything on the canvas.
+    m_UserInteractedWithCanvas = False
+    
+    'Notify the window manager that toolbars need to be made translucent
+    g_WindowManager.notifyMouseMoveOverCanvas
+    
+    'If no images have been loaded, reset the cursor
+    If g_OpenImageCount = 0 Then
+        setArrowCursorToHwnd Me.hWnd
+    End If
+
+End Sub
+
 'When the mouse leaves the window, if no buttons are down, clear the coordinate display.
 ' (We must check for button states because the user is allowed to do things like drag selection nodes outside the image.)
 Private Sub cMouseEvents_MouseOut()
+    
+    m_IsMouseOverCanvas = False
+    
+    'If the user did not interact with anything on the canvas, restore the original active layer
+    If Not m_UserInteractedWithCanvas And (Not pdImages(g_CurrentImage) Is Nothing) Then
+        If pdImages(g_CurrentImage).getActiveLayerIndex <> m_OriginalActiveLayerIndex Then
+            Layer_Handler.setActiveLayerByIndex m_OriginalActiveLayerIndex, False
+            RenderViewport pdImages(g_CurrentImage), Me
+        End If
+    End If
+    
     If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
+    
 End Sub
 
 Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
@@ -857,6 +886,9 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
     
     'If the image has not yet been loaded, exit
     If Not pdImages(g_CurrentImage).loadedSuccessfully Then Exit Sub
+    
+    'Note that the user has attempted to interact with the canvas.
+    m_UserInteractedWithCanvas = True
     
     'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
     ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
@@ -1014,6 +1046,34 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
                 
             'Move stuff around
             Case NAV_MOVE
+            
+                'If the "auto-activate layer beneath mouse" option is set, check the current layer position now
+                If CBool(toolbar_Tools.chkAutoActivateLayer) Then
+                
+                    Dim layerUnderMouse As Long
+                    layerUnderMouse = Layer_Handler.getLayerUnderMouse(imgX, imgY)
+                    
+                    'The "getLayerUnderMouse" function will return a layer index if the mouse is over a layer.  If the mouse is not
+                    ' over a layer, it will return -1.
+                    If layerUnderMouse > -1 Then
+                    
+                        'If the layer under the mouse is not already active, activate it now
+                        If layerUnderMouse <> pdImages(g_CurrentImage).getActiveLayerIndex Then
+                            Layer_Handler.setActiveLayerByIndex layerUnderMouse, False
+                            RenderViewport pdImages(g_CurrentImage), Me
+                        End If
+                    
+                    'The mouse is not over a layer.  Restore the original active layer, if necessary.
+                    Else
+                    
+                        If pdImages(g_CurrentImage).getActiveLayerIndex <> m_OriginalActiveLayerIndex Then
+                            Layer_Handler.setActiveLayerByIndex layerUnderMouse, False
+                            RenderViewport pdImages(g_CurrentImage), Me
+                        End If
+                    
+                    End If
+                
+                End If
                 
             'Standard selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
