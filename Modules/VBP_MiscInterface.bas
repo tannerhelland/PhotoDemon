@@ -3,8 +3,9 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 21/May/14
-'Last update: move paramString-related functions to the Text_Support module
+'Last updated: 26/May/14
+'Last update: add global enable/disable user input functions, which should simplify the process of disallowing certain
+'             behaviors while PD is processing background data.
 '
 'Miscellaneous routines related to rendering and handling PhotoDemon's interface.  As the program's complexity has
 ' increased, so has the need for specialized handling of certain UI elements.
@@ -1329,3 +1330,29 @@ Public Function isPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRec
     End If
 
 End Function
+
+'Use whenever you want the user to not be allowed to interact with the primary PD window.  Make sure that call "enableUserInput", below,
+' when you are done processing!
+Public Sub disableUserInput()
+
+    'Set the "input disabled" flag, which individual functions can use to modify their own behavior
+    g_DisableUserInput = True
+    
+    'Forcibly disable the main form
+    FormMain.Enabled = False
+
+End Sub
+
+'Sister function to "disableUserInput", above
+Public Sub enableUserInput()
+    
+    'Start a countdown timer on the main form.  When it terminates, user input will be restored.  A timer is required because
+    ' we need a certain amount of "dead time" to elapse between double-clicks on a top-level dialog (like a common dialog)
+    ' which may be incorrectly passed through to the main form.  (I know, this seems like a ridiculous solution, but I tried
+    ' a thousand others before settling on this.  It's the least of many evils.)
+    FormMain.tmrCountdown.Enabled = True
+    
+    'Re-enable the main form
+    FormMain.Enabled = True
+
+End Sub

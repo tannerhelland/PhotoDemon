@@ -24,6 +24,12 @@ Begin VB.Form FormMain
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1261
    StartUpPosition =   3  'Windows Default
+   Begin VB.Timer tmrCountdown 
+      Enabled         =   0   'False
+      Interval        =   200
+      Left            =   120
+      Top             =   1560
+   End
    Begin PhotoDemon.pdCanvas mainCanvas 
       Height          =   3735
       Index           =   0
@@ -31,21 +37,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0   'False
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -1504,7 +1510,7 @@ Private Sub MnuLayerNew_Click(Index As Integer)
         
         'Import from file
         Case 4
-            Process "New Layer from File", True
+            Process "New layer from file", True
     
     End Select
 
@@ -1600,6 +1606,24 @@ Private Sub MnuLayerSize_Click(Index As Integer)
             Process "Content-aware resize", True
     
     End Select
+
+End Sub
+
+'Countdown timer for re-enabling disabled user input.  A delay is enforced to prevent double-clicks on child dialogs from
+' "passing through" to the main form and causing goofy behavior.
+Private Sub tmrCountdown_Timer()
+
+    Static intervalCount As Long
+    
+    If intervalCount > 2 Then
+        
+        intervalCount = 0
+        g_DisableUserInput = False
+        tmrCountdown.Enabled = False
+        
+    End If
+    
+    intervalCount = intervalCount + 1
 
 End Sub
 

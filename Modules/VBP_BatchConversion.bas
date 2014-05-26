@@ -171,6 +171,9 @@ End Sub
 
 Public Sub PlayMacro()
 
+    'Disable user input until the dialog closes
+    Interface.disableUserInput
+
     'Automatically launch the load Macro data routine
     Dim CC As cCommonDialog
     Set CC = New cCommonDialog
@@ -201,6 +204,9 @@ Public Sub PlayMacro()
     Else
         Message "Macro load canceled."
     End If
+    
+    'Re-enable user input
+    Interface.enableUserInput
     
     'Reset window top-most status
     g_WindowManager.resetTopmostForAllWindows True

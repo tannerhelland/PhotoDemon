@@ -268,3 +268,9 @@ Public g_UseSystemColorProfile As Boolean
 ' at run-time to account for high-DPI screens.  (It may even be worthwhile to let users adjust this value, or to
 ' retrieve some system metric for it... if such a thing exists.)
 Public g_MouseAccuracy As Double
+
+'If a double-click action closes a window (e.g. double-clicking a file from a common dialog), Windows incorrectly
+' forwards the second click to the window behind the closed dialog.  To avoid this "click-through" behavior,
+' this variable can be set to TRUE, which will prevent the underlying canvas from accepting input.  Just make sure
+' to restore this variable to FALSE when you're done, including catching any error states!
+Public g_DisableUserInput As Boolean

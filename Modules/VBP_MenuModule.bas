@@ -32,6 +32,9 @@ End Sub
 ' The commondialog filters are automatically set according to image formats supported by the program.
 Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal ownerHwnd As Long) As Boolean
 
+    'Disable user input until the dialog closes
+    Interface.disableUserInput
+    
     'Common dialog interface
     Dim CC As cCommonDialog
     
@@ -117,6 +120,9 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
         PhotoDemon_OpenImageDialog = False
     End If
     
+    'Re-enable user input
+    Interface.enableUserInput
+    
     'Restore window status
     g_WindowManager.resetTopmostForAllWindows True
     
@@ -129,6 +135,9 @@ End Function
 ' then use as it pleases.
 Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String, ByVal ownerHwnd As Long) As Boolean
 
+    'Disable user input until the dialog closes
+    Interface.disableUserInput
+    
     'Common dialog interface
     Dim CC As cCommonDialog
     
@@ -170,6 +179,9 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
     
     'Restore window status
     g_WindowManager.resetTopmostForAllWindows True
+    
+    'Re-enable user input
+    Interface.enableUserInput
     
     'Release the common dialog object
     Set CC = Nothing
