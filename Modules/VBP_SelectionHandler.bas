@@ -108,6 +108,9 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
 
     If displayDialog Then
     
+        'Disable user input until the dialog closes
+        Interface.disableUserInput
+    
         'Simple open dialog
         Dim CC As cCommonDialog
             
@@ -149,6 +152,9 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
             Set tmpSelection = Nothing
             
         End If
+        
+        'Re-enable user input
+        Interface.enableUserInput
         
         'Reset window top-most status
         g_WindowManager.resetTopmostForAllWindows True

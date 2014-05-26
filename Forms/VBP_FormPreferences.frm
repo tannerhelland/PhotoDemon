@@ -2656,6 +2656,9 @@ End Sub
 ' settings, save any changes to file immediately, rather than waiting for the user to click OK.
 Private Sub cmdColorProfilePath_Click()
 
+    'Disable user input until the dialog closes
+    Interface.disableUserInput
+    
     Dim sFile As String
     sFile = ""
     
@@ -2696,6 +2699,9 @@ Private Sub cmdColorProfilePath_Click()
         If Not optColorManagement(1).Value Then optColorManagement(1).Value = True
         
     End If
+    
+    'Re-enable user input
+    Interface.enableUserInput
 
 End Sub
 

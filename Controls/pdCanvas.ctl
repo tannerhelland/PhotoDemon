@@ -885,6 +885,9 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
     'If the main form is disabled, exit
     If Not FormMain.Enabled Then Exit Sub
     
+    'If user input has been forcibly disabled, exit
+    If g_DisableUserInput Then Exit Sub
+        
     'If no images have been loaded, exit
     If g_OpenImageCount = 0 Then Exit Sub
     
@@ -990,6 +993,9 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
 
     'If the main form is disabled, exit
     If Not FormMain.Enabled Then Exit Sub
+    
+    'If user input has been forcibly disabled, exit
+    If g_DisableUserInput Then Exit Sub
     
     'If no images have been loaded, exit
     If g_OpenImageCount = 0 Then Exit Sub
@@ -1097,6 +1103,9 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
 
     'If no images have been loaded, exit
     If g_OpenImageCount = 0 Then Exit Sub
+    
+    'If user input has been forcibly disabled, exit
+    If g_DisableUserInput Then Exit Sub
 
     'If the image has not yet been loaded, exit
     If Not pdImages(g_CurrentImage).loadedSuccessfully Then Exit Sub

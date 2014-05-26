@@ -461,7 +461,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Add blank layer"
             Layer_Handler.addBlankLayer cParams.GetLong(1)
         
-        Case "New Layer from File"
+        Case "New layer from file"
             Layer_Handler.loadImageAsNewLayer showDialog, processParameters
         
         Case "Duplicate Layer"
