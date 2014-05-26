@@ -58,6 +58,7 @@ Begin VB.Form FormMain
       Top             =   360
       _ExtentX        =   635
       _ExtentY        =   635
+      ErrAsOut        =   0   'False
       PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
@@ -1607,6 +1608,28 @@ Private Sub MnuLayerSize_Click(Index As Integer)
     
     End Select
 
+End Sub
+
+Private Sub shellPipeMain_ErrDataArrival(ByVal CharsTotal As Long)
+
+    Debug.Print "WARNING!  Asynchronous pipe source returned the following data on stderr: "
+    Debug.Print shellPipeMain.ErrGetData()
+    Debug.Print " -- End stderr output -- "
+
+End Sub
+
+'Append any new data to our master metadata string
+Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
+    
+    Dim receivedData As String
+    receivedData = shellPipeMain.GetData()
+    
+    newMetadataReceived receivedData
+    
+    'DEBUG ONLY!
+    'Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
+    'Debug.Print receivedData
+    
 End Sub
 
 'Countdown timer for re-enabling disabled user input.  A delay is enforced to prevent double-clicks on child dialogs from
@@ -3649,16 +3672,3 @@ Public Sub requestMakeFormPretty(Optional ByVal useDoEvents As Boolean = False)
     
 End Sub
 
-'Append any new data to our master metadata string
-Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
-    
-    Dim receivedData As String
-    receivedData = shellPipeMain.GetData()
-    
-    newMetadataReceived receivedData
-    
-    'DEBUG ONLY!
-    'Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
-    'Debug.Print receivedData
-    
-End Sub

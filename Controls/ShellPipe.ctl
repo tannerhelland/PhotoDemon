@@ -33,7 +33,7 @@ Attribute VB_Exposed = False
 
 'This code was originally written by vbforums user "dilettante".
 
-'You may download the original version of this code from the following link (good as of November '13):
+'You may download the original version of this code from the following link (good as of May '14):
 ' http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control
 
 'Many thanks to dilettante for this excellent user control, which allows PhotoDemon to asynchronously interact
@@ -42,13 +42,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 '
-'ShellPipe (version 4)
+'ShellPipe (version 7)
 '=========
 '
 'Run a console program and communicate with it via the
 'Standard I/O streams.
-'
-'Both StdOut and StdErr are piped to one stream reader here.
 '
 'NOTES
 '-----
@@ -57,7 +55,7 @@ Option Explicit
 'control uses a Timer control and a "polling" model to
 'process pipe reads and writes and detect process termination.
 '
-'Requires SmartBuffer class.
+'Requires SPBuffer class.
 '
 'ENUMS
 '-----
@@ -86,7 +84,7 @@ Option Explicit
 'HasLine Boolean, read-only.
 '
 '        True if we have a buffered "line" from the child
-'        process buffered.
+'        process OutPipe buffered.
 '
 '        Set appropriately by every call to GetData() and
 '        GetLine() as well as by DataArrival events so it
@@ -96,17 +94,44 @@ Option Explicit
 'Length  Long, read-only.
 '
 '        Number of characters currently buffered from the
-'        child process.
+'        child process OutPipe.
+'
+'ErrHasLine Boolean, read-only.
+'
+'        True if we have a buffered "line" from the child
+'        process ErrPipe buffered.
+'
+'        Set appropriately by every call to GetData() and
+'        GetLine() as well as by DataArrival events so it
+'        is possible to loop on this property to retrieve
+'        lines of text.
+'
+'ErrLength Long, read-only.
+'
+'        Number of characters currently buffered from the
+'        child process ErrPipe.
 '
 'PollInterval Long, read/write.  Default: 50.
 '
 '        This is a value in milliseconds used to:
 '
 '        * Look for data or EOF from the child process'
-'          OutPipe.
+'          OutPipe and ErrPipe.
 '        * Send pending blocked output to the child
 '          process' InPipe.
 '        * Check for process termination.
+'
+'ErrAsOut Boolean, read/write.  Default: True.
+'
+'        Included for compatibility with earlier versions
+'        of ShellPipe.
+'
+'        When True then child output written to StdErr is
+'        accumulated and reported along with output written
+'        to StdOut.
+'
+'        When False child's StdErr is accumulated and
+'        reported separately.
 '
 'WaitForIdle Long, read/write.  Default: 200.
 '
@@ -150,6 +175,25 @@ Option Explicit
 'GetLine() As String
 '
 '        Get a line of data from child process' OutPipe.
+'
+'        Should only be called when HasLine is True.
+'        May return an empty string.
+'
+'        A "line" is defined as text delimited by a CR, but
+'        if CRLF occurs the LFs are consumed as well.  Both
+'        conventions are used by StdIO programs.
+'
+'ErrGetData(Optional ByVal MaxLen As Long = -1) As String
+'
+'        Get data from child process' ErrPipe.
+'
+'        Returns MaxLen characters (or as many as are
+'        available).  When MaxLen is -1 returns all
+'        available characters.  May return an empty string.
+'
+'ErrGetLine() As String
+'
+'        Get a line of data from child process' ErrPipe.
 '
 '        Should only be called when HasLine is True.
 '        May return an empty string.
@@ -219,6 +263,22 @@ Option Explicit
 '        EOFType:  SPEOF_NORMAL
 '                  SPEOF_BROKEN_PIPE
 '
+'ErrDataArrival(ByVal CharsTotal As Long)
+'
+'        Signals that input data from the child process'
+'        ErrPipe is available to be read via GetData().
+'
+'        CharsTotal is the amount of data available to be
+'        read.
+'
+'ErrEOF  (ByVal EOFType As SPEOF_TYPES)
+'
+'        Signals that an EOF or BROKEN_PIPE has occurred
+'        on the child process' ErrPipe.
+'
+'        EOFType:  SPEOF_NORMAL
+'                  SPEOF_BROKEN_PIPE
+'
 'Error  (ByVal Number As Long, _
 '        ByVal Source As String, _
 '        ByRef CancelDisplay As Boolean)
@@ -246,6 +306,10 @@ Option Explicit
 '
 '        PollInterval value supplied is outside the valid
 '        range 10 to 65535.
+'
+'&H80042B03 in ShellPipe.WaitForIdle
+'
+'        WaitForIdle must be >= 0.
 '
 
 Private Const WIN32NULL As Long = 0&
@@ -319,7 +383,7 @@ Private Declare Function CreateProcessA Lib "kernel32" _
      ByVal bInheritHandles As Long, _
      ByVal dwCreationFlags As Long, _
      ByVal lpEnvironment As Long, _
-     ByVal lpCurrentDirectory As String, _
+     ByVal lpCurrentDirectory As Long, _
      ByRef lpStartupInfo As STARTUPINFO, _
      ByRef lpProcessInformation As PROCESSINFO) As Long
 
@@ -376,12 +440,19 @@ Private hChildInPipeRd As Long
 Private hChildInPipeWr As Long
 Private hChildOutPipeRd As Long
 Private hChildOutPipeWr As Long
+Private hChildErrPipeRd As Long
+Private hChildErrPipeWr As Long
 Private blnFinishedChild As Boolean
 Private blnProcessActive As Boolean
-Private blnInPipeOpen As Boolean
-Private lngWaitForIdle As Long
-Private sbInBuffer As SmartBuffer
-Private sbOutBuffer As SmartBuffer
+Private PipeOpenIn As Boolean
+Private PipeOpenOut As Boolean
+Private PipeOpenErr As Boolean
+Private BufferIn As SPBuffer
+Private BufferOut As SPBuffer
+Private BufferErr As SPBuffer
+
+Private mErrAsOut As Boolean
+Private mWaitForIdle As Long
 
 Public Enum SPEOF_TYPES
     SPEOF_NORMAL = 0
@@ -395,7 +466,9 @@ Public Enum SP_RESULTS
 End Enum
 
 Public Event DataArrival(ByVal CharsTotal As Long)
+Public Event ErrDataArrival(ByVal CharsTotal As Long)
 Public Event EOF(ByVal EOFType As SPEOF_TYPES)
+Public Event ErrEOF(ByVal EOFType As SPEOF_TYPES)
 Public Event Error(ByVal Number As Long, _
                    ByVal Source As String, _
                    CancelDisplay As Boolean)
@@ -416,7 +489,7 @@ End Property
 
 Public Sub ClosePipe()
     CloseHandle hChildInPipeWr
-    blnInPipeOpen = False
+    PipeOpenIn = False
 End Sub
 
 Public Function FinishChild(Optional ByVal WaitMs As Long = 500, _
@@ -427,52 +500,77 @@ Public Function FinishChild(Optional ByVal WaitMs As Long = 500, _
         If blnProcessActive Then
             If WaitForSingleObject(piProc.hProcess, WaitMs) <> WAIT_OBJECT_0 Then
                 TerminateProcess piProc.hProcess, KillReturnCode
-                'WaitForSingleObject piProc.hProcess, INFINITE
+                WaitForSingleObject piProc.hProcess, INFINITE
             End If
             blnProcessActive = False
             tmrCheck.Enabled = False
         End If
         
-        sbInBuffer.Flush
-        sbOutBuffer.Flush
+        BufferOut.Clear
+        BufferIn.Clear
         GetExitCodeProcess piProc.hProcess, FinishChild
-        CloseHandle hChildOutPipeRd
-        If blnInPipeOpen Then ClosePipe
+        If PipeOpenOut Then ClosePipeOut
+        If PipeOpenErr Then ClosePipeErr
+        If PipeOpenIn Then ClosePipe
         CloseHandle piProc.hThread
         CloseHandle piProc.hProcess
         blnFinishedChild = True
     End If
 End Function
 
+Public Property Get ErrAsOut() As Boolean
+    ErrAsOut = mErrAsOut
+End Property
+
+Public Property Let ErrAsOut(ByVal RHS As Boolean)
+    mErrAsOut = RHS
+End Property
+
 Public Function GetData(Optional ByVal MaxLen As Long = -1) As String
-    GetData = sbInBuffer.GetData(MaxLen)
+    GetData = BufferOut.GetData(MaxLen)
 End Function
 
 Public Function GetLine() As String
-    GetLine = sbInBuffer.GetLine()
+    GetLine = BufferOut.GetLine()
 End Function
 
 Public Property Get HasLine() As Boolean
-    HasLine = sbInBuffer.HasLine
+    HasLine = BufferOut.HasLine
+End Property
+
+Public Function ErrGetData(Optional ByVal MaxLen As Long = -1) As String
+    ErrGetData = BufferErr.GetData(MaxLen)
+End Function
+
+Public Function ErrGetLine() As String
+    ErrGetLine = BufferErr.GetLine()
+End Function
+
+Public Property Get ErrHasLine() As Boolean
+    ErrHasLine = BufferErr.HasLine
 End Property
 
 Public Sub Interrupt(Optional ByVal Break As Boolean = False)
     Dim lngEvent As Long
-    Dim lngError As Long
-    Dim blnCancel As Boolean
+    Dim ErrNum As Long
+    Dim Cancel As Boolean
     
     lngEvent = IIf(Break, CTRL_BREAK_EVENT, CTRL_C_EVENT)
     If GenerateConsoleCtrlEvent(lngEvent, 0&) = 0 Then
-        lngError = Err.LastDllError
-        RaiseEvent Error(lngError, "ShellPipe.Interrupt.ConsoleCtrlEvent", blnCancel)
-        If Not blnCancel Then
-            Err.Raise lngError, TypeName(Me), "Interrupt ConsoleCtrlEvent error"
+        ErrNum = Err.LastDllError
+        RaiseEvent Error(ErrNum, "ShellPipe.Interrupt.ConsoleCtrlEvent", Cancel)
+        If Not Cancel Then
+            Err.Raise ErrNum, TypeName(Me), "Interrupt ConsoleCtrlEvent error"
         End If
     End If
 End Sub
 
 Public Property Get Length() As Long
-    Length = sbInBuffer.Length
+    Length = BufferOut.Length
+End Property
+
+Public Property Get ErrLength() As Long
+    ErrLength = BufferErr.Length
 End Property
 
 Public Property Get PollInterval() As Long
@@ -487,9 +585,19 @@ Public Property Let PollInterval(ByVal RHS As Long)
     PropertyChanged "PollInterval"
 End Property
 
-Public Function Run(ByVal CommandLine As String, Optional ByVal CommandLineParams As String = "", Optional ByVal CurrentDir As String = vbNullString) As SP_RESULTS
+'NOTE FROM TANNER: I have modified this function to better work with ExifTool.  Specifically, I have separated out the command line
+'                   and command line params into two separate strings, which are then passed SEPARATELY to CreateProcessA.  Because
+'                   ExifTool requests can require many command line parameters, this helps us avoid MAX_PATH limitations for the
+'                   whole command line + params string, and it also makes it easier to deal with spaces in the path name.
+Public Function Run( _
+    ByVal CommandLine As String, _
+    Optional ByVal CommandLineParams As String = "", _
+    Optional ByVal CurrentDir As String = "") _
+    As SP_RESULTS
     
     Dim siStart As STARTUPINFO
+    Dim AnsiCurrentDir() As Byte
+    Dim pAnsiCurrentDir As Long
     
     With saPipe
         .nLength = Len(saPipe)
@@ -503,9 +611,19 @@ Public Function Run(ByVal CommandLine As String, Optional ByVal CommandLineParam
     End If
     SetHandleInformation hChildOutPipeRd, HANDLE_FLAG_INHERIT, 0&
     
+    If CreatePipe(hChildErrPipeRd, hChildErrPipeWr, saPipe, 0&) = WIN32FALSE Then
+        CloseHandle hChildOutPipeRd
+        CloseHandle hChildOutPipeWr
+        Run = SP_CREATEPIPEFAILED
+        Exit Function
+    End If
+    SetHandleInformation hChildErrPipeRd, HANDLE_FLAG_INHERIT, 0&
+    
     If CreatePipe(hChildInPipeRd, hChildInPipeWr, saPipe, 0&) = WIN32FALSE Then
         CloseHandle hChildOutPipeRd
         CloseHandle hChildOutPipeWr
+        CloseHandle hChildErrPipeRd
+        CloseHandle hChildErrPipeWr
         Run = SP_CREATEPIPEFAILED
         Exit Function
     End If
@@ -516,7 +634,7 @@ Public Function Run(ByVal CommandLine As String, Optional ByVal CommandLineParam
         .dwFlags = STARTF_USESTDHANDLES Or STARTF_USESHOWWINDOW
         .wShowWindow = SW_HIDE
         .hStdOutput = hChildOutPipeWr
-        .hStdError = hChildOutPipeWr
+        .hStdError = hChildErrPipeWr
         .hStdInput = hChildInPipeRd
         'Leave other fields 0/Null.
     End With
@@ -529,17 +647,28 @@ Public Function Run(ByVal CommandLine As String, Optional ByVal CommandLineParam
         .dwThreadID = 0
     End With
     
+    If Len(CurrentDir) > 0 Then
+        AnsiCurrentDir = StrConv(CurrentDir, vbFromUnicode)
+        ReDim Preserve AnsiCurrentDir(UBound(AnsiCurrentDir) + 1) 'Add Nul.
+        pAnsiCurrentDir = VarPtr(AnsiCurrentDir(0))
+    'Else 'Happens implicitly anyway so we comment these lines out.
+    '    pAnsiCurrentDir = WIN32NULL
+    End If
+        
     If CreateProcessA(CommandLine, CommandLineParams, WIN32NULL, WIN32NULL, WIN32TRUE, _
-                      NORMAL_PRIORITY_CLASS, WIN32NULL, CurrentDir, _
+                      NORMAL_PRIORITY_CLASS, WIN32NULL, pAnsiCurrentDir, _
                       siStart, piProc) = WIN32FALSE Then
         blnProcessActive = False
         Run = SP_CREATEPROCFAILED
     Else
         CloseHandle hChildOutPipeWr
+        CloseHandle hChildErrPipeWr
         CloseHandle hChildInPipeRd
         blnProcessActive = True
         blnFinishedChild = False
-        blnInPipeOpen = True
+        PipeOpenIn = True
+        PipeOpenOut = True
+        PipeOpenErr = True
         If WaitForIdle > 0 Then WaitForInputIdle piProc.hProcess, WaitForIdle
         tmrCheck.Enabled = True
         Run = SP_SUCCESS
@@ -547,7 +676,7 @@ Public Function Run(ByVal CommandLine As String, Optional ByVal CommandLineParam
 End Function
 
 Public Sub SendData(ByVal Data As String)
-    sbOutBuffer.Append Data
+    BufferIn.Append Data
     WriteData
 End Sub
 
@@ -560,12 +689,12 @@ Public Sub SendLine(ByVal Line As String, Optional ByVal UseLFs As Boolean = Tru
 End Sub
 
 Public Property Get WaitForIdle() As Long
-    WaitForIdle = lngWaitForIdle
+    WaitForIdle = mWaitForIdle
 End Property
 
 Public Property Let WaitForIdle(ByVal RHS As Long)
     If RHS < 0 Then Err.Raise &H80042B03, TypeName(Me), "WaitForIdle must be >= 0"
-    lngWaitForIdle = RHS
+    mWaitForIdle = RHS
     PropertyChanged "WaitForIdle"
 End Property
 
@@ -584,97 +713,165 @@ Private Sub tmrCheck_Timer()
     End If
 End Sub
 
+Private Sub ClosePipeOut()
+    CloseHandle hChildOutPipeRd
+    PipeOpenOut = False
+End Sub
+
+Private Sub ClosePipeErr()
+    CloseHandle hChildErrPipeRd
+    PipeOpenErr = False
+End Sub
+
 Private Sub ReadData()
-    Dim strBuf As String
-    Dim lngAvail As Long
-    Dim lngRead As Long
-    Dim lngError As Long
-    Dim blnCancel As Boolean
+    Dim Buffer As String
+    Dim AvailChars As Long
+    Dim CharsRead As Long
+    Dim ErrNum As Long
+    Dim Cancel As Boolean
     
-    If PeekNamedPipe(hChildOutPipeRd, WIN32NULL, 0&, WIN32NULL, lngAvail, WIN32NULL) <> WIN32FALSE Then
-        If lngAvail > 0 Then
-            strBuf = String$(lngAvail, 0)
-            If ReadFile(hChildOutPipeRd, ByVal strBuf, lngAvail, lngRead, WIN32NULL) <> WIN32FALSE Then
-                If lngRead > 0 Then
-                    sbInBuffer.Append Left$(strBuf, lngRead)
-                    RaiseEvent DataArrival(sbInBuffer.Length)
+    If PipeOpenOut Then
+        If PeekNamedPipe(hChildOutPipeRd, WIN32NULL, 0&, WIN32NULL, AvailChars, WIN32NULL) <> WIN32FALSE Then
+            If AvailChars > 0 Then
+                Buffer = String$(AvailChars, 0)
+                If ReadFile(hChildOutPipeRd, ByVal Buffer, AvailChars, CharsRead, WIN32NULL) <> WIN32FALSE Then
+                    If CharsRead > 0 Then
+                        BufferOut.Append Left$(Buffer, CharsRead)
+                        RaiseEvent DataArrival(BufferOut.Length)
+                    Else
+                        RaiseEvent EOF(SPEOF_NORMAL)
+                        ClosePipeOut
+                    End If
                 Else
-                    RaiseEvent EOF(SPEOF_NORMAL)
-                End If
-            Else
-                lngError = Err.LastDllError
-                If lngError = ERROR_BROKEN_PIPE Then
-                    RaiseEvent EOF(SPEOF_BROKEN_PIPE)
-                Else
-                    RaiseEvent Error(lngError, "ShellPipe.ReadData.ReadFile", blnCancel)
-                    If Not blnCancel Then
-                        Err.Raise lngError, TypeName(Me), "ReadData ReadFile error"
+                    ErrNum = Err.LastDllError
+                    If ErrNum = ERROR_BROKEN_PIPE Then
+                        RaiseEvent EOF(SPEOF_BROKEN_PIPE)
+                        ClosePipeOut
+                    Else
+                        RaiseEvent Error(ErrNum, "ShellPipe.ReadData.ReadFile", Cancel)
+                        If Not Cancel Then
+                            Err.Raise ErrNum, TypeName(Me), "ReadData ReadFile error"
+                        End If
                     End If
                 End If
             End If
+        Else
+            ErrNum = Err.LastDllError
+            Select Case ErrNum
+                Case ERROR_BROKEN_PIPE
+                    RaiseEvent EOF(SPEOF_BROKEN_PIPE)
+                    ClosePipeOut
+                    
+                Case ERROR_ACCESS_DENIED, ERROR_INVALID_HANDLE
+                    'Ignore as "no input."
+                    
+                Case Else
+                    RaiseEvent Error(ErrNum, "ShellPipe.ReadData.PeekNamedPipe", Cancel)
+                    If Not Cancel Then
+                        Err.Raise ErrNum, TypeName(Me), "ReadData PeeknamedPipe error"
+                    End If
+            End Select
         End If
-    Else
-        lngError = Err.LastDllError
-        Select Case lngError
-            Case ERROR_BROKEN_PIPE
-                RaiseEvent EOF(SPEOF_BROKEN_PIPE)
-                
-            Case ERROR_ACCESS_DENIED, ERROR_INVALID_HANDLE
-                'Ignore as "no input."
-                
-            Case Else
-                RaiseEvent Error(lngError, "ShellPipe.ReadData.PeekNamedPipe", blnCancel)
-                If Not blnCancel Then
-                    Err.Raise TypeName(Me), "ReadData PeeknamedPipe error"
+    End If
+    
+    If PipeOpenErr Then
+        If PeekNamedPipe(hChildErrPipeRd, WIN32NULL, 0&, WIN32NULL, AvailChars, WIN32NULL) <> WIN32FALSE Then
+            If AvailChars > 0 Then
+                Buffer = String$(AvailChars, 0)
+                If ReadFile(hChildErrPipeRd, ByVal Buffer, AvailChars, CharsRead, WIN32NULL) <> WIN32FALSE Then
+                    If CharsRead > 0 Then
+                        If mErrAsOut Then
+                            BufferOut.Append Left$(Buffer, CharsRead)
+                            RaiseEvent DataArrival(BufferOut.Length)
+                        Else
+                            BufferErr.Append Left$(Buffer, CharsRead)
+                            RaiseEvent ErrDataArrival(BufferErr.Length)
+                        End If
+                    Else
+                        RaiseEvent ErrEOF(SPEOF_NORMAL)
+                        ClosePipeErr
+                    End If
+                Else
+                    ErrNum = Err.LastDllError
+                    If ErrNum = ERROR_BROKEN_PIPE Then
+                        If Not mErrAsOut Then RaiseEvent ErrEOF(SPEOF_BROKEN_PIPE)
+                        ClosePipeErr
+                    Else
+                        RaiseEvent Error(ErrNum, "ShellPipe.ReadData.ReadFile", Cancel)
+                        If Not Cancel Then
+                            Err.Raise ErrNum, TypeName(Me), "ReadData ReadFile error"
+                        End If
+                    End If
                 End If
-        End Select
+            End If
+        Else
+            ErrNum = Err.LastDllError
+            Select Case ErrNum
+                Case ERROR_BROKEN_PIPE
+                    If Not mErrAsOut Then RaiseEvent ErrEOF(SPEOF_BROKEN_PIPE)
+                    ClosePipeErr
+                    
+                Case ERROR_ACCESS_DENIED, ERROR_INVALID_HANDLE
+                    'Ignore as "no input."
+                    
+                Case Else
+                    RaiseEvent Error(ErrNum, "ShellPipe.ReadData.PeekNamedPipe", Cancel)
+                    If Not Cancel Then
+                        Err.Raise ErrNum, TypeName(Me), "ReadData PeeknamedPipe error"
+                    End If
+            End Select
+        End If
     End If
 End Sub
 
 Private Sub WriteData()
-    Dim strBuffer As String
-    Dim lngWritten As Long
-    Dim lngError As Long
-    Dim blnCancel As Boolean
+    Dim Buffer As String
+    Dim CharsWritten As Long
+    Dim ErrNum As Long
+    Dim Cancel As Boolean
     
-    If blnInPipeOpen Then
-        If sbOutBuffer.Length > 0 Then
-            sbOutBuffer.PeekBuffer strBuffer
-            If WriteFile(hChildInPipeWr, ByVal strBuffer, Len(strBuffer), lngWritten, 0&) <> WIN32FALSE Then
-                sbOutBuffer.DeleteData lngWritten
+    If PipeOpenIn Then
+        If BufferIn.Length > 0 Then
+            BufferIn.PeekBuffer Buffer
+            If WriteFile(hChildInPipeWr, ByVal Buffer, Len(Buffer), CharsWritten, 0&) <> WIN32FALSE Then
+                BufferIn.DeleteData CharsWritten
             Else
-                lngError = Err.LastDllError
-                RaiseEvent Error(lngError, "ShellPipe.WriteData.WriteFile", blnCancel)
-                If Not blnCancel Then
-                    'NOTE FROM TANNER: we don't care about write errors in PD, so just ignore any that may rise
-                    'Err.Raise lngError, TypeName(Me), "WriteData WriteFile error"
+                ErrNum = Err.LastDllError
+                RaiseEvent Error(ErrNum, "ShellPipe.WriteData.WriteFile", Cancel)
+                If Not Cancel Then
+                    Err.Raise ErrNum, TypeName(Me), "WriteData WriteFile error"
                 End If
             End If
         End If
     Else
-        sbOutBuffer.Flush
+        BufferIn.Clear
     End If
 End Sub
 
 Private Sub UserControl_Initialize()
     blnFinishedChild = True
-    Set sbInBuffer = New SmartBuffer
-    Set sbOutBuffer = New SmartBuffer
+    Set BufferOut = New SPBuffer
+    Set BufferErr = New SPBuffer
+    Set BufferIn = New SPBuffer
 End Sub
 
 Private Sub UserControl_InitProperties()
+    ErrAsOut = True
     PollInterval = 50
     WaitForIdle = 200
 End Sub
 
-Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-    PollInterval = PropBag.ReadProperty("PollInterval", 50)
-    WaitForIdle = PropBag.ReadProperty("WaitForIdle", 200)
-End Sub
-
-Private Sub UserControl_Resize()
+Private Sub UserControl_Paint()
     Height = 360
     Width = 360
+End Sub
+
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+    With PropBag
+        ErrAsOut = .ReadProperty("ErrAsOut", True)
+        PollInterval = .ReadProperty("PollInterval", 50)
+        WaitForIdle = .ReadProperty("WaitForIdle", 200)
+    End With
 End Sub
 
 Private Sub UserControl_Terminate()
@@ -682,6 +879,9 @@ Private Sub UserControl_Terminate()
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-    PropBag.WriteProperty "PollInterval", PollInterval, 50
-    PropBag.WriteProperty "WaitForIdle", WaitForIdle, 200
+    With PropBag
+        .WriteProperty "ErrAsOut", ErrAsOut, True
+        .WriteProperty "PollInterval", PollInterval, 50
+        .WriteProperty "WaitForIdle", WaitForIdle, 200
+    End With
 End Sub
