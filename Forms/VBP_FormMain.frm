@@ -1369,7 +1369,7 @@ Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal
 
 'When the main form is resized, we must re-align the main canvas
 Private Sub Form_Resize()
-
+    
     refreshAllCanvases
 
 End Sub

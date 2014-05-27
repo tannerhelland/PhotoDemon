@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 25/March/14
-'Last update: add Layers toolbox to the list of windows with specialized handling
+'Last updated: 27/May/14
+'Last update: use constants to control minimum window size, and enforce a larger minimum window size
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2014, it became time to rewrite its window method once again - this time, to a tabbed interface in line with the major
@@ -299,8 +299,11 @@ Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As
 Private Declare Function AdjustWindowRect Lib "user32" (ByRef lpRect As winRect, ByVal dwStyle As Long, ByVal bMenu As Long) As Long
 Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal targetHWnd As Long, ByVal lpString As String) As Long
 Private Declare Function AnimateWindow Lib "user32" (ByVal targetHWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
-'Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal targetHWnd As Long) As Long
+
+'Enforce a specific minimum width/height for the main window
+Private Const PD_MAIN_WINDOW_MINIMUM_HEIGHT As Long = 640
+Private Const PD_MAIN_WINDOW_MINIMUM_WIDTH As Long = 880
 
 'Child window tracking
 Private pdWindows() As pdWindowData
@@ -1985,21 +1988,21 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     CopyMemory curWinRect, ByVal lParam, Len(curWinRect)
                     
                     'If the user has set the window size too small, force the window to a minimum size (640x480).
-                    If (curWinRect.x2 - curWinRect.x1) < 640 Then
+                    If (curWinRect.x2 - curWinRect.x1) < PD_MAIN_WINDOW_MINIMUM_WIDTH Then
                         userSizeTooSmall = True
                         If (resizeHandle = WMSZ_BOTTOMLEFT) Or (resizeHandle = WMSZ_LEFT) Or (resizeHandle = WMSZ_TOPLEFT) Then
-                            curWinRect.x1 = curWinRect.x2 - 640
+                            curWinRect.x1 = curWinRect.x2 - PD_MAIN_WINDOW_MINIMUM_WIDTH
                         Else
-                            curWinRect.x2 = curWinRect.x1 + 640
+                            curWinRect.x2 = curWinRect.x1 + PD_MAIN_WINDOW_MINIMUM_WIDTH
                         End If
                     End If
                     
-                    If (curWinRect.y2 - curWinRect.y1) < 480 Then
+                    If (curWinRect.y2 - curWinRect.y1) < PD_MAIN_WINDOW_MINIMUM_HEIGHT Then
                         userSizeTooSmall = True
                         If (resizeHandle = WMSZ_TOPLEFT) Or (resizeHandle = WMSZ_TOP) Or (resizeHandle = WMSZ_TOPRIGHT) Then
-                            curWinRect.y1 = curWinRect.y2 - 480
+                            curWinRect.y1 = curWinRect.y2 - PD_MAIN_WINDOW_MINIMUM_HEIGHT
                         Else
-                            curWinRect.y2 = curWinRect.y1 + 480
+                            curWinRect.y2 = curWinRect.y1 + PD_MAIN_WINDOW_MINIMUM_HEIGHT
                         End If
                     End If
                     

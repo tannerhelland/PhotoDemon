@@ -257,8 +257,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 16/May/14
-'Last update: remove old specialty Selection Undo/Redo handling code
+'Last updated: 27/May/14
+'Last update: add placeholder text when no images are loaded
 '
 'Every time the user loads an image, one of these forms is spawned. This form also interfaces with several
 ' specialized program components in the pdWindowManager class.
@@ -327,6 +327,9 @@ Attribute VScroll.VB_VarHelpID = -1
 
 'Icons rendered to the scroll bar.  Rather than constantly reloading them from file, we cache them at initialization.
 Dim sbIconSize As pdDIB, sbIconCoords As pdDIB
+
+'When no images are loaded, we instruct the user to load an image.  This generic image icon is used as a placeholder.
+Dim iconLoadAnImage As pdDIB
 
 'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
 Public Sub setRedrawSuspension(ByVal newRedrawValue As Boolean)
@@ -508,6 +511,9 @@ Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
     'The size display is cleared whenever the user has no images loaded
     If clearSize Then
         lblImgSize.Caption = ""
+        
+        'Also, clear the back of the canvas
+        fixChromeLayout
         
     'When size IS displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
     Else
@@ -1260,6 +1266,9 @@ Private Sub UserControl_Show()
         loadResourceToDIB "SB_IMG_SIZE", sbIconSize
         loadResourceToDIB "SB_MOUSE_POS", sbIconCoords
         
+        Set iconLoadAnImage = New pdDIB
+        loadResourceToDIB "IMAGE_ETCH_256", iconLoadAnImage
+        
         'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
         ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
         On Error GoTo CanvasShowError
@@ -1276,6 +1285,8 @@ Private Sub UserControl_Show()
         lblImgSize.FontName = g_InterfaceFont
         lblMessages.FontName = g_InterfaceFont
         
+CanvasShowError:
+        
         'Make all status bar lines a proper height (again, necessary on high-DPI displays)
         Dim i As Long
         For i = 0 To lineStatusBar.Count - 1
@@ -1286,8 +1297,6 @@ Private Sub UserControl_Show()
     End If
     
     Exit Sub
-    
-CanvasShowError:
 
 End Sub
 
@@ -1313,6 +1322,53 @@ Public Sub fixChromeLayout()
     Else
         lblMessages.Width = newMessageArea
         lblMessages.Visible = True
+    End If
+    
+    'If the canvas is currently disabled (e.g. no image is loaded), let the user know that they can drag/drop files onto
+    ' this space to begin editing
+    If Not cmbZoom.Enabled Then
+    
+        Debug.Print "drawing message"
+    
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        
+        'If a histogram has already been drawn, render the "please wait" text over the top of it.  Otherwise, render it to a blank white image.
+        tmpDIB.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, g_CanvasBackground
+        
+        Dim notifyFont As pdFont
+        Set notifyFont = New pdFont
+        notifyFont.setFontFace g_InterfaceFont
+        
+        'Set the font size dynamically.  en-US gets a larger size; other languages, whose text may be longer, use a smaller one.
+        If g_Language.translationActive Then
+            notifyFont.setFontSize 13
+        Else
+            notifyFont.setFontSize 14
+        End If
+        
+        notifyFont.setFontBold False
+        notifyFont.setFontColor RGB(41, 43, 54)
+        notifyFont.setTextAlignment vbCenter
+        
+        'Create the font and attach it to our temporary DIB's DC
+        notifyFont.createFontObject
+        notifyFont.attachToDC tmpDIB.getDIBDC
+        
+        Dim modifiedHeight As Long
+        modifiedHeight = tmpDIB.getDIBHeight + (iconLoadAnImage.getDIBHeight / 2) + fixDPI(24)
+        
+        Dim loadImageMessage As String
+        loadImageMessage = g_Language.TranslateMessage("Drag an image onto this space to begin editing." & vbCrLf & vbCrLf & "You can also use the Open Image button on the left," & vbCrLf & "or the File > Open and File > Import menus.")
+        notifyFont.drawCenteredText loadImageMessage, tmpDIB.getDIBWidth, modifiedHeight
+        
+        'Just above the text instructions, add a generic image icon
+        iconLoadAnImage.alphaBlendToDC tmpDIB.getDIBDC, 192, (tmpDIB.getDIBWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - fixDPI(20)
+        
+        BitBlt Me.hDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+        requestBufferSync
+        Set tmpDIB = Nothing
+        
     End If
 
 End Sub
@@ -1360,10 +1416,12 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         
     'Images are not loaded.  Hide the lines and other items.
     Else
+    
         cmbSizeUnit.Visible = False
         lineStatusBar(0).Visible = False
         lineStatusBar(1).Visible = False
         lineStatusBar(2).Visible = False
+                
     End If
     
     'Make our painting persistent
