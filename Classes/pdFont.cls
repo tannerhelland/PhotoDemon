@@ -164,20 +164,38 @@ Dim currentLogFont As LOGFONT
 
 'This function draws horizontally and vertically centered text onto the attached DC, and it does it without modifying any of the current
 ' font settings (including alignment).  It is designed for one-off renderings of centered text.
-Public Sub drawCenteredText(ByRef srcString As String)
+Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidth As Long = -1, Optional ByVal customHeight As Long = -1)
 
-    'Because DCs are dimensionless abstractions, we need to retrieve the attached window and use it to calculate the output rect
+    'Check for multiline text first; it requires special handling
+    Dim textIsMultiline As Boolean
+    If InStr(1, srcString, vbCrLf, vbBinaryCompare) > 0 Then
+        textIsMultiline = True
+    Else
+        textIsMultiline = False
+    End If
+    
+    'Because DCs are dimensionless abstractions, we need to retrieve the attached window and use it to calculate the output rect.
+    ' (Note that this does not work when rendering to a windowless DC, like a DIB.)
     Dim winClientRect As winRect
     GetClientRect WindowFromDC(curDC), winClientRect
     
     'Use the client rectangle to determine a width and height midpoint for the target DC
     Dim halfDCWidth As Long, halfDCHeight As Long
-    halfDCWidth = winClientRect.x2 \ 2
-    halfDCHeight = winClientRect.y2 \ 2
-
+    If winClientRect.x2 = 0 Then
+        halfDCWidth = customWidth \ 2
+        halfDCHeight = customHeight \ 2
+    Else
+        halfDCWidth = winClientRect.x2 \ 2
+        halfDCHeight = winClientRect.y2 \ 2
+    End If
+    
     'Next, determine the height of the string we were passed
     Dim strHeightHalf As Long
-    strHeightHalf = getHeightOfString(srcString) \ 2
+    If textIsMultiline Then
+        strHeightHalf = getHeightOfWordwrapString(srcString, getWidthOfString(srcString)) \ 2
+    Else
+        strHeightHalf = getHeightOfString(srcString) \ 2
+    End If
     
     'Back-up the current text alignment, then change it to horizontally aligned
     Dim backupAlignment As AlignmentConstants
@@ -185,7 +203,22 @@ Public Sub drawCenteredText(ByRef srcString As String)
     updateAlignment vbCenter
     
     'Render the text
-    ExtTextOutNoRect curDC, halfDCWidth, halfDCHeight - strHeightHalf, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
+    If textIsMultiline Then
+    
+        'Create a bounding rect for the text
+        Dim tmpRect As RECT
+        
+        tmpRect.Left = halfDCWidth
+        tmpRect.Right = tmpRect.Left + getWidthOfString(srcString)
+        tmpRect.Top = halfDCHeight
+        tmpRect.Bottom = tmpRect.Top + getHeightOfWordwrapString(srcString, getWidthOfString(srcString))
+        
+        'If the text is going to extend past the target rect, draw it with ellipses
+        DrawText curDC, srcString, Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP
+    
+    Else
+        ExtTextOutNoRect curDC, halfDCWidth, halfDCHeight - strHeightHalf, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
+    End If
     
     'Restore the original text alignment
     updateAlignment backupAlignment

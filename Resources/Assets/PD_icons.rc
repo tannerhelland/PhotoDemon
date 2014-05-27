@@ -364,6 +364,9 @@ PRNT_1IMAGE  CUSTOM  MOVEABLE        LOADONCALL      print_preview_one_page.png
 PRNT_MLTIMGS CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_images.png
 PRNT_MLTPGS  CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_pages.png
 
+//Etched icon for "load an image" screen
+IMAGE_ETCH_256 CUSTOM  MOVEABLE        LOADONCALL      image_etched_256.png
+
 //Control arrows used on either side of the hue box in the color selection dialog
 CLR_ARROW_L  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_left.png
 CLR_ARROW_R  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_right.png
