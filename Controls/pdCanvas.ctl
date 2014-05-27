@@ -346,8 +346,20 @@ Public Property Let BackColor(newBackColor As Long)
 End Property
 
 Public Sub clearCanvas()
-    UserControl.Picture = LoadPicture("")
-    UserControl.Refresh
+    
+    'If no images have been loaded, draw the "load image" placeholder.
+    If (g_OpenImageCount = 0) And (Not g_ProgramShuttingDown) Then
+        
+        fixChromeLayout
+    
+    'Otherwise, simply clear the user control
+    Else
+    
+        UserControl.Picture = LoadPicture("")
+        UserControl.Refresh
+    
+    End If
+    
 End Sub
 
 'Get/Set scroll bar visibility
@@ -1328,46 +1340,49 @@ Public Sub fixChromeLayout()
     ' this space to begin editing
     If Not cmbZoom.Enabled Then
     
-        Debug.Print "drawing message"
+        'Ignore redraws if the program is being closed; this improves program termination performance
+        If (Not g_ProgramShuttingDown) Then
     
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        
-        'If a histogram has already been drawn, render the "please wait" text over the top of it.  Otherwise, render it to a blank white image.
-        tmpDIB.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, g_CanvasBackground
-        
-        Dim notifyFont As pdFont
-        Set notifyFont = New pdFont
-        notifyFont.setFontFace g_InterfaceFont
-        
-        'Set the font size dynamically.  en-US gets a larger size; other languages, whose text may be longer, use a smaller one.
-        If g_Language.translationActive Then
-            notifyFont.setFontSize 13
-        Else
-            notifyFont.setFontSize 14
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            
+            'If a histogram has already been drawn, render the "please wait" text over the top of it.  Otherwise, render it to a blank white image.
+            tmpDIB.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, g_CanvasBackground
+            
+            Dim notifyFont As pdFont
+            Set notifyFont = New pdFont
+            notifyFont.setFontFace g_InterfaceFont
+            
+            'Set the font size dynamically.  en-US gets a larger size; other languages, whose text may be longer, use a smaller one.
+            If g_Language.translationActive Then
+                notifyFont.setFontSize 13
+            Else
+                notifyFont.setFontSize 14
+            End If
+            
+            notifyFont.setFontBold False
+            notifyFont.setFontColor RGB(41, 43, 54)
+            notifyFont.setTextAlignment vbCenter
+            
+            'Create the font and attach it to our temporary DIB's DC
+            notifyFont.createFontObject
+            notifyFont.attachToDC tmpDIB.getDIBDC
+            
+            Dim modifiedHeight As Long
+            modifiedHeight = tmpDIB.getDIBHeight + (iconLoadAnImage.getDIBHeight / 2) + fixDPI(24)
+            
+            Dim loadImageMessage As String
+            loadImageMessage = g_Language.TranslateMessage("Drag an image onto this space to begin editing." & vbCrLf & vbCrLf & "You can also use the Open Image button on the left," & vbCrLf & "or the File > Open and File > Import menus.")
+            notifyFont.drawCenteredText loadImageMessage, tmpDIB.getDIBWidth, modifiedHeight
+            
+            'Just above the text instructions, add a generic image icon
+            iconLoadAnImage.alphaBlendToDC tmpDIB.getDIBDC, 192, (tmpDIB.getDIBWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - fixDPI(20)
+            
+            BitBlt Me.hDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+            requestBufferSync
+            Set tmpDIB = Nothing
+            
         End If
-        
-        notifyFont.setFontBold False
-        notifyFont.setFontColor RGB(41, 43, 54)
-        notifyFont.setTextAlignment vbCenter
-        
-        'Create the font and attach it to our temporary DIB's DC
-        notifyFont.createFontObject
-        notifyFont.attachToDC tmpDIB.getDIBDC
-        
-        Dim modifiedHeight As Long
-        modifiedHeight = tmpDIB.getDIBHeight + (iconLoadAnImage.getDIBHeight / 2) + fixDPI(24)
-        
-        Dim loadImageMessage As String
-        loadImageMessage = g_Language.TranslateMessage("Drag an image onto this space to begin editing." & vbCrLf & vbCrLf & "You can also use the Open Image button on the left," & vbCrLf & "or the File > Open and File > Import menus.")
-        notifyFont.drawCenteredText loadImageMessage, tmpDIB.getDIBWidth, modifiedHeight
-        
-        'Just above the text instructions, add a generic image icon
-        iconLoadAnImage.alphaBlendToDC tmpDIB.getDIBDC, 192, (tmpDIB.getDIBWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - fixDPI(20)
-        
-        BitBlt Me.hDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-        requestBufferSync
-        Set tmpDIB = Nothing
         
     End If
 

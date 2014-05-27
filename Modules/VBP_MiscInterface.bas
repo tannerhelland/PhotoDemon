@@ -122,7 +122,7 @@ Public Sub syncInterfaceToCurrentImage()
         '"Paste as new layer" is disabled when no images are loaded (but "Paste as new image" remains active)
         FormMain.MnuEdit(6).Enabled = False
                         
-        Message "Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)"
+        Message "Please load or import an image to begin editing."
         
         'Assign a generic caption to the main window
         FormMain.Caption = getPhotoDemonNameAndVersion()
