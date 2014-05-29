@@ -16,7 +16,8 @@ Attribute VB_Exposed = False
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
 'Last updated: 29/May/14
-'Last update: wrap up initial build, using toolbar_Layers as our test implementation
+'Last update: revisit cursor handling to minimize cursor updates (by setting the relevant class long to NULL upon
+'             mouse entering the window)
 '
 'As we get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
 ' become clear.  Until now, a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel)
@@ -131,6 +132,7 @@ Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) A
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Private Declare Function GetClassLong Lib "user32" Alias "GetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
 Private Const GCL_HCURSOR = (-12)
 
 'API helper functions for converting between screen and client coordinate spaces
@@ -159,7 +161,7 @@ Private m_MouseTrackingActive() As Boolean
 Private m_HoverModeActive As Boolean
 
 'If the user has requested that we force a persistent cursor for this object, the cursor handle will be stored here.
-Private m_CursorHandle As Long
+Private m_CursorHandle As Long, m_PrevClassCursorHandle As Long
 
 'If the user wants us to raise additional events using this class - e.g. MouseMove or AppCommands - we will use
 ' this enum with the multidimensional tracking array to handle events accordingly.
@@ -283,14 +285,7 @@ Public Sub setSystemCursor(Optional ByVal systemCursorType As Long = 0)
     If m_CursorHandle <> tmpCursorHandle Then
         
         m_CursorHandle = tmpCursorHandle
-    
-        'Apply the cursor now
-        Dim i As Long
-        For i = 0 To m_hWndCount - 1
-            If m_TrackingData(PDIT_CURSOR, i) Then
-                SetClassLong m_TrackingData(PDIT_DEFAULT, i), GCL_HCURSOR, m_CursorHandle
-            End If
-        Next i
+        applyCursorToHwnds False
         
     End If
         
@@ -303,16 +298,33 @@ End Sub
 ' custom cursors at exit time, so this class need not concern itself with unloading requested cursors.
 Public Sub setPNGCursor(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
     
-    m_CursorHandle = Icon_and_Cursor_Handler.requestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
+    Dim tmpCursorHandle As Long
+    tmpCursorHandle = Icon_and_Cursor_Handler.requestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
     
-    'Apply the cursor now
-    Dim i As Long
-    For i = 0 To m_hWndCount - 1
-        If m_TrackingData(PDIT_CURSOR, i) Then
-            SetClassLong m_TrackingData(PDIT_DEFAULT, i), GCL_HCURSOR, m_CursorHandle
-        End If
-    Next i
+    If m_CursorHandle <> tmpCursorHandle Then
+        m_CursorHandle = tmpCursorHandle
+        applyCursorToHwnds False
+    End If
     
+End Sub
+
+'Private helper function used by setSystemCursor and setPNGCursor, above.  When setting the cursor for the first time
+' for our base hWnd, it is helpful to reset the class cursor definition so that Windows doesn't automatically raise
+' WM_SETCURSOR messages every time the mouse is moved.  Set the optional parameter to TRUE to cache the existing class
+' cursor and overwrite it with NULL.
+Private Sub applyCursorToHwnds(Optional ByVal removeExistingClassCursor As Boolean = False)
+
+    'If removeExistingClassCursor is set, use SetClassLong to remove any existing class-level cursor definition
+    If removeExistingClassCursor Then m_PrevClassCursorHandle = SetClassLong(m_TrackingData(PDIT_DEFAULT, 0), GCL_HCURSOR, 0&)
+
+    'Apply the new cursor using SetCursor
+    SetCursor m_CursorHandle
+
+End Sub
+
+'Partner to applyCursorToHwnds, above.  To be used only when the mouse leaves a cursor-controlled area.
+Private Sub resetClassCursor()
+    SetClassLong m_TrackingData(PDIT_DEFAULT, 0), GCL_HCURSOR, m_PrevClassCursorHandle
 End Sub
 
 'Given an hWnd, populate a generic TrackMouseEvent struct and pass it to the TrackMouseEvent function
@@ -536,6 +548,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         m_MouseTrackingActive(indexOfHwnd) = True
                         requestMouseTrackingForHwnd lng_hWnd
                         
+                        'If cursor handling is enabled, reset the class cursor and re-apply any custom cursor now.
+                        If m_TrackingData(PDIT_CURSOR, indexOfHwnd) Then applyCursorToHwnds True
+                        
                         'Only raise a MouseEnter event if this event is happening for the primary hWnd; otherwise, track
                         ' mouse events silently.
                         '
@@ -544,14 +559,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         If indexOfHwnd = 0 Then RaiseEvent MouseEnter(retMouseButton, retShiftConstants, mouseX, mouseY)
                         
                     End If
-                    
-                    'If tracking cursors, see if an update is required
-                    If m_TrackingData(PDIT_CURSOR, indexOfHwnd) Then
-                        If GetClassLong(m_TrackingData(PDIT_DEFAULT, indexOfHwnd), GCL_HCURSOR) <> m_CursorHandle Then
-                            SetClassLong m_TrackingData(PDIT_DEFAULT, indexOfHwnd), GCL_HCURSOR, m_CursorHandle
-                        End If
-                    End If
-                    
+                                        
                     'If custom MouseMove tracking has been requested for this hWnd, raise a mouse move event now
                     If m_TrackingData(PDIT_MOUSEMOVE, indexOfHwnd) Then
                         RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
@@ -577,15 +585,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         '       tracked controls; I'll investigate a better solution if/when it proves necessary.
                         If indexOfHwnd = 0 Then RaiseEvent MouseLeave(retMouseButton, retShiftConstants, mouseX, mouseY)
                         
-                        'If cursor handling is enabled for this hWnd, reset the cursor to its default arrow whenever
+                        'If cursor handling is enabled for this hWnd, reset the cursor to its original value whenever
                         ' the mouse has left the control.  This will prevent us from mistakenly assigning our custom
                         ' cursor to other objects that share this class.
-                        If m_TrackingData(PDIT_CURSOR, indexOfHwnd) Then
-                            Dim i As Long
-                            For i = 0 To m_hWndCount - 1
-                                SetClassLong m_TrackingData(PDIT_DEFAULT, i), GCL_HCURSOR, LoadCursor(0, IDC_ARROW)
-                            Next i
-                        End If
+                        If m_TrackingData(PDIT_CURSOR, indexOfHwnd) Then resetClassCursor
                         
                     End If
                     
@@ -650,7 +653,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     parseAppCommand lParam, commandID
                     RaiseEvent AppCommand(commandID, retShiftConstants, mouseX, mouseY)
                 End If
-            
+                
         
         End Select
 
