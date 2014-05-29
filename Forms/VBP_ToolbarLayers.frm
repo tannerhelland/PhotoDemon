@@ -301,7 +301,7 @@ Private Const thumbBorder As Long = 3
 Dim m_ToolTip As clsToolTip
 
 'An outside class provides access to mousewheel events for scrolling the layer view
-Private WithEvents cMouseEvents As bluMouseEvents
+Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Height of each layer content block.  Note that this is effectively a "magic number", in pixels, representing the
@@ -470,23 +470,111 @@ Private Sub cmdLayerAction_Click(Index As Integer)
     
 End Sub
 
-Private Sub cMouseEvents_MouseOut()
-    
+Private Sub cMouseEvents_MouseLeave(ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
     curLayerHover = -1
     m_MouseX = -1
     m_MouseY = -1
     
     'Redraw the layer box, which no longer has anything hovered
     redrawLayerBox
+
+End Sub
+
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'Ignore user interaction while in drag/drop mode
+    If inDragDropMode Then Exit Sub
+    
+    'Only display the hand cursor if the cursor is over a layer
+    If getLayerAtPosition(x, y) <> -1 Then
+        cMouseEvents.setSystemCursor IDC_HAND
+    Else
+        cMouseEvents.setSystemCursor IDC_ARROW
+    End If
+    
+    'Don't process further MouseMove events if no images are loaded
+    If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
+    
+    'If a layer other than the active one is being hovered, highlight that box
+    If curLayerHover <> getLayerAtPosition(x, y) Then
+        curLayerHover = getLayerAtPosition(x, y)
+        redrawLayerBox
+    End If
+    
+    'Store the mouse position so other functions in this routine can access them
+    m_MouseX = x
+    m_MouseY = y
+    
+    'Update the tooltip contingent on the mouse position.
+    Dim toolString As String
+    
+    'Mouse is over a visibility toggle
+    If isPointInRect(x, y, m_VisibilityRect) Then
+        
+        'Fast mouse movements can cause this event to trigger, even when no layer is hovered.
+        ' As such, we need to make sure we won't be attempting to access a bad layer index.
+        If curLayerHover >= 0 Then
+            If pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility Then
+                toolString = g_Language.TranslateMessage("Click to hide this layer.")
+            Else
+                toolString = g_Language.TranslateMessage("Click to show this layer.")
+            End If
+        End If
+        
+    'Mouse is over Duplicate
+    ElseIf isPointInRect(x, y, m_DuplicateRect) Then
+    
+        If curLayerHover >= 0 Then
+            toolString = g_Language.TranslateMessage("Click to duplicate this layer.")
+        End If
+    
+    'Mouse is over Merge Down
+    ElseIf isPointInRect(x, y, m_MergeDownRect) Then
+    
+        If curLayerHover >= 0 Then
+            If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, True) >= 0 Then
+                toolString = g_Language.TranslateMessage("Click to merge this layer with the layer beneath it.")
+            Else
+                toolString = g_Language.TranslateMessage("This layer can't merge down, because there are no visible layers beneath it.")
+            End If
+        End If
+            
+    'Mouse is over Merge Up
+    ElseIf isPointInRect(x, y, m_MergeUpRect) Then
+    
+        If curLayerHover >= 0 Then
+            If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, False) >= 0 Then
+                toolString = g_Language.TranslateMessage("Click to merge this layer with the layer above it.")
+            Else
+                toolString = g_Language.TranslateMessage("This layer can't merge up, because there are no visible layers above it.")
+            End If
+        End If
+            
+    'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
+    ' the active layer.
+    Else
+        
+        'The tooltip is irrelevant if the current layer is already active
+        If pdImages(g_CurrentImage).getActiveLayerIndex <> getLayerAtPosition(x, y) Then
+            toolString = g_Language.TranslateMessage("Click to make this the active layer.")
+        Else
+            toolString = g_Language.TranslateMessage("This is the currently active layer.")
+        End If
+        
+    End If
+    
+    'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
+    If StrComp(m_ToolTip.ToolText(picLayers), toolString, vbTextCompare) <> 0 Then m_ToolTip.ToolText(picLayers) = toolString
     
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
+Private Sub cMouseEvents_MouseScrollVertical(ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If vsLayer.Visible Then
   
-        If LinesScrolled < 0 Then
+        If scrollAmount < 0 Then
             
             If vsLayer.Value + vsLayer.LargeChange > vsLayer.Max Then
                 vsLayer.Value = vsLayer.Max
@@ -497,7 +585,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
             curLayerHover = getLayerAtPosition(x, y)
             redrawLayerBox
         
-        ElseIf LinesScrolled > 0 Then
+        ElseIf scrollAmount > 0 Then
             
             If vsLayer.Value - vsLayer.LargeChange < vsLayer.Min Then
                 vsLayer.Value = vsLayer.Min
@@ -559,8 +647,9 @@ Private Sub Form_Load()
     makeFormPretty Me
     
     'Enable mousewheel scrolling for the layer box
-    Set cMouseEvents = New bluMouseEvents
-    cMouseEvents.Attach picLayers.hWnd, Me.hWnd
+    Set cMouseEvents = New pdInput
+    cMouseEvents.addInputTracker picLayers.hWnd, True, True, , True
+    cMouseEvents.addInputTracker Me.hWnd
     
     'No layer has been hovered yet
     curLayerHover = -1
@@ -1027,96 +1116,6 @@ Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single
         
     End If
     
-End Sub
-
-Private Sub picLayers_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    'Ignore user interaction while in drag/drop mode
-    If inDragDropMode Then Exit Sub
-    
-    'Only display the hand cursor if the cursor is over a layer
-    If getLayerAtPosition(x, y) <> -1 Then
-        picLayers.MousePointer = vbCustom
-        setHandCursorToHwnd picLayers.hWnd
-    Else
-        picLayers.MousePointer = vbDefault
-        setArrowCursorToHwnd picLayers.hWnd
-    End If
-    
-    'Don't process further MouseMove events if no images are loaded
-    If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
-    
-    'If a layer other than the active one is being hovered, highlight that box
-    If curLayerHover <> getLayerAtPosition(x, y) Then
-        curLayerHover = getLayerAtPosition(x, y)
-        redrawLayerBox
-    End If
-    
-    'Store the mouse position so other functions in this routine can access them
-    m_MouseX = x
-    m_MouseY = y
-    
-    'Update the tooltip contingent on the mouse position.
-    Dim toolString As String
-    
-    'Mouse is over a visibility toggle
-    If isPointInRect(x, y, m_VisibilityRect) Then
-        
-        'Fast mouse movements can cause this event to trigger, even when no layer is hovered.
-        ' As such, we need to make sure we won't be attempting to access a bad layer index.
-        If curLayerHover >= 0 Then
-            If pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility Then
-                toolString = g_Language.TranslateMessage("Click to hide this layer.")
-            Else
-                toolString = g_Language.TranslateMessage("Click to show this layer.")
-            End If
-        End If
-        
-    'Mouse is over Duplicate
-    ElseIf isPointInRect(x, y, m_DuplicateRect) Then
-    
-        If curLayerHover >= 0 Then
-            toolString = g_Language.TranslateMessage("Click to duplicate this layer.")
-        End If
-    
-    'Mouse is over Merge Down
-    ElseIf isPointInRect(x, y, m_MergeDownRect) Then
-    
-        If curLayerHover >= 0 Then
-            If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, True) >= 0 Then
-                toolString = g_Language.TranslateMessage("Click to merge this layer with the layer beneath it.")
-            Else
-                toolString = g_Language.TranslateMessage("This layer can't merge down, because there are no visible layers beneath it.")
-            End If
-        End If
-            
-    'Mouse is over Merge Up
-    ElseIf isPointInRect(x, y, m_MergeUpRect) Then
-    
-        If curLayerHover >= 0 Then
-            If Layer_Handler.isLayerAllowedToMergeAdjacent(curLayerHover, False) >= 0 Then
-                toolString = g_Language.TranslateMessage("Click to merge this layer with the layer above it.")
-            Else
-                toolString = g_Language.TranslateMessage("This layer can't merge up, because there are no visible layers above it.")
-            End If
-        End If
-            
-    'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
-    ' the active layer.
-    Else
-        
-        'The tooltip is irrelevant if the current layer is already active
-        If pdImages(g_CurrentImage).getActiveLayerIndex <> getLayerAtPosition(x, y) Then
-            toolString = g_Language.TranslateMessage("Click to make this the active layer.")
-        Else
-            toolString = g_Language.TranslateMessage("This is the currently active layer.")
-        End If
-        
-    End If
-    
-    'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
-    If StrComp(m_ToolTip.ToolText(picLayers), toolString, vbTextCompare) <> 0 Then m_ToolTip.ToolText(picLayers) = toolString
-        
 End Sub
 
 'Given mouse coordinates over the buffer picture box, return the layer at that location

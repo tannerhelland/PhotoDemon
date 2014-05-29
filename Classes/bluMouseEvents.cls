@@ -148,7 +148,7 @@ Private Const HOVER_DEFAULT As Long = &HFFFFFFFF
 
 'Structure to call the mouse tracking API _
  <msdn.microsoft.com/en-us/library/windows/desktop/ms645604%28v=vs.85%29.aspx>
-Private Type TRACKMOUSEEVENT
+Private Type TrackMouseEvent
     SizeOfMe        As Long         'Size of this structure in bytes
     Flags           As TME_FLAGS    'Various settings
     hndTrack        As Long         'Which window to track
@@ -166,7 +166,7 @@ End Enum
 'Tap into the mouse movement _
  <msdn.microsoft.com/en-us/library/windows/desktop/ms646265%28v=vs.85%29.aspx>
 Private Declare Function user32_TrackMouseEvent Lib "user32" Alias "TrackMouseEvent" ( _
-    ByRef ptrTRACKMOUSEEVENT As TRACKMOUSEEVENT _
+    ByRef ptrTRACKMOUSEEVENT As TrackMouseEvent _
 ) As BOOL
 
 'What virtual keys are pressed, i.e. during `WM_MOUSEHOVER` / `WM_MOUSEMOVE`
@@ -210,7 +210,7 @@ Private hndParentForm As Long
 
 'This strucutre will be used to start the mouse tracking, we have to keep hold of it _
  as the mouse tracking stops after every event fires
-Private TME As TRACKMOUSEEVENT
+Private TME As TrackMouseEvent
 'Whether the mouse tracking is running
 Private IsTracking As Boolean
 'Whether the mouse has left the window; _
