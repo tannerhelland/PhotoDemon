@@ -247,7 +247,7 @@ Public Function addInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTra
     cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
     
     'Set any optional event subclassing as well
-    If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSEHOVER, WM_MOUSELEAVE, WM_MOUSEMOVE
+    If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER
     If alsoTrackAppCommands Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_APPCOMMAND
             
     'If enter, leave, and hover events are desired, start mouse tracking now
@@ -334,7 +334,7 @@ Private Function requestMouseTrackingForHwnd(ByVal targetHwnd As Long)
     
     With eventTracker
         .cbSize = Len(eventTracker)
-        .dwFlags = TME_HOVER Or TME_LEAVE
+        .dwFlags = TME_LEAVE Or TME_HOVER
         .hWndTrack = targetHwnd
         .dwHoverTime = &HFFFFFFFF
     End With
@@ -563,7 +563,17 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     'If custom MouseMove tracking has been requested for this hWnd, raise a mouse move event now
                     If m_TrackingData(PDIT_MOUSEMOVE, indexOfHwnd) Then
                         RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
-                        bHandled = True
+                        
+                        'Random fact!  If bHandled is set to TRUE, tooltips will not appear for the window in question.
+                        ' I haven't yet discovered a reason for this, but I can reliably reproduce the issue.  My assumption,
+                        ' based on the MSDN isntructions of "if an application processes this message, it should return zero,"
+                        ' is that DefWindowProc needs to pass the message onto the tooltip object so it can process its own
+                        ' internal timer for showing the tooltip; by setting bHandled to True, we prevent that hand-off, so
+                        ' the tooltip never gets notification.
+                        'bHandled = True
+                        
+                        lReturn = 0
+                        
                     End If
                     
                 End If
