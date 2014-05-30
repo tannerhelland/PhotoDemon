@@ -1675,7 +1675,11 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
         If g_MouseOverImageTabstrip Then
             toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
         Else
-            FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, x, y, LinesScrolled
+            If (Shift And vbCtrlMask) <> 0 Then
+                FormMain.mainCanvas(0).cMouseEvents_MouseWheelZoom Button, Shift, x, y, LinesScrolled
+            Else
+                FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, x, y, LinesScrolled
+            End If
         End If
     End If
 

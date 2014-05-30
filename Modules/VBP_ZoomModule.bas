@@ -3,8 +3,8 @@ Attribute VB_Name = "Viewport_Handler"
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 05/May/14
-'Last update: greatly simplify the ScrollViewport step of the pipeline, thanks to our awesome new getCompositedRect function.
+'Last updated: 30/May/14
+'Last update: add support for "preserve relative canvas position under cursor while mousewheel zooming"
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
 ' - PrepareViewport: for recalculating all viewport variables and controls (done only when the zoom value is changed or a new picture is loaded)
@@ -260,17 +260,25 @@ End Sub
     '2) an image's zoom value is changed
     '3) an image's container form is resized
     '4) other special cases (resizing an image, rotating an image - basically anything that changes the size of the back buffer)
-
+'
 'Note that specific zoom values are calculated in other routines; they are only USED here.
-
-'This routine requires a target form as a parameter.  This form will almost always be pdImages(g_CurrentImage).containingForm, but in
-' certain rare cases (cascading windows, for example), it may be necessary to recalculate the viewport and scroll bars
-' in non-active windows - in those cases, the calling routine must specify which viewport it wants rebuilt.
-
-'Because redrawing a viewport from scratch is an expensive operation, this function also takes a "reasonForRedraw" parameter, which
-' is an untranslated string supplied by the caller.  I use this to track when viewport redraws are requested, and to try and keep
-' such requests as infrequent as possible.
-Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByRef reasonForRedraw As String)
+'
+'Because redrawing a viewport from scratch is an expensive operation, this function also takes an optional "reasonForRedraw"
+' parameter, which is an untranslated string supplied by the caller.  I use this to track when viewport redraws are requested,
+' and to try and keep such requests as infrequent as possible.  If you see a bunch of PrepareViewport requests happening
+' back-to-back in the Debug window, you should investigate, because drawing is being repeated unnecessarily.
+'
+'Finally, to support "Zoom to Coordinate" behavior when the mousewheel is used to zoom, optional targetX and targetY parameters
+' can be supplied.  If present, PrepareViewport will automatically set the scroll bar values to preserve the position of the
+' passed coordinate before and after the zoom operation (as close as it can; obviously some zoom changes make this impossible,
+' such as zooming out to a point where scroll bars aren't visible).  IMPORTANT NOTE!  Two sets of required target coordinates must
+' be passed for each of X and Y: coordinates in *canvas space*, and coordinates in *image space*.  Both are required because
+' PrepareViewport doesn't keep track of past zoom values, so once the zoom combo box has been changed (as will likely happen prior
+' to calling this function), PrepareViewport has no way of knowing what zoom value was used previously.  So when using these
+' parameters, make sure to handle zoom changes in the following order: cache x/y values for both image and canvas space,
+' disable automatic canvas redraws, change zoom, enable automatic canvas redraws, request manual redraw via PrepareViewport and
+' supply your previously cached x/y values.
+Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByRef reasonForRedraw As String, Optional ByVal oldXCanvas As Long = 0, Optional ByVal oldYCanvas As Long = 0, Optional ByVal targetXImage As Double = 0, Optional ByVal targetYImage As Double = 0)
 
     'Don't attempt to resize the scroll bars if g_AllowViewportRendering is disabled. This is used to provide a smoother user experience,
     ' especially when images are being loaded. (This routine is triggered on Form_Resize, which is in turn triggered when a
@@ -399,10 +407,13 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
         
     End If
     
-    'If we've reached this point, one or both scroll bars are enabled.  The time has come to calculate their values.
-    'Horizontal scroll bar comes first.
-    Dim newScrollMax As Long
     
+    Dim newScrollMax As Long
+    Dim newXCanvas As Double, newYCanvas As Double, canvasXDiff As Double, canvasYDiff As Double
+    
+    'If we've reached this point, one or both scroll bars are enabled.  The time has come to calculate their values.
+    
+    'Horizontal scroll bar comes first.
     If hScrollEnabled Then
     
         'If zoomed-in, set the scroll bar range to the number of not visible pixels.
@@ -413,17 +424,40 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
             newScrollMax = srcImage.Width - Int(viewportWidth / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
         End If
         
-        'If the current scroll value exceeds the new scroll maximum, reduce the scroll bar value to compensate
-        If dstCanvas.getScrollValue(PD_HORIZONTAL) > newScrollMax Then
-            dstCanvas.setRedrawSuspension True
-            dstCanvas.setScrollValue PD_HORIZONTAL, newScrollMax
-            dstCanvas.setRedrawSuspension False
-        End If
-        
+        'Apply the new maximum
+        dstCanvas.setRedrawSuspension True
         dstCanvas.setScrollMax PD_HORIZONTAL, newScrollMax
+        dstCanvas.setRedrawSuspension False
         
+        'If the calling function supplied targetX values, calculate a theoretical new scroll bar value that maintains
+        ' the position of the image, relative to the updated viewport.  (Note: if the calculated value exceeds the range of the
+        ' current or future scroll bar max value, PD's custom scroll bar class will solve the problem automatically.)
+        If oldXCanvas <> 0 Then
+        
+            dstCanvas.setRedrawSuspension True
+        
+            'From the supplied coordinates, we know that image coordinate targetXImage was originally located at position
+            ' oldXCanvas.  Our goal is to make targetXImage *remain* at oldXCanvas position, while accounting for
+            ' any changes made to zoom (and thus to scroll bar max/min values).
+            
+            'Start by converting targetXCanvas to the current canvas space.  This will give us a value NewCanvasX, that describes
+            ' where that coordinate lies on the *new* canvas.
+            dstCanvas.setScrollValue PD_HORIZONTAL, 0
+            Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), targetXImage, targetYImage, newXCanvas, newYCanvas, False
+            
+            'Use the difference between newCanvasX and oldCanvasX to determine a new scroll bar value.
+            canvasXDiff = newXCanvas - oldXCanvas
+            
+            'Modify the scrollbar by canvasXDiff amount, while accounting for zoom (as different zoom levels cause scroll bar
+            ' notches to represent varying amounts of pixels)
+            dstCanvas.setScrollValue PD_HORIZONTAL, canvasXDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
+            
+            dstCanvas.setRedrawSuspension False
+        
+        End If
+                        
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
-        If dstCanvas.getScrollMax(PD_HORIZONTAL) > 15 Then
+        If (dstCanvas.getScrollMax(PD_HORIZONTAL) > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
             dstCanvas.setScrollLargeChange PD_HORIZONTAL, dstCanvas.getScrollMax(PD_HORIZONTAL) \ 16
         Else
             dstCanvas.setScrollLargeChange PD_HORIZONTAL, 1
@@ -442,17 +476,40 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
             newScrollMax = srcImage.Height - Int(viewportHeight / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
         End If
         
-        'If the current scroll value exceeds the new scroll maximum, reduce the scroll bar value to compensate
-        If dstCanvas.getScrollValue(PD_VERTICAL) > newScrollMax Then
-            dstCanvas.setRedrawSuspension True
-            dstCanvas.setScrollValue PD_VERTICAL, newScrollMax
-            dstCanvas.setRedrawSuspension False
-        End If
-        
+        'Apply the new maximum
+        dstCanvas.setRedrawSuspension True
         dstCanvas.setScrollMax PD_VERTICAL, newScrollMax
+        dstCanvas.setRedrawSuspension False
         
+        'If the calling function supplied targetY values, calculate a theoretical new scroll bar value that maintains
+        ' the position of the image, relative to the updated viewport.  (Note: if the calculated value exceeds the range of the
+        ' current or future scroll bar max value, PD's custom scroll bar class will solve the problem automatically.)
+        If oldYCanvas <> 0 Then
+        
+            dstCanvas.setRedrawSuspension True
+        
+            'From the supplied coordinates, we know that image coordinate targetYImage was originally located at position
+            ' oldYCanvas.  Our goal is to make targetYImage *remain* at oldYCanvas position, while accounting for
+            ' any changes made to zoom (and thus to scroll bar max/min values).
+            
+            'Start by converting the old targetYImage to the current canvas space, *with an assumed scroll bar value of zero*.
+            ' This will give us a value NewYCanvas, that describes where that coordinate lies on the *new* canvas.
+            dstCanvas.setScrollValue PD_VERTICAL, 0
+            Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), targetXImage, targetYImage, newXCanvas, newYCanvas, False
+            
+            'Use the difference between newCanvasY and oldCanvasY to determine a new scroll bar value.
+            canvasYDiff = newYCanvas - oldYCanvas
+            
+            'Modify the scrollbar by canvasYDiff amount, while accounting for zoom (as different zoom levels cause scroll bar
+            ' notches to represent varying amounts of pixels)
+            dstCanvas.setScrollValue PD_VERTICAL, canvasYDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
+            
+            dstCanvas.setRedrawSuspension False
+        
+        End If
+                
         'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
-        If dstCanvas.getScrollMax(PD_VERTICAL) > 15 Then
+        If (dstCanvas.getScrollMax(PD_VERTICAL) > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
             dstCanvas.setScrollLargeChange PD_VERTICAL, dstCanvas.getScrollMax(PD_VERTICAL) \ 16
         Else
             dstCanvas.setScrollLargeChange PD_VERTICAL, 1
