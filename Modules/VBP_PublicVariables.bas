@@ -274,3 +274,19 @@ Public g_MouseAccuracy As Double
 ' this variable can be set to TRUE, which will prevent the underlying canvas from accepting input.  Just make sure
 ' to restore this variable to FALSE when you're done, including catching any error states!
 Public g_DisableUserInput As Boolean
+
+
+'Replacement mouse button type.  VB doesn't report X-button clicks in their native button type, but PD does.  Whether
+' this is useful is anybody's guess, but it doesn't hurt to have... right?  Also, note that the left/middle/right button
+' values are identical to VB, so existing code won't break if using this enum against VB's standard mouse constants.
+Public Enum PDMouseButtonConstants
+    pdLeftButton = 1
+    pdRightButton = 2
+    pdMiddleButton = 4
+    pdXButtonOne = 8
+    pdXButtonTwo = 16
+End Enum
+
+#If False Then
+    Private Const pdLeftButton = 1, pdRightButton = 2, pdMiddleButton = 4, pdXButtonOne = 8, pdXButtonTwo = 16
+#End If

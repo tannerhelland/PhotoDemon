@@ -19,15 +19,16 @@ Attribute VB_Exposed = False
 'Last update: revisit cursor handling to minimize cursor updates (by setting the relevant class long to NULL upon
 '             mouse entering the window)
 '
-'As we get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
+'As I get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
 ' become clear.  Until now, a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel)
-' has covered PD pretty tool, but as drawing tools emerge, we will need for support for more complicated input
-' interactions, like GetMouseMovePointsEx combined with spline interpolation for buttery smooth mouse input, and ideally,
-' proper handling for touch and/or pen input.
+' has covered PD pretty well, but drawing tools and more advanced UI features require more detailed input handling, like
+' GetMouseMovePointsEx + spline interpolation for buttery smooth mouse input, or (ideally) some level of support for
+' touch and/or pen input.
 '
-'Because I would like to keep all input together in one place as much as possible, I am now working to unify all custom
-' input handling into this class.  Besides the usual mouse events, we can also move our (large!) collection of custom
-' mouse cursor code here, which should reduce code redundancy while improving reliability.
+'Because I would like to keep all input code as unified as possible, it is finally time to start merging PD's many
+' disparate pieces of input handling into this single class.  Besides the obvious mouse events that require special
+' handling (again, mousewheel), I'm also working on moving PD's (large!) collection of custom mouse cursor code into
+' this class, which should reduce code redundancy while improving reliability.
 '
 'Many thanks to Kroc Camen of camendesign.com, whose bluMouseEvents class served PD well for a long time prior to this
 ' implementation.  If you need a lightweight mouse-handler that works well as a standalone solution, I recommend using
@@ -36,19 +37,23 @@ Attribute VB_Exposed = False
 '
 'A few important notes when using this class:
 '
-'- This class can optionally handle Mouse_Move events for a given hWnd.  I'm testing this to see if manually handling such
-'   events fixes issues with high-DPI mice under Windows 8, but even if it doesn't, I will still provide this capability
-'   for controls that want to make use of GetMouseMovePointsEx for a more fluid mouse experience.
+'- This class can optionally handle standard mouse events for a given hWnd (e.g. mouse events VB normally covers, like
+'   Click, DoubleClick, MouseMove, etc).  There are a lot of reasons to do this, but among the obvious benefits are things
+'   like x/y coordinates for click events, support for 32-bit mouse positions, support for X-keys as a button type, and more.
+'   In the future, the custom version of these events could also do things like supply a Pressure parameter for MouseDown
+'   events, or use interpolation to smooth out MouseMove coordinate reports.
 '
 '- Multiple hWnds can be passed to a single instace of this class, but the first hWnd passed serves as the "master hWnd".
 '   This means that all mouse coordinates reported by this class will always be relative to *that hWnd*.  Tracking multiple
 '   hWnds at once is helpful if you want a child object to receive all mousewheel events for it and its parent, for example,
-'   or if you want to handle all mouse events for a  collection of objects with a single MouseMove function.
+'   or if you want to handle all mouse events for a  collection of objects with a single MouseMove function.  Similarly, if
+'   you want to subclass multiple controls within a single parent, that should work just fine, as long as you don't assign
+'   the parent hWnd to multiple instances of this class.
 '
-'- Mouse coordinate, button, and shift key modifiers are processed independent of window messages.  This allows us to
-'   supply this data even if a given window message doesn't supply these values naturally.  It also allows for higher
-'   accuracy when tracking mouse move data, as we use 32-bit values instead of 16-bit ones (which seems ridiculous now, but
-'   may not be forever).
+'- As implied above, mouse coordinate, button, and shift key modifiers are processed independent of window messages.  This
+'   allows us to supply such data even if a given window message doesn't automatically include them.  It also allows for
+'   higher accuracy when tracking mouse move data, as we use 32-bit values instead of 16-bit ones (which seems ridiculous
+'   now, but may not be forever).
 '
 'Also, let me give a big thank you to Steve McMahon for translating the GET_APPCOMMAND_LPARAM, GET_DEVICE_LPARAM, and
 ' GET_KEYSTATE_LPARAM macros into VB; this class uses these events to respond to actions like "back"/"forward", regardless
@@ -63,15 +68,16 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This class can raise many events.  The following events are raised for all tracked hWnds:
-Event MouseLeave(ByVal Button As VBRUN.MouseButtonConstants, ByVal Shift As VBRUN.ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event MouseEnter(ByVal Button As VBRUN.MouseButtonConstants, ByVal Shift As VBRUN.ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event MouseHover(ByVal Button As VBRUN.MouseButtonConstants, ByVal Shift As VBRUN.ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event MouseScrollVertical(ByVal Button As VBRUN.MouseButtonConstants, ByVal Shift As VBRUN.ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-Event MouseScrollHorizontal(ByVal Button As VBRUN.MouseButtonConstants, ByVal Shift As VBRUN.ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Event DoubleClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
 'The following events are raised only if specifically requested
-Event MouseMoveCustom(ByVal Button As VBRUN.MouseButtonConstants, ByVal Shift As VBRUN.ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event AppCommand(ByVal vKeyID As Long, ByVal Shift As VBRUN.ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event AppCommand(ByVal vKeyID As Long, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
 'This class tracks all kinds of window messages.  Most objects won't need this level of tracking, but they're there
 ' if needed.
@@ -81,17 +87,20 @@ Private Const WM_MOUSELEAVE As Long = &H2A3
 Private Const WM_MOUSEMOVE As Long = &H200
 Private Const WM_MOUSEWHEEL As Long = &H20A
 Private Const WM_SETCURSOR As Long = &H20
+Private Const WM_LBUTTONDBLCLK As Long = &H203
+Private Const WM_MBUTTONDBLCLK As Long = &H209
+Private Const WM_RBUTTONDBLCLK As Long = &H206
+Private Const WM_XBUTTONDBLCLK As Long = &H20D  'Note: I would like to include X-button double-clicks, but doing so would require use of a custom button Enum.  Still debating the merits of this...
 
 'X buttons (sometimes called buttons 4 and 5 in MSDN docs) are typically used for forward/back maneuvering.
 ' I've declared these constants here, but PD will actually use WM_APPCOMMAND instead, as it will automatically be
 ' raised by both keyboard and mouse equivalents of forward/back keys, which is a better solution for PD.
 Private Const WM_APPCOMMAND As Long = &H319
-Private Const WM_XBUTTONDBLCLK As Long = &H20D
 Private Const WM_XBUTTONDOWN As Long = &H20B
 Private Const WM_XBUTTONUP As Long = &H20C
 
 'Mouse-tracking for hover and leave events is not handled automatically by Windows; we must request it.
-Private Type TrackMouseEvent_Struct
+Private Type TRACKMOUSEEVENT_STRUCT
     cbSize As Long
     dwFlags As Long
     hWndTrack As Long
@@ -101,7 +110,7 @@ End Type
 Private Const TME_HOVER As Long = &H1
 Private Const TME_LEAVE As Long = &H2
 
-Private Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As TrackMouseEvent_Struct) As Long
+Private Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
 
 'The Alt mask won't be returned by mouse WM notifications, so we need to retrieve it manually
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
@@ -113,6 +122,8 @@ Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_ME
 Private Const VK_LBUTTON As Long = &H1
 Private Const VK_RBUTTON As Long = &H2
 Private Const VK_MBUTTON As Long = &H4
+Private Const VK_XBUTTON1 As Long = &H5
+Private Const VK_XBUTTON2 As Long = &H6
 
 'In the future, other virtual key codes can be retrieved here:
 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
@@ -168,13 +179,13 @@ Private m_CursorHandle As Long, m_PrevClassCursorHandle As Long
 Private Enum PD_CUSTOM_INPUT_TRACKERS
     PDIT_DEFAULT = 0
     PDIT_MOUSE_ENTERLEAVE = 1
-    PDIT_MOUSEMOVE = 2
+    PDIT_STANDARD_MOUSE = 2
     PDIT_APPCOMMAND = 3
     PDIT_CURSOR = 4
 End Enum
 
 #If False Then
-    Private Const PDIT_DEFAULT = 0, PDIT_MOUSE_ENTERLEAVE = 1, PDIT_MOUSEMOVE = 2, PDIT_APPCOMMAND = 3, PDIT_CURSOR = 4
+    Private Const PDIT_DEFAULT = 0, PDIT_MOUSE_ENTERLEAVE = 1, PDIT_STANDARD_MOUSE = 2, PDIT_APPCOMMAND = 3, PDIT_CURSOR = 4
 #End If
 
 Private Const NUM_OF_CUSTOM_INPUT_TRACKERS = 5
@@ -207,21 +218,21 @@ End Sub
 'By default, all added hWnds will have MouseEnter/Leave/Wheel events tracked "for free".
 '
 'Note that this function will return TRUE if input tracking was initiated successfully.
-Public Function addInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackMouseMove As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False) As Boolean
+Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackStandardMouseEvents As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False) As Boolean
 
     Dim i As Long
         
     'Add the hWnd to our tracking array.  Note that the hWnd in position 0 is treated as the base.
-    If targetHwnd <> 0 Then
+    If targetHWnd <> 0 Then
     
         'Add the hWnd to our tracking array, and increment all subarrays accordingly
         m_hWndCount = m_hWndCount + 1
         ReDim Preserve m_TrackingData(0 To NUM_OF_CUSTOM_INPUT_TRACKERS - 1, 0 To m_hWndCount - 1) As Long
         ReDim Preserve m_MouseTrackingActive(0 To m_hWndCount - 1) As Boolean
         
-        m_TrackingData(PDIT_DEFAULT, m_hWndCount - 1) = targetHwnd
+        m_TrackingData(PDIT_DEFAULT, m_hWndCount - 1) = targetHWnd
         m_TrackingData(PDIT_MOUSE_ENTERLEAVE, m_hWndCount - 1) = alsoTrackMouseEnterLeave
-        m_TrackingData(PDIT_MOUSEMOVE, m_hWndCount - 1) = alsoTrackMouseMove
+        m_TrackingData(PDIT_STANDARD_MOUSE, m_hWndCount - 1) = alsoTrackStandardMouseEvents
         m_TrackingData(PDIT_APPCOMMAND, m_hWndCount - 1) = alsoTrackAppCommands
         m_TrackingData(PDIT_CURSOR, m_hWndCount - 1) = alsoHandleCursorDuties
     
@@ -233,9 +244,9 @@ Public Function addInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTra
     End If
     
     'Attach the subclasser to this hWnd
-    If Not cSubclass.ssc_Subclass(targetHwnd, , 1, Me) Then
+    If Not cSubclass.ssc_Subclass(targetHWnd, , 1, Me) Then
         
-        Debug.Print "WARNING: input subclasser failed to subclass hWnd #" & targetHwnd & ".  Fix it!"
+        Debug.Print "WARNING: input subclasser failed to subclass hWnd #" & targetHWnd & ".  Fix it!"
         addInputTracker = False
         Exit Function
     
@@ -244,20 +255,26 @@ Public Function addInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTra
     'Subclassing was successful.  Add all relevant mouse messages.
     ' (Note that we subclass MouseMove events even if the user doesn't want these events returned; this is
     ' used to generate MouseEnter/Leave events.)
-    cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
+    cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
     
     'Set any optional event subclassing as well
-    If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER
-    If alsoTrackAppCommands Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_APPCOMMAND
+    If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER
+    If alsoTrackAppCommands Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_APPCOMMAND
+    If alsoTrackStandardMouseEvents Then
+    
+        'Double-clicks (including X-buttons)...
+        cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
+        
+    End If
             
     'If enter, leave, and hover events are desired, start mouse tracking now
     If alsoTrackMouseEnterLeave Then
     
-        If requestMouseTrackingForHwnd(targetHwnd) Then
+        If requestMouseTrackingForHwnd(targetHWnd) Then
             m_MouseTrackingActive(m_hWndCount - 1) = True
         Else
             
-            Debug.Print "WARNING: couldn't get Windows to track mouse events for hWnd #" & targetHwnd & ".  Fix it!"
+            Debug.Print "WARNING: couldn't get Windows to track mouse events for hWnd #" & targetHWnd & ".  Fix it!"
             addInputTracker = False
             Exit Function
                 
@@ -328,14 +345,14 @@ Private Sub resetClassCursor()
 End Sub
 
 'Given an hWnd, populate a generic TrackMouseEvent struct and pass it to the TrackMouseEvent function
-Private Function requestMouseTrackingForHwnd(ByVal targetHwnd As Long)
+Private Function requestMouseTrackingForHwnd(ByVal targetHWnd As Long)
 
-    Dim eventTracker As TrackMouseEvent_Struct
+    Dim eventTracker As TRACKMOUSEEVENT_STRUCT
     
     With eventTracker
         .cbSize = Len(eventTracker)
         .dwFlags = TME_LEAVE Or TME_HOVER
-        .hWndTrack = targetHwnd
+        .hWndTrack = targetHWnd
         .dwHoverTime = &HFFFFFFFF
     End With
     
@@ -367,8 +384,11 @@ Private Function isMouseButtonDown(ByVal vKey As Long) As Boolean
     If GetSystemMetrics(SM_SWAPBUTTON) <> 0 Then
     
         'Reassign left/right mouse buttons as necessary
-        If vKey = VK_LBUTTON Then vKey = VK_RBUTTON
-        If vKey = VK_RBUTTON Then vKey = VK_LBUTTON
+        If vKey = VK_LBUTTON Then
+            vKey = VK_RBUTTON
+        Else
+            If vKey = VK_RBUTTON Then vKey = VK_LBUTTON
+        End If
     
     End If
     
@@ -509,10 +529,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         If isVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
                 
         'Similarly, always grab mouse buttons independent of the window message
-        Dim retMouseButton As MouseButtonConstants
-        If isMouseButtonDown(VK_LBUTTON) Then retMouseButton = retMouseButton Or vbLeftButton
-        If isMouseButtonDown(VK_MBUTTON) Then retMouseButton = retMouseButton Or vbMiddleButton
-        If isMouseButtonDown(VK_RBUTTON) Then retMouseButton = retMouseButton Or vbRightButton
+        Dim retMouseButton As PDMouseButtonConstants
+        If isMouseButtonDown(VK_LBUTTON) Then retMouseButton = retMouseButton Or pdLeftButton
+        If isMouseButtonDown(VK_MBUTTON) Then retMouseButton = retMouseButton Or pdMiddleButton
+        If isMouseButtonDown(VK_RBUTTON) Then retMouseButton = retMouseButton Or pdRightButton
+        If isMouseButtonDown(VK_XBUTTON1) Then retMouseButton = retMouseButton Or pdXButtonOne
+        If isMouseButtonDown(VK_XBUTTON2) Then retMouseButton = retMouseButton Or pdXButtonTwo
         
         'Some functions also supply mouse button and coordinate values; we'll be retrieving these as well.
         ' To improve accuracy of the retrieved coordinates (and to make future support for GetMouseMovePointsEx
@@ -561,7 +583,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     End If
                                         
                     'If custom MouseMove tracking has been requested for this hWnd, raise a mouse move event now
-                    If m_TrackingData(PDIT_MOUSEMOVE, indexOfHwnd) Then
+                    If m_TrackingData(PDIT_STANDARD_MOUSE, indexOfHwnd) Then
                         RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
                         
                         'Random fact!  If bHandled is set to TRUE, tooltips will not appear for the window in question.
@@ -577,7 +599,37 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     End If
                     
                 End If
+            
+            'Double-clicks
+            Case WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
+            
+                'Because double-click events tend to focus on the use of a single button, it makes more sense for us to
+                ' manually return a single-button type here (rather than a composite flag).
+                retMouseButton = 0
                 
+                If uMsg = WM_LBUTTONDBLCLK Then
+                    retMouseButton = vbLeftButton
+                ElseIf uMsg = WM_RBUTTONDBLCLK Then
+                    retMouseButton = vbRightButton
+                ElseIf uMsg = WM_MBUTTONDBLCLK Then
+                    retMouseButton = vbMiddleButton
+                ElseIf uMsg = WM_XBUTTONDBLCLK Then
+                
+                    'In this rare instance, we have to pull data directly from the message, because which XButton triggered
+                    ' the message can only be found by checking flags in the high-order word of the wParam.
+                    If (wParam \ &H10000) = 1 Then
+                        retMouseButton = pdXButtonOne
+                    Else
+                        retMouseButton = pdXButtonTwo
+                    End If
+                    
+                End If
+                
+                RaiseEvent DoubleClick(retMouseButton, retShiftConstants, mouseX, mouseY)
+                
+                lReturn = 0
+            
+            'Mouse leaving the client area
             Case WM_MOUSELEAVE
             
                 'Make sure we are actually tracking mouse enter/leave events for this hWnd
@@ -643,10 +695,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 If (uMsg = WM_MOUSEWHEEL) And ((retShiftConstants And vbShiftMask) = 0) Then
                     finalScrollAmount = CDbl(scrollDelta) * getUserScrollSetting(True)
-                    RaiseEvent MouseScrollVertical(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                    RaiseEvent MouseWheelVertical(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
                 Else
                     finalScrollAmount = CDbl(scrollDelta) * getUserScrollSetting(False)
-                    RaiseEvent MouseScrollHorizontal(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                    RaiseEvent MouseWheelHorizontal(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
                 End If
                 
                 bHandled = True
