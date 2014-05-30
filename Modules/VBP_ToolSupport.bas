@@ -3,8 +3,8 @@ Attribute VB_Name = "Tool_Support"
 'Helper functions for various PhotoDemon tools
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/February/14
-'Last updated: 05/May/14
-'Last update: add bounds checking to transformCurrentLayer to prevent the user from resizing an image layer into oblivion
+'Last updated: 30/May/14
+'Last update: fix bogus Shift-Key modifier calculations when resizing a layer via the top-left or top-right corners
 '
 'To keep the pdCanvas user control codebase lean, much of its MouseMove events redirect here, to specialized
 ' functions that take mouse actions on the canvas and translate them into tool actions.
@@ -188,7 +188,10 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
                 .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
                 
                 'If the user is pressing the SHIFT key, lock the image's aspect ratio
-                If isShiftDown Then .setLayerCanvasYModifier .getLayerCanvasXModifier
+                If isShiftDown Then
+                    .setLayerCanvasXModifier .getLayerCanvasYModifier
+                    .setLayerOffsetX origLayerRectModified.Right - (.getLayerCanvasXModifier * origWidth)
+                End If
             
             '1: top-right corner
             Case 1
@@ -199,7 +202,7 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
                 .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
                 
                 'If the user is pressing the SHIFT key, lock the image's aspect ratio
-                If isShiftDown Then .setLayerCanvasYModifier .getLayerCanvasXModifier
+                If isShiftDown Then .setLayerCanvasXModifier .getLayerCanvasYModifier
             
             '2: bottom-right
             Case 2
