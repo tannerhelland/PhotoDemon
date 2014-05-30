@@ -73,6 +73,7 @@ Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftCon
 Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
 Event ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -807,20 +808,44 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' in lines or chars depending on whether vertical or horizontal scrolling is active.
                 Dim finalScrollAmount As Double
                 
-                If (uMsg = WM_MOUSEWHEEL) And ((retShiftConstants And vbShiftMask) = 0) Then
+                'Vertical scroll only, meaning Vertical Wheel + !Shift and !Ctrl
+                If (uMsg = WM_MOUSEWHEEL) And ((retShiftConstants And vbShiftMask) = 0) And ((retShiftConstants And vbCtrlMask) = 0) Then
                     finalScrollAmount = CDbl(scrollDelta) * getUserScrollSetting(True)
                     RaiseEvent MouseWheelVertical(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
-                Else
-                    finalScrollAmount = CDbl(scrollDelta) * getUserScrollSetting(False)
+                
+                'Horizontal scroll, but generated via Vertical Wheel + Shift and !Ctrl
+                ElseIf (uMsg = WM_MOUSEWHEEL) And ((retShiftConstants And vbShiftMask) <> 0) And ((retShiftConstants And vbCtrlMask) = 0) Then
+                
+                    finalScrollAmount = CDbl(scrollDelta) * getUserScrollSetting(True)
                     
-                    'If the user is using the Shift+VerticalWheel combination, reverse the delta; this makes it so that
-                    ' shift+up_wheel = left, and shift+down_wheel = right - the idea is that up_wheel and shift+up_wheel
+                    'Because the user is using the Shift+VerticalWheel combination, reverse the delta; this makes it so
+                    ' that shift+up_wheel = left, and shift+down_wheel = right - the idea is that up_wheel and shift+up_wheel
                     ' both target the top-left corner of the image.
-                    If (uMsg = WM_MOUSEWHEEL) And ((retShiftConstants And vbShiftMask) <> 0) Then finalScrollAmount = -1 * finalScrollAmount
+                    finalScrollAmount = -1 * finalScrollAmount
                     
                     RaiseEvent MouseWheelHorizontal(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                    
+                'Zoom scroll, generated via Vertical Wheel + Ctrl and !Shift
+                ElseIf (uMsg = WM_MOUSEWHEEL) And ((retShiftConstants And vbCtrlMask) <> 0) And ((retShiftConstants And vbShiftMask) = 0) Then
+                
+                    finalScrollAmount = CDbl(scrollDelta) * getUserScrollSetting(True)
+                    RaiseEvent MouseWheelZoom(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                
+                'Horizontal scroll, generated via actual Horizontal Scroll/Tilt message
+                ElseIf (uMsg = WM_MOUSEHWHEEL) Then
+                
+                    finalScrollAmount = CDbl(scrollDelta) * getUserScrollSetting(False)
+                    RaiseEvent MouseWheelHorizontal(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                    
+                'The only combination left is Vertical scroll, but with some weird combination of Shift modifiers; return
+                ' a generic vertical wheel event as-is.
+                Else
+                    finalScrollAmount = CDbl(scrollDelta) * getUserScrollSetting(True)
+                    RaiseEvent MouseWheelVertical(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                
                 End If
                 
+                lReturn = 1
                 bHandled = True
                 
             'App commands are meta functions like "back" or "increase volume" or "media rewind".  They can be triggered

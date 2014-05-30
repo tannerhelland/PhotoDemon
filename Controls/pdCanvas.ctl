@@ -1101,71 +1101,68 @@ Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConsta
 
 End Sub
 
+'Vertical mousewheel scrolling.  Note that Shift+Wheel and Ctrl+Wheel modifiers do NOT raise this event; pdInput automatically
+' reroutes them to MouseWheelHorizontal and MouseWheelZoom, respectively.
 Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 
-    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If Not (Shift And vbCtrlMask) Then
-    
-        'PhotoDemon uses the standard photo editor convention of Ctrl+Wheel = zoom, Shift+Wheel = h_scroll, and Wheel = v_scroll.
-        ' Some users (for reasons I don't understand??) expect plain mousewheel to zoom the image.  For these users, we now
-        ' display a helpful message telling them to use the damn Ctrl modifier like everyone else.
-        If picScrollV.Visible Then
-      
-            If scrollAmount < 0 Then
-                
-                m_suspendRedraws = True
-                
-                If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
-                    VScroll.Value = VScroll.Max
-                Else
-                    VScroll.Value = VScroll.Value + VScroll.LargeChange
-                End If
-                
-                m_suspendRedraws = False
-                
-                ScrollViewport pdImages(g_CurrentImage), Me
+    'PhotoDemon uses the standard photo editor convention of Ctrl+Wheel = zoom, Shift+Wheel = h_scroll, and Wheel = v_scroll.
+    ' Some users (for reasons I don't understand??) expect plain mousewheel to zoom the image.  For these users, we now
+    ' display a helpful message telling them to use the damn Ctrl modifier like everyone else.
+    If picScrollV.Visible Then
+  
+        If scrollAmount < 0 Then
             
-            ElseIf scrollAmount > 0 Then
-                
-                m_suspendRedraws = True
-                
-                If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
-                    VScroll.Value = VScroll.Min
-                Else
-                    VScroll.Value = VScroll.Value - VScroll.LargeChange
-                End If
-                
-                m_suspendRedraws = False
-                
-                ScrollViewport pdImages(g_CurrentImage), Me
-                
+            m_suspendRedraws = True
+            
+            If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
+                VScroll.Value = VScroll.Max
+            Else
+                VScroll.Value = VScroll.Value + VScroll.LargeChange
             End If
-    
-        'The user is using the mousewheel without Ctrl/Shift modifiers, even without a visible scrollbar.
-        ' Display a message about how mousewheels are supposed to work.
-        Else
-            If Not vbCtrlMask Then Message "Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM"
+            
+            m_suspendRedraws = False
+            
+            ScrollViewport pdImages(g_CurrentImage), Me
+        
+        ElseIf scrollAmount > 0 Then
+            
+            m_suspendRedraws = True
+            
+            If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
+                VScroll.Value = VScroll.Min
+            Else
+                VScroll.Value = VScroll.Value - VScroll.LargeChange
+            End If
+            
+            m_suspendRedraws = False
+            
+            ScrollViewport pdImages(g_CurrentImage), Me
+            
         End If
-    
+
+    'The user is using the mousewheel without Ctrl/Shift modifiers, even without a visible scrollbar.
+    ' Display a message about how mousewheels are supposed to work.
+    Else
+        Message "Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM"
     End If
     
-    'NOTE: horizontal scrolling is now handled in the separate _MouseHScroll event.  This is necessary to handle mice with
-    '      a dedicated horizontal scroller.
+    'NOTE: horizontal scrolling via Shift+Vertical Wheel is handled in the separate _MouseWheelHorizontal event.
+    'NOTE: zooming via Ctrl+Vertical Wheel is handled in the separate _MouseWheelZoom event.
     
-    'Zooming - only trigger when Ctrl has been pressed
-    If (Shift And vbCtrlMask) Then
-      
-        If scrollAmount > 0 Then
+End Sub
+
+'The pdInput class now provides a dedicated zoom event for us - how nice!
+Private Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+
+    If zoomAmount > 0 Then
             
-            If cmbZoom.ListIndex > 0 Then cmbZoom.ListIndex = cmbZoom.ListIndex - 1
-            'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
-            
-        ElseIf scrollAmount < 0 Then
-            
-            If cmbZoom.ListIndex < (cmbZoom.ListCount - 1) Then cmbZoom.ListIndex = cmbZoom.ListIndex + 1
-            
-        End If
+        If cmbZoom.ListIndex > 0 Then cmbZoom.ListIndex = cmbZoom.ListIndex - 1
+        'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
+           
+    ElseIf zoomAmount < 0 Then
         
+        If cmbZoom.ListIndex < (cmbZoom.ListCount - 1) Then cmbZoom.ListIndex = cmbZoom.ListIndex + 1
+           
     End If
 
 End Sub
