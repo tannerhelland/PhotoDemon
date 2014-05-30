@@ -60,6 +60,11 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 Private Declare Function SetBrushOrgEx Lib "gdi32" (ByVal targetDC As Long, ByVal nXOrg As Long, ByVal nYOrg As Long, ByVal refToPeviousPoint As Long) As Long
 Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode As Long) As Long
 
+'API for converting between hWnd-specific coordinate spaces.  Note that the function technically accepts an
+' array of POINTAPI points; the address passed to lpPoints should be the address of the first point in the array
+' (e.g. ByRef PointArray(0)), while the cPoints parameter is the number of points in the array.  If two points are
+' passed, a special Rect transform may occur on RtL systems; see http://msdn.microsoft.com/en-us/library/dd145046%28v=vs.85%29.aspx
+Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByRef lpPoints As POINTAPI, ByVal cPoints As Long) As Long
 
 'Given a target picture box, draw a hue preview across the horizontal axis.  This is helpful for tools that provide
 ' a hue slider, so that the user can easily find a color of their choosing.  Optionally, saturation and luminance
@@ -442,6 +447,27 @@ Public Sub convertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
         If canvasX >= srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth Then imgX = srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth - 1
         If canvasY >= srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight Then imgY = srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight - 1
     End If
+    
+End Sub
+
+'Given a source hWnd and a destination hWnd, translate a coordinate pair between their unique coordinate spaces.  Note that
+' the screen coordinate space will be used as an intermediary in the conversion.
+Public Sub convertCoordsBetweenHwnds(ByVal srcHwnd As Long, ByVal dstHwnd As Long, ByVal srcX As Long, ByVal srcY As Long, ByRef dstX As Long, ByRef dstY As Long)
+    
+    'The API we're using require POINTAPI structs
+    Dim tmpPoint As POINTAPI
+    
+    With tmpPoint
+        .x = srcX
+        .y = srcY
+    End With
+    
+    'Transform the coordinates
+    MapWindowPoints srcHwnd, dstHwnd, tmpPoint, 1
+    
+    'Report the transformed points back to the user
+    dstX = tmpPoint.x
+    dstY = tmpPoint.y
     
 End Sub
 
