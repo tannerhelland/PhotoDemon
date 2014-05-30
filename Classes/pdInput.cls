@@ -80,7 +80,7 @@ Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As Shift
 
 'The following events are raised only if specifically requested
 Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event AppCommand(ByVal vKeyID As Long, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
 'This class tracks all kinds of window messages.  Most objects won't need this level of tracking, but they're there
 ' if needed.
@@ -310,12 +310,12 @@ Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTra
 End Function
 
 'Assign a cursor to the hWnd collection.  Call this function without a parameter to reset the cursor to the default arrow.
-Public Sub setSystemCursor(Optional ByVal systemCursorType As Long = 0)
+Public Sub setSystemCursor(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT)
     
     'Load the relevant cursor handle
     Dim tmpCursorHandle As Long
     
-    If systemCursorType = 0 Then
+    If systemCursorType = IDC_DEFAULT Then
         tmpCursorHandle = LoadCursor(0, IDC_ARROW)
     Else
         tmpCursorHandle = LoadCursor(0, systemCursorType)
@@ -812,6 +812,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     RaiseEvent MouseWheelVertical(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
                 Else
                     finalScrollAmount = CDbl(scrollDelta) * getUserScrollSetting(False)
+                    
+                    'If the user is using the Shift+VerticalWheel combination, reverse the delta; this makes it so that
+                    ' shift+up_wheel = left, and shift+down_wheel = right - the idea is that up_wheel and shift+up_wheel
+                    ' both target the top-left corner of the image.
+                    If (uMsg = WM_MOUSEWHEEL) And ((retShiftConstants And vbShiftMask) <> 0) Then finalScrollAmount = -1 * finalScrollAmount
+                    
                     RaiseEvent MouseWheelHorizontal(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
                 End If
                 

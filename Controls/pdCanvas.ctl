@@ -309,8 +309,8 @@ Private m_OriginalActiveLayerIndex As Long, m_UserInteractedWithCanvas As Boolea
 ' If a point of interest has not been selected, this value will be reset to -1.
 Private curPointOfInterest As Long
 
-'An outside class provides access to specialized mouse events (like mousewheel and forward/back keys)
-Private WithEvents cMouseEvents As bluMouseEvents
+'PD's custom input class completely replaces all mouse interfacing for this control
+Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
@@ -672,233 +672,30 @@ Private Sub cmdZoomOut_Click()
     FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex + 1
 End Sub
 
-'If an image is loaded, double-clicking the image size label launches the resize dialog
-Private Sub lblImgSize_DblClick()
-    If g_OpenImageCount > 0 Then Process "Resize image", True
-End Sub
+'At present, the only App Commands the canvas will handle are forward/back, which link to Undo/Redo
+Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
-Private Sub UserControl_Initialize()
-
-    If g_UserModeFix Then
+    Select Case cmdID
     
-        'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
-        Set cMouseEvents = New bluMouseEvents
-        cMouseEvents.Attach UserControl.hWnd
+        'Back button
+        Case AC_BROWSER_BACKWARD, AC_UNDO
         
-        'Assign tooltips manually (so theming is supported)
-        Set m_ToolTip = New clsToolTip
-        m_ToolTip.Create Me
-        m_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-        m_ToolTip.DelayTime(ttDelayShow) = 10000
-        
-        m_ToolTip.AddTool cmbZoom, "Click to adjust image zoom"
-        
-        'Allow the control to generate its own redraw requests
-        m_suspendRedraws = False
-        
-        'Set scroll bar size to match the current system default (which changes based on DPI, theming, and other factors)
-        picScrollH.Height = GetSystemMetrics(SM_CYHSCROLL)
-        picScrollV.Width = GetSystemMetrics(SM_CXVSCROLL)
-        
-        'Initialize scroll bars
-        Set HScroll = New pdScrollAPI
-        Set VScroll = New pdScrollAPI
-        
-        HScroll.initializeScrollBarWindow picScrollH.hWnd, True, 0, 10, 0, 1, 1
-        VScroll.initializeScrollBarWindow picScrollV.hWnd, False, 0, 10, 0, 1, 1
-        
-    End If
-    
-End Sub
-
-'Mousekey back triggers the same thing as clicking Undo
-Private Sub cMouseEvents_MouseBackButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-    If pdImages(g_CurrentImage).IsActive Then
-        If pdImages(g_CurrentImage).undoManager.getUndoState Then Process "Undo", , , UNDO_NOTHING
-    End If
-End Sub
-
-'Mousekey forward triggers the same thing as clicking Redo
-Private Sub cMouseEvents_MouseForwardButtonDown(ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-    If pdImages(g_CurrentImage).IsActive Then
-        If pdImages(g_CurrentImage).undoManager.getRedoState Then Process "Redo", , , UNDO_NOTHING
-    End If
-End Sub
-
-Public Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-
-    'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed
-    If picScrollH.Visible And Not (Shift And vbCtrlMask) Then
-        
-        If CharsScrolled < 0 Then
-        
-            m_suspendRedraws = True
-            
-            If HScroll.Value + HScroll.LargeChange > HScroll.Max Then
-                HScroll.Value = HScroll.Max
-            Else
-                HScroll.Value = HScroll.Value + HScroll.LargeChange
+            If pdImages(g_CurrentImage).IsActive Then
+                If pdImages(g_CurrentImage).undoManager.getUndoState Then Process "Undo", , , UNDO_NOTHING
             End If
-            
-            m_suspendRedraws = False
-            
-            ScrollViewport pdImages(g_CurrentImage), Me
         
-        ElseIf CharsScrolled > 0 Then
+        'Forward button
+        Case AC_BROWSER_FORWARD, AC_REDO
         
-            m_suspendRedraws = True
-            
-            If HScroll.Value - HScroll.LargeChange < HScroll.Min Then
-                HScroll.Value = HScroll.Min
-            Else
-                HScroll.Value = HScroll.Value - HScroll.LargeChange
-            End If
-            
-            m_suspendRedraws = False
-            
-            ScrollViewport pdImages(g_CurrentImage), Me
-            
-        End If
-        
-    End If
-  
-End Sub
-
-'When the mouse enters the canvas, any floating toolbars must be automatically dimmed.
-Private Sub cMouseEvents_MouseIn()
-
-    m_IsMouseOverCanvas = True
-    
-    'Note the currently active layer ID.  We may need to reset this when the mouse leaves the canvas.
-    If Not (pdImages(g_CurrentImage) Is Nothing) Then m_OriginalActiveLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
-    
-    'Note that the user has yet to interact with anything on the canvas.
-    m_UserInteractedWithCanvas = False
-    
-    'Notify the window manager that toolbars need to be made translucent
-    g_WindowManager.notifyMouseMoveOverCanvas
-    
-    'If no images have been loaded, reset the cursor
-    If g_OpenImageCount = 0 Then
-        setArrowCursorToHwnd Me.hWnd
-    End If
-
-End Sub
-
-'When the mouse leaves the window, if no buttons are down, clear the coordinate display.
-' (We must check for button states because the user is allowed to do things like drag selection nodes outside the image.)
-Private Sub cMouseEvents_MouseOut()
-    
-    m_IsMouseOverCanvas = False
-    
-    'If the user did not interact with anything on the canvas, restore the original active layer.
-    ' (Similarly, if the user *did* interact with the canvas but the mouse passed over other layers on the way out, restore
-    '  focus to the last layer the user interacted with.)
-    If (Not pdImages(g_CurrentImage) Is Nothing) Then
-        
-        If pdImages(g_CurrentImage).getActiveLayerIndex <> m_OriginalActiveLayerIndex Then
-            Layer_Handler.setActiveLayerByIndex m_OriginalActiveLayerIndex, False
-            RenderViewport pdImages(g_CurrentImage), Me
-        End If
-    
-    End If
-    
-    If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
-    
-End Sub
-
-Public Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-    
-    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If Not (Shift And vbCtrlMask) Then
-    
-        'PhotoDemon uses the standard photo editor convention of Ctrl+Wheel = zoom, Shift+Wheel = h_scroll, and Wheel = v_scroll.
-        ' Some users (for reasons I don't understand??) expect plain mousewheel to zoom the image.  For these users, we now
-        ' display a helpful message telling them to use the damn Ctrl modifier like everyone else.
-        If picScrollV.Visible Then
-      
-            If LinesScrolled < 0 Then
-                
-                m_suspendRedraws = True
-                
-                If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
-                    VScroll.Value = VScroll.Max
-                Else
-                    VScroll.Value = VScroll.Value + VScroll.LargeChange
-                End If
-                
-                m_suspendRedraws = False
-                
-                ScrollViewport pdImages(g_CurrentImage), Me
-            
-            ElseIf LinesScrolled > 0 Then
-                
-                m_suspendRedraws = True
-                
-                If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
-                    VScroll.Value = VScroll.Min
-                Else
-                    VScroll.Value = VScroll.Value - VScroll.LargeChange
-                End If
-                
-                m_suspendRedraws = False
-                
-                ScrollViewport pdImages(g_CurrentImage), Me
-                
+            If pdImages(g_CurrentImage).IsActive Then
+                If pdImages(g_CurrentImage).undoManager.getRedoState Then Process "Redo", , , UNDO_NOTHING
             End If
     
-        'The user is using the mousewheel without Ctrl/Shift modifiers, even without a visible scrollbar.
-        ' Display a message about how mousewheels are supposed to work.
-        Else
-            If Not vbCtrlMask Then Message "Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM"
-        End If
-    
-    End If
-    
-    'NOTE: horizontal scrolling is now handled in the separate _MouseHScroll event.  This is necessary to handle mice with
-    '      a dedicated horizontal scroller.
-    
-    'Zooming - only trigger when Ctrl has been pressed
-    If (Shift And vbCtrlMask) Then
-      
-        If LinesScrolled > 0 Then
-            
-            If cmbZoom.ListIndex > 0 Then cmbZoom.ListIndex = cmbZoom.ListIndex - 1
-            'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
-            
-        ElseIf LinesScrolled < 0 Then
-            
-            If cmbZoom.ListIndex < (cmbZoom.ListCount - 1) Then cmbZoom.ListIndex = cmbZoom.ListIndex + 1
-            
-        End If
-        
-    End If
-  
+    End Select
+
 End Sub
 
-Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
-    
-    ShiftDown = (Shift And vbShiftMask) > 0
-    CtrlDown = (Shift And vbCtrlMask) > 0
-    AltDown = (Shift And vbAltMask) > 0
-    
-    'If a selection is active, notify it of any changes in the shift key (which is used to request 1:1 selections)
-    If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestSquare ShiftDown
-    
-End Sub
-
-Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
-        
-    ShiftDown = (Shift And vbShiftMask) > 0
-    CtrlDown = (Shift And vbCtrlMask) > 0
-    AltDown = (Shift And vbAltMask) > 0
-    
-    'If a selection is active, notify it of any changes in the shift key (which is used to request 1:1 selections)
-    If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestSquare ShiftDown
-    
-End Sub
-
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'If the main form is disabled, exit
     If Not FormMain.Enabled Then Exit Sub
@@ -1007,7 +804,48 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
 
 End Sub
 
-Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+'When the mouse enters the canvas, any floating toolbars must be automatically dimmed.
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    m_IsMouseOverCanvas = True
+    
+    'Note the currently active layer ID.  We may need to reset this when the mouse leaves the canvas.
+    If Not (pdImages(g_CurrentImage) Is Nothing) Then m_OriginalActiveLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
+    
+    'Note that the user has yet to interact with anything on the canvas.
+    m_UserInteractedWithCanvas = False
+    
+    'Notify the window manager that toolbars need to be made translucent
+    g_WindowManager.notifyMouseMoveOverCanvas
+    
+    'If no images have been loaded, reset the cursor
+    If g_OpenImageCount = 0 Then cMouseEvents.setSystemCursor IDC_ARROW
+
+End Sub
+
+'When the mouse leaves the window, if no buttons are down, clear the coordinate display.
+' (We must check for button states because the user is allowed to do things like drag selection nodes outside the image.)
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    m_IsMouseOverCanvas = False
+    
+    'If the user did not interact with anything on the canvas, restore the original active layer.
+    ' (Similarly, if the user *did* interact with the canvas but the mouse passed over other layers on the way out, restore
+    '  focus to the last layer the user interacted with.)
+    If (Not pdImages(g_CurrentImage) Is Nothing) Then
+        
+        If pdImages(g_CurrentImage).getActiveLayerIndex <> m_OriginalActiveLayerIndex Then
+            Layer_Handler.setActiveLayerByIndex m_OriginalActiveLayerIndex, False
+            RenderViewport pdImages(g_CurrentImage), Me
+        End If
+    
+    End If
+    
+    If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
+
+End Sub
+
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'If the main form is disabled, exit
     If Not FormMain.Enabled Then Exit Sub
@@ -1117,8 +955,9 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, x As Sing
     
 End Sub
 
-Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
+    
     'If no images have been loaded, exit
     If g_OpenImageCount = 0 Then Exit Sub
     
@@ -1215,12 +1054,180 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
     
     'Reset any tracked point of interest value for this layer
     curPointOfInterest = -1
-    
-    'makeFormPretty Me
-    'setArrowCursorToHwnd UserControl.hWnd
         
     'Reset the mouse movement tracker
     hasMouseMoved = 0
+    
+
+End Sub
+
+Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+
+    'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed BUT a ctrl
+    ' button has not been pressed.  (TODO: shift the burden of mask detection to the pdInput class)
+    If picScrollH.Visible And Not (Shift And vbCtrlMask) Then
+        
+        If scrollAmount > 0 Then
+        
+            m_suspendRedraws = True
+            
+            If HScroll.Value + HScroll.LargeChange > HScroll.Max Then
+                HScroll.Value = HScroll.Max
+            Else
+                HScroll.Value = HScroll.Value + HScroll.LargeChange
+            End If
+            
+            m_suspendRedraws = False
+            
+            ScrollViewport pdImages(g_CurrentImage), Me
+        
+        ElseIf scrollAmount < 0 Then
+        
+            m_suspendRedraws = True
+            
+            If HScroll.Value - HScroll.LargeChange < HScroll.Min Then
+                HScroll.Value = HScroll.Min
+            Else
+                HScroll.Value = HScroll.Value - HScroll.LargeChange
+            End If
+            
+            m_suspendRedraws = False
+            
+            ScrollViewport pdImages(g_CurrentImage), Me
+            
+        End If
+        
+    End If
+
+End Sub
+
+Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+
+    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
+    If Not (Shift And vbCtrlMask) Then
+    
+        'PhotoDemon uses the standard photo editor convention of Ctrl+Wheel = zoom, Shift+Wheel = h_scroll, and Wheel = v_scroll.
+        ' Some users (for reasons I don't understand??) expect plain mousewheel to zoom the image.  For these users, we now
+        ' display a helpful message telling them to use the damn Ctrl modifier like everyone else.
+        If picScrollV.Visible Then
+      
+            If scrollAmount < 0 Then
+                
+                m_suspendRedraws = True
+                
+                If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
+                    VScroll.Value = VScroll.Max
+                Else
+                    VScroll.Value = VScroll.Value + VScroll.LargeChange
+                End If
+                
+                m_suspendRedraws = False
+                
+                ScrollViewport pdImages(g_CurrentImage), Me
+            
+            ElseIf scrollAmount > 0 Then
+                
+                m_suspendRedraws = True
+                
+                If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
+                    VScroll.Value = VScroll.Min
+                Else
+                    VScroll.Value = VScroll.Value - VScroll.LargeChange
+                End If
+                
+                m_suspendRedraws = False
+                
+                ScrollViewport pdImages(g_CurrentImage), Me
+                
+            End If
+    
+        'The user is using the mousewheel without Ctrl/Shift modifiers, even without a visible scrollbar.
+        ' Display a message about how mousewheels are supposed to work.
+        Else
+            If Not vbCtrlMask Then Message "Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM"
+        End If
+    
+    End If
+    
+    'NOTE: horizontal scrolling is now handled in the separate _MouseHScroll event.  This is necessary to handle mice with
+    '      a dedicated horizontal scroller.
+    
+    'Zooming - only trigger when Ctrl has been pressed
+    If (Shift And vbCtrlMask) Then
+      
+        If scrollAmount > 0 Then
+            
+            If cmbZoom.ListIndex > 0 Then cmbZoom.ListIndex = cmbZoom.ListIndex - 1
+            'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
+            
+        ElseIf scrollAmount < 0 Then
+            
+            If cmbZoom.ListIndex < (cmbZoom.ListCount - 1) Then cmbZoom.ListIndex = cmbZoom.ListIndex + 1
+            
+        End If
+        
+    End If
+
+End Sub
+
+'If an image is loaded, double-clicking the image size label launches the resize dialog
+Private Sub lblImgSize_DblClick()
+    If g_OpenImageCount > 0 Then Process "Resize image", True
+End Sub
+
+Private Sub UserControl_Initialize()
+
+    If g_UserModeFix Then
+    
+        'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
+        Set cMouseEvents = New pdInput
+        cMouseEvents.addInputTracker UserControl.hWnd, True, True, True, True
+        
+        'Assign tooltips manually (so theming is supported)
+        Set m_ToolTip = New clsToolTip
+        m_ToolTip.Create Me
+        m_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
+        m_ToolTip.DelayTime(ttDelayShow) = 10000
+        
+        m_ToolTip.AddTool cmbZoom, "Click to adjust image zoom"
+        
+        'Allow the control to generate its own redraw requests
+        m_suspendRedraws = False
+        
+        'Set scroll bar size to match the current system default (which changes based on DPI, theming, and other factors)
+        picScrollH.Height = GetSystemMetrics(SM_CYHSCROLL)
+        picScrollV.Width = GetSystemMetrics(SM_CXVSCROLL)
+        
+        'Initialize scroll bars
+        Set HScroll = New pdScrollAPI
+        Set VScroll = New pdScrollAPI
+        
+        HScroll.initializeScrollBarWindow picScrollH.hWnd, True, 0, 10, 0, 1, 1
+        VScroll.initializeScrollBarWindow picScrollV.hWnd, False, 0, 10, 0, 1, 1
+        
+    End If
+    
+End Sub
+
+Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
+    
+    ShiftDown = (Shift And vbShiftMask) > 0
+    CtrlDown = (Shift And vbCtrlMask) > 0
+    AltDown = (Shift And vbAltMask) > 0
+    
+    'If a selection is active, notify it of any changes in the shift key (which is used to request 1:1 selections)
+    If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestSquare ShiftDown
+    
+End Sub
+
+Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
+        
+    ShiftDown = (Shift And vbShiftMask) > 0
+    CtrlDown = (Shift And vbCtrlMask) > 0
+    AltDown = (Shift And vbAltMask) > 0
+    
+    'If a selection is active, notify it of any changes in the shift key (which is used to request 1:1 selections)
+    If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestSquare ShiftDown
     
 End Sub
 
@@ -1472,15 +1479,14 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
                 
                 If Button <> 0 Then
-                    UserControl.MousePointer = vbCustom
-                    setPNGCursorToHwnd Me.hWnd, "HANDCLOSED", 0, 0
+                    cMouseEvents.setPNGCursor "HANDCLOSED", 0, 0
                 Else
-                    UserControl.MousePointer = vbCustom
-                    setPNGCursorToHwnd Me.hWnd, "HANDOPEN", 0, 0
+                    cMouseEvents.setPNGCursor "HANDOPEN", 0, 0
                 End If
-                
+            
+            'If the cursor is not over the image, change to an arrow cursor
             Else
-                setArrowCursorToHwnd Me.hWnd        'If the cursor is not over the image, change to an arrow cursor
+                cMouseEvents.setSystemCursor IDC_ARROW
             End If
         
         Case NAV_MOVE
@@ -1490,34 +1496,28 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
                 'Mouse is not over the current layer
                 Case -1
-                    UserControl.MousePointer = vbDefault
-                    setArrowCursorToHwnd Me.hWnd
+                    cMouseEvents.setSystemCursor IDC_ARROW
                     
                 'Mouse is over the top-left corner
                 Case 0
-                    UserControl.MousePointer = vbCustom
-                    setSizeNWSECursor Me
-                
+                    cMouseEvents.setSystemCursor IDC_SIZENWSE
+                    
                 'Mouse is over the top-right corner
                 Case 1
-                    UserControl.MousePointer = vbCustom
-                    setSizeNESWCursor Me
-            
+                    cMouseEvents.setSystemCursor IDC_SIZENESW
+                    
                 'Mouse is over the bottom-right corner
                 Case 2
-                    UserControl.MousePointer = vbCustom
-                    setSizeNWSECursor Me
-                
+                    cMouseEvents.setSystemCursor IDC_SIZENWSE
+                    
                 'Mouse is over the bottom-left corner
                 Case 3
-                    UserControl.MousePointer = vbCustom
-                    setSizeNESWCursor Me
-                
+                    cMouseEvents.setSystemCursor IDC_SIZENESW
+                    
                 'Mouse is within the layer, but not over a specific node
                 Case 4
-                    UserControl.MousePointer = vbCustom
-                    setSizeAllCursor Me
-                
+                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    
             End Select
             
         Case SELECT_RECT, SELECT_CIRC
@@ -1538,35 +1538,25 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
             
                 Case -1
-                    UserControl.MousePointer = vbDefault
-                    setArrowCursorToHwnd Me.hWnd
+                    cMouseEvents.setSystemCursor IDC_ARROW
                 Case 0
-                    UserControl.MousePointer = vbCustom
-                    setSizeNWSECursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZENWSE
                 Case 1
-                    UserControl.MousePointer = vbCustom
-                    setSizeNESWCursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZENESW
                 Case 2
-                    UserControl.MousePointer = vbCustom
-                    setSizeNWSECursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZENWSE
                 Case 3
-                    UserControl.MousePointer = vbCustom
-                    setSizeNESWCursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZENESW
                 Case 4
-                    UserControl.MousePointer = vbCustom
-                    setSizeNSCursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZENS
                 Case 5
-                    UserControl.MousePointer = vbCustom
-                    setSizeWECursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZEWE
                 Case 6
-                    UserControl.MousePointer = vbCustom
-                    setSizeNSCursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZENS
                 Case 7
-                    UserControl.MousePointer = vbCustom
-                    setSizeWECursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZEWE
                 Case 8
-                    UserControl.MousePointer = vbCustom
-                    setSizeAllCursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZEALL
             
             End Select
         
@@ -1581,14 +1571,11 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
             
                 Case -1
-                    UserControl.MousePointer = vbDefault
-                    setArrowCursorToHwnd Me.hWnd
+                    cMouseEvents.setSystemCursor IDC_ARROW
                 Case 0
-                    UserControl.MousePointer = vbCustom
-                    setSizeAllCursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZEALL
                 Case 1
-                    UserControl.MousePointer = vbCustom
-                    setSizeAllCursor Me
+                    cMouseEvents.setSystemCursor IDC_SIZEALL
             
             End Select
                     
