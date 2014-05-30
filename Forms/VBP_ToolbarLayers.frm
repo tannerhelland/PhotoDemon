@@ -470,38 +470,9 @@ Private Sub cmdLayerAction_Click(Index As Integer)
     
 End Sub
 
-'Double-clicks on the layer box raise "layer title edit mode", if the mouse is within a layer's title area
-Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-
-    'Ignore user interaction while in drag/drop mode
-    If inDragDropMode Then Exit Sub
-
-    If isPointInRect(x, y, m_NameRect) And (Button = pdLeftButton) Then
+'Clicks on the layer box raise all kinds of fun events, depending on where they occur
+Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
-        'Move the text layer box into position
-        txtLayerName.Move m_NameRect.Left, m_NameRect.Top, m_NameRect.Right - m_NameRect.Left, m_NameRect.Bottom - m_NameRect.Top
-        txtLayerName.Visible = True
-        
-        'Disable hotkeys until editing is finished
-        FormMain.ctlAccelerator.Enabled = False
-        
-        'Fill the text box with the current layer name, and select it
-        txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerName
-        AutoSelectText txtLayerName
-    
-    Else
-    
-        'Hide the text box if it isn't already
-        txtLayerName.Visible = False
-    
-    End If
-
-End Sub
-
-'Layer box was clicked; most commonly, set that layer as the new active layer, and notify the parent pdImage object.
-' Additionally, the little custom trigger buttons can initiate other behavior too.
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-
     'Ignore user interaction while in drag/drop mode
     If inDragDropMode Then Exit Sub
     
@@ -552,9 +523,37 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         
     End If
     
+End Sub
+
+'Double-clicks on the layer box raise "layer title edit mode", if the mouse is within a layer's title area
+Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    'Ignore user interaction while in drag/drop mode
+    If inDragDropMode Then Exit Sub
+
+    If isPointInRect(x, y, m_NameRect) And (Button = pdLeftButton) Then
+    
+        'Move the text layer box into position
+        txtLayerName.Move m_NameRect.Left, m_NameRect.Top, m_NameRect.Right - m_NameRect.Left, m_NameRect.Bottom - m_NameRect.Top
+        txtLayerName.Visible = True
+        
+        'Disable hotkeys until editing is finished
+        FormMain.ctlAccelerator.Enabled = False
+        
+        'Fill the text box with the current layer name, and select it
+        txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerName
+        AutoSelectText txtLayerName
+    
+    Else
+    
+        'Hide the text box if it isn't already
+        txtLayerName.Visible = False
+    
+    End If
 
 End Sub
 
+'Mouse has left the layer box
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     curLayerHover = -1

@@ -73,6 +73,7 @@ Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftCon
 Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Event ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -103,13 +104,12 @@ Private Const WM_XBUTTONUP As Long = &H20C
 Private Const WM_LBUTTONDBLCLK As Long = &H203
 Private Const WM_MBUTTONDBLCLK As Long = &H209
 Private Const WM_RBUTTONDBLCLK As Long = &H206
-Private Const WM_XBUTTONDBLCLK As Long = &H20D  'Note: I would like to include X-button double-clicks, but doing so would require use of a custom button Enum.  Still debating the merits of this...
+Private Const WM_XBUTTONDBLCLK As Long = &H20D
 
 'X buttons (sometimes called buttons 4 and 5 in MSDN docs) are typically used for forward/back maneuvering.
 ' Users of this class can check their states in Mouse Up/Down events, but PD will preferentially use WM_APPCOMMAND instead,
 ' as it can be raised by both keyboard and mouse equivalents of forward/back keys, which is typically a better solution.
 Private Const WM_APPCOMMAND As Long = &H319
-
 
 'Mouse-tracking for hover and leave events is not handled automatically by Windows; we must request it.
 Private Type TRACKMOUSEEVENT_STRUCT
@@ -201,6 +201,11 @@ End Enum
 #End If
 
 Private Const NUM_OF_CUSTOM_INPUT_TRACKERS = 5
+
+'This class will generate Click() events using its own algorithm for determining when an action constitutes a "click".
+' Basically, a MouseDown/Up combination with two or less MouseMove messages between them constitutes a Click.  This variable
+' is used to count MouseMove occurrences.
+Private m_MouseMoveCount As Long
 
 Private Sub Class_Initialize()
     
@@ -544,8 +549,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
         If isVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
         If isVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+        
+        'NOTE!  MSDN provides some odd instructions for tracking the ALT key (see Remarks here:
+        ' http://msdn.microsoft.com/en-us/library/ms646242%28v=vs.85%29.aspx).  They state explicitly to use
+        ' use GetKeyState and not GetAsyncKeyState, but they don't provide any rationale for this.  I have no
+        ' trouble with GetAsyncKeyState properly reporting Alt status on Win 7, so I'm leaving this strategy
+        ' for now, but I remain intrigued by MSDN's oddly specific instructions on the point...
         If isVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
-                
+        
         'Similarly, always grab mouse buttons independent of the window message
         Dim retMouseButton As PDMouseButtonConstants
         If isMouseButtonDown(VK_LBUTTON) Then retMouseButton = retMouseButton Or pdLeftButton
@@ -574,6 +585,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
             'First things first: handle mouse enter and leave events.
             Case WM_MOUSEMOVE
+                
+                'Regardless of button or hWnd, increment the MouseMove counter
+                m_MouseMoveCount = m_MouseMoveCount + 1
                 
                 'Make sure we are actually tracking mouse enter/leave events for this hWnd
                 If m_TrackingData(PDIT_MOUSE_ENTERLEAVE, indexOfHwnd) Then
@@ -622,6 +636,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             Case WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
             
                 lReturn = 0
+                
+                'Reset the mouse move counter
+                m_MouseMoveCount = 0
                 
                 'Because mouse up/down events tend to focus on the use of a single button, it makes more sense for us to
                 ' manually return a single-button type here (rather than a composite flag).  The calling function can
@@ -685,6 +702,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 End If
                 
                 RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                
+                'If the user has not moved the mouse an appreciable amount since the last MouseDown event,
+                ' call this a click and raise the corresponding Click() event.
+                If m_MouseMoveCount < 2 Then
+                    RaiseEvent ClickCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                End If
                 
             'Double-clicks
             Case WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
