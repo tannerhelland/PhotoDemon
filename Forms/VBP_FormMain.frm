@@ -37,21 +37,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0   'False
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -1663,7 +1663,7 @@ Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Butto
         If g_MouseOverImageTabstrip Then
             toolbar_ImageTabs.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
         Else
-            FormMain.mainCanvas(0).cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
+            FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, x, y, CharsScrolled
         End If
     End If
 
@@ -1675,7 +1675,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
         If g_MouseOverImageTabstrip Then
             toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
         Else
-            FormMain.mainCanvas(0).cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
+            FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, x, y, LinesScrolled
         End If
     End If
 

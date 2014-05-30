@@ -71,20 +71,27 @@ Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hIns
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
 
-Public Const IDC_APPSTARTING = 32650&
-Public Const IDC_HAND = 32649&
-Public Const IDC_ARROW = 32512&
-Public Const IDC_CROSS = 32515&
-Public Const IDC_IBEAM = 32513&
-Public Const IDC_ICON = 32641&
-Public Const IDC_NO = 32648&
-Public Const IDC_SIZEALL = 32646&
-Public Const IDC_SIZENESW = 32643&
-Public Const IDC_SIZENS = 32645&
-Public Const IDC_SIZENWSE = 32642&
-Public Const IDC_SIZEWE = 32644&
-Public Const IDC_UPARROW = 32516&
-Public Const IDC_WAIT = 32514&
+Public Enum SystemCursorConstant
+    IDC_DEFAULT = 0&
+    IDC_APPSTARTING = 32650&
+    IDC_HAND = 32649&
+    IDC_ARROW = 32512&
+    IDC_CROSS = 32515&
+    IDC_IBEAM = 32513&
+    IDC_ICON = 32641&
+    IDC_NO = 32648&
+    IDC_SIZEALL = 32646&
+    IDC_SIZENESW = 32643&
+    IDC_SIZENS = 32645&
+    IDC_SIZENWSE = 32642&
+    IDC_SIZEWE = 32644&
+    IDC_UPARROW = 32516&
+    IDC_WAIT = 32514&
+End Enum
+
+#If False Then
+    Private Const IDC_DEFAULT = 0&, IDC_APPSTARTING = 32650&, IDC_HAND = 32649&, IDC_ARROW = 32512&, IDC_CROSS = 32515&, IDC_IBEAM = 32513&, IDC_ICON = 32641&, IDC_NO = 32648&, IDC_SIZEALL = 32646&, IDC_SIZENESW = 32643&, IDC_SIZENS = 32645&, IDC_SIZENWSE = 32642&, IDC_SIZEWE = 32644&, IDC_UPARROW = 32516&, IDC_WAIT = 32514&
+#End If
 
 Private Const GCL_HCURSOR = (-12)
 
