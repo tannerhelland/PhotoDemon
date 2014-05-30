@@ -257,13 +257,28 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 27/May/14
-'Last update: add placeholder text when no images are loaded
+'Last updated: 30/May/14
+'Last update: convert canvas to pdInput for all mouse handling
 '
-'Every time the user loads an image, one of these forms is spawned. This form also interfaces with several
-' specialized program components in the pdWindowManager class.
+'In years past, PhotoDemon would use a separate canvas (a full VB Form) for each loaded image.  In 2013, as part of the massive
+' window manager rewrite, I rewrote the program to only have a single canvas active at any time.  The canvas was rebuilt as a user
+' control, and instead of living on a separate form (which required a *ton* of code to keep in sync with the main PD window), it
+' was integrated directly into the main window.
 '
-'As I start including more and more paint tools, this form is going to become a bit more complex. Stay tuned.
+'Technically, the primary canvas is only the first entry in an array.  This was done deliberately in case I ever added support for
+' multiple canvases being usable at once.  This has some neat possibilities - for example, having side-by-side canvases at
+' different locations on an image - but there's a lot of messy UI considerations with something like this, especially if the two
+' viewports can support different images simultaneously.  So I have postponed this work until some later date, with the caveat
+' that implementing it will be a lot of work, and likely have unexpected interactions throughout the program.
+'
+'This canvas relies on pdInput for all mouse interactions.  See the pdInput class for details on why we do our own mouse management
+' instead of using VB's intrinsic mouse functions.
+'
+'As much as possible, I've tried to keep paint tool operation within this canvas to a minimum.  Generally speaking, the only tool
+' interactions the canvas should handle is reporting mouse events to external functions that actually handle paint tool processing
+' and rendering.  To that end, try to adhere to the existing tool implementation format when adding new tool support.  (Selections
+' are currently the exception to this rule, because they were implemented long before other tools and thus aren't as
+' well-contained.  I hope to someday remedy this.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -657,8 +672,9 @@ Private Sub CmbZoom_Click()
             If Not cmdZoomOut.Enabled Then cmdZoomOut.Enabled = True
         End If
         
-        'Redraw the viewport
-        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "zoom changed by primary drop-down box"
+        'Redraw the viewport (if allowed; some functions will prevent us from doing this, as they plan to request their own
+        ' refresh after additional processing occurs)
+        If g_AllowViewportRendering Then PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "zoom changed by primary drop-down box"
         
     End If
 
@@ -956,7 +972,6 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-
     
     'If no images have been loaded, exit
     If g_OpenImageCount = 0 Then Exit Sub
@@ -1152,18 +1167,32 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
 End Sub
 
 'The pdInput class now provides a dedicated zoom event for us - how nice!
-Private Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
 
+    'Before doing anything else, cache the current mouse coordinates (in both Canvas and Image coordinate spaces)
+    Dim imgX As Double, imgY As Double
+    convertCanvasCoordsToImageCoords Me, pdImages(g_CurrentImage), x, y, imgX, imgY, True
+    
+    'Suspend automatic viewport redraws until we are done with our calculations
+    g_AllowViewportRendering = False
+    
+    'Calculate a new zoom value
     If zoomAmount > 0 Then
             
         If cmbZoom.ListIndex > 0 Then cmbZoom.ListIndex = cmbZoom.ListIndex - 1
-        'NOTE: a manual call to PrepareViewport is no longer required, as changing the combo box will automatically trigger a redraw
            
     ElseIf zoomAmount < 0 Then
         
         If cmbZoom.ListIndex < (cmbZoom.ListCount - 1) Then cmbZoom.ListIndex = cmbZoom.ListIndex + 1
            
     End If
+    
+    'Re-enable automatic viewport redraws
+    g_AllowViewportRendering = True
+    
+    'Request a manual redraw from PrepareViewport, while supplying our x/y coordinates so that it can preserve mouse position
+    ' relative to the underlying image.
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "mousewheel zoom", x, y, imgX, imgY
 
 End Sub
 
