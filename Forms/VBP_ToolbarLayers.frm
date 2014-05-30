@@ -470,7 +470,34 @@ Private Sub cmdLayerAction_Click(Index As Integer)
     
 End Sub
 
-Private Sub cMouseEvents_MouseLeave(ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_DoubleClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    'Ignore user interaction while in drag/drop mode
+    If inDragDropMode Then Exit Sub
+
+    If isPointInRect(x, y, m_NameRect) And (Button = pdLeftButton) Then
+    
+        'Move the text layer box into position
+        txtLayerName.Move m_NameRect.Left, m_NameRect.Top, m_NameRect.Right - m_NameRect.Left, m_NameRect.Bottom - m_NameRect.Top
+        txtLayerName.Visible = True
+        
+        'Disable hotkeys until editing is finished
+        FormMain.ctlAccelerator.Enabled = False
+        
+        'Fill the text box with the current layer name, and select it
+        txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerName
+        AutoSelectText txtLayerName
+    
+    Else
+    
+        'Hide the text box if it isn't already
+        txtLayerName.Visible = False
+    
+    End If
+
+End Sub
+
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     curLayerHover = -1
     m_MouseX = -1
@@ -481,7 +508,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As MouseButtonConstants, ByVal 
 
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Ignore user interaction while in drag/drop mode
     If inDragDropMode Then Exit Sub
@@ -569,7 +596,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As MouseButtonConstants, B
     
 End Sub
 
-Private Sub cMouseEvents_MouseScrollVertical(ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If vsLayer.Visible Then
@@ -1033,34 +1060,6 @@ Private Sub fillRectWithDIBCoords(ByRef dstRect As RECT, ByRef srcDIB As pdDIB, 
         .Right = xOffset + srcDIB.getDIBWidth
         .Bottom = yOffset + srcDIB.getDIBHeight
     End With
-End Sub
-
-'The user can double-click a layer name to change it directly.
-Private Sub picLayers_DblClick()
-
-    'Ignore user interaction while in drag/drop mode
-    If inDragDropMode Then Exit Sub
-
-    If isPointInRect(m_MouseX, m_MouseY, m_NameRect) Then
-    
-        'Move the text layer box into position
-        txtLayerName.Move m_NameRect.Left, m_NameRect.Top, m_NameRect.Right - m_NameRect.Left, m_NameRect.Bottom - m_NameRect.Top
-        txtLayerName.Visible = True
-        
-        'Disable hotkeys until editing is finished
-        FormMain.ctlAccelerator.Enabled = False
-        
-        'Fill the text box with the current layer name, and select it
-        txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(m_MouseX, m_MouseY)).getLayerName
-        AutoSelectText txtLayerName
-    
-    Else
-    
-        'Hide the text box if it isn't already
-        txtLayerName.Visible = False
-    
-    End If
-
 End Sub
 
 'Layer box was clicked; set that layer as the new active layer, and notify the parent pdImage object
