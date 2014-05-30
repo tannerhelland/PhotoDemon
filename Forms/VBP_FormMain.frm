@@ -1671,16 +1671,26 @@ End Sub
 
 Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
+    Dim newX As Long, newY As Long
+
     If g_OpenImageCount > 0 Then
+        
         If g_MouseOverImageTabstrip Then
             toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
         Else
+            
+            'The mouse is over the main canvas.  Convert the x/y coordinates we received into the canvas coordinate space, then relay the
+            ' mousewheel message to them.
+            Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
+            
             If (Shift And vbCtrlMask) <> 0 Then
-                FormMain.mainCanvas(0).cMouseEvents_MouseWheelZoom Button, Shift, x, y, LinesScrolled
+                FormMain.mainCanvas(0).cMouseEvents_MouseWheelZoom Button, Shift, newX, newY, LinesScrolled
             Else
-                FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, x, y, LinesScrolled
+                FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, LinesScrolled
             End If
+            
         End If
+        
     End If
 
 End Sub
