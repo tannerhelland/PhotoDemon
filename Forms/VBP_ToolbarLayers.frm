@@ -470,7 +470,8 @@ Private Sub cmdLayerAction_Click(Index As Integer)
     
 End Sub
 
-Private Sub cMouseEvents_DoubleClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+'Double-clicks on the layer box raise "layer title edit mode", if the mouse is within a layer's title area
+Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'Ignore user interaction while in drag/drop mode
     If inDragDropMode Then Exit Sub
@@ -494,6 +495,63 @@ Private Sub cMouseEvents_DoubleClick(ByVal Button As PDMouseButtonConstants, ByV
         txtLayerName.Visible = False
     
     End If
+
+End Sub
+
+'Layer box was clicked; most commonly, set that layer as the new active layer, and notify the parent pdImage object.
+' Additionally, the little custom trigger buttons can initiate other behavior too.
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    'Ignore user interaction while in drag/drop mode
+    If inDragDropMode Then Exit Sub
+    
+    Dim clickedLayer As Long
+    clickedLayer = getLayerAtPosition(x, y)
+    
+    If clickedLayer >= 0 Then
+        
+        If (Not pdImages(g_CurrentImage) Is Nothing) And (Button = pdLeftButton) Then
+            
+            'Check the clicked position against a series of rects, each one representing a unique interaction.
+            
+            'Has the user clicked a visibility rectangle?
+            If isPointInRect(x, y, m_VisibilityRect) Then
+                
+                Layer_Handler.setLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).getLayerByIndex(clickedLayer).getLayerVisibility, True
+            
+            'Duplicate rectangle?
+            ElseIf isPointInRect(x, y, m_DuplicateRect) Then
+            
+                Process "Duplicate Layer", False, Str(clickedLayer), UNDO_IMAGE
+            
+            'Merge down rectangle?
+            ElseIf isPointInRect(x, y, m_MergeDownRect) Then
+            
+                If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
+                    Process "Merge layer down", False, Str(clickedLayer), UNDO_IMAGE
+                End If
+            
+            'Merge up rectangle?
+            ElseIf isPointInRect(x, y, m_MergeUpRect) Then
+            
+                If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
+                    Process "Merge layer up", False, Str(clickedLayer), UNDO_IMAGE
+                End If
+            
+            'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
+            ' the active layer.
+            Else
+                Layer_Handler.setActiveLayerByIndex clickedLayer, True
+            End If
+            
+            'Redraw the layer box to represent any changes from this interaction.
+            ' NOTE: this is not currently necessary, as all interactions will automatically force a redraw on their own.
+            'redrawLayerBox
+            
+        End If
+        
+    End If
+    
 
 End Sub
 
@@ -1060,61 +1118,6 @@ Private Sub fillRectWithDIBCoords(ByRef dstRect As RECT, ByRef srcDIB As pdDIB, 
         .Right = xOffset + srcDIB.getDIBWidth
         .Bottom = yOffset + srcDIB.getDIBHeight
     End With
-End Sub
-
-'Layer box was clicked; set that layer as the new active layer, and notify the parent pdImage object
-Private Sub picLayers_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    'Ignore user interaction while in drag/drop mode
-    If inDragDropMode Then Exit Sub
-    
-    Dim clickedLayer As Long
-    clickedLayer = getLayerAtPosition(x, y)
-    
-    If clickedLayer >= 0 Then
-        
-        If Not pdImages(g_CurrentImage) Is Nothing Then
-            
-            'Check the clicked position against a series of rects, each one representing a unique interaction.
-            
-            'Has the user clicked a visibility rectangle?
-            If isPointInRect(x, y, m_VisibilityRect) Then
-                
-                Layer_Handler.setLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).getLayerByIndex(clickedLayer).getLayerVisibility, True
-            
-            'Duplicate rectangle?
-            ElseIf isPointInRect(x, y, m_DuplicateRect) Then
-            
-                Process "Duplicate Layer", False, Str(clickedLayer), UNDO_IMAGE
-            
-            'Merge down rectangle?
-            ElseIf isPointInRect(x, y, m_MergeDownRect) Then
-            
-                If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
-                    Process "Merge layer down", False, Str(clickedLayer), UNDO_IMAGE
-                End If
-            
-            'Merge up rectangle?
-            ElseIf isPointInRect(x, y, m_MergeUpRect) Then
-            
-                If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
-                    Process "Merge layer up", False, Str(clickedLayer), UNDO_IMAGE
-                End If
-            
-            'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
-            ' the active layer.
-            Else
-                Layer_Handler.setActiveLayerByIndex clickedLayer, True
-            End If
-            
-            'Redraw the layer box to represent any changes from this interaction.
-            ' NOTE: this is not currently necessary, as all interactions will automatically force a redraw on their own.
-            'redrawLayerBox
-            
-        End If
-        
-    End If
-    
 End Sub
 
 'Given mouse coordinates over the buffer picture box, return the layer at that location

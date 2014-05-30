@@ -73,7 +73,9 @@ Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftCon
 Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-Event DoubleClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
 'The following events are raised only if specifically requested
 Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -87,17 +89,27 @@ Private Const WM_MOUSELEAVE As Long = &H2A3
 Private Const WM_MOUSEMOVE As Long = &H200
 Private Const WM_MOUSEWHEEL As Long = &H20A
 Private Const WM_SETCURSOR As Long = &H20
+
+Private Const WM_LBUTTONDOWN As Long = &H201
+Private Const WM_MBUTTONDOWN As Long = &H207
+Private Const WM_RBUTTONDOWN As Long = &H204
+Private Const WM_XBUTTONDOWN As Long = &H20B
+
+Private Const WM_LBUTTONUP As Long = &H202
+Private Const WM_MBUTTONUP As Long = &H208
+Private Const WM_RBUTTONUP As Long = &H205
+Private Const WM_XBUTTONUP As Long = &H20C
+
 Private Const WM_LBUTTONDBLCLK As Long = &H203
 Private Const WM_MBUTTONDBLCLK As Long = &H209
 Private Const WM_RBUTTONDBLCLK As Long = &H206
 Private Const WM_XBUTTONDBLCLK As Long = &H20D  'Note: I would like to include X-button double-clicks, but doing so would require use of a custom button Enum.  Still debating the merits of this...
 
 'X buttons (sometimes called buttons 4 and 5 in MSDN docs) are typically used for forward/back maneuvering.
-' I've declared these constants here, but PD will actually use WM_APPCOMMAND instead, as it will automatically be
-' raised by both keyboard and mouse equivalents of forward/back keys, which is a better solution for PD.
+' Users of this class can check their states in Mouse Up/Down events, but PD will preferentially use WM_APPCOMMAND instead,
+' as it can be raised by both keyboard and mouse equivalents of forward/back keys, which is typically a better solution.
 Private Const WM_APPCOMMAND As Long = &H319
-Private Const WM_XBUTTONDOWN As Long = &H20B
-Private Const WM_XBUTTONUP As Long = &H20C
+
 
 'Mouse-tracking for hover and leave events is not handled automatically by Windows; we must request it.
 Private Type TRACKMOUSEEVENT_STRUCT
@@ -261,7 +273,13 @@ Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTra
     If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER
     If alsoTrackAppCommands Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_APPCOMMAND
     If alsoTrackStandardMouseEvents Then
-    
+        
+        'Mouse down...
+        cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
+        
+        'Mouse up...
+        cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
+        
         'Double-clicks (including X-buttons)...
         cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
         
@@ -600,9 +618,79 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                 End If
             
+            'Mouse down
+            Case WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
+            
+                lReturn = 0
+                
+                'Because mouse up/down events tend to focus on the use of a single button, it makes more sense for us to
+                ' manually return a single-button type here (rather than a composite flag).  The calling function can
+                ' always query this class if it wants more detailed button up/down state data.
+                retMouseButton = 0
+                
+                If uMsg = WM_LBUTTONDOWN Then
+                    retMouseButton = vbLeftButton
+                ElseIf uMsg = WM_RBUTTONDOWN Then
+                    retMouseButton = vbRightButton
+                ElseIf uMsg = WM_MBUTTONDOWN Then
+                    retMouseButton = vbMiddleButton
+                ElseIf uMsg = WM_XBUTTONDOWN Then
+                
+                    'In this rare instance, we have to pull data directly from the message, because which XButton triggered
+                    ' the message can only be found by checking flags in the high-order word of the wParam.
+                    If (wParam \ &H10000) = 1 Then
+                        retMouseButton = pdXButtonOne
+                    Else
+                        retMouseButton = pdXButtonTwo
+                    End If
+                    
+                    'Also strange, X-button events require us to return TRUE!  This only for matters for pre-W2K systems,
+                    ' but sticking to the rule shows how carefully we read MSDN docs... ;)
+                    lReturn = 1
+                    
+                End If
+                
+                RaiseEvent MouseDownCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+            
+            'Mouse up
+            Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
+            
+                lReturn = 0
+                
+                'Because mouse up/down events tend to focus on the use of a single button, it makes more sense for us to
+                ' manually return a single-button type here (rather than a composite flag).  The calling function can
+                ' always query this class if it wants more detailed button up/down state data.
+                retMouseButton = 0
+                
+                If uMsg = WM_LBUTTONUP Then
+                    retMouseButton = vbLeftButton
+                ElseIf uMsg = WM_RBUTTONUP Then
+                    retMouseButton = vbRightButton
+                ElseIf uMsg = WM_MBUTTONUP Then
+                    retMouseButton = vbMiddleButton
+                ElseIf uMsg = WM_XBUTTONUP Then
+                
+                    'In this rare instance, we have to pull data directly from the message, because which XButton triggered
+                    ' the message can only be found by checking flags in the high-order word of the wParam.
+                    If (wParam \ &H10000) = 1 Then
+                        retMouseButton = pdXButtonOne
+                    Else
+                        retMouseButton = pdXButtonTwo
+                    End If
+                    
+                    'Also strange, X-button events require us to return TRUE!  This only for matters for pre-W2K systems,
+                    ' but sticking to the rule shows how carefully we read MSDN docs... ;)
+                    lReturn = 1
+                    
+                End If
+                
+                RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                
             'Double-clicks
             Case WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
             
+                lReturn = 0
+                
                 'Because double-click events tend to focus on the use of a single button, it makes more sense for us to
                 ' manually return a single-button type here (rather than a composite flag).
                 retMouseButton = 0
@@ -623,11 +711,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         retMouseButton = pdXButtonTwo
                     End If
                     
+                    'Also strange, X-button events require us to return TRUE!  This only for matters for pre-W2K systems,
+                    ' but sticking to the rule shows how carefully we read MSDN docs... ;)
+                    lReturn = 1
+                    
                 End If
                 
-                RaiseEvent DoubleClick(retMouseButton, retShiftConstants, mouseX, mouseY)
+                RaiseEvent DoubleClickCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
                 
-                lReturn = 0
             
             'Mouse leaving the client area
             Case WM_MOUSELEAVE
