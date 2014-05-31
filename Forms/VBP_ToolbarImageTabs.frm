@@ -88,14 +88,16 @@ Private Const thumbBorder As Long = 5
 Private bufferDIB As pdDIB
 Private m_BufferWidth As Long, m_BufferHeight As Long
 
-'An outside class provides access to mousewheel events for scrolling the filter view
+'An outside class provides access to mousewheel events for scrolling the tabstrip view
 Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'The currently selected and currently hovered thumbnail
 Private curThumb As Long, curThumbHover As Long
 
-'We allow the user to resize this window via the bottom border; these constants are used with the SendMessage API to enable this behavior
+'We allow the user to resize this window via the inside border; these constants are used with the SendMessage API
+' to enable this behavior.  (Because the tabstrip can be aligned to any window edge, the inside edge type can change;
+' we have to support all types in order to interact with SendMessage regardless of tabstrip alignment.)
 Private Const WM_NCLBUTTONDOWN As Long = &HA1
 Private Const HTLEFT As Long = 10
 Private Const HTTOP As Long = 12
