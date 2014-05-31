@@ -27,27 +27,19 @@ Begin VB.UserControl fxPreviewCtl
       TabIndex        =   2
       Top             =   5160
       Width           =   450
-      _ExtentX        =   794
-      _ExtentY        =   794
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      Value           =   -1  'True
-      HandPointer     =   -1  'True
-      PictureNormal   =   "fxPreview.ctx":0312
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      _extentx        =   794
+      _extenty        =   794
+      buttonstyle     =   7
+      font            =   "fxPreview.ctx":0312
+      backcolor       =   -2147483643
+      caption         =   ""
+      mode            =   1
+      value           =   -1  'True
+      handpointer     =   -1  'True
+      picturenormal   =   "fxPreview.ctx":033A
+      pictureeffectondown=   0
+      captioneffects  =   0
+      colorscheme     =   3
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -97,7 +89,7 @@ Begin VB.UserControl fxPreviewCtl
       ForeColor       =   &H00C07031&
       Height          =   210
       Left            =   120
-      MouseIcon       =   "fxPreview.ctx":1064
+      MouseIcon       =   "fxPreview.ctx":108C
       MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   5280
@@ -113,9 +105,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Effect Preview custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 10/January/13
-'Last updated: 09/January/13
-'Last update: new "click-to-raise-point-selection-event" feature; see Effects -> Stylize -> Vignetting for a nice
-'              example of the functionality this provides.
+'Last updated: 31/May/14
+'Last update: convert custom mouse handling code to use pdInput
 '
 'For the first decade of its life, PhotoDemon relied on simple picture boxes for rendering its effect previews.
 ' This worked well enough when there were only a handful of tools available, but as the complexity of the program
@@ -174,7 +165,7 @@ Private curImageState As Boolean
 Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
 
 'Mouse events are raised with the help of a bluMouseEvents class
-Private WithEvents cMouseEvents As bluMouseEvents
+Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'If the viewport is not set to "fit 100%", the user can click-drag around the image.  To do this successfully,
@@ -194,36 +185,6 @@ Private Sub cmdFit_Click()
     
     'Raise a viewport change event so the containing form can redraw itself accordingly
     RaiseEvent ViewportChanged
-    
-End Sub
-
-'Mouse enter/leave events will be handled by the bluMouseEvents object
-Private Sub cMouseEvents_MouseIn()
-    
-    'If this preview control instance allows the user to select a color, display the original image upon mouse entrance
-    If viewportFitFullImage Then
-        If AllowColorSelection Then
-            setPNGCursorToHwnd picPreview.hWnd, "C_PIPETTE", 0, 0
-            If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
-        End If
-    Else
-        setHandCursorToHwnd picPreview.hWnd
-    End If
-    
-End Sub
-
-Private Sub cMouseEvents_MouseOut()
-    
-    'If this preview control instance allows the user to select a color, restore whatever image was previously
-    ' displayed upon mouse exit
-    If AllowColorSelection Then
-        setHandCursorToHwnd picPreview.hWnd
-        If curImageState Then
-            If (Not fxImage Is Nothing) Then fxImage.renderToPictureBox picPreview
-        Else
-            If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
-        End If
-    End If
     
 End Sub
 
@@ -360,6 +321,37 @@ Public Function getPreviewHeight() As Long
     getPreviewHeight = picPreview.ScaleHeight
 End Function
 
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    'If this preview control instance allows the user to select a color, display the original image upon mouse entrance
+    If viewportFitFullImage Then
+        If AllowColorSelection Then
+            cMouseEvents.setPNGCursor "C_PIPETTE", 0, 0
+            If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+        End If
+    Else
+        cMouseEvents.setSystemCursor IDC_HAND
+    End If
+
+End Sub
+
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    'If this preview control instance allows the user to select a color, restore whatever image was previously
+    ' displayed upon mouse exit
+    If AllowColorSelection Then
+        
+        cMouseEvents.setSystemCursor IDC_HAND
+        
+        If curImageState Then
+            If (Not fxImage Is Nothing) Then fxImage.renderToPictureBox picPreview
+        Else
+            If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+        End If
+    End If
+
+End Sub
+
 'Toggle between the preview image and the original image if the user clicks this label
 Private Sub lblBeforeToggle_Click()
     
@@ -395,7 +387,7 @@ Private Sub picPreview_MouseDown(Button As Integer, Shift As Integer, x As Singl
         If Button = vbLeftButton Then
             m_InitX = x
             m_InitY = y
-            setSizeAllCursor picPreview
+            cMouseEvents.setSystemCursor IDC_SIZEALL
         End If
     End If
     
@@ -447,7 +439,7 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
         If Button = vbLeftButton Then
         
             'Make sure the move cursor remains accurate
-            setSizeAllCursor picPreview
+            cMouseEvents.setSystemCursor IDC_SIZEALL
                 
             'Store new offsets for the image
             m_OffsetX = m_InitX - x
@@ -461,7 +453,7 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
             RaiseEvent ViewportChanged
             
         Else
-            If Not isColorSelectionAllowed Then setHandCursor picPreview
+            If Not isColorSelectionAllowed Then cMouseEvents.setSystemCursor IDC_HAND
         End If
     Else
         'setArrowCursor picPreview
@@ -482,7 +474,7 @@ Private Sub picPreview_MouseMove(Button As Integer, Shift As Integer, x As Singl
     'If point selection is allowed, continue firing events while the mouse is moving (as a convenience to the user)
     If isPointSelectionAllowed Then
     
-        setHandCursorToHwnd picPreview.hWnd
+        cMouseEvents.setSystemCursor IDC_HAND
     
         If (Button = vbRightButton) Or (Button = vbLeftButton) Then
         
@@ -505,7 +497,8 @@ End Sub
 Private Sub picPreview_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     If Not viewportFitFullImage Then
-        setHandCursor picPreview
+        
+        cMouseEvents.setSystemCursor IDC_HAND
         
         hsOffsetX.Value = validateXOffset(hsOffsetX.Value + m_OffsetX)
         m_OffsetX = 0
@@ -571,8 +564,9 @@ Private Sub UserControl_Initialize()
     If g_UserModeFix Then
         
         'Set up a mouse events handler.  (NOTE: this handler subclasses, which may cause instability in the IDE.)
-        Set cMouseEvents = New bluMouseEvents
-        cMouseEvents.Attach picPreview.hWnd, UserControl.hWnd
+        Set cMouseEvents = New pdInput
+        cMouseEvents.addInputTracker picPreview.hWnd, True, , , True
+        cMouseEvents.setSystemCursor IDC_ARROW
         
         'Give the toggle image text the same font as the rest of the project.
         lblBeforeToggle.FontName = g_InterfaceFont
@@ -629,8 +623,9 @@ Private Sub UserControl_Show()
     End If
     
     'Reset the mouse cursors
-    setArrowCursorToHwnd picPreview.hWnd
-    setArrowCursorToHwnd UserControl.hWnd
+    cMouseEvents.setSystemCursor IDC_ARROW
+    
+    'setArrowCursorToHwnd UserControl.hWnd
     
     'Ensure the control is redrawn at least once
     redrawControl
