@@ -141,15 +141,14 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Metadata Browser
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/May/13
-'Last updated: 21/September/13
-'Last update: fix mousewheel behavior to give preference to the main list box, without requiring a click to obtain focus.
-'              Thanks to contributor Kroc for advice on remedying this issue.
+'Last updated: 31/May/14
+'Last update: convert mousewheel interactions to pdInput
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.
 '
 'This dialog interacts heavily with the pdMetadata class to present users with a relatively simple interface for
-' perusing (and eventually, editing - didn't make the cut for 6.0 but hopefully will in 6.2) an image's metadata.
+' perusing (and eventually, editing - didn't make the cut for 6.0 or 6.2 but maybe 6.4??) an image's metadata.
 '
 'Designing this dialog was quite difficult as it is impossible to predict what metadata types and entries might exist in
 ' an image file, so I've opted for the most flexible system I can.  No assumptions are made about present categories or
@@ -182,7 +181,7 @@ Private curTagCount() As Long
 Private Const BLOCKHEIGHT As Long = 64
 
 'An outside class provides access to mousewheel events for scrolling the filter view
-Private WithEvents cMouseEvents As bluMouseEvents
+Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
@@ -206,16 +205,17 @@ Private Sub CmdCancel_Click()
     Unload Me
 End Sub
 
+'OK button
 Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-    
+Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If vsMetadata.Visible Then
   
-        If LinesScrolled < 0 Then
+        If scrollAmount < 0 Then
             
             If vsMetadata.Value + vsMetadata.LargeChange > vsMetadata.Max Then
                 vsMetadata.Value = vsMetadata.Max
@@ -225,7 +225,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
             
             redrawMetadataList
         
-        ElseIf LinesScrolled > 0 Then
+        ElseIf scrollAmount > 0 Then
             
             If vsMetadata.Value - vsMetadata.LargeChange < vsMetadata.Min Then
                 vsMetadata.Value = vsMetadata.Min
@@ -238,7 +238,7 @@ Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Butto
         End If
         
     End If
-    
+
 End Sub
 
 Private Sub Form_Activate()
@@ -258,8 +258,10 @@ Private Sub Form_Load()
     'Note that this form will be interacting heavily with the current image's metadata container.
     
     'Enable mousewheel scrolling for the metadata box
-    Set cMouseEvents = New bluMouseEvents
-    cMouseEvents.Attach Me.hWnd
+    Set cMouseEvents = New pdInput
+    cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
+    cMouseEvents.addInputTracker Me.hWnd
+    cMouseEvents.setSystemCursor IDC_ARROW
         
     'Make the invisible buffer's font match the rest of PD
     picBuffer.FontName = g_InterfaceFont
