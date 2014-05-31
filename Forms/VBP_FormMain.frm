@@ -1378,14 +1378,14 @@ Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConst
             
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
             Drawing.convertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
-            toolbar_ImageTabs.cMouseEvents_MouseHScroll scrollAmount, Button, Shift, x, y
+            toolbar_ImageTabs.cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
         
         'Assume mouse is over the canvas
         Else
         
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
             Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
-            FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, x, y, scrollAmount
+            FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
             
         End If
         
@@ -1406,7 +1406,7 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
             
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
             Drawing.convertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
-            toolbar_ImageTabs.cMouseEvents_MouseVScroll scrollAmount, Button, Shift, x, y
+            toolbar_ImageTabs.cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
         
         'Assume mouse is over the main canvas
         Else
