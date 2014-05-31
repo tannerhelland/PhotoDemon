@@ -57,7 +57,7 @@ Option Explicit
 Public Event ColorChanged()
 
 'A specialized mouse class is used to handle the hand cursor for this control
-Private mouseHandler As bluMouseEvents
+Private cMouseEvents As pdInput
 
 'The control's current color
 Private curColor As OLE_COLOR
@@ -111,9 +111,9 @@ Private Sub UserControl_Initialize()
     drawControlBorders
     
     If g_UserModeFix Then
-        Set mouseHandler = New bluMouseEvents
-        mouseHandler.Attach UserControl.hWnd ', UserControl.Parent.hWnd
-        mouseHandler.MousePointer = IDC_HAND
+        Set cMouseEvents = New pdInput
+        cMouseEvents.addInputTracker UserControl.hWnd, True, , , True
+        cMouseEvents.setSystemCursor IDC_HAND
     End If
     
 End Sub
