@@ -27,19 +27,27 @@ Begin VB.UserControl fxPreviewCtl
       TabIndex        =   2
       Top             =   5160
       Width           =   450
-      _extentx        =   794
-      _extenty        =   794
-      buttonstyle     =   7
-      font            =   "fxPreview.ctx":0312
-      backcolor       =   -2147483643
-      caption         =   ""
-      mode            =   1
-      value           =   -1  'True
-      handpointer     =   -1  'True
-      picturenormal   =   "fxPreview.ctx":033A
-      pictureeffectondown=   0
-      captioneffects  =   0
-      colorscheme     =   3
+      _ExtentX        =   794
+      _ExtentY        =   794
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      Value           =   -1  'True
+      HandPointer     =   -1  'True
+      PictureNormal   =   "fxPreview.ctx":0312
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -89,7 +97,7 @@ Begin VB.UserControl fxPreviewCtl
       ForeColor       =   &H00C07031&
       Height          =   210
       Left            =   120
-      MouseIcon       =   "fxPreview.ctx":108C
+      MouseIcon       =   "fxPreview.ctx":1064
       MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   5280
@@ -164,7 +172,7 @@ Private curImageState As Boolean
 'GetPixel is used to retrieve colors from the image
 Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
 
-'Mouse events are raised with the help of a bluMouseEvents class
+'Mouse events are raised with the help of the pdInput class
 Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
