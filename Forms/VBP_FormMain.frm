@@ -1361,11 +1361,81 @@ Private m_ToolTip As clsToolTip
 Private tooltipBackup As Collection
 
 'An outside class provides access to specialized mouse events (like mousewheel and forward/back keys)
-Private WithEvents cMouseEvents As bluMouseEvents
+Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
+'Horizontal mousewheel; note that the pdInput class automatically converts Shift+Wheel to horizontal wheel for us
+Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    
+    Dim newX As Long, newY As Long
+    
+    If g_OpenImageCount > 0 Then
+    
+        'Mouse is over the tabstrip
+        If g_MouseOverImageTabstrip Then
+            
+            'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
+            Drawing.convertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
+            toolbar_ImageTabs.cMouseEvents_MouseHScroll scrollAmount, Button, Shift, x, y
+        
+        'Assume mouse is over the canvas
+        Else
+        
+            'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
+            Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
+            FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, x, y, scrollAmount
+            
+        End If
+        
+    End If
+
+End Sub
+
+'Vertical mousewheel; note that the pdInput class automatically converts Shift+Wheel and Ctrl+Wheel actions to dedicated events,
+' so this function will only return plain MouseWheel events (or Alt+MouseWheel, I suppose)
+Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+
+    Dim newX As Long, newY As Long
+
+    If g_OpenImageCount > 0 Then
+        
+        'Mouse is over the image tabstrip
+        If g_MouseOverImageTabstrip Then
+            
+            'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
+            Drawing.convertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
+            toolbar_ImageTabs.cMouseEvents_MouseVScroll scrollAmount, Button, Shift, x, y
+        
+        'Assume mouse is over the main canvas
+        Else
+            
+            'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
+            Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
+            FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
+            
+        End If
+        
+    End If
+
+End Sub
+
+'Ctrl+Wheel actions are detected by pdInput and sent to this dedicated class
+Private Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+
+    'The only child window that supports mousewheel zoom is the main canvas, so redirect any zoom events there.
+    If g_OpenImageCount > 0 Then
+    
+        Dim newX As Long, newY As Long
+    
+        'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
+        Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
+        FormMain.mainCanvas(0).cMouseEvents_MouseWheelZoom Button, Shift, newX, newY, zoomAmount
+    
+    End If
+
+End Sub
 
 'When the main form is resized, we must re-align the main canvas
 Private Sub Form_Resize()
@@ -1659,39 +1729,13 @@ End Sub
 'Forward mousewheel events to the relevant window
 Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
-    If g_OpenImageCount > 0 Then
-        If g_MouseOverImageTabstrip Then
-            toolbar_ImageTabs.cMouseEvents_MouseHScroll CharsScrolled, Button, Shift, x, y
-        Else
-            FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, x, y, CharsScrolled
-        End If
-    End If
+
 
 End Sub
 
 Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
 
-    Dim newX As Long, newY As Long
 
-    If g_OpenImageCount > 0 Then
-        
-        If g_MouseOverImageTabstrip Then
-            toolbar_ImageTabs.cMouseEvents_MouseVScroll LinesScrolled, Button, Shift, x, y
-        Else
-            
-            'The mouse is over the main canvas.  Convert the x/y coordinates we received into the canvas coordinate space, then relay the
-            ' mousewheel message to them.
-            Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
-            
-            If (Shift And vbCtrlMask) <> 0 Then
-                FormMain.mainCanvas(0).cMouseEvents_MouseWheelZoom Button, Shift, newX, newY, LinesScrolled
-            Else
-                FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, LinesScrolled
-            End If
-            
-        End If
-        
-    End If
 
 End Sub
 
@@ -1751,8 +1795,8 @@ Private Sub Form_Load()
     refreshAllCanvases
     
     'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
-    Set cMouseEvents = New bluMouseEvents
-    cMouseEvents.Attach Me.hWnd
+    Set cMouseEvents = New pdInput
+    cMouseEvents.addInputTracker Me.hWnd
     
     
     '*************************************************************************************************************************************
