@@ -3,17 +3,17 @@ Begin VB.UserControl bluDownload
    Appearance      =   0  'Flat
    BackColor       =   &H00FFAF00&
    CanGetFocus     =   0   'False
-   ClientHeight    =   483
+   ClientHeight    =   480
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   483
+   ClientWidth     =   480
    ClipBehavior    =   0  'None
    ClipControls    =   0   'False
    HasDC           =   0   'False
    HitBehavior     =   0  'None
    InvisibleAtRuntime=   -1  'True
-   ScaleHeight     =   483
-   ScaleWidth      =   483
+   ScaleHeight     =   480
+   ScaleWidth      =   480
    ToolboxBitmap   =   "bluDownload.ctx":0000
    Windowless      =   -1  'True
    Begin VB.Image imgIcon 
@@ -83,6 +83,7 @@ Event Failed(ByVal StatusCode As AsyncStatusCodeConstants, ByVal Status As Strin
 
 'CONTROL AsyncReadComplete _
  ======================================================================================
+
 Private Sub UserControl_AsyncReadComplete(ByRef AsyncProp As AsyncProperty)
 
     '"Error handling code should be placed in the AsyncReadComplete event procedure, _

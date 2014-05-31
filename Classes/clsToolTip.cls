@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 'You may download the original version of this code from the following link (good as of March '13):
 ' http://www.vb-helper.com/howto_multi_line_tooltip.html
 
-'Many thanks to Rod Stephens for his excellent VB-helper website.
+'Many thanks also to Rod Stephens for his excellent VB-helper website.
 
 
 Option Explicit
@@ -200,7 +200,7 @@ Private mnlgMaxTip                As Long
 Private m_TTHeader                As String
 Private m_ShowHeader              As Boolean
 Private Declare Function SendMessageT Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
-Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
+Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSource As Any, ByVal dwLength As Long)
 

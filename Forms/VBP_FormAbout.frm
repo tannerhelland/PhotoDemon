@@ -71,11 +71,11 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'About Form
+'PhotoDemon About Dialog
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 12/January/14
-'Last update: all (relevant) entries are now clickable!
+'Last updated: 31/May/14
+'Last update: convert extra mouse handling code to pdInput
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -126,7 +126,7 @@ Private inHoverState As Boolean
 Private clickToVisitText As String
 
 'An outside class provides access to specialized mouse events (mouse enter/leave, in this case)
-Private WithEvents cMouseEvents As bluMouseEvents
+Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'When the mouse moves over something clickable, update the pointer and stop the timer
@@ -138,7 +138,7 @@ Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
         If Not inHoverState Then
             
             'Display a hand cursor
-            setHandCursor picBuffer
+            cMouseEvents.setSystemCursor IDC_HAND
             
             'Slow the scrolling (to simplify clicking)
             tmrText.Interval = 50
@@ -153,7 +153,7 @@ Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
         If inHoverState Then
         
             'Restore an arrow cursor
-            setArrowCursor picBuffer
+            cMouseEvents.setSystemCursor IDC_ARROW
             
             'Return scrolling to normal speed
             tmrText.Interval = 17
@@ -172,7 +172,7 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
-Private Sub cMouseEvents_MouseOut()
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     mouseX = -1
     mouseY = -1
     curHoveredCredit = -1
@@ -191,8 +191,9 @@ Private Sub Form_Load()
     clickToVisitText = "(" & g_Language.TranslateMessage("click to visit") & ") "
     
     'Enable mouse subclassing for the main buffer box, which allows us to track when the mouse leaves
-    Set cMouseEvents = New bluMouseEvents
-    cMouseEvents.Attach picBuffer.hWnd
+    Set cMouseEvents = New pdInput
+    cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
+    cMouseEvents.setSystemCursor IDC_ARROW
 
     'Load the logo from the resource file
     Set logoDIB = New pdDIB
@@ -229,12 +230,14 @@ Private Sub Form_Load()
     GenerateThankyou "Allan Lima"
     GenerateThankyou "Andrew Yeoman"
     GenerateThankyou "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1", True
-    GenerateThankyou "audioglider", "https://github.com/audioglider", True
+    GenerateThankyou "Audioglider", "https://github.com/audioglider", True
     GenerateThankyou "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html", True
+    GenerateThankyou "Bonnie West", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1", True
     GenerateThankyou "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1", True
     GenerateThankyou "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546", True
     GenerateThankyou "dilettante", "http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control", True
     GenerateThankyou "Dosadi", "http://eztwain.com/eztwain1.htm", True
+    GenerateThankyou "Easy RGB", "http://www.easyrgb.com/", True
     GenerateThankyou "Everaldo Coelho", "http://www.everaldo.com/", True
     GenerateThankyou "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers", True
     GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/", True
@@ -248,6 +251,7 @@ Private Sub Form_Load()
     GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/", True
     GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1", True
     GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/", True
+    GenerateThankyou "Mike Raynder", "http://www.xtremevbtalk.com/showthread.php?t=229758", True
     GenerateThankyou "Mohammad Reza Karimi"
     GenerateThankyou "Paul Bourke", "http://paulbourke.net/miscellaneous/", True
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx", True
