@@ -149,8 +149,8 @@ Attribute VB_Exposed = False
 'Photo Filter Application Tool
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/June/13
-'Last updated: 23/August/13
-'Last update: fixed non-96 dpi issues with the custom list box
+'Last updated: 31/May/14
+'Last update: convert mousewheel interactions to pdInput
 '
 'Advanced photo filter simulation tool.  A full discussion of photographic filters and how they work are available
 ' at this Wikipedia article: http://en.wikipedia.org/wiki/Photographic_filter
@@ -207,7 +207,7 @@ Dim numOfFilters As Long
 Private Const BLOCKHEIGHT As Long = 53
 
 'An outside class provides access to mousewheel events for scrolling the filter view
-Private WithEvents cMouseEvents As bluMouseEvents
+Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
@@ -358,9 +358,42 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 'When the mouse leaves the filter box, remove any hovered entries and redraw
-Private Sub cMouseEvents_MouseOut()
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     curFilterHover = -1
     redrawFilterList
+End Sub
+
+Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+
+    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
+    If vsFilter.Visible Then
+  
+        If scrollAmount < 0 Then
+            
+            If vsFilter.Value + vsFilter.LargeChange > vsFilter.Max Then
+                vsFilter.Value = vsFilter.Max
+            Else
+                vsFilter.Value = vsFilter.Value + vsFilter.LargeChange
+            End If
+            
+            curFilterHover = getFilterAtPosition(x, y)
+            redrawFilterList
+        
+        ElseIf scrollAmount > 0 Then
+            
+            If vsFilter.Value - vsFilter.LargeChange < vsFilter.Min Then
+                vsFilter.Value = vsFilter.Min
+            Else
+                vsFilter.Value = vsFilter.Value - vsFilter.LargeChange
+            End If
+            
+            curFilterHover = getFilterAtPosition(x, y)
+            redrawFilterList
+            
+        End If
+        
+    End If
+
 End Sub
 
 Private Sub Form_Activate()
@@ -395,9 +428,10 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
 
     'Enable mousewheel scrolling for the filter box
-    Set cMouseEvents = New bluMouseEvents
-    cMouseEvents.Attach picBuffer.hWnd, Me.hWnd
-    cMouseEvents.MousePointer = IDC_HAND
+    Set cMouseEvents = New pdInput
+    cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
+    cMouseEvents.addInputTracker Me.hWnd
+    cMouseEvents.setSystemCursor IDC_HAND
     
     'Create a background buffer the same size as the buffer picture box
     Set bufferDIB = New pdDIB
@@ -637,40 +671,6 @@ End Sub
 
 Private Sub vsFilter_Scroll()
     redrawFilterList
-End Sub
-
-'This custom routine, combined with careful subclassing, allows us to handle mousewheel events for this form.
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-    
-    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If vsFilter.Visible Then
-  
-        If LinesScrolled < 0 Then
-            
-            If vsFilter.Value + vsFilter.LargeChange > vsFilter.Max Then
-                vsFilter.Value = vsFilter.Max
-            Else
-                vsFilter.Value = vsFilter.Value + vsFilter.LargeChange
-            End If
-            
-            curFilterHover = getFilterAtPosition(x, y)
-            redrawFilterList
-        
-        ElseIf LinesScrolled > 0 Then
-            
-            If vsFilter.Value - vsFilter.LargeChange < vsFilter.Min Then
-                vsFilter.Value = vsFilter.Min
-            Else
-                vsFilter.Value = vsFilter.Value - vsFilter.LargeChange
-            End If
-            
-            curFilterHover = getFilterAtPosition(x, y)
-            redrawFilterList
-            
-        End If
-        
-    End If
-
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
