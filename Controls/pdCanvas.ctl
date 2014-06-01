@@ -346,6 +346,12 @@ Dim sbIconSize As pdDIB, sbIconCoords As pdDIB
 'When no images are loaded, we instruct the user to load an image.  This generic image icon is used as a placeholder.
 Dim iconLoadAnImage As pdDIB
 
+'Some tools support the ability to auto-activate a layer beneath the mouse.  If supported, during the MouseMove event,
+' this value (m_LayerAutoActivateIndex) will be updated with the index of the layer that will be auto-activated if the
+' user presses the mouse button.  This can be used to modify things like cursor behavior, to make sure the user receives
+' accurate feedback on what a given action will affect.
+Private m_LayerAutoActivateIndex As Long
+
 'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
 Public Sub setRedrawSuspension(ByVal newRedrawValue As Boolean)
     m_suspendRedraws = newRedrawValue
@@ -765,6 +771,29 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 
             'Move stuff around
             Case NAV_MOVE
+            
+                'Prior to moving or transforming a layer, we need to check the state of the "auto-activate layer beneath mouse"
+                ' option; if it is set, check (and possibly modify) the active layer based on the mouse position.
+                If CBool(toolbar_Tools.chkAutoActivateLayer) Then
+                
+                    Dim layerUnderMouse As Long
+                    layerUnderMouse = Layer_Handler.getLayerUnderMouse(imgX, imgY, True)
+                    
+                    'The "getLayerUnderMouse" function will return a layer index if the mouse is over a layer.  If the mouse is not
+                    ' over a layer, it will return -1.
+                    If layerUnderMouse > -1 Then
+                    
+                        'If the layer under the mouse is not already active, activate it now
+                        If layerUnderMouse <> pdImages(g_CurrentImage).getActiveLayerIndex Then
+                            Layer_Handler.setActiveLayerByIndex layerUnderMouse, False
+                            RenderViewport pdImages(g_CurrentImage), Me
+                        End If
+                    
+                    End If
+                
+                End If
+                
+                'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
                 setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
         
             'Rectangular selection
@@ -932,32 +961,30 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             'Move stuff around
             Case NAV_MOVE
             
-                'If the "auto-activate layer beneath mouse" option is set, check the current layer position now
+                'If the user has the "auto-activate layer beneath mouse" option set, report the current layer name in the
+                ' message bar; this is helpful for determining what layer will be affected by a given action.
                 If CBool(toolbar_Tools.chkAutoActivateLayer) Then
                 
                     Dim layerUnderMouse As Long
-                    layerUnderMouse = Layer_Handler.getLayerUnderMouse(imgX, imgY)
+                    layerUnderMouse = Layer_Handler.getLayerUnderMouse(imgX, imgY, True)
                     
                     'The "getLayerUnderMouse" function will return a layer index if the mouse is over a layer.  If the mouse is not
                     ' over a layer, it will return -1.
                     If layerUnderMouse > -1 Then
+                        m_LayerAutoActivateIndex = layerUnderMouse
+                        Message "Layer beneath mouse: %1", pdImages(g_CurrentImage).getLayerByIndex(layerUnderMouse).getLayerName
                     
-                        'If the layer under the mouse is not already active, activate it now
-                        If layerUnderMouse <> pdImages(g_CurrentImage).getActiveLayerIndex Then
-                            Layer_Handler.setActiveLayerByIndex layerUnderMouse, False
-                            RenderViewport pdImages(g_CurrentImage), Me
-                        End If
-                    
-                    'The mouse is not over a layer.  Restore the original active layer, if necessary.
+                    'The mouse is not over a layer.  Default to the active layer, which allows the user to interact with the
+                    ' layer even if it lies off-canvas.
                     Else
-                    
-                        If pdImages(g_CurrentImage).getActiveLayerIndex <> m_OriginalActiveLayerIndex Then
-                            Layer_Handler.setActiveLayerByIndex layerUnderMouse, False
-                            RenderViewport pdImages(g_CurrentImage), Me
-                        End If
-                    
+                        m_LayerAutoActivateIndex = pdImages(g_CurrentImage).getActiveLayerIndex
                     End If
                 
+                'Auto-activation is disabled.  Don't bother reporting the layer beneath the mouse to the user, as actions can
+                ' only affect the active layer!
+                Else
+                    Message ""
+                    m_LayerAutoActivateIndex = pdImages(g_CurrentImage).getActiveLayerIndex
                 End If
                 
             'Standard selection tools
@@ -1542,7 +1569,18 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     
                 'Mouse is within the layer, but not over a specific node
                 Case 4
-                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                
+                    'This case is unique because if the user has elected to ignore transparent pixels, they cannot move a layer
+                    ' by dragging the mouse within a transparent region of the layer.  Thus, before changing the cursor,
+                    ' check to see if the hovered layer index is the same as the current layer index; if it isn't, don't display
+                    ' the Move cursor.  (Note that this works because the getLayerUnderMouse function, called during the MouseMove
+                    ' event, automatically factors the transparency check into its calculation.  Thus we don't have to
+                    ' re-evaluate the setting here.)
+                    If m_LayerAutoActivateIndex = pdImages(g_CurrentImage).getActiveLayerIndex Then
+                        cMouseEvents.setSystemCursor IDC_SIZEALL
+                    Else
+                        cMouseEvents.setSystemCursor IDC_ARROW
+                    End If
                     
             End Select
             

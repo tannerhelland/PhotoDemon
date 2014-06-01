@@ -107,11 +107,11 @@ Begin VB.Form toolbar_Tools
          Left            =   120
          TabIndex        =   31
          Top             =   780
-         Visible         =   0   'False
          Width           =   4920
          _ExtentX        =   8678
          _ExtentY        =   847
          Caption         =   "ignore transparent pixels when auto-activating layers"
+         Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75

@@ -710,13 +710,56 @@ Public Function getRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
 End Function
 
 'Given an x/y pair (in IMAGE COORDINATES), return the top-most layer under that position, if any.
-' The long-named final parameter, "enlargeForInteractionPadding", will instruct the function to add a few pixels worth of padding
-' to its search, to account for the space around a layer where things like resize nodes can appear.
-Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optional ByVal enlargeForInteractionPadding As Boolean = True) As Long
+' The long-named optional parameter, "givePreferenceToCurrentLayer", will check the currently active layer before checking any others.
+' If the mouse is over one of the current layer's points-of-interest (e.g. a resize node), the function will return that layer instead
+' of others that lay atop it.  This allows the user to move and resize the current layer preferentially, and only if the current layer
+' is completely out of the picture will other layers become activated.
+Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optional ByVal givePreferenceToCurrentLayer As Boolean = True) As Long
 
     Dim tmpRGBA As RGBQUAD
+    Dim curPOI As Long
+    
+    'If givePreferenceToCurrentLayer is selected, check the current layer first.  If the mouse is over one of the layer's POIs, return
+    ' the active layer without even checking other layers.
+    If givePreferenceToCurrentLayer Then
+    
+        'Only evaluate the active layer if the mouse is over it
+        If getRGBAPixelFromLayer(pdImages(g_CurrentImage).getActiveLayerIndex, curX, curY, tmpRGBA) Then
+            
+            'The mouse lies within image boundaries.  If the user wants transparency factored into the equation,
+            ' process it now.
+            If Not CBool(toolbar_Tools.chkIgnoreTransparent) Then
+            
+                getLayerUnderMouse = pdImages(g_CurrentImage).getActiveLayerIndex
+                Exit Function
+                
+            'The user wants transparency ignored.  Check the transparency of this pixel.
+            Else
+            
+                If tmpRGBA.Alpha > 0 Then
+                    getLayerUnderMouse = pdImages(g_CurrentImage).getActiveLayerIndex
+                    Exit Function
+                End If
+            
+            End If
+        
+        End If
+        
+        'If we made it here, the mouse is not under the current layer, or it is over a transparent area of the layer.
+        ' See if it is by chance over a POI for the layer (which may extend outside a layer's boundaries); if it is, return the active
+        ' layer index.
+        curPOI = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(curX, curY)
+        
+        'If the mouse is over a point of interest, return this layer and immediately exit
+        If curPOI >= 0 And curPOI <= 3 Then
+            getLayerUnderMouse = pdImages(g_CurrentImage).getActiveLayerIndex
+            Exit Function
+        End If
+        
+    End If
 
-    'Iterate through all layers in reverse (e.g. top-to-bottom)
+    'With the active layer out of the way, iterate through all image layers in reverse (e.g. top-to-bottom).  If one is located
+    ' beneath the mouse,
     Dim i As Long
     For i = pdImages(g_CurrentImage).getNumOfLayers - 1 To 0 Step -1
     
@@ -736,14 +779,13 @@ Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optio
                 
                 'If the user doesn't want us to ignore transparent pixels, this is easy - just return true.
                 'If Not CBool(toolbar_Tools.chkIgnoreTransparent) Then
-                    getLayerUnderMouse = i
-                    Exit Function
+                    'getLayerUnderMouse = i
+                    'Exit Function
                 
                 'The user wants to ignore transparent pixels when auto-activating layers.  Before doing this, stop to see if
                 ' the mouse is currently over a POI for this layer.  If it is, return the layer regardless of pixel transparency.
                 'Else
                 '
-                '    Dim curPOI As Long
                 '    curPOI = pdImages(g_CurrentImage).getLayerByIndex(i).checkForPointOfInterest(curX, curY)
                 '
                 '    'If the mouse is over a point of interest, return this layer regardless of underlying alpha
@@ -755,10 +797,10 @@ Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optio
                 '    ' if the layer is NOT fully transparent at this point.
                 '    Else
                 '
-                '        If tmpRGBA.Alpha > 0 Then
-                '            getLayerUnderMouse = i
-                '            Exit Function
-                '        End If
+                        If tmpRGBA.Alpha > 0 Then
+                            getLayerUnderMouse = i
+                            Exit Function
+                        End If
                 '
                 '    End If
                 '
