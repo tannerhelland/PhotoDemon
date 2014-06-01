@@ -77,7 +77,7 @@ Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As Shif
 Event ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
 
 'The following events are raised only if specifically requested
 Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -702,12 +702,20 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                 End If
                 
-                RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
-                
                 'If the user has not moved the mouse an appreciable amount since the last MouseDown event,
                 ' call this a click and raise the corresponding Click() event.
+                '
+                'Note that a MouseUp event is raised either way, and if a Click event is also being raised,
+                ' we warn the user in the MouseUp event.  This way, they can choose to abandon MouseUp
+                ' processing if the _Click event is implemented.
                 If m_MouseMoveCount < 2 Then
+                    
+                    RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseX, mouseY, True)
                     RaiseEvent ClickCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                
+                'The mouse has moved too much, so a Click event will not be raised.  Only raise a MouseUp event.
+                Else
+                    RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseX, mouseY, False)
                 End If
                 
             'Double-clicks
