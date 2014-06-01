@@ -376,6 +376,59 @@ Public Sub moveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Bo
 
 End Sub
 
+'Complicated function for moving a layer around in the layer stack.  A current layer index and destination layer index are required.
+' The destination layer index will be the *new* index of the source layer.  If the two indices match, the function will terminate.
+'
+'The function will return TRUE if the layers were moved successfully.
+Public Function moveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dstLayerIndex As Long) As Boolean
+
+    'Before doing anything else, make sure the requested move is a valid one
+    If srcLayerIndex = dstLayerIndex Then
+        moveLayerToArbitraryIndex = False
+        Exit Function
+    End If
+        
+    If (srcLayerIndex < 0) Or (srcLayerIndex > numOfLayers - 1) Then
+        moveLayerToArbitraryIndex = False
+        Exit Function
+    End If
+    
+    'Validate the destination layer differently; if it lies out-of-bounds, automatically correct it to the nearest
+    ' relevant position.
+    If dstLayerIndex < 0 Then dstLayerIndex = 0
+    If dstLayerIndex > numOfLayers - 1 Then dstLayerIndex = numOfLayers - 1
+    
+    'We now know several things:
+    ' 1) srcLayerIndex and dstLayerIndex are not the same
+    ' 2) srcLayerIndex and dstLayerIndex are valid entries in the layer stack
+    
+    Dim i As Long
+    
+    'We can now process the actual layer rearranging, and we will do so in two separate chunks of code: up vs down.
+    If dstLayerIndex > srcLayerIndex Then
+    
+        'The source layer is moving HIGHER in the stack
+    
+        'Iterate through all layers between the current position and the new one, swapping layers as we go
+        For i = srcLayerIndex To dstLayerIndex - 1
+            swapTwoLayers i, i + 1
+        Next i
+    
+    Else
+    
+        'The source layer is moving LOWER in the stack
+    
+        'Iterate through all layers between the current position and the new one, swapping layers as we go
+        For i = srcLayerIndex To dstLayerIndex + 1 Step -1
+            swapTwoLayers i, i - 1
+        Next i
+    
+    End If
+    
+    moveLayerToArbitraryIndex = True
+
+End Function
+
 'Used by various layer movement functions.  Given two layer indices, swap them.
 Public Sub swapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As Long)
 

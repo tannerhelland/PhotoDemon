@@ -580,6 +580,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Move layer"
             Layer_Handler.moveLayerOnCanvas pdImages(g_CurrentImage).getActiveLayerIndex, cParams.getParamString
             
+        '"Rearrange layers" is a dummy entry.  It does not actually modify the image; its sole purpose is to create an Undo/Redo entry
+        ' after the user has performed a drag/drop rearrangement of the layer stack.
+        Case "Rearrange layers"
+            
         
         'SELECTION FUNCTIONS
         ' Any action that operates on selections - creating them, moving them, erasing them, etc
