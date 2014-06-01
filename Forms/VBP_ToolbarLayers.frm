@@ -74,25 +74,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   4
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0000
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0000
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":0028
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -101,25 +93,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   5
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":0D7A
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -128,25 +112,17 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   15
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   847
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15199212
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
-         DisabledPictureMode=   1
-         CaptionEffects  =   0
-         TooltipTitle    =   "Open"
+         _extentx        =   953
+         _extenty        =   847
+         buttonstyle     =   13
+         font            =   "VBP_ToolbarLayers.frx":1AF4
+         backcolor       =   15199212
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
+         disabledpicturemode=   1
+         captioneffects  =   0
+         tooltiptitle    =   "Open"
       End
    End
    Begin VB.PictureBox picLayers 
@@ -189,19 +165,11 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   120
       Width           =   2760
-      _ExtentX        =   4868
-      _ExtentY        =   873
-      Max             =   100
-      Value           =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   4868
+      _extenty        =   873
+      font            =   "VBP_ToolbarLayers.frx":286E
+      max             =   100
+      value           =   100
    End
    Begin VB.Label lblLayerSettings 
       Alignment       =   1  'Right Justify
@@ -269,8 +237,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers Toolbar
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 25/March/14
-'Last updated: 08/May/14
-'Last update: limit hand cursor appearance to times when the cursor is over a valid layer
+'Last updated: 01/June/14
+'Last update: implement drag/drop layer reordering
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -349,15 +317,16 @@ Private m_VisibilityRect As RECT, m_NameRect As RECT
 Private m_MergeUpRect As RECT, m_MergeDownRect As RECT
 Private m_DuplicateRect As RECT
 
-'Because VB inexplicably fails to provide mouse coords for Click and DoubleClick events, we track coords manually
-' and use them as necessary.
-Private m_MouseX As Single, m_MouseY As Single
-
 'Global keyhooks are required because VB eats Enter keypresses if the user switches forms while a text box is active.
 Private cSubclass As cSelfSubHookCallback
 
-'While in drag/drop mode, ignore any mouse actions on the main layer box
-Private inDragDropMode As Boolean
+'While in OLE drag/drop mode (e.g. dragging files from Explorer), ignore any mouse actions on the main layer box
+Private m_InOLEDragDropMode As Boolean
+
+'While in our own custom layer box drag/drop mode (e.g. rearranging layers), this will be set to TRUE.
+' Also, the layer-to-be-moved is tracked, as is the initial layer index (which is required for processing the final
+' action, e.g. the one that triggers Undo/Redo creation).
+Private m_LayerRearrangingMode As Boolean, m_LayerIndexToRearrange As Long, m_InitialLayerIndex As Long
 
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
@@ -474,7 +443,7 @@ End Sub
 Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Ignore user interaction while in drag/drop mode
-    If inDragDropMode Then Exit Sub
+    If m_InOLEDragDropMode Then Exit Sub
     
     Dim clickedLayer As Long
     clickedLayer = getLayerAtPosition(x, y)
@@ -529,7 +498,7 @@ End Sub
 Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'Ignore user interaction while in drag/drop mode
-    If inDragDropMode Then Exit Sub
+    If m_InOLEDragDropMode Then Exit Sub
 
     If isPointInRect(x, y, m_NameRect) And (Button = pdLeftButton) Then
     
@@ -553,12 +522,40 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
 
 End Sub
 
+'MouseDown is used to process our own custom layer drag/drop reordering
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    'Ignore user interaction while in drag/drop mode
+    If m_InOLEDragDropMode Then Exit Sub
+    
+    'Retrieve the layer under this position
+    Dim clickedLayer As Long
+    clickedLayer = getLayerAtPosition(x, y)
+    
+    'Don't proceed unless the user has the mouse over a valid layer
+    If (clickedLayer >= 0) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+        
+        'If the image is a multilayer image, and they're using the left mouse button, initiate drag/drop layer reordering
+        If (pdImages(g_CurrentImage).getNumOfLayers > 1) And (Button = pdLeftButton) Then
+        
+            'Enter layer rearranging mode
+            m_LayerRearrangingMode = True
+            
+            'Note the layer being rearranged
+            m_LayerIndexToRearrange = clickedLayer
+            m_InitialLayerIndex = m_LayerIndexToRearrange
+        
+        End If
+        
+    End If
+
+End Sub
+
 'Mouse has left the layer box
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
+    'Note that no layer is currently hovered
     curLayerHover = -1
-    m_MouseX = -1
-    m_MouseY = -1
     
     'Redraw the layer box, which no longer has anything hovered
     redrawLayerBox
@@ -568,7 +565,7 @@ End Sub
 Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Ignore user interaction while in drag/drop mode
-    If inDragDropMode Then Exit Sub
+    If m_InOLEDragDropMode Then Exit Sub
     
     'Only display the hand cursor if the cursor is over a layer
     If getLayerAtPosition(x, y) <> -1 Then
@@ -580,15 +577,42 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     'Don't process further MouseMove events if no images are loaded
     If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
     
+    'Process any important interactions first.  If a live interaction is taking place (such as drag/drop layer reordering),
+    ' other MouseMove events will be suspended until the drag/drop is completed.
+    
+    'Check for drag/drop reordering
+    If m_LayerRearrangingMode Then
+    
+        'The user is in the middle of a drag/drop reorder.  Give them a live update!
+        
+        'Retrieve the layer under this position
+        Dim layerIndexUnderMouse As Long
+        layerIndexUnderMouse = getLayerAtPosition(x, y, True)
+                
+        'Ask the parent pdImage to move the layer for us
+        If pdImages(g_CurrentImage).moveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
+        
+            'Note that the layer currently being moved has changed
+            m_LayerIndexToRearrange = layerIndexUnderMouse
+            
+            'Keep the current layer as the active one
+            setActiveLayerByIndex layerIndexUnderMouse, False
+            
+            'Redraw the layer box, and note that thumbnails need to be re-cached
+            toolbar_Layers.forceRedraw True
+            
+            'Redraw the viewport
+            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+        End If
+        
+    End If
+    
     'If a layer other than the active one is being hovered, highlight that box
     If curLayerHover <> getLayerAtPosition(x, y) Then
         curLayerHover = getLayerAtPosition(x, y)
         redrawLayerBox
     End If
-    
-    'Store the mouse position so other functions in this routine can access them
-    m_MouseX = x
-    m_MouseY = y
     
     'Update the tooltip contingent on the mouse position.
     Dim toolString As String
@@ -651,6 +675,53 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
     If StrComp(m_ToolTip.ToolText(picLayers), toolString, vbTextCompare) <> 0 Then m_ToolTip.ToolText(picLayers) = toolString
     
+End Sub
+
+'MouseUp
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+
+    'Ignore user interaction while in drag/drop mode
+    If m_InOLEDragDropMode Then Exit Sub
+    
+    'Retrieve the layer under this position
+    Dim layerIndexUnderMouse As Long
+    layerIndexUnderMouse = getLayerAtPosition(x, y, True)
+    
+    'Don't proceed further unless an image has been loaded, and the user is not just clicking the layer box
+    If (Not pdImages(g_CurrentImage) Is Nothing) And (Not ClickEventAlsoFiring) Then
+        
+        'If we're in drag/drop mode, and the left mouse button is pressed, terminate drag/drop layer reordering
+        If m_LayerRearrangingMode And (Button = pdLeftButton) Then
+        
+            'Exit layer rearranging mode
+            m_LayerRearrangingMode = False
+            
+            'Ask the parent pdImage to move the layer for us; the MouseMove event has probably taken care of this already.
+            ' In that case, this function will return FALSE and we don't have to do anything extra.
+            If pdImages(g_CurrentImage).moveLayerToArbitraryIndex(m_LayerIndexToRearrange, layerIndexUnderMouse) Then
+    
+                'Keep the current layer as the active one
+                setActiveLayerByIndex layerIndexUnderMouse, False
+                
+                'Redraw the layer box, and note that thumbnails need to be re-cached
+                toolbar_Layers.forceRedraw True
+                
+                'Redraw the viewport
+                ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                
+            End If
+            
+            'If the new position differs from the layer's original position, call a dummy Processor call, which will create
+            ' an Undo/Redo entry at this point.
+            If m_InitialLayerIndex <> layerIndexUnderMouse Then Process "Rearrange layers", False, "", UNDO_IMAGEHEADER
+        
+        End If
+        
+    End If
+    
+    'If we haven't already, exit layer rearranging mode
+    m_LayerRearrangingMode = False
+
 End Sub
 
 Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
@@ -737,6 +808,9 @@ Private Sub Form_Load()
     
     'No layer has been hovered yet
     curLayerHover = -1
+    
+    'Rearranging mode is not active
+    m_LayerRearrangingMode = False
     
     'Prepare a DIB for rendering the Layer box
     Set bufferDIB = New pdDIB
@@ -1119,8 +1193,10 @@ Private Sub fillRectWithDIBCoords(ByRef dstRect As RECT, ByRef srcDIB As pdDIB, 
     End With
 End Sub
 
-'Given mouse coordinates over the buffer picture box, return the layer at that location
-Private Function getLayerAtPosition(ByVal x As Long, ByVal y As Long) As Long
+'Given mouse coordinates over the buffer picture box, return the layer at that location.
+' The optional parameter "reportNearestLayer" will return the index of the top layer if the mouse is in the invalid area
+' above the top-most layer, and the bottom layer if in the invalid area beneath the bottom-most layer.
+Private Function getLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional ByVal reportNearestLayer As Boolean = False) As Long
     
     If pdImages(g_CurrentImage) Is Nothing Then
         getLayerAtPosition = -1
@@ -1143,7 +1219,21 @@ Private Function getLayerAtPosition(ByVal x As Long, ByVal y As Long) As Long
         If (tmpLayerCheck >= 0) And (tmpLayerCheck < pdImages(g_CurrentImage).getNumOfLayers) Then
             getLayerAtPosition = tmpLayerCheck
         Else
-            getLayerAtPosition = -1
+        
+            'If the user wants us to report the *nearest* valid layer
+            If reportNearestLayer Then
+            
+                If tmpLayerCheck < 0 Then
+                    getLayerAtPosition = 0
+                Else
+                    getLayerAtPosition = pdImages(g_CurrentImage).getNumOfLayers - 1
+                End If
+            
+            'The user doesn't want us to report the nearest layer.  Report that the mouse is not over a layer.
+            Else
+                getLayerAtPosition = -1
+            End If
+            
         End If
     
     End If
@@ -1157,9 +1247,9 @@ Private Sub picLayers_OLEDragDrop(Data As DataObject, Effect As Long, Button As 
     
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
-    inDragDropMode = True
+    m_InOLEDragDropMode = True
     Clipboard_Handler.loadImageFromDragDrop Data, Effect, True
-    inDragDropMode = False
+    m_InOLEDragDropMode = False
 
 End Sub
 
