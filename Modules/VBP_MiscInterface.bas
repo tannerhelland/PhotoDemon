@@ -3,9 +3,8 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 26/May/14
-'Last update: add global enable/disable user input functions, which should simplify the process of disallowing certain
-'             behaviors while PD is processing background data.
+'Last updated: 01/June/14
+'Last update: optimize Message() to ignore duplicate message requests
 '
 'Miscellaneous routines related to rendering and handling PhotoDemon's interface.  As the program's complexity has
 ' increased, so has the need for specialized handling of certain UI elements.
@@ -90,6 +89,10 @@ Private dpiRatio As Double
 ' if a tool dialog displays a color selection dialog), the previous modal dialog is given ownership over the new dialog.
 Private currentDialogReference As Form
 Private isSecondaryDialog As Boolean
+
+'When a message is displayed to the user in the message portion of the status bar, we automatically cache the message's contents.
+' If a subsequent request is raised with the exact same text, we can skip the whole message display process.
+Private m_PrevMessage As String
 
 'Previously, various PD functions had to manually enable/disable button and menu state based on their actions.  This is no longer necessary.
 ' Simply call this function whenever an action has done something that will potentially affect the interface, and this function will iterate
@@ -1231,49 +1234,70 @@ End Function
 'This popular function is used to display a message in the main form's status bar.
 ' INPUTS:
 ' 1) the message to be displayed (mString)
-' *2) any values that must be calculated at run-time, which are labeled in the message string by "%n"
+' *2) any values that must be calculated at run-time, which are labeled in the message string by "%n", e.g. "Download time remaining: %1", timeRemaining
 Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
 
-    Dim newString As String
-    newString = mString
+    Dim i As Long
 
-    'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet
-    If (Not (g_Language Is Nothing)) Then
-        If g_Language.readyToTranslate Then
-            If g_Language.translationActive Then newString = g_Language.TranslateMessage(mString)
-        End If
-    End If
+    'Before doing anything else, check for a duplicate message request.  They are automatically ignored.
+    Dim tmpDupeCheckString As String
+    tmpDupeCheckString = mString
     
-    'Once the message is translated, we can add back in any optional parameters
     If Not IsMissing(ExtraText) Then
-    
-        Dim i As Long
+                    
         For i = LBound(ExtraText) To UBound(ExtraText)
-            newString = Replace$(newString, "%" & i + 1, CStr(ExtraText(i)))
+            tmpDupeCheckString = Replace$(tmpDupeCheckString, "%" & i + 1, CStr(ExtraText(i)))
         Next i
-    
-    End If
-
-    If MacroStatus = MacroSTART Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
-    
-    If MacroStatus <> MacroBATCH Then
-    
-        'If g_OpenImageCount > 0 Then
-            FormMain.mainCanvas(0).displayCanvasMessage newString
-        'End If
         
     End If
     
-    If Not g_IsProgramCompiled Then Debug.Print newString
+    'If the message request is for a novel string, display it.  Otherwise, exit now.
+    If StrComp(m_PrevMessage, tmpDupeCheckString, vbBinaryCompare) <> 0 Then
     
-    'If we're logging program messages, open up a log file and dump the message there
-    If g_LogProgramMessages Then
-        Dim fileNum As Integer
-        fileNum = FreeFile
-        Open g_UserPreferences.getDataPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
-            Print #fileNum, mString
-            If mString = "Finished." Then Print #fileNum, vbCrLf
-        Close #fileNum
+        'Cache the contents of the untranslated message, so we can check for duplicates on the next message request
+        m_PrevMessage = tmpDupeCheckString
+    
+        Dim newString As String
+        newString = mString
+    
+        'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet
+        If (Not (g_Language Is Nothing)) Then
+            If g_Language.readyToTranslate Then
+                If g_Language.translationActive Then newString = g_Language.TranslateMessage(mString)
+            End If
+        End If
+        
+        'Once the message is translated, we can add back in any optional parameters
+        If Not IsMissing(ExtraText) Then
+        
+            For i = LBound(ExtraText) To UBound(ExtraText)
+                newString = Replace$(newString, "%" & i + 1, CStr(ExtraText(i)))
+            Next i
+        
+        End If
+    
+        If MacroStatus = MacroSTART Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
+        
+        If MacroStatus <> MacroBATCH Then
+        
+            'If g_OpenImageCount > 0 Then
+                FormMain.mainCanvas(0).displayCanvasMessage newString
+            'End If
+            
+        End If
+        
+        If Not g_IsProgramCompiled Then Debug.Print newString
+        
+        'If we're logging program messages, open up a log file and dump the message there
+        If g_LogProgramMessages Then
+            Dim fileNum As Integer
+            fileNum = FreeFile
+            Open g_UserPreferences.getDataPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
+                Print #fileNum, mString
+                If mString = "Finished." Then Print #fileNum, vbCrLf
+            Close #fileNum
+        End If
+    
     End If
     
 End Sub
