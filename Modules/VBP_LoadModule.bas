@@ -172,7 +172,9 @@ Public Sub LoadTheProgram()
     
     'If ExifTool was enabled successfully, ask it to double-check that its tag database has been created
     ' successfully at some point in the past.  If it hasn't, generate a new copy now.
-    If g_ExifToolEnabled Then writeTagDatabase
+    '
+    'Now that this has been thoroughly tested, I'm postponing actual enabling of it until PD supports metadata editing.
+    'If g_ExifToolEnabled Then writeTagDatabase
     
     
     
