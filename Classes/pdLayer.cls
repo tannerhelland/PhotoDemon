@@ -180,7 +180,11 @@ Public Function getLayerOpacity() As Long
 End Function
 
 Public Sub setLayerOpacity(ByVal newLayerOpacity As Long)
+    
+    If newLayerOpacity > 100 Then newLayerOpacity = 100
+    If newLayerOpacity < 0 Then newLayerOpacity = 0
     myLayerData.l_Opacity = newLayerOpacity
+    
 End Sub
 
 'Get/set blend mode
