@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
 'Last updated: 02/June/14
-'Last update: add support for custom arrow key tracking
+'Last update: add WM_SETCURSOR checks if the user wants this class to handle cursor duties
 '
 'As I get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
 ' become clear.  Until now, a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel)
@@ -327,6 +327,9 @@ Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTra
         cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
         
     End If
+    
+    'Cursor duties require response to WM_SETCURSOR
+    If alsoHandleCursorDuties Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_SETCURSOR
             
     'If enter, leave, and hover events are desired, start mouse tracking now
     If alsoTrackMouseEnterLeave Then
@@ -1044,7 +1047,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     parseAppCommand lParam, commandID
                     RaiseEvent AppCommand(commandID, retShiftConstants, mouseX, mouseY)
                 End If
-                
+            
+            'While handling cursor duties, we must respond to WM_SETCURSOR events.
+            Case WM_SETCURSOR
+            
+                If m_TrackingData(PDIT_CURSOR, indexOfHwnd) Then applyCursorToHwnds
                 
             'A floating toolbox window is being activated or deactivated.  This is important as pdInput uses
             ' activation status to install and remove keyboard hooks.
