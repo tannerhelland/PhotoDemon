@@ -629,10 +629,7 @@ Private Sub UserControl_Show()
     Else
         lblBeforeToggle.Caption = "show original image (alt+t) "
     End If
-    
-    'Reset the mouse cursors
-    cMouseEvents.setSystemCursor IDC_ARROW
-    
+        
     'setArrowCursorToHwnd UserControl.hWnd
     
     'Ensure the control is redrawn at least once
@@ -640,6 +637,9 @@ Private Sub UserControl_Show()
     
     'Set an initial max/min for the preview offsets if the user chooses to preview at 100% zoom
     If g_UserModeFix Then
+    
+        'Reset the mouse cursor
+        cMouseEvents.setSystemCursor IDC_ARROW
     
         Dim maxHOffset As Long, maxVOffset As Long
         
