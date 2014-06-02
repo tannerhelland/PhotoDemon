@@ -167,9 +167,9 @@ Begin VB.Form toolbar_Layers
       Width           =   2760
       _extentx        =   4868
       _extenty        =   873
-      font            =   "VBP_ToolbarLayers.frx":286E
       max             =   100
       value           =   100
+      font            =   "VBP_ToolbarLayers.frx":286E
    End
    Begin VB.Label lblLayerSettings 
       Alignment       =   1  'Right Justify
@@ -522,6 +522,41 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
 
 End Sub
 
+'Arrow keys have been pressed (or number pad arrow keys)
+Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+    
+    'Ignore user interaction while in drag/drop mode
+    If m_InOLEDragDropMode Then Exit Sub
+    
+    'Ignore arrow keys unless an image has been loaded
+    If Not pdImages(g_CurrentImage) Is Nothing Then
+    
+        'Up key activates the next layer upward
+        If upArrow And (pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1) Then
+            Layer_Handler.setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex + 1, True
+        End If
+        
+        'Down key activates the next layer downward
+        If downArrow And pdImages(g_CurrentImage).getActiveLayerIndex > 0 Then
+            Layer_Handler.setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex - 1, True
+        End If
+        
+        'Right key increases active layer opacity
+        If rightArrow And (pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility) Then
+            sltLayerOpacity.Value = sltLayerOpacity.Value + 10
+            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        End If
+        
+        'Left key decreases active layer opacity
+        If leftArrow And (pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility) Then
+            sltLayerOpacity.Value = sltLayerOpacity.Value - 10
+            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        End If
+        
+    End If
+
+End Sub
+
 'MouseDown is used to process our own custom layer drag/drop reordering
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
@@ -801,10 +836,11 @@ Private Sub Form_Load()
     'Theme the form
     makeFormPretty Me
     
-    'Enable mousewheel scrolling for the layer box
+    'Enable custom input handling for the layer box
     Set cMouseEvents = New pdInput
     cMouseEvents.addInputTracker picLayers.hWnd, True, True, , True
     cMouseEvents.addInputTracker Me.hWnd
+    cMouseEvents.requestArrowKeyTracking picLayers.hWnd, False
     
     'No layer has been hovered yet
     curLayerHover = -1
