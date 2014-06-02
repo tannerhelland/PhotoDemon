@@ -439,6 +439,9 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                             If .eShift = eShiftCode Then
                                RaiseEvent Accelerator(iAccel, bCancel)
                                bHandled = True
+                               
+                               lReturn = 1
+                               
                                Exit For
                             End If
                          End If
@@ -454,6 +457,8 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         End If
         
     End If
+    
+    lReturn = CallNextHookEx(0, nCode, wParam, lParam)
     
 End Sub
 
