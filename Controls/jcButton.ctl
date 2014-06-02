@@ -482,7 +482,7 @@ End Type
 Private TrackUser32     As Boolean
 
 'Kernel32 declares used by the Subclasser
-Private Declare Function TRACKMOUSEEVENT Lib "user32" Alias "TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
+Private Declare Function TrackMouseEvent Lib "user32" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
 Private Declare Function TrackMouseEventComCtl Lib "comctl32" Alias "_TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
@@ -2730,9 +2730,9 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
     Case 13                                    'Enter Key
         RaiseEvent Click
     Case 37, 38                                'Left and Up Arrows
-        SendKeys "+{TAB}"                      'Button should transfer focus to other ctl
+        'SendKeys "+{TAB}"                      'Button should transfer focus to other ctl
     Case 39, 40                                'Right and Down Arrows
-        SendKeys "{TAB}"                       'Button should transfer focus to other ctl
+        'SendKeys "{TAB}"                       'Button should transfer focus to other ctl
     Case 32                                    'SpaceBar held down
         If Shift = 4 Then Exit Sub             'System Menu Should pop up
         If Not m_bIsDown Then
@@ -3445,7 +3445,7 @@ Dim TME              As TRACKMOUSEEVENT_STRUCT
         End With
 
         If TrackUser32 Then
-            TRACKMOUSEEVENT TME
+            TrackMouseEvent TME
         Else
             TrackMouseEventComCtl TME
         End If
