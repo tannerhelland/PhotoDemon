@@ -3,9 +3,9 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 22/May/14
-'Last update: add image checkpoint functions so that non-destructive edits are properly added to the Undo/Redo chain
-'              when necessary (e.g. before a destructive edit occurs).
+'Last updated: 02/June/14
+'Last update: minimize use of the busy cursor; it should now only be triggered for actions that affect DIBs directly
+'              (anything else should be fast enough to process in real-time)
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -93,7 +93,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If we are applying an action to the image (e.g. not just showing a dialog), and the action is likely to take awhile
     ' (e.g. it is processing an image, and not just modifying a layer header) display a busy cursor.
-    If (Not showDialog) And (createUndo <> UNDO_NOTHING) And (createUndo <> UNDO_LAYERHEADER) Then Screen.MousePointer = vbHourglass
+    If (Not showDialog) Then
+        If (createUndo = UNDO_EVERYTHING) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_LAYER) Then Screen.MousePointer = vbHourglass
+    End If
         
     'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data from the
     ' LastEffectsCall object; this simple approach lets us repeat the last action effortlessly!
@@ -1341,7 +1343,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'Restore the mouse pointer to its default value.
     ' (NOTE: if we are in the midst of a batch conversion, leave the cursor on "busy".  The batch function will restore the cursor when done.)
-    If MacroStatus <> MacroBATCH Then Screen.MousePointer = vbDefault
+    If MacroStatus <> MacroBATCH Then
+        
+        Screen.MousePointer = vbDefault
+        
+        'Also, ask the main canvas to refresh its cursor, as the cursor may have moved since the last
+        
+    End If
         
     'If the histogram form is visible and images are loaded, redraw the histogram
     'If FormHistogram.Visible Then
