@@ -702,6 +702,18 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                 End If
                 
+                'Fun fact!  If PD is busy doing a bunch of processing during MouseMove events (such as drag-resizing a
+                ' large layer), the MouseUp event may become artificially delayed.  When it finally triggers, the mouse
+                ' may have moved beyond its original point prior to release, causing the MouseUp event to report
+                ' inappropriate mouse values.  The best solution to this would be to grab the X/Y coordinates from the
+                ' window message, then use GetMouseMovePointsEx to retrieve a high-resolution copy of the coordinates.
+                ' Until we implement GetMouseMovePointsEx as a pdInput-wide solution, however, I'm going to simply
+                ' take the x/y values from the message and report them for now.
+                
+                'X/Y coords are packed into lParam as hi/lowords
+                mouseX = lParam And &HFFFF&
+                mouseY = lParam \ &H10000
+                
                 'If the user has not moved the mouse an appreciable amount since the last MouseDown event,
                 ' call this a click and raise the corresponding Click() event.
                 '
