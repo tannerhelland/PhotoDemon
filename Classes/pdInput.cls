@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Input Handler (mouse, pen, etc) class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
-'Last updated: 29/May/14
-'Last update: revisit cursor handling to minimize cursor updates (by setting the relevant class long to NULL upon
-'             mouse entering the window)
+'Last updated: 02/June/14
+'Last update: add support for custom arrow key tracking
 '
 'As I get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
 ' become clear.  Until now, a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel)
@@ -79,17 +78,23 @@ Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As S
 Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
 
-'The following events are raised only if specifically requested
+'The following events are raised only if specifically requested in the addInputTracker function
 Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
+'The following events are raised only if specifically requested via their dedicated function
+Event KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+
 'This class tracks all kinds of window messages.  Most objects won't need this level of tracking, but they're there
 ' if needed.
-Private Const WM_MOUSEHOVER As Long = &H2A1
 Private Const WM_MOUSEHWHEEL As Long = &H20E
-Private Const WM_MOUSELEAVE As Long = &H2A3
-Private Const WM_MOUSEMOVE As Long = &H200
 Private Const WM_MOUSEWHEEL As Long = &H20A
+
+Private Const WM_MOUSEHOVER As Long = &H2A1
+Private Const WM_MOUSELEAVE As Long = &H2A3
+
+Private Const WM_MOUSEMOVE As Long = &H200
+
 Private Const WM_SETCURSOR As Long = &H20
 
 Private Const WM_LBUTTONDOWN As Long = &H201
@@ -106,6 +111,13 @@ Private Const WM_LBUTTONDBLCLK As Long = &H203
 Private Const WM_MBUTTONDBLCLK As Long = &H209
 Private Const WM_RBUTTONDBLCLK As Long = &H206
 Private Const WM_XBUTTONDBLCLK As Long = &H20D
+
+Private Const WM_KEYDOWN As Long = &H100
+Private Const WM_GETDLGCODE As Long = &H87
+
+Private Const WM_ACTIVATE As Long = &H6
+Private Const WM_SETFOCUS As Long = &H7
+Private Const WM_KILLFOCUS As Long = &H8
 
 'X buttons (sometimes called buttons 4 and 5 in MSDN docs) are typically used for forward/back maneuvering.
 ' Users of this class can check their states in Mouse Up/Down events, but PD will preferentially use WM_APPCOMMAND instead,
@@ -128,6 +140,7 @@ Private Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As TRA
 'The Alt mask won't be returned by mouse WM notifications, so we need to retrieve it manually
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
 
+'Virtual key-codes currently supported by pdInput
 Private Const VK_SHIFT As Long = &H10
 Private Const VK_CONTROL As Long = &H11
 Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_MENU in MSDN documentation!
@@ -137,6 +150,23 @@ Private Const VK_RBUTTON As Long = &H2
 Private Const VK_MBUTTON As Long = &H4
 Private Const VK_XBUTTON1 As Long = &H5
 Private Const VK_XBUTTON2 As Long = &H6
+
+Private Const VK_LEFT As Long = &H25
+Private Const VK_UP As Long = &H26
+Private Const VK_RIGHT As Long = &H27
+Private Const VK_DOWN As Long = &H28
+
+Private Const VK_NUMLOCK As Long = &H90
+Private Const VK_NUMPAD0 As Long = &H60
+Private Const VK_NUMPAD1 As Long = &H61
+Private Const VK_NUMPAD2 As Long = &H62
+Private Const VK_NUMPAD3 As Long = &H63
+Private Const VK_NUMPAD4 As Long = &H64
+Private Const VK_NUMPAD5 As Long = &H65
+Private Const VK_NUMPAD6 As Long = &H66
+Private Const VK_NUMPAD7 As Long = &H67
+Private Const VK_NUMPAD8 As Long = &H68
+Private Const VK_NUMPAD9 As Long = &H69
 
 'In the future, other virtual key codes can be retrieved here:
 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
@@ -195,13 +225,20 @@ Private Enum PD_CUSTOM_INPUT_TRACKERS
     PDIT_STANDARD_MOUSE = 2
     PDIT_APPCOMMAND = 3
     PDIT_CURSOR = 4
+    PDIT_ARROWKEYS = 5
+    PDIT_HASFOCUS = 6
 End Enum
 
+'When tracking arrow keys, we use a few different track conditions (compared to just a binary TRUE/FALSE tracking code)
+Private Const ARROW_TRACKING_OBEY_NUMLOCK = 1
+Private Const ARROW_TRACKING_IGNORE_NUMLOCK = 2
+
 #If False Then
-    Private Const PDIT_DEFAULT = 0, PDIT_MOUSE_ENTERLEAVE = 1, PDIT_STANDARD_MOUSE = 2, PDIT_APPCOMMAND = 3, PDIT_CURSOR = 4
+    Private Const PDIT_DEFAULT = 0, PDIT_MOUSE_ENTERLEAVE = 1, PDIT_STANDARD_MOUSE = 2, PDIT_APPCOMMAND = 3, PDIT_CURSOR = 4, PDIT_ARROWKEYS = 5, _
+    PDIT_HASFOCUS = 6
 #End If
 
-Private Const NUM_OF_CUSTOM_INPUT_TRACKERS = 5
+Private Const NUM_OF_CUSTOM_INPUT_TRACKERS = 7
 
 'This class will generate Click() events using its own algorithm for determining when an action constitutes a "click".
 ' Basically, a MouseDown/Up combination with two or less MouseMove messages between them constitutes a Click.  This variable
@@ -310,6 +347,60 @@ Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTra
     
 End Function
 
+'Once an hWnd has been added to the tracker, callers can use several other functions to expand the tracking capabilities of the class.
+' This function is used to request Arrow Key tracking for a given hWnd.  Note that this function does NOT add a new hWnd to the tracker;
+' for that reason, I preface the function with "request" instead of "add", because the hWnd must have already been added.
+'
+'The optional parameter numPadMatters controls whether numLock status should affect reports from the numPad "arrow" keys.  If
+' numLockMatters is set to FALSE, this class will report arrow keys from the number pad *regardless of num lock status*.
+Public Function requestArrowKeyTracking(ByVal targetHWnd As Long, Optional ByVal numLockMatters As Boolean = True) As Boolean
+    
+    'Arrow key tracking is a nasty bit of business.  Let me just state that up front before breaking down how PD handles it.
+    
+    'By default, Windows generally handles arrow keypresses for applications.  Depending on the context, arrow buttons may
+    ' be used to navigate between command buttons, or navigate within a text box or edit control, or modify controls in some
+    ' other way.
+    
+    'This default behavior can be overridden by intercepting the WM_GETDLGCODE message and returning a value that specifies
+    ' what default behaviors you want to override.  Sounds easy, right?
+    
+    'In theory, it should be.  But in practice, it is anything but.  Some element of VB (who knows what) eats the WM_GETDLGCODE
+    ' message before it ever arrives at our wndProc.  It is possible that there's a way to override this behavior, or
+    ' somehow intercept it, but after a great deal of testing I have not found a reliable way to do it for any possible hWnd.
+    ' (This could be due to a whole bunch of factors, including the various window bits VB chooses to use, which I didn't want
+    ' to custom-handle as the goal here is to support custom tracking for *any* type of hWnd.)
+    
+    'So, subclassing is out.  That leaves hooking, which is a more troublesome solution, especially in PD's main screen where
+    ' a whole bunch of windows are simultaneously present.
+    
+    'Because hooking is an energy-intensive project, I don't want to hook anything more than is absolutely necessary.  So
+    ' hooking is now handled dynamically as any tracked window(s) gain or lose focus.  To accomplish this, key hooking requests
+    ' also generate some subclassing bits as well, so we can track focus of our individual windows.
+    
+    'Subclass two messages: WM_ACTIVATE (for floating windows) and WM_SETFOCUS/KILLFOCUS (for docked windows)
+    cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_ACTIVATE, WM_SETFOCUS, WM_KILLFOCUS
+    
+    'Note that we are tracking arrow key events for this hWnd
+    Dim hWndIndex As Long
+    hWndIndex = getIndexFromHwnd(targetHWnd)
+    
+    If hWndIndex >= 0 Then
+        
+        'Unlike other tracking data, arrow keys are a bit different.  A more detailed track state is required, to reflect
+        ' how numLock events are treated.
+        If numLockMatters Then
+            m_TrackingData(PDIT_ARROWKEYS, hWndIndex) = ARROW_TRACKING_OBEY_NUMLOCK
+        Else
+            m_TrackingData(PDIT_ARROWKEYS, hWndIndex) = ARROW_TRACKING_IGNORE_NUMLOCK
+        End If
+        
+        'Also reset the hasFocus parameter for this window; it will be set separately by intercepting the WM_ACTIVATE message
+        m_TrackingData(PDIT_HASFOCUS, hWndIndex) = False
+        
+    End If
+    
+End Function
+
 'Assign a cursor to the hWnd collection.  Call this function without a parameter to reset the cursor to the default arrow.
 Public Sub setSystemCursor(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT)
     
@@ -391,9 +482,10 @@ End Function
 
 Private Sub Class_Terminate()
 
-    'Release all subclassing
+    'Release all subclassing and hooking
+    cSubclass.shk_TerminateHooks
     cSubclass.ssc_Terminate
-
+    
 End Sub
 
 'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
@@ -500,6 +592,78 @@ Private Function getUserScrollSetting(ByVal directionIsVertical As Long) As Doub
     getUserScrollSetting = CDbl(tmpUserScrollReturn) / 120
 
 End Function
+
+'When an arrow key is pressed for a tracked hWnd that supports it, the WM_KEYDOWN message will call this function.
+' This function will check all arrow key states relative to the tracking status for this hWnd (e.g. factoring in numLock when relevant).
+Private Sub reportArrowKeyUpdate(ByVal indexOfHwnd As Long)
+    
+    'Start by assembling a list of all pressed default arrow keys
+    Dim leftArrow As Boolean, rightArrow As Boolean, upArrow As Boolean, downArrow As Boolean
+        
+    leftArrow = isVirtualKeyDown(VK_LEFT)
+    rightArrow = isVirtualKeyDown(VK_RIGHT)
+    upArrow = isVirtualKeyDown(VK_UP)
+    downArrow = isVirtualKeyDown(VK_DOWN)
+    
+    'If numLock status has been marked as irrelevant, and an arrow key is not already pressed, investigate number pad status
+    ' Similarly, if numLock is relevant, but numLock is DOWN, track status as well.
+    If (m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) = ARROW_TRACKING_IGNORE_NUMLOCK) Or ((m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) = ARROW_TRACKING_OBEY_NUMLOCK) And Not isVirtualKeyDown(VK_NUMLOCK)) Then
+    
+        If Not leftArrow Then leftArrow = (isVirtualKeyDown(VK_NUMPAD1) Or isVirtualKeyDown(VK_NUMPAD4) Or isVirtualKeyDown(VK_NUMPAD7))
+        If Not rightArrow Then rightArrow = (isVirtualKeyDown(VK_NUMPAD3) Or isVirtualKeyDown(VK_NUMPAD6) Or isVirtualKeyDown(VK_NUMPAD9))
+        If Not upArrow Then upArrow = (isVirtualKeyDown(VK_NUMPAD7) Or isVirtualKeyDown(VK_NUMPAD8) Or isVirtualKeyDown(VK_NUMPAD9))
+        If Not downArrow Then downArrow = (isVirtualKeyDown(VK_NUMPAD1) Or isVirtualKeyDown(VK_NUMPAD2) Or isVirtualKeyDown(VK_NUMPAD3))
+        
+    End If
+    
+    'Raise a corresponding arrow key event
+    RaiseEvent KeyDownArrows(upArrow, rightArrow, downArrow, leftArrow)
+
+End Sub
+
+'This routine MUST BE KEPT as the next-to-last routine for this form. Its ordinal position determines its ability to hook properly.
+Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal lHookType As eHookType, ByRef lParamUser As Long)
+'*************************************************************************************************
+' http://msdn2.microsoft.com/en-us/library/ms644990.aspx
+'* bBefore    - Indicates whether the callback is before or after the next hook in chain.
+'* bHandled   - In a before next hook in chain callback, setting bHandled to True will prevent the
+'*              message being passed to the next hook in chain and (if set to do so).
+'* lReturn    - Return value. For Before messages, set per the MSDN documentation for the hook type
+'* nCode      - A code the hook procedure uses to determine how to process the message
+'* wParam     - Message related data, hook type specific
+'* lParam     - Message related data, hook type specific
+'* lHookType  - Type of hook calling this callback
+'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
+'*************************************************************************************************
+    
+    'On Error Resume Next
+    
+    If lHookType = WH_KEYBOARD Then
+    
+        'Check the lParamUser to see if it matches an hWnd we are tracking
+        Dim indexOfHwnd As Long
+        indexOfHwnd = getIndexFromHwnd(lParamUser)
+        
+        If indexOfHwnd >= 0 Then
+            
+            'Check for arrow key handling
+            If (m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) = ARROW_TRACKING_OBEY_NUMLOCK) Or (m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) = ARROW_TRACKING_IGNORE_NUMLOCK) Then
+                reportArrowKeyUpdate indexOfHwnd
+            End If
+            
+        End If
+        
+        'Per MSDN, return the value of CallNextHookEx
+        If nCode < 0 Then
+            lReturn = CallNextHookEx(0, nCode, wParam, lParam)
+        Else
+            lReturn = 1
+        End If
+    
+    End If
+    
+End Sub
+
 
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
@@ -881,13 +1045,105 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     RaiseEvent AppCommand(commandID, retShiftConstants, mouseX, mouseY)
                 End If
                 
-        
+                
+            'A floating toolbox window is being activated or deactivated.  This is important as pdInput uses
+            ' activation status to install and remove keyboard hooks.
+            Case WM_ACTIVATE
+            
+                'See if we're tracking special keypresses for a window
+                If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
+                
+                    'We are tracking special keypresses for this hWnd.  Figure out if the window is being activated or deactivated.
+                    Const WA_INACTIVE As Long = 0
+                    Const WA_ACTIVE As Long = 1
+                    Const WA_CLICKACTIVE As Long = 2
+                    
+                    Dim activationStatus As Long
+                    activationStatus = wParam And &HFFFF
+                    
+                    'This hWnd is being deactivated.  If a hook has been installed, remove it now.
+                    If activationStatus = WA_INACTIVE Then
+                    
+                        'Check for an existing hook
+                        If m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
+                        
+                            Debug.Print "Uninstalling keyboard hook for hWnd #" & indexOfHwnd
+                        
+                            'A hook was found.  Uninstall it now.
+                            cSubclass.shk_UnHook WH_KEYBOARD
+                            
+                            'Note that this window is now inactive
+                            m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = False
+                        
+                        End If
+                    
+                    'This hWnd is being activated.  Install a hook now.
+                    Else
+                        
+                        'Check for an existing hook
+                        If Not m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
+                        
+                            Debug.Print "Installing keyboard hook for hWnd #" & indexOfHwnd
+                            
+                            cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, lng_hWnd, 2, Me
+                            
+                            'Note that this window is now active
+                            m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = True
+                            
+                        End If
+                        
+                    End If
+                
+                End If
+                
+                'Docked toolbox windows will raise WM_SETFOCUS instead of WM_ACTIVATE
+                Case WM_SETFOCUS
+                
+                    'See if we're tracking special keypresses for this window
+                    If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
+                    
+                        'Check for an existing hook
+                        If Not m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
+                        
+                            Debug.Print "Installing keyboard hook for hWnd #" & indexOfHwnd
+                            
+                            cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, lng_hWnd, 2, Me
+                            
+                            'Note that this window is now active
+                            m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = True
+                            
+                        End If
+                        
+                    End If
+                
+                Case WM_KILLFOCUS
+                
+                    'See if we're tracking special keypresses for this window
+                    If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
+                    
+                        'Check for an existing hook
+                        If m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
+                        
+                            Debug.Print "Uninstalling keyboard hook for hWnd #" & indexOfHwnd
+                        
+                            'A hook was found.  Uninstall it now.
+                            cSubclass.shk_UnHook WH_KEYBOARD
+                            
+                            'Note that this window is now inactive
+                            m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = False
+                        
+                        End If
+                    
+                    End If
+                
+                
         End Select
 
     
     'Somehow, the hWnd we've captured is not in our tracking list!  Abandon ship.
     Else
     
+        Debug.Print "WARNING!  Irrelevant hWnd intercepted by pdInput: " & lng_hWnd
         bHandled = False
     
     End If
