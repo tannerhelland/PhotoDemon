@@ -1989,7 +1989,7 @@ Private Sub Form_Load()
     ' Display any final messages and/or warnings
     '*************************************************************************************************************************************
         
-    Message "Program loaded successfully.  Please load or import an image to begin editing."
+    Message ""
     
     'TODO: As of 27 April '14, I have removed the warning below.
     'MsgBox "WARNING!  I am currently adding Layers support to PhotoDemon.  Because Layers are only partially complete, the program is extremely unstable, with many features completely broken." & vbCrLf & vbCrLf & "As long as this message remains, PhotoDemon may not function properly (or at all).  I've suspended nightly builds until things are stable.  If you've manually downloaded this build from GitHub, consider yourself warned." & vbCrLf & vbCrLf & "(Seriously: please do any editing with with the 6.2 stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "6.4 Development Warning"

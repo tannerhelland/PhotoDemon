@@ -119,6 +119,8 @@ Public Sub LoadTheProgram()
     wRect.Top = g_UserPreferences.GetPref_Long("Core", "Last Window Top", 1)
     wRect.Right = wRect.Left + g_UserPreferences.GetPref_Long("Core", "Last Window Width", 1)
     wRect.Bottom = wRect.Top + g_UserPreferences.GetPref_Long("Core", "Last Window Height", 1)
+    
+    'Center the splash screen on whichever monitor the user previously used.
     g_cMonitors.CenterFormOnMonitor FormSplash, , wRect.Left, wRect.Right, wRect.Top, wRect.Bottom
     
     'Make the splash screen's message display match the rest of PD
@@ -291,9 +293,6 @@ Public Sub LoadTheProgram()
     'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
     initializeIconHandler
     
-    'Before displaying the main window, check its last-used location and move the window into place.
-    restoreMainWindowLocation
-    
     'Prepare a checkerboard pattern, which will be used behind any transparent objects.  Caching this is much more efficient.
     ' than re-creating it every time it's needed.
     Set g_CheckerboardPattern = New pdDIB
@@ -350,7 +349,12 @@ Public Sub LoadTheProgram()
         Do While Timer - m_StartTime < m_LoadTime
         Loop
     End If
-        
+    
+    'If this is the first time the user has run PhotoDemon, resize the window a bit to make the default position nice.
+    ' (If this is *not* the first time, the window manager will automatically restore the window's last-known position and state.)
+    If g_IsFirstRun Then g_WindowManager.setFirstRunMainWindowPosition
+    
+    'Display the main form
     FormMain.Show
     
     Unload FormSplash
