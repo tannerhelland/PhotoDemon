@@ -12,7 +12,7 @@ Attribute VB_Name = "GDI_Plus"
 ' rendering of 32bpp images, regional blur of selection masks, antialiased lines and circles on various dialogs, and more.
 '
 'These routines are adapted from the work of a number of other talented VB programmers.  Since GDI+ is not well-documented
-' for VB users, I have pieced this module together from the following pieces of code:
+' for VB users, I first pieced this module together from the following pieces of code:
 ' Avery P's initial GDI+ deconstruction: http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1
 ' Carles P.V.'s iBMP implementation: http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
 ' Robert Rayment's PaintRR implementation: http://planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1

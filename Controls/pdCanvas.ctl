@@ -96,34 +96,26 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   8
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":0004
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom in"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":0004
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "pdCanvas.ctx":002C
+         picturealign    =   7
+         pictureeffectondown=   0
+         captioneffects  =   0
+         tooltip         =   "Zoom in"
+         colorscheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":0856
+         ItemData        =   "pdCanvas.ctx":087E
          Left            =   450
-         List            =   "pdCanvas.ctx":0858
+         List            =   "pdCanvas.ctx":0880
          Style           =   2  'Dropdown List
          TabIndex        =   7
          Top             =   15
@@ -135,27 +127,19 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":085A
-         PictureAlign    =   0
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom Out"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":0882
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "pdCanvas.ctx":08AA
+         picturealign    =   0
+         pictureeffectondown=   0
+         captioneffects  =   0
+         tooltip         =   "Zoom Out"
+         colorscheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -660,7 +644,7 @@ End Sub
 Private Sub CmbZoom_Click()
 
     'Only process zoom changes if an image has been loaded
-    If g_OpenImageCount > 0 Then
+    If isCanvasInteractionAllowed() Then
     
         'Store the current zoom value in this object (so the user can switch between images without losing zoom values)
         pdImages(g_CurrentImage).currentZoomValue = cmbZoom.ListIndex
@@ -696,40 +680,59 @@ End Sub
 
 'At present, the only App Commands the canvas will handle are forward/back, which link to Undo/Redo
 Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    If isCanvasInteractionAllowed() Then
+    
+        Select Case cmdID
+        
+            'Back button
+            Case AC_BROWSER_BACKWARD, AC_UNDO
+            
+                If pdImages(g_CurrentImage).IsActive Then
+                    If pdImages(g_CurrentImage).undoManager.getUndoState Then Process "Undo", , , UNDO_NOTHING
+                End If
+            
+            'Forward button
+            Case AC_BROWSER_FORWARD, AC_REDO
+            
+                If pdImages(g_CurrentImage).IsActive Then
+                    If pdImages(g_CurrentImage).undoManager.getRedoState Then Process "Redo", , , UNDO_NOTHING
+                End If
+        
+        End Select
 
-    Select Case cmdID
-    
-        'Back button
-        Case AC_BROWSER_BACKWARD, AC_UNDO
+    End If
+
+End Sub
+
+'An arrow key (or arrow key equivalent on the number pad) has been pressed.  How we handle it differs according to the current tool.
+Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+
+    'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
+    If isCanvasInteractionAllowed() Then
+
+        'Any further processing depends on which tool is currently active
+        Select Case g_CurrentTool
         
-            If pdImages(g_CurrentImage).IsActive Then
-                If pdImages(g_CurrentImage).undoManager.getUndoState Then Process "Undo", , , UNDO_NOTHING
-            End If
+            'Drag-to-pan canvas
+            Case NAV_DRAG
+                    
+            'Move stuff around
+            Case NAV_MOVE
+            
+            'Selections
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+            
+        End Select
         
-        'Forward button
-        Case AC_BROWSER_FORWARD, AC_REDO
-        
-            If pdImages(g_CurrentImage).IsActive Then
-                If pdImages(g_CurrentImage).undoManager.getRedoState Then Process "Redo", , , UNDO_NOTHING
-            End If
-    
-    End Select
+    End If
 
 End Sub
 
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
-    'If the main form is disabled, exit
-    If Not FormMain.Enabled Then Exit Sub
-    
-    'If user input has been forcibly disabled, exit
-    If g_DisableUserInput Then Exit Sub
-        
-    'If no images have been loaded, exit
-    If g_OpenImageCount = 0 Then Exit Sub
-    
-    'If the image has not yet been loaded, exit
-    If Not pdImages(g_CurrentImage).loadedSuccessfully Then Exit Sub
+    'Make sure interactions with this canvas are allowed
+    If Not isCanvasInteractionAllowed() Then Exit Sub
     
     'Note that the user has attempted to interact with the canvas.
     m_UserInteractedWithCanvas = True
@@ -892,18 +895,8 @@ End Sub
 
 Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
-    'If the main form is disabled, exit
-    If Not FormMain.Enabled Then Exit Sub
-    
-    'If user input has been forcibly disabled, exit
-    If g_DisableUserInput Then Exit Sub
-    
-    'If no images have been loaded, exit
-    If g_OpenImageCount = 0 Then Exit Sub
-    
-    'If the image has not yet been loaded, exit
-    If pdImages(g_CurrentImage) Is Nothing Then Exit Sub
-    If Not pdImages(g_CurrentImage).loadedSuccessfully Then Exit Sub
+    'Make sure interactions with this canvas are allowed
+    If Not isCanvasInteractionAllowed() Then Exit Sub
     
     hasMouseMoved = hasMouseMoved + 1
     
@@ -1000,14 +993,8 @@ End Sub
 
 Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
-    'If no images have been loaded, exit
-    If g_OpenImageCount = 0 Then Exit Sub
-    
-    'If user input has been forcibly disabled, exit
-    If g_DisableUserInput Then Exit Sub
-
-    'If the image has not yet been loaded, exit
-    If Not pdImages(g_CurrentImage).loadedSuccessfully Then Exit Sub
+    'Make sure interactions with this canvas are allowed
+    If Not isCanvasInteractionAllowed() Then Exit Sub
     
     'Display the image coordinates under the mouse pointer
     Dim imgX As Double, imgY As Double
@@ -1104,7 +1091,10 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
 End Sub
 
 Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-
+    
+    'Make sure interactions with this canvas are allowed
+    If Not isCanvasInteractionAllowed() Then Exit Sub
+    
     'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed BUT a ctrl
     ' button has not been pressed.  (TODO: shift the burden of mask detection to the pdInput class)
     If picScrollH.Visible And Not (Shift And vbCtrlMask) Then
@@ -1146,7 +1136,10 @@ End Sub
 'Vertical mousewheel scrolling.  Note that Shift+Wheel and Ctrl+Wheel modifiers do NOT raise this event; pdInput automatically
 ' reroutes them to MouseWheelHorizontal and MouseWheelZoom, respectively.
 Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-
+    
+    'Make sure interactions with this canvas are allowed
+    If Not isCanvasInteractionAllowed() Then Exit Sub
+    
     'PhotoDemon uses the standard photo editor convention of Ctrl+Wheel = zoom, Shift+Wheel = h_scroll, and Wheel = v_scroll.
     ' Some users (for reasons I don't understand??) expect plain mousewheel to zoom the image.  For these users, we now
     ' display a helpful message telling them to use the damn Ctrl modifier like everyone else.
@@ -1196,6 +1189,9 @@ End Sub
 'The pdInput class now provides a dedicated zoom event for us - how nice!
 Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
 
+    'Make sure interactions with this canvas are allowed
+    If Not isCanvasInteractionAllowed() Then Exit Sub
+    
     'Before doing anything else, cache the current mouse coordinates (in both Canvas and Image coordinate spaces)
     Dim imgX As Double, imgY As Double
     convertCanvasCoordsToImageCoords Me, pdImages(g_CurrentImage), x, y, imgX, imgY, True
@@ -1225,7 +1221,7 @@ End Sub
 
 'If an image is loaded, double-clicking the image size label launches the resize dialog
 Private Sub lblImgSize_DblClick()
-    If g_OpenImageCount > 0 Then Process "Resize image", True
+    If isCanvasInteractionAllowed() Then Process "Resize image", True
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -1235,6 +1231,7 @@ Private Sub UserControl_Initialize()
         'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
         Set cMouseEvents = New pdInput
         cMouseEvents.addInputTracker UserControl.hWnd, True, True, True, True
+        cMouseEvents.requestArrowKeyTracking UserControl.hWnd
         
         'Assign tooltips manually (so theming is supported)
         Set m_ToolTip = New clsToolTip
@@ -1264,6 +1261,9 @@ End Sub
 
 Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
     
+    'Make sure interactions with this canvas are allowed
+    If Not isCanvasInteractionAllowed() Then Exit Sub
+    
     ShiftDown = (Shift And vbShiftMask) > 0
     CtrlDown = (Shift And vbCtrlMask) > 0
     AltDown = (Shift And vbAltMask) > 0
@@ -1274,7 +1274,10 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
-        
+    
+    'Make sure interactions with this canvas are allowed
+    If Not isCanvasInteractionAllowed() Then Exit Sub
+    
     ShiftDown = (Shift And vbShiftMask) > 0
     CtrlDown = (Shift And vbCtrlMask) > 0
     AltDown = (Shift And vbAltMask) > 0
@@ -1646,3 +1649,34 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
     End Select
 
 End Sub
+
+'Simple unified way to see if canvas interaction is allowed.
+Private Function isCanvasInteractionAllowed() As Boolean
+
+    'If the main form is disabled, exit
+    If Not FormMain.Enabled Then
+        isCanvasInteractionAllowed = False
+        
+    'If user input has been forcibly disabled, exit
+    ElseIf g_DisableUserInput Then
+        isCanvasInteractionAllowed = False
+    
+    'If no images have been loaded, exit
+    ElseIf g_OpenImageCount = 0 Then
+        isCanvasInteractionAllowed = False
+    
+    'If the current image does not exist, exit
+    ElseIf pdImages(g_CurrentImage) Is Nothing Then
+        isCanvasInteractionAllowed = False
+    
+    'If an image has not yet been loaded, exit
+    ElseIf Not pdImages(g_CurrentImage).loadedSuccessfully Then
+        isCanvasInteractionAllowed = False
+    
+    'If none of the above are true, canvas interaction is allowed
+    Else
+        isCanvasInteractionAllowed = True
+    
+    End If
+
+End Function
