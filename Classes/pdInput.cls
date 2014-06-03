@@ -15,8 +15,16 @@ Attribute VB_Exposed = False
 'PhotoDemon Input Handler (mouse, pen, etc) class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
-'Last updated: 02/June/14
-'Last update: add WM_SETCURSOR checks if the user wants this class to handle cursor duties
+'Last updated: 03/June/14
+'Last update: added new addOverrideHwnds() function, which is required to deal with the endless focus fuckery VB applies
+'              to user controls.  Basically, user controls are terrified of the control itself receiving focus - even if
+'              explicitly requested - so they will always attempt to pass focus to a child object.  On something like
+'              PD's canvas UC, this is a huge problem because it means that any random child control could receive focus
+'              when the UC itself (but not a specific child control) is interacted with.  We now outsmart it by compiling
+'              a list of all focus-irrelevant controls (picture boxes, etc), then secretly adding those controls to our
+'              hooking checks.  If those controls receive key events, we process them via the main hook handler, so to
+'              the user it simply appears as if the control itself has focus (even though VB has inevitably given focus
+'              to some irrelevant random child control).
 '
 'As I get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
 ' become clear.  Until now, a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel)
@@ -245,11 +253,55 @@ Private Const NUM_OF_CUSTOM_INPUT_TRACKERS = 7
 ' is used to count MouseMove occurrences.
 Private m_MouseMoveCount As Long
 
+'User control fix??
+Private m_numOfOverrideControls As Long
+Private m_OverrideHwnds() As Long
+
+'VB is a source of endless focus when it comes to handling focus on UCs.  In VB's mind, user controls should fight
+' tooth-and-nail to make sure the UC itself never receives focus, even if we explicitly state that the UC can and should be
+' focusable.  Because of this, when the user interacts with a UC, VB will always attempt to pass focus to a child object.
+' Unfortunately, which child object gets focus is not predictable, though it seems to be tied to the Tab chain, e.g. the
+' next object in the tab line past whichever child control previously had focus will be the next one to get focus this
+' time.  This causes all sorts of havoc when attempting to handle unified system key messages (e.g. arrows) for the UC
+' as a single unit.
+'
+'To outsmart VB, UCs can now make use of this addOverrideHwnds function.  Upon initializing key hooking for a UC, call this
+' function and supply the hWnd of every focus-irrelevant control that VB might send focus to - picture boxes, etc.  This
+' tracker will then track their hWnds in the main hook handler, and treat any key events from those children as belonging to
+' the parent UC.  (Note that this still allows for proper arrow key usage within relevant controls, like a combo box.)
+'
+'To make sure that focus is handled properly for your UC when the user interacts with a non-control region, add something like
+' "<PictureBoxName>.SetFocus" to the mouse down event, which will ensure that one of the overridden hWnds gets focus, rather
+' than a random combo box or other control.
+Public Sub addOverrideHwnds(ParamArray ExtraHWnds() As Variant)
+
+    If Not IsMissing(ExtraHWnds) Then
+        
+        Dim i As Long
+        For i = LBound(ExtraHWnds) To UBound(ExtraHWnds)
+            If ExtraHWnds(i) <> 0 Then
+                m_numOfOverrideControls = m_numOfOverrideControls + 1
+                ReDim Preserve m_OverrideHwnds(0 To m_numOfOverrideControls - 1) As Long
+                m_OverrideHwnds(m_numOfOverrideControls - 1) = CLng(ExtraHWnds(i))
+                
+                cSubclass.ssc_Subclass m_OverrideHwnds(m_numOfOverrideControls - 1), , 1, Me
+                cSubclass.ssc_AddMsg m_OverrideHwnds(m_numOfOverrideControls - 1), MSG_BEFORE, WM_KILLFOCUS, WM_SETFOCUS
+                
+            End If
+        Next i
+        
+    End If
+
+End Sub
+
 Private Sub Class_Initialize()
     
     'Reset all input tracking variables
     ReDim m_TrackingData(0 To NUM_OF_CUSTOM_INPUT_TRACKERS - 1, 0) As Long
     ReDim m_MouseTrackingActive(0) As Boolean
+    
+    m_numOfOverrideControls = 0
+    ReDim m_OverrideHwnds(0) As Long
     
     'Note that we are not currently tracking the mouse for this object
     m_MouseTrackingActive(0) = False
@@ -639,30 +691,24 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
 '* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
 '*************************************************************************************************
     
-    'On Error Resume Next
     
     If lHookType = WH_KEYBOARD Then
     
-        'Check the lParamUser to see if it matches an hWnd we are tracking
-        Dim indexOfHwnd As Long
-        indexOfHwnd = getIndexFromHwnd(lParamUser)
-        
-        If indexOfHwnd >= 0 Then
-            
-            'Check for arrow key handling
-            If (m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) = ARROW_TRACKING_OBEY_NUMLOCK) Or (m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) = ARROW_TRACKING_IGNORE_NUMLOCK) Then
-                reportArrowKeyUpdate indexOfHwnd
-            End If
-            
+        'Check for arrow key handling
+        If (m_TrackingData(PDIT_ARROWKEYS, 0) = ARROW_TRACKING_OBEY_NUMLOCK) Or (m_TrackingData(PDIT_ARROWKEYS, 0) = ARROW_TRACKING_IGNORE_NUMLOCK) Then
+            reportArrowKeyUpdate 0
+            bHandled = True
+        Else
+            Debug.Print "I don't know what to do with this lParamUser: " & lParamUser
         End If
         
         'Per MSDN, return the value of CallNextHookEx
-        If nCode < 0 Then
+        If (nCode < 0) Or (Not bHandled) Then
             lReturn = CallNextHookEx(0, nCode, wParam, lParam)
         Else
             lReturn = 1
         End If
-    
+            
     End If
     
 End Sub
@@ -694,11 +740,27 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
 '*************************************************************************************************
 
+    Dim i As Long
     
     'Before processing anything, do a failsafe check to make sure the hWnd we've been passed is one we're
     ' actually responsible for.
     Dim indexOfHwnd As Long
     indexOfHwnd = getIndexFromHwnd(lng_hWnd)
+    
+    'If the hWnd wasn't found, it's possible that it belongs to the override array used for specialized key handling
+    ' on user controls (as user controls *fight* to not receive focus, and thus pass focus to any child control they
+    ' can get their hands on).  Check the override array for a match; if one was found, treat this window message as if
+    ' it applies to the base hWnd.
+    If (indexOfHwnd < 0) And (m_numOfOverrideControls > 0) Then
+        For i = 0 To m_numOfOverrideControls - 1
+        
+            If m_OverrideHwnds(i) = lng_hWnd Then
+                indexOfHwnd = 0
+                Exit For
+            End If
+        
+        Next i
+    End If
     
     'The hWnd was found in our tracking array.  Start processing it according to the events requested when
     ' the hWnd was first supplied to this class.
@@ -1057,6 +1119,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             ' activation status to install and remove keyboard hooks.
             Case WM_ACTIVATE
             
+                Debug.Print "wm_Activate"
+            
                 'See if we're tracking special keypresses for a window
                 If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
                 
@@ -1073,9 +1137,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                         'Check for an existing hook
                         If m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
-                        
-                            Debug.Print "Uninstalling keyboard hook for hWnd #" & indexOfHwnd
-                        
+                            
                             'A hook was found.  Uninstall it now.
                             cSubclass.shk_UnHook WH_KEYBOARD
                             
@@ -1089,9 +1151,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         
                         'Check for an existing hook
                         If Not m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
-                        
-                            Debug.Print "Installing keyboard hook for hWnd #" & indexOfHwnd
                             
+                            'No hook exists.  Hook the keyboard for this window.
                             cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, lng_hWnd, 2, Me
                             
                             'Note that this window is now active
@@ -1103,18 +1164,19 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 End If
                 
-                'Docked toolbox windows will raise WM_SETFOCUS instead of WM_ACTIVATE
+                'Docked toolbox windows and controls will raise WM_SETFOCUS instead of WM_ACTIVATE
                 Case WM_SETFOCUS
-                
+                    
                     'See if we're tracking special keypresses for this window
                     If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
                     
                         'Check for an existing hook
                         If Not m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
                         
-                            Debug.Print "Installing keyboard hook for hWnd #" & indexOfHwnd
+                            'Debug.Print "Installing keyboard hook for hWnd #" & indexOfHwnd
                             
-                            cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, lng_hWnd, 2, Me
+                            'No hook exists.  Hook the control now.
+                            cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_TrackingData(PDIT_DEFAULT, indexOfHwnd), 2, Me
                             
                             'Note that this window is now active
                             m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = True
@@ -1124,20 +1186,41 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     End If
                 
                 Case WM_KILLFOCUS
-                
+                    
                     'See if we're tracking special keypresses for this window
                     If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
                     
                         'Check for an existing hook
                         If m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
-                        
-                            Debug.Print "Uninstalling keyboard hook for hWnd #" & indexOfHwnd
-                        
-                            'A hook was found.  Uninstall it now.
-                            cSubclass.shk_UnHook WH_KEYBOARD
                             
-                            'Note that this window is now inactive
-                            m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = False
+                            Dim overrideRequired As Boolean
+                            overrideRequired = False
+                            
+                            'If the user has specified override controls (as required by a UC),
+                            ' compare the KillFocus wParam, which specifies which window is losing focus,
+                            ' to our override array.  If a child control *within the user control* is the
+                            ' one taking focus, maintain hooking.
+                            If m_numOfOverrideControls > 0 Then
+                            
+                                For i = 0 To m_numOfOverrideControls - 1
+                                    If m_OverrideHwnds(i) = wParam Then
+                                        overrideRequired = True
+                                        Exit For
+                                    End If
+                                Next i
+                            
+                            End If
+                            
+                            'If no override is required, uninstall the hook now
+                            If Not overrideRequired Then
+                            
+                                'Debug.Print "Uninstalling keyboard hook for hWnd #" & indexOfHwnd
+                                cSubclass.shk_UnHook WH_KEYBOARD
+                                
+                                'Note that hooking has been disabled for this control/window
+                                m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = False
+                                
+                            End If
                         
                         End If
                     
