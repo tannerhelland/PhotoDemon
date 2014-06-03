@@ -771,7 +771,7 @@ End Sub
 'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
 ' processing based on the state of this variable, we provide this interface.
 Public Sub setSaveState(ByVal newSaveState As Boolean)
-
+    
     If newSaveState Then
         
         hasBeenSaved = True
