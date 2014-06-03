@@ -261,7 +261,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                 If srcIsMeantAsLayer Then
                     Layer_Handler.loadImageAsNewLayer False, sFile(0)
                 Else
-                    LoadFileAsNewImage sFile, False
+                    LoadFileAsNewImage sFile, False, , getFilename(tmpDownloadFile)
                 End If
                 
                 'Delete the temporary file

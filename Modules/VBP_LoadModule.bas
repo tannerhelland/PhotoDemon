@@ -900,7 +900,7 @@ PDI_Load_Continuation:
         'Autosaved images are handled differently from normal images.  In order to preserve their original data,
         ' we load certain image data from a standalone XML file.
         If FileExtension = "PDTMP" Then
-        
+            
             targetImage.locationOnDisk = sFile(thisImage)
             
             'Ask the AutoSave engine to retrieve this image's data from the matching XML autosave file
@@ -914,7 +914,7 @@ PDI_Load_Continuation:
         'This is a non-autosave (normal!) image.
         Else
         
-            If imgName = "" Then
+            If Len(imgName) = 0 Then
                 'The calling routine hasn't specified an image name, so assume this is a normal load situation.
                 ' That means pulling the filename from the file itself.
                 targetImage.locationOnDisk = sFile(thisImage)
