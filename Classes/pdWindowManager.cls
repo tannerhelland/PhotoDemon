@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 27/May/14
-'Last update: use constants to control minimum window size, and enforce a larger minimum window size
+'Last updated: 03/June/14
+'Last update: new setFirstRunMainWindowPosition() position to be used when PD is run for the first time; it will calculate
+'              an initial window size and placement appropriate for the current monitor resolution.
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2014, it became time to rewrite its window method once again - this time, to a tabbed interface in line with the major
@@ -304,6 +305,9 @@ Private Declare Function SetFocus Lib "user32" (ByVal targetHWnd As Long) As Lon
 'Enforce a specific minimum width/height for the main window
 Private Const PD_MAIN_WINDOW_MINIMUM_HEIGHT As Long = 640
 Private Const PD_MAIN_WINDOW_MINIMUM_WIDTH As Long = 880
+
+Private Const PD_MAIN_WINDOW_PREFERRED_HEIGHT As Long = 720
+Private Const PD_MAIN_WINDOW_PREFERRED_WIDTH As Long = 980
 
 'Child window tracking
 Private pdWindows() As pdWindowData
@@ -1137,6 +1141,60 @@ Public Sub setFloatState(ByVal winType As pdWindowType, ByVal isFloating As Bool
         Next i
     End If
     
+End Sub
+
+'The first time PhotoDemon is run, this sub can be called to nicely center the window on the user's primary monitor.
+Public Sub setFirstRunMainWindowPosition()
+
+    'Start by retrieving the primary monitor's dimensions.  Note that this check relies on access to PD's g_cMonitors class.
+    Dim primaryMonitorIndex As Long
+    
+    Dim i As Long
+    For i = 1 To g_cMonitors.Monitors.Count
+        If g_cMonitors.Monitors(i).isPrimary Then
+            primaryMonitorIndex = i
+            Exit For
+        End If
+    Next i
+    
+    Dim primaryMonitorRect As winRect
+    With g_cMonitors.Monitors(primaryMonitorIndex)
+        primaryMonitorRect.x1 = .WorkLeft
+        primaryMonitorRect.x2 = .WorkRight
+        primaryMonitorRect.y1 = .WorkTop
+        primaryMonitorRect.y2 = .WorkBottom
+    End With
+    
+    'Using the primary monitor's dimensions, construct a new rect that fills most of (but not all) the user's screen
+    Dim monitorWidth As Long, monitorHeight As Long
+    monitorWidth = (primaryMonitorRect.x2 - primaryMonitorRect.x1)
+    monitorHeight = (primaryMonitorRect.y2 - primaryMonitorRect.y1)
+    
+    Dim idealWidth As Long, idealHeight As Long
+    idealWidth = monitorWidth * 0.85
+    idealHeight = monitorHeight * 0.9
+    
+    'Make sure the newly calculated "ideal" dimensions aren't less than PD's default width/height
+    If idealWidth < PD_MAIN_WINDOW_MINIMUM_WIDTH Then idealWidth = PD_MAIN_WINDOW_MINIMUM_WIDTH
+    If idealHeight < PD_MAIN_WINDOW_MINIMUM_HEIGHT Then idealHeight = PD_MAIN_WINDOW_MINIMUM_HEIGHT
+    
+    'If PD's preferred minimum width/height is available, and it is larger than the currently calculated ideal width, use those instead.
+    ' This is most relevant on 1024x768 monitors, where the "ideal" size of 80% of the monitor's available width and height is
+    ' still ridiculously small (relative to PD's UI layout).
+    If (PD_MAIN_WINDOW_PREFERRED_WIDTH < monitorWidth) And (idealWidth < PD_MAIN_WINDOW_PREFERRED_WIDTH) Then idealWidth = PD_MAIN_WINDOW_PREFERRED_WIDTH
+    If (PD_MAIN_WINDOW_PREFERRED_HEIGHT < monitorHeight) And (idealHeight < PD_MAIN_WINDOW_PREFERRED_HEIGHT) Then idealHeight = PD_MAIN_WINDOW_PREFERRED_HEIGHT
+    
+    'Apply the new rect to the image
+    Dim newWindowRect As winRect
+    With newWindowRect
+        .x1 = primaryMonitorRect.x1 + (monitorWidth - idealWidth) \ 2
+        .x2 = .x1 + idealWidth
+        .y1 = primaryMonitorRect.y1 + (monitorHeight - idealHeight) \ 2
+        .y2 = .y1 + idealHeight
+    
+        MoveWindow mainWindowHwnd, .x1, .y1, .x2 - .x1, .y2 - .y1, 0
+    End With
+
 End Sub
 
 'If a window had location data previously stored, this function will retrieve that data and move the window into place.
