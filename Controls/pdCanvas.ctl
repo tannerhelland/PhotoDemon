@@ -17,6 +17,7 @@ Begin VB.UserControl pdCanvas
       Strikethrough   =   0   'False
    EndProperty
    ForeColor       =   &H8000000D&
+   KeyPreview      =   -1  'True
    OLEDropMode     =   1  'Manual
    ScaleHeight     =   513
    ScaleMode       =   3  'Pixel
@@ -77,6 +78,7 @@ Begin VB.UserControl pdCanvas
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   886
       TabIndex        =   0
+      TabStop         =   0   'False
       Top             =   7350
       Width           =   13290
       Begin VB.ComboBox cmbSizeUnit 
@@ -102,11 +104,11 @@ Begin VB.UserControl pdCanvas
          font            =   "pdCanvas.ctx":0004
          backcolor       =   -2147483626
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "pdCanvas.ctx":002C
-         picturealign    =   7
          pictureeffectondown=   0
          captioneffects  =   0
+         picturealign    =   7
          tooltip         =   "Zoom in"
          colorscheme     =   3
       End
@@ -133,11 +135,11 @@ Begin VB.UserControl pdCanvas
          font            =   "pdCanvas.ctx":0882
          backcolor       =   -2147483626
          caption         =   ""
-         handpointer     =   -1  'True
+         handpointer     =   -1
          picturenormal   =   "pdCanvas.ctx":08AA
-         picturealign    =   0
          pictureeffectondown=   0
          captioneffects  =   0
+         picturealign    =   0
          tooltip         =   "Zoom Out"
          colorscheme     =   3
       End
@@ -707,7 +709,7 @@ End Sub
 
 'An arrow key (or arrow key equivalent on the number pad) has been pressed.  How we handle it differs according to the current tool.
 Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
-
+    
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
     If isCanvasInteractionAllowed() Then
 
@@ -716,6 +718,37 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArro
         
             'Drag-to-pan canvas
             Case NAV_DRAG
+                
+                Dim canvasMoved As Boolean
+                canvasMoved = False
+                
+                'Suspend automatic redraws until all arrow keys have been processed
+                m_suspendRedraws = True
+                
+                'If scrollbars are visible, nudge the canvas in the direction of the arrows.
+                If VScroll.Enabled Then
+                
+                    If upArrow Or downArrow Then canvasMoved = True
+                    
+                    If upArrow Then VScroll.Value = VScroll.Value - 1
+                    If downArrow Then VScroll.Value = VScroll.Value + 1
+                    
+                End If
+                
+                If HScroll.Enabled Then
+                
+                    If leftArrow Or rightArrow Then canvasMoved = True
+                    
+                    If leftArrow Then HScroll.Value = HScroll.Value - 1
+                    If rightArrow Then HScroll.Value = HScroll.Value + 1
+                    
+                End If
+                
+                'Re-enable automatic redraws
+                m_suspendRedraws = False
+            
+                'Redraw the viewport if necessary
+                If canvasMoved Then ScrollViewport pdImages(g_CurrentImage), Me
                     
             'Move stuff around
             Case NAV_MOVE
@@ -730,9 +763,11 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArro
 End Sub
 
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
+        
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
+    
+    cmdZoomIn.SetFocus
     
     'Note that the user has attempted to interact with the canvas.
     m_UserInteractedWithCanvas = True
@@ -854,7 +889,7 @@ End Sub
 
 'When the mouse enters the canvas, any floating toolbars must be automatically dimmed.
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
+        
     m_IsMouseOverCanvas = True
     
     'Note the currently active layer ID.  We may need to reset this when the mouse leaves the canvas.
@@ -1227,11 +1262,16 @@ End Sub
 Private Sub UserControl_Initialize()
 
     If g_UserModeFix Then
-    
+        
         'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
         Set cMouseEvents = New pdInput
         cMouseEvents.addInputTracker UserControl.hWnd, True, True, True, True
         cMouseEvents.requestArrowKeyTracking UserControl.hWnd
+        
+        'This user control contains a lot of child controls whose key events we want to intercept (as they aren't designed to have
+        ' focus on their own).  Submit these controls to the tracker, so it knows to mass any key events into the UC's master
+        ' key handler function.
+        cMouseEvents.addOverrideHwnds picStatusBar.hWnd, picScrollH.hWnd, picScrollV.hWnd, picProgressBar.hWnd, cmdZoomIn.hWnd, cmdZoomOut.hWnd
         
         'Assign tooltips manually (so theming is supported)
         Set m_ToolTip = New clsToolTip
