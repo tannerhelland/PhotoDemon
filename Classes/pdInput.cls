@@ -676,6 +676,27 @@ Private Sub reportArrowKeyUpdate(ByVal indexOfHwnd As Long)
 
 End Sub
 
+'When processing key hooks, our goal is to strip out any keypresses that we are explicitly handling.  If a handled key is found,
+' we prevent the keypress from proceeding to other hooks (e.g. pressing the arrow down key should only affect the control that
+' currently has focus).  However, if we are *not* handling a keypress, we need to pass it down the chain so other functions can
+' have a go at it.
+Private Function isRelevantKeyDown(ParamArray listOfVKeys() As Variant) As Boolean
+
+    isRelevantKeyDown = False
+
+    If Not IsMissing(listOfVKeys) Then
+        
+        Dim i As Long
+        For i = LBound(listOfVKeys) To UBound(listOfVKeys)
+            If listOfVKeys(i) <> 0 Then
+                isRelevantKeyDown = isRelevantKeyDown Or isVirtualKeyDown(listOfVKeys(i))
+            End If
+        Next i
+        
+    End If
+
+End Function
+
 'This routine MUST BE KEPT as the next-to-last routine for this form. Its ordinal position determines its ability to hook properly.
 Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal lHookType As eHookType, ByRef lParamUser As Long)
 '*************************************************************************************************
@@ -697,9 +718,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         'Check for arrow key handling
         If (m_TrackingData(PDIT_ARROWKEYS, 0) = ARROW_TRACKING_OBEY_NUMLOCK) Or (m_TrackingData(PDIT_ARROWKEYS, 0) = ARROW_TRACKING_IGNORE_NUMLOCK) Then
             reportArrowKeyUpdate 0
-            bHandled = True
-        Else
-            Debug.Print "I don't know what to do with this lParamUser: " & lParamUser
+            bHandled = isRelevantKeyDown(VK_LEFT, VK_RIGHT, VK_UP, VK_DOWN, VK_NUMPAD0, VK_NUMPAD1, VK_NUMPAD2, VK_NUMPAD3, VK_NUMPAD4, VK_NUMPAD5, VK_NUMPAD6, VK_NUMPAD7, VK_NUMPAD8, VK_NUMPAD9)
         End If
         
         'Per MSDN, return the value of CallNextHookEx
