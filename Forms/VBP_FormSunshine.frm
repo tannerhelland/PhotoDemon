@@ -52,6 +52,7 @@ Begin VB.Form FormSunshine
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltRayCount 
@@ -144,7 +145,7 @@ Begin VB.Form FormSunshine
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   1085
-      curColor        =   65535
+      curColor        =   8978431
    End
    Begin VB.Label lblShadow 
       AutoSize        =   -1  'True
@@ -247,15 +248,18 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Sunshine Effect Form
-'Copyright ©2014 by Audioglider
+'Copyright ©2013-2014 by Audioglider
 'Created: 30/May/14
-'Last updated: 30/May/14
-'Last update: Initial build
+'Last updated: 04/June/14
+'Last update: integrated Audioglider's great work into master
 '
 'This filter simulates the sun by generating a starburst effect. The X, Y
 ' coordinates sets the center of the burst, the Radius adjusts the size of
 ' of the center and the # of rays changes the the amount of rays of light
 ' that emanate from the center. All pretty self-explanatory :P
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
@@ -287,23 +291,29 @@ End Function
 Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpokeColor As Long, Optional ByVal centerX As Double = 0.1, Optional ByVal centerY As Double = 0.1, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If toPreview = False Then Message "Generating rays of happiness..."
-    
+        
     Dim i As Long
     Dim m_Radius As Double
     Dim m_Count As Long
     Dim m_Spoke() As Double
-    Dim m_SpokeColor() As RGBQUAD
+    Dim m_SpokeColorR() As Single, m_SpokeColorG() As Single, m_SpokeColorB() As Single
+    Dim newR As Double, newG As Double, newB As Double
+    
+    newR = ExtractR(lSpokeColor) / 255
+    newG = ExtractG(lSpokeColor) / 255
+    newB = ExtractB(lSpokeColor) / 255
     
     m_Radius = lRadius
     m_Count = lSpokeCount
     
     ReDim m_Spoke(0 To m_Count - 1)
-    ReDim m_SpokeColor(0 To m_Count - 1)
+    ReDim m_SpokeColorR(0 To m_Count - 1) As Single, m_SpokeColorG(0 To m_Count - 1) As Single, m_SpokeColorB(0 To m_Count - 1) As Single
+    
     For i = 0 To m_Count - 1
         m_Spoke(i) = GetGauss
-        m_SpokeColor(i).Red = ExtractR(lSpokeColor)
-        m_SpokeColor(i).Green = ExtractG(lSpokeColor)
-        m_SpokeColor(i).Blue = ExtractB(lSpokeColor)
+        m_SpokeColorR(i) = newR
+        m_SpokeColorG(i) = newG
+        m_SpokeColorB(i) = newB
     Next i
     
     'Create a local array and point it at the pixel data of the current image
@@ -355,11 +365,26 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim newR As Double, newG As Double, newB As Double
     
     Dim u As Double, v As Double, t As Double
     Dim w As Double, w1 As Double, ws As Double, fRatio As Double
-    Dim spokeCol As RGBQUAD
+    Dim spokeRed As Double, spokeGreen As Double, spokeBlue As Double
+    
+    'Because x and y values are recalculated according to the image's center and the user's selected radius, we can precalculate
+    ' all x/y values in advance.  This saves us a little time inside the main loop.
+    ' NOTE: on modern processors, doubles are faster to calculate in-line than singles.  However, doubles are slower when accessing
+    '       lookup tables of this size, so while it seems counterintuitive, the fastest combination tends to be doubles for all
+    '       in-line values, and singles for all lookup tables.  (Casting in this case doesn't have an appreciable penalty, thankfully.)
+    Dim xLookup() As Single, yLookup() As Single
+    ReDim xLookup(initX To finalX) As Single, yLookup(initY To finalY) As Single
+    
+    For x = initX To finalX
+        xLookup(x) = (x - midX + 0.0001) / m_Radius
+    Next x
+    
+    For y = initY To finalY
+        yLookup(y) = (y - midY + 0.0001) / m_Radius
+    Next y
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -370,10 +395,10 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
         g = srcImageData(QuickVal + 1, y)
         b = srcImageData(QuickVal, y)
     
-        u = (x - midX + 0.001) / m_Radius
-        v = (y - midY + 0.001) / m_Radius
+        u = xLookup(x)
+        v = yLookup(y)
         
-        t = (Atan2(u, v) / (2 * PI) + 0.51) * m_Count
+        t = (Atan2(u, v) / PI_DOUBLE + 0.51) * m_Count
         i = Floor(t)
         t = t - i
         i = i Mod m_Count
@@ -386,18 +411,18 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
         
         ws = fClamp(w1 * w, 0, 1)
         
-        spokeCol.Red = m_SpokeColor(i).Red / 255 * (1 - t) + m_SpokeColor((i + 1) Mod m_Count).Red / 255 * t
-        spokeCol.Green = m_SpokeColor(i).Green / 255 * (1 - t) + m_SpokeColor((i + 1) Mod m_Count).Green / 255 * t
-        spokeCol.Blue = m_SpokeColor(i).Blue / 255 * (1 - t) + m_SpokeColor((i + 1) Mod m_Count).Blue / 255 * t
+        spokeRed = m_SpokeColorR(i) * (1 - t) + m_SpokeColorR((i + 1) Mod m_Count) * t
+        spokeGreen = m_SpokeColorG(i) * (1 - t) + m_SpokeColorG((i + 1) Mod m_Count) * t
+        spokeBlue = m_SpokeColorB(i) * (1 - t) + m_SpokeColorB((i + 1) Mod m_Count) * t
         
         If w > 1 Then
-            newR = fClamp(spokeCol.Red * w, 0, 1)
-            newG = fClamp(spokeCol.Green * w, 0, 1)
-            newB = fClamp(spokeCol.Blue * w, 0, 1)
+            newR = fClamp(spokeRed * w, 0, 1)
+            newG = fClamp(spokeGreen * w, 0, 1)
+            newB = fClamp(spokeBlue * w, 0, 1)
         Else
-            newR = r / 255 * (1 - fRatio) + spokeCol.Red * fRatio
-            newG = g / 255 * (1 - fRatio) + spokeCol.Green * fRatio
-            newB = b / 255 * (1 - fRatio) + spokeCol.Blue * fRatio
+            newR = r / 255 * (1 - fRatio) + spokeRed * fRatio
+            newG = g / 255 * (1 - fRatio) + spokeGreen * fRatio
+            newB = b / 255 * (1 - fRatio) + spokeBlue * fRatio
         End If
             
         newR = (newR + ws) * 255
@@ -414,7 +439,7 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
         dstImageData(QuickVal, y) = newB
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -435,17 +460,17 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Sunshine", , buildParams(sltRadius.value, sltRayCount.value, cpShine.Color, sltXCenter.value, sltYCenter.value), UNDO_LAYER
+    Process "Sunshine", , buildParams(sltRadius.Value, sltRayCount.Value, cpShine.Color, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltXCenter.value = 0.1
-    sltYCenter.value = 0.1
-    sltRadius.value = 72
-    sltRayCount.value = 100
+    sltXCenter.Value = 0.1
+    sltYCenter.Value = 0.1
+    sltRadius.Value = 72
+    sltRayCount.Value = 100
     cpShine.Color = RGB(255, 255, 60)
 End Sub
 
@@ -478,8 +503,8 @@ End Sub
 
 Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
     cmdBar.markPreviewStatus False
-    sltXCenter.value = xRatio
-    sltYCenter.value = yRatio
+    sltXCenter.Value = xRatio
+    sltYCenter.Value = yRatio
     cmdBar.markPreviewStatus True
     updatePreview
 End Sub
@@ -493,7 +518,7 @@ Private Sub sltRayCount_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then SunShine sltRadius.value, sltRayCount.value, cpShine.Color, sltXCenter.value, sltYCenter.value, True, fxPreview
+    If cmdBar.previewsAllowed Then SunShine sltRadius.Value, sltRayCount.Value, cpShine.Color, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()

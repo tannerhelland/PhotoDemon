@@ -434,7 +434,8 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "LAVA", 7, 7, 4           'Lava
         addMenuIcon "RAINBOW", 7, 7, 5        'Rainbow
         addMenuIcon "STEEL", 7, 7, 6          'Steel
-        addMenuIcon "RAIN", 7, 7, 7           'Water
+        addMenuIcon "SUNSHINE", 7, 7, 7       'Sunshine
+        addMenuIcon "RAIN", 7, 7, 8           'Water
     addMenuIcon "NOISE", 7, 8           'Noise
         '--> Noise sub-menu
         addMenuIcon "FILMGRAIN", 7, 8, 0      'Film grain

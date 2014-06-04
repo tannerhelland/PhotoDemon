@@ -1212,6 +1212,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Steel"
             MenuSteel
             
+        Case "Sunshine"
+            If showDialog Then
+                showPDDialog vbModal, FormSunshine
+            Else
+                FormSunshine.SunShine cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
+            End If
+            
         Case "Water"
             MenuWater
             
