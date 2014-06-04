@@ -680,16 +680,19 @@ End Sub
 ' we prevent the keypress from proceeding to other hooks (e.g. pressing the arrow down key should only affect the control that
 ' currently has focus).  However, if we are *not* handling a keypress, we need to pass it down the chain so other functions can
 ' have a go at it.
-Private Function isRelevantKeyDown(ParamArray listOfVKeys() As Variant) As Boolean
+Private Function isRelevantKeyAffected(ByVal vKeyFromHook As Long, ParamArray listOfVKeys() As Variant) As Boolean
 
-    isRelevantKeyDown = False
+    isRelevantKeyAffected = False
 
     If Not IsMissing(listOfVKeys) Then
         
         Dim i As Long
         For i = LBound(listOfVKeys) To UBound(listOfVKeys)
             If listOfVKeys(i) <> 0 Then
-                isRelevantKeyDown = isRelevantKeyDown Or isVirtualKeyDown(listOfVKeys(i))
+                If vKeyFromHook = CLng(listOfVKeys(i)) Then
+                    isRelevantKeyAffected = True
+                    Exit For
+                End If
             End If
         Next i
         
@@ -715,14 +718,18 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
     
     If lHookType = WH_KEYBOARD Then
     
+        bHandled = False
+    
         'Check for arrow key handling
         If (m_TrackingData(PDIT_ARROWKEYS, 0) = ARROW_TRACKING_OBEY_NUMLOCK) Or (m_TrackingData(PDIT_ARROWKEYS, 0) = ARROW_TRACKING_IGNORE_NUMLOCK) Then
             reportArrowKeyUpdate 0
-            bHandled = isRelevantKeyDown(VK_LEFT, VK_RIGHT, VK_UP, VK_DOWN, VK_NUMPAD0, VK_NUMPAD1, VK_NUMPAD2, VK_NUMPAD3, VK_NUMPAD4, VK_NUMPAD5, VK_NUMPAD6, VK_NUMPAD7, VK_NUMPAD8, VK_NUMPAD9)
+            bHandled = isRelevantKeyAffected(wParam, VK_LEFT, VK_RIGHT, VK_UP, VK_DOWN, VK_NUMPAD0, VK_NUMPAD1, VK_NUMPAD2, VK_NUMPAD3, VK_NUMPAD4, VK_NUMPAD5, VK_NUMPAD6, VK_NUMPAD7, VK_NUMPAD8, VK_NUMPAD9)
         End If
         
+        Debug.Print "Handling keypress: " & bHandled & ", " & nCode
+        
         'Per MSDN, return the value of CallNextHookEx
-        If (nCode < 0) Or (Not bHandled) Then
+        If (Not bHandled) Then
             lReturn = CallNextHookEx(0, nCode, wParam, lParam)
         Else
             lReturn = 1
@@ -760,6 +767,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '*************************************************************************************************
 
     Dim i As Long
+    Dim overrideRequired As Boolean
     
     'Before processing anything, do a failsafe check to make sure the hWnd we've been passed is one we're
     ' actually responsible for.
@@ -1137,9 +1145,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'A floating toolbox window is being activated or deactivated.  This is important as pdInput uses
             ' activation status to install and remove keyboard hooks.
             Case WM_ACTIVATE
-            
-                Debug.Print "wm_Activate"
-            
+                
                 'See if we're tracking special keypresses for a window
                 If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
                 
@@ -1157,62 +1163,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         'Check for an existing hook
                         If m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
                             
-                            'A hook was found.  Uninstall it now.
-                            cSubclass.shk_UnHook WH_KEYBOARD
-                            
-                            'Note that this window is now inactive
-                            m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = False
-                        
-                        End If
-                    
-                    'This hWnd is being activated.  Install a hook now.
-                    Else
-                        
-                        'Check for an existing hook
-                        If Not m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
-                            
-                            'No hook exists.  Hook the keyboard for this window.
-                            cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, lng_hWnd, 2, Me
-                            
-                            'Note that this window is now active
-                            m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = True
-                            
-                        End If
-                        
-                    End If
-                
-                End If
-                
-                'Docked toolbox windows and controls will raise WM_SETFOCUS instead of WM_ACTIVATE
-                Case WM_SETFOCUS
-                    
-                    'See if we're tracking special keypresses for this window
-                    If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
-                    
-                        'Check for an existing hook
-                        If Not m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
-                        
-                            'Debug.Print "Installing keyboard hook for hWnd #" & indexOfHwnd
-                            
-                            'No hook exists.  Hook the control now.
-                            cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_TrackingData(PDIT_DEFAULT, indexOfHwnd), 2, Me
-                            
-                            'Note that this window is now active
-                            m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = True
-                            
-                        End If
-                        
-                    End If
-                
-                Case WM_KILLFOCUS
-                    
-                    'See if we're tracking special keypresses for this window
-                    If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
-                    
-                        'Check for an existing hook
-                        If m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
-                            
-                            Dim overrideRequired As Boolean
                             overrideRequired = False
                             
                             'If the user has specified override controls (as required by a UC),
@@ -1233,7 +1183,89 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             'If no override is required, uninstall the hook now
                             If Not overrideRequired Then
                             
-                                'Debug.Print "Uninstalling keyboard hook for hWnd #" & indexOfHwnd
+                                Debug.Print "Uninstalling keyboard hook for hWnd #" & m_TrackingData(PDIT_DEFAULT, indexOfHwnd) & " due to WM_ACTIVATE"
+                                
+                                'A hook was found.  Uninstall it now.
+                                cSubclass.shk_UnHook WH_KEYBOARD
+                                
+                                'Note that this window is now inactive
+                                m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = False
+                                
+                            End If
+                        
+                        End If
+                    
+                    'This hWnd is being activated.  Install a hook now.
+                    Else
+                        
+                        'Check for an existing hook
+                        If Not m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
+                            
+                            Debug.Print "Installing keyboard hook for hWnd #" & m_TrackingData(PDIT_DEFAULT, indexOfHwnd) & " due to WM_ACTIVATE"
+                            
+                            'No hook exists.  Hook the keyboard for this window.
+                            cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_TrackingData(PDIT_DEFAULT, indexOfHwnd), 2, Me
+                            
+                            'Note that this window is now active
+                            m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = True
+                            
+                        End If
+                        
+                    End If
+                
+                End If
+                
+                'Docked toolbox windows and controls will raise WM_SETFOCUS instead of WM_ACTIVATE
+                Case WM_SETFOCUS
+                    
+                    'See if we're tracking special keypresses for this window
+                    If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
+                    
+                        'Check for an existing hook
+                        If Not m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
+                        
+                            Debug.Print "Installing keyboard hook for hWnd #" & m_TrackingData(PDIT_DEFAULT, indexOfHwnd) & " due to WM_SETFOCUS"
+                            
+                            'No hook exists.  Hook the control now.
+                            cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_TrackingData(PDIT_DEFAULT, indexOfHwnd), 2, Me
+                            
+                            'Note that this window is now active
+                            m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = True
+                            
+                        End If
+                        
+                    End If
+                
+                Case WM_KILLFOCUS
+                    
+                    'See if we're tracking special keypresses for this window
+                    If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
+                    
+                        'Check for an existing hook
+                        If m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
+                            
+                            overrideRequired = False
+                            
+                            'If the user has specified override controls (as required by a UC),
+                            ' compare the KillFocus wParam, which specifies which window is losing focus,
+                            ' to our override array.  If a child control *within the user control* is the
+                            ' one taking focus, maintain hooking.
+                            If m_numOfOverrideControls > 0 Then
+                            
+                                For i = 0 To m_numOfOverrideControls - 1
+                                    If m_OverrideHwnds(i) = wParam Then
+                                        overrideRequired = True
+                                        Exit For
+                                    End If
+                                Next i
+                            
+                            End If
+                            
+                            'If no override is required, uninstall the hook now
+                            If Not overrideRequired Then
+                            
+                                Debug.Print "Uninstalling keyboard hook for hWnd #" & m_TrackingData(PDIT_DEFAULT, indexOfHwnd) & " due to WM_KILLFOCUS"
+                                
                                 cSubclass.shk_UnHook WH_KEYBOARD
                                 
                                 'Note that hooking has been disabled for this control/window

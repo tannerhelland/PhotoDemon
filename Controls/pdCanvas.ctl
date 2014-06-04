@@ -98,26 +98,34 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   8
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":0004
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "pdCanvas.ctx":002C
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   7
-         tooltip         =   "Zoom in"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":0004
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Zoom in"
+         ColorScheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":087E
+         ItemData        =   "pdCanvas.ctx":0856
          Left            =   450
-         List            =   "pdCanvas.ctx":0880
+         List            =   "pdCanvas.ctx":0858
          Style           =   2  'Dropdown List
          TabIndex        =   7
          Top             =   15
@@ -129,19 +137,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":0882
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "pdCanvas.ctx":08AA
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   0
-         tooltip         =   "Zoom Out"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":085A
+         PictureAlign    =   0
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Zoom Out"
+         ColorScheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -713,45 +729,58 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArro
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
     If isCanvasInteractionAllowed() Then
 
+        Dim canvasUpdateRequired As Boolean
+
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
         
             'Drag-to-pan canvas
             Case NAV_DRAG
                 
-                Dim canvasMoved As Boolean
-                canvasMoved = False
+                canvasUpdateRequired = False
                 
                 'Suspend automatic redraws until all arrow keys have been processed
                 m_suspendRedraws = True
                 
                 'If scrollbars are visible, nudge the canvas in the direction of the arrows.
                 If VScroll.Enabled Then
-                
-                    If upArrow Or downArrow Then canvasMoved = True
-                    
+                    If upArrow Or downArrow Then canvasUpdateRequired = True
                     If upArrow Then VScroll.Value = VScroll.Value - 1
                     If downArrow Then VScroll.Value = VScroll.Value + 1
-                    
                 End If
                 
                 If HScroll.Enabled Then
-                
-                    If leftArrow Or rightArrow Then canvasMoved = True
-                    
+                    If leftArrow Or rightArrow Then canvasUpdateRequired = True
                     If leftArrow Then HScroll.Value = HScroll.Value - 1
                     If rightArrow Then HScroll.Value = HScroll.Value + 1
-                    
                 End If
                 
                 'Re-enable automatic redraws
                 m_suspendRedraws = False
-            
+                
                 'Redraw the viewport if necessary
-                If canvasMoved Then ScrollViewport pdImages(g_CurrentImage), Me
+                If canvasUpdateRequired Then ScrollViewport pdImages(g_CurrentImage), Me
                     
             'Move stuff around
             Case NAV_MOVE
+            
+                'Calculate offset modifiers for the current layer
+                Dim hOffset As Long, vOffset As Long
+                If upArrow Then vOffset = vOffset - 1
+                If downArrow Then vOffset = vOffset + 1
+                If leftArrow Then hOffset = hOffset - 1
+                If rightArrow Then hOffset = hOffset + 1
+                
+                If upArrow Or downArrow Or leftArrow Or rightArrow Then canvasUpdateRequired = True
+                
+                'Apply the offsets
+                With pdImages(g_CurrentImage).getActiveLayer
+                    .setLayerOffsetX .getLayerOffsetX + hOffset
+                    .setLayerOffsetY .getLayerOffsetY + vOffset
+                End With
+                
+                'Redraw the viewport if necessary
+                If canvasUpdateRequired Then ScrollViewport pdImages(g_CurrentImage), Me
             
             'Selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
@@ -759,6 +788,8 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArro
         End Select
         
     End If
+    
+    
 
 End Sub
 
