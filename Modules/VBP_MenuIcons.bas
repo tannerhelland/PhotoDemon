@@ -658,6 +658,7 @@ Public Sub createCustomFormIcon(ByRef srcImage As pdImage)
 
     If Not ALLOW_DYNAMIC_ICONS Then Exit Sub
     If Not g_ImageFormats.FreeImageEnabled Then Exit Sub
+    If srcImage Is Nothing Then Exit Sub
 
     'Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.
     Dim hIcon32 As Long, hIcon16 As Long

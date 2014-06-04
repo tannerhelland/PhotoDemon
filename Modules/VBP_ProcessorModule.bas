@@ -156,23 +156,27 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'Finally, perform a check for any on-canvas modifications that have not yet had their Undo data saved.
         
         'First, check for on-canvas modifications to the selection (e.g. feathering slider changes, etc)
-        If pdImages(g_CurrentImage).selectionActive And (createUndo <> UNDO_SELECTION) Then
+        If Not pdImages(g_CurrentImage) Is Nothing Then
         
-            'Ask the Undo engine to return the last selection param string it has on file
-            Dim lastSelParamString As String
-            lastSelParamString = pdImages(g_CurrentImage).undoManager.getLastParamString(UNDO_SELECTION)
+            If pdImages(g_CurrentImage).selectionActive And (createUndo <> UNDO_SELECTION) Then
             
-            'If such a param string exists, compare it against the current selection param string
-            If Len(lastSelParamString) > 0 Then
-            
-                'If the last selection Undo param string does not match the current selection param string, the user has
-                ' modified the selection in some way since the last Undo was created.  Create a new entry now.
-                If StrComp(lastSelParamString, pdImages(g_CurrentImage).mainSelection.getSelectionParamString, vbTextCompare) <> 0 Then
-                    pdImages(g_CurrentImage).undoManager.createUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, , -1
+                'Ask the Undo engine to return the last selection param string it has on file
+                Dim lastSelParamString As String
+                lastSelParamString = pdImages(g_CurrentImage).undoManager.getLastParamString(UNDO_SELECTION)
+                
+                'If such a param string exists, compare it against the current selection param string
+                If Len(lastSelParamString) > 0 Then
+                
+                    'If the last selection Undo param string does not match the current selection param string, the user has
+                    ' modified the selection in some way since the last Undo was created.  Create a new entry now.
+                    If StrComp(lastSelParamString, pdImages(g_CurrentImage).mainSelection.getSelectionParamString, vbTextCompare) <> 0 Then
+                        pdImages(g_CurrentImage).undoManager.createUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, , -1
+                    End If
+                
                 End If
             
             End If
-        
+            
         End If
         
         'In the future, additional on-canvas modifications can be checked here.
@@ -1367,7 +1371,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
-    If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) Then
+    If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
         createCustomFormIcon pdImages(g_CurrentImage)
         toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
     End If
@@ -1394,7 +1398,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         '     utilizes other functions, but we only want a single Undo point created for the full set of actions.)
         ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so we ignore it
         '     during macro playback)
-        If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not showDialog) And recordAction Then
+        If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not showDialog) And recordAction And (Not pdImages(g_CurrentImage) Is Nothing) Then
             pdImages(g_CurrentImage).undoManager.createUndoData processID, processParameters, createUndo, pdImages(g_CurrentImage).getActiveLayerID, relevantTool
         End If
     
