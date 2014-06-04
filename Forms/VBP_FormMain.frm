@@ -3393,11 +3393,17 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
     
     'Don't process accelerators when the main form is disabled (e.g. if a modal form is present, or if a previous
     ' action is in the middle of execution)
-    If Not FormMain.Enabled Then Exit Sub
+    If Not FormMain.Enabled Then
+        bCancel = True
+        Exit Sub
+    End If
     
     'Don't process accelerators if the Language Editor is active
     If Not (FormLanguageEditor Is Nothing) Then
-        If FormLanguageEditor.Visible Then Exit Sub
+        If FormLanguageEditor.Visible Then
+            bCancel = True
+            Exit Sub
+        End If
     End If
 
     'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
