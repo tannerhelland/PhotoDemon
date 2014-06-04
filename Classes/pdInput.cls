@@ -726,7 +726,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             bHandled = isRelevantKeyAffected(wParam, VK_LEFT, VK_RIGHT, VK_UP, VK_DOWN, VK_NUMPAD0, VK_NUMPAD1, VK_NUMPAD2, VK_NUMPAD3, VK_NUMPAD4, VK_NUMPAD5, VK_NUMPAD6, VK_NUMPAD7, VK_NUMPAD8, VK_NUMPAD9)
         End If
         
-        Debug.Print "Handling keypress: " & bHandled & ", " & nCode
+        'If bHandled Then Debug.Print "pdInput is handling keypress: " & bHandled & ", " & nCode
         
         'Per MSDN, return the value of CallNextHookEx
         If (Not bHandled) Then
@@ -1247,10 +1247,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             overrideRequired = False
                             
                             'If the user has specified override controls (as required by a UC),
-                            ' compare the KillFocus wParam, which specifies which window is losing focus,
+                            ' compare the KillFocus wParam, which specifies which window is taking focus,
                             ' to our override array.  If a child control *within the user control* is the
                             ' one taking focus, maintain hooking.
-                            If m_numOfOverrideControls > 0 Then
+                            If (m_numOfOverrideControls > 0) And wParam <> m_TrackingData(PDIT_DEFAULT, indexOfHwnd) Then
                             
                                 For i = 0 To m_numOfOverrideControls - 1
                                     If m_OverrideHwnds(i) = wParam Then
@@ -1268,7 +1268,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                                 
                                 cSubclass.shk_UnHook WH_KEYBOARD
                                 
-                                'Note that hooking has been disabled for this control/window
                                 m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) = False
                                 
                             End If

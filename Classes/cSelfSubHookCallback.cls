@@ -783,7 +783,7 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
         'EDIT BY TANNER: check to see if the thunk exists before attempting to remove it.  Not sure why
         ' this has suddenly become necessary, but I was getting errors from this line before implementing
         ' a collection check.
-        If ExistsNonObject(z_scFunk, "h" & thunkID) Then z_scFunk.Remove "h" & thunkID 'Remove the specified thunk from the collection
+        If ExistsNonObject(z_scFunk, "h" & thunkID) Then z_scFunk.Remove "h" & thunkID        'Remove the specified thunk from the collection
         
         
     Case HookThunk
@@ -797,7 +797,11 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
                 zData(IDX_SHUTDOWN, z_ScMem) = 1            ' Set the shutdown indicator
                 zData(IDX_ATABLE, z_ScMem) = 0              ' want no more After messages
                 zData(IDX_BTABLE, z_ScMem) = 0              ' want no more Before messages
+                
                 ' when zTerminate is called this thunk's memory will be released
+                'ADDED BY TANNER: let the debugger know that the hook is still technically active!
+                Debug.Print "cSelfSubHookCallback couldn't release hook immediately, as another hook is stil active.  Will retry on next _Terminate event."
+                
             End If
         Else
             z_hkFunk.Remove "h" & thunkID       'Remove the specified thunk from the collection

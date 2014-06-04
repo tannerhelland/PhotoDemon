@@ -362,7 +362,7 @@ End Property
 
 Private Sub UserControl_Initialize()
     'Instantiate the subclasser
-    Set m_Subclass = New cSelfSubHookCallback
+    If g_UserModeFix Then Set m_Subclass = New cSelfSubHookCallback
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -440,8 +440,6 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                                RaiseEvent Accelerator(iAccel, bCancel)
                                bHandled = True
                                
-                               lReturn = 1
-                               
                                Exit For
                             End If
                          End If
@@ -457,8 +455,10 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         End If
         
     End If
+        
+    If Not bHandled Then lReturn = CallNextHookEx(0, nCode, wParam, lParam) Else lReturn = 1
     
-    lReturn = CallNextHookEx(0, nCode, wParam, lParam)
+    Debug.Print "VBAccelerator key handler exiting hook"
     
 End Sub
 
