@@ -728,7 +728,8 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArro
     
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
     If isCanvasInteractionAllowed() Then
-
+    
+        Dim hOffset As Long, vOffset As Long
         Dim canvasUpdateRequired As Boolean
 
         'Any further processing depends on which tool is currently active
@@ -765,7 +766,6 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArro
             Case NAV_MOVE
             
                 'Calculate offset modifiers for the current layer
-                Dim hOffset As Long, vOffset As Long
                 If upArrow Then vOffset = vOffset - 1
                 If downArrow Then vOffset = vOffset + 1
                 If leftArrow Then hOffset = hOffset - 1
@@ -784,6 +784,37 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArro
             
             'Selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+            
+                'If a selection is active, nudge it using the arrow keys
+                If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
+                
+                    'Disable automatic refresh requests
+                    pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = True
+                    
+                    'Calculate offsets
+                    If upArrow Then vOffset = vOffset - 1
+                    If downArrow Then vOffset = vOffset + 1
+                    If leftArrow Then hOffset = hOffset - 1
+                    If rightArrow Then hOffset = hOffset + 1
+                    
+                    'Update the selection coordinate text boxes with the new offsets
+                    toolbar_Tools.tudSel(0).Value = toolbar_Tools.tudSel(0).Value + hOffset
+                    toolbar_Tools.tudSel(1).Value = toolbar_Tools.tudSel(1).Value + vOffset
+                    
+                    If g_CurrentTool = SELECT_LINE Then
+                        toolbar_Tools.tudSel(2).Value = toolbar_Tools.tudSel(2).Value + hOffset
+                        toolbar_Tools.tudSel(3).Value = toolbar_Tools.tudSel(3).Value + vOffset
+                    End If
+                    
+                    'Update the screen
+                    pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
+                    
+                    If (hOffset <> 0) Or (vOffset <> 0) Then
+                        pdImages(g_CurrentImage).mainSelection.updateViaTextBox
+                        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                    End If
+                
+                End If
             
         End Select
         
