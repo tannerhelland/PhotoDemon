@@ -723,31 +723,8 @@ Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optio
     ' the active layer without even checking other layers.
     If givePreferenceToCurrentLayer Then
     
-        'Only evaluate the active layer if the mouse is over it
-        If getRGBAPixelFromLayer(pdImages(g_CurrentImage).getActiveLayerIndex, curX, curY, tmpRGBA) Then
-            
-            'The mouse lies within image boundaries.  If the user wants transparency factored into the equation,
-            ' process it now.
-            If Not CBool(toolbar_Tools.chkIgnoreTransparent) Then
-            
-                getLayerUnderMouse = pdImages(g_CurrentImage).getActiveLayerIndex
-                Exit Function
-                
-            'The user wants transparency ignored.  Check the transparency of this pixel.
-            Else
-            
-                If tmpRGBA.Alpha > 0 Then
-                    getLayerUnderMouse = pdImages(g_CurrentImage).getActiveLayerIndex
-                    Exit Function
-                End If
-            
-            End If
-        
-        End If
-        
-        'If we made it here, the mouse is not under the current layer, or it is over a transparent area of the layer.
-        ' See if it is by chance over a POI for the layer (which may extend outside a layer's boundaries); if it is, return the active
-        ' layer index.
+        'See if the mouse is over a POI for the current layer (which may extend outside a layer's boundaries, because the clickable
+        ' nodes have a radius greater than 0).  If the mouse is over a POI, return the active layer index immediately.
         curPOI = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(curX, curY)
         
         'If the mouse is over a point of interest, return this layer and immediately exit
