@@ -231,6 +231,7 @@ FREEZE       CUSTOM  MOVEABLE        LOADONCALL      ice.png
 LAVA         CUSTOM  MOVEABLE        LOADONCALL      zodiac_lava.png
 RAINBOW      CUSTOM  MOVEABLE        LOADONCALL      rainbow.png
 STEEL        CUSTOM  MOVEABLE        LOADONCALL      shield.png
+SUNSHINE     CUSTOM  MOVEABLE        LOADONCALL      sunshine.png
 RAIN         CUSTOM  MOVEABLE        LOADONCALL      weather_rain.png
 //
 NOISE        CUSTOM  MOVEABLE        LOADONCALL      speaker.png
