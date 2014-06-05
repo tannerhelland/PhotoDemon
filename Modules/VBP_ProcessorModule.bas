@@ -1355,11 +1355,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'Restore the mouse pointer to its default value.
     ' (NOTE: if we are in the midst of a batch conversion, leave the cursor on "busy".  The batch function will restore the cursor when done.)
     If MacroStatus <> MacroBATCH Then
-        
         Screen.MousePointer = vbDefault
-        
-        'Also, ask the main canvas to refresh its cursor, as the cursor may have moved since the last
-        
+        DoEvents
     End If
         
     'If the histogram form is visible and images are loaded, redraw the histogram

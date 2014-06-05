@@ -458,7 +458,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         
     If Not bHandled Then lReturn = CallNextHookEx(0, nCode, wParam, lParam) Else lReturn = 1
     
-    Debug.Print "VBAccelerator key handler exiting hook"
+    'Debug.Print "VBAccelerator key handler exiting hook"
     
 End Sub
 
