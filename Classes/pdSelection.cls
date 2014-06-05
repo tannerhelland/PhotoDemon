@@ -899,7 +899,7 @@ Private Sub createSelectionMask()
 
     'At present, mask creation is only applicable for certain transformable shapes (rectangles, ellipses, lines).  Other functions,
     ' like "Invert selection", rely on an already-created mask - so attempting to create a mask again will have undesirable behavior.
-    Debug.Print "Drawing new selection mask now"
+    'Debug.Print "Drawing new selection mask now"
 
     'Start by creating a blank mask (this will also erase any existing mask)
     selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
