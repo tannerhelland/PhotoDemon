@@ -163,8 +163,8 @@ Attribute VB_Exposed = False
 'Pixelate filter interface (formerly "mosaic")
 'Copyright ©2000-2014 by Tanner Helland
 'Created: 8/5/00
-'Last updated: 23/August/13
-'Last update: add command bar
+'Last updated: 05/June/14
+'Last update: fix to work with 32bpp images
 '
 'Form for handling all the pixellation image transform code.
 '
@@ -188,11 +188,12 @@ End Sub
 Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying pixellation..."
-    
+        
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
+        
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -249,7 +250,7 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
     Dim NumOfPixels As Long
     
     'Finally, individual colors also need to be tracked
-    Dim r As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long, a As Long
     
     'Loop through each pixel in the image, diffusing as we go
     For x = initX To xLoop
@@ -274,6 +275,7 @@ Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Op
             r = r + srcImageData(QuickVal + 2, j)
             g = g + srcImageData(QuickVal + 1, j)
             b = b + srcImageData(QuickVal, j)
+            If qvDepth = 4 Then a = a + srcImageData(QuickVal + 3, j)
             
             'Count this as a valid pixel
             NumOfPixels = NumOfPixels + 1
@@ -286,10 +288,11 @@ NextPixelatePixel1:
         'If this tile is completely off of the image, don't worry about it and go to the next one
         If NumOfPixels = 0 Then GoTo NextPixelatePixel3
         
-        'Take the average red, green, and blue values of all the pixles within this tile
+        'Take the average red, green, and blue values of all the pixels within this tile
         r = r \ NumOfPixels
         g = g \ NumOfPixels
         b = b \ NumOfPixels
+        If qvDepth = 4 Then a = a \ NumOfPixels
         
         'Now run a loop through the same pixels you just analyzed, only this time you're gonna
         'draw the averaged color over the top of them
@@ -301,6 +304,7 @@ NextPixelatePixel1:
             If i > finalX Or j > finalY Then GoTo NextPixelatePixel2
             
             'Set the pixel
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, j) = a
             dstImageData(QuickVal + 2, j) = r
             dstImageData(QuickVal + 1, j) = g
             dstImageData(QuickVal, j) = b
@@ -316,10 +320,11 @@ NextPixelatePixel3:
         r = 0
         g = 0
         b = 0
+        a = 0
         NumOfPixels = 0
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
