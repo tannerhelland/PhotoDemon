@@ -3,8 +3,8 @@ Attribute VB_Name = "FastDrawing"
 'Fast API Graphics Routines Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 14/April/14
-'Last update: get everything working with layers!
+'Last updated: 05/June/14
+'Last update: add support for individual filters and adjustments to override alpha premultiplication handling
 '
 'This interface provides API support for the main image interaction routines. It assigns memory data
 ' into a useable array, and later transfers that array back into memory.  Very fast, very compact, can't
@@ -244,7 +244,7 @@ End Sub
 '
 'Finally, the calling routine can optionally specify a different maximum progress bar value.  By default, this is the current
 ' DIB's width, but some routines run vertically and the progress bar maximum needs to be changed accordingly.
-Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False)
+Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional newProgBarMax As Long = -1, Optional ByVal doNotTouchProgressBar As Boolean = False, Optional ByVal doNotUnPremultiplyAlpha As Boolean = False)
 
     'Reset the public "cancel current action" tracker
     cancelCurrentAction = False
@@ -286,7 +286,10 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         End If
         
         'Premultiplied alpha is removed prior to processing; this allows various tools to return proper results.
-        If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha False
+        ' Note that individual tools can override this behavior - this is helpful in certain cases, e.g. area filters like
+        ' blur, where *not* premultiplying alpha causes the black RGB values from transparent areas to be "picked up"
+        ' by the area handling.
+        If (workingDIB.getDIBColorDepth = 32) And (Not doNotUnPremultiplyAlpha) Then workingDIB.fixPremultipliedAlpha False
     
     'This IS a preview, meaning more work is involved.  We must prepare a unique copy of the active layer that matches
     ' the requested dimensions of the preview area (which are not assumed to be universal), while accounting for the
@@ -421,7 +424,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         'Give the preview object a copy of this original, unmodified image data so it can show it to the user if requested
         If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingDIB
         
-        If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha False
+        If (workingDIB.getDIBColorDepth = 32) And (Not doNotUnPremultiplyAlpha) Then workingDIB.fixPremultipliedAlpha False
         
     End If
     
@@ -485,7 +488,7 @@ End Sub
 'Unlike prepImageData, this function has to do quite a bit of processing when selections are active.  The selection
 ' mask must be scanned for each pixel, and the results blended with the original image as appropriate.  For 32bpp images
 ' this is especially ugly.  (This is the price we pay for full selection feathering support!)
-Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl)
+Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional previewTarget As fxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
 
     'If the user canceled the current action, disregard the working DIB and exit immediately.  The central processor
     ' will take care of additional clean-up.
@@ -638,7 +641,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'If a selection is active, copy the processed area into its proper place.
         If pdImages(g_CurrentImage).selectionActive Then
         
-            If workingDIBBackup.getDIBColorDepth = 32 Then workingDIBBackup.fixPremultipliedAlpha True
+            If (workingDIBBackup.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIBBackup.fixPremultipliedAlpha True
             BitBlt pdImages(g_CurrentImage).getActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, workingDIBBackup.getDIBDC, 0, 0, vbSrcCopy
             
             'Un-pad any null pixels we may have added as part of the selection interaction
@@ -646,7 +649,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         'If a selection is not active, replace the entire DIB with the contents of the working DIB
         Else
-            If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha True
+            If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIB.fixPremultipliedAlpha True
             pdImages(g_CurrentImage).getActiveDIB().createFromExistingDIB workingDIB
         End If
                 
@@ -667,11 +670,11 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         'If a selection is active, use the contents of workingDIBBackup instead of workingDIB to render the preview
         If pdImages(g_CurrentImage).selectionActive Then
-            If workingDIBBackup.getDIBColorDepth = 32 Then workingDIBBackup.fixPremultipliedAlpha True
+            If (workingDIBBackup.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIBBackup.fixPremultipliedAlpha True
             previewTarget.setFXImage workingDIBBackup
         
         Else
-            If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha True
+            If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIB.fixPremultipliedAlpha True
             previewTarget.setFXImage workingDIB
         
         End If
