@@ -69,14 +69,14 @@ Begin VB.Form toolbar_Layers
       Width           =   3735
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
-         Index           =   0
-         Left            =   960
+         Index           =   2
+         Left            =   1920
          TabIndex        =   4
-         Top             =   15
+         Top             =   0
          Width           =   540
          _ExtentX        =   953
          _ExtentY        =   847
-         ButtonStyle     =   13
+         ButtonStyle     =   7
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -86,24 +86,25 @@ Begin VB.Form toolbar_Layers
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   15199212
+         BackColor       =   -2147483643
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_ToolbarLayers.frx":0000
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipTitle    =   "Open"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
-         Index           =   1
-         Left            =   1560
+         Index           =   3
+         Left            =   2640
          TabIndex        =   5
-         Top             =   15
+         Top             =   0
          Width           =   540
          _ExtentX        =   953
          _ExtentY        =   847
-         ButtonStyle     =   13
+         ButtonStyle     =   7
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -113,24 +114,25 @@ Begin VB.Form toolbar_Layers
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   15199212
+         BackColor       =   -2147483643
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipTitle    =   "Open"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
-         Index           =   2
-         Left            =   2160
+         Index           =   1
+         Left            =   1200
          TabIndex        =   6
-         Top             =   15
+         Top             =   0
          Width           =   540
          _ExtentX        =   953
          _ExtentY        =   847
-         ButtonStyle     =   13
+         ButtonStyle     =   7
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -140,13 +142,42 @@ Begin VB.Form toolbar_Layers
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   15199212
+         BackColor       =   -2147483643
          Caption         =   ""
          HandPointer     =   -1  'True
          PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
          DisabledPictureMode=   1
          CaptionEffects  =   0
          TooltipTitle    =   "Open"
+         ColorScheme     =   3
+      End
+      Begin PhotoDemon.jcbutton cmdLayerAction 
+         Height          =   480
+         Index           =   0
+         Left            =   480
+         TabIndex        =   11
+         Top             =   0
+         Width           =   540
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483643
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":27F6
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
+         ColorScheme     =   3
       End
    End
    Begin VB.PictureBox picLayers 
@@ -326,13 +357,14 @@ Private curLayerHover As Long
 
 'Layer buttons are more easily referenced by this enum rather than their actual indices
 Private Enum LAYER_BUTTON_ID
-    LYR_BTN_MOVE_UP = 0
-    LYR_BTN_MOVE_DOWN = 1
-    LYR_BTN_DELETE = 2
+    LYR_BTN_ADD = 0
+    LYR_BTN_DELETE = 1
+    LYR_BTN_MOVE_UP = 2
+    LYR_BTN_MOVE_DOWN = 3
 End Enum
 
 #If False Then
-    Private Const LYR_BTN_MOVE_UP = 0, LYR_BTN_MOVE_DOWN = 1, LYR_BTN_DELETE = 2
+    Private Const LYR_BTN_ADD = 0, LYR_BTN_DELETE = 1, LYR_BTN_MOVE_UP = 2, LYR_BTN_MOVE_DOWN = 3
 #End If
 
 'Sometimes we need to make changes that will raise redraw-causing events.  Set this variable to TRUE if you want
@@ -398,6 +430,9 @@ Private Sub checkButtonEnablement()
     'Make sure at least one image has been loaded
     If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
 
+        'Add layer is always allowed
+        cmdLayerAction(LYR_BTN_ADD).Enabled = True
+        
         'Merge down is only allowed for layer indexes > 0
         If pdImages(g_CurrentImage).getActiveLayerIndex = 0 Then
             cmdLayerAction(LYR_BTN_MOVE_DOWN).Enabled = False
@@ -459,14 +494,17 @@ Private Sub cmdLayerAction_Click(Index As Integer)
 
     Select Case Index
     
+        Case LYR_BTN_ADD
+            Process "Add blank layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGE
+        
+        Case LYR_BTN_DELETE
+            Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGE
+        
         Case LYR_BTN_MOVE_UP
             Process "Raise layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGEHEADER
         
         Case LYR_BTN_MOVE_DOWN
             Process "Lower layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGEHEADER
-    
-        Case LYR_BTN_DELETE
-            Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGE
             
     End Select
     
@@ -514,7 +552,8 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
             ' the active layer.
             Else
-                Layer_Handler.setActiveLayerByIndex clickedLayer, True
+                Layer_Handler.setActiveLayerByIndex clickedLayer, False
+                RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             End If
             
             'Redraw the layer box to represent any changes from this interaction.
@@ -865,6 +904,14 @@ Private Sub Form_Load()
     m_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
     m_ToolTip.DelayTime(ttDelayShow) = 10000
     m_ToolTip.AddTool picLayers, ""
+    
+    'Add helpful tooltips to the layer action buttons at the bottom of the toolbox
+    With m_ToolTip
+        .AddTool cmdLayerAction(0), g_Language.TranslateMessage("Add a blank layer to the image.")
+        .AddTool cmdLayerAction(1), g_Language.TranslateMessage("Delete the currently selected layer.")
+        .AddTool cmdLayerAction(2), g_Language.TranslateMessage("Move the current layer upward in the layer stack.")
+        .AddTool cmdLayerAction(3), g_Language.TranslateMessage("Move the current layer downward in the layer stack.")
+    End With
     
     'Theme the form
     makeFormPretty Me

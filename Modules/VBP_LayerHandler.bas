@@ -318,10 +318,16 @@ End Function
 'Delete a given layer
 Public Sub deleteLayer(ByVal dLayerIndex As Long)
 
+    'Cache the current layer index
+    Dim curLayerIndex As Long
+    curLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex - 1
+
     pdImages(g_CurrentImage).deleteLayerByIndex dLayerIndex
     
     'Set a new active layer
-    setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex, False
+    If curLayerIndex > pdImages(g_CurrentImage).getNumOfLayers - 1 Then curLayerIndex = pdImages(g_CurrentImage).getNumOfLayers - 1
+    If curLayerIndex < 0 Then curLayerIndex = 0
+    setActiveLayerByIndex curLayerIndex, False
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
