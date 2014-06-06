@@ -373,5 +373,10 @@ CLR_ARROW_L  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_left.png
 CLR_ARROW_R  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_right.png
 CLR_ARROW_U  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_up.png
 
+//Control arrows for levels dialog (black, gray, white)
+LVL_ARROW_BLK CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_black.png
+LVL_ARROW_GRY CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_gray.png
+LVL_ARROW_WHT CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_white.png
+
 //Sample image for rendering sample effects
 //SAMPLEIMAGE  CUSTOM  MOVEABLE        LOADONCALL      reference_flower.jpg

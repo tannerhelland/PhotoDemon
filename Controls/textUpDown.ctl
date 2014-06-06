@@ -291,7 +291,7 @@ Public Property Let Max(ByVal newValue As Double)
     If controlVal > controlMax Then
         controlVal = controlMax
         If g_UserModeFix Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
-        txtPrimary = CStr(controlVal)
+        If StrComp(txtPrimary, CStr(controlVal), vbTextCompare) <> 0 Then txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
     
