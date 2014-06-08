@@ -7,7 +7,7 @@ Begin VB.Form FormLevels
    ClientHeight    =   6525
    ClientLeft      =   45
    ClientTop       =   195
-   ClientWidth     =   12180
+   ClientWidth     =   12870
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -22,7 +22,7 @@ Begin VB.Form FormLevels
    MinButton       =   0   'False
    ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   812
+   ScaleWidth      =   858
    ShowInTaskbar   =   0   'False
    Begin VB.PictureBox picOutputArrows 
       Appearance      =   0  'Flat
@@ -34,10 +34,10 @@ Begin VB.Form FormLevels
       Left            =   5760
       ScaleHeight     =   13
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   425
+      ScaleWidth      =   473
       TabIndex        =   12
-      Top             =   4710
-      Width           =   6375
+      Top             =   4950
+      Width           =   7095
    End
    Begin VB.PictureBox picInputArrows 
       Appearance      =   0  'Flat
@@ -49,10 +49,10 @@ Begin VB.Form FormLevels
       Left            =   5760
       ScaleHeight     =   13
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   425
+      ScaleWidth      =   473
       TabIndex        =   11
-      Top             =   2790
-      Width           =   6375
+      Top             =   3390
+      Width           =   7095
    End
    Begin VB.PictureBox picHistogram 
       Appearance      =   0  'Flat
@@ -63,10 +63,10 @@ Begin VB.Form FormLevels
       Left            =   6000
       ScaleHeight     =   151
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   391
+      ScaleWidth      =   444
       TabIndex        =   10
-      Top             =   480
-      Width           =   5895
+      Top             =   1080
+      Width           =   6690
    End
    Begin VB.PictureBox picOutputGradient 
       Appearance      =   0  'Flat
@@ -77,16 +77,17 @@ Begin VB.Form FormLevels
       Left            =   6000
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   391
+      ScaleWidth      =   444
       TabIndex        =   9
-      Top             =   4320
-      Width           =   5895
+      Top             =   4560
+      Width           =   6690
    End
-   Begin PhotoDemon.textUpDown tudShadows 
+   Begin PhotoDemon.textUpDown tudLevels 
       Height          =   405
+      Index           =   0
       Left            =   6000
       TabIndex        =   4
-      Top             =   3120
+      Top             =   3720
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -107,8 +108,8 @@ Begin VB.Form FormLevels
       Left            =   0
       TabIndex        =   0
       Top             =   5775
-      Width           =   12180
-      _ExtentX        =   21484
+      Width           =   12870
+      _ExtentX        =   22701
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -129,11 +130,12 @@ Begin VB.Form FormLevels
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.textUpDown tudMidtones 
+   Begin PhotoDemon.textUpDown tudLevels 
       Height          =   405
-      Left            =   8400
+      Index           =   1
+      Left            =   8760
       TabIndex        =   5
-      Top             =   3120
+      Top             =   3720
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -151,11 +153,12 @@ Begin VB.Form FormLevels
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin PhotoDemon.textUpDown tudHighlights 
+   Begin PhotoDemon.textUpDown tudLevels 
       Height          =   405
-      Left            =   10560
+      Index           =   2
+      Left            =   11355
       TabIndex        =   6
-      Top             =   3120
+      Top             =   3720
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -172,11 +175,12 @@ Begin VB.Form FormLevels
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin PhotoDemon.textUpDown tudBlackPoint 
+   Begin PhotoDemon.textUpDown tudLevels 
       Height          =   405
+      Index           =   3
       Left            =   6000
       TabIndex        =   7
-      Top             =   5040
+      Top             =   5280
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -191,11 +195,12 @@ Begin VB.Form FormLevels
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin PhotoDemon.textUpDown tudWhitePoint 
+   Begin PhotoDemon.textUpDown tudLevels 
       Height          =   405
-      Left            =   10560
+      Index           =   4
+      Left            =   11355
       TabIndex        =   8
-      Top             =   5040
+      Top             =   5280
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -210,6 +215,123 @@ Begin VB.Form FormLevels
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.jcbutton cmdChannel 
+      Height          =   600
+      Index           =   3
+      Left            =   11040
+      TabIndex        =   13
+      Top             =   120
+      Width           =   1650
+      _ExtentX        =   2910
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   "RGB"
+      ForeColor       =   3158064
+      Mode            =   1
+      Value           =   -1  'True
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormImageLevels.frx":0000
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.jcbutton cmdChannel 
+      Height          =   600
+      Index           =   0
+      Left            =   6000
+      TabIndex        =   14
+      Top             =   120
+      Width           =   1650
+      _ExtentX        =   2910
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   "red"
+      ForeColor       =   3158064
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormImageLevels.frx":0D52
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.jcbutton cmdChannel 
+      Height          =   600
+      Index           =   1
+      Left            =   7680
+      TabIndex        =   15
+      Top             =   120
+      Width           =   1650
+      _ExtentX        =   2910
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   "green"
+      ForeColor       =   3158064
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormImageLevels.frx":1AA4
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.jcbutton cmdChannel 
+      Height          =   600
+      Index           =   2
+      Left            =   9360
+      TabIndex        =   16
+      Top             =   120
+      Width           =   1650
+      _ExtentX        =   2910
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   "blue"
+      ForeColor       =   3158064
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormImageLevels.frx":27F6
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin VB.Label lblOutput 
       AutoSize        =   -1  'True
@@ -228,7 +350,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   3960
+      Top             =   4200
       Width           =   1350
    End
    Begin VB.Label lblInput 
@@ -248,7 +370,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   120
+      Top             =   720
       Width           =   1200
    End
 End
@@ -261,8 +383,8 @@ Attribute VB_Exposed = False
 'Image Levels
 'Copyright ©2006-2014 by Tanner Helland
 'Created: 22/July/06
-'Last updated: 06/June/14
-'Last update: redesigned the entire dialog to better match Level dialogs in other photo editors.
+'Last updated: 08/June/14
+'Last update: new support for per-channel levels (red, green, blue, and luminance/"RGB" channels)
 '
 'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool, and identical
 ' values entered into both programs should yield an identical image.
@@ -304,6 +426,15 @@ Private m_ArrowOffsets(0 To 4) As Long
 Private m_ArrowWidth As Long, m_ArrowHalfWidth As Long, m_ArrowHeight As Long
 Private m_DstArrowBoxWidth As Long, m_DstArrowBoxOffset As Long
 
+'Current channel ([0, 3] where 0 = red, 1 = green, 2 = blue, 3 = luminance)
+Private m_curChannel As Long
+
+'Because the user can now change levels independently for each of Red, Green, Blue, and Luminance, we must store all
+' level values internally (rather than relying on the text up/down controls to do it for us).  Also, because the
+' midtone values are floating-point, we declare the whole tracking array as Double-type (even though shadow, highlight,
+' and output levels are integers).  The layout of this array is [channel, level adjustment].
+Private m_LevelValues(0 To 3, 0 To 4) As Double
+
 'Two special input classes are required; one each for the input and output arrow boxes
 Private WithEvents cMouseEventsIn As pdInput
 Attribute cMouseEventsIn.VB_VarHelpID = -1
@@ -313,12 +444,58 @@ Attribute cMouseEventsOut.VB_VarHelpID = -1
 'If the user is using the mouse to slide nodes around, these values will be used to store the node's index
 Private m_ActiveArrow As Long
 
+'To prevent complicated interactions related to the max/min interplay of input shadow and highlight values, this value can be used
+' to disable automatic bounds-checking of input/output values.  Set this to TRUE when overwriting all on-screen level values with
+' the ones stored in memory (e.g. when the user is changing the active channel, so the whole screen gets refreshed).  When all new
+' values have been set, restore this to FALSE, then make a single call to fixScrollBars() to set new max/min bounds.
+Private m_DisableMaxMinLimits As Boolean
+
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'Because the Levels dialog only uses one set of UI controls for all channels, we must manually write out preset data for each channel.
+' This event will be raised whenever the command bar needs custom data from us.
+Private Sub cmdBar_AddCustomPresetData()
+    cmdBar.addPresetData "MultichannelLevelData", getLevelsParamString()
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Levels", , buildParams(tudShadows.Value, tudMidtones.Value, tudHighlights.Value, tudBlackPoint.Value, tudWhitePoint.Value), UNDO_LAYER
+    Process "Levels", , getLevelsParamString(), UNDO_LAYER
+End Sub
+
+'When a preset is loaded from file, we need to retrieve the custom levels information alongside it
+Private Sub cmdBar_ReadCustomPresetData()
+    
+    'Retrieve a string containing all relevant layer information
+    Dim tmpString As String
+    tmpString = cmdBar.retrievePresetData("MultichannelLevelData")
+    
+    'Valid preset data was found
+    If Len(tmpString) > 0 Then
+    
+        'Level value parsing will be handled via PD's standard param string parser class
+        Dim cParams As pdParamString
+        Set cParams = New pdParamString
+        cParams.setParamString tmpString
+        
+        Dim i As Long, j As Long
+        For i = 0 To 19
+            m_LevelValues(i \ 5, i Mod 5) = cParams.GetDouble(i + 1)
+        Next i
+    
+        'Update the text boxes to match the new values
+        updateTextBoxes
+        
+        'Redraw the screen
+        updatePreview
+    
+    'Valid preset data was *not* found, possibly because the user just upgraded from a past version of the Levels tool.
+    ' Reset everything to default values
+    Else
+        Call cmdBar_ResetClick
+    End If
+    
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -326,19 +503,82 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+        
+    'Reset all values in our tracking array.
+    m_curChannel = 3
+        
+    Dim i As Long
+    For i = 0 To 3
     
-    'Set the output levels to (0-255)
-    tudBlackPoint.Value = 0
-    tudWhitePoint.Value = 255
+        'Input levels
+        m_LevelValues(i, 0) = 0
+        m_LevelValues(i, 1) = 0.5
+        m_LevelValues(i, 2) = 255
+        
+        'Output levels
+        m_LevelValues(i, 3) = 0
+        m_LevelValues(i, 4) = 255
     
-    'Set the input levels to (0-255)
-    tudShadows.Value = 0
-    tudHighlights.Value = 255
+    Next i
+    
+    'Update the text boxes to match the new values
+    updateTextBoxes
+    
+    'Redraw the screen
+    updatePreview
+    
+End Sub
+
+'Update all text box values to match the stored values of the current channel
+Private Sub updateTextBoxes()
+
+    cmdBar.markPreviewStatus False
+    m_DisableMaxMinLimits = True
+    
+    'Set max/min values of the input shadow/highlight boxes to their max possible values.  This will prevent the current limits
+    ' from affecting the new ones we are about to load.
+    tudLevels(0).Max = 255
+    tudLevels(2).Min = 0
+
+    'Load the new values
+    Dim i As Long
+    For i = 0 To 4
+        tudLevels(i) = m_LevelValues(m_curChannel, i)
+    Next i
+    
+    'Update the text up/down max/min for shadow and highlight levels
+    m_DisableMaxMinLimits = False
     FixScrollBars
     
-    'Set the midtone level to default (0.5)
-    tudMidtones.Value = 0.5
+    'Reinstate automatic preview updates
+    cmdBar.markPreviewStatus True
+
+End Sub
+
+'When a new channel is selected, refresh all text box values to match the new channel's stored values
+Private Sub cmdChannel_Click(Index As Integer)
+
+    Dim i As Long
+    For i = 0 To cmdChannel.Count - 1
+        If i = Index Then
+            cmdChannel(i).Value = True
+            m_curChannel = Index
+        Else
+            cmdChannel(i).Value = False
+        End If
+    Next i
     
+    'Draw the relevant histogram onto the histogram box
+    BitBlt picHistogram.hDC, 1, 0, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
+    picHistogram.Picture = picHistogram.Image
+    
+    'Update the text boxes to match the values for the selected channel
+    updateTextBoxes
+    
+    'Update the preview.  (The preview itself doesn't actually need to be redrawn, but that function is responsible for
+    ' syncing the text box values with the arrow positions.)
+    updatePreview
+
 End Sub
 
 Private Sub cMouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -374,25 +614,25 @@ Private Sub cMouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstant
             'Shadow input node
             Case 0
                 newTUDValue = tmpX * 255
-                If newTUDValue > tudShadows.Max Then newTUDValue = tudShadows.Max
-                tudShadows.Value = newTUDValue
+                If newTUDValue > tudLevels(0).Max Then newTUDValue = tudLevels(0).Max
+                tudLevels(0).Value = newTUDValue
             
             'Midtones input node
             Case 1
                 newTUDValue = tmpX * 255
-                newTUDValue = (newTUDValue - tudShadows.Value) / (tudHighlights.Value - tudShadows.Value)
-                If newTUDValue > tudMidtones.Max Then
-                    newTUDValue = tudShadows.Max
-                ElseIf tmpX < tudMidtones.Min Then
-                    newTUDValue = tudMidtones.Min
+                newTUDValue = (newTUDValue - tudLevels(0).Value) / (tudLevels(2).Value - tudLevels(0).Value)
+                If newTUDValue > tudLevels(1).Max Then
+                    newTUDValue = tudLevels(1).Max
+                ElseIf tmpX < tudLevels(1).Min Then
+                    newTUDValue = tudLevels(1).Min
                 End If
-                tudMidtones.Value = newTUDValue
+                tudLevels(1).Value = newTUDValue
                 
             'Highlight input node
             Case 2
                 newTUDValue = tmpX * 255
-                If newTUDValue < tudHighlights.Min Then newTUDValue = tudHighlights.Min
-                tudHighlights.Value = newTUDValue
+                If newTUDValue < tudLevels(2).Min Then newTUDValue = tudLevels(2).Min
+                tudLevels(2).Value = newTUDValue
         
         End Select
         
@@ -456,7 +696,7 @@ Private Sub cMouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
                 ElseIf newTUDValue < 0 Then
                     newTUDValue = 0
                 End If
-                tudBlackPoint.Value = newTUDValue
+                tudLevels(3).Value = newTUDValue
                 
             'White level node
             Case 4
@@ -466,7 +706,7 @@ Private Sub cMouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
                 ElseIf newTUDValue < 0 Then
                     newTUDValue = 0
                 End If
-                tudWhitePoint.Value = newTUDValue
+                tudLevels(4).Value = newTUDValue
         
         End Select
         
@@ -538,13 +778,15 @@ Private Sub Form_Activate()
     'Fill the histogram arrays and prepare the overlay DIBs.  To conserve resources, this is only done once,
     ' when the dialog is first loaded.
     prepHistogramOverlays
-    
-    'Draw the relevant histogram onto the histogram box
-    Dim m_curChannel As Long
+        
+    'Make RGB adjustments the default
     m_curChannel = 3
+    m_DisableMaxMinLimits = False
+    
+    'Draw the default histogram onto the histogram box
     BitBlt picHistogram.hDC, 1, 0, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
     picHistogram.Picture = picHistogram.Image
-    
+        
     'Load the arrow slider images from the resource file
     Dim i As Long
     For i = 0 To 2
@@ -655,6 +897,10 @@ Private Sub Form_Load()
 
     'Prevent automatic preview refreshes until we have finished initializing the dialog
     cmdBar.markPreviewStatus False
+    
+    'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
+    m_curChannel = 3
+    cmdChannel(3).Value = True
 
 End Sub
 
@@ -663,7 +909,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Draw an image based on user-adjusted input and output levels
-Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Double, ByVal inRLimit As Long, ByVal outLLimit As Long, ByVal outRLimit As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If Not toPreview Then Message "Mapping new image levels..."
     
@@ -715,52 +961,83 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Double, ByVa
         gValues(x) = 1 / ((gValues(x) + 1 / ROOT10) ^ 2)
     Next x
     
+    'Parse out individual level values into a master levels array
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString listOfLevels
+    
+    Dim levelValues(0 To 3, 0 To 4) As Double
+    
+    Dim i As Long, j As Long
+    For i = 0 To 19
+        levelValues(i \ 5, i Mod 5) = cParams.GetDouble(i + 1)
+    Next i
+    
     'Convert the midtone ratio into a byte (so we can access a look-up table with it)
-    Dim bRatio As Byte
-    bRatio = CByte(inMLimit * 255)
+    Dim bRatio(0 To 3) As Byte
+    For i = 0 To 3
+        bRatio(i) = CByte(levelValues(i, 1) * 255)
+    Next i
     
     'Calculate a look-up table of gamma-corrected values based on the midtones scrollbar
-    Dim gLevels(0 To 255) As Byte
+    Dim gLevels(0 To 3, 0 To 255) As Byte
     Dim tmpGamma As Double
-    For x = 0 To 255
-        tmpGamma = CDbl(x) / 255
-        tmpGamma = tmpGamma ^ (1 / gValues(bRatio))
-        tmpGamma = tmpGamma * 255
-        If tmpGamma > 255 Then
-            tmpGamma = 255
-        ElseIf tmpGamma < 0 Then
-            tmpGamma = 0
-        End If
-        gLevels(x) = tmpGamma
-    Next x
+    
+    For i = 0 To 3
+        For x = 0 To 255
+            tmpGamma = CDbl(x) / 255
+            tmpGamma = tmpGamma ^ (1 / gValues(bRatio(i)))
+            tmpGamma = tmpGamma * 255
+            If tmpGamma > 255 Then
+                tmpGamma = 255
+            ElseIf tmpGamma < 0 Then
+                tmpGamma = 0
+            End If
+            gLevels(i, x) = tmpGamma
+        Next x
+    Next i
     
     'Look-up table for the input leveled values
-    Dim newLevels(0 To 255) As Byte
+    Dim newLevels(0 To 3, 0 To 255) As Byte
     
     'Fill the look-up table with appropriately mapped input limits
     Dim pStep As Double
-    pStep = 255 / (CSng(inRLimit) - CSng(inLLimit))
-    For x = 0 To 255
-        If x < inLLimit Then
-            newLevels(x) = 0
-        ElseIf x > inRLimit Then
-            newLevels(x) = 255
-        Else
-            newLevels(x) = ByteMe(((CSng(x) - CSng(inLLimit)) * pStep))
-        End If
-    Next x
     
+    For i = 0 To 3
+    
+        pStep = 255 / (levelValues(i, 2) - levelValues(i, 0))
+        
+        For x = 0 To 255
+            If x < levelValues(i, 0) Then
+                newLevels(i, x) = 0
+            ElseIf x > levelValues(i, 2) Then
+                newLevels(i, x) = 255
+            Else
+                newLevels(i, x) = ByteMe(((CDbl(x) - levelValues(i, 0)) * pStep))
+            End If
+        Next x
+        
+    Next i
+        
     'Now run all input-mapped values through our midtone-correction look-up
-    For x = 0 To 255
-        newLevels(x) = gLevels(newLevels(x))
-    Next x
+    For i = 0 To 3
+        For x = 0 To 255
+            newLevels(i, x) = gLevels(i, newLevels(i, x))
+        Next x
+    Next i
     
     'Last of all, remap all image values to match the user-specified output limits
     Dim oStep As Double
-    oStep = (CSng(outRLimit) - CSng(outLLimit)) / 255
-    For x = 0 To 255
-        newLevels(x) = ByteMe(CSng(outLLimit) + (CSng(newLevels(x)) * oStep))
-    Next x
+    
+    For i = 0 To 3
+    
+        oStep = (levelValues(i, 4) - levelValues(i, 3)) / 255
+    
+        For x = 0 To 255
+            newLevels(i, x) = ByteMe(levelValues(i, 3) + (CDbl(newLevels(i, x)) * oStep))
+        Next x
+    
+    Next i
     
     'Now we can finally loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -768,17 +1045,17 @@ Public Sub MapImageLevels(ByVal inLLimit As Long, ByVal inMLimit As Double, ByVa
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = newLevels(0, ImageData(QuickVal + 2, y))
+        g = newLevels(1, ImageData(QuickVal + 1, y))
+        b = newLevels(2, ImageData(QuickVal, y))
         
         'Assign new values looking the lookup table
-        ImageData(QuickVal + 2, y) = newLevels(r)
-        ImageData(QuickVal + 1, y) = newLevels(g)
-        ImageData(QuickVal, y) = newLevels(b)
+        ImageData(QuickVal + 2, y) = newLevels(3, r)
+        ImageData(QuickVal + 1, y) = newLevels(3, g)
+        ImageData(QuickVal, y) = newLevels(3, b)
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -809,30 +1086,34 @@ End Function
 'Used to make sure the scroll bars have appropriate limits
 Private Sub FixScrollBars()
     
-    'The black tone input level is never allowed to be > the white tone input level.
-    If tudShadows.Max <> tudHighlights.Value - 2 Then tudShadows.Max = tudHighlights.Value - 2
+    If Not m_DisableMaxMinLimits Then
     
-    ' Similarly, the white tone input level is never allowed to be < the black tone input level.
-    If tudHighlights.Min <> tudShadows.Value + 2 Then tudHighlights.Min = tudShadows.Value + 2
+        'The black tone input level is never allowed to be > the white tone input level.
+        If tudLevels(0).Max <> tudLevels(2).Value - 2 Then tudLevels(0).Max = tudLevels(2).Value - 2
+        
+        ' Similarly, the white tone input level is never allowed to be < the black tone input level.
+        If tudLevels(2).Min <> tudLevels(0).Value + 2 Then tudLevels(2).Min = tudLevels(0).Value + 2
+        
+    End If
     
 End Sub
 
 Private Sub updatePreview()
     
-    If cmdBar.previewsAllowed Then
+    If cmdBar.previewsAllowed And (Not m_Arrows(0) Is Nothing) Then
         
         'Erase the picture boxes
         picInputArrows.Picture = LoadPicture("")
         picOutputArrows.Picture = LoadPicture("")
         
         'Synchronize the arrow offsets with the values of the corresponding text boxes
-        m_ArrowOffsets(0) = (tudShadows.Value / 255) * m_DstArrowBoxWidth
-        m_ArrowOffsets(2) = (tudHighlights.Value / 255) * m_DstArrowBoxWidth
+        m_ArrowOffsets(0) = (tudLevels(0).Value / 255) * m_DstArrowBoxWidth
+        m_ArrowOffsets(2) = (tudLevels(2).Value / 255) * m_DstArrowBoxWidth
         
-        m_ArrowOffsets(1) = tudMidtones.Value * (m_ArrowOffsets(2) - m_ArrowOffsets(0)) + m_ArrowOffsets(0)
+        m_ArrowOffsets(1) = tudLevels(1).Value * (m_ArrowOffsets(2) - m_ArrowOffsets(0)) + m_ArrowOffsets(0)
         
-        m_ArrowOffsets(3) = (tudBlackPoint.Value / 255) * m_DstArrowBoxWidth
-        m_ArrowOffsets(4) = (tudWhitePoint.Value / 255) * m_DstArrowBoxWidth
+        m_ArrowOffsets(3) = (tudLevels(3).Value / 255) * m_DstArrowBoxWidth
+        m_ArrowOffsets(4) = (tudLevels(4).Value / 255) * m_DstArrowBoxWidth
         
         'Render the arrows onto their respective picture boxes
         m_Arrows(0).alphaBlendToDC picInputArrows.hDC, 255, m_ArrowOffsets(0) - m_ArrowHalfWidth + m_DstArrowBoxOffset
@@ -847,7 +1128,7 @@ Private Sub updatePreview()
         picOutputArrows.Refresh
         
         'Actually render the levels effect
-        MapImageLevels tudShadows.Value, tudMidtones.Value, tudHighlights.Value, tudBlackPoint.Value, tudWhitePoint.Value, True, fxPreview
+        MapImageLevels getLevelsParamString(), True, fxPreview
         
     End If
     
@@ -858,24 +1139,36 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
-Private Sub tudBlackPoint_Change()
+Private Sub tudLevels_Change(Index As Integer)
+    
+    'The shadow and highlight input levels limit each other's range; when they are changed, we need to update the max or min
+    ' of the opposite control.
+    If (Index = 0) Or (Index = 2) Then FixScrollBars
+    
+    'Store the changed value in our master levels array
+    m_LevelValues(m_curChannel, Index) = tudLevels(Index)
+    
+    'Redraw the on-screen preview
     updatePreview
+    
 End Sub
 
-Private Sub tudHighlights_Change()
-    FixScrollBars
-    updatePreview
-End Sub
+'Convert all channel level values into a single list, built according to PD's internal string parameter format.
+Private Function getLevelsParamString() As String
 
-Private Sub tudMidtones_Change()
-    updatePreview
-End Sub
-
-Private Sub tudShadows_Change()
-    FixScrollBars
-    updatePreview
-End Sub
-
-Private Sub tudWhitePoint_Change()
-    updatePreview
-End Sub
+    Dim tmpString As String
+    tmpString = ""
+    
+    Dim i As Long, j As Long
+    For i = 0 To 3
+    For j = 0 To 4
+        tmpString = tmpString & m_LevelValues(i, j)
+        If (i < 3) Or (j < 4) Then tmpString = tmpString & "|"
+    Next j
+    Next i
+    
+    Debug.Print tmpString
+    
+    getLevelsParamString = tmpString
+    
+End Function
