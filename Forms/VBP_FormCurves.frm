@@ -802,6 +802,7 @@ End Sub
 
 Private Sub Form_Load()
     
+    'Disable previews until the form has finished initializing
     cmdBar.markPreviewStatus False
     
     'Populate the histogram display drop-down

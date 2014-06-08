@@ -214,8 +214,15 @@ Public Property Let Value(ByVal newValue As Double)
             If vsPrimary.Value <> newScrollVal Then
                 
                 'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
-                If newScrollVal < vsPrimary.Min Then newScrollVal = vsPrimary.Min
-                If newScrollVal > vsPrimary.Max Then newScrollVal = vsPrimary.Max
+                If newScrollVal < vsPrimary.Min Then
+                    Debug.Print "Control value forcibly changed to bring it in-bounds (too low)"
+                    newScrollVal = vsPrimary.Min
+                End If
+                
+                If newScrollVal > vsPrimary.Max Then
+                    Debug.Print "Control value forcibly changed to bring it in-bounds (too high)"
+                    newScrollVal = vsPrimary.Max
+                End If
                 
                 vsPrimary.Value = newScrollVal
                 
@@ -289,10 +296,13 @@ Public Property Let Max(ByVal newValue As Double)
     
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
+        
         controlVal = controlMax
         If g_UserModeFix Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
-        If StrComp(txtPrimary, CStr(controlVal), vbTextCompare) <> 0 Then txtPrimary = CStr(controlVal)
+        
+        txtPrimary = CStr(controlVal)
         RaiseEvent Change
+        
     End If
     
     PropertyChanged "Max"
@@ -536,16 +546,7 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     'Remember the current cursor position as necessary
     Dim cursorPos As Long
     cursorPos = txtPrimary.SelStart
-    
-    'NOTE: as part of a new initiative to better handle internationalization, I am no longer forcing text input to use
-    '      US-style notation.
-'    If InStr(1, chkString, ",") Then
-'        chkString = Replace(chkString, ",", ".")
-'        txtPrimary = chkString
-'        If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
-'        txtPrimary.SelStart = cursorPos
-'    End If
-    
+        
     'It may be possible for the user to enter consecutive ",." characters, which then cause the CDbl() below to fail.
     ' Check for this and fix it as necessary.
     If InStr(1, chkString, "..") Then
