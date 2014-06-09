@@ -393,6 +393,8 @@ Attribute VB_Exposed = False
 ' To mitigate the speed implications of such convoluted math, a number of look-up tables are used.  This makes the
 ' function quite fast, but at a hit to readability.  My apologies to anyone trying to understand how the function works.
 '
+'As of June '14, per-channel levels are now supported.
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -444,10 +446,11 @@ Attribute cMouseEventsOut.VB_VarHelpID = -1
 'If the user is using the mouse to slide nodes around, these values will be used to store the node's index
 Private m_ActiveArrow As Long
 
-'To prevent complicated interactions related to the max/min interplay of input shadow and highlight values, this value can be used
-' to disable automatic bounds-checking of input/output values.  Set this to TRUE when overwriting all on-screen level values with
-' the ones stored in memory (e.g. when the user is changing the active channel, so the whole screen gets refreshed).  When all new
-' values have been set, restore this to FALSE, then make a single call to fixScrollBars() to set new max/min bounds.
+'To prevent complicated interactions related to the max/min codependence of input shadow and highlight values, m_DisableMaxMinLimits
+' can be used to disable automatic bounds-checking of input/output values.  Set this to TRUE when overwriting all on-screen level
+' values with the ones stored in memory (e.g. when the user is changing the active channel, so the whole screen gets refreshed).
+' When the new values have all been set, restore this to FALSE, then make a single call to fixScrollBars() to establish the new
+' max/min bounds.
 Private m_DisableMaxMinLimits As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
@@ -462,6 +465,37 @@ End Sub
 'OK button
 Private Sub cmdBar_OKClick()
     Process "Levels", , getLevelsParamString(), UNDO_LAYER
+End Sub
+
+'Randomize button (command bar)
+Private Sub cmdBar_RandomizeClick()
+
+    Randomize Timer
+
+    Dim i As Long
+    For i = 0 To 3
+    
+        'Set random shadow and highlight input levels
+        m_LevelValues(i, 0) = Rnd * 125
+        m_LevelValues(i, 2) = Rnd * 125 + 128
+        
+        'Set a random midtone value (range 0.01 - 0.99)
+        m_LevelValues(i, 1) = Rnd
+        If m_LevelValues(i, 1) < 0.01 Then m_LevelValues(i, 1) = 0.01
+        If m_LevelValues(i, 1) > 0.99 Then m_LevelValues(i, 1) = 0.99
+        
+        'Set random output levels
+        m_LevelValues(i, 3) = Rnd * 256
+        m_LevelValues(i, 4) = Rnd * 256
+    
+    Next i
+    
+    'Update the text boxes to match the new values
+    updateTextBoxes
+    
+    'Redraw the screen
+    updatePreview
+
 End Sub
 
 'When a preset is loaded from file, we need to retrieve the custom levels information alongside it
