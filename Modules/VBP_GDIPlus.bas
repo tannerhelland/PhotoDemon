@@ -3,13 +3,13 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 06/May/14
-'Last update: new GDIPlusDrawRectOutlineToDC function
+'Last updated: 09/June/14
+'Last update: new GDIPlusFillDIBRect function
 '
-'This interface provides a means for interacting with the unnecessarily complex (and overwrought) GDI+ module.  GDI+ was
-' originally used as a fallback for image loading and saving if the FreeImage DLL was not found, but over time it has become
-' more and more integrated into PD.  As of version 6.0, GDI+ is used for a number of specialized tasks, including viewport
-' rendering of 32bpp images, regional blur of selection masks, antialiased lines and circles on various dialogs, and more.
+'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally used as a fallback for image loading
+' and saving if the FreeImage DLL was not found, but over time it has become more and more integrated into PD.  As of version 6.0, GDI+
+' is used for a number of specialized tasks, including viewport rendering of 32bpp images, regional blur of selection masks, antialiased
+' lines and circles on various dialogs, and more.
 '
 'These routines are adapted from the work of a number of other talented VB programmers.  Since GDI+ is not well-documented
 ' for VB users, I first pieced this module together from the following pieces of code:
@@ -306,6 +306,7 @@ Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal mColor As Long
 Private Declare Function GdipDrawLine Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
 Private Declare Function GdipDrawEllipse Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
 Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
+Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
 Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal mBrushMode As GDIFillMode, mPath As Long) As Long
 Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal mPath As Long) As Long
 'Private Declare Function GdipAddPathLine Lib "gdiplus" (ByVal mPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
@@ -908,6 +909,29 @@ Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, 
     GdipDeletePath rrPath
     GdipDeleteBrush iBrush
     GdipDeleteGraphics iGraphics
+
+End Function
+
+'Use GDI+ to fill a DIB with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full DIB alpha
+' in a single pass.
+Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255) As Boolean
+
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    
+    'Create a solid fill brush
+    Dim iBrush As Long
+    GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), iBrush
+    
+    'Apply the brush
+    GdipFillRectangleI iGraphics, iBrush, x1, y1, xWidth, yHeight
+    
+    'Release all created objects
+    GdipDeleteBrush iBrush
+    GdipDeleteGraphics iGraphics
+    
+    GDIPlusFillDIBRect = True
 
 End Function
 
