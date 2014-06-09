@@ -495,7 +495,7 @@ Private Sub cmdLayerAction_Click(Index As Integer)
     Select Case Index
     
         Case LYR_BTN_ADD
-            Process "Add blank layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGE
+            Process "Add new layer", True
         
         Case LYR_BTN_DELETE
             Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGE
