@@ -711,7 +711,7 @@ Public Sub convertToCMYK32()
         
         Dim x As Long, y As Long, QuickX As Long
                                 
-        Dim cyan As Long, magenta As Long, yellow As Long, K As Long
+        Dim cyan As Long, magenta As Long, yellow As Long, k As Long
         
         Dim qvDepth As Long
         qvDepth = dibColorDepth \ 8
@@ -731,17 +731,17 @@ Public Sub convertToCMYK32()
             yellow = 255 - iData(QuickX, y)
             
             'Key
-            K = CByte(Min3Int(cyan, magenta, yellow))
-            iData(QuickX + 3, y) = K
+            k = CByte(Min3Int(cyan, magenta, yellow))
+            iData(QuickX + 3, y) = k
             
-            If K = 255 Then
+            If k = 255 Then
                 iData(QuickX, y) = 0
                 iData(QuickX + 1, y) = 0
                 iData(QuickX + 2, y) = 0
             Else
-                iData(QuickX, y) = cyan - K
-                iData(QuickX + 1, y) = magenta - K
-                iData(QuickX + 2, y) = yellow - K
+                iData(QuickX, y) = cyan - k
+                iData(QuickX + 1, y) = magenta - k
+                iData(QuickX + 2, y) = yellow - k
             End If
                             
         Next y
@@ -913,22 +913,22 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
             If createBlank(tmpBitmap.Width, tmpBitmap.Height, tmpBitmap.BitsPerPixel) Then
             
                 'Create a new DC
-                Dim tmpDC As Long
-                tmpDC = CreateCompatibleDC(0)
+                Dim TmpDC As Long
+                TmpDC = CreateCompatibleDC(0)
                 
                 'If successful, select the object into that DC
-                If tmpDC <> 0 Then
+                If TmpDC <> 0 Then
                 
                     'Temporary holder for the object selection
                     Dim oldBitmap As Long
-                    oldBitmap = SelectObject(tmpDC, srcPicture.Handle)
+                    oldBitmap = SelectObject(TmpDC, srcPicture.Handle)
                     
                     'Use BitBlt to copy the pixel data to this DIB
-                    BitBlt dibDC, 0, 0, dibWidth, dibHeight, tmpDC, 0, 0, vbSrcCopy
+                    BitBlt dibDC, 0, 0, dibWidth, dibHeight, TmpDC, 0, 0, vbSrcCopy
                     
                     'Now that we have the pixel data, erase all temporary objects
-                    SelectObject tmpDC, oldBitmap
-                    DeleteDC tmpDC
+                    SelectObject TmpDC, oldBitmap
+                    DeleteDC TmpDC
                     
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
                     ' black background. We typically want the background to be white, so perform a composite if requested.
@@ -958,7 +958,7 @@ End Function
 
 'Create a blank DIB. If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
 ' If the DIB is 32bpp, an optional alpha parameter can be set for the DIB.
-Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite, Optional ByVal dibAlpha As Long = 255) As Boolean
+Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite, Optional ByVal dibAlpha As Long = 0) As Boolean
     
     'Erase any existing DIB data
     eraseDIB
@@ -1010,22 +1010,38 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         'If successful, select the newly created dib into our DC
         If (dibHandle <> 0) Then
         
-            'If the DIB is 24bpp, apply the background color now
-            'If (colorDepth = 24) Then
+            'We will later use dibHandleOriginal to clear up the memory associated with this DIB
+            dibHandleOriginal = SelectObject(dibDC, dibHandle)
         
-                'We will later use dibHandleOriginal to clear up the memory associated with this DIB
-                dibHandleOriginal = SelectObject(dibDC, dibHandle)
+            'If the DIB is 24bpp, apply the background color now
+            If (colorDepth = 24) Then
                 
-                'Finally, set the backColor
-                If colorDepth = 24 Then
-                    Dim dibRect As RECT
+                Dim dibRect As RECT
                     SetRect dibRect, 0, 0, iWidth, iHeight
-                    
+                
                     Dim hBrush As Long
                     hBrush = CreateSolidBrush(BackColor)
                     FillRect dibDC, dibRect, hBrush
                     DeleteObject hBrush
-                End If
+                
+            Else
+            
+                'Finally, set the backColor and/or transparency
+                GDIPlusFillDIBRect Me, 0, 0, iWidth, iHeight, BackColor, dibAlpha
+                
+            End If
+            
+                
+                
+                'If colorDepth = 24 Then
+                '    Dim dibRect As RECT
+                '    SetRect dibRect, 0, 0, iWidth, iHeight
+                '
+                '    Dim hBrush As Long
+                '    hBrush = CreateSolidBrush(BackColor)
+                '    FillRect dibDC, dibRect, hBrush
+                '    DeleteObject hBrush
+                'End If
                 
             'If the DIB is 32bpp, apply any transparency now
             'Else
