@@ -467,6 +467,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Add blank layer"
             Layer_Handler.addBlankLayer cParams.GetLong(1)
         
+        Case "Add new layer"
+            If showDialog Then
+                showPDDialog vbModal, FormNewLayer
+            Else
+                Layer_Handler.addNewLayer cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetString(4)
+            End If
+        
         Case "New layer from file"
             Layer_Handler.loadImageAsNewLayer showDialog, processParameters
         

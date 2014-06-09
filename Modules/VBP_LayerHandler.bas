@@ -50,6 +50,63 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long)
     
 End Sub
 
+'Add a non-blank 32bpp layer to the image.  (This function is used by the Add New Layer button on the layer box.)
+Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVal dLayerColor As Long, Optional ByVal dLayerName As String = "")
+
+    'Validate the requested layer index
+    If dLayerIndex < 0 Then dLayerIndex = 0
+    If dLayerIndex > pdImages(g_CurrentImage).getNumOfLayers - 1 Then dLayerIndex = pdImages(g_CurrentImage).getNumOfLayers - 1
+    
+    'Ask the parent pdImage to create a new layer object
+    Dim newLayerID As Long
+    newLayerID = pdImages(g_CurrentImage).createBlankLayer(dLayerIndex)
+    
+    'Assign the newly created layer the IMAGE type, and initialize it to the size of the image
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    'The parameters passed to the new DIB vary according to layer type.  Use the specified type to determine how we
+    ' initialize the new layer.
+    Select Case dLayerType
+    
+        'Transparent (blank)
+        Case 0
+            tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+        
+        'Black
+        Case 1
+            tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbBlack, 255
+        
+        'White
+        Case 2
+            tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbWhite, 255
+        
+        'Custom color
+        Case 3
+            tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, dLayerColor, 255
+        
+    End Select
+    
+    'Set the layer name
+    If Len(dLayerName) = 0 Then dLayerName = g_Language.TranslateMessage("Blank layer")
+    
+    'Assign the newly created DIB and layer name to the layer object
+    pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer tmpDIB, , dLayerName
+    
+    'Make the newly created layer the active layer
+    pdImages(g_CurrentImage).setActiveLayerByID newLayerID
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.forceRedraw True
+    
+    'Render the new image to screen (not technically necessary, but doesn't hurt)
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
+            
+    'Synchronize the interface to the new image
+    syncInterfaceToCurrentImage
+    
+End Sub
+
 'Allow the user to load an image file as a layer
 Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal imagePath As String = "", Optional ByVal customLayerName As String = "")
 
