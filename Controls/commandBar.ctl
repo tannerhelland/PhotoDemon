@@ -105,8 +105,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 10/February/14
-'Last update: add read/write preset support for resize UC unit of measurement and DPI
+'Last updated: 08/June/14
+'Last update: trim prepended spaces from control values generated via Str()
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -972,7 +972,7 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
                 If (eControl.hWnd <> cmbPreset.hWnd) Then controlValue = Str(eControl.ListIndex)
                 
             Case "TextBox"
-                controlValue = Str(eControl.Text)
+                controlValue = eControl.Text
                 
             'PhotoDemon's new resize control is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
@@ -982,6 +982,9 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
                 
         
         End Select
+        
+        'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
+        If Len(controlValue) > 0 Then controlValue = Trim$(controlValue)
         
         'If this control has a valid value property, add it to the XML file
         If Len(controlValue) > 0 Then
