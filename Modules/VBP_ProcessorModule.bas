@@ -1325,7 +1325,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormCustomFilter
             Else
-                DoFilter cParams.getParamString
+                ApplyConvolutionFilter cParams.getParamString
             End If
         
         

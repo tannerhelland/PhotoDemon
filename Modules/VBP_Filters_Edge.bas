@@ -37,7 +37,7 @@ Public Sub FilterPencil()
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString
+    ApplyConvolutionFilter tmpString
 
 End Sub
 
@@ -63,7 +63,7 @@ Public Sub FilterRelief()
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString
+    ApplyConvolutionFilter tmpString
 
 End Sub
 
@@ -89,6 +89,6 @@ Public Sub FilterEdgeEnhance()
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString
+    ApplyConvolutionFilter tmpString
 
 End Sub

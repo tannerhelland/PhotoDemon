@@ -3,14 +3,15 @@ Attribute VB_Name = "Filters_Area"
 'Filter (Area) Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 02/June/13
-'Last update: remove Soften, Soften More, Blur, and Blur More filters.  These have all been superseded by the far
-'              superior Gaussian Blur and Box Blur implementations.
-'Still needs: interpolation for isometric conversion
+'Last updated: 10/June/14
+'Last update: rewrite central convolution function to accept source/destination layers; this will allow us to use it from
+'              any arbitrary internal function.
 '
-'Holder for generalized area filters, including most of the project's convolution filters.
-' Also contains the DoFilter routine, which is central to running custom filters
-' (as well as many of the intrinsic PhotoDemon ones, like blur/sharpen/etc).
+'Holder module for generalized area filters, including most of the project's convolution filters.
+'
+'The most interesting function is ConvolveDIB, which applies any arbitrary 5x5 convolution filter to any arbitrary DIB.  This function
+' is used internally for nearly all edge-detection functions, and other generic convolution effects.  (Note that some convolution
+' filters, like Gaussian Blur, have their own specialized, optimized implementations.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -25,18 +26,15 @@ Public Const CUSTOM_FILTER_VERSION_2003 = &H80000000
 Public Const CUSTOM_FILTER_VERSION_2012 = &H80000001
 Public Const CUSTOM_FILTER_VERSION_2014 As String = "8.2014"
 
-'The omnipotent DoFilter routine - it takes whatever is in g_FM() - the "filter matrix" and applies it to the image
-'REWRITING AUGUST 2014:
-' DoFilter will now use a param string, like everything else.  Custom save/load code is also disappearing in favor of
-' the standard save/load preset manager.
+'The omnipotent ApplyConvolutionFilter routine, which applies the supplied convolution filter to the current image.
+' Note that as of June '13, ApplyConvolutionFilter uses a full param string for supplying convolution details.  The relevant
 ' ParamString format is as follows:
-'    Name: String.  Can't be blank, but can be a single space
-'    Invert: boolean
+'    Name: String (can't be blank, but can be a single space)
+'    Invert: Boolean
 '    Divisor: Double
 '    Offset: Long
-'    25 Double-type values, which correspond to entries in a 5x5 convolution matrix
-
-Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'    25 Double values, which correspond to entries in a 5x5 convolution matrix, in left-to-right, top-to-bottom order.
+Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
         
     'Prepare a param parser
     Dim cParams As pdParamString
@@ -46,19 +44,60 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
     'Note that the only purpose of the FilterType string is to display this message
     If Not toPreview Then Message "Applying %1 filter...", cParams.GetString(1)
     
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    'Create a local array and point it at the pixel data of the current image.  Note that the current layer is referred to as the
+    ' DESTINATION image for the convolution; we will make a separate temp copy of the image to use as the SOURCE.
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
+    
+    
+    'Use the central ConvolveDIB function to apply the convolution
+    ConvolveDIB fullParamString, srcDIB, workingDIB, toPreview
+    
+    
+    'Free our temporary DIB
+    srcDIB.eraseDIB
+    Set srcDIB = Nothing
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
+    finalizeImageData toPreview, dstPic
         
+End Sub
+
+'Apply any convolution filter to a pdDIB object.  This is primarily used by the ApplyConvolutionFilter function, above, but can also be linked
+' internally to apply multiple convolutions in succession, or to create standalone convolved images that can then be blended together.
+Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+    
+    'Prepare a param parser; this is necessary for parsing out the individual convolution parameters from the param string
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString fullParamString
+    
+    'Create a local array and point it at the destination pixel data
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, dstDIB
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent processed pixel values from corrupting subsequent calculations.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, srcDIB
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, x2 As Long, y2 As Long
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    initX = 0
+    initY = 0
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
     
     Dim checkXMin As Long, checkXMax As Long, checkYMin As Long, checkYMax As Long
     checkXMin = curDIBValues.minX
@@ -68,17 +107,21 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
-    
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
+    End If
+        
     'We can now parse out the relevant filter values from the param string
     Dim invertResult As Boolean
     invertResult = cParams.GetBool(2)
@@ -93,7 +136,10 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
         iFM(x, y) = cParams.GetDouble((x + 2) + (y + 2) * 5 + 5)
     Next y
     Next x
-        
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
+    
     'FilterWeightTemp will be reset for every pixel, and decremented appropriately when attempting to calculate the value for pixels
     ' outside the image perimeter
     Dim FilterWeightTemp As Double
@@ -101,24 +147,12 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
     'Temporary calculation variables
     Dim CalcX As Long, CalcY As Long
     
-    'Create a temporary DIB and resize it to the same size as the current image
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB workingDIB
-    
-    'Create a local array and point it at the pixel data of our temporary DIB.  This will be used to access the current pixel data
-    ' without modifications, while the actual image data will be modified by the filter as it's processed.
-    Dim tmpData() As Byte
-    Dim tSA As SAFEARRAY2D
-    prepSafeArray tSA, tmpDIB
-    CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
-    
     'QuickValInner is like QuickVal below, but for sub-loops
     Dim QuickValInner As Long
         
     'Apply the filter
     For x = initX To finalX
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
         
         'Reset our values upon beginning analysis on a new pixel
@@ -137,33 +171,41 @@ Public Sub DoFilter(ByVal fullParamString As String, Optional ByVal toPreview As
             
             'If no filter value is being applied to this pixel, ignore it (GoTo's aren't generally a part of good programming,
             ' but because VB does not provide a "continue next" type mechanism, GoTo's are all we've got.)
-            If iFM(CalcX, CalcY) = 0 Then GoTo NextCustomFilterPixel
+            If iFM(CalcX, CalcY) <> 0 Then
             
-            'If this pixel lies outside the image perimeter, ignore it and adjust g_FilterWeight accordingly
-            If x2 < checkXMin Or y2 < checkYMin Or x2 > checkXMax Or y2 > checkYMax Then
-                FilterWeightTemp = FilterWeightTemp - iFM(CalcX, CalcY)
-                GoTo NextCustomFilterPixel
+                'If this pixel lies outside the image perimeter, ignore it and adjust g_FilterWeight accordingly
+                If (x2 < checkXMin) Or (y2 < checkYMin) Or (x2 > checkXMax) Or (y2 > checkYMax) Then
+                    
+                    FilterWeightTemp = FilterWeightTemp - iFM(CalcX, CalcY)
+                
+                Else
+                
+                    'Adjust red, green, and blue according to the values in the filter matrix (FM)
+                    r = r + (srcImageData(QuickValInner + 2, y2) * iFM(CalcX, CalcY))
+                    g = g + (srcImageData(QuickValInner + 1, y2) * iFM(CalcX, CalcY))
+                    b = b + (srcImageData(QuickValInner, y2) * iFM(CalcX, CalcY))
+                    
+                End If
+                
             End If
-            
-            'Adjust red, green, and blue according to the values in the filter matrix (FM)
-            r = r + (tmpData(QuickValInner + 2, y2) * iFM(CalcX, CalcY))
-            g = g + (tmpData(QuickValInner + 1, y2) * iFM(CalcX, CalcY))
-            b = b + (tmpData(QuickValInner, y2) * iFM(CalcX, CalcY))
-
-NextCustomFilterPixel:  Next y2
+    
+        Next y2
         Next x2
         
         'If a weight has been set, apply it now
         If (FilterWeightTemp <> 1) Then
+        
+            'Catch potential divide-by-zero errors
             If (FilterWeightTemp <> 0) Then
-                r = r / FilterWeightTemp
-                g = g / FilterWeightTemp
-                b = b / FilterWeightTemp
+                r = r \ FilterWeightTemp
+                g = g \ FilterWeightTemp
+                b = b \ FilterWeightTemp
             Else
                 r = 0
                 g = 0
                 b = 0
             End If
+            
         End If
         
         'If a bias has been specified, apply it now
@@ -199,35 +241,31 @@ NextCustomFilterPixel:  Next y2
             b = 255 - b
         End If
         
-        'Finally, remember the new value in our tData array
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        'Copy the calculated value into the destination array
+        dstImageData(QuickVal + 2, y) = r
+        dstImageData(QuickVal + 1, y) = g
+        dstImageData(QuickVal, y) = b
         
     Next y
-        If Not toPreview Then
+        If Not suppressMessages Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal x + modifyProgBarOffset
             End If
         End If
     Next x
     
-    'With our work complete, point ImageData() and tmpData() away from their respective DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    'With our work complete, point ImageData() and srcImageData() away from their respective DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
     
-    CopyMemory ByVal VarPtrArray(tmpData), 0&, 4
-    Erase tmpData
-    
-    'Erase our temporary DIB
-    tmpDIB.eraseDIB
-    Set tmpDIB = Nothing
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
-    
-End Sub
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+        
+    'Return success/failure
+    If cancelCurrentAction Then ConvolveDIB = 0 Else ConvolveDIB = 1
+
+End Function
 
 'Apply a grid blur to an image; basically, blur every vertical line, then every horizontal line, then average the results
 Public Sub FilterGridBlur()
@@ -256,7 +294,7 @@ Public Sub FilterGridBlur()
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -276,11 +314,11 @@ Public Sub FilterGridBlur()
         r = 0
         g = 0
         b = 0
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
         For y = initY To finalY
-            r = r + ImageData(quickVal + 2, y)
-            g = g + ImageData(quickVal + 1, y)
-            b = b + ImageData(quickVal, y)
+            r = r + ImageData(QuickVal + 2, y)
+            g = g + ImageData(QuickVal + 1, y)
+            b = b + ImageData(QuickVal, y)
         Next y
         rax(x) = r
         gax(x) = g
@@ -293,10 +331,10 @@ Public Sub FilterGridBlur()
         g = 0
         b = 0
         For x = initX To finalX
-            quickVal = x * qvDepth
-            r = r + ImageData(quickVal + 2, y)
-            g = g + ImageData(quickVal + 1, y)
-            b = b + ImageData(quickVal, y)
+            QuickVal = x * qvDepth
+            r = r + ImageData(QuickVal + 2, y)
+            g = g + ImageData(QuickVal + 1, y)
+            b = b + ImageData(QuickVal, y)
         Next x
         ray(y) = r
         gay(y) = g
@@ -307,7 +345,7 @@ Public Sub FilterGridBlur()
         
     'Apply the filter
     For x = initX To finalX
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
@@ -321,9 +359,9 @@ Public Sub FilterGridBlur()
         If b > 255 Then b = 255
         
         'Assign the new RGB values back into the array
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
-        ImageData(quickVal, y) = b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then

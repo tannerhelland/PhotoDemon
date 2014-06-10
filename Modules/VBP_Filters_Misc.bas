@@ -920,7 +920,7 @@ Public Sub MenuVibrate()
     tmpString = tmpString & "-1|0|0|0|1"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString
+    ApplyConvolutionFilter tmpString
 
 End Sub
 

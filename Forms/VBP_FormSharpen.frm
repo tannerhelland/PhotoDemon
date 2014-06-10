@@ -104,14 +104,14 @@ Attribute VB_Exposed = False
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 09/August/13 (actually, a naive version was built years ago, but didn't offer variable strength)
 'Last updated: 22/August/13
-'Last update: rewrote the DoFilter call against the new paramString implementation
+'Last update: rewrote the ApplyConvolutionFilter call against the new paramString implementation
 '
 'Basic sharpening tool.  A 3x3 convolution kernel is used to apply the sharpening, so the results will
 ' be inferior to Unsharp Masking - but the tool is much simpler, and for light sharpening, the results are
 ' often acceptable.
 '
-'The bulk of the work happens in the DoFilter routine that handles all of PhotoDemon's generic convolution
-' work.  All this dialog does is set up the kernel, then pass it on to DoFilter.
+'The bulk of the work happens in the ApplyConvolutionFilter routine that handles all of PhotoDemon's generic convolution
+' work.  All this dialog does is set up the kernel, then pass it on to ApplyConvolutionFilter.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -147,7 +147,7 @@ Public Sub ApplySharpenFilter(ByVal sStrength As Double, Optional ByVal toPrevie
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString, toPreview, dstPic
+    ApplyConvolutionFilter tmpString, toPreview, dstPic
                 
 End Sub
 
