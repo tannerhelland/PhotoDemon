@@ -140,10 +140,10 @@ Attribute VB_Exposed = False
 'Copyright ©2000-2014 by Tanner Helland
 'Created: 1/11/02
 'Last updated: 22/August/13
-'Last update: rewrote all DoFilter calls with paramStrings
+'Last update: rewrote all ApplyConvolutionFilter calls with paramStrings
 '
 'All known edge-detection routines are handled from this form.  Most are simply convolution kernels that are passed off
-' to the "DoFilter" function, but at least one (Artistic Contour) resides here.
+' to the "ApplyConvolutionFilter" function, but at least one (Artistic Contour) resides here.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -226,7 +226,7 @@ Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optio
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString, toPreview, dstPic
+    ApplyConvolutionFilter tmpString, toPreview, dstPic
     
 End Sub
 
@@ -251,7 +251,7 @@ Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolea
     tmpString = tmpString & "0|0|0|1|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString, toPreview, dstPic
+    ApplyConvolutionFilter tmpString, toPreview, dstPic
     
 End Sub
 
@@ -276,7 +276,7 @@ Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boole
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString, toPreview, dstPic
+    ApplyConvolutionFilter tmpString, toPreview, dstPic
     
 End Sub
 
@@ -301,7 +301,7 @@ Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = F
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString, toPreview, dstPic
+    ApplyConvolutionFilter tmpString, toPreview, dstPic
     
 End Sub
 
@@ -326,7 +326,7 @@ Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = Fal
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString, toPreview, dstPic
+    ApplyConvolutionFilter tmpString, toPreview, dstPic
     
 End Sub
 
@@ -351,7 +351,7 @@ Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = Fal
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString, toPreview, dstPic
+    ApplyConvolutionFilter tmpString, toPreview, dstPic
     
 End Sub
 
@@ -376,7 +376,7 @@ Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString, toPreview, dstPic
+    ApplyConvolutionFilter tmpString, toPreview, dstPic
     
 End Sub
 
@@ -401,7 +401,7 @@ Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Op
     tmpString = tmpString & "0|0|0|0|0"
     
     'Pass our new parameter string to the main convolution filter function
-    DoFilter tmpString, toPreview, dstPic
+    ApplyConvolutionFilter tmpString, toPreview, dstPic
     
 End Sub
 

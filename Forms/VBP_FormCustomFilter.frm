@@ -742,7 +742,7 @@ Attribute VB_Exposed = False
 '             with text up/downs for improved value nudging and validation.
 '
 'This dialog allows the user to create custom convolution filters.  The actual processing of the convolution filter happens in
-' a separate "DoFilter" function; this dialog simply serves as a user-facing interface to that.
+' a separate "ApplyConvolutionFilter" function; this dialog simply serves as a user-facing interface to that.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -833,7 +833,7 @@ Private Sub updatePreview()
         End If
             
         'Apply the preview
-        DoFilter getFilterParamString, True, fxPreview
+        ApplyConvolutionFilter getFilterParamString, True, fxPreview
     
         'Reenable previews
         cmdBar.markPreviewStatus True
@@ -854,7 +854,7 @@ Private Sub tudOffset_Change()
     updatePreview
 End Sub
 
-'Stick all the current filter values into a parameter string, which can then be passed to the DoFilter function
+'Stick all the current filter values into a parameter string, which can then be passed to the ApplyConvolutionFilter function
 Private Function getFilterParamString() As String
     
     Dim tmpString As String
