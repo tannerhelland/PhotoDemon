@@ -85,7 +85,7 @@ Begin VB.UserControl pdCanvas
          CausesValidation=   0   'False
          Height          =   315
          ItemData        =   "pdCanvas.ctx":0000
-         Left            =   2760
+         Left            =   3480
          List            =   "pdCanvas.ctx":0002
          Style           =   2  'Dropdown List
          TabIndex        =   10
@@ -94,7 +94,7 @@ Begin VB.UserControl pdCanvas
       End
       Begin PhotoDemon.jcbutton cmdZoomIn 
          Height          =   345
-         Left            =   1440
+         Left            =   1830
          TabIndex        =   8
          Top             =   0
          Width           =   390
@@ -124,7 +124,7 @@ Begin VB.UserControl pdCanvas
          CausesValidation=   0   'False
          Height          =   315
          ItemData        =   "pdCanvas.ctx":0856
-         Left            =   450
+         Left            =   840
          List            =   "pdCanvas.ctx":0858
          Style           =   2  'Dropdown List
          TabIndex        =   7
@@ -133,7 +133,7 @@ Begin VB.UserControl pdCanvas
       End
       Begin PhotoDemon.jcbutton cmdZoomOut 
          Height          =   345
-         Left            =   30
+         Left            =   390
          TabIndex        =   9
          Top             =   0
          Width           =   390
@@ -156,14 +156,70 @@ Begin VB.UserControl pdCanvas
          PictureAlign    =   0
          PictureEffectOnDown=   0
          CaptionEffects  =   0
-         ToolTip         =   "Zoom Out"
+         ToolTip         =   "Zoom out"
+         ColorScheme     =   3
+      End
+      Begin PhotoDemon.jcbutton cmdZoomFit 
+         Height          =   345
+         Left            =   0
+         TabIndex        =   11
+         Top             =   0
+         Width           =   390
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":10AC
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Fit image on screen"
+         ColorScheme     =   3
+      End
+      Begin PhotoDemon.jcbutton cmdImgSize 
+         Height          =   345
+         Left            =   2640
+         TabIndex        =   12
+         Top             =   0
+         Width           =   390
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":18FE
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Resize image"
          ColorScheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
          Index           =   0
-         X1              =   126
-         X2              =   126
+         X1              =   174
+         X2              =   174
          Y1              =   1
          Y2              =   22
       End
@@ -184,7 +240,7 @@ Begin VB.UserControl pdCanvas
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   210
-         Left            =   2280
+         Left            =   3120
          TabIndex        =   3
          Top             =   60
          Width           =   345
@@ -192,8 +248,8 @@ Begin VB.UserControl pdCanvas
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
          Index           =   1
-         X1              =   256
-         X2              =   256
+         X1              =   304
+         X2              =   304
          Y1              =   1
          Y2              =   22
       End
@@ -213,7 +269,7 @@ Begin VB.UserControl pdCanvas
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   210
-         Left            =   4230
+         Left            =   4950
          TabIndex        =   2
          Top             =   60
          Width           =   525
@@ -221,8 +277,8 @@ Begin VB.UserControl pdCanvas
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
          Index           =   2
-         X1              =   344
-         X2              =   344
+         X1              =   392
+         X2              =   392
          Y1              =   1
          Y2              =   22
       End
@@ -651,6 +707,10 @@ Public Sub enableZoomOut(ByVal isEnabled As Boolean)
     cmdZoomOut.Enabled = isEnabled
 End Sub
 
+Public Sub enableZoomFit(ByVal isEnabled As Boolean)
+    cmdZoomFit.Enabled = isEnabled
+End Sub
+
 Public Function getZoomDropDownReference() As ComboBox
     Set getZoomDropDownReference = cmbZoom
 End Function
@@ -686,6 +746,14 @@ Private Sub CmbZoom_Click()
         
     End If
 
+End Sub
+
+Private Sub cmdImgSize_Click()
+    If isCanvasInteractionAllowed() Then Process "Resize image", True
+End Sub
+
+Private Sub cmdZoomFit_Click()
+    Image_Canvas_Handler.FitOnScreen
 End Sub
 
 Private Sub cmdZoomIn_Click()
@@ -829,7 +897,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
     
-    cmdZoomIn.SetFocus
+    cmdZoomFit.SetFocus
     
     'Note that the user has attempted to interact with the canvas.
     m_UserInteractedWithCanvas = True
@@ -1316,11 +1384,6 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
 
 End Sub
 
-'If an image is loaded, double-clicking the image size label launches the resize dialog
-Private Sub lblImgSize_DblClick()
-    If isCanvasInteractionAllowed() Then Process "Resize image", True
-End Sub
-
 Private Sub UserControl_Initialize()
 
     If g_UserModeFix Then
@@ -1333,7 +1396,7 @@ Private Sub UserControl_Initialize()
         'This user control contains a lot of child controls whose key events we want to intercept (as they aren't designed to have
         ' focus on their own).  Submit these controls to the tracker, so it knows to mass any key events into the UC's master
         ' key handler function.
-        cMouseEvents.addOverrideHwnds picStatusBar.hWnd, picScrollH.hWnd, picScrollV.hWnd, picProgressBar.hWnd, cmdZoomIn.hWnd, cmdZoomOut.hWnd
+        cMouseEvents.addOverrideHwnds picStatusBar.hWnd, picScrollH.hWnd, picScrollV.hWnd, picProgressBar.hWnd, cmdZoomIn.hWnd, cmdZoomOut.hWnd, cmdZoomFit.hWnd, cmdImgSize.hWnd
         
         'Assign tooltips manually (so theming is supported)
         Set m_ToolTip = New clsToolTip
@@ -1568,12 +1631,14 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         lineStatusBar(0).x1 = (cmdZoomIn.Left + cmdZoomIn.Width) + fixDPI(6)
         lineStatusBar(0).x2 = lineStatusBar(0).x1
         
-        'Start with the "image size" icon
-        sbIconSize.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconSize.getDIBWidth), fixDPI(sbIconSize.getDIBHeight)
+        'Start with the "image size" button
+        cmdImgSize.Left = lineStatusBar(0).x1 + fixDPI(4)
+        If Not cmdImgSize.Visible Then cmdImgSize.Visible = True
+        'sbIconSize.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconSize.getDIBWidth), fixDPI(sbIconSize.getDIBHeight)
         
-        'After the "image size" icon comes the actual image size label.  Its position is determined by 16 px for the icon,
-        ' plus a 5px buffer on either size (contingent on DPI)
-        lblImgSize.Left = lineStatusBar(0).x1 + fixDPI(14) + fixDPI(16)
+        'After the "image size" icon comes the actual image size label.  Its position is determined by the image resize button width,
+        ' plus a 4px buffer on either size (contingent on DPI)
+        lblImgSize.Left = cmdImgSize.Left + cmdImgSize.Width + fixDPI(4)
         
         'The image size label is autosized.  Move the "size unit" combo box next to it, and the next vertical line
         ' separator just past it.
@@ -1597,6 +1662,7 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
     'Images are not loaded.  Hide the lines and other items.
     Else
     
+        cmdImgSize.Visible = False
         cmbSizeUnit.Visible = False
         lineStatusBar(0).Visible = False
         lineStatusBar(1).Visible = False

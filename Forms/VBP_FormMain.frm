@@ -2603,7 +2603,7 @@ Private Sub MnuFile_Click(Index As Integer)
 End Sub
 
 Private Sub MnuFitOnScreen_Click()
-    FitOnScreen
+    Image_Canvas_Handler.FitOnScreen
 End Sub
 
 Private Sub MnuHeatmap_Click()

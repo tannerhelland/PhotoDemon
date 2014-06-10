@@ -605,6 +605,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 FormMain.mainCanvas(0).getZoomDropDownReference().Enabled = newState
                 FormMain.mainCanvas(0).enableZoomIn newState
                 FormMain.mainCanvas(0).enableZoomOut newState
+                FormMain.mainCanvas(0).enableZoomFit newState
             End If
             
             'When disabling zoom controls, reset the zoom drop-down to 100%
