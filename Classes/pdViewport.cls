@@ -38,8 +38,8 @@ Option Explicit
 'These values track the size and position of the image, as seen from the viewport.  These values are...
 ' - SET by the PrepareViewport function
 ' - READ by the ScrollViewport and RenderViewport functions
-Public targetWidth As Long
-Public targetHeight As Long
+Public targetWidth As Double
+Public targetHeight As Double
 Public targetTop As Long
 Public targetLeft As Long
 
