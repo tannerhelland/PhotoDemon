@@ -467,7 +467,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
                 Else
                     ReDim sFile(0) As String
                     sFile(0) = tmpDownloadFile
-                    LoadFileAsNewImage sFile
+                    LoadFileAsNewImage sFile, False, , getFilename(tmpDownloadFile)
                 End If
                 
                 'Delete the temporary file
