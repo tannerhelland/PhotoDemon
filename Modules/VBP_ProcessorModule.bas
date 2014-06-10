@@ -1131,34 +1131,15 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             FilterEdgeEnhance
             
         Case "Find edges"
-            showPDDialog vbModal, FormFindEdges
             
-            Case "Artistic contour"
-                FormFindEdges.FilterSmoothContour cParams.GetBool(1)
-                
-            Case "Find edges (Prewitt horizontal)"
-                FormFindEdges.FilterPrewittHorizontal cParams.GetBool(1)
-                
-            Case "Find edges (Prewitt vertical)"
-                FormFindEdges.FilterPrewittVertical cParams.GetBool(1)
-                
-            Case "Find edges (Sobel horizontal)"
-                FormFindEdges.FilterSobelHorizontal cParams.GetBool(1)
-                
-            Case "Find edges (Sobel vertical)"
-                FormFindEdges.FilterSobelVertical cParams.GetBool(1)
-                
-            Case "Find edges (Laplacian)"
-                FormFindEdges.FilterLaplacian cParams.GetBool(1)
-                
-            Case "Find edges (Hilite)"
-                FormFindEdges.FilterHilite cParams.GetBool(1)
-                
-            Case "Find edges (PhotoDemon linear)"
-                FormFindEdges.PhotoDemonLinearEdgeDetection cParams.GetBool(1)
-                
-            Case "Find edges (PhotoDemon cubic)"
-                FormFindEdges.PhotoDemonCubicEdgeDetection cParams.GetBool(1)
+            If showDialog Then
+                showPDDialog vbModal, FormFindEdges
+            Else
+                FormFindEdges.ApplyEdgeDetection cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
+            End If
+            
+        Case "Artistic contour"
+            FormFindEdges.FilterSmoothContour cParams.GetBool(1)
             
         Case "Trace contour"
             If showDialog Then
