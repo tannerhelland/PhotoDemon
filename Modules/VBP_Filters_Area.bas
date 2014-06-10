@@ -100,10 +100,10 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
     finalY = srcDIB.getDIBHeight - 1
     
     Dim checkXMin As Long, checkXMax As Long, checkYMin As Long, checkYMax As Long
-    checkXMin = curDIBValues.minX
-    checkXMax = curDIBValues.maxX
-    checkYMin = curDIBValues.MinY
-    checkYMax = curDIBValues.MaxY
+    checkXMin = initX
+    checkXMax = finalX
+    checkYMin = initY
+    checkYMax = finalY
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -197,9 +197,9 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
         
             'Catch potential divide-by-zero errors
             If (FilterWeightTemp <> 0) Then
-                r = r \ FilterWeightTemp
-                g = g \ FilterWeightTemp
-                b = b \ FilterWeightTemp
+                r = r / FilterWeightTemp
+                g = g / FilterWeightTemp
+                b = b / FilterWeightTemp
             Else
                 r = 0
                 g = 0

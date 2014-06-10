@@ -45,9 +45,9 @@ Begin VB.Form FormFindEdges
    End
    Begin PhotoDemon.smartCheckBox chkInvert 
       Height          =   480
-      Left            =   9120
-      TabIndex        =   5
-      Top             =   3360
+      Left            =   6240
+      TabIndex        =   4
+      Top             =   5040
       Width           =   2220
       _ExtentX        =   3916
       _ExtentY        =   847
@@ -73,24 +73,67 @@ Begin VB.Form FormFindEdges
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   2460
-      Left            =   6000
+      Height          =   2220
+      Left            =   6240
       TabIndex        =   1
-      Top             =   1320
-      Width           =   2895
+      Top             =   480
+      Width           =   5655
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin VB.Label Label1 
+   Begin PhotoDemon.smartCheckBox chkDirection 
+      Height          =   540
+      Index           =   0
+      Left            =   6240
+      TabIndex        =   7
+      Top             =   3360
+      Width           =   1290
+      _ExtentX        =   2275
+      _ExtentY        =   953
+      Caption         =   "horizontal"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.smartCheckBox chkDirection 
+      Height          =   540
+      Index           =   1
+      Left            =   6240
+      TabIndex        =   8
+      Top             =   3840
+      Width           =   1050
+      _ExtentX        =   1852
+      _ExtentY        =   953
+      Caption         =   "vertical"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "description:"
+      Caption         =   "other options:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -101,20 +144,20 @@ Begin VB.Form FormFindEdges
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   375
-      Left            =   9120
-      TabIndex        =   3
-      Top             =   1320
-      Width           =   2055
+      Height          =   285
+      Index           =   2
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   4560
+      Width           =   1500
    End
-   Begin VB.Label LblDesc 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "(no item selected)"
+      Caption         =   "detection direction(s):"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -122,12 +165,33 @@ Begin VB.Form FormFindEdges
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   1575
-      Left            =   9120
+      Height          =   285
+      Index           =   1
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   3000
+      Width           =   2325
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "edge detection technique:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   6000
       TabIndex        =   2
-      Top             =   1800
-      Width           =   2895
-      WordWrap        =   -1  'True
+      Top             =   120
+      Width           =   2730
    End
 End
 Attribute VB_Name = "FormFindEdges"
@@ -155,42 +219,42 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'To prevent recursion when setting checkbox state, this value is used to notify the function that a state change
+' is already underway
+Private ignoreStateChanges As Boolean
+
+'The direction checkboxes are somewhat odd; one or the other should always be selected, so we have to do some special
+' checking to make sure that happens.
+Private Sub chkDirection_Click(Index As Integer)
+
+    If ignoreStateChanges Then Exit Sub
+    
+    ignoreStateChanges = True
+
+    Dim otherIndex As Long
+    If Index = 0 Then otherIndex = 1 Else otherIndex = 0
+
+    If Not chkDirection(Index) Then
+        If Not chkDirection(otherIndex) Then chkDirection(otherIndex).Value = vbChecked
+    End If
+    
+    ignoreStateChanges = False
+    
+    updatePreview
+
+End Sub
+
 Private Sub chkInvert_Click()
     updatePreview
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-
-    Select Case LstEdgeOptions.ListIndex
-        Case 0
-            Process "Find edges (Prewitt horizontal)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
-        Case 1
-            Process "Find edges (Prewitt vertical)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
-        Case 2
-            Process "Find edges (Sobel horizontal)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
-        Case 3
-            Process "Find edges (Sobel vertical)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
-        Case 4
-            Process "Find edges (Laplacian)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
-        Case 5
-            Process "Artistic contour", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
-        Case 6
-            Process "Find edges (Hilite)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
-        Case 7
-            Process "Find edges (PhotoDemon linear)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
-        Case 8
-            Process "Find edges (PhotoDemon cubic)", , buildParams(CBool(chkInvert.Value)), UNDO_LAYER
-    End Select
-    
+    Process "Find edges", , buildParams(LstEdgeOptions.ListIndex, getDirectionality(), CBool(chkInvert.Value)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    LstEdgeOptions.ListIndex = 5
 End Sub
 
 Private Sub Form_Activate()
@@ -205,205 +269,290 @@ Private Sub Form_Activate()
     
 End Sub
 
-Public Sub FilterHilite(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'Apply any supported edge detection filter to an image.  Directionality can be specified, but note that only some
+' algorithms support the parameter.
+Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL, Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+
+    'Applying an edge detection filter generally happens via these steps:
     
-    Dim tmpString As String
+    '1) Set up any parameters we know in advance, like generating a String name for the supplied filter, and converting
+    '    the optional "blackBackground" parameter into PD's internal ParamString format
+    '2) Retrieve a relevant convolution matrix for the requested filter
+    '3) Supply the full ParamString, including convo matrix, to PD's central ApplyConvolutionFilter function
+    '4) If necessary, repeat steps 2 and 3 to retrieve multiple directionality images
     
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("Hilite edge detection") & "|"
+    Dim tmpParamString As String, convolutionMatrixString As String
     
-    'Next comes an invert parameter
-    tmpString = tmpString & Str(Not blackBackground) & "|"
+    'Before doing anything else, check for the Artistic Contour filter type.  This is handled via its own dedicated
+    ' function, separate from traditional convolution matrix processing
+    If edgeDetectionType = PD_EDGE_ARTISTIC_CONTOUR Then
+        Me.FilterSmoothContour blackBackground, toPreview, dstPic
+        Exit Sub
+    End If
     
-    'Next is the divisor and offset
-    tmpString = tmpString & "1|0|"
+    '1a) Generate a name for the requested filter
+    tmpParamString = getNameOfEdgeDetector(edgeDetectionType) & "|"
     
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|-4|-2|-1|0|"
-    tmpString = tmpString & "0|-2|10|0|0|"
-    tmpString = tmpString & "0|-1|0|0|0|"
-    tmpString = tmpString & "0|0|0|0|0"
+    '1b) Add in the invert (black background) parameter
+    tmpParamString = tmpParamString & Trim$(Str$(Not blackBackground)) & "|"
     
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString, toPreview, dstPic
+    '2a) Retrieve the relevant convolution matrix for this filter
+    convolutionMatrixString = getParamStringForEdgeDetector(edgeDetectionType, edgeDirectionality)
     
+    '2b) Merge the retrieved convolution matrix string with our name and invert params
+    tmpParamString = tmpParamString & convolutionMatrixString
+    
+    '3a) If the function is single-pass compatible (e.g. it does not require us to traverse the image multiple times, then
+    '     blend the edge detection results), supply the compiled param string to PD's central convolution function and exit
+    If isEdgeDetectionSinglePass(edgeDetectionType, edgeDirectionality) Then
+        ApplyConvolutionFilter tmpParamString, toPreview, dstPic
+        Exit Sub
+    End If
+    
+    '3b) If we made it all the way here, the requested edge operation cannot be applied in a single-pass.  We need to
+    '     manually process the request by traversing the image twice, then blending the results.  (The code below is
+    '     based off the ApplyConvolutionFilter function, so mirror any changes there.)
+            
+    'Note that the only purpose of the FilterType string is to display this message
+    If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", "1", "2", getNameOfEdgeDetector(edgeDetectionType)
+    
+    'Create a local array and point it at the pixel data of the current image.  Note that the current layer is referred to as the
+    ' DESTINATION image for the convolution; we will make a separate temp copy of the image to use as the SOURCE.
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
+        
+    'Use the central ConvolveDIB function to apply the convolution to workingDIB
+    ConvolveDIB tmpParamString, srcDIB, workingDIB, toPreview, srcDIB.getDIBWidth * 2
+    
+    'Now we need a third copy of the image, which will receive the alternate direction transform
+    Dim secondDstDIB As pdDIB
+    Set secondDstDIB = New pdDIB
+    secondDstDIB.createFromExistingDIB srcDIB
+    
+    'When two passes are required, the vertical direction is always applied first.  Thus we know we need to apply the
+    ' horizontal direction next.  Generate a new param string for the horizontal direction.
+    If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", "2", "2", getNameOfEdgeDetector(edgeDetectionType)
+    
+    tmpParamString = getNameOfEdgeDetector(edgeDetectionType) & "|"
+    tmpParamString = tmpParamString & Trim$(Str$(Not blackBackground)) & "|"
+    convolutionMatrixString = getParamStringForEdgeDetector(edgeDetectionType, PD_EDGE_DIR_HORIZONTAL)
+    tmpParamString = tmpParamString & convolutionMatrixString
+    
+    'Use the central ConvolveDIB function to apply the new convolution to workingDIB
+    ConvolveDIB tmpParamString, srcDIB, secondDstDIB, toPreview, srcDIB.getDIBWidth * 2, srcDIB.getDIBWidth
+    
+    'Free our temporary source DIB
+    srcDIB.eraseDIB
+    Set srcDIB = Nothing
+    
+    'Last step is to blend the two result arrays together.  Use the pdCompositor class to do this.
+    Dim cComposite As pdCompositor
+    Set cComposite = New pdCompositor
+    
+    If blackBackground Then
+        cComposite.compositeDIBs workingDIB, secondDstDIB, BL_SCREEN, 0, 0
+    Else
+        cComposite.compositeDIBs workingDIB, secondDstDIB, BL_MULTIPLY, 0, 0
+    End If
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
+    finalizeImageData toPreview, dstPic
+
 End Sub
 
-Public Sub PhotoDemonCubicEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'Return the naem of an edge detection type as a human-readable string
+Private Function getNameOfEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION) As String
 
-    Dim tmpString As String
+    Select Case edgeDetectionType
     
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("PhotoDemon cubic edge detection") & "|"
-    
-    'Next comes an invert parameter
-    tmpString = tmpString & Str(Not blackBackground) & "|"
-    
-    'Next is the divisor and offset
-    tmpString = tmpString & "1|0|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|1|0|0|0|"
-    tmpString = tmpString & "0|0|0|0|1|"
-    tmpString = tmpString & "0|0|-4|0|0|"
-    tmpString = tmpString & "1|0|0|0|0|"
-    tmpString = tmpString & "0|0|0|1|0"
-    
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString, toPreview, dstPic
-    
-End Sub
+        Case PD_EDGE_PREWITT
+            getNameOfEdgeDetector = g_Language.TranslateMessage("Prewitt edge detection")
+        
+        Case PD_EDGE_SOBEL
+            getNameOfEdgeDetector = g_Language.TranslateMessage("Sobel edge detection")
+        
+        Case PD_EDGE_LAPLACIAN
+            getNameOfEdgeDetector = g_Language.TranslateMessage("Laplacian edge detection")
+        
+        Case PD_EDGE_HILITE
+            getNameOfEdgeDetector = g_Language.TranslateMessage("Hilite edge detection")
+        
+        Case PD_EDGE_PHOTODEMON
+            getNameOfEdgeDetector = g_Language.TranslateMessage("PhotoDemon edge detection")
+            
+    End Select
 
-Public Sub PhotoDemonLinearEdgeDetection(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    
-    Dim tmpString As String
-    
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("PhotoDemon linear edge detection") & "|"
-    
-    'Next comes an invert parameter
-    tmpString = tmpString & Str(Not blackBackground) & "|"
-    
-    'Next is the divisor and offset
-    tmpString = tmpString & "1|0|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|-1|0|-1|0|"
-    tmpString = tmpString & "0|0|4|0|0|"
-    tmpString = tmpString & "0|-1|0|-1|0|"
-    tmpString = tmpString & "0|0|0|0|0"
-    
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString, toPreview, dstPic
-    
-End Sub
+End Function
 
-Public Sub FilterPrewittHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'Given an edge detection type and a direction, return TRUE if the requested edge detector can be applied in a single pass.
+' Return FALSE if the function requires multiple image passes.
+Private Function isEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As Boolean
 
-    Dim tmpString As String
+    'Convolution matrix strings are assembled in two or three steps:
+    ' 1) Add divisor and offset values
+    ' 2 (optional) ) Check directionality and adjust behavior accordingly
+    ' 3) Build actual convolution matrix
+    Select Case edgeDetectionType
+        
+        Case PD_EDGE_ARTISTIC_CONTOUR
+            isEdgeDetectionSinglePass = True
     
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("Prewitt horizontal edge detection") & "|"
+        Case PD_EDGE_PREWITT
+            If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
+                isEdgeDetectionSinglePass = True
+            Else
+                isEdgeDetectionSinglePass = False
+            End If
+            
+        Case PD_EDGE_SOBEL
+            If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
+                isEdgeDetectionSinglePass = True
+            Else
+                isEdgeDetectionSinglePass = False
+            End If
+        
+        Case PD_EDGE_LAPLACIAN
+            isEdgeDetectionSinglePass = True
+            
+        'Hilite detection (doesn't support directionality)
+        Case PD_EDGE_HILITE
+            isEdgeDetectionSinglePass = True
+        
+        'PhotoDemon edge detection (doesn't support directionality)
+        Case PD_EDGE_PHOTODEMON
+            isEdgeDetectionSinglePass = True
     
-    'Next comes an invert parameter
-    tmpString = tmpString & Str(Not blackBackground) & "|"
-    
-    'Next is the divisor and offset
-    tmpString = tmpString & "1|0|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|-1|0|1|0|"
-    tmpString = tmpString & "0|-1|0|1|0|"
-    tmpString = tmpString & "0|-1|0|1|0|"
-    tmpString = tmpString & "0|0|0|0|0"
-    
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString, toPreview, dstPic
-    
-End Sub
+    End Select
 
-Public Sub FilterPrewittVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+End Function
 
-    Dim tmpString As String
-    
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("Prewitt vertical edge detection") & "|"
-    
-    'Next comes an invert parameter
-    tmpString = tmpString & Str(Not blackBackground) & "|"
-    
-    'Next is the divisor and offset
-    tmpString = tmpString & "1|0|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|1|1|1|0|"
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|-1|-1|-1|0|"
-    tmpString = tmpString & "0|0|0|0|0"
-    
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString, toPreview, dstPic
-    
-End Sub
+'Given an internal edge detection type (and optionally, a direction), calculate a matching convolution matrix and return it
+Private Function getParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As String
 
-Public Sub FilterSobelHorizontal(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+    Dim convoString As String
+    convoString = ""
+    
+    'Convolution matrix strings are assembled in two or three steps:
+    ' 1) Add divisor and offset values
+    ' 2 (optional) ) Check directionality and adjust behavior accordingly
+    ' 3) Build actual convolution matrix
+    Select Case edgeDetectionType
+    
+        Case PD_EDGE_PREWITT
+        
+            'Divisor/offset
+            convoString = convoString & "1|0|"
+            
+            'Actual convo matrix varies according to direction
+            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|-1|0|1|0|"
+                convoString = convoString & "0|-1|0|1|0|"
+                convoString = convoString & "0|-1|0|1|0|"
+                convoString = convoString & "0|0|0|0|0"
+            Else
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|1|1|1|0|"
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|-1|-1|-1|0|"
+                convoString = convoString & "0|0|0|0|0"
+            End If
+        
+        Case PD_EDGE_SOBEL
+            
+            'Divisor/offset
+            convoString = convoString & "1|0|"
+            
+            'Actual convo matrix varies according to direction
+            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|-1|0|1|0|"
+                convoString = convoString & "0|-2|0|2|0|"
+                convoString = convoString & "0|-1|0|1|0|"
+                convoString = convoString & "0|0|0|0|0"
+            Else
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|1|2|1|0|"
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|-1|-2|-1|0|"
+                convoString = convoString & "0|0|0|0|0"
+            End If
+        
+        Case PD_EDGE_LAPLACIAN
+            
+            'Actual convo matrix varies according to direction
+            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
+            
+                'Divisor/offset
+                convoString = convoString & "0.25|0|"
+                
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|-1|2|-1|0|"
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|0|0|0|0"
+                
+            ElseIf edgeDirectionality = PD_EDGE_DIR_VERTICAL Then
+            
+                'Divisor/offset
+                convoString = convoString & "0.25|0|"
+                
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|0|-1|0|0|"
+                convoString = convoString & "0|0|2|0|0|"
+                convoString = convoString & "0|0|-1|0|0|"
+                convoString = convoString & "0|0|0|0|0"
+                
+            Else
+            
+                'Divisor/offset
+                convoString = convoString & "0.5|0|"
+                
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|0|-1|0|0|"
+                convoString = convoString & "0|-1|4|-1|0|"
+                convoString = convoString & "0|0|-1|0|0|"
+                convoString = convoString & "0|0|0|0|0"
+            
+            End If
+        
+        'Hilite detection (doesn't support directionality)
+        Case PD_EDGE_HILITE
+            
+            'Divisor/offset
+            convoString = convoString & "1|0|"
+    
+            'Actual convo matrix
+            convoString = convoString & "0|0|0|0|0|"
+            convoString = convoString & "0|-4|-2|-1|0|"
+            convoString = convoString & "0|-2|10|0|0|"
+            convoString = convoString & "0|-1|0|0|0|"
+            convoString = convoString & "0|0|0|0|0"
+        
+        'PhotoDemon edge detection (doesn't support directionality)
+        Case PD_EDGE_PHOTODEMON
+        
+            'Divisor/offset
+            convoString = convoString & "1|0|"
+            
+            'Actual convo matrix
+            convoString = convoString & "0|1|0|0|0|"
+            convoString = convoString & "0|0|0|0|1|"
+            convoString = convoString & "0|0|-4|0|0|"
+            convoString = convoString & "1|0|0|0|0|"
+            convoString = convoString & "0|0|0|1|0"
+    
+    End Select
+    
+    getParamStringForEdgeDetector = convoString
 
-    Dim tmpString As String
-    
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("Sobel horizontal edge detection") & "|"
-    
-    'Next comes an invert parameter
-    tmpString = tmpString & Str(Not blackBackground) & "|"
-    
-    'Next is the divisor and offset
-    tmpString = tmpString & "1|0|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|-1|0|1|0|"
-    tmpString = tmpString & "0|-2|0|2|0|"
-    tmpString = tmpString & "0|-1|0|1|0|"
-    tmpString = tmpString & "0|0|0|0|0"
-    
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString, toPreview, dstPic
-    
-End Sub
-
-Public Sub FilterSobelVertical(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-
-    Dim tmpString As String
-    
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("Sobel vertical edge detection") & "|"
-    
-    'Next comes an invert parameter
-    tmpString = tmpString & Str(Not blackBackground) & "|"
-    
-    'Next is the divisor and offset
-    tmpString = tmpString & "1|0|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|1|2|1|0|"
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|-1|-2|-1|0|"
-    tmpString = tmpString & "0|0|0|0|0"
-    
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString, toPreview, dstPic
-    
-End Sub
-
-Public Sub FilterLaplacian(Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    
-    Dim tmpString As String
-    
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("Laplacian edge detection") & "|"
-    
-    'Next comes an invert parameter
-    tmpString = tmpString & Str(Not blackBackground) & "|"
-    
-    'Next is the divisor and offset
-    tmpString = tmpString & "1|0|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|0|-1|0|0|"
-    tmpString = tmpString & "0|-1|4|-1|0|"
-    tmpString = tmpString & "0|0|-1|0|0|"
-    tmpString = tmpString & "0|0|0|0|0"
-    
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString, toPreview, dstPic
-    
-End Sub
+End Function
 
 'This code is a modified version of an algorithm originally developed by Manuel Augusto Santos.  A link to his original
 ' implementation is available from the "Help -> About PhotoDemon" menu option.
@@ -437,15 +586,14 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Generate a list box with all the currently implemented edge detection algorithms
-    LstEdgeOptions.AddItem "Prewitt Horizontal"
-    LstEdgeOptions.AddItem "Prewitt Vertical"
-    LstEdgeOptions.AddItem "Sobel Horizontal"
-    LstEdgeOptions.AddItem "Sobel Vertical"
-    LstEdgeOptions.AddItem "Laplacian"
-    LstEdgeOptions.AddItem "Artistic Contour"
-    LstEdgeOptions.AddItem "Hilite"
-    LstEdgeOptions.AddItem "PhotoDemon Linear"
-    LstEdgeOptions.AddItem "PhotoDemon Cubic"
+    LstEdgeOptions.AddItem "Artistic contour", 0
+    LstEdgeOptions.AddItem "Hilite", 1
+    LstEdgeOptions.AddItem "Laplacian", 2
+    LstEdgeOptions.AddItem "PhotoDemon", 3
+    LstEdgeOptions.AddItem "Prewitt", 4
+    LstEdgeOptions.AddItem "Sobel", 5
+    
+    LstEdgeOptions.ListIndex = 0
     
 End Sub
 
@@ -454,48 +602,78 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub LstEdgeOptions_Click()
+    
+    cmdBar.markPreviewStatus False
+    
+    'Directionality is only supported by some transforms, so de/activate the directionality check boxes to match the
+    ' capabilities of the selected transform
+    Select Case LstEdgeOptions.ListIndex
+    
+        Case PD_EDGE_ARTISTIC_CONTOUR
+            changeCheckboxActivation False
+        
+        Case PD_EDGE_HILITE
+            changeCheckboxActivation False
+        
+        Case PD_EDGE_LAPLACIAN
+            changeCheckboxActivation True
+        
+        Case PD_EDGE_PHOTODEMON
+            changeCheckboxActivation False
+        
+        Case PD_EDGE_PREWITT
+            changeCheckboxActivation True
+        
+        Case PD_EDGE_SOBEL
+            changeCheckboxActivation True
+    
+    End Select
+    
+    cmdBar.markPreviewStatus True
     updatePreview
+    
 End Sub
 
-'Show the user a brief explanation of the algorithm in question.  Yes, the PhotoDemon routine descriptions are bullshit -
-' I know that already.  :)  But the descriptions make them sound more impressive than they actually are.
-' This sub also handles redrawing the edge detection preview.
+'Dis/enable the directionality checkboxes to match the request; when checkboxes are disabled, their value is automatically
+' forced to TRUE.
+Private Sub changeCheckboxActivation(ByVal toEnable As Boolean)
+
+    If toEnable Then
+    
+        chkDirection(0).Enabled = True
+        chkDirection(1).Enabled = True
+    
+    'Activate both directions, then disable the checkboxes
+    Else
+    
+        If Not chkDirection(0) Then chkDirection(0).Value = vbChecked
+        If Not chkDirection(1) Then chkDirection(1).Value = vbChecked
+        
+        chkDirection(0).Enabled = False
+        chkDirection(1).Enabled = False
+    
+    End If
+    
+End Sub
+
+'Convert the directionality checkboxes to PD's internal edge detection definitions
+Private Function getDirectionality() As PD_EDGE_DETECTION_DIRECTION
+
+    If CBool(chkDirection(0)) And Not CBool(chkDirection(1)) Then
+        getDirectionality = PD_EDGE_DIR_HORIZONTAL
+    ElseIf CBool(chkDirection(1)) And Not CBool(chkDirection(0)) Then
+        getDirectionality = PD_EDGE_DIR_VERTICAL
+    Else
+        getDirectionality = PD_EDGE_DIR_ALL
+    End If
+
+End Function
+
+'Update the live preview of the selected edge detection options
 Private Sub updatePreview()
     
     If cmdBar.previewsAllowed Then
-    
-        Select Case LstEdgeOptions.ListIndex
-        
-            Case 0
-                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1" & vbCrLf & "-1 0 1"
-                FilterPrewittHorizontal CBool(chkInvert.Value), True, fxPreview
-            Case 1
-                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 -1 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  1  1"
-                FilterPrewittVertical CBool(chkInvert.Value), True, fxPreview
-            Case 2
-                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 0 1" & vbCrLf & "-2 0 2" & vbCrLf & "-1 0 1"
-                FilterSobelHorizontal CBool(chkInvert.Value), True, fxPreview
-            Case 3
-                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-1 -2 -1" & vbCrLf & " 0  0  0" & vbCrLf & " 1  2  1"
-                FilterSobelVertical CBool(chkInvert.Value), True, fxPreview
-            Case 4
-                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & " 0 -1  0" & vbCrLf & "-1  4 -1" & vbCrLf & " 0 -1  0"
-                FilterLaplacian CBool(chkInvert.Value), True, fxPreview
-            Case 5
-                LblDesc = g_Language.TranslateMessage("Algorithm designed to present a clean, artistic prediction of image edges.")
-                FilterSmoothContour CBool(chkInvert.Value), True, fxPreview
-            Case 6
-                LblDesc = g_Language.TranslateMessage("Simple matrix method:") & vbCrLf & vbCrLf & "-4 -2 -1" & vbCrLf & "-2 10  0" & vbCrLf & "-1  0  0"
-                FilterHilite CBool(chkInvert.Value), True, fxPreview
-            Case 7
-                LblDesc = g_Language.TranslateMessage("Simple mathematical routine based on linear relationships between diagonal pixels.")
-                PhotoDemonLinearEdgeDetection CBool(chkInvert.Value), True, fxPreview
-            Case 8
-                LblDesc = g_Language.TranslateMessage("Advanced mathematical routine based on cubic relationships between diagonal pixels.")
-                PhotoDemonCubicEdgeDetection CBool(chkInvert.Value), True, fxPreview
-        
-        End Select
-        
+        ApplyEdgeDetection LstEdgeOptions.ListIndex, getDirectionality(), CBool(chkInvert.Value), True, fxPreview
     End If
     
 End Sub
