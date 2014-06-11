@@ -1204,7 +1204,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormSunshine
             Else
-                FormSunshine.SunShine cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
+                FormSunshine.SunShine cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetDouble(6)
             End If
             
         Case "Water"
