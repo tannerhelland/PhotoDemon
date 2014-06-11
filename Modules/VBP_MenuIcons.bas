@@ -416,15 +416,14 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "EDGEENHANCE", 7, 5, 1    'Enhance Edges
         addMenuIcon "EDGES", 7, 5, 2          'Find Edges
         addMenuIcon "TRACECONTOUR", 7, 5, 3   'Trace Contour
-    addMenuIcon "OTHER", 7, 6           'Fun
-        '--> Fun sub-menu
-        addMenuIcon "ALIEN", 7, 6, 0          'Alien
-        addMenuIcon "BLACKLIGHT", 7, 6, 1     'Blacklight
-        addMenuIcon "DREAM", 7, 6, 2          'Dream
-        addMenuIcon "RADIOACTIVE", 7, 6, 3    'Radioactive
-        addMenuIcon "SYNTHESIZE", 7, 6, 4     'Synthesize
-        addMenuIcon "HEATMAP", 7, 6, 5        'Thermograph
-        addMenuIcon "VIBRATE", 7, 6, 6        'Vibrate
+        
+    addMenuIcon "SUNSHINE", 7, 6        'Lights and shadows
+        '--> Lights and shadows sub-menu
+        addMenuIcon "BLACKLIGHT", 7, 6, 0     'Blacklight
+        addMenuIcon "DILATE", 7, 6, 1         'Dilate
+        addMenuIcon "ERODE", 7, 6, 2          'Erode
+        addMenuIcon "SUNSHINE", 7, 6, 3       'Sunshine
+    
     addMenuIcon "NATURAL", 7, 7         'Natural
         '--> Natural sub-menu
         addMenuIcon "ATMOSPHERE", 7, 7, 0     'Atmosphere
@@ -434,27 +433,36 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "LAVA", 7, 7, 4           'Lava
         addMenuIcon "RAINBOW", 7, 7, 5        'Rainbow
         addMenuIcon "STEEL", 7, 7, 6          'Steel
-        addMenuIcon "SUNSHINE", 7, 7, 7       'Sunshine
-        addMenuIcon "RAIN", 7, 7, 8           'Water
+        addMenuIcon "RAIN", 7, 7, 7           'Water
+        
     addMenuIcon "NOISE", 7, 8           'Noise
         '--> Noise sub-menu
         addMenuIcon "FILMGRAIN", 7, 8, 0      'Film grain
         addMenuIcon "ADDNOISE", 7, 8, 1       'Add Noise
         addMenuIcon "MEDIAN", 7, 8, 3         'Median
+        
     addMenuIcon "SHARPEN", 7, 9         'Sharpen
         '--> Sharpen sub-menu
         addMenuIcon "SHARPEN", 7, 9, 0       'Sharpen
         addMenuIcon "UNSHARP", 7, 9, 1       'Unsharp
+        
     addMenuIcon "STYLIZE", 7, 10        'Stylize
         '--> Stylize sub-menu
         addMenuIcon "ANTIQUE", 7, 10, 0       'Antique (Sepia)
         addMenuIcon "DIFFUSE", 7, 10, 1       'Diffuse
-        addMenuIcon "DILATE", 7, 10, 2        'Dilate
-        addMenuIcon "ERODE", 7, 10, 3         'Erode
-        addMenuIcon "SOLARIZE", 7, 10, 4      'Solarize
-        addMenuIcon "TWINS", 7, 10, 5         'Twins
-        addMenuIcon "VIGNETTE", 7, 10, 6      'Vignetting
+        addMenuIcon "SOLARIZE", 7, 10, 2      'Solarize
+        addMenuIcon "TWINS", 7, 10, 3         'Twins
+        addMenuIcon "VIGNETTE", 7, 10, 4      'Vignetting
     addMenuIcon "CUSTFILTER", 7, 12     'Custom Filter
+    
+    addMenuIcon "OTHER", 7, 14           'Experimental
+        '--> Experimental sub-menu
+        addMenuIcon "ALIEN", 7, 14, 0          'Alien
+        addMenuIcon "DREAM", 7, 14, 1          'Dream
+        addMenuIcon "RADIOACTIVE", 7, 14, 2    'Radioactive
+        addMenuIcon "SYNTHESIZE", 7, 14, 3     'Synthesize
+        addMenuIcon "HEATMAP", 7, 14, 4        'Thermograph
+        addMenuIcon "VIBRATE", 7, 14, 5        'Vibrate
     
     'Tools Menu
     addMenuIcon "LANGUAGES", 8, 0       'Languages
