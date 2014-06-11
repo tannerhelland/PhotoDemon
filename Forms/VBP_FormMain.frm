@@ -833,7 +833,7 @@ Begin VB.Form FormMain
          Caption         =   "Fade last effect"
          Enabled         =   0   'False
       End
-      Begin VB.Menu MnuFilterSepBar2 
+      Begin VB.Menu MnuFilterSepBar0 
          Caption         =   "-"
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1017,28 +1017,23 @@ Begin VB.Form FormMain
          End
       End
       Begin VB.Menu MnuEffectUpper 
-         Caption         =   "Experimental"
+         Caption         =   "Lights and shadows"
          Index           =   4
-         Begin VB.Menu MnuAlien 
-            Caption         =   "Alien"
-         End
-         Begin VB.Menu MnuBlackLight 
+         Begin VB.Menu MnuLightShadow 
             Caption         =   "Black light..."
+            Index           =   0
          End
-         Begin VB.Menu MnuDream 
-            Caption         =   "Dream"
+         Begin VB.Menu MnuLightShadow 
+            Caption         =   "Dilate..."
+            Index           =   1
          End
-         Begin VB.Menu MnuRadioactive 
-            Caption         =   "Radioactive"
+         Begin VB.Menu MnuLightShadow 
+            Caption         =   "Erode..."
+            Index           =   2
          End
-         Begin VB.Menu MnuSynthesize 
-            Caption         =   "Synthesize"
-         End
-         Begin VB.Menu MnuHeatmap 
-            Caption         =   "Thermograph (heat map)"
-         End
-         Begin VB.Menu MnuVibrate 
-            Caption         =   "Vibrate"
+         Begin VB.Menu MnuLightShadow 
+            Caption         =   "Sunshine..."
+            Index           =   3
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1071,10 +1066,6 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuNatureFilter 
             Caption         =   "Steel"
             Index           =   6
-         End
-         Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Sunshine"
-            Index           =   7
          End
          Begin VB.Menu MnuNatureFilter 
             Caption         =   "Underwater"
@@ -1125,24 +1116,16 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Dilate..."
+            Caption         =   "Solarize..."
             Index           =   2
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Erode..."
+            Caption         =   "Twins..."
             Index           =   3
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Solarize..."
-            Index           =   4
-         End
-         Begin VB.Menu MnuStylize 
-            Caption         =   "Twins..."
-            Index           =   5
-         End
-         Begin VB.Menu MnuStylize 
             Caption         =   "Vignetting..."
-            Index           =   6
+            Index           =   4
          End
       End
       Begin VB.Menu MnuFilterSepBar1 
@@ -1150,6 +1133,31 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuCustomFilter 
          Caption         =   "Custom filter..."
+      End
+      Begin VB.Menu MnuFilterSepBar2 
+         Caption         =   "-"
+      End
+      Begin VB.Menu MnuEffectExperimental 
+         Caption         =   "Experimental"
+         Index           =   4
+         Begin VB.Menu MnuAlien 
+            Caption         =   "Alien"
+         End
+         Begin VB.Menu MnuDream 
+            Caption         =   "Dream"
+         End
+         Begin VB.Menu MnuRadioactive 
+            Caption         =   "Radioactive"
+         End
+         Begin VB.Menu MnuSynthesize 
+            Caption         =   "Synthesize"
+         End
+         Begin VB.Menu MnuHeatmap 
+            Caption         =   "Thermograph (heat map)"
+         End
+         Begin VB.Menu MnuVibrate 
+            Caption         =   "Vibrate"
+         End
       End
       Begin VB.Menu MnuTest 
          Caption         =   "Test"
@@ -1679,6 +1687,31 @@ Private Sub MnuLayerSize_Click(Index As Integer)
         'Content-aware resize
         Case 3
             Process "Content-aware resize", True
+    
+    End Select
+
+End Sub
+
+'Lights and shadows effect menu
+Private Sub MnuLightShadow_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Black light
+        Case 0
+            Process "Black light", True
+        
+        'Dilate (maximum rank)
+        Case 1
+            Process "Dilate (maximum rank)", True
+        
+        'Erode (minimum rank)
+        Case 2
+            Process "Erode (minimum rank)", True
+            
+        'Sunshine
+        Case 3
+            Process "Sunshine", True
     
     End Select
 
@@ -2225,11 +2258,6 @@ Private Sub MnuArtistic_Click(Index As Integer)
     
     End Select
 
-End Sub
-
-
-Private Sub MnuBlackLight_Click()
-    Process "Black light", True
 End Sub
 
 'All blur filters are handled here
@@ -3029,12 +3057,8 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
         Case 6
             Process "Steel", , , UNDO_LAYER
         
-        'Sunshine
-        Case 7
-            Process "Sunshine", True
-        
         'Water
-        Case 8
+        Case 7
             Process "Water", , , UNDO_LAYER
     
     End Select
@@ -3295,24 +3319,16 @@ Private Sub MnuStylize_Click(Index As Integer)
         Case 1
             Process "Diffuse", True
         
-        'Dilate (maximum rank)
-        Case 2
-            Process "Dilate (maximum rank)", True
-        
-        'Erode (minimum rank)
-        Case 3
-            Process "Erode (minimum rank)", True
-        
         'Solarize
-        Case 4
+        Case 2
             Process "Solarize", True
 
         'Twins
-        Case 5
+        Case 3
             Process "Twins", True
             
         'Vignetting
-        Case 6
+        Case 4
             Process "Vignetting", True
     
     End Select
@@ -3325,9 +3341,11 @@ End Sub
 
 Private Sub MnuTest_Click()
     
-    showPDDialog vbModal, FormGlassTiles
+    'Want to test a new dialog?  Call it here:
+    'showPDDialog vbModal, FormToTest
     
     MenuTest
+    
 End Sub
 
 'All tool menu items are launched from here
