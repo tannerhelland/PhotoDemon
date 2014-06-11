@@ -1017,7 +1017,7 @@ Begin VB.Form FormMain
          End
       End
       Begin VB.Menu MnuEffectUpper 
-         Caption         =   "Lights and shadows"
+         Caption         =   "Light and shadow"
          Index           =   4
          Begin VB.Menu MnuLightShadow 
             Caption         =   "Black light..."
@@ -1032,8 +1032,12 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Sunshine..."
+            Caption         =   "Rainbow..."
             Index           =   3
+         End
+         Begin VB.Menu MnuLightShadow 
+            Caption         =   "Sunshine..."
+            Index           =   4
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1060,16 +1064,12 @@ Begin VB.Form FormMain
             Index           =   4
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Rainbow"
+            Caption         =   "Steel"
             Index           =   5
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Steel"
-            Index           =   6
-         End
-         Begin VB.Menu MnuNatureFilter 
             Caption         =   "Underwater"
-            Index           =   8
+            Index           =   6
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1709,8 +1709,12 @@ Private Sub MnuLightShadow_Click(Index As Integer)
         Case 2
             Process "Erode (minimum rank)", True
             
-        'Sunshine
+        'Rainbow
         Case 3
+            Process "Rainbow", True
+            
+        'Sunshine
+        Case 4
             Process "Sunshine", True
     
     End Select
@@ -3048,17 +3052,13 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
         'Lava
         Case 4
             Process "Lava", , , UNDO_LAYER
-                
-        'Rainbow
-        Case 5
-            Process "Rainbow", , , UNDO_LAYER
         
         'Steel
-        Case 6
+        Case 5
             Process "Steel", , , UNDO_LAYER
         
         'Water
-        Case 7
+        Case 6
             Process "Water", , , UNDO_LAYER
     
     End Select
