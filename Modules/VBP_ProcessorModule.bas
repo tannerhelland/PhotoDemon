@@ -1149,33 +1149,42 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
             
         
-        'Experimental
+        'Lights and shadows
         
-        Case "Alien"
-            MenuAlien
-            
         Case "Black light"
             If showDialog Then
                 showPDDialog vbModal, FormBlackLight
             Else
                 FormBlackLight.fxBlackLight cParams.GetDouble(1)
             End If
-            
-        Case "Dream"
-            MenuDream
-            
-        Case "Radioactive"
-            MenuRadioactive
-            
-        Case "Synthesize"
-            MenuSynthesize
         
-        Case "Thermograph (heat map)"
-            MenuHeatMap
-        
-        Case "Vibrate"
-            MenuVibrate
-        
+        Case "Dilate (maximum rank)"
+            If showDialog Then
+                FormMedian.showMedianDialog 100
+            Else
+                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
+            End If
+            
+        Case "Erode (minimum rank)"
+            If showDialog Then
+                FormMedian.showMedianDialog 1
+            Else
+                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
+            End If
+            
+        Case "Rainbow"
+            If showDialog Then
+                showPDDialog vbModal, FormRainbow
+            Else
+                FormRainbow.ApplyRainbowEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
+            End If
+            
+        Case "Sunshine"
+            If showDialog Then
+                showPDDialog vbModal, FormSunshine
+            Else
+                FormSunshine.SunShine cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetDouble(6)
+            End If
         
         'Natural
         
@@ -1193,19 +1202,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Lava"
             MenuLava
-            
-        Case "Rainbow"
-            MenuRainbow
-        
+                    
         Case "Steel"
             MenuSteel
-            
-        Case "Sunshine"
-            If showDialog Then
-                showPDDialog vbModal, FormSunshine
-            Else
-                FormSunshine.SunShine cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetDouble(6)
-            End If
             
         Case "Water"
             MenuWater
@@ -1263,21 +1262,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormDiffuse.DiffuseCustom cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
-            
-        Case "Dilate (maximum rank)"
-            If showDialog Then
-                FormMedian.showMedianDialog 100
-            Else
-                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
-            End If
-            
-        Case "Erode (minimum rank)"
-            If showDialog Then
-                FormMedian.showMedianDialog 1
-            Else
-                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
-            End If
-        
+                
         Case "Solarize"
             If showDialog Then
                 showPDDialog vbModal, FormSolarize
@@ -1310,6 +1295,28 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
         
         
+        'Experimental
+        
+        Case "Alien"
+            MenuAlien
+                    
+        Case "Dream"
+            MenuDream
+            
+        Case "Radioactive"
+            MenuRadioactive
+            
+        Case "Synthesize"
+            MenuSynthesize
+        
+        Case "Thermograph (heat map)"
+            MenuHeatMap
+        
+        Case "Vibrate"
+            MenuVibrate
+            
+            
+            
         'SPECIAL OPERATIONS
         Case "Fade last effect"
             MenuFadeLastEffect

@@ -422,7 +422,8 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "BLACKLIGHT", 7, 6, 0     'Blacklight
         addMenuIcon "DILATE", 7, 6, 1         'Dilate
         addMenuIcon "ERODE", 7, 6, 2          'Erode
-        addMenuIcon "SUNSHINE", 7, 6, 3       'Sunshine
+        addMenuIcon "RAINBOW", 7, 6, 3        'Rainbow
+        addMenuIcon "SUNSHINE", 7, 6, 4       'Sunshine
     
     addMenuIcon "NATURAL", 7, 7         'Natural
         '--> Natural sub-menu
@@ -431,9 +432,8 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "FOG", 7, 7, 2            'Fog
         addMenuIcon "FREEZE", 7, 7, 3         'Freeze
         addMenuIcon "LAVA", 7, 7, 4           'Lava
-        addMenuIcon "RAINBOW", 7, 7, 5        'Rainbow
-        addMenuIcon "STEEL", 7, 7, 6          'Steel
-        addMenuIcon "RAIN", 7, 7, 7           'Water
+        addMenuIcon "STEEL", 7, 7, 5          'Steel
+        addMenuIcon "RAIN", 7, 7, 6           'Water
         
     addMenuIcon "NOISE", 7, 8           'Noise
         '--> Noise sub-menu
