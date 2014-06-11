@@ -27,7 +27,7 @@ Begin VB.Form FormSunshine
       Height          =   495
       Left            =   6000
       TabIndex        =   3
-      Top             =   2010
+      Top             =   1875
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -59,7 +59,7 @@ Begin VB.Form FormSunshine
       Height          =   495
       Left            =   6000
       TabIndex        =   4
-      Top             =   3000
+      Top             =   2850
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -141,16 +141,35 @@ Begin VB.Form FormSunshine
       Height          =   615
       Left            =   6120
       TabIndex        =   10
-      Top             =   4080
+      Top             =   3915
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   1085
       curColor        =   8978431
    End
-   Begin VB.Label lblShadow 
+   Begin PhotoDemon.sliderTextCombo sltVariance 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   5100
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "shine color:"
+      Caption         =   "color variance:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -162,10 +181,32 @@ Begin VB.Form FormSunshine
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
+      Index           =   3
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   4740
+      Width           =   1560
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "color:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   2
       Left            =   6000
       TabIndex        =   11
-      Top             =   3720
-      Width           =   1245
+      Top             =   3555
+      Width           =   615
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent
@@ -200,7 +241,7 @@ Begin VB.Form FormSunshine
       Top             =   120
       Width           =   2205
    End
-   Begin VB.Label lblSaturation 
+   Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "number of rays:"
@@ -215,12 +256,13 @@ Begin VB.Form FormSunshine
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
+      Index           =   1
       Left            =   6000
       TabIndex        =   1
-      Top             =   2640
+      Top             =   2490
       Width           =   1710
    End
-   Begin VB.Label lblHue 
+   Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "radius:"
@@ -235,9 +277,10 @@ Begin VB.Form FormSunshine
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
+      Index           =   0
       Left            =   6000
       TabIndex        =   0
-      Top             =   1680
+      Top             =   1545
       Width           =   735
    End
 End
@@ -251,7 +294,7 @@ Attribute VB_Exposed = False
 'Copyright ©2013-2014 by Audioglider
 'Created: 30/May/14
 'Last updated: 04/June/14
-'Last update: integrated Audioglider's great work into master
+'Last update: added "color variance" control
 '
 'This filter simulates the sun by generating a starburst effect. The X, Y
 ' coordinates sets the center of the burst, the Radius adjusts the size of
@@ -268,30 +311,11 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'Returns the largest integer not greater than x.
-Private Function Floor(ByVal x As Double) As Long
-    Floor = (-Int(x) * (-1))
-End Function
-
-Private Function GetGauss() As Double
+'Apply a "sunshine" or "starburst" effect to an image
+Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpokeColor As Long, ByVal lColorShift As Long, Optional ByVal centerX As Double = 0.1, Optional ByVal centerY As Double = 0.1, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    Dim sum As Double
-    Dim i As Long
+    If Not toPreview Then Message "Generating rays of happiness..."
     
-    Randomize Timer
-    
-    sum = 0
-    For i = 0 To 5
-        sum = sum + Rnd()
-    Next i
-    GetGauss = sum / 6
-    
-End Function
-
-Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpokeColor As Long, Optional ByVal centerX As Double = 0.1, Optional ByVal centerY As Double = 0.1, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    
-    If toPreview = False Then Message "Generating rays of happiness..."
-        
     Dim i As Long
     Dim m_Radius As Double
     Dim m_Count As Long
@@ -299,21 +323,52 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     Dim m_SpokeColorR() As Single, m_SpokeColorG() As Single, m_SpokeColorB() As Single
     Dim newR As Double, newG As Double, newB As Double
     
+    Dim r As Long, g As Long, b As Long
+    
+    Dim rFloat As Double, gFloat As Double, bFloat As Double
+    Dim h As Double, s As Double
+    
+    'Additional color variables
+    Dim u As Double, v As Double, t As Double
+    Dim w As Double, w1 As Double, ws As Double, fRatio As Double
+    Dim spokeRed As Double, spokeGreen As Double, spokeBlue As Double
+    
     newR = ExtractR(lSpokeColor) / 255
     newG = ExtractG(lSpokeColor) / 255
     newB = ExtractB(lSpokeColor) / 255
     
+    'Calculate HSV equivalents of the target color
+    fRGBtoHSV newR / 255, newG / 255, newB / 255, h, s, v
+    
     m_Radius = lRadius
     m_Count = lSpokeCount
+    
+    Dim colorShiftThreshold As Double
+    colorShiftThreshold = lColorShift / 200
     
     ReDim m_Spoke(0 To m_Count - 1)
     ReDim m_SpokeColorR(0 To m_Count - 1) As Single, m_SpokeColorG(0 To m_Count - 1) As Single, m_SpokeColorB(0 To m_Count - 1) As Single
     
+    Randomize Timer
+    
     For i = 0 To m_Count - 1
         m_Spoke(i) = GetGauss
-        m_SpokeColorR(i) = newR
-        m_SpokeColorG(i) = newG
-        m_SpokeColorB(i) = newB
+        
+        'Randomize hue for this spoke according to the incoming threshold
+        If colorShiftThreshold > 0 Then
+        
+            fHSVtoRGB h + (Rnd * 2 - 1) * colorShiftThreshold, s, v, rFloat, gFloat, bFloat
+        
+            m_SpokeColorR(i) = rFloat * 255
+            m_SpokeColorG(i) = gFloat * 255
+            m_SpokeColorB(i) = bFloat * 255
+        
+        Else
+            m_SpokeColorR(i) = newR
+            m_SpokeColorG(i) = newG
+            m_SpokeColorB(i) = newB
+        End If
+        
     Next i
     
     'Create a local array and point it at the pixel data of the current image
@@ -342,9 +397,7 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     finalY = curDIBValues.Bottom
             
     'If this is a preview, we need to adjust the radius values to match the size of the preview box
-    If toPreview Then
-        m_Radius = m_Radius * curDIBValues.previewModifier
-    End If
+    If toPreview Then m_Radius = m_Radius * curDIBValues.previewModifier
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -362,14 +415,7 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     midX = midX + initX
     midY = CDbl(finalY - initY) * centerY
     midY = midY + initY
-    
-    'Color variables
-    Dim r As Long, g As Long, b As Long
-    
-    Dim u As Double, v As Double, t As Double
-    Dim w As Double, w1 As Double, ws As Double, fRatio As Double
-    Dim spokeRed As Double, spokeGreen As Double, spokeBlue As Double
-    
+        
     'Because x and y values are recalculated according to the image's center and the user's selected radius, we can precalculate
     ' all x/y values in advance.  This saves us a little time inside the main loop.
     ' NOTE: on modern processors, doubles are faster to calculate in-line than singles.  However, doubles are slower when accessing
@@ -459,9 +505,39 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     
 End Sub
 
+'Returns the largest integer not greater than x.
+Private Function Floor(ByVal x As Double) As Long
+    Floor = (-Int(x) * (-1))
+End Function
+
+Private Function GetGauss() As Double
+    
+    Dim sum As Double
+    Dim i As Long
+    
+    Randomize Timer
+    
+    sum = 0
+    For i = 0 To 5
+        sum = sum + Rnd()
+    Next i
+    GetGauss = sum / 6
+    
+End Function
+
+Private Function fClamp(ByVal t As Double, ByVal dLow As Double, ByVal dHigh As Double) As Double
+    If t < dHigh Then
+        If t > dLow Then fClamp = t Else fClamp = dLow
+        Exit Function
+    End If
+    fClamp = dHigh
+End Function
+
+'OK button
 Private Sub cmdBar_OKClick()
-    Process "Sunshine", , buildParams(sltRadius.Value, sltRayCount.Value, cpShine.Color, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Sunshine", , buildParams(sltRadius.Value, sltRayCount.Value, cpShine.Color, sltVariance.Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
+
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub
@@ -518,17 +594,14 @@ Private Sub sltRayCount_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then SunShine sltRadius.Value, sltRayCount.Value, cpShine.Color, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then SunShine sltRadius.Value, sltRayCount.Value, cpShine.Color, sltVariance.Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
+
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
-Private Function fClamp(ByVal t As Double, ByVal dLow As Double, ByVal dHigh As Double) As Double
-    If t < dHigh Then
-        If t > dLow Then fClamp = t Else fClamp = dLow
-        Exit Function
-    End If
-    fClamp = dHigh
-End Function
+Private Sub sltVariance_Change()
+    updatePreview
+End Sub
