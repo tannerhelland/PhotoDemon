@@ -24,6 +24,14 @@ Begin VB.Form FormLevels
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   858
    ShowInTaskbar   =   0   'False
+   Begin VB.CommandButton cmdAutoLevels 
+      Caption         =   "Auto-Levels"
+      Height          =   450
+      Left            =   8040
+      TabIndex        =   21
+      Top             =   5250
+      Width           =   2655
+   End
    Begin PhotoDemon.jcbutton cmdColorSelect 
       Height          =   375
       Index           =   0
@@ -460,8 +468,9 @@ Attribute VB_Exposed = False
 'Image Levels
 'Copyright ©2006-2014 by Tanner Helland
 'Created: 22/July/06
-'Last updated: 08/June/14
-'Last update: new support for per-channel levels (red, green, blue, and luminance/"RGB" channels)
+'Last updated: 11/June/14
+'Last update: add a best-in-class Auto Levels implementation.  (Seriously, PD's algorithm kicks GIMP and Paint.NET's collective
+'              auto-leveling asses :)
 '
 'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool, and identical
 ' values entered into both programs should yield an identical image.
@@ -470,7 +479,7 @@ Attribute VB_Exposed = False
 ' To mitigate the speed implications of such convoluted math, a number of look-up tables are used.  This makes the
 ' function quite fast, but at a hit to readability.  My apologies to anyone trying to understand how the function works.
 '
-'As of June '14, per-channel levels are now supported.
+'As of June '14, per-channel levels, set-by-color options, and Auto Levels are now supported.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -532,6 +541,242 @@ Private m_DisableMaxMinLimits As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+'Auto levels wil calculate new levels for the user, using the getIdealLevelParamString function below
+Private Sub cmdAutoLevels_Click()
+    
+    'Retrieve the ideal level param string
+    Dim pString As String
+    pString = getIdealLevelParamString(pdImages(g_CurrentImage).getActiveDIB)
+    
+    'Level value parsing is easily handled via PD's standard param string parser class
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString pString
+    
+    Dim i As Long, j As Long
+    For i = 0 To 19
+        m_LevelValues(i \ 5, i Mod 5) = cParams.GetDouble(i + 1)
+    Next i
+
+    'Update the text boxes to match the new values
+    updateTextBoxes
+    
+    'Redraw the screen
+    updatePreview
+    
+End Sub
+
+'Returns the ideal param string for a given DIB.  "Auto levels" relies on this function to retrieve best values for a function.
+' Note that PD's White Balance tool is effectively just an auto-levels function, with a variable "ignore percentage" that the
+' user can set.  Similarly, the shadow/highlights tool allows for separate "ignore percentages" for shadows and highlights, but
+' is otherwise effectively this same algorithm.
+Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
+
+    'Create a local array and point it at the source DIB's pixel data
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = srcDIB.getDIBColorDepth \ 8
+    
+    'Color values
+    Dim r As Long, g As Long, b As Long, l As Long
+    
+    'Maximum and minimum values, which will be detected by our initial histogram run
+    Dim rMax As Byte, gMax As Byte, bMax As Byte, lMax As Byte
+    Dim rMin As Byte, gMin As Byte, bMin As Byte, lMin As Byte
+    rMax = 0: gMax = 0: bMax = 0: lMax = 0
+    rMin = 255: gMin = 255: bMin = 255: lMin = 255
+    
+    'Calculate a percentage to ignore at either end.  Photoshop defaults to 0.5%, but the actual value might need to vary on
+    ' a per-image basis... hard to know what the best approach is.
+    Dim percentIgnore As Double
+    percentIgnore = 0.005
+    
+    'Prepare histogram arrays
+    Dim rCount(0 To 255) As Long, gCount(0 To 255) As Long, bCount(0 To 255) As Long, lCount(0 To 255) As Long
+    For x = 0 To 255
+        rCount(x) = 0
+        gCount(x) = 0
+        bCount(x) = 0
+        lCount(x) = 0
+    Next x
+    
+    'Build an image histogram
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        rCount(r) = rCount(r) + 1
+        gCount(g) = gCount(g) + 1
+        bCount(b) = bCount(b) + 1
+        
+        l = (213 * r + 715 * g + 72 * b) \ 1000
+        lCount(l) = lCount(l) + 1
+    Next y
+    Next x
+    
+     'With the histogram complete, we can now figure out how to stretch the RGB channels. We do this by calculating a min/max
+    ' ratio where the top and bottom 0.05% (or user-specified value) of pixels are ignored.
+    
+    Dim foundYet As Boolean
+    foundYet = False
+    
+    Dim NumOfPixels As Long
+    NumOfPixels = (finalX + 1) * (finalY + 1)
+    
+    Dim wbThreshold As Long
+    wbThreshold = NumOfPixels * percentIgnore
+    
+    r = 0: g = 0: b = 0: l = 0
+    
+    Dim rTally As Long, gTally As Long, bTally As Long, lTally As Long
+    rTally = 0: gTally = 0: bTally = 0: lTally = 0
+    
+    'Find minimum values of red, green, blue, and luminance
+    Do
+        If rCount(r) + rTally < wbThreshold Then
+            r = r + 1
+            rTally = rTally + rCount(r)
+        Else
+            rMin = r
+            foundYet = True
+        End If
+    Loop While foundYet = False
+        
+    foundYet = False
+        
+    Do
+        If gCount(g) + gTally < wbThreshold Then
+            g = g + 1
+            gTally = gTally + gCount(g)
+        Else
+            gMin = g
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    foundYet = False
+    
+    Do
+        If bCount(b) + bTally < wbThreshold Then
+            b = b + 1
+            bTally = bTally + bCount(b)
+        Else
+            bMin = b
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    foundYet = False
+    
+    Do
+        If lCount(l) + lTally < wbThreshold Then
+            l = l + 1
+            lTally = lTally + lCount(l)
+        Else
+            lMin = l
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    'Now, find maximum values of red, green, blue, and luminance
+    foundYet = False
+    
+    r = 255: g = 255: b = 255: l = 255
+    rTally = 0: gTally = 0: bTally = 0: lTally = 0
+    
+    Do
+        If rCount(r) + rTally < wbThreshold Then
+            r = r - 1
+            rTally = rTally + rCount(r)
+        Else
+            rMax = r
+            foundYet = True
+        End If
+    Loop While foundYet = False
+        
+    foundYet = False
+        
+    Do
+        If gCount(g) + gTally < wbThreshold Then
+            g = g - 1
+            gTally = gTally + gCount(g)
+        Else
+            gMax = g
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    foundYet = False
+    
+    Do
+        If bCount(b) + bTally < wbThreshold Then
+            b = b - 1
+            bTally = bTally + bCount(b)
+        Else
+            bMax = b
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    foundYet = False
+    
+    Do
+        If lCount(l) + lTally < wbThreshold Then
+            l = l - 1
+            lTally = lTally + lCount(l)
+        Else
+            lMax = l
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    'We now have an idealized max/min for each of red, green, blue, and luminance.
+    
+    'One of the problems with auto-levels is that it can introduce nasty color casts to the image.  Consider an image of a Caucasian
+    ' human face; generally speaking, red tends to be exposed fairly equally across skin tones, but green and blue are much more
+    ' variable according to background elements.  A face against a bright blue sky will tend to have blue concentrated at the high
+    ' end of the scale, so when we auto-level it, those blue levels will get spread across the full spectrum, introducing an
+    ' unpleasant purplish-cast across the subject's skin.
+    
+    'To avoid this in PD (and to produce a really kick-ass Auto-Level result), we split the calculated auto-level adjustment equally
+    ' between per-channel corrections and net luminance corrections.  This roughly maintains the existing color spread of the image,
+    ' while removing any obviously bad results, and producing a consistently well-exposed final image.  It also serves to balance out
+    ' color temperature in an elegant way, without subjecting photos to the standard over-cooled look of other auto-level tools.
+    rMin = rMin \ 2
+    gMin = gMin \ 2
+    bMin = bMin \ 2
+    lMin = lMin \ 2
+    
+    rMax = rMax + ((255 - rMax) \ 2)
+    gMax = gMax + ((255 - gMax) \ 2)
+    bMax = bMax + ((255 - bMax) \ 2)
+    lMax = lMax + ((255 - lMax) \ 2)
+    
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Return our assembled data in param-string compatible format
+    getIdealLevelParamString = buildParams(rMin, 0.5, rMax, 0, 255, gMin, 0.5, gMax, 0, 255, bMin, 0.5, bMax, 0, 255, lMin, 0.5, lMax, 0, 255)
+
+End Function
 
 'Because the Levels dialog only uses one set of UI controls for all channels, we must manually write out preset data for each channel.
 ' This event will be raised whenever the command bar needs custom data from us.
