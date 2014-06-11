@@ -649,18 +649,18 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Loop While foundYet = False
     
     'Finally, calculate the difference between max and min for each color
-    Dim rdif As Long, Gdif As Long, Bdif As Long
-    rdif = CLng(rMax) - CLng(rMin)
-    Gdif = CLng(gMax) - CLng(gMin)
-    Bdif = CLng(bMax) - CLng(bMin)
+    Dim rDif As Long, gDif As Long, bDif As Long
+    rDif = CLng(rMax) - CLng(rMin)
+    gDif = CLng(gMax) - CLng(gMin)
+    bDif = CLng(bMax) - CLng(bMin)
     
     'We can now build a final set of look-up tables that contain the results of every possible color transformation
     Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
     
     For x = 0 To 255
-        If rdif <> 0 Then r = 255 * ((x - rMin) / rdif) Else r = x
-        If Gdif <> 0 Then g = 255 * ((x - gMin) / Gdif) Else g = x
-        If Bdif <> 0 Then b = 255 * ((x - bMin) / Bdif) Else b = x
+        If rDif <> 0 Then r = 255 * ((x - rMin) / rDif) Else r = x
+        If gDif <> 0 Then g = 255 * ((x - gMin) / gDif) Else g = x
+        If bDif <> 0 Then b = 255 * ((x - bMin) / bDif) Else b = x
         If r > 255 Then r = 255
         If r < 0 Then r = 0
         If g > 255 Then g = 255
@@ -971,18 +971,18 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowClipping As Double, ByVal h
     Loop While foundYet = False
     
     'Finally, calculate the difference between max and min for each color
-    Dim rdif As Long, Gdif As Long, Bdif As Long
-    rdif = CLng(rMax) - CLng(rMin)
-    Gdif = CLng(gMax) - CLng(gMin)
-    Bdif = CLng(bMax) - CLng(bMin)
+    Dim rDif As Long, gDif As Long, bDif As Long
+    rDif = CLng(rMax) - CLng(rMin)
+    gDif = CLng(gMax) - CLng(gMin)
+    bDif = CLng(bMax) - CLng(bMin)
     
     'We can now build a final set of look-up tables that contain the results of every possible color transformation
     Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
     
     For x = 0 To 255
-        If rdif <> 0 Then r = 255 * ((x - rMin) / rdif) Else r = x
-        If Gdif <> 0 Then g = 255 * ((x - gMin) / Gdif) Else g = x
-        If Bdif <> 0 Then b = 255 * ((x - bMin) / Bdif) Else b = x
+        If rDif <> 0 Then r = 255 * ((x - rMin) / rDif) Else r = x
+        If gDif <> 0 Then g = 255 * ((x - gMin) / gDif) Else g = x
+        If bDif <> 0 Then b = 255 * ((x - bMin) / bDif) Else b = x
         If r > 255 Then r = 255
         If r < 0 Then r = 0
         If g > 255 Then g = 255

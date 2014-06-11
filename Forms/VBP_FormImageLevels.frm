@@ -24,6 +24,45 @@ Begin VB.Form FormLevels
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   858
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.jcbutton cmdColorSelect 
+      Height          =   375
+      Index           =   0
+      Left            =   7710
+      TabIndex        =   19
+      Top             =   3720
+      Width           =   375
+      _ExtentX        =   661
+      _ExtentY        =   661
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      Value           =   -1  'True
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormImageLevels.frx":0000
+      CaptionEffects  =   0
+      ToolTip         =   "When this button is active, you can set the shadow input level color by right-clicking a color in the preview window."
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.colorSelector csShadow 
+      Height          =   375
+      Left            =   7200
+      TabIndex        =   17
+      Top             =   3720
+      Width           =   495
+      _ExtentX        =   873
+      _ExtentY        =   661
+      curColor        =   0
+   End
    Begin VB.PictureBox picOutputArrows 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -88,8 +127,8 @@ Begin VB.Form FormLevels
       Left            =   6000
       TabIndex        =   4
       Top             =   3720
-      Width           =   1335
-      _ExtentX        =   2355
+      Width           =   1200
+      _ExtentX        =   2117
       _ExtentY        =   714
       Max             =   253
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -129,6 +168,7 @@ Begin VB.Form FormLevels
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.textUpDown tudLevels 
       Height          =   405
@@ -156,11 +196,11 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.textUpDown tudLevels 
       Height          =   405
       Index           =   2
-      Left            =   11355
+      Left            =   11490
       TabIndex        =   6
       Top             =   3720
-      Width           =   1335
-      _ExtentX        =   2355
+      Width           =   1200
+      _ExtentX        =   2117
       _ExtentY        =   714
       Min             =   2
       Max             =   255
@@ -241,7 +281,7 @@ Begin VB.Form FormLevels
       Mode            =   1
       Value           =   -1  'True
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":0000
+      PictureNormal   =   "VBP_FormImageLevels.frx":0852
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -270,7 +310,7 @@ Begin VB.Form FormLevels
       ForeColor       =   3158064
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":0D52
+      PictureNormal   =   "VBP_FormImageLevels.frx":15A4
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -299,7 +339,7 @@ Begin VB.Form FormLevels
       ForeColor       =   3158064
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":1AA4
+      PictureNormal   =   "VBP_FormImageLevels.frx":22F6
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -328,9 +368,46 @@ Begin VB.Form FormLevels
       ForeColor       =   3158064
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":27F6
+      PictureNormal   =   "VBP_FormImageLevels.frx":3048
       PictureEffectOnDown=   0
       CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.colorSelector csHighlight 
+      Height          =   375
+      Left            =   10920
+      TabIndex        =   18
+      Top             =   3720
+      Width           =   495
+      _ExtentX        =   873
+      _ExtentY        =   661
+   End
+   Begin PhotoDemon.jcbutton cmdColorSelect 
+      Height          =   375
+      Index           =   1
+      Left            =   10530
+      TabIndex        =   20
+      Top             =   3720
+      Width           =   375
+      _ExtentX        =   661
+      _ExtentY        =   661
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormImageLevels.frx":3D9A
+      CaptionEffects  =   0
+      ToolTip         =   "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
       ColorScheme     =   3
    End
    Begin VB.Label lblOutput 
@@ -615,6 +692,25 @@ Private Sub cmdChannel_Click(Index As Integer)
 
 End Sub
 
+Private Sub cmdColorSelect_Click(Index As Integer)
+
+    If cmdBar.previewsAllowed Then
+    
+        cmdBar.markPreviewStatus False
+        
+        'Toggle the other command button (as only one can be active at any time)
+        If Index = 0 Then
+            cmdColorSelect(1).Value = False
+        Else
+            cmdColorSelect(0).Value = False
+        End If
+        
+        cmdBar.markPreviewStatus True
+    
+    End If
+
+End Sub
+
 Private Sub cMouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
@@ -804,6 +900,82 @@ Private Function isCursorOverArrow(ByVal mouseX As Long, ByVal requestIsForInput
 
 End Function
 
+'When the shadow or highlight color is changed by the user, update the Level parameters accordingly
+Private Sub csHighlight_ColorChanged()
+
+    If cmdBar.previewsAllowed Then
+    
+        'Disable automatic preview updates until our calculations are done.  (If we don't do this, we get infinite recursion from
+        ' the updatePreview function attempting to set our color to match the new RGB values.)
+        cmdBar.markPreviewStatus False
+    
+        Dim r As Long, g As Long, b As Long, l As Long
+        r = ExtractR(csHighlight.Color)
+        g = ExtractG(csHighlight.Color)
+        b = ExtractB(csHighlight.Color)
+        
+        'Set the internal shadow colors to match these RGB values
+        If r < m_LevelValues(0, 0) + 2 Then r = m_LevelValues(0, 0) + 2
+        If g < m_LevelValues(1, 0) + 2 Then g = m_LevelValues(1, 0) + 2
+        If b < m_LevelValues(2, 0) + 2 Then b = m_LevelValues(2, 0) + 2
+        
+        m_LevelValues(0, 2) = r
+        m_LevelValues(1, 2) = g
+        m_LevelValues(2, 2) = b
+        
+        l = (r + g + b) \ 3
+        If l < m_LevelValues(3, 0) + 2 Then l = m_LevelValues(3, 0) + 2
+        m_LevelValues(3, 2) = l
+        
+        'Update the active text box to match
+        tudLevels(2) = m_LevelValues(m_curChannel, 2)
+        
+        'Re-enable automatic preview updates
+        cmdBar.markPreviewStatus True
+        
+        'Redraw the preview
+        updatePreview
+        
+    End If
+
+End Sub
+
+Private Sub csShadow_ColorChanged()
+
+    If cmdBar.previewsAllowed Then
+    
+        cmdBar.markPreviewStatus False
+    
+        Dim r As Long, g As Long, b As Long, l As Long
+        r = ExtractR(csShadow.Color)
+        g = ExtractG(csShadow.Color)
+        b = ExtractB(csShadow.Color)
+        
+        'Set the internal shadow colors to match these RGB values
+        If r > m_LevelValues(0, 2) - 2 Then r = m_LevelValues(0, 2) - 2
+        If g > m_LevelValues(1, 2) - 2 Then g = m_LevelValues(1, 2) - 2
+        If b > m_LevelValues(2, 2) - 2 Then b = m_LevelValues(2, 2) - 2
+        
+        m_LevelValues(0, 0) = r
+        m_LevelValues(1, 0) = g
+        m_LevelValues(2, 0) = b
+        
+        l = (r + g + b) \ 3
+        If l > m_LevelValues(3, 2) - 2 Then l = m_LevelValues(3, 2) - 2
+        m_LevelValues(3, 0) = l
+        
+        'Update the active text box to match
+        tudLevels(0) = m_LevelValues(m_curChannel, 0)
+        
+        cmdBar.markPreviewStatus True
+        
+        'Redraw the preview
+        updatePreview
+        
+    End If
+
+End Sub
+
 Private Sub Form_Activate()
     
     'Note that the user is not currently interacting with a slider node
@@ -839,18 +1011,7 @@ Private Sub Form_Activate()
     ' right borders of the desired area, so that the edges of the slider images are not cropped.
     m_DstArrowBoxWidth = picHistogram.ScaleWidth
     m_DstArrowBoxOffset = picHistogram.Left - picInputArrows.Left + 1
-    
-    'Prepare the custom input handlers
-    Set cMouseEventsIn = New pdInput
-    Set cMouseEventsOut = New pdInput
-    
-    cMouseEventsIn.addInputTracker picInputArrows.hWnd, True, True, , True
-    cMouseEventsOut.addInputTracker picOutputArrows.hWnd, True, True, , True
-    
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-    
+            
     'Render sample gradients for input/output levels
     Drawing.DrawGradient picOutputGradient, RGB(0, 0, 0), RGB(255, 255, 255), True
     
@@ -935,6 +1096,16 @@ Private Sub Form_Load()
     'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
     m_curChannel = 3
     cmdChannel(3).Value = True
+    
+    'Prepare the custom input handlers
+    Set cMouseEventsIn = New pdInput
+    Set cMouseEventsOut = New pdInput
+    cMouseEventsIn.addInputTracker picInputArrows.hWnd, True, True, , True
+    cMouseEventsOut.addInputTracker picOutputArrows.hWnd, True, True, , True
+    
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
 
 End Sub
 
@@ -1136,6 +1307,8 @@ Private Sub updatePreview()
     
     If cmdBar.previewsAllowed And (Not m_Arrows(0) Is Nothing) Then
         
+        cmdBar.markPreviewStatus False
+        
         'Erase the picture boxes
         picInputArrows.Picture = LoadPicture("")
         picOutputArrows.Picture = LoadPicture("")
@@ -1160,12 +1333,54 @@ Private Sub updatePreview()
         picInputArrows.Refresh
         picOutputArrows.Picture = picOutputArrows.Image
         picOutputArrows.Refresh
+                
+        'Update the shadow color box to match the new level values
+        Dim r As Long, g As Long, b As Long, l As Long
+        r = m_LevelValues(0, 0)
+        g = m_LevelValues(1, 0)
+        b = m_LevelValues(2, 0)
+        
+        l = (r + g + b) \ 3
+        l = m_LevelValues(3, 0) - l
+        
+        r = ByteMe(r + l)
+        g = ByteMe(g + l)
+        b = ByteMe(b + l)
+        
+        csShadow.Color = RGB(r, g, b)
+        
+        'Repeat the above steps for the highlight box
+        r = m_LevelValues(0, 2)
+        g = m_LevelValues(1, 2)
+        b = m_LevelValues(2, 2)
+        
+        l = (r + g + b) \ 3
+        l = m_LevelValues(3, 2) - l
+        
+        r = ByteMe(r + l)
+        g = ByteMe(g + l)
+        b = ByteMe(b + l)
+        
+        csHighlight.Color = RGB(r, g, b)
+        
+        cmdBar.markPreviewStatus True
         
         'Actually render the levels effect
         MapImageLevels getLevelsParamString(), True, fxPreview
         
     End If
     
+End Sub
+
+Private Sub fxPreview_ColorSelected()
+
+    'Assign the new color to the selected box
+    If cmdColorSelect(0).Value Then
+        csShadow.Color = fxPreview.SelectedColor
+    Else
+        csHighlight.Color = fxPreview.SelectedColor
+    End If
+
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -1200,8 +1415,6 @@ Private Function getLevelsParamString() As String
         If (i < 3) Or (j < 4) Then tmpString = tmpString & "|"
     Next j
     Next i
-    
-    Debug.Print tmpString
     
     getLevelsParamString = tmpString
     
