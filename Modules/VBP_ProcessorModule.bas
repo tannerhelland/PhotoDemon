@@ -1118,14 +1118,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         
         'Edge filters
-        Case "Emboss or engrave"
-            showPDDialog vbModal, FormEmbossEngrave
-            
-            Case "Emboss"
-                FormEmbossEngrave.FilterEmbossColor cParams.GetLong(1)
-                
-            Case "Engrave"
-                FormEmbossEngrave.FilterEngraveColor cParams.GetLong(1)
+        Case "Emboss"
+            If showDialog Then
+                showPDDialog vbModal, FormEmbossEngrave
+            Else
+                FormEmbossEngrave.ApplyEmbossEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4)
+            End If
             
         Case "Enhance edges"
             If showDialog Then

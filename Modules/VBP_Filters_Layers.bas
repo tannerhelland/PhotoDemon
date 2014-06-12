@@ -2411,10 +2411,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
         ySin(y) = (y - midY) * sinTheta
         yCos(y) = (y - midY) * cosTheta
     Next y
-    
-    'X and Y values, remapped around a center point of (0, 0)
-    Dim nX As Double, nY As Double
-    
+        
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
     
