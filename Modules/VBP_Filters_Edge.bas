@@ -66,29 +66,3 @@ Public Sub FilterRelief()
     ApplyConvolutionFilter tmpString
 
 End Sub
-
-'A lighter version of a traditional sharpen filter; it's designed to bring out edge detail without the blowout typical of sharpening
-Public Sub FilterEdgeEnhance()
-
-    Dim tmpString As String
-    
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("edge enhance") & "|"
-    
-    'Next comes an invert parameter
-    tmpString = tmpString & "0|"
-    
-    'Next is the divisor and offset
-    tmpString = tmpString & "4|0|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|0|-1|0|0|"
-    tmpString = tmpString & "0|-1|8|-1|0|"
-    tmpString = tmpString & "0|0|-1|0|0|"
-    tmpString = tmpString & "0|0|0|0|0"
-    
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString
-
-End Sub

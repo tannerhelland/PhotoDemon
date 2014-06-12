@@ -1127,11 +1127,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Case "Engrave"
                 FormEmbossEngrave.FilterEngraveColor cParams.GetLong(1)
             
-        Case "Edge enhance"
-            FilterEdgeEnhance
+        Case "Enhance edges"
+            If showDialog Then
+                showPDDialog vbModal, FormEdgeEnhance
+            Else
+                FormEdgeEnhance.ApplyEdgeEnhancement cParams.GetLong(1), cParams.GetLong(2), cParams.GetDouble(3)
+            End If
             
         Case "Find edges"
-            
             If showDialog Then
                 showPDDialog vbModal, FormFindEdges
             Else
