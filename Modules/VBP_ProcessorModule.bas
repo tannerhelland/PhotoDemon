@@ -1179,7 +1179,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormRainbow
             Else
-                FormRainbow.ApplyRainbowEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
+                FormRainbow.ApplyRainbowEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4)
             End If
             
         Case "Sunshine"
