@@ -1004,7 +1004,7 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuEdge 
-            Caption         =   "Enhance edges"
+            Caption         =   "Enhance edges..."
             Index           =   1
          End
          Begin VB.Menu MnuEdge 
@@ -2500,7 +2500,7 @@ Private Sub MnuEdge_Click(Index As Integer)
          
         'Enhance edges
         Case 1
-            Process "Edge enhance", , , UNDO_LAYER
+            Process "Enhance edges", True
         
         'Find edges
         Case 2
