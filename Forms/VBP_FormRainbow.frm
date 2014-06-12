@@ -46,7 +46,7 @@ Begin VB.Form FormRainbow
       Height          =   495
       Left            =   6000
       TabIndex        =   5
-      Top             =   1770
+      Top             =   1170
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -75,7 +75,7 @@ Begin VB.Form FormRainbow
       Height          =   495
       Left            =   6000
       TabIndex        =   6
-      Top             =   2760
+      Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -94,7 +94,7 @@ Begin VB.Form FormRainbow
       Height          =   495
       Left            =   6000
       TabIndex        =   7
-      Top             =   3840
+      Top             =   3240
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -109,6 +109,46 @@ Begin VB.Form FormRainbow
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltSaturation 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   4320
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "saturation boost:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   3
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   3960
+      Width           =   1800
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -128,7 +168,7 @@ Begin VB.Form FormRainbow
       Index           =   2
       Left            =   6000
       TabIndex        =   3
-      Top             =   3480
+      Top             =   2880
       Width           =   960
    End
    Begin VB.Label lblTitle 
@@ -149,7 +189,7 @@ Begin VB.Form FormRainbow
       Index           =   1
       Left            =   6000
       TabIndex        =   2
-      Top             =   2400
+      Top             =   1800
       Width           =   660
    End
    Begin VB.Label lblTitle 
@@ -170,7 +210,7 @@ Begin VB.Form FormRainbow
       Index           =   0
       Left            =   6000
       TabIndex        =   1
-      Top             =   1440
+      Top             =   840
       Width           =   675
    End
 End
@@ -199,15 +239,18 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 'Apply a rainbow overlay to an image
-Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As Double, ByVal rainbowStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As Double, ByVal rainbowStrength As Double, ByVal saturationBoost As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Sprinkling image with shimmering rainbows..."
     
     'Convert the hue modifier to the [0, 6] range
     hueOffset = hueOffset / 360
     
-    'Finally, convert strength from [0, 100] to [0, 1]
+    'Convert strength from [0, 100] to [0, 1]
     rainbowStrength = rainbowStrength / 100
+    
+    'Convert saturation boosting from [0, 100] to [0, 1]
+    saturationBoost = saturationBoost / 100
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -302,7 +345,11 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
         hVal = hVal + hueOffset
         If hVal > 1 Then hVal = hVal - 1
         
-        'Now convert those HSL values back to RGB, but substitute in our artificial hue value
+        'Apply saturation boosting, if any
+        If saturationBoost > 0 Then s = 1 * saturationBoost + (s * (1 - saturationBoost))
+        
+        'Now convert those HSL values back to RGB, but substitute in our artificial hue (and possibly
+        ' saturation) value(s)
         fHSVtoRGB hVal, s, l, rFloat, gFloat, bFloat
         
         'Blend the original and new RGB values according to the requested strength
@@ -334,11 +381,15 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Rainbow", , buildParams(sltOffset.Value, sltAngle.Value, sltStrength.Value), UNDO_LAYER
+    Process "Rainbow", , buildParams(sltOffset.Value, sltAngle.Value, sltStrength.Value, sltSaturation.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltStrength.Value = 100
 End Sub
 
 Private Sub Form_Activate()
@@ -357,7 +408,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyRainbowEffect sltOffset.Value, sltAngle.Value, sltStrength.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyRainbowEffect sltOffset.Value, sltAngle.Value, sltStrength.Value, sltSaturation.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -370,6 +421,10 @@ Private Sub sltAngle_Change()
 End Sub
 
 Private Sub sltOffset_Change()
+    updatePreview
+End Sub
+
+Private Sub sltSaturation_Change()
     updatePreview
 End Sub
 
