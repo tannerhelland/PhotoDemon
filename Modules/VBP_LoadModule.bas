@@ -687,7 +687,9 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                         targetImage.originalColorDepth = targetDIB.getOriginalColorDepth
                         
                         'Finally, copy the background color (if any) from the DIB
-                        targetImage.pngBackgroundColor = targetDIB.getBackgroundColor
+                        If targetImage.originalFileFormat = FIF_PNG Then
+                            targetImage.imgStorage.Add "pngBackgroundColor", targetDIB.getBackgroundColor
+                        End If
                         
                     End If
                     

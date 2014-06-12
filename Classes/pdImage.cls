@@ -90,9 +90,6 @@ Option Explicit
     ' public variables we previously used.
     Public imgStorage As Dictionary
         
-    'For PNG files, if the original PNG file has a background color, it will be stored here.
-    Public pngBackgroundColor As Long
-    
     'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
     Private hasBeenSaved As Boolean
         
@@ -500,10 +497,12 @@ Public Function writeExternalData(ByRef dstFilename As String, Optional ByVal fi
     xmlEngine.writeTag "OriginalFileFormat", originalFileFormat
     xmlEngine.writeTag "CurrentFileFormat", currentFileFormat
     xmlEngine.writeTag "OriginalColorDepth", originalColorDepth
-    xmlEngine.writeTag "pngBackgroundColor", pngBackgroundColor
     xmlEngine.writeTag "numOfLayersEverCreated", numOfLayersEverCreated
     xmlEngine.writeTag "numOfLayers", numOfLayers
     xmlEngine.writeTag "curLayer", curLayer
+    
+    'Next comes conditional data, which may not exist in the scripting dictionary.  If it's available, we'll write it out.
+    If imgStorage.Exists("pngBackgroundColor") Then xmlEngine.writeTag "pngBackgroundColor", imgStorage.Item("pngBackgroundColor")
     
     xmlEngine.writeBlankLine
     
@@ -583,7 +582,10 @@ Public Function readExternalData(ByRef srcFilename As String, Optional ByVal fil
             'Me.originalFileFormat = xmlEngine.getUniqueTag_Long("originalFileFormat")
             'Me.currentFileFormat = xmlEngine.getUniqueTag_Long("currentFileFormat")
             Me.originalColorDepth = xmlEngine.getUniqueTag_Long("originalColorDepth")
-            Me.pngBackgroundColor = xmlEngine.getUniqueTag_Long("pngBackgroundColor")
+            
+            'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them
+            ' only as necessary.
+            If xmlEngine.doesTagExist("pngBackgroundColor") Then imgStorage.Add "pngBackgroundColor", xmlEngine.getUniqueTag_Long("pngBackgroundColor")
             
         End If
         
@@ -806,7 +808,6 @@ Private Sub Class_Initialize()
     loadedSuccessfully = False
     hasBeenSaved = False
     forInternalUseOnly = False
-    pngBackgroundColor = -1
     
     'Initialize the public storage dictionary
     Set imgStorage = New Dictionary
