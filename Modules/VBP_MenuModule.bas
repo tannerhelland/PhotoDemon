@@ -236,15 +236,19 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         ' If it is, the user needs to be prompted at least once for those settings.
         
         'JPEG
-        If (pdImages(imageID).currentFileFormat = FIF_JPEG) And (Not pdImages(imageID).hasSeenJPEGPrompt) Then
+        If (pdImages(imageID).currentFileFormat = FIF_JPEG) And (Not pdImages(imageID).imgStorage.Item("hasSeenJPEGPrompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'JPEG-2000
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_JP2) And (Not pdImages(imageID).hasSeenJP2Prompt) Then
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_JP2) And (Not pdImages(imageID).imgStorage.Item("hasSeenJP2Prompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
             
         'WebP
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).hasSeenWebPPrompt) Then
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.Item("hasSeenWebPPrompt")) Then
+            MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
+        
+        'JXR
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.Item("hasSeenJXRPrompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'All other formats
