@@ -203,11 +203,14 @@ Attribute VB_Exposed = False
 'Edge Detection Interface
 'Copyright ©2000-2014 by Tanner Helland
 'Created: 1/11/02
-'Last updated: 22/August/13
-'Last update: rewrote all ApplyConvolutionFilter calls with paramStrings
+'Last updated: 12/June/14
+'Last update: add Roberts cross operator
 '
 'All known edge-detection routines are handled from this form.  Most are simply convolution kernels that are passed off
 ' to the "ApplyConvolutionFilter" function, but at least one (Artistic Contour) resides here.
+'
+'As of June '14, directionality is now supported for all compatible filters, and the entire engine has been rewritten to make
+' it easier to add additional operators in the future.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -370,21 +373,24 @@ End Sub
 Private Function getNameOfEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION) As String
 
     Select Case edgeDetectionType
-    
-        Case PD_EDGE_PREWITT
-            getNameOfEdgeDetector = g_Language.TranslateMessage("Prewitt edge detection")
-        
-        Case PD_EDGE_SOBEL
-            getNameOfEdgeDetector = g_Language.TranslateMessage("Sobel edge detection")
-        
+                
+        Case PD_EDGE_HILITE
+            getNameOfEdgeDetector = g_Language.TranslateMessage("Hilite edge detection")
+            
         Case PD_EDGE_LAPLACIAN
             getNameOfEdgeDetector = g_Language.TranslateMessage("Laplacian edge detection")
         
-        Case PD_EDGE_HILITE
-            getNameOfEdgeDetector = g_Language.TranslateMessage("Hilite edge detection")
-        
         Case PD_EDGE_PHOTODEMON
             getNameOfEdgeDetector = g_Language.TranslateMessage("PhotoDemon edge detection")
+            
+        Case PD_EDGE_PREWITT
+            getNameOfEdgeDetector = g_Language.TranslateMessage("Prewitt edge detection")
+        
+        Case PD_EDGE_ROBERTS
+            getNameOfEdgeDetector = g_Language.TranslateMessage("Roberts cross edge detection")
+            
+        Case PD_EDGE_SOBEL
+            getNameOfEdgeDetector = g_Language.TranslateMessage("Sobel edge detection")
             
     End Select
 
@@ -403,6 +409,20 @@ Private Function isEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DE
         Case PD_EDGE_ARTISTIC_CONTOUR
             isEdgeDetectionSinglePass = True
     
+        'Hilite detection (doesn't support directionality)
+        Case PD_EDGE_HILITE
+            isEdgeDetectionSinglePass = True
+        
+        'Laplacian is unique because it supports a different operator for all directionalities, so even horizontal/vertical can
+        ' be done in a single pass.
+        Case PD_EDGE_LAPLACIAN
+            isEdgeDetectionSinglePass = True
+                
+        'PhotoDemon edge detection (doesn't support directionality)
+        Case PD_EDGE_PHOTODEMON
+            isEdgeDetectionSinglePass = True
+        
+        'Prewitt edge detection is unidirectional
         Case PD_EDGE_PREWITT
             If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
                 isEdgeDetectionSinglePass = True
@@ -410,6 +430,15 @@ Private Function isEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DE
                 isEdgeDetectionSinglePass = False
             End If
             
+        'Roberts cross edge detection is unidirectional
+        Case PD_EDGE_ROBERTS
+            If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
+                isEdgeDetectionSinglePass = True
+            Else
+                isEdgeDetectionSinglePass = False
+            End If
+        
+        'Sobel edge detection is unidirectional
         Case PD_EDGE_SOBEL
             If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
                 isEdgeDetectionSinglePass = True
@@ -417,17 +446,6 @@ Private Function isEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DE
                 isEdgeDetectionSinglePass = False
             End If
         
-        Case PD_EDGE_LAPLACIAN
-            isEdgeDetectionSinglePass = True
-            
-        'Hilite detection (doesn't support directionality)
-        Case PD_EDGE_HILITE
-            isEdgeDetectionSinglePass = True
-        
-        'PhotoDemon edge detection (doesn't support directionality)
-        Case PD_EDGE_PHOTODEMON
-            isEdgeDetectionSinglePass = True
-    
     End Select
 
 End Function
@@ -444,45 +462,18 @@ Private Function getParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
     ' 3) Build actual convolution matrix
     Select Case edgeDetectionType
     
-        Case PD_EDGE_PREWITT
-        
-            'Divisor/offset
-            convoString = convoString & "1|0|"
-            
-            'Actual convo matrix varies according to direction
-            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
-                convoString = convoString & "0|0|0|0|0|"
-                convoString = convoString & "0|-1|0|1|0|"
-                convoString = convoString & "0|-1|0|1|0|"
-                convoString = convoString & "0|-1|0|1|0|"
-                convoString = convoString & "0|0|0|0|0"
-            Else
-                convoString = convoString & "0|0|0|0|0|"
-                convoString = convoString & "0|1|1|1|0|"
-                convoString = convoString & "0|0|0|0|0|"
-                convoString = convoString & "0|-1|-1|-1|0|"
-                convoString = convoString & "0|0|0|0|0"
-            End If
-        
-        Case PD_EDGE_SOBEL
+        'Hilite detection (doesn't support directionality)
+        Case PD_EDGE_HILITE
             
             'Divisor/offset
             convoString = convoString & "1|0|"
-            
-            'Actual convo matrix varies according to direction
-            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
-                convoString = convoString & "0|0|0|0|0|"
-                convoString = convoString & "0|-1|0|1|0|"
-                convoString = convoString & "0|-2|0|2|0|"
-                convoString = convoString & "0|-1|0|1|0|"
-                convoString = convoString & "0|0|0|0|0"
-            Else
-                convoString = convoString & "0|0|0|0|0|"
-                convoString = convoString & "0|1|2|1|0|"
-                convoString = convoString & "0|0|0|0|0|"
-                convoString = convoString & "0|-1|-2|-1|0|"
-                convoString = convoString & "0|0|0|0|0"
-            End If
+    
+            'Actual convo matrix
+            convoString = convoString & "0|0|0|0|0|"
+            convoString = convoString & "0|-4|-2|-1|0|"
+            convoString = convoString & "0|-2|10|0|0|"
+            convoString = convoString & "0|-1|0|0|0|"
+            convoString = convoString & "0|0|0|0|0"
         
         Case PD_EDGE_LAPLACIAN
             
@@ -522,19 +513,6 @@ Private Function getParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
             
             End If
         
-        'Hilite detection (doesn't support directionality)
-        Case PD_EDGE_HILITE
-            
-            'Divisor/offset
-            convoString = convoString & "1|0|"
-    
-            'Actual convo matrix
-            convoString = convoString & "0|0|0|0|0|"
-            convoString = convoString & "0|-4|-2|-1|0|"
-            convoString = convoString & "0|-2|10|0|0|"
-            convoString = convoString & "0|-1|0|0|0|"
-            convoString = convoString & "0|0|0|0|0"
-        
         'PhotoDemon edge detection (doesn't support directionality)
         Case PD_EDGE_PHOTODEMON
         
@@ -542,11 +520,74 @@ Private Function getParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
             convoString = convoString & "1|0|"
             
             'Actual convo matrix
-            convoString = convoString & "0|1|0|0|0|"
-            convoString = convoString & "0|0|0|0|1|"
-            convoString = convoString & "0|0|-4|0|0|"
-            convoString = convoString & "1|0|0|0|0|"
-            convoString = convoString & "0|0|0|1|0"
+            convoString = convoString & "0|-1|0|0|0|"
+            convoString = convoString & "0|0|0|0|-1|"
+            convoString = convoString & "0|0|4|0|0|"
+            convoString = convoString & "-1|0|0|0|0|"
+            convoString = convoString & "0|0|0|-1|0"
+        
+        'Prewitt edge detection (directionality supported)
+        Case PD_EDGE_PREWITT
+        
+            'Divisor/offset
+            convoString = convoString & "1|0|"
+            
+            'Actual convo matrix varies according to direction
+            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|-1|0|1|0|"
+                convoString = convoString & "0|-1|0|1|0|"
+                convoString = convoString & "0|-1|0|1|0|"
+                convoString = convoString & "0|0|0|0|0"
+            Else
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|1|1|1|0|"
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|-1|-1|-1|0|"
+                convoString = convoString & "0|0|0|0|0"
+            End If
+        
+        'Roberts cross edge detection (directionality supported)
+        Case PD_EDGE_ROBERTS
+        
+            'Divisor/offset
+            convoString = convoString & "0.5|0|"
+            
+            'Actual convo matrix varies according to direction
+            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|-1|0|0|0|"
+                convoString = convoString & "0|0|1|0|0|"
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|0|0|0|0"
+            Else
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|0|0|-1|0|"
+                convoString = convoString & "0|0|1|0|0|"
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|0|0|0|0"
+            End If
+        
+        'Sobel edge detection (directionality supported)
+        Case PD_EDGE_SOBEL
+            
+            'Divisor/offset
+            convoString = convoString & "1|0|"
+            
+            'Actual convo matrix varies according to direction
+            If edgeDirectionality = PD_EDGE_DIR_HORIZONTAL Then
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|-1|0|1|0|"
+                convoString = convoString & "0|-2|0|2|0|"
+                convoString = convoString & "0|-1|0|1|0|"
+                convoString = convoString & "0|0|0|0|0"
+            Else
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|1|2|1|0|"
+                convoString = convoString & "0|0|0|0|0|"
+                convoString = convoString & "0|-1|-2|-1|0|"
+                convoString = convoString & "0|0|0|0|0"
+            End If
     
     End Select
     
@@ -591,7 +632,8 @@ Private Sub Form_Load()
     LstEdgeOptions.AddItem "Laplacian", 2
     LstEdgeOptions.AddItem "PhotoDemon", 3
     LstEdgeOptions.AddItem "Prewitt", 4
-    LstEdgeOptions.AddItem "Sobel", 5
+    LstEdgeOptions.AddItem "Roberts cross", 5
+    LstEdgeOptions.AddItem "Sobel", 6
     
     LstEdgeOptions.ListIndex = 0
     
@@ -624,6 +666,9 @@ Private Sub LstEdgeOptions_Click()
         Case PD_EDGE_PREWITT
             changeCheckboxActivation True
         
+        Case PD_EDGE_ROBERTS
+            changeCheckboxActivation True
+            
         Case PD_EDGE_SOBEL
             changeCheckboxActivation True
     
