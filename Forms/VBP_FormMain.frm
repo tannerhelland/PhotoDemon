@@ -1000,7 +1000,7 @@ Begin VB.Form FormMain
          Caption         =   "Edge"
          Index           =   3
          Begin VB.Menu MnuEdge 
-            Caption         =   "Emboss or engrave..."
+            Caption         =   "Emboss..."
             Index           =   0
          End
          Begin VB.Menu MnuEdge 
@@ -2496,7 +2496,7 @@ Private Sub MnuEdge_Click(Index As Integer)
         
         'Emboss/engrave
         Case 0
-            Process "Emboss or engrave", True
+            Process "Emboss", True
          
         'Enhance edges
         Case 1

@@ -6,7 +6,7 @@ Begin VB.Form FormEmbossEngrave
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   11820
+   ClientWidth     =   12015
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,7 +21,7 @@ Begin VB.Form FormEmbossEngrave
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   788
+   ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -29,8 +29,8 @@ Begin VB.Form FormEmbossEngrave
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   11820
-      _ExtentX        =   20849
+      Width           =   12015
+      _ExtentX        =   21193
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -45,53 +45,91 @@ Begin VB.Form FormEmbossEngrave
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   615
       Left            =   6240
-      TabIndex        =   4
-      Top             =   3360
-      Width           =   5415
+      TabIndex        =   2
+      Top             =   4320
+      Width           =   5535
       _ExtentX        =   9551
       _ExtentY        =   1085
       curColor        =   16744576
    End
-   Begin PhotoDemon.smartOptionButton optEmboss 
-      Height          =   345
-      Left            =   6240
-      TabIndex        =   1
-      Top             =   1920
-      Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   661
-      Caption         =   "emboss"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
       ColorSelection  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton optEngrave 
-      Height          =   345
-      Left            =   6240
-      TabIndex        =   2
-      Top             =   2370
-      Width           =   1230
-      _ExtentX        =   2170
-      _ExtentY        =   661
-      Caption         =   "engrave"
+   Begin PhotoDemon.sliderTextCombo sltDistance 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   2160
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   -10
+      SigDigits       =   2
+      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltAngle 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   7
+      Top             =   1080
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   -180
+      Max             =   180
+      SigDigits       =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltDepth 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   9
+      Top             =   3240
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   0.1
+      SigDigits       =   2
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "depth:"
+      BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
          Charset         =   0
@@ -100,6 +138,34 @@ Begin VB.Form FormEmbossEngrave
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   3
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   2880
+      Width           =   690
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "angle:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   2
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   720
+      Width           =   660
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -118,14 +184,14 @@ Begin VB.Form FormEmbossEngrave
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   6
-      Top             =   2880
+      TabIndex        =   4
+      Top             =   3960
       Width           =   1170
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "style:"
+      Caption         =   "thickness:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -139,9 +205,9 @@ Begin VB.Form FormEmbossEngrave
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   5
-      Top             =   1560
-      Width           =   570
+      TabIndex        =   3
+      Top             =   1800
+      Width           =   1050
    End
 End
 Attribute VB_Name = "FormEmbossEngrave"
@@ -150,14 +216,17 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Emboss/Engrave Filter Interface
+'Emboss/Engrave Effect Dialog
 'Copyright ©2003-2014 by Tanner Helland
 'Created: 3/6/03
-'Last updated: 22/August/13
-'Last update: added command bar and simplified form layout and code
+'Last updated: 12/June/14
+'Last update: complete overhaul: angle, thickness, and depth parameters added, entire algorithm rewritten, interface
+'              redesigned to match features.
 '
-'Module for handling all emboss and engrave filters.  It's basically just an
-'interfacing layer to the 4 main filters: Emboss/EmbossToColor and Engrave/EngraveToColor
+'This dialog processes a variety of emboss/engrave-style filters.  It's been in PD for a long time, but the 6.4 release
+' saw some much-needed improvements in the form of selectable angle, depth, and thickness.  Interpolation is used to
+' process all emboss calculations, so the result should be very good for any angle and/or depth combination, and edge
+' handling is now handled much better than past versions of the tool.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -171,13 +240,7 @@ Dim m_ToolTip As clsToolTip
 
 'OK button
 Private Sub cmdBar_OKClick()
-
-    If optEmboss.Value Then
-        Process "Emboss", , buildParams(colorPicker.Color), UNDO_LAYER
-    Else
-        Process "Engrave", , buildParams(colorPicker.Color), UNDO_LAYER
-    End If
-    
+    Process "Emboss", , buildParams(sltDistance.Value, sltAngle.Value, sltDepth.Value, colorPicker.Color), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -185,6 +248,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    sltDepth.Value = 1
+    sltDistance.Value = 1
     colorPicker.Color = RGB(127, 127, 127)
 End Sub
 
@@ -211,21 +276,15 @@ Private Sub fxPreview_ColorSelected()
     colorPicker.Color = fxPreview.SelectedColor
 End Sub
 
-'When the emboss/engrave options are clicked, redraw the preview
-Private Sub OptEmboss_Click()
-    updatePreview
-End Sub
-
-Private Sub OptEngrave_Click()
-    updatePreview
-End Sub
-
 'Emboss an image
 ' Inputs: color to emboss to, and whether or not this is a preview (plus the destination picture box if it IS a preview)
-Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, ByVal eDepth As Double, ByVal eColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If Not toPreview Then Message "Embossing image..."
     
+    'Don't allow distance to be 0
+    If eDistance = 0 Then eDistance = 0.01
+        
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -248,13 +307,21 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
-    finalX = curDIBValues.Right - 1
+    finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValRight As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
+    
+    'Create a filter support class, which will aid with edge handling and interpolation
+    Dim fSupport As pdFilterSupport
+    Set fSupport = New pdFilterSupport
+    fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curDIBValues.maxX, curDIBValues.MaxY
+    
+    'During previews, adjust the distance parameter to compensate for preview size
+    If toPreview Then eDistance = eDistance * curDIBValues.previewModifier
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -263,24 +330,56 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
     
     'Color variables
     Dim r As Long, g As Long, b As Long
-    Dim TR As Long, tB As Long, tG As Long
+    Dim tR As Long, tG As Long, tB As Long, tA As Long
+    Dim rBase As Long, gBase As Long, bBase As Long
 
     'Extract the red, green, and blue values from the color we've been passed
-    TR = ExtractR(cColor)
-    tG = ExtractG(cColor)
-    tB = ExtractB(cColor)
-        
+    rBase = ExtractR(eColor)
+    gBase = ExtractG(eColor)
+    bBase = ExtractB(eColor)
+    
+    'Convert the rotation angle to radians
+    eAngle = eAngle * (PI / 180)
+    
+    'Find the cos and sin of this angle and store the values
+    Dim cosTheta As Double, sinTheta As Double
+    cosTheta = Cos(eAngle)
+    sinTheta = Sin(eAngle)
+    
+    'X and Y values, remapped around a center point of (0, 0)
+    Dim nX As Double, nY As Double
+    
+    'Source X and Y values, which are used to solve for the hue of a given point
+    Dim srcX As Double, srcY As Double
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
         QuickValRight = (x + 1) * qvDepth
     For y = initY To finalY
     
-        'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickVal + 2, y)) - CLng(srcImageData(QuickValRight + 2, y)) + TR)
-        g = Abs(CLng(srcImageData(QuickVal + 1, y)) - CLng(srcImageData(QuickValRight + 1, y)) + tG)
-        b = Abs(CLng(srcImageData(QuickVal, y)) - CLng(srcImageData(QuickValRight, y)) + tB)
+        'Retrieve source RGB values
+        r = srcImageData(QuickVal + 2, y)
+        g = srcImageData(QuickVal + 1, y)
+        b = srcImageData(QuickVal, y)
+    
+        'Move x according to the user's distance parameter
+        nX = x + eDistance
+    
+        'Calculate a rotated source x/y pixel
+        srcX = cosTheta * (nX - x) + x
+        srcY = sinTheta * (nX - x) + y
         
+        'Use the filter support class to retrieve the pixel at that position, with interpolation and edge-wrapping
+        ' automatically handled as necessary
+        fSupport.getColorsFromSource tR, tG, tB, tA, srcX, srcY, srcImageData
+        
+        'Calculate an emboss value for each color
+        r = (r - tR) * eDepth + rBase
+        g = (g - tG) * eDepth + gBase
+        b = (b - tB) * eDepth + bBase
+                
+        'Clamp RGB values
         If r > 255 Then
             r = 255
         ElseIf r < 0 Then
@@ -303,126 +402,8 @@ Public Sub FilterEmbossColor(ByVal cColor As Long, Optional ByVal toPreview As B
         dstImageData(QuickVal + 1, y) = g
         dstImageData(QuickVal, y) = b
         
-        'The right-most line of pixels will always be missed, so manually check for and correct that
-        If x = finalX Then
-            dstImageData(QuickValRight + 2, y) = r
-            dstImageData(QuickValRight + 1, y) = g
-            dstImageData(QuickValRight, y) = b
-        End If
-        
     Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
-                SetProgBarVal x
-            End If
-        End If
-    Next x
-    
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
-    
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
- 
-End Sub
-
-'Engrave an image
-' Inputs: color to emboss to, and whether or not this is a preview (plus the destination picture box if it IS a preview)
-Public Sub FilterEngraveColor(ByVal cColor As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-
-    If Not toPreview Then Message "Engraving image..."
-        
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent already engraved pixels from screwing up our results for later pixels.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
-    
-    prepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right - 1
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValRight As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
-    
-    'Color variables
-    Dim r As Long, g As Long, b As Long
-    Dim TR As Long, tB As Long, tG As Long
-    
-    'Extract the red, green, and blue values from the color we've been passed
-    TR = ExtractR(cColor)
-    tG = ExtractG(cColor)
-    tB = ExtractB(cColor)
-        
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-        QuickValRight = (x + 1) * qvDepth
-    For y = initY To finalY
-    
-        'This line is the emboss code.  Very simple, very fast.
-        r = Abs(CLng(srcImageData(QuickValRight + 2, y)) - CLng(srcImageData(QuickVal + 2, y)) + TR)
-        g = Abs(CLng(srcImageData(QuickValRight + 1, y)) - CLng(srcImageData(QuickVal + 1, y)) + tG)
-        b = Abs(CLng(srcImageData(QuickValRight, y)) - CLng(srcImageData(QuickVal, y)) + tB)
-        
-        If r > 255 Then
-            r = 255
-        ElseIf r < 0 Then
-            r = 0
-        End If
-        
-        If g > 255 Then
-            g = 255
-        ElseIf g < 0 Then
-            g = 0
-        End If
-        
-        If b > 255 Then
-            b = 255
-        ElseIf b < 0 Then
-            b = 0
-        End If
-
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
-        
-        'The right-most line of pixels will always be missed, so manually check for and correct that
-        If x = finalX Then
-            dstImageData(QuickValRight + 2, y) = r
-            dstImageData(QuickValRight + 1, y) = g
-            dstImageData(QuickValRight, y) = b
-        End If
-        
-    Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -444,13 +425,7 @@ End Sub
 
 'Render a new preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then
-        If optEmboss.Value Then
-            FilterEmbossColor colorPicker.Color, True, fxPreview
-        Else
-            FilterEngraveColor colorPicker.Color, True, fxPreview
-        End If
-    End If
+    If cmdBar.previewsAllowed Then ApplyEmbossEffect sltDistance.Value, sltAngle.Value, sltDepth.Value, colorPicker.Color, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -458,4 +433,14 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+Private Sub sltAngle_Change()
+    updatePreview
+End Sub
 
+Private Sub sltDepth_Change()
+    updatePreview
+End Sub
+
+Private Sub sltDistance_Change()
+    updatePreview
+End Sub
