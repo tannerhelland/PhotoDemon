@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright ©2006-2014 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 01/May/14
-'Last update: move all compositing code to an external class
+'Last updated: 11/June/14
+'Last update: start migrating public variables into the imgStorage scripting dictionary
 '
 'The pdImage class is used to store information on each image loaded by the user.  One copy of this
 ' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
@@ -86,18 +86,10 @@ Option Explicit
     ' them every time they save)
     Public saveParameters As String
     
-    'For JPEGs specifically, has a quality value been set?  If it hasn't, the user needs to be prompted at least once.
-    Public hasSeenJPEGPrompt As Boolean
-    
-    'For JPEG-2000 files, has a compression ratio been set?  If it hasn't, the user needs to be prompted at least once.
-    Public hasSeenJP2Prompt As Boolean
-    
-    'For WEBP files, has a compression ratio been set?  If it hasn't, the user needs to be prompted at least once.
-    Public hasSeenWebPPrompt As Boolean
-    
-    'For JPEG XR files, has a compression ratio been set?  If it hasn't, the user needs to be prompted at least once.
-    Public hasSeenJXRPrompt As Boolean
-    
+    'Any random data relevant to the image can be stored in this Dictionary object.  It replaces the wide array of specific
+    ' public variables we previously used.
+    Public imgStorage As Dictionary
+        
     'For PNG files, if the original PNG file has a background color, it will be stored here.
     Public pngBackgroundColor As Long
     
@@ -814,9 +806,21 @@ Private Sub Class_Initialize()
     loadedSuccessfully = False
     hasBeenSaved = False
     forInternalUseOnly = False
-    hasSeenJPEGPrompt = False
     pngBackgroundColor = -1
     
+    'Initialize the public storage dictionary
+    Set imgStorage = New Dictionary
+    imgStorage.CompareMode = TextCompare
+    
+    'Add initial key/value pairs to the dictionary.  Doing this here saves us from having to check key existence in subsequent functions.
+    
+        'Lossless filetypes always present an export dialog at least once.  Beyond that point, any use of the Save command will
+        ' re-save the file using previous settings.  Save As will still trigger a new dialog, however.
+        imgStorage.Add "hasSeenJPEGPrompt", False
+        imgStorage.Add "hasSeenJP2Prompt", False
+        imgStorage.Add "hasSeenWebPPrompt", False
+        imgStorage.Add "hasSeenJXRPrompt", False
+        
     'Initialize the back buffer
     Set backBuffer = New pdDIB
     

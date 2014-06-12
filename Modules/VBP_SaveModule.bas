@@ -227,7 +227,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotSettings = vbOK Then
-                    srcPDImage.hasSeenJPEGPrompt = True
+                    srcPDImage.imgStorage.Item("hasSeenJPEGPrompt") = True
                     PhotoDemon_SaveImage = True
                 Else
                     PhotoDemon_SaveImage = False
@@ -342,7 +342,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotJP2Settings = vbOK Then
-                    srcPDImage.hasSeenJP2Prompt = True
+                    srcPDImage.imgStorage.Item("hasSeenJP2Prompt") = True
                     PhotoDemon_SaveImage = True
                 Else
                     PhotoDemon_SaveImage = False
@@ -391,7 +391,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotWebPSettings = vbOK Then
-                    srcPDImage.hasSeenWebPPrompt = True
+                    srcPDImage.imgStorage.Item("hasSeenWebPPrompt") = True
                     PhotoDemon_SaveImage = True
                 Else
                     PhotoDemon_SaveImage = False
@@ -420,7 +420,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotJXRSettings = vbOK Then
-                    srcPDImage.hasSeenJXRPrompt = True
+                    srcPDImage.imgStorage.Item("hasSeenJXRPrompt") = True
                     PhotoDemon_SaveImage = True
                 Else
                     PhotoDemon_SaveImage = False
