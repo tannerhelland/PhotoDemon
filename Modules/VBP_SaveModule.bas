@@ -1046,12 +1046,12 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     If fi_DIB <> 0 Then
     
         'Embed a background color if available, and the user has requested it.
-        If pngPreserveBKGD And srcPDImage.pngBackgroundColor <> -1 Then
+        If pngPreserveBKGD And srcPDImage.imgStorage.Exists("pngBackgroundColor") Then
             
             Dim rQuad As RGBQUAD
-            rQuad.Red = ExtractR(srcPDImage.pngBackgroundColor)
-            rQuad.Green = ExtractG(srcPDImage.pngBackgroundColor)
-            rQuad.Blue = ExtractB(srcPDImage.pngBackgroundColor)
+            rQuad.Red = ExtractR(srcPDImage.imgStorage.Item("pngBackgroundColor"))
+            rQuad.Green = ExtractG(srcPDImage.imgStorage.Item("pngBackgroundColor"))
+            rQuad.Blue = ExtractB(srcPDImage.imgStorage.Item("pngBackgroundColor"))
             FreeImage_SetBackgroundColor fi_DIB, rQuad
         
         End If
