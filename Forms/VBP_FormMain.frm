@@ -1382,8 +1382,8 @@ Attribute VB_Exposed = False
 'Main Program Form
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 21/May/14
-'Last update: update interactions with Autosave handler to reflect recent Autosave engine overhaul
+'Last updated: 13/June/14
+'Last update: solve remaining asynchronicity problems when metadata parsing is delayed or full-on interrupted
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its
 ' primary purpose is sending parameters to other, more interesting sections of the program.
@@ -1818,8 +1818,8 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     newMetadataReceived receivedData
     
     'DEBUG ONLY!
-    Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
-    Debug.Print receivedData
+    'Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
+    'Debug.Print receivedData
     
 End Sub
 
@@ -1996,13 +1996,48 @@ Private Sub tmrMetadata_Timer()
         'Cache the current message (if any)
         Dim prevMessage As String
         prevMessage = g_LastPostedMessage
-        
-        'Retrieve the final metadata string, and update the interface to match (e.g. update any metadata-related menus accordingly)
+                
         Message "Asynchronous metadata check complete!  Updating metadata collection..."
-        pdImages(g_CurrentImage).imgMetadata.loadAllMetadata retrieveMetadataString
+        
+        'Retrieve the completed metadata string
+        Dim mdString As String
+        mdString = retrieveMetadataString()
+        
+        Dim curImageID As Long
+        
+        'Now comes some messy string parsing.  If the user has loaded multiple images at once, the metadata string returned by ExifTool will contain
+        ' ALL METADATA for ALL IMAGES in one giant string.  We need to parse out each image's metadata, supply it to the correct image, then repeat
+        ' until all images have received their relevant metadata.
+        
+        'Start by finding the first occurrence of ExifTool's unique "{ready}" message, which signifies its success in completing a single coherent
+        ' -execute request.
+        Dim startPosition As Long, terminalPosition As Long
+        startPosition = 1
+        terminalPosition = InStr(1, mdString, "{ready", vbBinaryCompare)
+        
+        Do While terminalPosition > 0
+        
+            'terminalPosition now contains the position of ExifTool's "{ready123}" tag, where 123 is the ID of the image whose metadata
+            ' is contained prior to that point.  Start by figuring out what that ID number actually is.
+            curImageID = CLng(Mid$(mdString, terminalPosition + 6, InStr(terminalPosition + 6, mdString, "}", vbBinaryCompare) - (terminalPosition + 6)))
+            
+            'Now we know where the metadata for this image *ends*, but we still need to find where it *starts*.  All metadata XML entries start with
+            ' a standard XML header.  Search backwards from the {ready123} message until such a header is found.
+            startPosition = InStrRev(mdString, "<?xml", terminalPosition, vbBinaryCompare)
+            
+            'Using the start and final markers, extract the relevant metadata and forward it to the relevant pdImage object
+            pdImages(curImageID).imgMetadata.loadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
+            
+            'Find the next chunk of image metadata, if any
+            terminalPosition = InStr(terminalPosition + 6, mdString, "{ready", vbBinaryCompare)
+        
+        Loop
+        
+        'Update the interface to match the active image.  (This must be done if things like GPS tags were found in the metadata,
+        ' because their presence affects the enabling of certain metadata-related menu entries.)
         syncInterfaceToCurrentImage
         
-        'Restore the original on-screen message and terminate the timer
+        'Restore the original on-screen message and terminate this timer
         Message prevMessage
         tmrMetadata.Enabled = False
         
@@ -2016,18 +2051,6 @@ Private Sub updateChecker_Complete()
     g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
 End Sub
 
-'Forward mousewheel events to the relevant window
-Private Sub cMouseEvents_MouseHScroll(ByVal CharsScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-
-
-
-End Sub
-
-Private Sub cMouseEvents_MouseVScroll(ByVal LinesScrolled As Single, ByVal Button As MouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Single, ByVal y As Single)
-
-
-
-End Sub
 
 'THE BEGINNING OF EVERYTHING
 ' Actually, Sub "Main" in the module "modMain" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.

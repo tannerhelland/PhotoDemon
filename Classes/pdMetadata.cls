@@ -232,8 +232,9 @@ Private Function retrieveModifiedXMLString() As String
 End Function
 
 'Given a valid XML-formatted metadata string from ExifTool, parse it into usable PD metadata format.
-' (The image's format is also passed to this function, which may be helpful in the future for enabling certain options on a per-format basis.)
-Public Sub loadAllMetadata(ByVal mdString As String)
+' (The parent image's ID format is also passed to this function, because a custom "ready" tag with the image's ID must be manually
+'  removed from the XML string.)
+Public Sub loadAllMetadata(ByVal mdString As String, ByVal parentImageID As Long)
 
     'If the ExifTool plugin can't be found, abandon all metadata loading attempts
     If Not g_ExifToolEnabled Then
@@ -247,12 +248,17 @@ Public Sub loadAllMetadata(ByVal mdString As String)
     'If no metadata was found, we can safely exit now
     If mdString = "" Then Exit Sub
     
-    'DEBUGGING ONLY: I found it helpful to dump the EXIF data to the clipboard while debugging.  Uncomment as necessary.
+    'DEBUGGING ONLY: sometimes it is helpful to dump the full metadata text to the clipboard.  Uncomment as necessary.
     'Clipboard.Clear
     'Clipboard.SetText mdString
     
-    'We now have a (very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of that string.
-    ' We need this backup when it comes time to write the metadata back out to file.
+    'Due to recent changes to the way PD handles asynchronous metadata parsing, the returned string will contain text similar to
+    ' {ready123}, where 123 is the ID number of this image.  Because we don't actually want to store that text, use the supplied
+    ' parentImageID to find and remove the text in question.
+    If InStrRev(mdString, "{ready", , vbBinaryCompare) Then mdString = Replace$(mdString, "{ready" & parentImageID & "}", "")
+    
+    'We now have a (potentially very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of
+    ' that string.  We need this backup when it comes time to write the metadata back out to file.
     originalMetadataXML = mdString
     
     'Our next job is to parse our very large XML string into individual components within the iMetadata() array. We accomplish this by
@@ -621,7 +627,7 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
                 newXMLString = originalMetadataXML
                 
                 ' Since we can assume the user has rights to the output directory, write the temporary XML file there
-                tmpXMLPath = g_UserPreferences.getTempPath
+                tmpXMLPath = g_UserPreferences.GetTempPath
                 
                 'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
                 tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
