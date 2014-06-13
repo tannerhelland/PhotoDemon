@@ -24,6 +24,12 @@ Begin VB.Form FormMain
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1261
    StartUpPosition =   3  'Windows Default
+   Begin VB.Timer tmrMetadata 
+      Enabled         =   0   'False
+      Interval        =   250
+      Left            =   120
+      Top             =   2760
+   End
    Begin VB.Timer tmrAccelerators 
       Enabled         =   0   'False
       Interval        =   100
@@ -1812,8 +1818,8 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     newMetadataReceived receivedData
     
     'DEBUG ONLY!
-    'Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
-    'Debug.Print receivedData
+    Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
+    Debug.Print receivedData
     
 End Sub
 
@@ -1973,6 +1979,34 @@ Private Sub tmrCountdown_Timer()
     End If
     
     intervalCount = intervalCount + 1
+
+End Sub
+
+'Thsi metadata timer is a final failsafe for images with huge metadata collections that take a long time to parse.  If an image has successfully
+' loaded but its metadata parsing is still in-progress, PD's load function will activate this timer.  The timer will wait (asynchronously) for
+' metadata parsing to finish, and when it does, it will copy the metadata into the active pdImage object, then disable itself.
+'
+'NOTE!  This function may cause trouble when a bunch of images are loaded at once.  I am not sure what to do in that situation, as how can we
+'        know which metadata messages are for which images?  A better solution for this is on my to-do list; we may be able to pass ExifTool
+'        some kind of ID, which it would report over stdOut, and we could then match against our pdImage collection... but that's a big project.
+Private Sub tmrMetadata_Timer()
+
+    If isMetadataFinished Then
+    
+        'Cache the current message (if any)
+        Dim prevMessage As String
+        prevMessage = g_LastPostedMessage
+        
+        'Retrieve the final metadata string, and update the interface to match (e.g. update any metadata-related menus accordingly)
+        Message "Asynchronous metadata check complete!  Updating metadata collection..."
+        pdImages(g_CurrentImage).imgMetadata.loadAllMetadata retrieveMetadataString
+        syncInterfaceToCurrentImage
+        
+        'Restore the original on-screen message and terminate the timer
+        Message prevMessage
+        tmrMetadata.Enabled = False
+        
+    End If
 
 End Sub
 
@@ -3623,10 +3657,16 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
 
     'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
     ' faster than the system keyboard delay (250ms at minimum, 1s at maximum).
-    If Abs(Timer - m_TimerAtAcceleratorPress < getKeyboardDelay()) Then Exit Sub
+    If Abs(Timer - m_TimerAtAcceleratorPress < getKeyboardDelay()) Then
+        bCancel = True
+        Exit Sub
+    End If
     
     'Finally, if the accelerator timer is already waiting to process an existing accelerator, exit
-    If tmrAccelerators.Enabled Then Exit Sub
+    If tmrAccelerators.Enabled Then
+        bCancel = True
+        Exit Sub
+    End If
     
     'If we made it all the way here, the accelerator is potentially valid, so we need to evaluate it.
     ' Store the accelerator index in a module-level variable, note the time, then initiate the accelerator evaluation timer

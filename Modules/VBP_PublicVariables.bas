@@ -275,7 +275,6 @@ Public g_MouseAccuracy As Double
 ' to restore this variable to FALSE when you're done, including catching any error states!
 Public g_DisableUserInput As Boolean
 
-
 'Replacement mouse button type.  VB doesn't report X-button clicks in their native button type, but PD does.  Whether
 ' this is useful is anybody's guess, but it doesn't hurt to have... right?  Also, note that the left/middle/right button
 ' values are identical to VB, so existing code won't break if using this enum against VB's standard mouse constants.
@@ -290,3 +289,11 @@ End Enum
 #If False Then
     Private Const pdLeftButton = 1, pdRightButton = 2, pdMiddleButton = 4, pdXButtonOne = 8, pdXButtonTwo = 16
 #End If
+
+'Last message sent to PD's central Message() function.  Note that this string *includes any custom attachments* and is calculated
+' *post-translation*, e.g. instead of being "Error %1", the "%1" will be populated with whatever value was supplied, and "Error"
+' will be translated into the currently active language.  The purpose of this variable is to assist asynchronous functions.  When
+' such functions terminate, they can cache the previous message, display any relevant messages according to their asynchronous
+' results, then restore the original message when done.  This makes the experience seamless for the user, but is hugely helpful
+' to me when debugging asynchronous program behavior.
+Public g_LastPostedMessage As String
