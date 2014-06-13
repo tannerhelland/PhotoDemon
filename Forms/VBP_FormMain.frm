@@ -37,21 +37,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -1024,20 +1024,28 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Dilate..."
+            Caption         =   "Lens flare..."
             Index           =   1
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Erode..."
+            Caption         =   "Rainbow..."
             Index           =   2
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Rainbow..."
+            Caption         =   "Sunshine..."
             Index           =   3
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Sunshine..."
+            Caption         =   "-"
             Index           =   4
+         End
+         Begin VB.Menu MnuLightShadow 
+            Caption         =   "Dilate..."
+            Index           =   5
+         End
+         Begin VB.Menu MnuLightShadow 
+            Caption         =   "Erode..."
+            Index           =   6
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1692,7 +1700,7 @@ Private Sub MnuLayerSize_Click(Index As Integer)
 
 End Sub
 
-'Lights and shadows effect menu
+'Light and shadow effect menu
 Private Sub MnuLightShadow_Click(Index As Integer)
 
     Select Case Index
@@ -1701,21 +1709,29 @@ Private Sub MnuLightShadow_Click(Index As Integer)
         Case 0
             Process "Black light", True
         
-        'Dilate (maximum rank)
+        'Lens flare
         Case 1
-            Process "Dilate (maximum rank)", True
+            Process "Lens flare", True
         
-        'Erode (minimum rank)
-        Case 2
-            Process "Erode (minimum rank)", True
-            
         'Rainbow
-        Case 3
+        Case 2
             Process "Rainbow", True
             
         'Sunshine
-        Case 4
+        Case 3
             Process "Sunshine", True
+        
+        '<separator>
+        Case 4
+        
+        'Dilate (maximum rank)
+        Case 5
+            Process "Dilate (maximum rank)", True
+        
+        'Erode (minimum rank)
+        Case 6
+            Process "Erode (minimum rank)", True
+        
     
     End Select
 

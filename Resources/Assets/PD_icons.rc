@@ -173,12 +173,13 @@ SPLITTONE    CUSTOM  MOVEABLE        LOADONCALL      split_tone.png
 
 //Filters menu
 //FADELAST     CUSTOM  MOVEABLE        LOADONCALL      layers_arrange_back.png
+
 ARTISTIC     CUSTOM  MOVEABLE        LOADONCALL      paintbrush.png
 //--> Artistic sub-menu
 COMICBOOK    CUSTOM  MOVEABLE        LOADONCALL      book_open_text_image.png
 FIGGLASS     CUSTOM  MOVEABLE        LOADONCALL      jar_empty.png
 FILMNOIR     CUSTOM  MOVEABLE        LOADONCALL      user_detective_gray.png
-GLASSTILES   CUSTOM  MOVEABLE        LOADONCALL      glass_tiles.png
+GLASSTILES   CUSTOM  MOVEABLE        LOADONCALL      wafer.png
 KALEIDOSCOPE CUSTOM  MOVEABLE        LOADONCALL      flower_modified.png
 MODERNART    CUSTOM  MOVEABLE        LOADONCALL      stickman_smiley.png
 OILPAINTING  CUSTOM  MOVEABLE        LOADONCALL      palette_paintbrush.png
@@ -186,6 +187,7 @@ PENCIL       CUSTOM  MOVEABLE        LOADONCALL      pencil.png
 POSTERIZE    CUSTOM  MOVEABLE        LOADONCALL      categories.png
 RELIEF       CUSTOM  MOVEABLE        LOADONCALL      wall.png
 //
+
 BLUR         CUSTOM  MOVEABLE        LOADONCALL      glass.png
 //--> Blur sub-menu
 BOXBLUR      CUSTOM  MOVEABLE        LOADONCALL      box.png
@@ -199,6 +201,7 @@ RADIALBLUR   CUSTOM  MOVEABLE        LOADONCALL      arrow_step_over.png
 SMARTBLUR    CUSTOM  MOVEABLE        LOADONCALL      brain.png
 ZOOMBLUR     CUSTOM  MOVEABLE        LOADONCALL      arrow_in_out.png
 //
+
 DISTORT      CUSTOM  MOVEABLE        LOADONCALL      mizuhiki_paper_cord.png
 //--> Distort sub-menu
 LENSDISTORT  CUSTOM  MOVEABLE        LOADONCALL      camera_lens_plus.png
@@ -222,6 +225,16 @@ EMBOSS       CUSTOM  MOVEABLE        LOADONCALL      stamp.png
 EDGEENHANCE  CUSTOM  MOVEABLE        LOADONCALL      layer_select.png
 TRACECONTOUR CUSTOM  MOVEABLE        LOADONCALL      quill.png
 //
+
+SUNSHINE     CUSTOM  MOVEABLE        LOADONCALL      sunshine.png
+//--> Lighting sub-menu
+BLACKLIGHT   CUSTOM  MOVEABLE        LOADONCALL      black_light_bulb.png
+LENSFLARE    CUSTOM  MOVEABLE        LOADONCALL      lens_flare.png
+RAINBOW      CUSTOM  MOVEABLE        LOADONCALL      rainbow.png
+DILATE       CUSTOM  MOVEABLE        LOADONCALL      dilate.png
+ERODE        CUSTOM  MOVEABLE        LOADONCALL      erode.png
+//
+
 NATURAL      CUSTOM  MOVEABLE        LOADONCALL      leaf_plant.png
 //--> Natural sub-menu
 ATMOSPHERE   CUSTOM  MOVEABLE        LOADONCALL      weather_moon_clouds.png
@@ -229,43 +242,42 @@ BURN         CUSTOM  MOVEABLE        LOADONCALL      fire_big.png
 FOG          CUSTOM  MOVEABLE        LOADONCALL      weather_fog.png
 FREEZE       CUSTOM  MOVEABLE        LOADONCALL      ice.png
 LAVA         CUSTOM  MOVEABLE        LOADONCALL      zodiac_lava.png
-RAINBOW      CUSTOM  MOVEABLE        LOADONCALL      rainbow.png
 STEEL        CUSTOM  MOVEABLE        LOADONCALL      shield.png
-SUNSHINE     CUSTOM  MOVEABLE        LOADONCALL      sunshine.png
 RAIN         CUSTOM  MOVEABLE        LOADONCALL      weather_rain.png
 //
+
 NOISE        CUSTOM  MOVEABLE        LOADONCALL      speaker.png
 //--> Noise sub-menu
 FILMGRAIN    CUSTOM  MOVEABLE        LOADONCALL      film.png
 ADDNOISE     CUSTOM  MOVEABLE        LOADONCALL      speaker_volume_control_up.png
 MEDIAN       CUSTOM  MOVEABLE        LOADONCALL      balance.png
 //
-OTHER        CUSTOM  MOVEABLE        LOADONCALL      beaker.png
-//--> Other sub-menu
-ALIEN        CUSTOM  MOVEABLE        LOADONCALL      game.png
-BLACKLIGHT   CUSTOM  MOVEABLE        LOADONCALL      black_light_bulb.png
-DREAM        CUSTOM  MOVEABLE        LOADONCALL      smiley_sleep.png
-HEATMAP      CUSTOM  MOVEABLE        LOADONCALL      spectrum_emission.png
-RADIOACTIVE  CUSTOM  MOVEABLE        LOADONCALL      radioactivity.png
-SYNTHESIZE   CUSTOM  MOVEABLE        LOADONCALL      drill.png
-VIBRATE      CUSTOM  MOVEABLE        LOADONCALL      lightning.png
-//
+
 SHARPEN      CUSTOM  MOVEABLE        LOADONCALL      spectacle.png
 //--> Sharpen sub-menu
 UNSHARP      CUSTOM  MOVEABLE        LOADONCALL      spectacle_sunglass.png
 //
+
 STYLIZE      CUSTOM  MOVEABLE        LOADONCALL      tie.png
 //--> Stylize sub-menu
 ANTIQUE      CUSTOM  MOVEABLE        LOADONCALL      radio_old.png
 DIFFUSE      CUSTOM  MOVEABLE        LOADONCALL      bomb.png
-DILATE       CUSTOM  MOVEABLE        LOADONCALL      dilate.png
-ERODE        CUSTOM  MOVEABLE        LOADONCALL      erode.png
 SOLARIZE     CUSTOM  MOVEABLE        LOADONCALL      solar_panel.png
 TWINS        CUSTOM  MOVEABLE        LOADONCALL      image_twins.png
 VIGNETTE     CUSTOM  MOVEABLE        LOADONCALL      photo_sunset.png
 //
 
 CUSTFILTER   CUSTOM  MOVEABLE        LOADONCALL      table_pencil.png
+
+OTHER        CUSTOM  MOVEABLE        LOADONCALL      beaker.png
+//--> Experimental sub-menu
+//ALIEN        CUSTOM  MOVEABLE        LOADONCALL      game.png
+//DREAM        CUSTOM  MOVEABLE        LOADONCALL      smiley_sleep.png
+//HEATMAP      CUSTOM  MOVEABLE        LOADONCALL      spectrum_emission.png
+//RADIOACTIVE  CUSTOM  MOVEABLE        LOADONCALL      radioactivity.png
+//SYNTHESIZE   CUSTOM  MOVEABLE        LOADONCALL      drill.png
+//VIBRATE      CUSTOM  MOVEABLE        LOADONCALL      lightning.png
+//
 
 
 //Tools menu

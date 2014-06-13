@@ -420,10 +420,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "SUNSHINE", 7, 6        'Lights and shadows
         '--> Lights and shadows sub-menu
         addMenuIcon "BLACKLIGHT", 7, 6, 0     'Blacklight
-        addMenuIcon "DILATE", 7, 6, 1         'Dilate
-        addMenuIcon "ERODE", 7, 6, 2          'Erode
-        addMenuIcon "RAINBOW", 7, 6, 3        'Rainbow
-        addMenuIcon "SUNSHINE", 7, 6, 4       'Sunshine
+        addMenuIcon "LENSFLARE", 7, 6, 1      'Lens flare
+        addMenuIcon "RAINBOW", 7, 6, 2        'Rainbow
+        addMenuIcon "SUNSHINE", 7, 6, 3       'Sunshine
+        addMenuIcon "DILATE", 7, 6, 5         'Dilate
+        addMenuIcon "ERODE", 7, 6, 6          'Erode
     
     addMenuIcon "NATURAL", 7, 7         'Natural
         '--> Natural sub-menu
@@ -457,12 +458,12 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     addMenuIcon "OTHER", 7, 14           'Experimental
         '--> Experimental sub-menu
-        addMenuIcon "ALIEN", 7, 14, 0          'Alien
-        addMenuIcon "DREAM", 7, 14, 1          'Dream
-        addMenuIcon "RADIOACTIVE", 7, 14, 2    'Radioactive
-        addMenuIcon "SYNTHESIZE", 7, 14, 3     'Synthesize
-        addMenuIcon "HEATMAP", 7, 14, 4        'Thermograph
-        addMenuIcon "VIBRATE", 7, 14, 5        'Vibrate
+        'addMenuIcon "ALIEN", 7, 14, 0          'Alien
+        'addMenuIcon "DREAM", 7, 14, 1          'Dream
+        'addMenuIcon "RADIOACTIVE", 7, 14, 2    'Radioactive
+        'addMenuIcon "SYNTHESIZE", 7, 14, 3     'Synthesize
+        'addMenuIcon "HEATMAP", 7, 14, 4        'Thermograph
+        'addMenuIcon "VIBRATE", 7, 14, 5        'Vibrate
     
     'Tools Menu
     addMenuIcon "LANGUAGES", 8, 0       'Languages

@@ -216,6 +216,7 @@ Form=Forms\VBP_FormSunshine.frm
 Form=Forms\VBP_FormNewLayer.frm
 Form=Forms\VBP_FormRainbow.frm
 Form=Forms\VBP_FormEdgeEnhance.frm
+Form=Forms\VBP_FormLensFlare.frm
 ResFile32="Resources\PD_icons.RES"
 IconForm="FormMain"
 Startup="Sub Main"

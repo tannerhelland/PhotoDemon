@@ -30,17 +30,9 @@ Begin VB.Form FormLensFlare
       TabIndex        =   0
       Top             =   5790
       Width           =   12090
-      _ExtentX        =   21325
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   21325
+      _extenty        =   1323
+      font            =   "VBP_FormLensFlare.frx":0000
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -48,56 +40,40 @@ Begin VB.Form FormLensFlare
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
-      PointSelection  =   -1  'True
+      _extentx        =   9922
+      _extenty        =   9922
+      pointselection  =   -1
    End
    Begin PhotoDemon.sliderTextCombo sltXCenter 
       Height          =   495
       Left            =   6000
       TabIndex        =   2
-      Top             =   480
+      Top             =   2280
       Width           =   2895
-      _ExtentX        =   5106
-      _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   5106
+      _extenty        =   873
+      font            =   "VBP_FormLensFlare.frx":0028
+      max             =   1
+      sigdigits       =   2
+      value           =   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   495
       Left            =   9000
       TabIndex        =   3
-      Top             =   480
+      Top             =   2280
       Width           =   2895
-      _ExtentX        =   5106
-      _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   5106
+      _extenty        =   873
+      font            =   "VBP_FormLensFlare.frx":0050
+      max             =   1
+      sigdigits       =   2
+      value           =   0.5
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "center position (x, y)"
+      Caption         =   "position (x, y)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -112,18 +88,27 @@ Begin VB.Form FormLensFlare
       Index           =   4
       Left            =   6000
       TabIndex        =   5
-      Top             =   120
-      Width           =   2205
+      Top             =   1920
+      Width           =   1485
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent
       Caption         =   "Note: you can also set a center position by clicking the preview window."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00404040&
-      Height          =   435
+      Height          =   1035
       Index           =   0
       Left            =   6120
       TabIndex        =   4
-      Top             =   1050
+      Top             =   3000
       Width           =   5655
       WordWrap        =   -1  'True
    End
@@ -491,12 +476,18 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Lens flare", , buildParams(sltXCenter.value, sltYCenter.value), UNDO_LAYER
+    Process "Lens flare", , buildParams(sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltXCenter.Value = 0.5
+    sltYCenter.Value = 0.5
+End Sub
+
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
@@ -513,13 +504,13 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then LensFlare sltXCenter.value, sltYCenter.value, True, fxPreview
+    If cmdBar.previewsAllowed Then LensFlare sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
     cmdBar.markPreviewStatus False
-    sltXCenter.value = xRatio
-    sltYCenter.value = yRatio
+    sltXCenter.Value = xRatio
+    sltYCenter.Value = yRatio
     cmdBar.markPreviewStatus True
     updatePreview
 End Sub
