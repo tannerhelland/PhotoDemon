@@ -438,7 +438,7 @@ End Sub
 
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
 Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetDIB As pdDIB, Optional ByVal pageNumber As Long = 0)
-        
+    
     '*************************************************************************************************************************************
     ' Prepare all variables related to image loading
     '*************************************************************************************************************************************
@@ -1028,33 +1028,8 @@ PDI_Load_Continuation:
                 
             Else
             
-                Message "Finishing image metadata parsing..."
-            
-                'Forcibly disable the main form to avoid DoEvents allowing click-through
-                FormMain.Enabled = False
-                
-                'We don't want to pause for more than 4 additional seconds, so make a note of the time.
-                Dim timeWaitMetadata As Double
-                timeWaitMetadata = Timer
-                
-                'Pause for 1/2 second
-                Do
-                    PauseProgram 0.5
-                    
-                    'If the user shuts down the program while we are still waiting for input, exit immediately
-                    If g_ProgramShuttingDown Then Exit Sub
-                
-                'Give ExifTool 3.5 seconds to complete its work.  If it hasn't succeeded within 3.5 seconds, assume
-                ' some kind of internal failure and abandon metadata importing.
-                Loop While (Not isMetadataFinished) And ((Timer - timeWaitMetadata) < 3.5)
-                
-                'Re-enable the main form
-                FormMain.Enabled = True
-                
-                If isMetadataFinished Then
-                    Message "Metadata retrieved successfully."
-                    targetImage.imgMetadata.loadAllMetadata retrieveMetadataString
-                End If
+                Message "Metadata parsing hasn't finished; switching to asynchronous wait mode..."
+                FormMain.tmrMetadata.Enabled = True
                 
             End If
             

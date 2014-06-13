@@ -1257,7 +1257,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     
         'Cache the contents of the untranslated message, so we can check for duplicates on the next message request
         m_PrevMessage = tmpDupeCheckString
-    
+                
         Dim newString As String
         newString = mString
     
@@ -1276,17 +1276,16 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
             Next i
         
         End If
-    
+        
         If MacroStatus = MacroSTART Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
         
-        If MacroStatus <> MacroBATCH Then
+        'Post the message to the screen
+        If MacroStatus <> MacroBATCH Then FormMain.mainCanvas(0).displayCanvasMessage newString
         
-            'If g_OpenImageCount > 0 Then
-                FormMain.mainCanvas(0).displayCanvasMessage newString
-            'End If
-            
-        End If
+        'Update the global "previous message" string
+        g_LastPostedMessage = newString
         
+        'In the IDE, mirror the message output to the Debug window
         If Not g_IsProgramCompiled Then Debug.Print newString
         
         'If we're logging program messages, open up a log file and dump the message there
