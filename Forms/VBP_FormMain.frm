@@ -944,56 +944,40 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Miscellaneous..."
+            Caption         =   "-"
             Index           =   2
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Pan and zoom..."
+            Caption         =   "Pinch and whirl..."
             Index           =   3
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Perspective..."
+            Caption         =   "Poke..."
             Index           =   4
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Pinch and whirl..."
+            Caption         =   "Ripple..."
             Index           =   5
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Poke..."
+            Caption         =   "Squish..."
             Index           =   6
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Polar conversion..."
+            Caption         =   "Swirl..."
             Index           =   7
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Ripple..."
+            Caption         =   "Waves..."
             Index           =   8
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Rotate..."
+            Caption         =   "-"
             Index           =   9
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Shear..."
+            Caption         =   "Miscellaneous..."
             Index           =   10
-         End
-         Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Spherize..."
-            Index           =   11
-         End
-         Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Squish..."
-            Index           =   12
-         End
-         Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Swirl..."
-            Index           =   13
-         End
-         Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Waves..."
-            Index           =   14
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1134,6 +1118,34 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuStylize 
             Caption         =   "Vignetting..."
             Index           =   4
+         End
+      End
+      Begin VB.Menu MnuEffectUpper 
+         Caption         =   "Transform"
+         Index           =   10
+         Begin VB.Menu MnuEffectTransform 
+            Caption         =   "Pan and zoom..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuEffectTransform 
+            Caption         =   "Perspective..."
+            Index           =   1
+         End
+         Begin VB.Menu MnuEffectTransform 
+            Caption         =   "Polar conversion..."
+            Index           =   2
+         End
+         Begin VB.Menu MnuEffectTransform 
+            Caption         =   "Rotate..."
+            Index           =   3
+         End
+         Begin VB.Menu MnuEffectTransform 
+            Caption         =   "Shear..."
+            Index           =   4
+         End
+         Begin VB.Menu MnuEffectTransform 
+            Caption         =   "Spherize..."
+            Index           =   5
          End
       End
       Begin VB.Menu MnuFilterSepBar1 
@@ -1503,6 +1515,39 @@ Private Sub MnuAdjustmentsPhoto_Click(Index As Integer)
         Case 2
             Process "Split toning", True
     
+    End Select
+
+End Sub
+
+'Menu: effect > transform actions
+Private Sub MnuEffectTransform_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Pan and zoom
+        Case 0
+            Process "Pan and zoom", True
+            
+        'Perspective (free)
+        Case 1
+            Process "Perspective", True
+        
+        'Polar conversion
+        Case 2
+            Process "Polar conversion", True
+            
+        'Rotate
+        Case 3
+            Process "Rotate", True
+        
+        'Shear
+        Case 4
+            Process "Shear", True
+            
+        'Spherize
+        Case 5
+            Process "Spherize", True
+        
     End Select
 
 End Sub
@@ -2445,59 +2490,41 @@ Private Sub MnuDistortEffects_Click(Index As Integer)
         'Remove lens distort
         Case 1
             Process "Correct lens distortion", True
-                
-        'Miscellaneous
+        
+        '<separator>
         Case 2
-            Process "Miscellaneous distort", True
-            
-        'Pan and zoom
-        Case 3
-            Process "Pan and zoom", True
-            
-        'Perspective (free)
-        Case 4
-            Process "Perspective", True
             
         'Pinch and whirl
-        Case 5
+        Case 3
             Process "Pinch and whirl", True
         
         'Poke
-        Case 6
+        Case 4
             Process "Poke", True
-            
-        'Polar conversion
-        Case 7
-            Process "Polar conversion", True
         
         'Ripple
-        Case 8
+        Case 5
             Process "Ripple", True
         
-        'Rotate
-        Case 9
-            Process "Rotate", True
-        
-        'Shear
-        Case 10
-            Process "Shear", True
-            
-        'Spherize
-        Case 11
-            Process "Spherize", True
-            
         'Squish (formerly Fixed Perspective)
-        Case 12
+        Case 6
             Process "Squish", True
         
         'Swirl
-        Case 13
+        Case 7
             Process "Swirl", True
         
         'Waves
-        Case 14
+        Case 8
             Process "Waves", True
-    
+            
+        '<separator>
+        Case 9
+        
+        'Miscellaneous
+        Case 10
+            Process "Miscellaneous distort", True
+        
     End Select
 
 End Sub
