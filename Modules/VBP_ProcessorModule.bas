@@ -1158,19 +1158,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormBlackLight.fxBlackLight cParams.GetDouble(1)
             End If
-        
-        Case "Dilate (maximum rank)"
+                   
+        Case "Lens flare"
             If showDialog Then
-                FormMedian.showMedianDialog 100
+                showPDDialog vbModal, FormLensFlare
             Else
-                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
-            End If
-            
-        Case "Erode (minimum rank)"
-            If showDialog Then
-                FormMedian.showMedianDialog 1
-            Else
-                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
+                FormLensFlare.LensFlare cParams.GetDouble(1), cParams.GetDouble(2)
             End If
             
         Case "Rainbow"
@@ -1185,6 +1178,20 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 showPDDialog vbModal, FormSunshine
             Else
                 FormSunshine.SunShine cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetDouble(6)
+            End If
+            
+        Case "Dilate (maximum rank)"
+            If showDialog Then
+                FormMedian.showMedianDialog 100
+            Else
+                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
+            End If
+            
+        Case "Erode (minimum rank)"
+            If showDialog Then
+                FormMedian.showMedianDialog 1
+            Else
+                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
             End If
         
         'Natural
