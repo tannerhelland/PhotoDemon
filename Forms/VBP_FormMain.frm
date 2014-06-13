@@ -24,6 +24,12 @@ Begin VB.Form FormMain
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1261
    StartUpPosition =   3  'Windows Default
+   Begin VB.Timer tmrAccelerators 
+      Enabled         =   0   'False
+      Interval        =   100
+      Left            =   120
+      Top             =   2160
+   End
    Begin VB.Timer tmrCountdown 
       Enabled         =   0   'False
       Interval        =   200
@@ -37,21 +43,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -1383,6 +1389,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'MoveWindow is used to seamlessly reposition the image canvas as necessary
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Private m_ToolTip As clsToolTip
 
@@ -1396,7 +1405,11 @@ Private tooltipBackup As Collection
 Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+'Keyboard accelerators are troublesome to handle because they interfere with PD's dynamic hooking solution for canvas hotkeys.  To work around this
+' limitation, these module-level variables are set by the accelerator hook control any time a potential accelerator is intercepted.  The hook then
+' initiates the tmrAccelerators timer, then exits, which allows hook behavior to continue uninterrupted.  After the timer enforces a slight delay,
+' it evaluates the accelerator like normal.
+Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Double
 
 'Horizontal mousewheel; note that the pdInput class automatically converts Shift+Wheel to horizontal wheel for us
 Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
@@ -1802,6 +1815,147 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     'Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
     'Debug.Print receivedData
     
+End Sub
+
+Private Sub tmrAccelerators_Timer()
+
+    If Timer - m_TimerAtAcceleratorPress > 0.2 Then
+
+        'Because the accelerator has now been processed, we can disable the timer; this will prevent it from firing again, but the
+        ' current sub will still complete its actions.
+        tmrAccelerators.Enabled = False
+        
+        'Accelerators are divided into three groups, and they are processed in the following order:
+        ' 1) Direct processor strings.  These are automatically submitted to the software processor.
+        ' 2) Non-processor directives that can be fired if no images are present (e.g. Open, Paste)
+        ' 3) Non-processor directives that require an image.
+    
+        '***********************************************************
+        'Accelerators that are direct processor strings are handled automatically
+        
+        With ctlAccelerator
+        
+            If .isProcString(m_AcceleratorIndex) Then
+                
+                'If the action requires an open image, check for that first
+                If .imageRequired(m_AcceleratorIndex) Then
+                    If g_OpenImageCount = 0 Then Exit Sub
+                    If Not (FormLanguageEditor Is Nothing) Then
+                        If FormLanguageEditor.Visible Then Exit Sub
+                    End If
+                End If
+        
+                Process .Key(m_AcceleratorIndex), .displayDialog(m_AcceleratorIndex), , .shouldCreateUndo(m_AcceleratorIndex)
+                Exit Sub
+                
+            End If
+        
+        End With
+    
+        '***********************************************************
+        'Accelerators that DO NOT require at least one loaded image, and that require special handling:
+        
+        'Open program preferences
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Preferences" Then
+            If Not FormPreferences.Visible Then
+                showPDDialog vbModal, FormPreferences
+                Exit Sub
+            End If
+        End If
+        
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Plugin manager" Then
+            If Not FormPluginManager.Visible Then
+                showPDDialog vbModal, FormPluginManager
+                Exit Sub
+            End If
+        End If
+            
+        'Escape - a separate function is used to cancel currently running filters.  This accelerator is only used
+        ' to cancel batch conversions, but in the future it should be applied elsewhere.
+        'If ctlAccelerator.Key(m_AcceleratorIndex) = "Escape" Then
+        '    If MacroStatus = MacroBATCH Then MacroStatus = MacroCANCEL
+        'End If
+        
+        'MRU files
+        Dim i As Integer
+        For i = 0 To 9
+            If ctlAccelerator.Key(m_AcceleratorIndex) = ("MRU_" & i) Then
+                If FormMain.mnuRecDocs.Count > i Then
+                    If FormMain.mnuRecDocs(i).Enabled Then
+                        FormMain.mnuRecDocs_Click i
+                    End If
+                End If
+            End If
+        Next i
+        
+        '***********************************************************
+        'Accelerators that DO require at least one loaded image, and that require special handling:
+        
+        'If no images are loaded, or another form is active, exit.
+        If g_OpenImageCount = 0 Then Exit Sub
+        
+        'Fit on screen
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "FitOnScreen" Then FitOnScreen
+        
+        'Zoom in
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_In" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex > 0 Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex - 1
+        End If
+        
+        'Zoom out
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_Out" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex < (FormMain.mainCanvas(0).getZoomDropDownReference().ListCount - 1) Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex + 1
+        End If
+        
+        'Actual size
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Actual_Size" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+        End If
+        
+        'Various zoom values
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_161" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 2
+        End If
+        
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_81" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 4
+        End If
+        
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_41" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 8
+        End If
+        
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_21" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 10
+        End If
+        
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_12" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 14
+        End If
+        
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_14" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 16
+        End If
+        
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_18" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 19
+        End If
+        
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_116" Then
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 21
+        End If
+        
+        'Remove selection
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Remove selection" Then
+            Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION
+        End If
+        
+        'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Next_Image" Then moveToNextChildWindow True
+        If ctlAccelerator.Key(m_AcceleratorIndex) = "Prev_Image" Then moveToNextChildWindow False
+                
+    End If
+
 End Sub
 
 'Countdown timer for re-enabling disabled user input.  A delay is enforced to prevent double-clicks on child dialogs from
@@ -3469,139 +3623,18 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
 
     'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
     ' faster than the system keyboard delay (250ms at minimum, 1s at maximum).
-    Static lastAccelerator As Double
-    If (Timer - lastAccelerator < getKeyboardDelay()) Then Exit Sub
-
-    'Accelerators are divided into three groups, and they are processed in the following order:
-    ' 1) Direct processor strings.  These are automatically submitted to the software processor.
-    ' 2) Non-processor directives that can be fired if no images are present (e.g. Open, Paste)
-    ' 3) Non-processor directives that require an image.
-
-    '***********************************************************
-    'Accelerators that are direct processor strings are handled automatically
+    If Abs(Timer - m_TimerAtAcceleratorPress < getKeyboardDelay()) Then Exit Sub
     
-    With ctlAccelerator
+    'Finally, if the accelerator timer is already waiting to process an existing accelerator, exit
+    If tmrAccelerators.Enabled Then Exit Sub
     
-        If .isProcString(nIndex) Then
-            
-            'If the action requires an open image, check for that first
-            If .imageRequired(nIndex) Then
-                If g_OpenImageCount = 0 Then Exit Sub
-                If Not (FormLanguageEditor Is Nothing) Then
-                    If FormLanguageEditor.Visible Then Exit Sub
-                End If
-            End If
+    'If we made it all the way here, the accelerator is potentially valid, so we need to evaluate it.
+    ' Store the accelerator index in a module-level variable, note the time, then initiate the accelerator evaluation timer
+    m_AcceleratorIndex = nIndex
+    m_TimerAtAcceleratorPress = Timer
+    tmrAccelerators.Enabled = True
     
-            Process .Key(nIndex), .displayDialog(nIndex), , .shouldCreateUndo(nIndex)
-            Exit Sub
-            
-        End If
-    
-    End With
-
-    '***********************************************************
-    'Accelerators that DO NOT require at least one loaded image, and that require special handling:
-    
-    'Open program preferences
-    If ctlAccelerator.Key(nIndex) = "Preferences" Then
-        If Not FormPreferences.Visible Then
-            showPDDialog vbModal, FormPreferences
-            Exit Sub
-        End If
-    End If
-    
-    If ctlAccelerator.Key(nIndex) = "Plugin manager" Then
-        If Not FormPluginManager.Visible Then
-            showPDDialog vbModal, FormPluginManager
-            Exit Sub
-        End If
-    End If
-        
-    'Escape - a separate function is used to cancel currently running filters.  This accelerator is only used
-    ' to cancel batch conversions, but in the future it should be applied elsewhere.
-    'If ctlAccelerator.Key(nIndex) = "Escape" Then
-    '    If MacroStatus = MacroBATCH Then MacroStatus = MacroCANCEL
-    'End If
-    
-    'MRU files
-    Dim i As Integer
-    For i = 0 To 9
-        If ctlAccelerator.Key(nIndex) = ("MRU_" & i) Then
-            If FormMain.mnuRecDocs.Count > i Then
-                If FormMain.mnuRecDocs(i).Enabled Then
-                    FormMain.mnuRecDocs_Click i
-                End If
-            End If
-        End If
-    Next i
-    
-    '***********************************************************
-    'Accelerators that DO require at least one loaded image, and that require special handling:
-    
-    'If no images are loaded, or another form is active, exit.
-    If g_OpenImageCount = 0 Then Exit Sub
-    
-    'Fit on screen
-    If ctlAccelerator.Key(nIndex) = "FitOnScreen" Then FitOnScreen
-    
-    'Zoom in
-    If ctlAccelerator.Key(nIndex) = "Zoom_In" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex > 0 Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex - 1
-    End If
-    
-    'Zoom out
-    If ctlAccelerator.Key(nIndex) = "Zoom_Out" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex < (FormMain.mainCanvas(0).getZoomDropDownReference().ListCount - 1) Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex + 1
-    End If
-    
-    'Actual size
-    If ctlAccelerator.Key(nIndex) = "Actual_Size" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
-    End If
-    
-    'Various zoom values
-    If ctlAccelerator.Key(nIndex) = "Zoom_161" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 2
-    End If
-    
-    If ctlAccelerator.Key(nIndex) = "Zoom_81" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 4
-    End If
-    
-    If ctlAccelerator.Key(nIndex) = "Zoom_41" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 8
-    End If
-    
-    If ctlAccelerator.Key(nIndex) = "Zoom_21" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 10
-    End If
-    
-    If ctlAccelerator.Key(nIndex) = "Zoom_12" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 14
-    End If
-    
-    If ctlAccelerator.Key(nIndex) = "Zoom_14" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 16
-    End If
-    
-    If ctlAccelerator.Key(nIndex) = "Zoom_18" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 19
-    End If
-    
-    If ctlAccelerator.Key(nIndex) = "Zoom_116" Then
-        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = 21
-    End If
-    
-    'Remove selection
-    If ctlAccelerator.Key(nIndex) = "Remove selection" Then
-        Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION
-    End If
-    
-    'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
-    If ctlAccelerator.Key(nIndex) = "Next_Image" Then moveToNextChildWindow True
-    If ctlAccelerator.Key(nIndex) = "Prev_Image" Then moveToNextChildWindow False
-    
-    lastAccelerator = Timer
+    Exit Sub
     
 End Sub
 
