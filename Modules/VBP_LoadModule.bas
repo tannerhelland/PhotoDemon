@@ -594,7 +594,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         If g_ExifToolEnabled And isThisPrimaryImage Then
             Message "Starting separate metadata extraction thread..."
-            startMetadataProcessing sFile(thisImage), targetImage.originalFileFormat
+            startMetadataProcessing sFile(thisImage), targetImage.originalFileFormat, targetImage.imageID
         End If
         
         'By default, set this image to use the program's default metadata setting (settable from Tools -> Options).
@@ -964,7 +964,9 @@ PDI_Load_Continuation:
         '*************************************************************************************************************************************
         ' If this is a primary image, update all relevant interface elements (image size display, 24/32bpp options, custom form icon, etc)
         '*************************************************************************************************************************************
-                
+        
+        Message "Finalizing image details..."
+        
         'If this is a primary image, it needs to be rendered to the screen
         If isThisPrimaryImage Then
             
@@ -1024,7 +1026,7 @@ PDI_Load_Continuation:
             If isMetadataFinished Then
                 
                 Message "Metadata retrieved successfully."
-                targetImage.imgMetadata.loadAllMetadata retrieveMetadataString
+                targetImage.imgMetadata.loadAllMetadata retrieveMetadataString, targetImage.imageID
                 
             Else
             

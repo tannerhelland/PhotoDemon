@@ -3,10 +3,9 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 'ExifTool Plugin Interface
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 24/May/13
-'Last updated: 18/January/14
-'Last update: improve treatment of JPEG metadata that may be invalid due to JPEG re-saves; basically, technical
-'              JPEG information is sometimes stored inside EXIF or XMP data, and we should rewrite this technical
-'              data (if present) to match the values of the latest JPEG export.
+'Last updated: 13/June/14
+'Last update: solve asynchronicity problems once and for all (by using a combination of black magic and pixie dust,
+'              in case you were curious...)
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
 ' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin is
@@ -141,6 +140,11 @@ Private databaseString As String
 ' automatically triggered by the newMetadataReceived function as necessary) will remove the file at this location.
 Private tmpMetadataFilePath As String
 
+'If multiple images are loaded simultaneously, we have to do some tricky handling to parse out their individual bits.  As such, we store
+' the ID of the last image metadata request we received; only when this ID is returned successfully do we consider metadata processing
+' "complete", and return TRUE for isMetadataFinished.
+Private m_LastRequestID As Long
+
 Public Function isDatabaseModeActive() As Boolean
     isDatabaseModeActive = databaseModeActive
 End Function
@@ -240,7 +244,7 @@ Public Function isMetadataFinished() As Boolean
         Exit Function
     End If
     
-    If InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) > 0 Then
+    If InStr(1, tmpMetadata, "{ready" & m_LastRequestID & "}", vbBinaryCompare) > 0 Then
         
         'Terminate the relevant mode
         If captureModeActive Then captureModeActive = False
@@ -266,13 +270,14 @@ Public Function retrieveMetadataString() As String
     If InStr(1, curMetadataString, "&gt;") > 0 Then curMetadataString = Replace(curMetadataString, "&gt;", ">")
     If InStr(1, curMetadataString, "&lt;") > 0 Then curMetadataString = Replace(curMetadataString, "&lt;", "<")
     
-    'Replace the {ready} text supplied by ExifTool itself
-    curMetadataString = Replace$(curMetadataString, "{ready}", "")
-    
     'Return the processed string, then erase our copy of it
     retrieveMetadataString = curMetadataString
     curMetadataString = ""
     
+End Function
+
+Public Function retrieveUntouchedMetadataString() As String
+    retrieveUntouchedMetadataString = curMetadataString
 End Function
 
 'Is ExifTool available as a plugin?
@@ -310,7 +315,7 @@ End Function
 
 'Start an ExifTool instance (if one isn't already active), and have it process an image file.  Because we now run ExifTool
 ' asynchronously, this should be done early in the image load process.
-Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat As Long) As Boolean
+Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat As Long, ByVal targetImageID As Long) As Boolean
 
     'If ExifTool is not running, start it.  If it cannot be started, exit.
     If Not isExifToolRunning Then
@@ -374,7 +379,11 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     cmdParams = cmdParams & srcFile & vbCrLf
     
     'Finally, add the special command "-execute" which tells ExifTool to start operations
-    cmdParams = cmdParams & "-execute" & vbCrLf
+    cmdParams = cmdParams & "-execute" & targetImageID & vbCrLf
+    
+    'Note this request ID as being the last one we received; only when this ID is returned by ExifTool will we actually consider our
+    ' work complete.
+    m_LastRequestID = targetImageID
     
     'DEBUG ONLY! Display the param list we have assembled.
     'Debug.Print cmdParams
