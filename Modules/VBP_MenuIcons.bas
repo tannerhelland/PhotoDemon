@@ -367,6 +367,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     'Effects (Filters) Menu
     'addMenuIcon "FADELAST", 7, 0        'Fade Last
+    
     addMenuIcon "ARTISTIC", 7, 2        'Artistic
         '--> Artistic sub-menu
         addMenuIcon "COMICBOOK", 7, 2, 0      'Comic book
@@ -379,6 +380,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "PENCIL", 7, 2, 7         'Pencil
         addMenuIcon "POSTERIZE", 7, 2, 8      'Posterize
         addMenuIcon "RELIEF", 7, 2, 9         'Relief
+    
     addMenuIcon "BLUR", 7, 3            'Blur
         '--> Blur sub-menu
         addMenuIcon "BOXBLUR", 7, 3, 0        'Box Blur
@@ -396,20 +398,16 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         '--> Distort sub-menu
         addMenuIcon "LENSDISTORT", 7, 4, 0    'Apply lens distortion
         addMenuIcon "FIXLENS", 7, 4, 1        'Remove or correct existing lens distortion
-        addMenuIcon "MISCDISTORT", 7, 4, 2    'Miscellaneous distort functions
-        addMenuIcon "PANANDZOOM", 7, 4, 3     'Pan and zoom
-        addMenuIcon "PERSPECTIVE", 7, 4, 4    'Perspective (free)
-        addMenuIcon "PINCHWHIRL", 7, 4, 5     'Pinch and whirl
-        addMenuIcon "POKE", 7, 4, 6           'Poke
-        addMenuIcon "POLAR", 7, 4, 7          'Polar conversion
-        addMenuIcon "RIPPLE", 7, 4, 8         'Ripple
-        addMenuIcon "ROTATECW", 7, 4, 9       'Rotate
-        addMenuIcon "SHEAR", 7, 4, 10         'Shear
-        addMenuIcon "SPHERIZE", 7, 4, 11      'Spherize
-        addMenuIcon "SQUISH", 7, 4, 12        'Squish (formerly Fixed Perspective)
-        addMenuIcon "SWIRL", 7, 4, 13         'Swirl
-        addMenuIcon "WAVES", 7, 4, 14         'Waves
         
+        addMenuIcon "PINCHWHIRL", 7, 4, 3     'Pinch and whirl
+        addMenuIcon "POKE", 7, 4, 4           'Poke
+        addMenuIcon "RIPPLE", 7, 4, 5         'Ripple
+        addMenuIcon "SQUISH", 7, 4, 6         'Squish (formerly Fixed Perspective)
+        addMenuIcon "SWIRL", 7, 4, 7          'Swirl
+        addMenuIcon "WAVES", 7, 4, 8          'Waves
+        
+        addMenuIcon "MISCDISTORT", 7, 4, 10   'Miscellaneous distort functions
+                
     addMenuIcon "EDGES", 7, 5           'Edges
         '--> Edges sub-menu
         addMenuIcon "EMBOSS", 7, 5, 0         'Emboss / Engrave
@@ -454,9 +452,19 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "SOLARIZE", 7, 10, 2      'Solarize
         addMenuIcon "TWINS", 7, 10, 3         'Twins
         addMenuIcon "VIGNETTE", 7, 10, 4      'Vignetting
-    addMenuIcon "CUSTFILTER", 7, 12     'Custom Filter
+        
+    addMenuIcon "PANANDZOOM", 7, 11        'Transform
+        '--> Transform sub-menu
+        addMenuIcon "PANANDZOOM", 7, 11, 0    'Pan and zoom
+        addMenuIcon "PERSPECTIVE", 7, 11, 1   'Perspective (free)
+        addMenuIcon "POLAR", 7, 11, 2         'Polar conversion
+        addMenuIcon "ROTATECW", 7, 11, 3      'Rotate
+        addMenuIcon "SHEAR", 7, 11, 4         'Shear
+        addMenuIcon "SPHERIZE", 7, 11, 5      'Spherize
+        
+    addMenuIcon "CUSTFILTER", 7, 13     'Custom Filter
     
-    addMenuIcon "OTHER", 7, 14           'Experimental
+    addMenuIcon "OTHER", 7, 15           'Experimental
         '--> Experimental sub-menu
         'addMenuIcon "ALIEN", 7, 14, 0          'Alien
         'addMenuIcon "DREAM", 7, 14, 1          'Dream

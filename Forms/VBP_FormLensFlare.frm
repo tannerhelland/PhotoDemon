@@ -30,9 +30,17 @@ Begin VB.Form FormLensFlare
       TabIndex        =   0
       Top             =   5790
       Width           =   12090
-      _extentx        =   21325
-      _extenty        =   1323
-      font            =   "VBP_FormLensFlare.frx":0000
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -40,9 +48,9 @@ Begin VB.Form FormLensFlare
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
-      pointselection  =   -1
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+      PointSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltXCenter 
       Height          =   495
@@ -50,12 +58,20 @@ Begin VB.Form FormLensFlare
       TabIndex        =   2
       Top             =   2280
       Width           =   2895
-      _extentx        =   5106
-      _extenty        =   873
-      font            =   "VBP_FormLensFlare.frx":0028
-      max             =   1
-      sigdigits       =   2
-      value           =   0.5
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   495
@@ -63,12 +79,20 @@ Begin VB.Form FormLensFlare
       TabIndex        =   3
       Top             =   2280
       Width           =   2895
-      _extentx        =   5106
-      _extenty        =   873
-      font            =   "VBP_FormLensFlare.frx":0050
-      max             =   1
-      sigdigits       =   2
-      value           =   0.5
+      _ExtentX        =   5106
+      _ExtentY        =   873
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -484,8 +508,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltXCenter.Value = 0.5
-    sltYCenter.Value = 0.5
+    sltXCenter.Value = 0.8
+    sltYCenter.Value = 0.2
 End Sub
 
 Private Sub Form_Activate()
