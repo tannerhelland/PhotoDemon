@@ -326,6 +326,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
         
+        Case "Cut"
+            ClipboardCut
+        
         Case "Copy"
             ClipboardCopy False
             

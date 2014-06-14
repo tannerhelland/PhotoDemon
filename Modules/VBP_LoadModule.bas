@@ -1926,10 +1926,11 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyY, vbCtrlMask, "Redo", FormMain.MnuEdit(1), True, True, False, UNDO_NOTHING
         .AddAccelerator vbKeyF, vbCtrlMask, "Repeat last action", FormMain.MnuEdit(2), True, True, False, UNDO_IMAGE
         
-        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", FormMain.MnuEdit(4), True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy merged", FormMain.MnuEdit(5), True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new layer", FormMain.MnuEdit(6), True, False, False, UNDO_IMAGE
-        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new image", FormMain.MnuEdit(7), True, False, False, UNDO_NOTHING
+        .AddAccelerator vbKeyX, vbCtrlMask, "Cut", FormMain.MnuEdit(4), True, True, False, UNDO_LAYER
+        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", FormMain.MnuEdit(5), True, True, False, UNDO_NOTHING
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy merged", FormMain.MnuEdit(6), True, True, False, UNDO_NOTHING
+        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new layer", FormMain.MnuEdit(7), True, False, False, UNDO_IMAGE
+        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new image", FormMain.MnuEdit(8), True, False, False, UNDO_NOTHING
         
         'View menu
         .AddAccelerator vbKey0, 0, "FitOnScreen", FormMain.MnuFitOnScreen, False, True, False, UNDO_NOTHING
