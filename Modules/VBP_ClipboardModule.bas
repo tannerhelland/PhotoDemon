@@ -24,8 +24,40 @@ Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
 
 Private Const CF_HDROP As Long = 15
 
+'Copy the current selection (or entire layer, if no selection is active) to the clipboard, then erase the selected area
+' (or entire layer, if no selection is active).
+Public Sub ClipboardCut()
+
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    'Check for an active selection
+    If pdImages(g_CurrentImage).selectionActive Then
+    
+        'Fill the temporary DIB with the selection
+        pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, False
+        
+    Else
+        
+        tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveLayer.layerDIB
+            
+        'Layers are always premultiplied, so we must unpremultiply it now if 32bpp
+        If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha False
+        
+    End If
+    
+    'Copy the temporary DIB to the clipboard, then erase it
+    tmpDIB.copyDIBToClipboard
+    tmpDIB.eraseDIB
+    
+    pdImages(g_CurrentImage).eraseProcessedSelection False
+    
+    'Redraw the active viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
 'Copy the current layer (or composite image, if copyMerged is true) to the clipboard.
-' If a selection is active, crop the image to the layer area first.
 Public Sub ClipboardCopy(ByVal copyMerged As Boolean)
     
     Dim tmpDIB As pdDIB

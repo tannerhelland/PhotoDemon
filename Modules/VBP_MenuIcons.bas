@@ -204,11 +204,12 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "UNDO", 1, 0           'Undo
     addMenuIcon "REDO", 1, 1           'Redo
     addMenuIcon "REPEAT", 1, 2         'Repeat Last Action
-    addMenuIcon "COPY", 1, 4           'Copy
-    addMenuIcon "COPY_MERGED", 1, 5    'Copy merged
-    addMenuIcon "PASTE_LAYER", 1, 6    'Paste as new layer
-    addMenuIcon "PASTE_IMAGE", 1, 7    'Paste as new image
-    addMenuIcon "CLEAR", 1, 9          'Empty Clipboard
+    addMenuIcon "CUT", 1, 4            'Cut
+    addMenuIcon "COPY", 1, 5           'Copy
+    addMenuIcon "COPY_MERGED", 1, 6    'Copy merged
+    addMenuIcon "PASTE_LAYER", 1, 7    'Paste as new layer
+    addMenuIcon "PASTE_IMAGE", 1, 8    'Paste as new image
+    addMenuIcon "CLEAR", 1, 10         'Empty Clipboard
     
     'View Menu
     addMenuIcon "FITONSCREEN", 2, 0    'Fit on Screen

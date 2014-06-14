@@ -948,7 +948,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
         If thisAlpha > 0 Then
             
             'Check for the presence of alpha data in the original image.  If found, use that AND the selection mask to set the
-            ' alpha value of the destination pixel.  If the source data is 32bpp, use only the selection mask data.
+            ' alpha value of the destination pixel.  If the source data is 24bpp, use only the selection mask data.
             If srcDIBCD = 4 Then
             
                 'Check the image's alpha value.  If it's zero, we have no reason to process it further
@@ -1001,6 +1001,116 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     If Not preMultipliedAlphaState Then dstDIB.fixPremultipliedAlpha False
         
     retrieveProcessedSelection = True
+
+End Function
+
+'Erase the currently selected area of a layer, with new alpha applied according to the selection mask
+Public Function eraseProcessedSelection(Optional ByVal useMergedImage As Boolean = False) As Boolean
+
+    'If this image does not contain an active selection, exit now.
+    If (Not IsActive) Or (Not selectionActive) Then
+        eraseProcessedSelection = False
+        Exit Function
+    End If
+    
+    'Before doing anything else, null-pad the layer we will be processing.  (At present, this function only operates on a single layer.)
+    imgLayers(curLayer).convertToNullPaddedLayer Me.Width, Me.Height
+    
+    'Selections can be one of several types.  Right now, we don't give special handling to simple rectangular selections - all selections
+    ' are fully processed according to the contents of the mask.  Also, all selections are currently created as 32bpp DIBs.
+    
+    'We now need pointers to two separate sets of image data: destination DIB, and selection mask.
+    Dim selData() As Byte
+    Dim selSA As SAFEARRAY2D
+    prepSafeArray selSA, mainSelection.selMask
+    CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
+            
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, imgLayers(curLayer).layerDIB
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    Dim leftOffset As Long, topOffset As Long
+    leftOffset = mainSelection.boundLeft
+    topOffset = mainSelection.boundTop
+    
+    Dim x As Long, y As Long
+    Dim r As Long, g As Long, b As Long
+    Dim thisAlpha As Long, origAlpha As Long
+    Dim blendAlpha As Double
+    
+    Dim dstDIBCD As Long, dstQuickX As Long, selQuickX As Long
+    dstDIBCD = imgLayers(curLayer).layerDIB.getDIBColorDepth \ 8
+            
+    For x = mainSelection.boundLeft To mainSelection.boundLeft + mainSelection.boundWidth - 1
+        dstQuickX = x * dstDIBCD
+        selQuickX = x * 3
+    For y = mainSelection.boundTop To mainSelection.boundTop + mainSelection.boundHeight - 1
+        
+        thisAlpha = selData(selQuickX, y)
+        
+        'If the selection does not exist at this pixel, we have no reason to process this pixel further!
+        If thisAlpha > 0 Then
+        
+            thisAlpha = 255 - thisAlpha
+            
+            'Check for the presence of alpha data in the original image.  If found, use that AND the selection mask to set the
+            ' alpha value of the destination pixel.  If the source data is 24bpp, use only the selection mask data.
+            If dstDIBCD = 4 Then
+            
+                'Check the image's alpha value.  If it's zero, we have no reason to process it further
+                origAlpha = dstImageData(dstQuickX + 3, y)
+                
+                If origAlpha > 0 Then
+                    
+                    'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
+                    ' we premultiply alpha, after all!)
+                    r = dstImageData(dstQuickX + 2, y)
+                    g = dstImageData(dstQuickX + 1, y)
+                    b = dstImageData(dstQuickX, y)
+                    
+                    'Calculate a new multiplier, based on the strength of the selection at this location
+                    blendAlpha = thisAlpha / 255
+                    
+                    'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
+                    dstImageData(dstQuickX + 2, y) = r * blendAlpha
+                    dstImageData(dstQuickX + 1, y) = g * blendAlpha
+                    dstImageData(dstQuickX, y) = b * blendAlpha
+                    
+                    'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
+                    ' the original alpha value, and the selection mask value at this location.
+                    dstImageData(dstQuickX + 3, y) = origAlpha * blendAlpha
+                    
+                End If
+                
+            Else
+            
+                'Premultiply alpha
+                blendAlpha = thisAlpha / 255
+                
+                dstImageData(dstQuickX, y) = dstImageData(dstQuickX, y) * blendAlpha
+                dstImageData(dstQuickX + 1, y) = dstImageData(dstQuickX + 1, y) * blendAlpha
+                dstImageData(dstQuickX + 2, y) = dstImageData(dstQuickX + 2, y) * blendAlpha
+                dstImageData(dstQuickX + 3, y) = thisAlpha
+                
+            End If
+            
+        End If
+        
+    Next y
+    Next x
+    
+    'Clear all array references
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(selData), 0&, 4
+    
+    Erase dstImageData
+    Erase selData
+    
+    'Shrink the layer to its maximum relevant size
+    imgLayers(curLayer).cropNullPaddedLayer
+    
+    eraseProcessedSelection = True
 
 End Function
 

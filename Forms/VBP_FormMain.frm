@@ -198,28 +198,32 @@ Begin VB.Form FormMain
          Index           =   3
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Copy "
+         Caption         =   "Cu&t"
          Index           =   4
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Copy Merged"
+         Caption         =   "&Copy "
          Index           =   5
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Paste as new layer"
+         Caption         =   "Copy Merged"
          Index           =   6
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Paste as new image"
+         Caption         =   "&Paste as new layer"
          Index           =   7
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "-"
+         Caption         =   "Paste as new image"
          Index           =   8
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Empty clipboard"
+         Caption         =   "-"
          Index           =   9
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "&Empty clipboard"
+         Index           =   10
       End
    End
    Begin VB.Menu MnuView 
@@ -2788,27 +2792,31 @@ Private Sub MnuEdit_Click(Index As Integer)
         '<separator>
         Case 3
         
-        'Copy default to clipboard
+        'Cut
         Case 4
+            Process "Cut", False, , UNDO_LAYER, , True
+            
+        'Copy default to clipboard
+        Case 5
             Process "Copy", False, , UNDO_NOTHING, , False
         
         'Copy merged area to clipboard
-        Case 5
+        Case 6
             Process "Copy merged", False, , UNDO_NOTHING, , False
         
         'Paste as new layer
-        Case 6
+        Case 7
             Process "Paste as new layer", False, , UNDO_IMAGE, , False
         
         'Paste as new image
-        Case 7
+        Case 8
             Process "Paste as new image", False, , UNDO_NOTHING, , False
         
         '<separator>
-        Case 8
+        Case 9
         
         'Empty clipboard
-        Case 9
+        Case 10
             Process "Empty clipboard", False, , UNDO_NOTHING, , False
                 
     
