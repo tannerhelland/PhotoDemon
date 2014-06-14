@@ -108,7 +108,7 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVa
 End Sub
 
 'Allow the user to load an image file as a layer
-Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal imagePath As String = "", Optional ByVal customLayerName As String = "")
+Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal imagePath As String = "", Optional ByVal customLayerName As String = "", Optional ByVal createUndo As Boolean = False)
 
     'This function handles two cases: retrieving the filename from a common dialog box, and actually
     ' loading the image file and applying it to the current pdImage as a new layer.
@@ -147,6 +147,11 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
             End If
             
             Debug.Print "Layer created successfully (ID# " & pdImages(g_CurrentImage).getLayerByID(newLayerID).getLayerName & ")"
+            
+            'If the user wants us to manually create an Undo point (as required when pasting, for example), do so now
+            If createUndo Then
+                pdImages(g_CurrentImage).undoManager.createUndoData "Add layer", "", UNDO_IMAGE, pdImages(g_CurrentImage).getActiveLayerID, -1
+            End If
             
             'Render the new image to screen
             PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
