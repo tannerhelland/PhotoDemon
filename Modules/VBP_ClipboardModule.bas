@@ -3,8 +3,8 @@ Attribute VB_Name = "Clipboard_Handler"
 'Clipboard Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 29/April/14
-'Last update: improve reliability of URL parsing from clipboard HTML data
+'Last updated: 14/June/14
+'Last update: add "paste as new layer" actions to Undo stack
 '
 'Module for handling all Windows clipboard routines.  Copy and Paste are the real stars; Cut is not included
 ' (as there is no purpose for it at present), though Empty Clipboard does make an appearance.
@@ -103,7 +103,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                 
                 'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                 If srcIsMeantAsLayer Then
-                    Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle
+                    Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle, True
                 Else
                     LoadFileAsNewImage sFile, False, sTitle, sFilename
                 End If
@@ -168,7 +168,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                             
                             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                             If srcIsMeantAsLayer Then
-                                Layer_Handler.loadImageAsNewLayer False, sFile(0)
+                                Layer_Handler.loadImageAsNewLayer False, sFile(0), True
                             Else
                                 LoadFileAsNewImage sFile, False
                             End If
@@ -230,7 +230,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         
         'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
         If srcIsMeantAsLayer Then
-            Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle
+            Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle, True
         Else
             LoadFileAsNewImage sFile, False, sTitle, sFilename
         End If
@@ -259,7 +259,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                 
                 'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                 If srcIsMeantAsLayer Then
-                    Layer_Handler.loadImageAsNewLayer False, sFile(0)
+                    Layer_Handler.loadImageAsNewLayer False, sFile(0), , True
                 Else
                     LoadFileAsNewImage sFile, False, , getFilename(tmpDownloadFile)
                 End If
@@ -292,7 +292,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             Dim i As Long
             
             For i = 0 To UBound(listFiles)
-                Layer_Handler.loadImageAsNewLayer False, listFiles(i)
+                Layer_Handler.loadImageAsNewLayer False, listFiles(i), , True
             Next i
             
         Else
