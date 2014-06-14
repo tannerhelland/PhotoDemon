@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Font Manager (and Renderer)
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 31/May/13
-'Last updated: 30/March/14
-'Last update: added a new function for rendering text to a specific RECT, with support for ellipses (as necessary)
+'Last updated: 14/June/14
+'Last update: switch to DrawTextW (instead of DrawTextA).  While actual Unicode compatibility is a long ways off for PD,
+'              there's no reason we can't start making small steps toward it.
 '
 'While VB6 actually provides pretty good font support, PhotoDemon has some unique needs (as usual).  Chief among these
 ' are detailed handling over font positioning, rendering to arbitrary DCs, and managing fonts in a more speed-friendly
@@ -139,7 +140,8 @@ Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC A
 
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 
-Private Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hDC As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+'Private Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hDC As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 
 'Used to measure the expected length of a string (single line only; line breaks do not work)
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
@@ -214,7 +216,7 @@ Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidt
         tmpRect.Bottom = tmpRect.Top + getHeightOfWordwrapString(srcString, getWidthOfString(srcString))
         
         'If the text is going to extend past the target rect, draw it with ellipses
-        DrawText curDC, srcString, Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP
+        DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP
     
     Else
         ExtTextOutNoRect curDC, halfDCWidth, halfDCHeight - strHeightHalf, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
@@ -241,7 +243,7 @@ Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     tmpRect.Bottom = dstY + dstHeight
     
     'If the text is going to extend past the target rect, draw it with ellipses
-    DrawText curDC, srcString, Len(srcString), tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING
+    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING
     
 End Sub
 
@@ -258,7 +260,7 @@ Public Sub fastRenderMultilineText(ByVal dstX As Long, ByVal dstY As Long, ByRef
     tmpRect.Bottom = dstY + getHeightOfWordwrapString(srcString, getWidthOfString(srcString))
     
     'If the text is going to extend past the target rect, draw it with ellipses
-    DrawText curDC, srcString, Len(srcString), tmpRect, DT_LEFT Or DT_TOP Or DT_WORDBREAK
+    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_TOP Or DT_WORDBREAK
     
 End Sub
 
@@ -389,7 +391,7 @@ Public Function getHeightOfWordwrapString(ByVal srcString As String, ByVal strWi
     tmpRect.Bottom = 0
     tmpRect.Right = strWidth - 1
     
-    DrawText curDC, srcString, Len(srcString), tmpRect, DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
+    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
     
     getHeightOfWordwrapString = tmpRect.Bottom
 
