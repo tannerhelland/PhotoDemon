@@ -1005,7 +1005,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
 End Function
 
 'Erase the currently selected area of a layer, with new alpha applied according to the selection mask
-Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long, Optional ByVal useMergedImage As Boolean = False) As Boolean
+Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boolean
 
     'If this image does not contain an active selection, exit now.
     If (Not IsActive) Or (Not selectionActive) Or (targetLayerIndex < 0) Or (targetLayerIndex >= numOfLayers) Then
@@ -1027,7 +1027,7 @@ Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long, Optional
             
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, imgLayers(curLayer).layerDIB
+    prepSafeArray dstSA, imgLayers(targetLayerIndex).layerDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     Dim leftOffset As Long, topOffset As Long

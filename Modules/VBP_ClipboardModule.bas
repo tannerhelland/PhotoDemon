@@ -35,22 +35,52 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
     If pdImages(g_CurrentImage).selectionActive Then
     
         'Fill the temporary DIB with the selection
-        pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, False
+        pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, cutMerged
         
     Else
         
-        tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveLayer.layerDIB
+        'If a selection is NOT active, just make a copy of the full layer or image, depending on the merged request
+        If cutMerged Then
+            pdImages(g_CurrentImage).getCompositedImage tmpDIB, False
+        Else
+            tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveLayer.layerDIB
             
-        'Layers are always premultiplied, so we must unpremultiply it now if 32bpp
-        If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha False
+            'Layers are always premultiplied, so we must unpremultiply it now if 32bpp
+            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha False
+            
+        End If
         
     End If
     
     'Copy the temporary DIB to the clipboard, then erase it
     tmpDIB.copyDIBToClipboard
-    tmpDIB.eraseDIB
+    Set tmpDIB = Nothing
     
-    pdImages(g_CurrentImage).eraseProcessedSelection pdImages(g_CurrentImage).getActiveLayerIndex, False
+    'Now, we have the added step of erasing the selected area from the screen.  "Cut merged" requires us to delete the selected
+    ' region from all visible layers, so vary the loop bounds accordingly.
+    Dim startLayer As Long, endLayer As Long
+    
+    If cutMerged Then
+        startLayer = 0
+        endLayer = pdImages(g_CurrentImage).getNumOfLayers - 1
+    Else
+        startLayer = pdImages(g_CurrentImage).getActiveLayerIndex
+        endLayer = pdImages(g_CurrentImage).getActiveLayerIndex
+    End If
+    
+    Dim i As Long
+    For i = startLayer To endLayer
+        
+        'For "cut merged", ignore transparent layers
+        If cutMerged Then
+            If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then pdImages(g_CurrentImage).eraseProcessedSelection i
+        
+        'For "cut from layer", erase the selection regardless of layer visibility
+        Else
+            pdImages(g_CurrentImage).eraseProcessedSelection i
+        End If
+        
+    Next i
     
     'Redraw the active viewport
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
