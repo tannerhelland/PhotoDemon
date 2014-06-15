@@ -26,7 +26,7 @@ Private Const CF_HDROP As Long = 15
 
 'Copy the current selection (or entire layer, if no selection is active) to the clipboard, then erase the selected area
 ' (or entire layer, if no selection is active).
-Public Sub ClipboardCut()
+Public Sub ClipboardCut(ByVal cutMerged As Boolean)
 
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -50,7 +50,7 @@ Public Sub ClipboardCut()
     tmpDIB.copyDIBToClipboard
     tmpDIB.eraseDIB
     
-    pdImages(g_CurrentImage).eraseProcessedSelection False
+    pdImages(g_CurrentImage).eraseProcessedSelection pdImages(g_CurrentImage).getActiveLayerIndex, False
     
     'Redraw the active viewport
     ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)

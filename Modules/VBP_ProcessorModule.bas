@@ -327,25 +327,28 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
         
         Case "Cut"
-            ClipboardCut
+            ClipboardCut True
         
-        Case "Copy"
-            ClipboardCopy False
+        Case "Cut from layer"
+            ClipboardCut False
             
-        Case "Copy merged"
+        Case "Copy"
             ClipboardCopy True
             
+        Case "Copy from layer"
+            ClipboardCopy False
+            
+        Case "Paste as new image"
+            ClipboardPaste False
+        
         Case "Paste as new layer"
-            'Perform a quick check; if no images have been loaded, secretly reroute the Ctrl+V shortcut as "Paste as new image"
+            'Perform a quick check; if no images have been loaded, secretly reroute the Ctrl+Shift+V shortcut as "Paste as new image"
             If g_OpenImageCount > 0 Then
                 ClipboardPaste True
             Else
                 ClipboardPaste False
             End If
-            
-        Case "Paste as new image"
-            ClipboardPaste False
-            
+                    
         Case "Empty clipboard"
             ClipboardEmpty
         
