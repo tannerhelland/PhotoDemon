@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -202,28 +202,32 @@ Begin VB.Form FormMain
          Index           =   4
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Copy "
+         Caption         =   "Cut from layer"
          Index           =   5
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Copy Merged"
+         Caption         =   "&Copy"
          Index           =   6
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Paste as new layer"
+         Caption         =   "Copy from layer"
          Index           =   7
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Paste as new image"
+         Caption         =   "&Paste as new image"
          Index           =   8
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "-"
+         Caption         =   "Paste as new layer"
          Index           =   9
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Empty clipboard"
+         Caption         =   "-"
          Index           =   10
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "&Empty clipboard"
+         Index           =   11
       End
    End
    Begin VB.Menu MnuView 
@@ -2792,31 +2796,35 @@ Private Sub MnuEdit_Click(Index As Integer)
         '<separator>
         Case 3
         
-        'Cut
+        'Cut from image
         Case 4
-            Process "Cut", False, , UNDO_LAYER, , True
+            Process "Cut", False, , UNDO_IMAGE, , True
             
-        'Copy default to clipboard
+        'Cut from layer
         Case 5
+            Process "Cut from layer", False, , UNDO_LAYER, , True
+            
+        'Copy from image
+        Case 6
             Process "Copy", False, , UNDO_NOTHING, , False
         
-        'Copy merged area to clipboard
-        Case 6
-            Process "Copy merged", False, , UNDO_NOTHING, , False
-        
-        'Paste as new layer
+        'Copy from layer
         Case 7
-            Process "Paste as new layer", False, , UNDO_IMAGE, , False
+            Process "Copy from layer", False, , UNDO_NOTHING, , False
         
         'Paste as new image
         Case 8
             Process "Paste as new image", False, , UNDO_NOTHING, , False
         
-        '<separator>
+        'Paste as new layer
         Case 9
+            Process "Paste as new layer", False, , UNDO_IMAGE, , False
+        
+        '<separator>
+        Case 10
         
         'Empty clipboard
-        Case 10
+        Case 11
             Process "Empty clipboard", False, , UNDO_NOTHING, , False
                 
     

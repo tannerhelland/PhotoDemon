@@ -1926,11 +1926,15 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyY, vbCtrlMask, "Redo", FormMain.MnuEdit(1), True, True, False, UNDO_NOTHING
         .AddAccelerator vbKeyF, vbCtrlMask, "Repeat last action", FormMain.MnuEdit(2), True, True, False, UNDO_IMAGE
         
-        .AddAccelerator vbKeyX, vbCtrlMask, "Cut", FormMain.MnuEdit(4), True, True, False, UNDO_LAYER
-        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", FormMain.MnuEdit(5), True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy merged", FormMain.MnuEdit(6), True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new layer", FormMain.MnuEdit(7), True, False, False, UNDO_IMAGE
-        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new image", FormMain.MnuEdit(8), True, False, False, UNDO_NOTHING
+        .AddAccelerator vbKeyX, vbCtrlMask, "Cut", FormMain.MnuEdit(4), True, True, False, UNDO_IMAGE
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Cut from layer", FormMain.MnuEdit(5), True, True, False, UNDO_LAYER
+        
+        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", FormMain.MnuEdit(6), True, True, False, UNDO_NOTHING
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy from layer", FormMain.MnuEdit(7), True, True, False, UNDO_NOTHING
+        
+        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", FormMain.MnuEdit(8), True, False, False, UNDO_NOTHING
+        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new layer", FormMain.MnuEdit(9), True, False, False, UNDO_IMAGE
+        
         
         'View menu
         .AddAccelerator vbKey0, 0, "FitOnScreen", FormMain.MnuFitOnScreen, False, True, False, UNDO_NOTHING
@@ -1950,7 +1954,7 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyA, vbCtrlMask Or vbShiftMask, "Duplicate image", FormMain.MnuImage(0), True, True, False, UNDO_NOTHING
         .AddAccelerator vbKeyR, vbCtrlMask, "Resize image", FormMain.MnuImage(2), True, True, True, UNDO_IMAGE
         .AddAccelerator vbKeyR, vbCtrlMask Or vbAltMask, "Canvas size", FormMain.MnuImage(4), True, True, True, UNDO_IMAGEHEADER
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(8), True, True, False, UNDO_IMAGE
+        '.AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Crop", FormMain.MnuImage(8), True, True, False, UNDO_IMAGE
         .AddAccelerator vbKeyX, vbCtrlMask Or vbAltMask, "Trim", FormMain.MnuImage(9), True, True, False, UNDO_IMAGEHEADER
         'KeyCode 188 = <,  (next to the letter M)
         .AddAccelerator 188, vbCtrlMask Or vbAltMask, "Reduce colors", FormMain.MnuImage(15), True, True, False, UNDO_IMAGE

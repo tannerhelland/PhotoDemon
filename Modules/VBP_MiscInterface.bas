@@ -500,6 +500,9 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         Case tCopy
             If FormMain.MnuEdit(4).Enabled <> newState Then FormMain.MnuEdit(4).Enabled = newState
             If FormMain.MnuEdit(5).Enabled <> newState Then FormMain.MnuEdit(5).Enabled = newState
+            If FormMain.MnuEdit(6).Enabled <> newState Then FormMain.MnuEdit(6).Enabled = newState
+            If FormMain.MnuEdit(7).Enabled <> newState Then FormMain.MnuEdit(7).Enabled = newState
+            If FormMain.MnuEdit(9).Enabled <> newState Then FormMain.MnuEdit(9).Enabled = newState
             
         'View (top-menu level)
         Case tView

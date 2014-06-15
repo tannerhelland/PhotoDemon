@@ -1005,16 +1005,16 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
 End Function
 
 'Erase the currently selected area of a layer, with new alpha applied according to the selection mask
-Public Function eraseProcessedSelection(Optional ByVal useMergedImage As Boolean = False) As Boolean
+Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long, Optional ByVal useMergedImage As Boolean = False) As Boolean
 
     'If this image does not contain an active selection, exit now.
-    If (Not IsActive) Or (Not selectionActive) Then
+    If (Not IsActive) Or (Not selectionActive) Or (targetLayerIndex < 0) Or (targetLayerIndex >= numOfLayers) Then
         eraseProcessedSelection = False
         Exit Function
     End If
     
     'Before doing anything else, null-pad the layer we will be processing.  (At present, this function only operates on a single layer.)
-    imgLayers(curLayer).convertToNullPaddedLayer Me.Width, Me.Height
+    imgLayers(targetLayerIndex).convertToNullPaddedLayer Me.Width, Me.Height
     
     'Selections can be one of several types.  Right now, we don't give special handling to simple rectangular selections - all selections
     ' are fully processed according to the contents of the mask.  Also, all selections are currently created as 32bpp DIBs.
@@ -1040,7 +1040,7 @@ Public Function eraseProcessedSelection(Optional ByVal useMergedImage As Boolean
     Dim blendAlpha As Double
     
     Dim dstDIBCD As Long, dstQuickX As Long, selQuickX As Long
-    dstDIBCD = imgLayers(curLayer).layerDIB.getDIBColorDepth \ 8
+    dstDIBCD = imgLayers(targetLayerIndex).layerDIB.getDIBColorDepth \ 8
             
     For x = mainSelection.boundLeft To mainSelection.boundLeft + mainSelection.boundWidth - 1
         dstQuickX = x * dstDIBCD
@@ -1108,7 +1108,7 @@ Public Function eraseProcessedSelection(Optional ByVal useMergedImage As Boolean
     Erase selData
     
     'Shrink the layer to its maximum relevant size
-    imgLayers(curLayer).cropNullPaddedLayer
+    imgLayers(targetLayerIndex).cropNullPaddedLayer
     
     eraseProcessedSelection = True
 
