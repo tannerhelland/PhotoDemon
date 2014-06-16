@@ -382,9 +382,6 @@ Private m_VisibilityRect As RECT, m_NameRect As RECT
 Private m_MergeUpRect As RECT, m_MergeDownRect As RECT
 Private m_DuplicateRect As RECT
 
-'Global keyhooks are required because VB eats Enter keypresses if the user switches forms while a text box is active.
-Private cSubclass As cSelfSubHookCallback
-
 'While in OLE drag/drop mode (e.g. dragging files from Explorer), ignore any mouse actions on the main layer box
 Private m_InOLEDragDropMode As Boolean
 
@@ -626,10 +623,6 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upAr
         End If
         
     End If
-
-End Sub
-
-Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean)
 
 End Sub
 
@@ -961,10 +954,6 @@ Private Sub Form_Load()
     'If a UI image can be disabled, make a grayscale copy of it in advance
     Filters_Layers.GrayscaleDIB img_MergeUpDisabled, True
     Filters_Layers.GrayscaleDIB img_MergeDownDisabled, True
-        
-    'Initialize the subclasser, so we can capture key events.  Note that we won't actually activate the hook until the
-    ' layer name text box receives focus.  Similarly, when it loses focus, it will immediately release the hook.
-    Set cSubclass = New cSelfSubHookCallback
     
     'Force the blend mode drop-down to display the full list of items.  The SendMessage call is structured as:
     ' 1) hWnd of combo box
@@ -1411,25 +1400,36 @@ Private Sub sltLayerOpacity_Change()
 
 End Sub
 
-Private Sub txtLayerName_GotFocus()
-    
-    'Hook keypresses.  This is the only way to reliably catch the Enter key, as VB is prone to eating Enter presses.
-    'cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, , , Me
-    
-End Sub
-
 Private Sub txtLayerName_KeyPress(KeyAscii As Integer)
 
-    'Prevent beeps; also, we don't need to check for Enter here, because we do that in the hook handler
-    If KeyAscii = 13 Then KeyAscii = 0
+    'KeyAscii 13 = Enter key; when this happens, commit the changed layer name and hide the text box
+    If KeyAscii = 13 Then
+        
+        'Prevent beeps
+        KeyAscii = 0
+                
+        'Set the active layer name, then hide the text box
+        pdImages(g_CurrentImage).getActiveLayer.setLayerName txtLayerName.Text
+        txtLayerName.Text = ""
+        txtLayerName.Visible = False
+        
+        'Re-enable hotkeys now that editing is finished
+        FormMain.ctlAccelerator.Enabled = True
+        
+        'Redraw the layer box with the new name
+        redrawLayerBox
+        
+        'Transfer focus back to the layer box
+        picLayers.SetFocus
+        
+    End If
     
 End Sub
 
 'If the text box loses focus mid-edit, hide it and discard any changes
 Private Sub txtLayerName_LostFocus()
 
-    'Release our keyhook and hide the text box.
-    cSubclass.shk_UnHook WH_KEYBOARD
+    'Hide the text box if it's still visible (e.g. if the user decided not to change a layer name after all).
     If txtLayerName.Visible Then txtLayerName.Visible = False
 
 End Sub
@@ -1441,65 +1441,3 @@ End Sub
 Private Sub vsLayer_Scroll()
     redrawLayerBox
 End Sub
-
-'All events hooked by this window are processed here.  This function must remain as the last function in the
-Private Sub myHookProc(ByVal bBefore As Boolean, _
-                        ByRef bHandled As Boolean, _
-                        ByRef lReturn As Long, _
-                        ByVal nCode As Long, _
-                        ByVal wParam As Long, _
-                        ByVal lParam As Long, _
-                        ByVal lHookType As eHookType, _
-                        ByRef lParamUser As Long)
-'*************************************************************************************************
-' http://msdn2.microsoft.com/en-us/library/ms644990.aspx
-'* bBefore    - Indicates whether the callback is before or after the next hook in chain.
-'* bHandled   - In a before next hook in chain callback, setting bHandled to True will prevent the
-'*              message being passed to the next hook in chain and (if set to do so).
-'* lReturn    - Return value. For Before messages, set per the MSDN documentation for the hook type
-'* nCode      - A code the hook procedure uses to determine how to process the message
-'* wParam     - Message related data, hook type specific
-'* lParam     - Message related data, hook type specific
-'* lHookType  - Type of hook calling this callback
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
-    
-    'Virtual keycode for the Enter key.  (See http://msdn.microsoft.com/en-us/library/dd375731.aspx)
-    Const VK_RETURN As Long = &HD
-    
-    'If the user presses Enter
-    If (wParam = VK_RETURN) And txtLayerName.Visible Then
-        
-        'Set the active layer name, then hide the text box
-        pdImages(g_CurrentImage).getActiveLayer.setLayerName txtLayerName.Text
-        txtLayerName.Text = ""
-        txtLayerName.Visible = False
-        
-        'Call the LostFocus event, which will handle the rest of the clean-up (including unhooking key events)
-        Call txtLayerName_LostFocus
-        
-        'Re-enable hotkeys now that editing is finished
-        FormMain.ctlAccelerator.Enabled = True
-        
-        'Redraw the layer box with the new name
-        redrawLayerBox
-        
-        'Transfer focus somewhere innocent.  (If we don't do this, random command buttons on the form may activate!)
-        picLayers.SetFocus
-        
-        bHandled = True
-        
-    End If
-            
-    'Per http://msdn.microsoft.com/en-us/library/ms644984.aspx, we are required to return the value of
-    ' CallNextHookEx if the code value is less than 0.
-    If nCode < 0 Then lReturn = CallNextHookEx(lHookType, nCode, wParam, ByVal lParam)
-    
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
-
