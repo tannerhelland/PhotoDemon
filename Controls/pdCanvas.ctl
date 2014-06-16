@@ -760,7 +760,7 @@ Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Sh
 End Sub
 
 'An arrow key (or arrow key equivalent on the number pad) has been pressed.  How we handle it differs according to the current tool.
-Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
     
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
     If isCanvasInteractionAllowed() Then

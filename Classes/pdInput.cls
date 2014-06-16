@@ -45,9 +45,10 @@ Attribute VB_Exposed = False
 '- Multiple hWnds can be passed to a single instace of this class, but the first hWnd passed serves as the "master hWnd".
 '   This means that all mouse coordinates reported by this class will always be relative to *that hWnd*.  Tracking multiple
 '   hWnds at once is helpful if you want a child object to receive all mousewheel events for it and its parent, for example,
-'   or if you want to handle all mouse events for a  collection of objects with a single MouseMove function.  Similarly, if
+'   or if you want to handle all mouse events for a collection of objects with a single MouseMove function.  Similarly, if
 '   you want to subclass multiple controls within a single parent, that should work just fine, as long as you don't assign
-'   the parent hWnd to multiple instances of this class.
+'   the parent hWnd to multiple instances of this class (e.g. create just ONE pdInput copy for the entire collection, rather
+'   than different ones for each child).
 '
 '- As implied above, mouse coordinate, button, and shift key modifiers are processed independent of window messages.  This
 '   allows us to supply such data even if a given window message doesn't automatically include them.  It also allows for
@@ -82,8 +83,9 @@ Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As Shift
 Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
-'The following events are raised only if specifically requested via their dedicated function
-Event KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+'The following events are raised only if specifically requested via the dedicated requestKeyTracking and setKeyTrackers functions
+Event KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+Event KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean)
 
 'This class tracks all kinds of window messages.  Most objects won't need this level of tracking, but they're there
 ' if needed.
@@ -168,8 +170,19 @@ Private Const VK_NUMPAD7 As Long = &H67
 Private Const VK_NUMPAD8 As Long = &H68
 Private Const VK_NUMPAD9 As Long = &H69
 
+Private Const VK_BACK As Long = &H8
+Private Const VK_TAB As Long = &H9
+Private Const VK_RETURN As Long = &HD
+Private Const VK_SPACE As Long = &H20
+Private Const VK_INSERT As Long = &H2D
+Private Const VK_DELETE As Long = &H2E
+
 'In the future, other virtual key codes can be retrieved here:
 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
+
+'To see if a given key is marked as an "extended key" by the system (e.g. Return vs NumPad Enter key, which have the same
+' virtual key code), perform a bitwise AND (&&) of this flag against the lParam of the WM_KEYDOWN event
+Private Const KF_EXTENDED As Long = &H1000000
 
 'Mouse buttons can be retrieved from various mouse messages, but for consistency's sake, we pull them straight
 ' from GetAsyncKeyState.  One thing to note about GetAsyncKeyState is that it returns the physical mouse button
@@ -228,6 +241,7 @@ Private Enum PD_CUSTOM_INPUT_TRACKERS
     PDIT_KEYTRACKING = 5
     PDIT_HASFOCUS = 6
     PDIT_ARROWKEYS = 7
+    PDIT_EDITKEYS = 8
 End Enum
 
 'When tracking arrow keys, we use a few different track conditions (compared to just a binary TRUE/FALSE tracking code)
@@ -236,17 +250,18 @@ Private Const ARROW_TRACKING_IGNORE_NUMLOCK = 2
 
 #If False Then
     Private Const PDIT_DEFAULT = 0, PDIT_MOUSE_ENTERLEAVE = 1, PDIT_STANDARD_MOUSE = 2, PDIT_APPCOMMAND = 3, PDIT_CURSOR = 4, _
-    PDIT_KEYTRACKING = 5, PDIT_HASFOCUS = 6, PDIT_ARROWKEYS = 7
+    PDIT_KEYTRACKING = 5, PDIT_HASFOCUS = 6, PDIT_ARROWKEYS = 7, PDIT_EDITKEYS = 8
 #End If
 
-Private Const NUM_OF_CUSTOM_INPUT_TRACKERS = 8
+Private Const NUM_OF_CUSTOM_INPUT_TRACKERS = 9
 
 'This class will generate Click() events using its own algorithm for determining when an action constitutes a "click".
 ' Basically, a MouseDown/Up combination with two or less MouseMove messages between them constitutes a Click.  This variable
 ' is used to count MouseMove occurrences.
 Private m_MouseMoveCount As Long
 
-'User control fix??
+'User controls don't handle focus correctly, so manual override control hWnds will be stored here.  (See comments for
+' the addOverrideHwnds sub for details)
 Private m_numOfOverrideControls As Long
 Private m_OverrideHwnds() As Long
 
@@ -455,7 +470,7 @@ End Function
 ' can be used to specify which key bundles the client wants tracked.  To allow the system to automatically handle certain keypresses,
 ' pdInput will restrict its handling to *only the keys requested*, so please keep tracking requests to the bare minimum necessary to
 ' enable whatever behavior is desired.
-Public Function setKeyTrackers(ByVal targetHWnd As Long, Optional ByVal trackArrowKeys As Boolean = False, Optional ByVal numLockMatters As Boolean = True) As Boolean
+Public Function setKeyTrackers(ByVal targetHWnd As Long, Optional ByVal trackArrowKeys As Boolean = False, Optional ByVal numLockMatters As Boolean = True, Optional ByVal trackEditKeys As Boolean = False) As Boolean
 
     'Make sure we are tracking keys for this hWnd
     Dim hWndIndex As Long
@@ -463,6 +478,7 @@ Public Function setKeyTrackers(ByVal targetHWnd As Long, Optional ByVal trackArr
     
     If hWndIndex >= 0 Then
     
+        'Track arrow keys
         If trackArrowKeys Then
         
             'Unlike other tracking data, arrow keys are a bit different.  A more detailed track state is required, to reflect
@@ -474,7 +490,10 @@ Public Function setKeyTrackers(ByVal targetHWnd As Long, Optional ByVal trackArr
             End If
             
         End If
-    
+        
+        'Track edit keys (return, space, backspace, ins/del, etc)
+        If trackEditKeys Then m_TrackingData(PDIT_EDITKEYS, hWndIndex) = True
+        
         setKeyTrackers = True
     
     Else
@@ -680,7 +699,7 @@ End Function
 
 'When an arrow key is pressed for a tracked hWnd that supports it, the WM_KEYDOWN message will call this function.
 ' This function will check all arrow key states relative to the tracking status for this hWnd (e.g. factoring in numLock when relevant).
-Private Sub reportArrowKeyUpdate(ByVal indexOfHwnd As Long)
+Private Function reportArrowKeyUpdate(ByVal indexOfHwnd As Long, ByVal modifierKeys As ShiftConstants) As Boolean
     
     'Start by assembling a list of all pressed default arrow keys
     Dim leftArrow As Boolean, rightArrow As Boolean, upArrow As Boolean, downArrow As Boolean
@@ -702,9 +721,49 @@ Private Sub reportArrowKeyUpdate(ByVal indexOfHwnd As Long)
     End If
     
     'Raise a corresponding arrow key event
-    RaiseEvent KeyDownArrows(upArrow, rightArrow, downArrow, leftArrow)
+    If upArrow Or rightArrow Or downArrow Or leftArrow Then
+        RaiseEvent KeyDownArrows(modifierKeys, upArrow, rightArrow, downArrow, leftArrow)
+        reportArrowKeyUpdate = True
+    Else
+        reportArrowKeyUpdate = False
+    End If
 
-End Sub
+End Function
+
+'When an edit key is pressed for a tracked hWnd that supports it, the WM_KEYDOWN message will call this function.
+' This function will check all edit key states relative to the tracking status for this hWnd (e.g. factoring in
+' the Extended Key Code bit to determine if numpad key variants are being used, which requires a check of the lParam value
+' from the hook proc).
+Private Function reportEditKeyUpdate(ByVal indexOfHwnd As Long, ByVal modifierKeys As ShiftConstants, ByVal lParam As Long) As Boolean
+    
+    'Start by assembling a list of all pressed default edit keys
+    Dim keyReturn As Boolean, keyEnter As Boolean, keySpaceBar As Boolean, keyBackspace As Boolean
+    Dim keyTab As Boolean, keyInsert As Boolean, keyDelete As Boolean
+        
+    keyReturn = isVirtualKeyDown(VK_RETURN)
+    keyEnter = isVirtualKeyDown(VK_RETURN)
+    keySpaceBar = isVirtualKeyDown(VK_SPACE)
+    keyBackspace = isVirtualKeyDown(VK_BACK)
+    keyTab = isVirtualKeyDown(VK_TAB)
+    keyInsert = isVirtualKeyDown(VK_INSERT)
+    keyDelete = isVirtualKeyDown(VK_DELETE)
+    
+    'Return and Enter require special handling, because they share the same virtual keycode (brilliant work, MS engineers).
+    ' To distinguish between them, we must check the hook event lParam against the "extended key" bit.
+    Dim isExtendedKey As Boolean
+    If (lParam And KF_EXTENDED) = 0 Then isExtendedKey = False Else isExtendedKey = True
+    If keyReturn And isExtendedKey Then keyReturn = False
+    If keyEnter And (Not isExtendedKey) Then keyEnter = False
+    
+    'With all key states correctly tracked, raise a corresponding edit key event
+    If keyReturn Or keyEnter Or keySpaceBar Or keyBackspace Or keyTab Or keyInsert Or keyDelete Then
+        RaiseEvent KeyDownEdits(modifierKeys, keyReturn, keyEnter, keySpaceBar, keyBackspace, keyInsert, keyDelete, keyTab)
+        reportEditKeyUpdate = True
+    Else
+        reportEditKeyUpdate = False
+    End If
+    
+End Function
 
 'When processing key hooks, our goal is to strip out any keypresses that we are explicitly handling.  If a handled key is found,
 ' we prevent the keypress from proceeding to other hooks (e.g. pressing the arrow down key should only affect the control that
@@ -749,11 +808,21 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
     If lHookType = WH_KEYBOARD Then
     
         bHandled = False
+        
+        'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
+        Dim retShiftConstants As ShiftConstants
+        If isVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
+        If isVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+        If isVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
     
         'Check for arrow key handling
         If (m_TrackingData(PDIT_ARROWKEYS, 0) = ARROW_TRACKING_OBEY_NUMLOCK) Or (m_TrackingData(PDIT_ARROWKEYS, 0) = ARROW_TRACKING_IGNORE_NUMLOCK) Then
-            reportArrowKeyUpdate 0
-            bHandled = isRelevantKeyAffected(wParam, VK_LEFT, VK_RIGHT, VK_UP, VK_DOWN, VK_NUMPAD0, VK_NUMPAD1, VK_NUMPAD2, VK_NUMPAD3, VK_NUMPAD4, VK_NUMPAD5, VK_NUMPAD6, VK_NUMPAD7, VK_NUMPAD8, VK_NUMPAD9)
+            bHandled = bHandled Or reportArrowKeyUpdate(0, retShiftConstants)
+        End If
+        
+        'Check for edit key handling
+        If m_TrackingData(PDIT_EDITKEYS, 0) Then
+            bHandled = bHandled Or reportEditKeyUpdate(0, retShiftConstants, lParam)
         End If
         
         'If bHandled Then Debug.Print "pdInput is handling keypress: " & bHandled & ", " & nCode
