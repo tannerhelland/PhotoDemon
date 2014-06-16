@@ -15,16 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Input Handler (mouse, pen, etc) class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
-'Last updated: 03/June/14
-'Last update: added new addOverrideHwnds() function, which is required to deal with the endless focus fuckery VB applies
-'              to user controls.  Basically, user controls are terrified of the control itself receiving focus - even if
-'              explicitly requested - so they will always attempt to pass focus to a child object.  On something like
-'              PD's canvas UC, this is a huge problem because it means that any random child control could receive focus
-'              when the UC itself (but not a specific child control) is interacted with.  We now outsmart it by compiling
-'              a list of all focus-irrelevant controls (picture boxes, etc), then secretly adding those controls to our
-'              hooking checks.  If those controls receive key events, we process them via the main hook handler, so to
-'              the user it simply appears as if the control itself has focus (even though VB has inevitably given focus
-'              to some irrelevant random child control).
+'Last updated: 16/June/14
+'Last update: start extending key tracking functions so we can add more key bundles to the tracker
 '
 'As I get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
 ' become clear.  Until now, a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel)
@@ -233,8 +225,9 @@ Private Enum PD_CUSTOM_INPUT_TRACKERS
     PDIT_STANDARD_MOUSE = 2
     PDIT_APPCOMMAND = 3
     PDIT_CURSOR = 4
-    PDIT_ARROWKEYS = 5
+    PDIT_KEYTRACKING = 5
     PDIT_HASFOCUS = 6
+    PDIT_ARROWKEYS = 7
 End Enum
 
 'When tracking arrow keys, we use a few different track conditions (compared to just a binary TRUE/FALSE tracking code)
@@ -242,11 +235,11 @@ Private Const ARROW_TRACKING_OBEY_NUMLOCK = 1
 Private Const ARROW_TRACKING_IGNORE_NUMLOCK = 2
 
 #If False Then
-    Private Const PDIT_DEFAULT = 0, PDIT_MOUSE_ENTERLEAVE = 1, PDIT_STANDARD_MOUSE = 2, PDIT_APPCOMMAND = 3, PDIT_CURSOR = 4, PDIT_ARROWKEYS = 5, _
-    PDIT_HASFOCUS = 6
+    Private Const PDIT_DEFAULT = 0, PDIT_MOUSE_ENTERLEAVE = 1, PDIT_STANDARD_MOUSE = 2, PDIT_APPCOMMAND = 3, PDIT_CURSOR = 4, _
+    PDIT_KEYTRACKING = 5, PDIT_HASFOCUS = 6, PDIT_ARROWKEYS = 7
 #End If
 
-Private Const NUM_OF_CUSTOM_INPUT_TRACKERS = 7
+Private Const NUM_OF_CUSTOM_INPUT_TRACKERS = 8
 
 'This class will generate Click() events using its own algorithm for determining when an action constitutes a "click".
 ' Basically, a MouseDown/Up combination with two or less MouseMove messages between them constitutes a Click.  This variable
@@ -408,7 +401,7 @@ End Function
 '
 'The optional parameter numPadMatters controls whether numLock status should affect reports from the numPad "arrow" keys.  If
 ' numLockMatters is set to FALSE, this class will report arrow keys from the number pad *regardless of num lock status*.
-Public Function requestArrowKeyTracking(ByVal targetHWnd As Long, Optional ByVal numLockMatters As Boolean = True) As Boolean
+Public Function requestKeyTracking(ByVal targetHWnd As Long) As Boolean
     
     'Arrow key tracking is a nasty bit of business.  Let me just state that up front before breaking down how PD handles it.
     
@@ -441,17 +434,54 @@ Public Function requestArrowKeyTracking(ByVal targetHWnd As Long, Optional ByVal
     
     If hWndIndex >= 0 Then
         
-        'Unlike other tracking data, arrow keys are a bit different.  A more detailed track state is required, to reflect
-        ' how numLock events are treated.
-        If numLockMatters Then
-            m_TrackingData(PDIT_ARROWKEYS, hWndIndex) = ARROW_TRACKING_OBEY_NUMLOCK
-        Else
-            m_TrackingData(PDIT_ARROWKEYS, hWndIndex) = ARROW_TRACKING_IGNORE_NUMLOCK
-        End If
+        'Note that this hWnd has requested key tracking
+        m_TrackingData(PDIT_KEYTRACKING, hWndIndex) = True
         
         'Also reset the hasFocus parameter for this window; it will be set separately by intercepting the WM_ACTIVATE message
         m_TrackingData(PDIT_HASFOCUS, hWndIndex) = False
         
+        requestKeyTracking = True
+        
+    Else
+    
+        Debug.Print "Key tracking was requested for an hWnd that doesn't exist in the tracker.  Fix it!"
+        requestKeyTracking = False
+        
+    End If
+    
+End Function
+
+'Once requestKeyTracking (above) has been used to initialize dynamic key hooking for a given hWnd, this setKeyTrackers function
+' can be used to specify which key bundles the client wants tracked.  To allow the system to automatically handle certain keypresses,
+' pdInput will restrict its handling to *only the keys requested*, so please keep tracking requests to the bare minimum necessary to
+' enable whatever behavior is desired.
+Public Function setKeyTrackers(ByVal targetHWnd As Long, Optional ByVal trackArrowKeys As Boolean = False, Optional ByVal numLockMatters As Boolean = True) As Boolean
+
+    'Make sure we are tracking keys for this hWnd
+    Dim hWndIndex As Long
+    hWndIndex = getIndexFromHwnd(targetHWnd)
+    
+    If hWndIndex >= 0 Then
+    
+        If trackArrowKeys Then
+        
+            'Unlike other tracking data, arrow keys are a bit different.  A more detailed track state is required, to reflect
+            ' how numLock events are treated.
+            If numLockMatters Then
+                m_TrackingData(PDIT_ARROWKEYS, hWndIndex) = ARROW_TRACKING_OBEY_NUMLOCK
+            Else
+                m_TrackingData(PDIT_ARROWKEYS, hWndIndex) = ARROW_TRACKING_IGNORE_NUMLOCK
+            End If
+            
+        End If
+    
+        setKeyTrackers = True
+    
+    Else
+    
+        Debug.Print "You can't set key trackers for an hWnd that doesn't exist in the tracker.  Fix it!"
+        setKeyTrackers = False
+    
     End If
     
 End Function
@@ -1147,7 +1177,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             Case WM_ACTIVATE
                 
                 'See if we're tracking special keypresses for a window
-                If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
+                If m_TrackingData(PDIT_KEYTRACKING, indexOfHwnd) Then
                 
                     'We are tracking special keypresses for this hWnd.  Figure out if the window is being activated or deactivated.
                     Const WA_INACTIVE As Long = 0
@@ -1219,7 +1249,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 Case WM_SETFOCUS
                     
                     'See if we're tracking special keypresses for this window
-                    If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
+                    If m_TrackingData(PDIT_KEYTRACKING, indexOfHwnd) Then
                     
                         'Check for an existing hook
                         If Not m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
@@ -1239,7 +1269,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 Case WM_KILLFOCUS
                     
                     'See if we're tracking special keypresses for this window
-                    If m_TrackingData(PDIT_ARROWKEYS, indexOfHwnd) >= 0 Then
+                    If m_TrackingData(PDIT_KEYTRACKING, indexOfHwnd) Then
                     
                         'Check for an existing hook
                         If m_TrackingData(PDIT_HASFOCUS, indexOfHwnd) Then
