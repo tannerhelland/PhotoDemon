@@ -595,7 +595,7 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
 End Sub
 
 'Arrow keys have been pressed (or number pad arrow keys)
-Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
     
     'Ignore user interaction while in drag/drop mode
     If m_InOLEDragDropMode Then Exit Sub
@@ -626,6 +626,10 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal upArrow As Boolean, ByVal rightArro
         End If
         
     End If
+
+End Sub
+
+Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean)
 
 End Sub
 
@@ -921,7 +925,7 @@ Private Sub Form_Load()
     cMouseEvents.addInputTracker picLayers.hWnd, True, True, , True
     cMouseEvents.addInputTracker Me.hWnd
     cMouseEvents.requestKeyTracking picLayers.hWnd
-    cMouseEvents.setKeyTrackers picLayers.hWnd, True
+    cMouseEvents.setKeyTrackers picLayers.hWnd, True, True, True
     
     'No layer has been hovered yet
     curLayerHover = -1
@@ -1410,7 +1414,7 @@ End Sub
 Private Sub txtLayerName_GotFocus()
     
     'Hook keypresses.  This is the only way to reliably catch the Enter key, as VB is prone to eating Enter presses.
-    cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, , , Me
+    'cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, , , Me
     
 End Sub
 
