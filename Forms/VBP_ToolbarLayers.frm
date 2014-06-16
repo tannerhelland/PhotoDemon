@@ -920,7 +920,8 @@ Private Sub Form_Load()
     Set cMouseEvents = New pdInput
     cMouseEvents.addInputTracker picLayers.hWnd, True, True, , True
     cMouseEvents.addInputTracker Me.hWnd
-    cMouseEvents.requestArrowKeyTracking picLayers.hWnd, False
+    cMouseEvents.requestKeyTracking picLayers.hWnd
+    cMouseEvents.setKeyTrackers picLayers.hWnd, True
     
     'No layer has been hovered yet
     curLayerHover = -1
