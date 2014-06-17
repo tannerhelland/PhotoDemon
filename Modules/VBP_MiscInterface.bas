@@ -565,11 +565,14 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                     FormMain.MnuSelect(i).Enabled = newState
                 Next i
                 
+                'Erase selected area
+                FormMain.MnuSelect(10).Enabled = newState
+                
                 'Save selection
-                FormMain.MnuSelect(11).Enabled = newState
+                FormMain.MnuSelect(13).Enabled = newState
                 
                 'Export selection top-level menu
-                FormMain.MnuSelect(12).Enabled = newState
+                FormMain.MnuSelect(14).Enabled = newState
                 
             End If
                                     

@@ -610,80 +610,84 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         'Create/remove selections
         Case "Create selection"
-            CreateNewSelection cParams.getParamString
+            Selection_Handler.CreateNewSelection cParams.getParamString
         
         Case "Remove selection"
-            RemoveCurrentSelection cParams.getParamString
+            Selection_Handler.RemoveCurrentSelection cParams.getParamString
                     
         
         'Modify the existing selection in some way
         Case "Invert selection"
-            invertCurrentSelection
+            Selection_Handler.invertCurrentSelection
             
         Case "Grow selection"
             If showDialog Then
-                growCurrentSelection True
+                Selection_Handler.growCurrentSelection True
             Else
-                growCurrentSelection False, cParams.GetDouble(1)
+                Selection_Handler.growCurrentSelection False, cParams.GetDouble(1)
             End If
             
         Case "Shrink selection"
             If showDialog Then
-                shrinkCurrentSelection True
+                Selection_Handler.shrinkCurrentSelection True
             Else
-                shrinkCurrentSelection False, cParams.GetDouble(1)
+                Selection_Handler.shrinkCurrentSelection False, cParams.GetDouble(1)
             End If
         
         Case "Feather selection"
             If showDialog Then
-                featherCurrentSelection True
+                Selection_Handler.featherCurrentSelection True
             Else
-                featherCurrentSelection False, cParams.GetDouble(1)
+                Selection_Handler.featherCurrentSelection False, cParams.GetDouble(1)
             End If
         
         Case "Sharpen selection"
             If showDialog Then
-                sharpenCurrentSelection True
+                Selection_Handler.sharpenCurrentSelection True
             Else
-                sharpenCurrentSelection False, cParams.GetDouble(1)
+                Selection_Handler.sharpenCurrentSelection False, cParams.GetDouble(1)
             End If
             
         Case "Border selection"
             If showDialog Then
-                borderCurrentSelection True
+                Selection_Handler.borderCurrentSelection True
             Else
-                borderCurrentSelection False, cParams.GetDouble(1)
+                Selection_Handler.borderCurrentSelection False, cParams.GetDouble(1)
             End If
+        
+        'Erase selected area (from layer)
+        Case "Erase selected area"
+            Selection_Handler.eraseSelectedArea cParams.GetLong(1)
         
         'Load/save selection from/to file
         Case "Load selection"
             If showDialog Then
-                LoadSelectionFromFile True
+                Selection_Handler.LoadSelectionFromFile True
             Else
-                LoadSelectionFromFile False, cParams.getParamString
+                Selection_Handler.LoadSelectionFromFile False, cParams.getParamString
             End If
             
         Case "Save selection"
-            SaveSelectionToFile
+            Selection_Handler.SaveSelectionToFile
             
         'Export selected area as image (defaults to PNG, but user can select the actual format)
         Case "Export selected area as image"
-            ExportSelectedAreaAsImage
+            Selection_Handler.ExportSelectedAreaAsImage
         
         'Export selection mask as image (defaults to PNG, but user can select the actual format)
         Case "Export selection mask as image"
-            ExportSelectionMaskAsImage
+            Selection_Handler.ExportSelectionMaskAsImage
         
         ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
         Case "Move selection"
-            CreateNewSelection cParams.getParamString
+            Selection_Handler.CreateNewSelection cParams.getParamString
             
         ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
         Case "Resize selection"
-            CreateNewSelection cParams.getParamString
+            Selection_Handler.CreateNewSelection cParams.getParamString
         
         Case "Select all"
-            SelectWholeImage
+            Selection_Handler.SelectWholeImage
         
         
         

@@ -295,12 +295,13 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "SELECTBORDER", 5, 6    'Border selection
     addMenuIcon "SELECTFTHR", 5, 7      'Feather selection
     addMenuIcon "SELECTSHRP", 5, 8      'Sharpen selection
-    addMenuIcon "SELECTLOAD", 5, 10     'Load selection from file
-    addMenuIcon "SELECTSAVE", 5, 11     'Save selection to file
-    addMenuIcon "SELECTEXPORT", 5, 12   'Export selection (top-level)
+    addMenuIcon "SELECTERASE", 5, 10    'Erase selected area
+    addMenuIcon "SELECTLOAD", 5, 12     'Load selection from file
+    addMenuIcon "SELECTSAVE", 5, 13     'Save selection to file
+    addMenuIcon "SELECTEXPORT", 5, 14   'Export selection (top-level)
         '--> Export Selection sub-menu
-        addMenuIcon "EXPRTSELAREA", 5, 12, 0  'Export selected area as image
-        addMenuIcon "EXPRTSELMASK", 5, 12, 1  'Export selection mask as image
+        addMenuIcon "EXPRTSELAREA", 5, 14, 0  'Export selected area as image
+        addMenuIcon "EXPRTSELMASK", 5, 14, 1  'Export selection mask as image
     
     'Adjustments Menu
     

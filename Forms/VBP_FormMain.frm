@@ -57,7 +57,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0   'False
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
@@ -621,16 +621,24 @@ Begin VB.Form FormMain
          Index           =   9
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Load selection..."
+         Caption         =   "Erase selected area"
          Index           =   10
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Save current selection..."
+         Caption         =   "-"
          Index           =   11
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Export"
+         Caption         =   "Load selection..."
          Index           =   12
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Save current selection..."
+         Index           =   13
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Export"
+         Index           =   14
          Begin VB.Menu MnuSelectExport 
             Caption         =   "Selected area as image..."
             Index           =   0
@@ -3482,16 +3490,23 @@ Private Sub MnuSelect_Click(Index As Integer)
         '<separator>
         Case 9
         
-        'Load selection
+        'Erase selected area
         Case 10
+            Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
+        
+        '<separator>
+        Case 11
+        
+        'Load selection
+        Case 12
             Process "Load selection", True
         
         'Save current selection
-        Case 11
+        Case 13
             Process "Save selection", True
             
         '<Export top-level>
-        Case 12
+        Case 14
             
     End Select
 

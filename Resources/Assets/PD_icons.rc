@@ -112,6 +112,7 @@ SELECTSHRINK CUSTOM  MOVEABLE        LOADONCALL      select_shrink.png
 SELECTBORDER CUSTOM  MOVEABLE        LOADONCALL      select_border.png
 SELECTFTHR   CUSTOM  MOVEABLE        LOADONCALL      select_feather.png
 SELECTSHRP   CUSTOM  MOVEABLE        LOADONCALL      select_sharpen.png
+SELECTERASE  CUSTOM  MOVEABLE        LOADONCALL      selection_erase.png
 SELECTLOAD   CUSTOM  MOVEABLE        LOADONCALL      select_load.png
 SELECTSAVE   CUSTOM  MOVEABLE        LOADONCALL      disk.png
 SELECTEXPORT CUSTOM  MOVEABLE        LOADONCALL      select_export.png
