@@ -98,26 +98,34 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   8
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":0004
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "pdCanvas.ctx":002C
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   7
-         tooltip         =   "Zoom in"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":0004
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Zoom in"
+         ColorScheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":087E
+         ItemData        =   "pdCanvas.ctx":0856
          Left            =   840
-         List            =   "pdCanvas.ctx":0880
+         List            =   "pdCanvas.ctx":0858
          Style           =   2  'Dropdown List
          TabIndex        =   7
          Top             =   15
@@ -129,19 +137,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":0882
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "pdCanvas.ctx":08AA
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   0
-         tooltip         =   "Zoom out"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":085A
+         PictureAlign    =   0
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Zoom out"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdZoomFit 
          Height          =   345
@@ -149,19 +165,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   11
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":10FC
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "pdCanvas.ctx":1124
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   7
-         tooltip         =   "Fit image on screen"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":10AC
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Fit image on screen"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdImgSize 
          Height          =   345
@@ -169,19 +193,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   12
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":1976
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "pdCanvas.ctx":199E
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   7
-         tooltip         =   "Resize image"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":18FE
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Resize image"
+         ColorScheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -860,6 +892,40 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upAr
 
 End Sub
 
+'An edit key (http://en.wikipedia.org/wiki/Template:Keyboard_keys) has been pressed.  How we handle it differs according to the current tool.
+Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean)
+
+    'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
+    If isCanvasInteractionAllowed() Then
+        
+        'Any further processing depends on which tool is currently active
+        Select Case g_CurrentTool
+        
+            'Drag-to-pan canvas
+            Case NAV_DRAG
+                
+            'Move and resize layers
+            Case NAV_MOVE
+            
+            'Selections
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+            
+                'Delete key: if a selection is active, erase the selected area
+                If kDelete And pdImages(g_CurrentImage).selectionActive Then
+                    Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
+                End If
+                
+                'Escape key: if a selection is active, clear it
+                If kEscape And pdImages(g_CurrentImage).selectionActive Then
+                    Process "Remove selection", , , UNDO_SELECTION
+                End If
+        
+        End Select
+        
+    End If
+
+End Sub
+
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
         
     'Make sure interactions with this canvas are allowed
@@ -1165,12 +1231,12 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
                     If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
-                        Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                        Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
                     Else
                     
                         'Check to see if all selection coordinates are invalid.  If they are, forget about this selection.
                         If pdImages(g_CurrentImage).mainSelection.areAllCoordinatesInvalid Then
-                            Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                            Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
                         Else
                             
                             'Depending on the type of transformation that may or may not have been applied, call the appropriate processor
@@ -1360,7 +1426,7 @@ Private Sub UserControl_Initialize()
         Set cMouseEvents = New pdInput
         cMouseEvents.addInputTracker UserControl.hWnd, True, True, True, True
         cMouseEvents.requestKeyTracking UserControl.hWnd
-        cMouseEvents.setKeyTrackers UserControl.hWnd, True
+        cMouseEvents.setKeyTrackers UserControl.hWnd, True, True, True
         
         'This user control contains a lot of child controls whose key events we want to intercept (as they aren't designed to have
         ' focus on their own).  Submit these controls to the tracker, so it knows to mass any key events into the UC's master

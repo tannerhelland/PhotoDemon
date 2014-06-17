@@ -613,7 +613,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Selection_Handler.CreateNewSelection cParams.getParamString
         
         Case "Remove selection"
-            Selection_Handler.RemoveCurrentSelection cParams.getParamString
+            Selection_Handler.RemoveCurrentSelection
                     
         
         'Modify the existing selection in some way

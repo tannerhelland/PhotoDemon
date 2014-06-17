@@ -66,8 +66,8 @@ Public Sub CreateNewSelection(ByVal paramString As String)
 
 End Sub
 
-'Create a new selection using the settings stored in a pdParamString-compatible string
-Public Sub RemoveCurrentSelection(Optional ByVal paramString As String)
+'Remove the current selection
+Public Sub RemoveCurrentSelection()
     
     'Use the passed parameter string to initialize the selection
     pdImages(g_CurrentImage).mainSelection.lockRelease

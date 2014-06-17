@@ -57,7 +57,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
@@ -1969,7 +1969,7 @@ Private Sub tmrAccelerators_Timer()
         
         'Remove selection
         If ctlAccelerator.Key(m_AcceleratorIndex) = "Remove selection" Then
-            Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION
+            Process "Remove selection", , , UNDO_SELECTION
         End If
         
         'Next / Previous image hotkeys ("Page Down" and "Page Up", respectively)
@@ -3458,7 +3458,7 @@ Private Sub MnuSelect_Click(Index As Integer)
         
         'Select none
         Case 1
-            Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION
+            Process "Remove selection", , , UNDO_SELECTION
         
         'Invert
         Case 2
