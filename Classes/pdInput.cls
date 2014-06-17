@@ -85,7 +85,7 @@ Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstan
 
 'The following events are raised only if specifically requested via the dedicated requestKeyTracking and setKeyTrackers functions
 Event KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
-Event KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean)
+Event KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean)
 
 'This class tracks all kinds of window messages.  Most objects won't need this level of tracking, but they're there
 ' if needed.
@@ -176,6 +176,7 @@ Private Const VK_RETURN As Long = &HD
 Private Const VK_SPACE As Long = &H20
 Private Const VK_INSERT As Long = &H2D
 Private Const VK_DELETE As Long = &H2E
+Private Const VK_ESCAPE As Long = &H1B
 
 'In the future, other virtual key codes can be retrieved here:
 ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
@@ -738,7 +739,7 @@ Private Function reportEditKeyUpdate(ByVal indexOfHwnd As Long, ByVal modifierKe
     
     'Start by assembling a list of all pressed default edit keys
     Dim keyReturn As Boolean, keyEnter As Boolean, keySpaceBar As Boolean, keyBackspace As Boolean
-    Dim keyTab As Boolean, keyInsert As Boolean, keyDelete As Boolean
+    Dim keyTab As Boolean, keyInsert As Boolean, keyDelete As Boolean, keyEscape As Boolean
         
     keyReturn = isVirtualKeyDown(VK_RETURN)
     keyEnter = isVirtualKeyDown(VK_RETURN)
@@ -747,6 +748,7 @@ Private Function reportEditKeyUpdate(ByVal indexOfHwnd As Long, ByVal modifierKe
     keyTab = isVirtualKeyDown(VK_TAB)
     keyInsert = isVirtualKeyDown(VK_INSERT)
     keyDelete = isVirtualKeyDown(VK_DELETE)
+    keyEscape = isVirtualKeyDown(VK_ESCAPE)
     
     'Return and Enter require special handling, because they share the same virtual keycode (brilliant work, MS engineers).
     ' To distinguish between them, we must check the hook event lParam against the "extended key" bit.
@@ -756,8 +758,8 @@ Private Function reportEditKeyUpdate(ByVal indexOfHwnd As Long, ByVal modifierKe
     If keyEnter And (Not isExtendedKey) Then keyEnter = False
     
     'With all key states correctly tracked, raise a corresponding edit key event
-    If keyReturn Or keyEnter Or keySpaceBar Or keyBackspace Or keyTab Or keyInsert Or keyDelete Then
-        RaiseEvent KeyDownEdits(modifierKeys, keyReturn, keyEnter, keySpaceBar, keyBackspace, keyInsert, keyDelete, keyTab)
+    If keyReturn Or keyEnter Or keySpaceBar Or keyBackspace Or keyTab Or keyInsert Or keyDelete Or keyEscape Then
+        RaiseEvent KeyDownEdits(modifierKeys, keyReturn, keyEnter, keySpaceBar, keyBackspace, keyInsert, keyDelete, keyTab, keyEscape)
         reportEditKeyUpdate = True
     Else
         reportEditKeyUpdate = False
