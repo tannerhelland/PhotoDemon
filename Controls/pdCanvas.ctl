@@ -907,6 +907,49 @@ Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kRetu
             'Move and resize layers
             Case NAV_MOVE
             
+                'Delete key: delete the active layer (if allowed)
+                If kDelete And pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+                    Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+                End If
+                
+                'Insert: raise Add New Layer dialog
+                If kInsert Then
+                    Process "Add new layer", True
+                End If
+                
+                'Tab and Shift+Tab: move through layer stack
+                If kTab Then
+                    
+                    'Retrieve the active layer index
+                    Dim curLayerIndex As Long
+                    curLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
+                    
+                    'Advance the layer index according to the Shift modifier
+                    If (Shift And vbShiftMask) <> 0 Then
+                        curLayerIndex = curLayerIndex + 1
+                    Else
+                        curLayerIndex = curLayerIndex - 1
+                    End If
+                    
+                    If curLayerIndex < 0 Then curLayerIndex = pdImages(g_CurrentImage).getNumOfLayers - 1
+                    If curLayerIndex > pdImages(g_CurrentImage).getNumOfLayers - 1 Then curLayerIndex = 0
+                    
+                    'Activate the new layer
+                    pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
+                    
+                    'Redraw the viewport and interface to match
+                    RenderViewport pdImages(g_CurrentImage), Me
+                    syncInterfaceToCurrentImage
+                    
+                End If
+                
+                'Space bar: toggle active layer visibility
+                If kSpaceBar Then
+                    pdImages(g_CurrentImage).getActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility)
+                    ScrollViewport pdImages(g_CurrentImage), Me
+                    syncInterfaceToCurrentImage
+                End If
+            
             'Selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             
