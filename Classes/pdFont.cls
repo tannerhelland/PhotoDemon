@@ -135,16 +135,15 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 
-Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpString As String, ByVal nCount As Long, ByRef lpDx As Long) As Long
-Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutA" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpString As String, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 
-'Private Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hDC As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 
 'Used to measure the expected length of a string (single line only; line breaks do not work)
-Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
+Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
 
 'Used to track the created font
 Dim curFont As Long, oldFont As Long
@@ -219,7 +218,7 @@ Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidt
         DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP
     
     Else
-        ExtTextOutNoRect curDC, halfDCWidth, halfDCHeight - strHeightHalf, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
+        ExtTextOutNoRect curDC, halfDCWidth, halfDCHeight - strHeightHalf, 0, ByVal 0&, StrPtr(srcString), Len(srcString), ByVal 0&
     End If
     
     'Restore the original text alignment
@@ -230,7 +229,7 @@ End Sub
 'If the font has already been created and set to a DC, this function can be used to quickly render text (because no
 ' additional parameters have to be set)
 Public Sub fastRenderText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcString As String)
-    ExtTextOutNoRect curDC, dstX, dstY, 0, ByVal 0&, srcString, Len(srcString), ByVal 0&
+    ExtTextOutNoRect curDC, dstX, dstY, 0, ByVal 0&, StrPtr(srcString), Len(srcString), ByVal 0&
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with a constraining rect
@@ -371,13 +370,13 @@ End Sub
 ' object, as the DC's font settings are used to determine the string's dimensions.
 Public Function getWidthOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
-    GetTextExtentPoint32 curDC, srcString, Len(srcString), txtSize
+    GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
     getWidthOfString = txtSize.x
 End Function
 
 Public Function getHeightOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
-    GetTextExtentPoint32 curDC, srcString, Len(srcString), txtSize
+    GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
     getHeightOfString = txtSize.y
 End Function
 
