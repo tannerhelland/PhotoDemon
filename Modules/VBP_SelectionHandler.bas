@@ -631,7 +631,6 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         Set tmpDIB = New pdDIB
         tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
         CreateApproximateGaussianBlurDIB featherRadius, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, 3, False
-        'CreateGaussianBlurDIB featherRadius, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
         
         tmpDIB.eraseDIB
         Set tmpDIB = Nothing
@@ -717,7 +716,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         pdImages(g_CurrentImage).mainSelection.lockRelease
         pdImages(g_CurrentImage).selectionActive = False
         
-        'Use PD's built-in Gaussian blur function to apply the blur
+        'Use PD's built-in Median function to dilate the selected area
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
@@ -765,7 +764,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         pdImages(g_CurrentImage).mainSelection.lockRelease
         pdImages(g_CurrentImage).selectionActive = False
         
-        'Use PD's built-in Gaussian blur function to apply the blur
+        'Use PD's built-in Median function to erode the selected area
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
@@ -836,6 +835,16 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
     
 End Sub
 
+'Erase the currently selected area (LAYER ONLY!).  Note that this will not modify the current selection in any way.
+Public Sub eraseSelectedArea(ByVal targetLayerIndex As Long)
+
+    pdImages(g_CurrentImage).eraseProcessedSelection targetLayerIndex
+    
+    'Redraw the active viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
 'The selection engine integrates closely with tool selection (as it needs to know what kind of selection is being
 ' created/edited at any given time).  This function is called whenever the selection engine needs to correlate the
 ' current tool with a selection type.  This allows us to easily switch between a rectangle and circle selection,
@@ -855,8 +864,6 @@ Public Function getSelectionTypeFromCurrentTool() As SelectionShape
     
     End Select
     
-    'Debug.Print getSelectionTypeFromCurrentTool
-
 End Function
 
 'The inverse of "getSelectionTypeFromCurrentTool", above
@@ -876,9 +883,7 @@ Public Function getRelevantToolFromSelectType() As PDTools
                 getRelevantToolFromSelectType = SELECT_LINE
         
         End Select
-    
-    'Debug.Print getRelevantToolFromSelectType
-    
+        
     End If
 
 End Function
