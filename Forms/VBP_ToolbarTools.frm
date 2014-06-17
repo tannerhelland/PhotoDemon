@@ -1094,7 +1094,7 @@ Private Sub newToolSelected()
                     Else
                     
                         'Remove any existing selections
-                        If g_OpenImageCount > 0 Then Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION
+                        If g_OpenImageCount > 0 Then Process "Remove selection", , , UNDO_SELECTION
                     
                         metaToggle tSelectionTransform, False
                         
@@ -1116,7 +1116,7 @@ Private Sub newToolSelected()
                     Else
                         
                         'Remove any existing selections
-                        If g_OpenImageCount > 0 Then Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION
+                        If g_OpenImageCount > 0 Then Process "Remove selection", , , UNDO_SELECTION
                         
                         metaToggle tSelectionTransform, False
                         
@@ -1134,7 +1134,7 @@ Private Sub newToolSelected()
                 Else
                 
                     'Remove any existing selections
-                    If g_OpenImageCount > 0 Then Process "Remove selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION
+                    If g_OpenImageCount > 0 Then Process "Remove selection", , , UNDO_SELECTION
                 
                     metaToggle tSelectionTransform, False
                     
