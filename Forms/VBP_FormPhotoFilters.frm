@@ -149,8 +149,8 @@ Attribute VB_Exposed = False
 'Photo Filter Application Tool
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/June/13
-'Last updated: 31/May/14
-'Last update: convert mousewheel interactions to pdInput
+'Last updated: 18/June/14
+'Last update: add arrow key nav support to the custom list
 '
 'Advanced photo filter simulation tool.  A full discussion of photographic filters and how they work are available
 ' at this Wikipedia article: http://en.wikipedia.org/wiki/Photographic_filter
@@ -357,6 +357,46 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
+Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+
+    'Up and down arrows navigate the list
+    If upArrow Or downArrow Then
+    
+        If upArrow Then
+            curFilter = curFilter - 1
+            If curFilter < 0 Then curFilter = numOfFilters - 1
+        End If
+        
+        If downArrow Then
+            curFilter = curFilter + 1
+            If curFilter >= numOfFilters Then curFilter = 0
+        End If
+        
+        'Calculate a new vertical scroll position so that the selected filter appears on-screen
+        Dim newScrollOffset As Long
+        newScrollOffset = curFilter * fixDPI(BLOCKHEIGHT)
+        If newScrollOffset > vsFilter.Max Then newScrollOffset = vsFilter.Max
+        vsFilter.Value = newScrollOffset
+        
+        'Redraw the custom filter list
+        redrawFilterList
+        
+    End If
+    
+    'Right and left arrows modify strength
+    If leftArrow Or rightArrow Then
+        
+        cmdBar.markPreviewStatus False
+        If rightArrow Then sltDensity.Value = sltDensity.Value + 10
+        If leftArrow Then sltDensity.Value = sltDensity.Value - 10
+        cmdBar.markPreviewStatus True
+        
+    End If
+    
+    updatePreview
+
+End Sub
+
 'When the mouse leaves the filter box, remove any hovered entries and redraw
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     curFilterHover = -1
@@ -432,6 +472,8 @@ Private Sub Form_Load()
     cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
     cMouseEvents.addInputTracker Me.hWnd
     cMouseEvents.setSystemCursor IDC_HAND
+    cMouseEvents.requestKeyTracking picBuffer.hWnd
+    cMouseEvents.setKeyTrackers picBuffer.hWnd, True
     
     'Create a background buffer the same size as the buffer picture box
     Set bufferDIB = New pdDIB
