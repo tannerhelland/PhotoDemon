@@ -290,6 +290,9 @@ Public Sub mergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
                 'Delete the now-merged layer
                 .deleteLayerByIndex dLayerIndex
                 
+                'Notify the newly merged layer that its contents have changed
+                .getLayerByIndex(mergeTarget).notifyLayerModified
+                
                 'Set the newly merged layer as the active layer
                 .setActiveLayerByIndex mergeTarget
             
@@ -305,13 +308,16 @@ Public Sub mergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
                 'Delete the now-merged layer
                 .deleteLayerByIndex mergeTarget
                 
+                'Notify the newly merged layer that its contents have changed
+                .getLayerByIndex(dLayerIndex).notifyLayerModified
+                
                 'Set the newly merged layer as the active layer
                 .setActiveLayerByIndex dLayerIndex
                 
             End With
         
         End If
-        
+                
         'Redraw the layer box, and note that thumbnails need to be re-cached
         toolbar_Layers.forceRedraw True
     

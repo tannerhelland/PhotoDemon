@@ -1110,6 +1110,9 @@ Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     'Shrink the layer to its maximum relevant size
     imgLayers(targetLayerIndex).cropNullPaddedLayer
     
+    'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+    imgLayers(targetLayerIndex).notifyLayerModified
+    
     eraseProcessedSelection = True
 
 End Function

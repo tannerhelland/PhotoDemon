@@ -475,6 +475,9 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         SetProgBarVal 0
         releaseProgressBar
         
+        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+        pdImages(g_CurrentImage).getLayerByIndex(0).notifyLayerModified
+        
         'Render the image on-screen at an automatically corrected zoom
         FitOnScreen
     

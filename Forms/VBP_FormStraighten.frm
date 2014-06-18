@@ -371,6 +371,9 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                 
                 'If resizing the entire image, remove any null-padding now
                 If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.cropNullPaddedLayer
+                
+                'Notify the layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+                tmpLayerRef.notifyLayerModified
                                 
             'Continue with the next layer
             Next i

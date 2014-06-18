@@ -1348,6 +1348,9 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
                 'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
                 dstImage.getLayerByIndex(i).layerDIB.copyStreamOverImageArray retBytes
                 
+                'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+                dstImage.getLayerByIndex(i).notifyLayerModified
+                
             Else
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
             End If
@@ -1545,7 +1548,10 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
             
                 'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
                 dstLayer.layerDIB.copyStreamOverImageArray retBytes
-            
+                
+                'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+                dstLayer.notifyLayerModified
+                
             'Bytes could not be read, or alternately, checksums didn't match for the first node.
             Else
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
@@ -1630,6 +1636,9 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
             
                 'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
                 dstLayer.layerDIB.copyStreamOverImageArray retBytes
+                
+                'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+                dstLayer.notifyLayerModified
                 
             'Bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently disabled
             ' for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)

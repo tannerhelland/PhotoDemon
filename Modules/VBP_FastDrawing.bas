@@ -652,13 +652,16 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
             If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIB.fixPremultipliedAlpha True
             pdImages(g_CurrentImage).getActiveDIB().createFromExistingDIB workingDIB
         End If
-                
+        
         'workingDIB and its backup have served their purposes, so erase them from memory
         Set workingDIB = Nothing
         Set workingDIBBackup = Nothing
-                
+        
         'If we're setting data to the screen, we can reasonably assume that the progress bar should be reset
         releaseProgressBar
+        
+        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+        pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
         
         'Pass control to the viewport renderer, which will perform the actual rendering
         ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
