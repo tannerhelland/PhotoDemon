@@ -157,6 +157,9 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
     
     End If
     
+    'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+    pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
+    
     Message "Finished."
     
     'Redraw the main window
@@ -242,6 +245,9 @@ Public Sub MenuFadeLastEffect()
     'Erase our temporary DIB as well
     tmpDIB.eraseDIB
     Set tmpDIB = Nothing
+    
+    'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+    pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
     
     'Render the final image to the screen
     SetProgBarVal 0

@@ -54,7 +54,9 @@ End Enum
     Const PDL_IMAGE = 0, PDL_TEXT = 1, PDL_ADJUSTMENT = 2
 #End If
 
-'Layer type is set at creation time.  Once a layer has been created, its type cannot be changed.
+'Layer type is set at creation time.  Once a layer has been created, its type should not be changed.
+' The one exception to this rule is converting vector layers (text, etc) to image layers.  This can be done, but it is a one-way conversion.
+' Once a layer is converted to PDL_IMAGE type, it cannot be reverted.
 Private myLayerType As LAYER_TYPE
 
 Public Enum LAYER_BLENDMODE
@@ -95,7 +97,7 @@ End Enum
 ' persistent for the life of the layer, the life of the parent pdImage object (meaning no other layer in that image will
 ' ever be assigned this ID value), and the life of any copies of the parent pdImage saved to file.
 '
-'Because this value cannot be changed once created, I have separated it out from the LayerData enum.
+'Because this value cannot be changed once created, I keep it separate from the LayerData struct (whose data can be changed).
 Private layerID As Long
 
 'Layers store a lot of layer-type-agnostic metadata. **All of these entries can be changed by the user at run-time.**
@@ -130,6 +132,34 @@ Private myLayerData As LayerData
 ' them as necessary.  That said, any function that directly modifies the DIB must also take care of any management functions
 ' as well (e.g. redrawing the viewport), because layers have no way to propagate change notifications up to their parent image.
 Public layerDIB As pdDIB
+
+'Layer thumbnail.  This 256x256 DIB is cached locally, then passed to external functions only when necessary.  Note that requests
+' for sizes larger than 256x256 (in either dimension) will force creation of a custom thumbnail from scratch, so try to avoid that
+' if at all possible!
+Private Const LAYER_THUMB_SIZE As Long = 256
+Private layerThumbnail As pdDIB
+
+'If the current thumbnail is clean or dirty.  Clean means that to the best of this class's knowledge, the current thumbnail accurately
+' reflects the layer's contents.  Dirty means that we know the current thumbnail is invalid, so regenerate it before continuing.
+Private m_IsThumbClean As Boolean
+
+
+
+'If an external function modifies this layer's DIB contents (or the vector data from which the DIB is generated),
+' *IT MUST CALL THIS FUNCTION AFTERWARD*.
+'
+'As part of new program-wide optimizations in v6.4, I am trying to limit the amount of data that PD has to generate on the fly.
+' For layers, we can reduce churn by caching things like the layer thumbnail, which should really only be updated when the layer's
+' contents are updated.
+'
+'This notifyLayerModified() function will rebuild all caches for this layer, so use it only when appropriate (because calling it
+' any more than absolutely necessary defeats the whole purpose of caching data in the first place).
+Public Sub notifyLayerModified()
+
+    'Mark the layer thumbnail as dirty
+    m_IsThumbClean = False
+
+End Sub
 
 'Get/set this layer's canonical ID value.  Note that this value is valid for both the life of the layer, and the life of its
 ' parent image (including persistence when writing image data to/from file).
@@ -310,6 +340,10 @@ Private Sub Class_Initialize()
     'Initialize the layer's DIB
     Set layerDIB = New pdDIB
     
+    'Initialize the layer thumbnail and note that it is not clean, which will force a regeneration when the thumbnail is next requested.
+    Set layerThumbnail = New pdDIB
+    m_IsThumbClean = False
+    
     'Set the canonical ID to -1.  This can be used to determine if the layer has been activated.
     layerID = -1
     
@@ -410,7 +444,7 @@ Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
         .l_Angle = cParams.GetDouble(9)
         .l_Visibility = cParams.GetBool(10)
     End With
-    
+        
     'Per PD convention, this class has no way to notify outsiders of updates, so the calling function must handle any
     ' viewport redraws or other interface changes resulting from this assignment.
 
@@ -469,6 +503,9 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
                 layerDIB.createBlank .getUniqueTag_Long("DIB_Width", 1), .getUniqueTag_Long("DIB_Height", 1), .getUniqueTag_Long("DIB_ColorDepth", 32)
             End With
             
+            'Note that the layer thumbnail is no longer valid
+            m_IsThumbClean = False
+            
         End If
         
         CreateNewImageLayerFromXML = True
@@ -504,6 +541,9 @@ Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage
     'Create a local copy of the passed DIB.
     Set layerDIB = New pdDIB
     layerDIB.createFromExistingDIB srcDIB
+    
+    'Note that the layer thumbnail is not valid
+    m_IsThumbClean = False
     
     'Set the initial offset so that the image is centered on the parent canvas
     'If Not (parentImage Is Nothing) Then
@@ -545,6 +585,9 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     
     'Finally, copy the source layer's DIB.
     layerDIB.createFromExistingDIB srcLayer.layerDIB
+    
+    'Note that the layer thumbnail is no longer valid
+    m_IsThumbClean = False
     
     'Depending on the type of layer we are copying, copy any extra layer data, or generate a new layer mask to
     ' match the layer's vector contents.
@@ -778,20 +821,16 @@ Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
     
 End Sub
 
-'External functions can use this function to request a thumbnail version of the layer contents.
-'
-'FreeImage is preferred for thumbnail resizing, but if it's not available, GDI+ will be used.
-Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+'Update the internal thumbnail.  Only call this function if the current thumbnail has been marked as DIRTY; otherwise, just use the
+' existing thumbnail as-is.
+Private Sub updateInternalThumbnail()
     
     'Uncomment the two lines below (and another at the end of the function) to profile different thumbnail resize strategies
     'Dim startTime As Double
     'startTime = Timer
     
     'If the layer has not been instantiated properly, reject the thumbnail request
-    If (layerDIB Is Nothing) Or (layerDIB.getDIBWidth = 0) Or (layerDIB.getDIBHeight = 0) Then
-        requestThumbnail = False
-        Exit Function
-    End If
+    If (layerDIB Is Nothing) Or (layerDIB.getDIBWidth = 0) Or (layerDIB.getDIBHeight = 0) Then Exit Sub
     
     'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
     ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
@@ -801,32 +840,63 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
     'Start by determining proper dimensions for the resized thumbnail image.
-    convertAspectRatio layerDIB.getDIBWidth, layerDIB.getDIBHeight, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
+    convertAspectRatio layerDIB.getDIBWidth, layerDIB.getDIBHeight, LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
     If tIcoWidth > tIcoHeight Then
         tX = 0
-        tY = (thumbnailSize - tIcoHeight) / 2
+        tY = (LAYER_THUMB_SIZE - tIcoHeight) / 2
     
     '...otherwise, center it horizontally
     Else
         tY = 0
-        tX = (thumbnailSize - tIcoWidth) / 2
+        tX = (LAYER_THUMB_SIZE - tIcoWidth) / 2
     End If
     
     'Prepare the destination DIB
-    dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+    layerThumbnail.createBlank LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, 32, 0
     
     'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
     ' is faster (I've actually profiled it!), but if FreeImage is not available, GDI+ will suffice.
     If g_ImageFormats.FreeImageEnabled Then
-        requestThumbnail = FreeImageResizeDIBFast(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, layerDIB, FILTER_BILINEAR, True)
+        FreeImageResizeDIBFast layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, FILTER_BILINEAR, True
     Else
-        requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic)
+        GDIPlusResizeDIB layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
     End If
     
     'Uncomment the line below to profile different thumbnail resize strategies
     'Debug.Print "Time taken for layer thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
+    
+    'Mark the thumbnail state as clean
+    m_IsThumbClean = True
+    
+End Sub
+
+'External functions can use this function to request a thumbnail version of the layer contents.
+Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+    
+    'Is the current thumbnail dirty?  If so, regenerate it.
+    If Not m_IsThumbClean Then updateInternalThumbnail
+    
+    'Clear the destination thumbnail
+    Set dstThumbnailDIB = New pdDIB
+    
+    'If the requested thumbnail size differs from our cached version, resize the thumbnail prior to passing it along
+    If thumbnailSize <> LAYER_THUMB_SIZE Then
+        
+        dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+        
+        If g_ImageFormats.FreeImageEnabled Then
+            FreeImageResizeDIBFast dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, FILTER_BILINEAR, True
+        Else
+            GDIPlusResizeDIB dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, 0, 0, layerThumbnail.getDIBWidth, layerThumbnail.getDIBHeight, InterpolationModeHighQualityBicubic
+        End If
+        
+    Else
+        dstThumbnailDIB.createFromExistingDIB layerThumbnail
+    End If
+    
+    requestThumbnail = True
     
 End Function
 

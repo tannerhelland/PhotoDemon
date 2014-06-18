@@ -369,7 +369,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         Else
             GDIPlusResizeDIB tmpDIB, xOffset, yOffset, bottomLayer.getLayerCanvasWidthModified, bottomLayer.getLayerCanvasHeightModified, bottomLayer.layerDIB, 0, 0, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
             
-            'Also, resize the canvas modifiers for the bottom layer now, as we have effectively nullified them by this resize
+            'Also, reset the canvas modifiers for the bottom layer now, as we have effectively nullified them by this resize
             bottomLayer.setLayerCanvasXModifier 1
             bottomLayer.setLayerCanvasYModifier 1
         End If
@@ -645,24 +645,24 @@ End Function
 ' Note that the code assumes RGB values already in the [0, 1] range, and it will return HSV values in the [0, 1] range.
 Private Sub fastRGBtoHSV(ByVal r As Single, ByVal g As Single, ByVal b As Single, ByRef h As Single, ByRef s As Single, ByRef v As Single)
 
-    Dim K As Single, tmpSwap As Single, chroma As Single
+    Dim k As Single, tmpSwap As Single, chroma As Single
     
     If (g < b) Then
         tmpSwap = b
         b = g
         g = tmpSwap
-        K = -1
+        k = -1
     End If
     
     If (r < g) Then
         tmpSwap = g
         g = r
         r = tmpSwap
-        K = -(2 / 6) - K
+        k = -(2 / 6) - k
     End If
     
     chroma = r - fMin(g, b)
-    h = Abs(K + (g - b) / (6 * chroma + 0.0000001))
+    h = Abs(k + (g - b) / (6 * chroma + 0.0000001))
     s = chroma / (r + 0.00000001)
     v = r
     

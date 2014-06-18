@@ -198,6 +198,9 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     pdImages(g_CurrentImage).getActiveLayer.layerDIB.createFromExistingDIB tmpDIB
     Set tmpDIB = Nothing
     
+    'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+    pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
+    
     'Fit the new image on-screen and redraw its viewport
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Content-aware resize"
     

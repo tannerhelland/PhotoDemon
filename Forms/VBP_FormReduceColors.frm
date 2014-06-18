@@ -321,6 +321,9 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
                 'Ask FreeImage for the size of the quantized image's palette
                 numOfQuantizedColors = FreeImage_GetColorsUsed(returnDIB)
                 
+                'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+                pdImages(g_CurrentImage).getLayerByIndex(0).notifyLayerModified
+                
             End If
             
             'With the transfer complete, release the FreeImage DIB

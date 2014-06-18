@@ -368,12 +368,15 @@ Public Sub MenuCropToSelection()
         
         'Replace the current layer DIB with our destination one
         tmpLayerRef.layerDIB.createFromExistingDIB tmpDIB
-        
+                
         'Release our temporary DIB
         tmpDIB.eraseDIB
         
         'Remove any null-padding from the layer
         tmpLayerRef.cropNullPaddedLayer
+        
+        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+        tmpLayerRef.notifyLayerModified
         
     Next i
     
@@ -456,6 +459,9 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+        
+        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+        tmpLayerRef.notifyLayerModified
     
     Next i
     
@@ -509,6 +515,9 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+        
+        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+        tmpLayerRef.notifyLayerModified
     
     Next i
     
@@ -587,6 +596,9 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+        
+        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+        tmpLayerRef.notifyLayerModified
     
         'Update the progress bar (really only relevant if rotating the entire image)
         SetProgBarVal i
@@ -653,6 +665,9 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+        
+        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+        tmpLayerRef.notifyLayerModified
     
     Next i
             
@@ -730,7 +745,10 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
-    
+        
+        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+        tmpLayerRef.notifyLayerModified
+        
         'Update the progress bar (really only relevant if rotating the entire image)
         SetProgBarVal i
     
