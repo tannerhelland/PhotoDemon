@@ -50,6 +50,7 @@ Public Enum PDTools
     SELECT_RECT = 2
     SELECT_CIRC = 3
     SELECT_LINE = 4
+    QUICK_FIX_LIGHTING = 5
 End Enum
 
 #If False Then
@@ -58,6 +59,7 @@ End Enum
     Const SELECT_RECT = 2
     Const SELECT_CIRC = 3
     Const SELECT_LINE = 4
+    Const QUICK_FIX_LIGHTING = 5
 #End If
 
 'How should the selection be rendered?
