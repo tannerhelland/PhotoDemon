@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright ï¿½2001-2014 by Tanner Helland
+'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 02/June/14
 'Last update: minimize use of the busy cursor; it should now only be triggered for actions that affect DIBs directly
@@ -418,13 +418,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
             End If
         
-        Case "Rotate image 90ï¿½ clockwise"
+        Case "Rotate image 90° clockwise"
             MenuRotate90Clockwise
             
-        Case "Rotate image 180ï¿½"
+        Case "Rotate image 180°"
             MenuRotate180
             
-        Case "Rotate image 90ï¿½ counter-clockwise"
+        Case "Rotate image 90° counter-clockwise"
             MenuRotate270Clockwise
             
         Case "Arbitrary image rotation"
@@ -522,13 +522,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
             End If
             
-        Case "Rotate layer 90ï¿½ clockwise"
+        Case "Rotate layer 90° clockwise"
             MenuRotate90Clockwise pdImages(g_CurrentImage).getActiveLayerIndex
             
-        Case "Rotate layer 180ï¿½"
+        Case "Rotate layer 180°"
             MenuRotate180 pdImages(g_CurrentImage).getActiveLayerIndex
             
-        Case "Rotate layer 90ï¿½ counter-clockwise"
+        Case "Rotate layer 90° counter-clockwise"
             MenuRotate270Clockwise pdImages(g_CurrentImage).getActiveLayerIndex
             
         Case "Arbitrary layer rotation"
