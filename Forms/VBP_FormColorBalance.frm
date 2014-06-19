@@ -30,9 +30,17 @@ Begin VB.Form FormColorBalance
       TabIndex        =   0
       Top             =   5790
       Width           =   12090
-      _extentx        =   21325
-      _extenty        =   1323
-      font            =   "VBP_FormColorBalance.frx":0000
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -40,98 +48,154 @@ Begin VB.Form FormColorBalance
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
       Height          =   495
       Left            =   6000
       TabIndex        =   8
-      Top             =   720
+      Top             =   2160
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      min             =   -100
-      max             =   100
-      font            =   "VBP_FormColorBalance.frx":0028
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
       Left            =   6000
       TabIndex        =   9
-      Top             =   1680
+      Top             =   3120
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      min             =   -100
-      max             =   100
-      font            =   "VBP_FormColorBalance.frx":0050
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
       Left            =   6000
       TabIndex        =   10
-      Top             =   2640
+      Top             =   4080
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      min             =   -100
-      max             =   100
-      font            =   "VBP_FormColorBalance.frx":0078
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   -100
+      Max             =   100
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptTone 
       Height          =   360
       Index           =   0
       Left            =   6240
       TabIndex        =   12
-      Top             =   4320
+      Top             =   480
       Width           =   1230
-      _extentx        =   2170
-      _extenty        =   635
-      caption         =   "shadows"
-      font            =   "VBP_FormColorBalance.frx":00A0
+      _ExtentX        =   2170
+      _ExtentY        =   635
+      Caption         =   "shadows"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptTone 
       Height          =   360
       Index           =   1
-      Left            =   8040
+      Left            =   6240
       TabIndex        =   13
-      Top             =   4320
+      Top             =   840
       Width           =   1275
-      _extentx        =   2249
-      _extenty        =   635
-      caption         =   "midtones"
-      value           =   -1  'True
-      font            =   "VBP_FormColorBalance.frx":00C8
+      _ExtentX        =   2249
+      _ExtentY        =   635
+      Caption         =   "midtones"
+      Value           =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptTone 
       Height          =   360
       Index           =   2
-      Left            =   9840
+      Left            =   6240
       TabIndex        =   14
-      Top             =   4320
+      Top             =   1200
       Width           =   1260
-      _extentx        =   2223
-      _extenty        =   635
-      caption         =   "highlights"
-      font            =   "VBP_FormColorBalance.frx":00F0
+      _ExtentX        =   2223
+      _ExtentY        =   635
+      Caption         =   "highlights"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkLuminance 
-      Height          =   570
+      Height          =   480
       Left            =   6240
       TabIndex        =   15
-      Top             =   4680
-      Width           =   2430
-      _extentx        =   4286
-      _extenty        =   1005
-      caption         =   "preserve luminance"
-      value           =   1
-      font            =   "VBP_FormColorBalance.frx":0118
+      Top             =   5160
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   847
+      Caption         =   "preserve luminance"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "tone balance:"
+      Caption         =   "new balance:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -143,10 +207,32 @@ Begin VB.Form FormColorBalance
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
+      Index           =   1
+      Left            =   6000
+      TabIndex        =   16
+      Top             =   1800
+      Width           =   1395
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "tonal range:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
       Left            =   6000
       TabIndex        =   11
-      Top             =   3960
-      Width           =   1425
+      Top             =   120
+      Width           =   1290
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -154,7 +240,7 @@ Begin VB.Form FormColorBalance
       Caption         =   "yellow"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -162,11 +248,11 @@ Begin VB.Form FormColorBalance
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   270
       Left            =   6360
       TabIndex        =   7
-      Top             =   3120
-      Width           =   675
+      Top             =   4560
+      Width           =   570
    End
    Begin VB.Label lblMagenta 
       AutoSize        =   -1  'True
@@ -174,7 +260,7 @@ Begin VB.Form FormColorBalance
       Caption         =   "magenta"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -182,11 +268,11 @@ Begin VB.Form FormColorBalance
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   270
       Left            =   6360
       TabIndex        =   6
-      Top             =   2160
-      Width           =   915
+      Top             =   3600
+      Width           =   870
    End
    Begin VB.Label lblCyan 
       AutoSize        =   -1  'True
@@ -194,7 +280,7 @@ Begin VB.Form FormColorBalance
       Caption         =   "cyan"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -202,11 +288,11 @@ Begin VB.Form FormColorBalance
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   270
       Left            =   6360
       TabIndex        =   5
-      Top             =   1200
-      Width           =   480
+      Top             =   2640
+      Width           =   465
    End
    Begin VB.Label lblBlue 
       Alignment       =   1  'Right Justify
@@ -215,7 +301,7 @@ Begin VB.Form FormColorBalance
       Caption         =   "blue"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -223,11 +309,11 @@ Begin VB.Form FormColorBalance
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   10215
+      Height          =   270
+      Left            =   10275
       TabIndex        =   3
-      Top             =   3120
-      Width           =   450
+      Top             =   4560
+      Width           =   390
    End
    Begin VB.Label lblGreen 
       Alignment       =   1  'Right Justify
@@ -236,7 +322,7 @@ Begin VB.Form FormColorBalance
       Caption         =   "green"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -244,11 +330,11 @@ Begin VB.Form FormColorBalance
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   10080
+      Height          =   270
+      Left            =   10125
       TabIndex        =   2
-      Top             =   2160
-      Width           =   600
+      Top             =   3600
+      Width           =   555
    End
    Begin VB.Label lblRed 
       Alignment       =   1  'Right Justify
@@ -257,7 +343,7 @@ Begin VB.Form FormColorBalance
       Caption         =   "red"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   12
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -265,11 +351,11 @@ Begin VB.Form FormColorBalance
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   10320
+      Height          =   270
+      Left            =   10350
       TabIndex        =   1
-      Top             =   1200
-      Width           =   345
+      Top             =   2640
+      Width           =   315
    End
 End
 Attribute VB_Name = "FormColorBalance"
@@ -279,24 +365,18 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Balance Adjustment Form
-'Copyright Â©2012-2014 by Tanner Helland & Audioglider
+'Copyright ©2012-2014 by Tanner Helland & Audioglider
 'Created: 31/January/13
 'Last updated: 16/June/14
 'Last update: Rewrote the color balance formula to allow the adjustment of
 '             shadow/midtone/highlight tones.
 '
 'Fairly simple and standard color adjustment form.  Layout and feature set derived from comparable tools
-
 ' in GIMP and Photoshop.
-
 '
-
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
-
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
-
 '
-
 '***************************************************************************
 
 Option Explicit
@@ -314,7 +394,7 @@ Dim m_ToolTip As clsToolTip
 ' Input: offset for each of red, green, and blue
 Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal As Long, ByVal nTone As Long, ByVal preserveLuminance As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Adjusting color balance..."
+    If Not toPreview Then Message "Adjusting color balance..."
     
     Dim rModifier As Long, gModifier As Long, bModifier As Long
     rModifier = 0
@@ -462,10 +542,13 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         'If they do want us to maintain luminance, things are a bit trickier.  We need to convert our values to
         ' HSL, then substitute the original luminance and convert back to RGB.
         If preserveLuminance Then
+        
             'Convert the new values to HSL
             tRGBToHSL r, g, b, h, s, l
+            
             'Now, convert back, using the original luminance
             tHSLToRGB h, s, origLuminance, r, g, b
+            
         End If
         
         'Assign the new values to each color channel
@@ -474,7 +557,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         ImageData(QuickVal, y) = b
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -491,23 +574,33 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     
 End Sub
 
+'Limit color to a 0-255 range
+Private Function Clamp0255(ByVal d As Double) As Double
+    If d < 255 Then
+        If d > 0 Then Clamp0255 = d Else Clamp0255 = 0
+        Exit Function
+    End If
+    Clamp0255 = 255
+End Function
+
 Private Sub chkLuminance_Click()
     updatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Color balance", , buildParams(sltRed, sltGreen, sltBlue, -OptTone(1).value - OptTone(2).value * 2, CBool(chkLuminance.value)), UNDO_LAYER
+    Process "Color balance", , buildParams(sltRed, sltGreen, sltBlue, -OptTone(1).Value - OptTone(2).Value * 2, CBool(chkLuminance.Value)), UNDO_LAYER
 End Sub
+
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltRed.value = 0
-    sltGreen.value = 0
-    sltBlue.value = 0
-    OptTone(1).value = True  'midtones
-    chkLuminance.value = vbChecked
+    sltRed.Value = 0
+    sltGreen.Value = 0
+    sltBlue.Value = 0
+    OptTone(1).Value = True  'Default to midtone correction
+    chkLuminance.Value = vbChecked
 End Sub
 
 Private Sub Form_Activate()
@@ -542,18 +635,10 @@ Private Sub sltRed_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, -OptTone(1).value - OptTone(2).value * 2, CBool(chkLuminance), True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, -OptTone(1).Value - OptTone(2).Value * 2, CBool(chkLuminance), True, fxPreview
 End Sub
+
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
-
-'Limit color to a 0-255 range
-Private Function Clamp0255(ByVal d As Double) As Double
-    If d < 255 Then
-        If d > 0 Then Clamp0255 = d Else Clamp0255 = 0
-        Exit Function
-    End If
-    Clamp0255 = 255
-End Function
