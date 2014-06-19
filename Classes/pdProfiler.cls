@@ -18,13 +18,15 @@ Attribute VB_Exposed = False
 'Last updated: 19/June/14
 'Last update: initial build
 '
-'As PhotoDemon has grown more complex, I've had to be more careful about overall program performance.  Unfortunately, performance
-' is a tough thing to track using default VB code, hence the existence of this class.
+'As PhotoDemon has grown more complex, I've had to be more careful about overall program performance.  Unfortunately,
+' performance is a tough thing to track using default VB code, hence the existence of this class.
 '
-'pdProfile aims to make profiling complex functions simpler, by allowing
+'pdProfile aims to make profiling complex functions simpler, by allowing the user to break a profiling session into
+' discrete "events", each of which gets its own timing report.  When profiling terminates, this class will automatically
+' sort each discrete event by time taken, giving me an easy way to know where I can focus my optimization efforts.
 '
-'Many thanks to Karl Petersen's "StopWatch" class (http://vb.mvps.org/samples/StopWatch/), which was a valuable resource when I
-' first created this class.
+'Many thanks to Karl Petersen's "Measuring Optimizations for Classic VB" article (http://vb.mvps.org/articles/vsm20100518.pdf)
+' and accompanying "StopWatch" class (http://vb.mvps.org/samples/StopWatch/), which served as my inspiration for this project.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
