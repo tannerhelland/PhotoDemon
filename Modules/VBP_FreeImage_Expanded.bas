@@ -858,7 +858,7 @@ Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
             tmpDIB.createBlank dstWidth, dstHeight, 32, 0
-            SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 0, 0, 0, srcDIB.getDIBHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+            SetDIBitsToDevice tmpDIB.getDIBDC, 0, 0, dstWidth, dstHeight, 0, 0, 0, dstHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
             
             'If the destinationIsBlank flag is true, we can use BitBlt in place of AlphaBlend to copy the result
             ' onto the destination DIB; this shaves off a tiny bit of time.
