@@ -27,9 +27,18 @@ Public Sub LoadTheProgram()
     
     m_StartTime = Timer
     
+    'During development, I find it helpful to profile PhotoDemon's startup process.  Timing functions like this can be commented out
+    ' without harming anything.
+    Dim perfCheck As pdProfiler
+    Set perfCheck = New pdProfiler
+    
+    If DISPLAY_TIMINGS Then perfCheck.startProfiling "PhotoDemon Startup"
+    
     '*************************************************************************************************************************************
     ' Prepare the splash screen (but don't display it yet)
     '*************************************************************************************************************************************
+    
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Prepare splash screen"
     
     'We need GDI+ to extract a JPEG from the resource file and convert it in-memory.  (Yes, there are other ways to do this.  No, I don't
     ' care about using them.)  Check its availability.
@@ -54,6 +63,8 @@ Public Sub LoadTheProgram()
     ' Determine which version of Windows the user is running (as other load functions rely on this)
     '*************************************************************************************************************************************
     
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Check Windows version"
+    
     LoadMessage "Detecting Windows® version..."
     
     'Certain features are OS-version dependent.  We must determine the OS version early in the load process to ensure that all features
@@ -70,6 +81,8 @@ Public Sub LoadTheProgram()
     ' If the user doesn't have font smoothing enabled, enable it now.  PD's interface looks much better with some form of antialiasing.
     '*************************************************************************************************************************************
     
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "ClearType check"
+    
     handleClearType True
     
     
@@ -77,6 +90,8 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' Initialize the user preferences (settings) handler
     '*************************************************************************************************************************************
+    
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Initialize preferences engine"
     
     Set g_UserPreferences = New pdPreferences
     
@@ -99,6 +114,8 @@ Public Sub LoadTheProgram()
     ' PhotoDemon works very well with multiple monitors.  Check for such a situation now.
     '*************************************************************************************************************************************
     
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Detect monitors"
+    
     LoadMessage "Analyzing current monitor setup..."
     
     Set g_cMonitors = New clsMonitors
@@ -112,7 +129,9 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' Now we have what we need to properly display the splash screen.  Do so now.
     '*************************************************************************************************************************************
-        
+    
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Display splash screen"
+    
     'Determine the program's previous on-screen location.  We need that to determine where to display the splash screen.
     Dim wRect As RECT
     wRect.Left = g_UserPreferences.GetPref_Long("Core", "Last Window Left", 1)
@@ -138,6 +157,8 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' Initialize the translation (language) engine
     '*************************************************************************************************************************************
+    
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Initialize translation engine"
     
     'Initialize a new language engine.
     Set g_Language = New pdTranslate
@@ -166,6 +187,8 @@ Public Sub LoadTheProgram()
     ' Check for the presence of plugins (as other functions rely on these to initialize themselves)
     '*************************************************************************************************************************************
     
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Load plugins"
+    
     LoadMessage "Loading plugins..."
     
     LoadPlugins
@@ -183,7 +206,9 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' Based on available plugins, determine which image formats PhotoDemon can handle
     '*************************************************************************************************************************************
-        
+    
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Load import/export libraries"
+    
     LoadMessage "Loading import/export libraries..."
         
     g_ImageFormats.generateInputFormats
@@ -195,6 +220,8 @@ Public Sub LoadTheProgram()
     ' Initialize the visual themes engine
     '*************************************************************************************************************************************
     
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Initialize theme engine"
+    
     'Because this class subclasses all forms in the project, it must be loaded very early in the start process
     LoadMessage "Initializing theme engine..."
     
@@ -205,6 +232,8 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' Get the viewport engine ready
     '*************************************************************************************************************************************
+    
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Initialize viewport engine"
     
     'Initialize our current zoom method
     LoadMessage "Initializing viewport engine..."
@@ -222,6 +251,8 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' Initialize the window manager (the class that synchronizes all toolbox and image window positions)
     '*************************************************************************************************************************************
+    
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Initialize window manager"
     
     LoadMessage "Initializing window manager..."
     Set g_WindowManager = New pdWindowManager
@@ -254,7 +285,9 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' Set all default tool values
     '*************************************************************************************************************************************
-        
+    
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Initialize tools"
+    
     LoadMessage "Initializing image tools..."
         
     'Note that selection tools are initialized in the Tool toolbar's Form_Load event
@@ -264,6 +297,8 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' PhotoDemon's complex interface requires a lot of things to be generated at run-time.
     '*************************************************************************************************************************************
+    
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Initialize UI"
     
     LoadMessage "Initializing user interface..."
     
@@ -320,6 +355,8 @@ Public Sub LoadTheProgram()
     ' The program's menus support many features that VB can't do natively (like icons and custom shortcuts).  Load such things now.
     '*************************************************************************************************************************************
     
+    If DISPLAY_TIMINGS Then perfCheck.markEvent "Prep menus"
+    
     LoadMessage "Preparing program menus..."
     
     'If inside the IDE, disable the "Effects" -> "Test" menu
@@ -349,7 +386,22 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' Unload the splash screen and present the main form
     '*************************************************************************************************************************************
+    
+    If DISPLAY_TIMINGS Then
+        perfCheck.stopProfiling
         
+        'If compiled, write the file out to the /Data subdirectory
+        If g_IsProgramCompiled Then
+            perfCheck.generateProfileReport g_UserPreferences.getDataPath & "PhotoDemon_Performance_Report.txt"
+        
+        'If inside the IDE, just dump the profile report to the Debug window
+        Else
+            perfCheck.generateProfileReport
+        
+        End If
+        
+    End If
+    
     'Display the splash screen for at least a second or two
     If Timer - m_StartTime < m_LoadTime Then
         Do While Timer - m_StartTime < m_LoadTime
