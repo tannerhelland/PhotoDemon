@@ -1548,6 +1548,8 @@ End Sub
 ' the following two functions can be used to add or evaluate such checkpoints outside of the central processor.
 Public Sub setImageCheckpoint()
 
+    'Make a note of the current image header param string; this will serve as our "reference" when evaluating the image checkpoint, to see
+    ' if anything inside the header has changed.
     If (Not pdImages(g_CurrentImage) Is Nothing) Then
         previousImageID = g_CurrentImage
         previousLayerID = pdImages(g_CurrentImage).getActiveLayerID
@@ -1556,19 +1558,34 @@ Public Sub setImageCheckpoint()
 
 End Sub
 
-Public Sub evaluateImageCheckpoint()
+'Evaluate all possible non-destructive change identifiers, and if any were found, commit them to the Undo stack immediately.  If a new
+' Undo entry was created by this function, it will return TRUE.  Callers can use this to determine whether syncInterfaceToImage needs to be
+' called, or whether they can simply proceed normally.
+Public Function evaluateImageCheckpoint() As Boolean
 
+    Dim checkpointWasMeaningful As Boolean
+    checkpointWasMeaningful = False
+    
     'See if the specified layer's settings have changed since the last time a processor request was made.  If they have,
     ' trigger an Undo/Redo point to capture those changes.
     If (Not pdImages(previousImageID) Is Nothing) Then
-    If (Not pdImages(previousImageID).getLayerByID(previousLayerID) Is Nothing) Then
+        If (Not pdImages(previousImageID).getLayerByID(previousLayerID) Is Nothing) Then
+            
+            'If the previous layer's param string doesn't match the new one, trigger immediate creation of an Undo entry.
+            If StrComp(pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, previousLayerParamString, vbTextCompare) <> 0 Then
+                
+                'Create an Undo entry
+                pdImages(g_CurrentImage).undoManager.createUndoData "Modify layer settings", pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, UNDO_LAYERHEADER, previousLayerID, -1
+                
+                'Note that Undo data has been created, so the caller will want to re-sync the interface (to make sure Undo/Redo buttons reflect
+                ' the change).  Some functions may do this regardless of the checkpoint merit, in which case they can ignore this return value.
+                checkpointWasMeaningful = True
+                
+            End If
         
-        'If the layer param strings don't match, trigger immediate creation of an Undo entry.
-        If StrComp(pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, previousLayerParamString, vbTextCompare) <> 0 Then
-            pdImages(g_CurrentImage).undoManager.createUndoData "Modify layer settings", pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, UNDO_LAYERHEADER, previousLayerID, -1
         End If
+    End If
     
-    End If
-    End If
+    evaluateImageCheckpoint = checkpointWasMeaningful
 
-End Sub
+End Function
