@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Compositor class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 01/May/14
-'Last update: add blend modes!
+'Last updated: 20/June/14
+'Last update: add non-destructive edit support!
 '
 'Image compositing is a fairly arduous process, especially when dealing with stuff like custom blend modes.
 ' Previously, the pdImage class handled all compositing on its own, but as PD's compositing needs have
@@ -27,7 +27,11 @@ Attribute VB_Exposed = False
 ' present the parent pdImage object always passes a self-reference to this class when a compositing operation
 ' is requested.  (This is simpler than dealing with persistent circular references.)
 '
-'Many thanks to expert contributor audioglider for implementing many of PhotoDemon's blend modes.
+'As of 20 June '14, this class also supports the processing of non-destructive edits for a given layer.  At present,
+' PD's stock layer edit functions are used, but it may be worthwhile to write ultra-fast versions specific to this
+' class.  I'll investigate further as more non-destructive effects are implemented.
+'
+'Many thanks to expert contributor Audioglider for his help implementing PhotoDemon's many supported blend modes.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -411,13 +415,19 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
             tmpDIB.createBlank topLayer.getLayerCanvasWidthModified, topLayer.getLayerCanvasHeightModified, 32, 0
             GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, topLayer.layerDIB, 0, 0, topLayer.layerDIB.getDIBWidth, topLayer.layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
         End If
-    
-        'tmpDIB now contains the chunk of this layer that appears on the viewport.  Time to composite it!
+        
+        'tmpDIB now contains the chunk of this layer that appears on the viewport.  Before we can composite it against the base layer,
+        ' we need to check for any non-destructive FX that may be active.
+        ' (TODO: check layer size vs non-destructive size, and apply the non-destructive effect to whichever version is smaller!
+        '        That could give us a minor speed boost.)
+        If topLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB topLayer, tmpDIB
+                
+        'With all non-destructive options accounted for, we can finally calculate composited layer data!
         If topLayer.getLayerBlendMode <> BL_NORMAL Then
             compositeDIBs tmpDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset
         End If
     
-        'Always use the AlphaBlend API for 32bpp layers
+        'With compositing complete, apply the final step, which is alpha-blending the layer downward while accounting for layer opacity.
         tmpDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, topLayer.getLayerOpacity * 2.55, xOffset, yOffset
         
     End If
@@ -458,23 +468,31 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     
         'Check to see if the base layer has any size modifications; if it does, apply them now
         If tmpLayerRef.getLayerCanvasXModifier = 1 And tmpLayerRef.getLayerCanvasYModifier = 1 Then
-        
-            With tmpLayerRef
-                .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-            End With
+            
+            'No size modifications are active; copy the layer as-is
+            tmpDIB.createFromExistingDIB tmpLayerRef.layerDIB
+            
+            'Apply any non-destructive effects now
+            If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, tmpDIB
             
         Else
-        
+            
             With tmpLayerRef
                 
                 tmpDIB.createBlank .getLayerCanvasWidthModified, .getLayerCanvasHeightModified, 32, 0
                 GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, .layerDIB, 0, 0, .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
                 
-                tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-            
+                'Before we can composite this temporary DIB against other DIBs, we need to check for any non-destructive FX that may be active.
+                ' (TODO: check layer size vs non-destructive size, and apply the non-destructive effect to whichever version is smaller!
+                '        That could give us a minor speed boost.)
+                If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, tmpDIB
+                
             End With
         
         End If
+        
+        'Blend the bottom layer onto the destination DIB
+        tmpDIB.alphaBlendToDC dstDIB.getDIBDC, tmpLayerRef.getLayerOpacity * 2.55, tmpLayerRef.getLayerOffsetX, tmpLayerRef.getLayerOffsetY
     
     End If
     
@@ -595,8 +613,12 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                 'We now have everything we need to create a resized version of this layer!  Grab it now.
                 tmpDIB.createBlank dstRect.Right - dstRect.Left, dstRect.Bottom - dstRect.Top, 32, 0
                 GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
-                                
-                'tmpDIB now contains the chunk of this layer that appears on the viewport.  Time to composite it!
+                
+                'Before we can composite this temporary DIB against other DIBs, we need to check for any non-destructive FX that may be active.
+                If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, tmpDIB
+                
+                'tmpDIB now contains the chunk of this layer that appears on the viewport, with all non-destructive edits applied.
+                ' Time to composite it!
                 If tmpLayerRef.getLayerBlendMode <> BL_NORMAL Then
                     compositeDIBs tmpDIB, dstLayer.layerDIB, tmpLayerRef.getLayerBlendMode, dstRect.Left - dstX, dstRect.Top - dstY
                 End If
@@ -616,6 +638,22 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     Set dstLayer.layerDIB = Nothing
     Set tmpDIB = Nothing
     
+End Sub
+
+'Given a layer containing one or more non-destructive effect parameters, and a target DIB, apply the layer's specified FX against
+' the DIB.  Why supply the DIB separately?  Because during viewport composition, all layers are resized and/or cropped to their
+' size relevant to the viewport.  By doing this, we hugely decrease the performance hit from non-destructive edit calculations.
+Private Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB)
+
+    'Start by unpremultiplying the layer alpha
+    If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha False
+
+    'Calculate each non-destructive FX in turn
+    If parentLayer.getLayerNonDestructiveFXValue(NDFX_WHITEBALANCE) > 0 Then WhiteBalanceDIB parentLayer.getLayerNonDestructiveFXValue(NDFX_WHITEBALANCE), targetDIB, True
+    
+    'Re-premultiply alpha
+    If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha True
+
 End Sub
 
 'Given StretchBlt-like parameters, create a destination rect that reflects the transformation of a source rect

@@ -3,8 +3,8 @@ Attribute VB_Name = "Interface"
 'Miscellaneous Functions Related to the User Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 01/June/14
-'Last update: optimize Message() to ignore duplicate message requests
+'Last updated: 20/June/14
+'Last update: add interface-syncing functions for non-destructive edit tools
 '
 'Miscellaneous routines related to rendering and handling PhotoDemon's interface.  As the program's complexity has
 ' increased, so has the need for specialized handling of certain UI elements.
@@ -67,11 +67,12 @@ Public Enum metaInitializer
      tSelection
      tSelectionTransform
      tZoom
+     tNonDestructiveFX
 End Enum
 
 #If False Then
     Private Const tSave = 0, tSaveAs = 0, tClose = 0, tUndo = 0, tRedo = 0, tRepeatLast = 0, tCopy = 0, tPaste = 0, tView = 0, tImageOps = 0
-    Private Const tMetadata = 0, tGPSMetadata = 0, tMacro = 0, tSelection = 0, tSelectionTransform = 0, tZoom = 0
+    Private Const tMetadata = 0, tGPSMetadata = 0, tMacro = 0, tSelection = 0, tSelectionTransform = 0, tZoom = 0, tNonDestructiveFX = 0
 #End If
 
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
@@ -121,6 +122,7 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tSelection, False
         metaToggle tMacro, False
         metaToggle tZoom, False
+        metaToggle tNonDestructiveFX, False
         
         '"Paste as new layer" is disabled when no images are loaded (but "Paste as new image" remains active)
         FormMain.MnuEdit(6).Enabled = False
@@ -246,10 +248,15 @@ Public Sub syncInterfaceToCurrentImage()
             metaToggle tSelection, False
             metaToggle tSelectionTransform, False
         End If
-        
+                
         'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
         ' are visible, and other criteria.
         If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
+        
+            'If non-destructive FX are active on the current layer, update the non-destructive tools to match
+            If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
+                metaToggle tNonDestructiveFX, True
+            End If
         
             'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
             If pdImages(g_CurrentImage).getNumOfLayers = 1 Then
@@ -360,6 +367,7 @@ Public Sub syncInterfaceToCurrentImage()
             FormMain.MnuLayer(10).Enabled = False
             FormMain.MnuLayer(12).Enabled = False
             FormMain.MnuLayer(13).Enabled = False
+            metaToggle tNonDestructiveFX, False
         
         End If
         
@@ -598,6 +606,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 If FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = False
             End If
         
+        'GPS metadata is its own sub-category, and its activation is contigent upon an image having embedded GPS data
         Case tGPSMetadata
         
             If g_ExifToolEnabled Then
@@ -605,7 +614,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             Else
                 If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False
             End If
-            
+        
+        'Zoom controls not just the drop-down zoom box, but the zoom in, zoom out, and zoom fit buttons as well
         Case tZoom
             If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled <> newState Then
                 FormMain.mainCanvas(0).getZoomDropDownReference().Enabled = newState
@@ -616,6 +626,26 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
             'When disabling zoom controls, reset the zoom drop-down to 100%
             If Not newState Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+            
+        'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
+        Case tNonDestructiveFX
+            If newState Then
+                
+                'Start by enabling all non-destructive FX controls
+                If Not toolbar_Tools.sltNDFXWhiteBalance.Enabled Then toolbar_Tools.sltNDFXWhiteBalance.Enabled = True
+                
+                'Disable automatic NDFX syncing, then update all sliders to match the current layer's values
+                With toolbar_Tools
+                    .setNDFXControlState False
+                
+                    .sltNDFXWhiteBalance = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXValue(NDFX_WHITEBALANCE)
+                
+                    .setNDFXControlState True
+                End With
+                
+            Else
+                toolbar_Tools.sltNDFXWhiteBalance.Enabled = False
+            End If
             
     End Select
     

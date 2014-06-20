@@ -42,7 +42,7 @@ Begin VB.Form toolbar_Tools
       Top             =   1020
       Visible         =   0   'False
       Width           =   13770
-      Begin PhotoDemon.sliderTextCombo sltStrength 
+      Begin PhotoDemon.sliderTextCombo sltNDFXWhiteBalance 
          Height          =   495
          Left            =   120
          TabIndex        =   36
@@ -50,10 +50,8 @@ Begin VB.Form toolbar_Tools
          Width           =   5925
          _ExtentX        =   10451
          _ExtentY        =   873
-         Min             =   0.01
          Max             =   5
          SigDigits       =   2
-         Value           =   0.05
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -923,6 +921,14 @@ Dim m_ToolTip As clsToolTip
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
+'Whether or not non-destructive FX can be applied to the image
+Private m_NonDestructiveFXAllowed As Boolean
+
+'If external functions want to disable automatic non-destructive FX syncing, then can do so via this function
+Public Sub setNDFXControlState(ByVal newNDFXState As Boolean)
+    m_NonDestructiveFXAllowed = newNDFXState
+End Sub
+
 Private Sub chkAutoActivateLayer_Click()
     If CBool(chkAutoActivateLayer) Then
         If Not chkIgnoreTransparent.Enabled Then chkIgnoreTransparent.Enabled = True
@@ -1009,14 +1015,17 @@ Private Sub Form_Load()
         toolbar_Tools.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
         toolbar_Tools.sltSelectionBorder.assignTooltip "This option adjusts the width of the selection border."
         
-        'Load any last-used settings for this form
-        Set lastUsedSettings = New pdLastUsedSettings
-        lastUsedSettings.setParentForm Me
-        lastUsedSettings.loadAllControlValues
-        
-        'Assign the system hand cursor to all relevant objects
-        Set m_ToolTip = New clsToolTip
-        makeFormPretty Me, m_ToolTip
+    'Load any last-used settings for this form
+    Set lastUsedSettings = New pdLastUsedSettings
+    lastUsedSettings.setParentForm Me
+    lastUsedSettings.loadAllControlValues
+    
+    'Assign the system hand cursor to all relevant objects
+    Set m_ToolTip = New clsToolTip
+    makeFormPretty Me, m_ToolTip
+    
+    'Allow non-destructive effects
+    m_NonDestructiveFXAllowed = True
 
 End Sub
 
@@ -1301,6 +1310,16 @@ Private Sub sltCornerRounding_Change()
         pdImages(g_CurrentImage).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
+End Sub
+
+'Non-destructive effect changes will force an immediate redraw of the viewport
+Private Sub sltNDFXWhiteBalance_Change()
+    
+    If (Not pdImages(g_CurrentImage) Is Nothing) And m_NonDestructiveFXAllowed Then
+        pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState NDFX_WHITEBALANCE, sltNDFXWhiteBalance.Value
+        ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    End If
+    
 End Sub
 
 Private Sub sltSelectionBorder_Change()
