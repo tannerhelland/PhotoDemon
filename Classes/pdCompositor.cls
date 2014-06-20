@@ -655,6 +655,16 @@ Private Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDI
         fastLayerExposureContrast parentLayer, targetDIB
     End If
     
+    'Saturation
+    If (parentLayer.getLayerNonDestructiveFXValue(NDFX_SATURATION) <> 0) Then
+        fastLayerSaturation parentLayer, targetDIB
+    End If
+    
+    'Vibrance
+    If (parentLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE) <> 0) Then
+        fastLayerVibrance parentLayer, targetDIB
+    End If
+    
     'Re-premultiply alpha
     If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha True
 
@@ -678,26 +688,22 @@ Private Sub fastLayerExposureContrast(ByRef targetLayer As pdLayer, ByRef target
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, qvDepth As Long
     qvDepth = targetDIB.getDIBColorDepth \ 8
-        
-    'Color values
-    Dim r As Long, g As Long, b As Long
     
     'Adjustment values
-    Dim brightAdjustment As Double, contrastAdjustment As Long
-    brightAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) / 2
+    Dim exposureAdjustment As Double, contrastAdjustment As Long
+    exposureAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) / 2
     contrastAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST)
     
-    'Look-up tables are used to accelerate this function.  Note that we aren't actually applying brightness; we're applying exposure
-    ' changes, but the user doesn't need to know this.
-    Dim bcLUT(0 To 255) As Byte
+    'Look-up tables are used to accelerate this function.
+    Dim ecLUT(0 To 255) As Byte
     Dim tmpVal As Double
     
     For x = 0 To 255
         
         'Calculate exposure
-        If brightAdjustment <> 0 Then
+        If exposureAdjustment <> 0 Then
             tmpVal = x / 255
-            tmpVal = tmpVal * 2 ^ (brightAdjustment)
+            tmpVal = tmpVal * 2 ^ (exposureAdjustment)
             tmpVal = tmpVal * 255
         Else
             tmpVal = x
@@ -715,7 +721,7 @@ Private Sub fastLayerExposureContrast(ByRef targetLayer As pdLayer, ByRef target
             tmpVal = 0
         End If
         
-        bcLUT(x) = tmpVal
+        ecLUT(x) = tmpVal
         
     Next x
     
@@ -725,9 +731,158 @@ Private Sub fastLayerExposureContrast(ByRef targetLayer As pdLayer, ByRef target
     For y = 0 To finalY
             
         'Apply the changes in one fell swoop
-        ImageData(QuickVal, y) = bcLUT(ImageData(QuickVal, y))
-        ImageData(QuickVal + 1, y) = bcLUT(ImageData(QuickVal + 1, y))
-        ImageData(QuickVal + 2, y) = bcLUT(ImageData(QuickVal + 2, y))
+        ImageData(QuickVal, y) = ecLUT(ImageData(QuickVal, y))
+        ImageData(QuickVal + 1, y) = ecLUT(ImageData(QuickVal + 1, y))
+        ImageData(QuickVal + 2, y) = ecLUT(ImageData(QuickVal + 2, y))
+        
+    Next y
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    
+End Sub
+
+'Super-fast, no-frills saturation adjustment, designed for non-destructive compositing purposes
+Private Sub fastLayerSaturation(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
+
+    'Create a local array and point it at the target layer's DIB
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, targetDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    
+    'Local loop variables
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
+    finalX = targetDIB.getDIBWidth - 1
+    finalY = targetDIB.getDIBHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = targetDIB.getDIBColorDepth \ 8
+        
+    'Color values
+    Dim r As Long, g As Long, b As Long
+    Dim rFloat As Single, gFloat As Single, bFloat As Single
+    Dim h As Single, s As Single, v As Single
+    
+    'Adjustment values
+    Dim saturationAdjustment As Double
+    saturationAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_SATURATION) / 200
+    
+    'Division lookup table
+    Dim fastDiv() As Single
+    ReDim fastDiv(0 To 255) As Single
+    
+    For x = 0 To 255
+        fastDiv(x) = x / 255
+    Next x
+    
+    'Now we can loop through each pixel in the image, converting values as we go
+    For x = 0 To finalX
+        QuickVal = x * qvDepth
+    For y = 0 To finalY
+            
+        'Retrieve RGB values
+        r = ImageData(QuickVal, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal + 2, y)
+        
+        'Convert to HSV
+        fastRGBtoHSV fastDiv(r), fastDiv(g), fastDiv(b), h, s, v
+        
+        'Calculate a new saturation
+        s = s + saturationAdjustment
+        If s < 1 Then
+            If s < 0 Then s = 0
+        Else
+            s = 1
+        End If
+        
+        'Convert back to RGB
+        fHSVtoRGB h, s, v, rFloat, gFloat, bFloat
+        
+        'Apply the new values to the image
+        ImageData(QuickVal, y) = rFloat * 255
+        ImageData(QuickVal + 1, y) = gFloat * 255
+        ImageData(QuickVal + 2, y) = bFloat * 255
+        
+    Next y
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    
+End Sub
+
+'Super-fast, no-frills vibrance adjustment, designed for non-destructive compositing purposes
+Private Sub fastLayerVibrance(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
+
+    'Create a local array and point it at the target layer's DIB
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, targetDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    
+    'Local loop variables
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
+    finalX = targetDIB.getDIBWidth - 1
+    finalY = targetDIB.getDIBHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = targetDIB.getDIBColorDepth \ 8
+    
+    'Adjustment value
+    Dim vibranceAdjustment As Double
+    vibranceAdjustment = -0.02 * targetLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE)
+    
+    'Color and related variables
+    Dim r As Long, g As Long, b As Long, maxVal As Long
+    Dim amtVal As Double, avgVal As Double
+    
+    'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
+    Dim grayLookUp(0 To 765) As Byte
+    For x = 0 To 765
+        grayLookUp(x) = x \ 3
+    Next x
+        
+    'Now we can loop through each pixel in the image, converting values as we go
+    For x = 0 To finalX
+        QuickVal = x * qvDepth
+    For y = 0 To finalY
+            
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'Calculate the gray value using the look-up table
+        avgVal = grayLookUp(r + g + b)
+        maxVal = Max3Int(r, g, b)
+        
+        'Get adjusted average
+        amtVal = ((Abs(maxVal - avgVal) / 127) * vibranceAdjustment)
+        
+        'Apply new vibrance
+        If r <> maxVal Then r = r + (maxVal - r) * amtVal
+        If g <> maxVal Then g = g + (maxVal - g) * amtVal
+        If b <> maxVal Then b = b + (maxVal - b) * amtVal
+        
+        'Clamp values to [0,255] range
+        If r < 0 Then r = 0
+        If r > 255 Then r = 255
+        If g < 0 Then g = 0
+        If g > 255 Then g = 255
+        If b < 0 Then b = 0
+        If b > 255 Then b = 255
+        
+        'Apply the new values
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
         
     Next y
     Next x
