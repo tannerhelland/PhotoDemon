@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 21/May/14
-'Last update: add support for getting/setting layer properties by param string
+'Last updated: 20/June/14
+'Last update: add comprehensive support for non-destructive layer FX
 '
 'Once upon a time, the pdLayer class was simply a DIB wrapper.  Once PhotoDemon moved to a fully layer-compatible
 ' image editor, however, it became necessary to separate Layer-specific functions from generic DIB functions.
@@ -104,20 +104,37 @@ Private layerID As Long
 ' Default values will be set at creation time, but never assume that these values are constant, and never attempt to reference
 '  a layer by one of these properties (INCLUDING NAME, as it can be modified without warning)
 Private Type LayerData
-    l_Name As String                'Layer name, as entered by the user
-    l_GroupID As Long               'Layer group (0 if not assigned to a group)
-    l_Opacity As Long               'Layer opacity (defaults to 100)
-    l_BlendMode As LAYER_BLENDMODE  'Layer blend mode; defaults to BL_NORMAL
-    l_OffsetX As Double             'X/Y offset of the layer's top-left corner
+    l_Name As String                    'Layer name, as entered by the user
+    l_GroupID As Long                   'Layer group (0 if not assigned to a group)
+    l_Opacity As Long                   'Layer opacity (defaults to 100)
+    l_BlendMode As LAYER_BLENDMODE      'Layer blend mode; defaults to BL_NORMAL
+    l_OffsetX As Double                 'X/Y offset of the layer's top-left corner
     l_OffsetY As Double
-    l_CanvasXModifier As Double     'Width/height modifier for the image; by default, these are set to 1.0.
+    l_CanvasXModifier As Double         'Width/height modifier for the image; by default, these are set to 1.0.
     l_CanvasYModifier As Double
-    l_Angle As Double               'Layer angle.  (A long-term goal is to support non-destructive rotation of layers.)
-    l_Visibility As Boolean         'Layer visibility
+    l_Angle As Double                   'Layer angle.  (A long-term goal is to support non-destructive rotation of layers.)
+    l_Visibility As Boolean             'Layer visibility
+    l_NonDestructiveFXActive As Boolean 'Are any non-destructive edits or other FX active?
 End Type
 
 'Local instance of layer data for this layer
 Private myLayerData As LayerData
+
+'Non-destructive edits currently supported by the program.
+Public Enum LAYER_NONDESTRUCTIVE_FX
+    NDFX_WHITEBALANCE = 0
+End Enum
+
+#If False Then
+    Const NDFX_WHITEBALANCE = 0
+#End If
+
+'Local copy of non-destructive FX
+Private Type nonDestructiveFXSettings
+    fx_WhiteBalance As Double
+End Type
+
+Private myNonDestructiveFX As nonDestructiveFXSettings
 
 'Layer width, height.  Note that this values are automatically updated as necessary, depending on the contents of the layer
 'Private layerWidth As Long, layerHeight As Long
@@ -144,16 +161,14 @@ Private layerThumbnail As pdDIB
 Private m_IsThumbClean As Boolean
 
 
-
 'If an external function modifies this layer's DIB contents (or the vector data from which the DIB is generated),
 ' *IT MUST CALL THIS FUNCTION AFTERWARD*.
 '
 'As part of new program-wide optimizations in v6.4, I am trying to limit the amount of data that PD has to generate on the fly.
-' For layers, we can reduce churn by caching things like the layer thumbnail, which should really only be updated when the layer's
-' contents are updated.
+' For layers, we can reduce churn by caching things like the layer thumbnail, which should only be updated when the layer's
+' contents are updated (destructively).
 '
-'This notifyLayerModified() function will rebuild all caches for this layer, so use it only when appropriate (because calling it
-' any more than absolutely necessary defeats the whole purpose of caching data in the first place).
+'This notifyLayerModified() function will rebuild all caches for this layer, so use it only when absolutely necessary.
 Public Sub notifyLayerModified()
 
     'Mark the layer thumbnail as dirty
@@ -277,6 +292,56 @@ Public Sub setLayerCanvasYModifier(ByVal newYModifier As Double)
     End If
 End Sub
 
+'Get/set non-destructive FX status.  Note that these functions work a little differently than other get/set functions.  Get() works
+' normally, but Set() requires the user to activate or deactivate a specific
+Public Function getLayerNonDestructiveFXState() As Boolean
+    getLayerNonDestructiveFXState = myLayerData.l_NonDestructiveFXActive
+End Function
+
+Public Function getLayerNonDestructiveFXValue(ByVal ndEffect As LAYER_NONDESTRUCTIVE_FX) As Double
+    
+    'Return a new value contigent on the supplied ndEffect
+    Select Case ndEffect
+    
+        'White balance
+        Case NDFX_WHITEBALANCE
+            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_WhiteBalance
+            
+    End Select
+    
+End Function
+
+Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_FX, Optional ByVal newEffectValue As Double = 0#)
+    
+    'Assign the new value to the appropriate entry in this layer's non-destructive FX array
+    Select Case ndEffect
+    
+        'White balance
+        Case NDFX_WHITEBALANCE
+            myNonDestructiveFX.fx_WhiteBalance = newEffectValue
+    
+    End Select
+    
+    'Is the newEffectValue 0?  If it is, check to see if any other FX have non-zero values; if all values are zero, we can mark
+    ' the layer's non-destructive FX state as FALSE.
+    If newEffectValue = 0 Then
+    
+        myLayerData.l_NonDestructiveFXActive = False
+        
+        'Check each entry in the local non-destructive effects cache; if any still have non-zero values, note that the layer still
+        ' has active non-destructive effects.
+        With myNonDestructiveFX
+        
+            If .fx_WhiteBalance <> 0 Then myLayerData.l_NonDestructiveFXActive = True
+        
+        End With
+    
+    Else
+        myLayerData.l_NonDestructiveFXActive = True
+    End If
+    
+End Sub
+
 'As a convenience to the user, modified width/height values can be retrieved using this function.  Note that
 ' error handling is automatically performed to prevent over/underflow.
 Public Function getLayerCanvasWidthModified() As Long
@@ -335,6 +400,11 @@ Private Sub Class_Initialize()
         .l_CanvasYModifier = 1
         .l_Angle = 0
         .l_Visibility = True
+        .l_NonDestructiveFXActive = False
+    End With
+    
+    With myNonDestructiveFX
+        .fx_WhiteBalance = 0
     End With
     
     'Initialize the layer's DIB
@@ -392,6 +462,12 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
         xmlEngine.writeTag "CanvasYModifier", .l_CanvasYModifier
         xmlEngine.writeTag "Angle", .l_Angle
         xmlEngine.writeTag "Visibility", .l_Visibility
+        xmlEngine.writeTag "NonDestructiveFXActive", .l_NonDestructiveFXActive
+    End With
+    
+    'Next, write out any non-destructive FX parameters
+    With myNonDestructiveFX
+        xmlEngine.writeTag "NDFX_WhiteBalance", .fx_WhiteBalance
     End With
     
     'Next, write out the header of the layer's DIB contents.  These values are necessary for reconstructing the layer's DIB
@@ -416,8 +492,14 @@ End Function
 ' non-destructive changes to layer data; if any are found, the Undo/Redo engine knows to create a new point on the stack.
 Public Function getLayerHeaderAsParamString() As String
 
+    'Start by compiling a layer header
     With myLayerData
-        getLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility)
+        getLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive)
+    End With
+    
+    'Next, add any non-destructive FX parameters
+    With myNonDestructiveFX
+        getLayerHeaderAsParamString = getLayerHeaderAsParamString & "|" & buildParams(.fx_WhiteBalance)
     End With
     
 End Function
@@ -443,6 +525,13 @@ Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
         .l_CanvasYModifier = cParams.GetDouble(8)
         .l_Angle = cParams.GetDouble(9)
         .l_Visibility = cParams.GetBool(10)
+        .l_NonDestructiveFXActive = cParams.GetBool(11)
+    End With
+    
+    'After the layer header comes non-destructive FX settings.  Make sure to adjust these indices if new values get added to
+    ' myLayerData, above!
+    With myNonDestructiveFX
+        .fx_WhiteBalance = cParams.GetDouble(12)
     End With
         
     'Per PD convention, this class has no way to notify outsiders of updates, so the calling function must handle any
@@ -487,6 +576,12 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
             .l_CanvasYModifier = xmlEngine.getUniqueTag_Double("CanvasYModifier", 1)
             .l_Angle = xmlEngine.getUniqueTag_Double("Angle")
             .l_Visibility = xmlEngine.getUniqueTag_Boolean("Visibility")
+            .l_NonDestructiveFXActive = xmlEngine.getUniqueTag_Boolean("NonDestructiveFXActive", False)
+        End With
+        
+        'Read in the contents of the non-destructive FX chunk
+        With myNonDestructiveFX
+            .fx_WhiteBalance = xmlEngine.getUniqueTag_Double("NDFX_WhiteBalance", 0)
         End With
         
         'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
@@ -536,6 +631,12 @@ Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage
         .l_Opacity = 100
         .l_BlendMode = BL_NORMAL
         .l_Visibility = True
+        .l_NonDestructiveFXActive = False
+    End With
+    
+    'Reset any non-destructive fx parameters
+    With myNonDestructiveFX
+        .fx_WhiteBalance = 0
     End With
     
     'Create a local copy of the passed DIB.
@@ -581,6 +682,12 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_CanvasYModifier = srcLayer.getLayerCanvasYModifier
         .l_Angle = srcLayer.getLayerAngle
         .l_Visibility = srcLayer.getLayerVisibility
+        .l_NonDestructiveFXActive = srcLayer.getLayerNonDestructiveFXState
+    End With
+    
+    'Next, copy any non-destructive FX parameters
+    With myNonDestructiveFX
+        .fx_WhiteBalance = srcLayer.getLayerNonDestructiveFXValue(NDFX_WHITEBALANCE)
     End With
     
     'Finally, copy the source layer's DIB.
@@ -987,7 +1094,7 @@ End Function
 ' an image, we want to reset the base layer.)  Use this function to do so.
 Public Sub resetLayerParameters()
 
-    'Assign default values to this instance
+    'Assign default values to this instance's header
     With myLayerData
         .l_GroupID = 0
         .l_Opacity = 100
@@ -998,6 +1105,12 @@ Public Sub resetLayerParameters()
         .l_CanvasYModifier = 1
         .l_Angle = 0
         .l_Visibility = True
+        .l_NonDestructiveFXActive = False
+    End With
+    
+    'Assign default values to the non-destructive FX params
+    With myNonDestructiveFX
+        .fx_WhiteBalance = 0
     End With
 
 End Sub
