@@ -629,22 +629,33 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
         'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
         Case tNonDestructiveFX
+        
             If newState Then
                 
                 'Start by enabling all non-destructive FX controls
-                If Not toolbar_Tools.sltNDFXWhiteBalance.Enabled Then toolbar_Tools.sltNDFXWhiteBalance.Enabled = True
+                For i = 0 To toolbar_Tools.sltQuickFix.Count - 1
+                    If Not toolbar_Tools.sltQuickFix(i).Enabled Then toolbar_Tools.sltQuickFix(i).Enabled = True
+                Next i
                 
                 'Disable automatic NDFX syncing, then update all sliders to match the current layer's values
                 With toolbar_Tools
                     .setNDFXControlState False
-                
-                    .sltNDFXWhiteBalance = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXValue(NDFX_WHITEBALANCE)
-                
+                    
+                    'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
+                    For i = 0 To .sltQuickFix.Count - 1
+                        .sltQuickFix(i) = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXValue(i)
+                    Next i
+                    
                     .setNDFXControlState True
                 End With
                 
             Else
-                toolbar_Tools.sltNDFXWhiteBalance.Enabled = False
+                
+                'Disable all non-destructive FX controls
+                For i = 0 To toolbar_Tools.sltQuickFix.Count - 1
+                    If toolbar_Tools.sltQuickFix(i).Enabled Then toolbar_Tools.sltQuickFix(i).Enabled = False
+                Next i
+                
             End If
             
     End Select

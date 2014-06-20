@@ -649,11 +649,92 @@ Private Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDI
     If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha False
 
     'Calculate each non-destructive FX in turn
-    If parentLayer.getLayerNonDestructiveFXValue(NDFX_WHITEBALANCE) > 0 Then WhiteBalanceDIB parentLayer.getLayerNonDestructiveFXValue(NDFX_WHITEBALANCE), targetDIB, True
+    
+    'Brightness and contrast are handled simultaneously, to reduce processing time
+    If (parentLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST) <> 0) Then
+        fastLayerExposureContrast parentLayer, targetDIB
+    End If
     
     'Re-premultiply alpha
     If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha True
 
+End Sub
+
+'Super-fast, no-frills brightness and/or contrast adjustment, designed for non-destructive compositing purposes
+Private Sub fastLayerExposureContrast(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
+
+    'Create a local array and point it at the target layer's DIB
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, targetDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    
+    'Local loop variables
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
+    finalX = targetDIB.getDIBWidth - 1
+    finalY = targetDIB.getDIBHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = targetDIB.getDIBColorDepth \ 8
+        
+    'Color values
+    Dim r As Long, g As Long, b As Long
+    
+    'Adjustment values
+    Dim brightAdjustment As Double, contrastAdjustment As Long
+    brightAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) / 100
+    contrastAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST)
+    
+    'Look-up tables are used to accelerate this function.  Note that we aren't actually applying brightness; we're applying exposure
+    ' changes, but the user doesn't need to know this.
+    Dim bcLUT(0 To 255) As Byte
+    Dim tmpVal As Double
+    
+    For x = 0 To 255
+        
+        'Calculate exposure
+        If brightAdjustment <> 0 Then
+            tmpVal = x / 255
+            tmpVal = tmpVal * 2 ^ (brightAdjustment)
+            tmpVal = tmpVal * 255
+        Else
+            tmpVal = x
+        End If
+        
+        'Calculate contrast
+        If contrastAdjustment <> 0 Then
+            tmpVal = tmpVal + (((tmpVal - 127) * contrastAdjustment) \ 100)
+        End If
+        
+        'Crop the lookup value to [0, 255] range
+        If tmpVal > 255 Then
+            tmpVal = 255
+        ElseIf tmpVal < 0 Then
+            tmpVal = 0
+        End If
+        
+        bcLUT(x) = tmpVal
+        
+    Next x
+    
+    'Now we can loop through each pixel in the image, converting values as we go
+    For x = 0 To finalX
+        QuickVal = x * qvDepth
+    For y = 0 To finalY
+            
+        'Apply the changes in one fell swoop
+        ImageData(QuickVal, y) = bcLUT(ImageData(QuickVal, y))
+        ImageData(QuickVal + 1, y) = bcLUT(ImageData(QuickVal + 1, y))
+        ImageData(QuickVal + 2, y) = bcLUT(ImageData(QuickVal + 2, y))
+        
+    Next y
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    
 End Sub
 
 'Given StretchBlt-like parameters, create a destination rect that reflects the transformation of a source rect
