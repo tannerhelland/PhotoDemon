@@ -201,7 +201,7 @@ Begin VB.Form toolbar_Tools
       ForeColor       =   &H80000008&
       Height          =   1575
       Index           =   2
-      Left            =   15
+      Left            =   0
       ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   918
@@ -213,7 +213,7 @@ Begin VB.Form toolbar_Tools
          CausesValidation=   0   'False
          Height          =   495
          Index           =   0
-         Left            =   1200
+         Left            =   1260
          TabIndex        =   36
          Top             =   120
          Width           =   2670
@@ -236,7 +236,7 @@ Begin VB.Form toolbar_Tools
          CausesValidation=   0   'False
          Height          =   495
          Index           =   1
-         Left            =   1200
+         Left            =   1260
          TabIndex        =   37
          Top             =   720
          Width           =   2670
@@ -253,6 +253,98 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   2
+         Left            =   5520
+         TabIndex        =   39
+         Top             =   120
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   3
+         Left            =   5520
+         TabIndex        =   41
+         Top             =   720
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "vibrance:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   5
+         Left            =   4680
+         TabIndex        =   42
+         Top             =   810
+         Width           =   795
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "saturation:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   4
+         Left            =   4545
+         TabIndex        =   40
+         Top             =   210
+         Width           =   930
       End
       Begin VB.Label lblOptions 
          Alignment       =   1  'Right Justify

@@ -124,16 +124,20 @@ Private myLayerData As LayerData
 Public Enum LAYER_NONDESTRUCTIVE_FX
     NDFX_EXPOSURE = 0
     NDFX_CONTRAST = 1
+    NDFX_SATURATION = 2
+    NDFX_VIBRANCE = 3
 End Enum
 
 #If False Then
-    Const NDFX_EXPOSURE = 0, NDFX_CONTRAST = 1
+    Const NDFX_EXPOSURE = 0, NDFX_CONTRAST = 1, NDFX_SATURATION = 2, NDFX_VIBRANCE = 3
 #End If
 
 'Local copy of non-destructive FX
 Private Type nonDestructiveFXSettings
     fx_Exposure As Double
     fx_Contrast As Long
+    fx_Saturation As Long
+    fx_Vibrance As Long
 End Type
 
 Private myNonDestructiveFX As nonDestructiveFXSettings
@@ -313,6 +317,14 @@ Public Function getLayerNonDestructiveFXValue(ByVal ndEffect As LAYER_NONDESTRUC
         Case NDFX_CONTRAST
             getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Contrast
             
+        'Saturation
+        Case NDFX_SATURATION
+            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Saturation
+            
+        'Vibrance
+        Case NDFX_VIBRANCE
+            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Vibrance
+            
     End Select
     
 End Function
@@ -329,7 +341,15 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
         'Contrast
         Case NDFX_CONTRAST
             myNonDestructiveFX.fx_Contrast = newEffectValue
-    
+        
+        'Saturation
+        Case NDFX_SATURATION
+            myNonDestructiveFX.fx_Saturation = newEffectValue
+            
+        'Vibrance
+        Case NDFX_VIBRANCE
+            myNonDestructiveFX.fx_Vibrance = newEffectValue
+            
     End Select
     
     'Is the newEffectValue 0?  If it is, check to see if any other FX have non-zero values; if all values are zero, we can mark
@@ -344,6 +364,8 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
         
             If .fx_Exposure <> 0 Then myLayerData.l_NonDestructiveFXActive = True
             If .fx_Contrast <> 0 Then myLayerData.l_NonDestructiveFXActive = True
+            If .fx_Saturation <> 0 Then myLayerData.l_NonDestructiveFXActive = True
+            If .fx_Vibrance <> 0 Then myLayerData.l_NonDestructiveFXActive = True
         
         End With
     
@@ -417,6 +439,8 @@ Private Sub Class_Initialize()
     With myNonDestructiveFX
         .fx_Exposure = 0
         .fx_Contrast = 0
+        .fx_Saturation = 0
+        .fx_Vibrance = 0
     End With
     
     'Initialize the layer's DIB
@@ -481,6 +505,8 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
     With myNonDestructiveFX
         xmlEngine.writeTag "NDFX_Exposure", .fx_Exposure
         xmlEngine.writeTag "NDFX_Contrast", .fx_Contrast
+        xmlEngine.writeTag "NDFX_Saturation", .fx_Saturation
+        xmlEngine.writeTag "NDFX_Vibrance", .fx_Vibrance
     End With
     
     'Next, write out the header of the layer's DIB contents.  These values are necessary for reconstructing the layer's DIB
@@ -512,7 +538,7 @@ Public Function getLayerHeaderAsParamString() As String
     
     'Next, add any non-destructive FX parameters
     With myNonDestructiveFX
-        getLayerHeaderAsParamString = getLayerHeaderAsParamString & "|" & buildParams(.fx_Exposure, .fx_Contrast)
+        getLayerHeaderAsParamString = getLayerHeaderAsParamString & "|" & buildParams(.fx_Exposure, .fx_Contrast, .fx_Saturation, .fx_Vibrance)
     End With
     
 End Function
@@ -546,6 +572,8 @@ Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
     With myNonDestructiveFX
         .fx_Exposure = cParams.GetDouble(12)
         .fx_Contrast = cParams.GetLong(13)
+        .fx_Saturation = cParams.GetLong(14)
+        .fx_Vibrance = cParams.GetLong(15)
     End With
         
     'Per PD convention, this class has no way to notify outsiders of updates, so the calling function must handle any
@@ -597,6 +625,8 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
         With myNonDestructiveFX
             .fx_Exposure = xmlEngine.getUniqueTag_Double("NDFX_Exposure", 0)
             .fx_Contrast = xmlEngine.getUniqueTag_Long("NDFX_Contrast", 0)
+            .fx_Saturation = xmlEngine.getUniqueTag_Double("NDFX_Saturation", 0)
+            .fx_Vibrance = xmlEngine.getUniqueTag_Long("NDFX_Vibrance", 0)
         End With
         
         'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
@@ -653,6 +683,8 @@ Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage
     With myNonDestructiveFX
         .fx_Exposure = 0
         .fx_Contrast = 0
+        .fx_Saturation = 0
+        .fx_Vibrance = 0
     End With
     
     'Create a local copy of the passed DIB.
@@ -705,6 +737,8 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     With myNonDestructiveFX
         .fx_Exposure = srcLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE)
         .fx_Contrast = srcLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST)
+        .fx_Saturation = srcLayer.getLayerNonDestructiveFXValue(NDFX_SATURATION)
+        .fx_Vibrance = srcLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE)
     End With
     
     'Finally, copy the source layer's DIB.
@@ -1129,6 +1163,8 @@ Public Sub resetLayerParameters()
     With myNonDestructiveFX
         .fx_Exposure = 0
         .fx_Contrast = 0
+        .fx_Saturation = 0
+        .fx_Vibrance = 0
     End With
 
 End Sub
