@@ -25,67 +25,6 @@ Begin VB.Form toolbar_Tools
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   911
    ShowInTaskbar   =   0   'False
-   Begin VB.PictureBox picTools 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ClipControls    =   0   'False
-      ForeColor       =   &H80000008&
-      Height          =   1575
-      Index           =   2
-      Left            =   15
-      ScaleHeight     =   105
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   918
-      TabIndex        =   34
-      Top             =   1020
-      Visible         =   0   'False
-      Width           =   13770
-      Begin PhotoDemon.sliderTextCombo sltNDFXWhiteBalance 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   36
-         Top             =   360
-         Width           =   5925
-         _ExtentX        =   10451
-         _ExtentY        =   873
-         Max             =   5
-         SigDigits       =   2
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblOptions 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "white balance test:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   2
-         Left            =   120
-         TabIndex        =   35
-         Top             =   60
-         Width           =   1635
-      End
-   End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   2
@@ -253,6 +192,116 @@ Begin VB.Form toolbar_Tools
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
+   End
+   Begin VB.PictureBox picTools 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ClipControls    =   0   'False
+      ForeColor       =   &H80000008&
+      Height          =   1575
+      Index           =   2
+      Left            =   15
+      ScaleHeight     =   105
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   918
+      TabIndex        =   34
+      Top             =   1020
+      Visible         =   0   'False
+      Width           =   13770
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   0
+         Left            =   1200
+         TabIndex        =   36
+         Top             =   120
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   1
+         Left            =   1200
+         TabIndex        =   37
+         Top             =   720
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "contrast:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   3
+         Left            =   450
+         TabIndex        =   38
+         Top             =   810
+         Width           =   765
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "exposure:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   2
+         Left            =   360
+         TabIndex        =   35
+         Top             =   210
+         Width           =   855
+      End
    End
    Begin VB.PictureBox picTools 
       Appearance      =   0  'Flat
@@ -1313,13 +1362,18 @@ Private Sub sltCornerRounding_Change()
 End Sub
 
 'Non-destructive effect changes will force an immediate redraw of the viewport
-Private Sub sltNDFXWhiteBalance_Change()
-    
+Private Sub sltQuickFix_Change(Index As Integer)
+
     If (Not pdImages(g_CurrentImage) Is Nothing) And m_NonDestructiveFXAllowed Then
-        pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState NDFX_WHITEBALANCE, sltNDFXWhiteBalance.Value
+        
+        'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
+        pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState Index, sltQuickFix(Index).Value
+        
+        'Redraw the viewport
         ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
     End If
-    
+
 End Sub
 
 Private Sub sltSelectionBorder_Change()

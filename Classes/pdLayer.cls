@@ -122,16 +122,18 @@ Private myLayerData As LayerData
 
 'Non-destructive edits currently supported by the program.
 Public Enum LAYER_NONDESTRUCTIVE_FX
-    NDFX_WHITEBALANCE = 0
+    NDFX_EXPOSURE = 0
+    NDFX_CONTRAST = 1
 End Enum
 
 #If False Then
-    Const NDFX_WHITEBALANCE = 0
+    Const NDFX_EXPOSURE = 0, NDFX_CONTRAST = 1
 #End If
 
 'Local copy of non-destructive FX
 Private Type nonDestructiveFXSettings
-    fx_WhiteBalance As Double
+    fx_Exposure As Long
+    fx_Contrast As Long
 End Type
 
 Private myNonDestructiveFX As nonDestructiveFXSettings
@@ -300,12 +302,16 @@ End Function
 
 Public Function getLayerNonDestructiveFXValue(ByVal ndEffect As LAYER_NONDESTRUCTIVE_FX) As Double
     
-    'Return a new value contigent on the supplied ndEffect
+    'Return a new value contigent on the supplied ndEffect value
     Select Case ndEffect
     
-        'White balance
-        Case NDFX_WHITEBALANCE
-            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_WhiteBalance
+        'Exposure
+        Case NDFX_EXPOSURE
+            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Exposure
+            
+        'Contrast
+        Case NDFX_CONTRAST
+            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Contrast
             
     End Select
     
@@ -316,14 +322,18 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
     'Assign the new value to the appropriate entry in this layer's non-destructive FX array
     Select Case ndEffect
     
-        'White balance
-        Case NDFX_WHITEBALANCE
-            myNonDestructiveFX.fx_WhiteBalance = newEffectValue
+        'Exposure
+        Case NDFX_EXPOSURE
+            myNonDestructiveFX.fx_Exposure = newEffectValue
+            
+        'Contrast
+        Case NDFX_CONTRAST
+            myNonDestructiveFX.fx_Contrast = newEffectValue
     
     End Select
     
     'Is the newEffectValue 0?  If it is, check to see if any other FX have non-zero values; if all values are zero, we can mark
-    ' the layer's non-destructive FX state as FALSE.
+    ' the layer's non-destructive FX state as FALSE, but if any are non-zero, it must remain as TRUE.
     If newEffectValue = 0 Then
     
         myLayerData.l_NonDestructiveFXActive = False
@@ -332,7 +342,8 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
         ' has active non-destructive effects.
         With myNonDestructiveFX
         
-            If .fx_WhiteBalance <> 0 Then myLayerData.l_NonDestructiveFXActive = True
+            If .fx_Exposure <> 0 Then myLayerData.l_NonDestructiveFXActive = True
+            If .fx_Contrast <> 0 Then myLayerData.l_NonDestructiveFXActive = True
         
         End With
     
@@ -404,7 +415,8 @@ Private Sub Class_Initialize()
     End With
     
     With myNonDestructiveFX
-        .fx_WhiteBalance = 0
+        .fx_Exposure = 0
+        .fx_Contrast = 0
     End With
     
     'Initialize the layer's DIB
@@ -467,7 +479,8 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
     
     'Next, write out any non-destructive FX parameters
     With myNonDestructiveFX
-        xmlEngine.writeTag "NDFX_WhiteBalance", .fx_WhiteBalance
+        xmlEngine.writeTag "NDFX_Exposure", .fx_Exposure
+        xmlEngine.writeTag "NDFX_Contrast", .fx_Contrast
     End With
     
     'Next, write out the header of the layer's DIB contents.  These values are necessary for reconstructing the layer's DIB
@@ -499,7 +512,7 @@ Public Function getLayerHeaderAsParamString() As String
     
     'Next, add any non-destructive FX parameters
     With myNonDestructiveFX
-        getLayerHeaderAsParamString = getLayerHeaderAsParamString & "|" & buildParams(.fx_WhiteBalance)
+        getLayerHeaderAsParamString = getLayerHeaderAsParamString & "|" & buildParams(.fx_Exposure, .fx_Contrast)
     End With
     
 End Function
@@ -531,7 +544,8 @@ Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
     'After the layer header comes non-destructive FX settings.  Make sure to adjust these indices if new values get added to
     ' myLayerData, above!
     With myNonDestructiveFX
-        .fx_WhiteBalance = cParams.GetDouble(12)
+        .fx_Exposure = cParams.GetLong(12)
+        .fx_Contrast = cParams.GetLong(13)
     End With
         
     'Per PD convention, this class has no way to notify outsiders of updates, so the calling function must handle any
@@ -581,7 +595,8 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
         
         'Read in the contents of the non-destructive FX chunk
         With myNonDestructiveFX
-            .fx_WhiteBalance = xmlEngine.getUniqueTag_Double("NDFX_WhiteBalance", 0)
+            .fx_Exposure = xmlEngine.getUniqueTag_Long("NDFX_Exposure", 0)
+            .fx_Contrast = xmlEngine.getUniqueTag_Long("NDFX_Contrast", 0)
         End With
         
         'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
@@ -636,7 +651,8 @@ Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage
     
     'Reset any non-destructive fx parameters
     With myNonDestructiveFX
-        .fx_WhiteBalance = 0
+        .fx_Exposure = 0
+        .fx_Contrast = 0
     End With
     
     'Create a local copy of the passed DIB.
@@ -687,7 +703,8 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     
     'Next, copy any non-destructive FX parameters
     With myNonDestructiveFX
-        .fx_WhiteBalance = srcLayer.getLayerNonDestructiveFXValue(NDFX_WHITEBALANCE)
+        .fx_Exposure = srcLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE)
+        .fx_Contrast = srcLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST)
     End With
     
     'Finally, copy the source layer's DIB.
@@ -1110,7 +1127,8 @@ Public Sub resetLayerParameters()
     
     'Assign default values to the non-destructive FX params
     With myNonDestructiveFX
-        .fx_WhiteBalance = 0
+        .fx_Exposure = 0
+        .fx_Contrast = 0
     End With
 
 End Sub

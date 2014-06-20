@@ -238,11 +238,8 @@ Public Sub generateProfileReport(Optional ByVal dstTextFile As String = "")
 
 End Sub
 
-'Sort the profile entries from longest to shortest
+'Sort the profile entries from longest to shortest time taken
 Private Sub sortProfileEntries()
-
-    'Sort the availableLanguages array alphabetically, using language names as the sort parameter
-
 
     Dim i As Long, j As Long
     
