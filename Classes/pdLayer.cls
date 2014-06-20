@@ -132,7 +132,7 @@ End Enum
 
 'Local copy of non-destructive FX
 Private Type nonDestructiveFXSettings
-    fx_Exposure As Long
+    fx_Exposure As Double
     fx_Contrast As Long
 End Type
 
@@ -544,7 +544,7 @@ Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
     'After the layer header comes non-destructive FX settings.  Make sure to adjust these indices if new values get added to
     ' myLayerData, above!
     With myNonDestructiveFX
-        .fx_Exposure = cParams.GetLong(12)
+        .fx_Exposure = cParams.GetDouble(12)
         .fx_Contrast = cParams.GetLong(13)
     End With
         
@@ -595,7 +595,7 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
         
         'Read in the contents of the non-destructive FX chunk
         With myNonDestructiveFX
-            .fx_Exposure = xmlEngine.getUniqueTag_Long("NDFX_Exposure", 0)
+            .fx_Exposure = xmlEngine.getUniqueTag_Double("NDFX_Exposure", 0)
             .fx_Contrast = xmlEngine.getUniqueTag_Long("NDFX_Contrast", 0)
         End With
         

@@ -35,7 +35,7 @@ Public Const CUSTOM_FILTER_VERSION_2014 As String = "8.2014"
 '    Offset: Long
 '    25 Double values, which correspond to entries in a 5x5 convolution matrix, in left-to-right, top-to-bottom order.
 Public Sub ApplyConvolutionFilter(ByVal fullParamString As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-        
+    
     'Prepare a param parser
     Dim cParams As pdParamString
     Set cParams = New pdParamString

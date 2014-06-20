@@ -684,7 +684,7 @@ Private Sub fastLayerExposureContrast(ByRef targetLayer As pdLayer, ByRef target
     
     'Adjustment values
     Dim brightAdjustment As Double, contrastAdjustment As Long
-    brightAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) / 100
+    brightAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) / 2
     contrastAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST)
     
     'Look-up tables are used to accelerate this function.  Note that we aren't actually applying brightness; we're applying exposure
