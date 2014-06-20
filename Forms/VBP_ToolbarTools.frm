@@ -8,7 +8,6 @@ Begin VB.Form toolbar_Tools
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   13665
-   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -220,8 +219,9 @@ Begin VB.Form toolbar_Tools
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
+         Min             =   -2
+         Max             =   2
+         SigDigits       =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
