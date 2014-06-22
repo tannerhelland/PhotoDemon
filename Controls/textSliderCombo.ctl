@@ -161,11 +161,12 @@ Public Enum SLIDER_TRACK_STYLE
     NoFrills = 1
     GradientTwoPoint = 2
     GradientThreePoint = 3
-    CustomOwnerDrawn = 4
+    HueSpectrum360 = 4
+    CustomOwnerDrawn = 5
 End Enum
 
 #If False Then
-    Const DefaultStyle = 0, NoFrills = 1, GradientTwoPoint = 2, GradientThreePoint = 3, CustomOwnerDrawn = 4
+    Const DefaultStyle = 0, NoFrills = 1, GradientTwoPoint = 2, GradientThreePoint = 3, HueSpectrum360 = 4, CustomOwnerDrawn = 5
 #End If
 
 Private curSliderStyle As SLIDER_TRACK_STYLE
@@ -627,7 +628,7 @@ Private Sub UserControl_Resize()
     m_SliderAreaHeight = picScroll.ScaleHeight
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
-    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
+    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360) Then redrawInternalGradientDIB
     
     'Redraw the control
     redrawSlider
@@ -641,7 +642,7 @@ Private Sub UserControl_Show()
     If Len(Extender.ToolTipText) > 0 Then assignTooltip Extender.ToolTipText
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
-    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
+    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360) Then redrawInternalGradientDIB
     
     redrawSlider
         
@@ -749,7 +750,7 @@ Private Sub redrawSlider()
             Case NoFrills
                 GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
             
-            Case GradientTwoPoint, GradientThreePoint
+            Case GradientTwoPoint, GradientThreePoint, HueSpectrum360
             
                 'As a failsafe, make sure our internal gradient DIB exists
                 If m_GradientDIB Is Nothing Then redrawInternalGradientDIB
@@ -825,40 +826,73 @@ Private Sub redrawInternalGradientDIB()
     Dim trackRadius As Single
     trackRadius = (m_trackDiameter) \ 2
     
-    'Draw the gradient differently depending on whether the gradient is a two-color or three-color variant.
+    Dim x As Long
+    Dim relativeMiddlePosition As Single, tmpY As Single
     
-    'Two colors
-    If curSliderStyle = GradientTwoPoint Then
-        Drawing.DrawHorizontalGradientToDIB m_GradientDIB, trackRadius, m_GradientDIB.getDIBWidth - trackRadius, gradColorLeft, gradColorRight
+    'Draw the gradient differently depending on the type of gradient
+    Select Case curSliderStyle
     
-    'Three colors
-    Else
+        'Two-point gradients are the easiest; simply draw a gradient from left color to right color, the full width of the image
+        Case GradientTwoPoint
+           Drawing.DrawHorizontalGradientToDIB m_GradientDIB, trackRadius, m_GradientDIB.getDIBWidth - trackRadius, gradColorLeft, gradColorRight
         
-        Dim relativeMiddlePosition As Single, tmpY As Single
+        'Three-point gradients are more involved; draw a custom blend from left to middle to right, while accounting for the
+        ' center point's position (which is variable, and which may change at run-time).
+        Case GradientThreePoint
+            
+            'Calculate a relative pixel position for the supplied gradient middle value
+            If (gradMiddleValue >= controlMin) And (gradMiddleValue <= controlMax) Then
+                getCustomValueCoordinates gradMiddleValue, relativeMiddlePosition, tmpY
+            Else
+                relativeMiddlePosition = getTrackMinPos + ((getTrackMaxPos - getTrackMinPos) \ 2)
+            End If
+            
+            'Draw two gradients; one each for the left and right of the gradient middle position
+            Drawing.DrawHorizontalGradientToDIB m_GradientDIB, trackRadius, relativeMiddlePosition, gradColorLeft, gradColorMiddle
+            Drawing.DrawHorizontalGradientToDIB m_GradientDIB, relativeMiddlePosition, m_GradientDIB.getDIBWidth - trackRadius, gradColorMiddle, gradColorRight
+            
+        'Hue gradients simply draw a full hue spectrum from 0 to 360.
+        Case HueSpectrum360
         
-        'Calculate a relative pixel position for the supplied gradient middle value
-        If (gradMiddleValue >= controlMin) And (gradMiddleValue <= controlMax) Then
-            getCustomValueCoordinates gradMiddleValue, relativeMiddlePosition, tmpY
-        Else
-            relativeMiddlePosition = getTrackMinPos + ((getTrackMaxPos - getTrackMinPos) \ 2)
-        End If
+            'From left-to-right, draw a full hue range onto the DIB
+            Dim hueSpread As Long
+            hueSpread = (m_GradientDIB.getDIBWidth - m_trackDiameter)
+            
+            Dim tmpR As Double, tmpG As Double, tmpB As Double
+            
+            For x = 0 To m_GradientDIB.getDIBWidth - 1
+                
+                If x < trackRadius Then
+                    fHSVtoRGB 0, 1, 1, tmpR, tmpG, tmpB
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                ElseIf x > (m_GradientDIB.getDIBWidth - trackRadius) Then
+                    fHSVtoRGB 1, 1, 1, tmpR, tmpG, tmpB
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                Else
+                    fHSVtoRGB (x - trackRadius) / hueSpread, 1, 1, tmpR, tmpG, tmpB
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                End If
+                
+            Next x
+            
+    End Select
+    
+    
+    'Next, on custom gradients, we need to fill in the DIB just past the gradient on either side; this makes the gradient's
+    ' termination point fall directly on the  maximum slider position (instead of the edge of the DIB, which would be
+    ' incorrect sa we need some padding for the rounded edge of the track area).  Note that hue gradients automatically
+    ' handle this step during the DIB creation phase.
+    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then
+    
+        For x = 0 To trackRadius
+            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, gradColorLeft, 255, 1, False, LineCapFlat
+        Next x
         
-        'Draw two gradients; one each for the left and right of the gradient middle position
-        Drawing.DrawHorizontalGradientToDIB m_GradientDIB, trackRadius, relativeMiddlePosition, gradColorLeft, gradColorMiddle
-        Drawing.DrawHorizontalGradientToDIB m_GradientDIB, relativeMiddlePosition, m_GradientDIB.getDIBWidth - trackRadius, gradColorMiddle, gradColorRight
+        For x = m_GradientDIB.getDIBWidth - trackRadius To m_GradientDIB.getDIBWidth
+            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, gradColorRight, 255, 1, False, LineCapFlat
+        Next x
         
     End If
-    
-    'Next, we need to fill in the DIB just past the gradient on either side; this makes it so that the gradient's termination point is the
-    ' maximum slider position (instead of the edge of the DIB, which has some padding for the rounded track area)
-    Dim x As Long
-    For x = 0 To trackRadius
-        GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, gradColorLeft, 255, 1, False, LineCapFlat
-    Next x
-    
-    For x = m_GradientDIB.getDIBWidth - trackRadius To m_GradientDIB.getDIBWidth
-        GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, gradColorRight, 255, 1, False, LineCapFlat
-    Next x
     
     'Next, we need to crop the track DIB to the shape of the background slider area.  This is a fairly involved operation, as we need to
     ' render a track line slightly smaller than the usual size, then manually apply a per-pixel copy of alpha data from the created line
