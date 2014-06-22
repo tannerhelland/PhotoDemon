@@ -279,7 +279,7 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
         VB = Abs(b - b2) / tmpHeight
     End If
     
-    'If the second color is less than the first value, make the step negative
+    'If a component of the right color is less than the matching component of the left color, make the step negative
     If r2 < r Then VR = -VR
     If g2 < g Then VG = -VG
     If b2 < b Then VB = -VB
@@ -300,6 +300,68 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
             DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)
         Next y
     End If
+    
+End Sub
+
+'Draw a horizontal gradient to a specified DIB from x-position xLeft to xRigth,
+' using ColorLeft and ColorRight (RGB longs) as the gradient endpoints.
+Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Long, ByVal xRight As Long, ByVal colorLeft As Long, ByVal colorRight As Long)
+    
+    Dim x As Long
+    
+    'Red, green, and blue variables for each gradient color
+    Dim rLeft As Long, gLeft As Long, bLeft As Long
+    Dim rRight As Long, gRight As Long, bRight As Long
+    
+    'Extract the red, green, and blue values from the gradient colors (which were passed as Longs)
+    rLeft = ExtractR(colorLeft)
+    gLeft = ExtractG(colorLeft)
+    bLeft = ExtractB(colorLeft)
+    rRight = ExtractR(colorRight)
+    gRight = ExtractG(colorRight)
+    bRight = ExtractB(colorRight)
+    
+    'Calculate a width for the gradient area
+    Dim gradWidth As Long
+    gradWidth = xRight - xLeft
+    
+    Dim blendRatio As Double
+    Dim newR As Byte, newG As Byte, newB As Byte
+    
+    '32bpp DIBs need to use GDI+ instead of GDI, to make sure the alpha channel is supported
+    Dim alphaMatters As Boolean
+    If dstDIB.getDIBColorDepth = 32 Then alphaMatters = True Else alphaMatters = False
+    
+    'If alpha is relevant, cache a GDI+ image handle and pen in advance
+    Dim hGdipImage As Long, hGdipPen As Long
+    If alphaMatters Then hGdipImage = GDI_Plus.getGDIPlusImageHandleFromDC(dstDIB.getDIBDC, False)
+    
+    'Run a loop across the DIB, changing the gradient color according to the step calculated earlier
+    For x = xLeft To xRight
+        
+        'Calculate a blend ratio for this position
+        blendRatio = (x - xLeft) / gradWidth
+        
+        'Calculate blendd RGB values for this position
+        newR = BlendColors(rLeft, rRight, blendRatio)
+        newG = BlendColors(gLeft, gRight, blendRatio)
+        newB = BlendColors(bLeft, bRight, blendRatio)
+        
+        'Draw a vertical line at this position, using the calculated color
+        If alphaMatters Then
+        
+            hGdipPen = GDI_Plus.getGDIPlusPenHandle(RGB(newR, newG, newB), 255, 1, LineCapFlat)
+            GDI_Plus.GDIPlusDrawLine_Fast hGdipImage, hGdipPen, x, 0, x, dstDIB.getDIBHeight
+            GDI_Plus.releaseGDIPlusPen hGdipPen
+        
+        Else
+            drawLineToDC dstDIB.getDIBDC, x, 0, x, dstDIB.getDIBHeight, RGB(newR, newG, newB)
+        End If
+        
+    Next x
+    
+    'Release our GDI+ handle, if any
+    If alphaMatters Then GDI_Plus.releaseGDIPlusImageHandle hGdipImage
     
 End Sub
 

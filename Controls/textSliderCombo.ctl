@@ -170,6 +170,81 @@ End Enum
 
 Private curSliderStyle As SLIDER_TRACK_STYLE
 
+'Gradient colors.  For the two-color gradient style, only colors Left and Right are relevant.  Color Middle is used for the
+' 3-color style only, and note that it *must* be accompanied by an owner-supplied middle position value.
+Private gradColorLeft As Long, gradColorRight As Long, gradColorMiddle As Long
+Private gradMiddleValue As Double
+
+'Internal gradient DIB.  This is recreated as necessary to reflect the gradient colors and positions.
+Private m_GradientDIB As pdDIB
+
+'Gradient colors.  For the two-color gradient style, only colors Left and Right are relevant.  Color Middle is used for the
+' 3-color style only, and note that it *must* be accompanied by an owner-supplied middle position value.
+Public Property Get GradientColorLeft() As OLE_COLOR
+    GradientColorLeft = gradColorLeft
+End Property
+
+Public Property Get GradientColorMiddle() As OLE_COLOR
+    GradientColorMiddle = gradColorMiddle
+End Property
+
+Public Property Get GradientColorRight() As OLE_COLOR
+    GradientColorRight = gradColorRight
+End Property
+
+Public Property Let GradientColorLeft(ByVal newColor As OLE_COLOR)
+
+    'Store the new color, then redraw the slider to match
+    If newColor <> gradColorLeft Then
+        gradColorLeft = ConvertSystemColor(newColor)
+        redrawInternalGradientDIB
+        redrawSlider
+        PropertyChanged "GradientColorLeft"
+    End If
+
+End Property
+
+Public Property Let GradientColorMiddle(ByVal newColor As OLE_COLOR)
+
+    'Store the new color, then redraw the slider to match
+    If newColor <> gradColorMiddle Then
+        gradColorMiddle = ConvertSystemColor(newColor)
+        redrawInternalGradientDIB
+        redrawSlider
+        PropertyChanged "GradientColorMiddle"
+    End If
+
+End Property
+
+Public Property Let GradientColorRight(ByVal newColor As OLE_COLOR)
+
+    'Store the new color, then redraw the slider to match
+    If newColor <> gradColorRight Then
+        gradColorRight = ConvertSystemColor(newColor)
+        redrawInternalGradientDIB
+        redrawSlider
+        PropertyChanged "GradientColorRight"
+    End If
+
+End Property
+
+'Custom middle value for the 3-color gradient style.  This value is ignored for all other styles.
+Public Property Get GradientMiddleValue() As Double
+    GradientMiddleValue = gradMiddleValue
+End Property
+
+Public Property Let GradientMiddleValue(ByVal newValue As Double)
+    
+    'Store the new value, then redraw the slider to match
+    If newValue <> gradMiddleValue Then
+        gradMiddleValue = newValue
+        redrawSlider
+        PropertyChanged "GradientMiddleValue"
+        redrawInternalGradientDIB
+    End If
+    
+End Property
+
 Public Property Get SliderTrackStyle() As SLIDER_TRACK_STYLE
     SliderTrackStyle = curSliderStyle
 End Property
@@ -342,7 +417,7 @@ Public Property Let Value(ByVal newValue As Double)
                 txtPrimary.Refresh
             End If
         End If
-        
+                
         'Redraw the slider to reflect the new value
         redrawSlider
         
@@ -363,9 +438,12 @@ Public Property Let Min(ByVal newValue As Double)
     
     controlMin = newValue
     
+    'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
+    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
+    
     'If the current control value is less than the new minimum, update it to match (and raise a corresponding _Change event)
     If controlVal < controlMin Then Value = controlMin
-    
+        
     PropertyChanged "Min"
     
 End Property
@@ -378,6 +456,9 @@ End Property
 Public Property Let Max(ByVal newValue As Double)
     
     controlMax = newValue
+    
+    'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
+    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
     
     'If the current control value is greater than the new max, update it to match (and raise a corresponding _Change event)
     If controlVal > controlMax Then Value = controlMax
@@ -483,6 +564,20 @@ Private Sub UserControl_InitProperties()
     SliderTrackStyle = DefaultStyle
     curSliderStyle = DefaultStyle
     
+    'These default gradient values are useless; if you're using a gradient style, MAKE CERTAIN TO SPECIFY ACTUAL COLORS!
+    GradientColorLeft = RGB(0, 0, 0)
+    gradColorLeft = RGB(0, 0, 0)
+    
+    GradientColorRight = RGB(255, 255, 25)
+    gradColorRight = RGB(255, 255, 255)
+    
+    GradientColorMiddle = RGB(121, 131, 135)
+    gradColorMiddle = RGB(121, 131, 135)
+    
+    'This default gradient middle value is useless; if you use the 3-color gradient style, MAKE CERTAIN TO SPECIFY THIS VALUE!
+    GradientMiddleValue = -1
+    gradMiddleValue = -1
+    
 End Sub
 
 'Read control properties from file
@@ -496,13 +591,24 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         SigDigits = .ReadProperty("SigDigits", 0)
         SliderTrackStyle = .ReadProperty("SliderTrackStyle", DefaultStyle)
         Value = .ReadProperty("Value", 0)
+        GradientColorLeft = .ReadProperty("GradientColorLeft", RGB(0, 0, 0))
+        GradientColorRight = .ReadProperty("GradientColorRight", RGB(255, 255, 255))
+        GradientColorMiddle = .ReadProperty("GradientColorMiddle", RGB(121, 131, 135))
+        GradientMiddleValue = .ReadProperty("GradientMiddleValue", -1)
     End With
     
-    controlMin = Min
-    controlMax = Max
-    controlVal = Value
-    significantDigits = SigDigits
-    curSliderStyle = SliderTrackStyle
+    'These values should have already been set by their respective property read, but I list them here to help me remember
+    ' which internal values correspond to which properties:
+    'controlMin = Min
+    'controlMax = Max
+    'controlVal = Value
+    'significantDigits = SigDigits
+    'curSliderStyle = SliderTrackStyle
+    '
+    'gradColorLeft = GradientColorLeft
+    'gradColorRight = GradientColorRight
+    'gradColorMiddle = GradientColorMiddle
+    'gradMiddleValue = GradientMiddleValue
     
 End Sub
 
@@ -520,6 +626,9 @@ Private Sub UserControl_Resize()
     m_SliderAreaWidth = picScroll.ScaleWidth
     m_SliderAreaHeight = picScroll.ScaleHeight
     
+    'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
+    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
+    
     'Redraw the control
     redrawSlider
 
@@ -531,8 +640,37 @@ Private Sub UserControl_Show()
     ' using a custom solution (which allows for linebreaks and theming).
     If Len(Extender.ToolTipText) > 0 Then assignTooltip Extender.ToolTipText
     
+    'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
+    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
+    
     redrawSlider
         
+End Sub
+
+Private Sub UserControl_Terminate()
+    
+    'When the control is terminated, release the subclassing used for transparent backgrounds
+    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.releaseContainerSubclass UserControl.hWnd
+    
+End Sub
+
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+
+    'Store all associated properties
+    With PropBag
+        .WriteProperty "Font", mFont, "Tahoma"
+        .WriteProperty "ForeColor", ForeColor, &H404040
+        .WriteProperty "Min", controlMin, 0
+        .WriteProperty "Max", controlMax, 10
+        .WriteProperty "SigDigits", significantDigits, 0
+        .WriteProperty "SliderTrackStyle", curSliderStyle, DefaultStyle
+        .WriteProperty "Value", controlVal, 0
+        .WriteProperty "GradientColorLeft", gradColorLeft, RGB(0, 0, 0)
+        .WriteProperty "GradientColorRight", gradColorRight, RGB(255, 255, 255)
+        .WriteProperty "GradientColorMiddle", gradColorMiddle, RGB(121, 131, 135)
+        .WriteProperty "GradientMiddleValue", gradMiddleValue, -1
+    End With
+    
 End Sub
 
 'Render a custom slider to the slider area picture box
@@ -561,6 +699,10 @@ Private Sub redrawSlider()
     Dim relevantSliderPosX As Single, relevantSliderPosY As Single
     getSliderCoordinates relevantSliderPosX, relevantSliderPosY
     
+    'Additional draw variables utilized by multiple render styles
+    Dim notchSize As Single
+    Dim customX As Single, customY As Single
+    
     'Draw the background track according to the current SliderTrackStyle property.
     If Me.Enabled Then
     
@@ -586,7 +728,6 @@ Private Sub redrawSlider()
                 End If
                 
                 'Convert our newly calculated relevant min value into an actual pixel position on the track
-                Dim customX As Single, customY As Single
                 getCustomValueCoordinates relevantMin, customX, customY
                 
                 'Draw a highlighted line between the slider position and our calculated relevant minimum
@@ -596,7 +737,6 @@ Private Sub redrawSlider()
                 ' to help orient the user
                 If relevantMin <> controlMin Then
                 
-                    Dim notchSize As Single
                     notchSize = (m_SliderAreaHeight - m_trackDiameter) \ 2 - 4
                     
                     'Draw a top notch and bottom notch
@@ -609,9 +749,33 @@ Private Sub redrawSlider()
             Case NoFrills
                 GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
             
-            Case GradientTwoPoint
+            Case GradientTwoPoint, GradientThreePoint
             
-            Case GradientThreePoint
+                'As a failsafe, make sure our internal gradient DIB exists
+                If m_GradientDIB Is Nothing Then redrawInternalGradientDIB
+                
+                'Draw a stock trackline onto the target DIB.  This will serve as the border of the gradient track area.
+                GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+                
+                'Next, draw the gradient effect DIB to the location where we'd normally draw the track line.  Alpha has already been
+                ' calculated for the gradient DIB, so it will sit precisely inside the trackline drawn above, giving the track a
+                ' sharp 1px border.
+                m_GradientDIB.alphaBlendToDC tmpDIB.getDIBDC, 255, getTrackMinPos - (m_trackDiameter \ 2), 0
+                
+                'Three-point gradients will have a middle point that sits somewhere inside the slider area.  Draw notches around that point
+                ' to help orient the user.
+                If curSliderStyle = GradientThreePoint Then
+                
+                    notchSize = (m_SliderAreaHeight - m_trackDiameter) \ 2 - 4
+                    
+                    'Convert the gradient middle point into an actual pixel position on the track
+                    getCustomValueCoordinates GradientMiddleValue, customX, customY
+                    
+                    'Draw a top notch and bottom notch
+                    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, 1, customX, 1 + notchSize, trackColor, 255, 1, True, LineCapFlat
+                    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, trackColor, 255, 1, True, LineCapFlat
+                
+                End If
             
             Case CustomOwnerDrawn
         
@@ -650,6 +814,79 @@ Private Sub redrawSlider()
 
 End Sub
 
+'When using a two-color or three-color gradient track style, this function can be called to recreate the background track DIB.
+' Please note that this process is expensive (as we have to do per-pixel alpha masking of the final gradient), so please only
+' call this function when absolutely necessary.
+Private Sub redrawInternalGradientDIB()
+
+    'Recreate the gradient DIB to the size of the background track area
+    sizeDIBToTrackArea m_GradientDIB
+    
+    Dim trackRadius As Single
+    trackRadius = (m_trackDiameter) \ 2
+    
+    'Draw the gradient differently depending on whether the gradient is a two-color or three-color variant.
+    
+    'Two colors
+    If curSliderStyle = GradientTwoPoint Then
+        Drawing.DrawHorizontalGradientToDIB m_GradientDIB, trackRadius, m_GradientDIB.getDIBWidth - trackRadius, gradColorLeft, gradColorRight
+    
+    'Three colors
+    Else
+        
+        Dim relativeMiddlePosition As Single, tmpY As Single
+        
+        'Calculate a relative pixel position for the supplied gradient middle value
+        If (gradMiddleValue >= controlMin) And (gradMiddleValue <= controlMax) Then
+            getCustomValueCoordinates gradMiddleValue, relativeMiddlePosition, tmpY
+        Else
+            relativeMiddlePosition = getTrackMinPos + ((getTrackMaxPos - getTrackMinPos) \ 2)
+        End If
+        
+        'Draw two gradients; one each for the left and right of the gradient middle position
+        Drawing.DrawHorizontalGradientToDIB m_GradientDIB, trackRadius, relativeMiddlePosition, gradColorLeft, gradColorMiddle
+        Drawing.DrawHorizontalGradientToDIB m_GradientDIB, relativeMiddlePosition, m_GradientDIB.getDIBWidth - trackRadius, gradColorMiddle, gradColorRight
+        
+    End If
+    
+    'Next, we need to fill in the DIB just past the gradient on either side; this makes it so that the gradient's termination point is the
+    ' maximum slider position (instead of the edge of the DIB, which has some padding for the rounded track area)
+    Dim x As Long
+    For x = 0 To trackRadius
+        GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, gradColorLeft, 255, 1, False, LineCapFlat
+    Next x
+    
+    For x = m_GradientDIB.getDIBWidth - trackRadius To m_GradientDIB.getDIBWidth
+        GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, gradColorRight, 255, 1, False, LineCapFlat
+    Next x
+    
+    'Next, we need to crop the track DIB to the shape of the background slider area.  This is a fairly involved operation, as we need to
+    ' render a track line slightly smaller than the usual size, then manually apply a per-pixel copy of alpha data from the created line
+    ' to the internal DIB.  This will allows us to alpha-blend the custom DIB over a copy of the background line, to retain a small border.
+    
+    'Start by creating the image we're going to use as our alpha mask.
+    Dim alphaMask As pdDIB
+    Set alphaMask = New pdDIB
+    alphaMask.createBlank m_GradientDIB.getDIBWidth, m_GradientDIB.getDIBHeight, 32, 0, 0
+    
+    'Next, use GDI+ to render a slightly smaller line than the typical track onto the alpha mask.  GDI+'s antialiasing code will automatically
+    ' set the relevant alpha bytes for the region of interest.
+    GDI_Plus.GDIPlusDrawLineToDC alphaMask.getDIBDC, trackRadius, m_GradientDIB.getDIBHeight \ 2, m_GradientDIB.getDIBWidth - trackRadius, m_GradientDIB.getDIBHeight \ 2, 0, 255, m_trackDiameter - 1, True, LineCapRound
+    
+    'Transfer the alpha from the alpha mask to the gradient DIB itself
+    'alphaMask.fixPremultipliedAlpha False
+    m_GradientDIB.copyAlphaFromExistingDIB alphaMask
+    
+    'Release the alpha-mask
+    Set alphaMask = Nothing
+    
+    'Premultiply the gradient DIB, so we can successfully alpha-blend it later
+    m_GradientDIB.fixPremultipliedAlpha True
+    
+    'The gradient mask is now complete!
+    
+End Sub
+
 'To workaround a translation issue, the control's original English text can be manually backed up; this allows us
 ' to change the language at run-time and still have translations work as expected.
 Public Sub assignTooltip(ByVal newTooltip As String)
@@ -676,28 +913,6 @@ Public Sub refreshTooltipObject()
         End If
     End With
         
-End Sub
-
-Private Sub UserControl_Terminate()
-    
-    'When the control is terminated, release the subclassing used for transparent backgrounds
-    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.releaseContainerSubclass UserControl.hWnd
-    
-End Sub
-
-Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-
-    'Store all associated properties
-    With PropBag
-        .WriteProperty "Font", mFont, "Tahoma"
-        .WriteProperty "ForeColor", ForeColor, &H404040
-        .WriteProperty "Min", controlMin, 0
-        .WriteProperty "Max", controlMax, 10
-        .WriteProperty "SigDigits", significantDigits, 0
-        .WriteProperty "SliderTrackStyle", curSliderStyle, DefaultStyle
-        .WriteProperty "Value", controlVal, 0
-    End With
-    
 End Sub
 
 'Because this control can contain either decimal or float values, we want to make sure any entered strings adhere
@@ -828,3 +1043,12 @@ End Function
 Private Function getTrackMaxPos() As Long
     getTrackMaxPos = m_SliderAreaWidth - (m_sliderDiameter \ 2) - 2
 End Function
+
+'Given a user-supplied DIB, resize it to the area of the background track.  When using a custom-drawn slider, first call this function
+' (and supply your owner-drawn DIB, obviously), so you know how big of an area is required.
+Public Sub sizeDIBToTrackArea(ByRef targetDIB As pdDIB)
+    
+    Set targetDIB = New pdDIB
+    targetDIB.createBlank (getTrackMaxPos - getTrackMinPos) + m_trackDiameter, m_SliderAreaHeight, 32, ConvertSystemColor(vbWindowBackground), 255
+    
+End Sub
