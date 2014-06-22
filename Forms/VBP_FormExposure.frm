@@ -64,9 +64,6 @@ Begin VB.Form FormExposure
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -5
-      Max             =   5
-      SigDigits       =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -77,6 +74,10 @@ Begin VB.Form FormExposure
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   0
+      Min             =   -5
+      Max             =   5
+      SigDigits       =   2
+      SliderTrackStyle=   2
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625

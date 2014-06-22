@@ -60,8 +60,6 @@ Begin VB.Form FormSplitTone
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -71,6 +69,11 @@ Begin VB.Form FormSplitTone
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      SliderTrackStyle=   3
+      GradientColorMiddle=   16777215
+      GradientMiddleValue=   0
    End
    Begin PhotoDemon.colorSelector cpHighlight 
       Height          =   615
@@ -100,8 +103,6 @@ Begin VB.Form FormSplitTone
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      Max             =   100
-      Value           =   50
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -111,6 +112,8 @@ Begin VB.Form FormSplitTone
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   100
+      Value           =   50
    End
    Begin VB.Label lblStrength 
       AutoSize        =   -1  'True
@@ -377,6 +380,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
+    updateBalanceSlider
     updatePreview
 End Sub
 
@@ -389,10 +393,12 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub cpHighlight_ColorChanged()
+    updateBalanceSlider
     updatePreview
 End Sub
 
 Private Sub cpShadow_ColorChanged()
+    updateBalanceSlider
     updatePreview
 End Sub
 
@@ -426,4 +432,12 @@ End Sub
 
 Private Sub sltBalance_Change()
     updatePreview
+End Sub
+
+'Redraw the balance slider gradient to match the currently selected split-toning values
+Private Sub updateBalanceSlider()
+
+    sltBalance.GradientColorLeft = cpShadow.Color
+    sltBalance.GradientColorRight = cpHighlight.Color
+
 End Sub

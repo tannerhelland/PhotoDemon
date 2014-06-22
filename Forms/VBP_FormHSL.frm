@@ -50,8 +50,6 @@ Begin VB.Form FormHSL
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -180
-      Max             =   180
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -61,6 +59,9 @@ Begin VB.Form FormHSL
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -180
+      Max             =   180
+      SliderTrackStyle=   4
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -79,8 +80,6 @@ Begin VB.Form FormHSL
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -90,6 +89,9 @@ Begin VB.Form FormHSL
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      SliderTrackStyle=   2
    End
    Begin PhotoDemon.sliderTextCombo sltLuminance 
       Height          =   495
@@ -99,8 +101,6 @@ Begin VB.Form FormHSL
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -110,6 +110,9 @@ Begin VB.Form FormHSL
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      SliderTrackStyle=   2
    End
    Begin VB.Label lblLuminance 
       AutoSize        =   -1  'True
@@ -201,7 +204,7 @@ Dim m_ToolTip As clsToolTip
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
 Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, ByVal lModifier As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Adjusting hue, saturation, and luminance values..."
+    If Not toPreview Then Message "Adjusting hue, saturation, and luminance values..."
     
     'Convert the modifiers to be on the same scale as the HSL translation routine
     hModifier = hModifier / 60
@@ -293,6 +296,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
+    redrawSaturationSlider
     updatePreview
 End Sub
 
@@ -312,6 +316,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltHue_Change()
+    redrawSaturationSlider
     updatePreview
 End Sub
 
@@ -332,4 +337,16 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+Private Sub redrawSaturationSlider()
 
+    'Update the Saturation background dynamically, to match the hue background!
+    Dim r As Long, g As Long, b As Long
+    Dim h As Double, s As Double, l As Double
+    
+    tHSLToRGB (sltHue.Value + 180) / 60, 0, 0.5, r, g, b
+    sltSaturation.GradientColorLeft = RGB(r, g, b)
+    
+    tHSLToRGB (sltHue.Value + 180) / 60, 1, 0.5, r, g, b
+    sltSaturation.GradientColorRight = RGB(r, g, b)
+
+End Sub
