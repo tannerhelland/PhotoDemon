@@ -74,9 +74,9 @@ Attribute VB_Exposed = False
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 21/June/14
-'Last update: dump the scroll bar; implement my own slider
+'Last update: dump the scroll bar; implement my own owner-drawn slider
 '
-'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
+'Software like PhotoDemon requires a lot of UI elements.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
 ' make both large and small adjustments to a given parameter.
 '
@@ -84,17 +84,21 @@ Attribute VB_Exposed = False
 ' This got the job done, but it had a number of limitations - such as requiring an enormous amount of time if
 ' changes ever needed to be made, and custom code being required in every form to handle text / scroll synching.
 '
-'In April 2014, it was brought to my attention that some locales (e.g. Italy) use a comma instead of a decimal
+'In April 2013, it was brought to my attention that some locales (e.g. Italy) use a comma instead of a decimal
 ' for float values.  Rather than go through and add custom support for this to every damn form, I finally did
 ' the smart thing and built a custom text/scroll user control.  This effectively replaces all other text/scroll
 ' combos in the program.
 '
-'This control handles the following things automatically:
+'In June 2014, I finally did what I should have done long ago and swapped out the scroll bar for a custom-drawn
+' slider.  That update also added support for some new features (like custom images on the background-track),
+' while helping prepare PD for full theming support.
+'
+'Anyway, as of today, this control handles the following things automatically:
 ' 1) Synching of text and scroll/slide values
 ' 2) Validation of text entries, including a function for external validation requests
 ' 3) Locale handling (like the aforementioned comma/decimal replacement in some countries)
 ' 4) A single "Change" event that fires for either scroll or text changes, and only if a text change is valid
-' 5) Support for floating-point values via the "SigDigits" property
+' 5) Support for integer or floating-point values via the "SigDigits" property
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -140,6 +144,14 @@ Private m_InitX As Single, m_InitY As Single
 Private Const TRACK_DIAMETER As Long = 6
 Private Const SLIDER_DIAMETER As Long = 16
 
+'Track and slider diameter, at current DPI.  This is set when the control is first loaded.  In a perfect world, we would catch screen
+' DPI changes and update these values accordingly, but I'm postponing that project until a later date.
+Private m_trackDiameter As Single, m_sliderDiameter As Single
+
+'Width/height of the full slider area.  These are set at control intialization, and will only be updated if the control size changes.
+' As ScaleWidth and ScaleHeight properties can be slow to read, we cache these values manually.
+Private m_SliderAreaWidth As Long, m_SliderAreaHeight As Long
+    
 'If the current text value is NOT valid, this will return FALSE
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
     
@@ -163,11 +175,18 @@ Attribute Enabled.VB_UserMemId = -514
 End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
+    
     UserControl.Enabled = newValue
-    'If g_UserModeFix Then hsPrimary.Enabled = newValue
+    
+    'Disable the text box
     txtPrimary.Enabled = newValue
+    txtPrimary.Refresh
+    
+    'Redraw the slider; when disabled, the slider itself is not drawn (only the track behind it is)
     redrawSlider
+    
     PropertyChanged "Enabled"
+    
 End Property
 
 'Font handling is a bit specialized for user controls; see http://msdn.microsoft.com/en-us/library/aa261313%28v=vs.60%29.aspx
@@ -187,11 +206,10 @@ Public Property Set Font(mNewFont As StdFont)
     PropertyChanged "Font"
 End Property
 
+'Arrow keys can be used to "nudge" the control value in single-unit increments.
 Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
-    
     If upArrow Or rightArrow Then Value = Value + getIncrementAmount
     If leftArrow Or downArrow Then Value = Value - getIncrementAmount
-    
 End Sub
 
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -218,17 +236,9 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
 
     'If the mouse is down, adjust the current control value accordingly.
     If m_MouseDown Then
-        
-        Dim trackDiameter As Single, sliderDiameter As Single
-        trackDiameter = fixDPI(TRACK_DIAMETER)
-        sliderDiameter = fixDPI(SLIDER_DIAMETER)
-    
-        Dim trackMinPos As Long, trackMaxPos As Long
-        trackMinPos = sliderDiameter \ 2 + 2
-        trackMaxPos = picScroll.ScaleWidth - (sliderDiameter \ 2) - 2
-        
+                
         'Calculate a new control value relative to the current mouse position
-        Value = (controlMax - controlMin) * (((x + m_InitX) - trackMinPos) / (trackMaxPos - trackMinPos)) + controlMin
+        Value = (controlMax - controlMin) * (((x + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
             
     'If the LMB is not down, modify the cursor according to its position relative to the slider
     Else
@@ -244,9 +254,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-    
     If (Button And pdLeftButton) <> 0 Then m_MouseDown = False
-    
 End Sub
 
 Private Function isMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
@@ -264,11 +272,7 @@ Private Function isMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
 
 End Function
 
-'Private Sub hsPrimary_Scroll()
-'    If Not textBoxInitiated Then copyValToTextBox hsPrimary.Value
-'    Value = hsPrimary.Value / (10 ^ significantDigits)
-'End Sub
-
+'When the font is updated, change the text box font to match.  (We also change the user control font, but this doesn't do anything... yet!)
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
     Set txtPrimary.Font = UserControl.Font
@@ -324,7 +328,7 @@ Public Property Let Min(ByVal newValue As Double)
     
     controlMin = newValue
     
-    'If the current control .Value is less than the new minimum, change it to match
+    'If the current control value is less than the new minimum, update it to match (and raise a corresponding _Change event)
     If controlVal < controlMin Then Value = controlMin
     
     PropertyChanged "Min"
@@ -340,7 +344,7 @@ Public Property Let Max(ByVal newValue As Double)
     
     controlMax = newValue
     
-    'If the current control .Value is greater than the new max, change it to match
+    'If the current control value is greater than the new max, update it to match (and raise a corresponding _Change event)
     If controlVal > controlMax Then Value = controlMax
     
     PropertyChanged "Max"
@@ -353,10 +357,8 @@ Public Property Get SigDigits() As Long
 End Property
 
 Public Property Let SigDigits(ByVal newValue As Long)
-    
     significantDigits = newValue
     PropertyChanged "SigDigits"
-    
 End Property
 
 'Forecolor may be used in the future as part of theming, but right now it serves no purpose
@@ -399,6 +401,14 @@ Private Sub UserControl_Initialize()
         cMouseEvents.requestKeyTracking picScroll.hWnd
         cMouseEvents.setKeyTrackers picScroll.hWnd, True
     End If
+    
+    'Update the control-level track and slider diameters to reflect current screen DPI
+    m_trackDiameter = fixDPI(TRACK_DIAMETER)
+    m_sliderDiameter = fixDPI(SLIDER_DIAMETER)
+    
+    'Set slider area width/height
+    m_SliderAreaWidth = picScroll.ScaleWidth
+    m_SliderAreaHeight = picScroll.ScaleHeight
     
     'Forecolor tracking may be supported in the future, but for now it's irrelevant
     origForecolor = ForeColor
@@ -457,8 +467,16 @@ Private Sub UserControl_Resize()
     'We want to keep the text box and scroll bar universally aligned.  Thus, I have hard-coded specific spacing values.
     txtPrimary.Left = UserControl.ScaleWidth - fixDPI(56)
     shpError.Left = txtPrimary.Left - fixDPI(4)
+    
+    'It's possible - but obviously not recommended - to shrink the control so much that the scroll bar is invisible.
+    ' Please do not do this.
     If txtPrimary.Left - fixDPI(15) > 0 Then picScroll.Width = txtPrimary.Left - fixDPI(15)         '15 = 8 (scroll bar's .Left) + 7 (distance between scroll bar and text box)
     
+    'Update slider area width/height to match the new picScroll size
+    m_SliderAreaWidth = picScroll.ScaleWidth
+    m_SliderAreaHeight = picScroll.ScaleHeight
+    
+    'Redraw the control
     redrawSlider
 
 End Sub
@@ -480,51 +498,48 @@ Private Sub redrawSlider()
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     
-    tmpDIB.createBlank picScroll.ScaleWidth, picScroll.ScaleHeight, 32, 0
-
+    tmpDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 32, 0
+    
     'There are a few components to the slider:
     ' 1) The track that sits behind the slider.  It has two relevant parameters: a radius, and a color.  Its width is automatically
     '     calculated relevant to the width of the control as a whole.
-    ' 2) The slider that sits atop the track.  It has two relevant parameters: a radius, and a color.  Its width is constant.
+    ' 2) The slider that sits atop the track.  It has two relevant parameters: a radius, a fill color, and an edge color.  Its width
+    '     is constant from a programmatic standpoint, though it does get updated at run-time to account for screen DPI.
+    
+    'Set colors first.  In the future, these will be handled via a theming engine (so PD can support light-on-dark or dark-on-light
+    ' themes, etc), but for now, set them manually.
     Dim trackColor As Long, sliderBackgroundColor As Long, sliderEdgeColor As Long
     trackColor = RGB(177, 186, 194)
     sliderBackgroundColor = RGB(255, 255, 255)
     sliderEdgeColor = RGB(60, 175, 230)
     
-    Dim trackDiameter As Single, sliderDiameter As Single
-    trackDiameter = fixDPI(TRACK_DIAMETER)
-    sliderDiameter = fixDPI(SLIDER_DIAMETER)
+    'Draw the background track
+    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
     
-    Dim trackMinPos As Long, trackMaxPos As Long
-    trackMinPos = sliderDiameter \ 2 + 2
-    trackMaxPos = tmpDIB.getDIBWidth - (sliderDiameter \ 2) - 2
-    
-    'Draw the filled background for the slider, at a position relevant to the current value
+    'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
     Dim relevantSliderPosX As Single, relevantSliderPosY As Single
-    If controlMax <> controlMin Then
-        getSliderCoordinates relevantSliderPosX, relevantSliderPosY
-    Else
-        relevantSliderPosX = trackMinPos
-        relevantSliderPosY = (tmpDIB.getDIBHeight \ 2)
+    getSliderCoordinates relevantSliderPosX, relevantSliderPosY
+    
+    'The slider itself is only drawn if the control is enabled; otherwise, we do not display it at all.
+    If Me.Enabled Then
+    
+        'Draw the background (interior fill) circle of the slider
+        GDI_Plus.GDIPlusDrawEllipseToDC tmpDIB.getDIBDC, relevantSliderPosX - (m_sliderDiameter \ 2), relevantSliderPosY - (m_sliderDiameter \ 2), m_sliderDiameter, m_sliderDiameter, sliderBackgroundColor, True
+        
+        'Draw the edge (exterior) circle around the slider
+        GDI_Plus.GDIPlusDrawCircleToDC tmpDIB.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
+        
     End If
     
-    'Draw the background track
-    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, trackMinPos, tmpDIB.getDIBHeight \ 2, trackMaxPos, tmpDIB.getDIBHeight \ 2, trackColor, 255, trackDiameter + 1, True, LineCapRound
-    
-    'Draw the background (interior) circle within the slider
-    GDI_Plus.GDIPlusDrawEllipseToDC tmpDIB.getDIBDC, relevantSliderPosX - (sliderDiameter \ 2), relevantSliderPosY - (sliderDiameter \ 2), sliderDiameter, sliderDiameter, sliderBackgroundColor, True
-    
-    'Draw the edge (exterior) circle around the slider
-    GDI_Plus.GDIPlusDrawCircleToDC tmpDIB.getDIBDC, relevantSliderPosX, relevantSliderPosY, sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
-    
-    'Composite the buffer against the specified background color
+    'Composite the slider buffer against the specified background color.  In the future, the background color will be set by PD's theming engine,
+    ' but for now it is hard-coded against the standard "window background" color.
     Dim backDIB As pdDIB
     Set backDIB = New pdDIB
-    backDIB.createBlank tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, 24, RGB(255, 255, 255)
+    backDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, ConvertSystemColor(vbWindowBackground)
     tmpDIB.alphaBlendToDC backDIB.getDIBDC, 255
     
-    BitBlt picScroll.hDC, 0, 0, backDIB.getDIBWidth, backDIB.getDIBHeight, backDIB.getDIBDC, 0, 0, vbSrcCopy
-    
+    'Flip the fully composited scroller image onto the owner picture box
+    BitBlt picScroll.hDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, backDIB.getDIBDC, 0, 0, vbSrcCopy
     picScroll.Picture = picScroll.Image
     picScroll.Refresh
     
@@ -667,17 +682,16 @@ End Function
 'Retrieve the current coordinates of the slider.  Note that the x/y pair returned are the slider's *center point*.
 Private Sub getSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Single)
     
-    Dim trackDiameter As Single, sliderDiameter As Single
-    trackDiameter = fixDPI(TRACK_DIAMETER)
-    sliderDiameter = fixDPI(SLIDER_DIAMETER)
+    'This dumb catch exists for when sliders are first loaded, and their max/min may both be zero.  This causes a divide-by-zero
+    ' error in the horizontal slider position calculation, so if that happens, simply set the slider to its minimum position and exit.
+    If controlMin <> controlMax Then
+        sliderX = getTrackMinPos + ((controlVal - controlMin) / (controlMax - controlMin)) * (getTrackMaxPos - getTrackMinPos)
+    Else
+        sliderX = getTrackMinPos
+    End If
     
-    Dim trackMinPos As Long, trackMaxPos As Long
-    trackMinPos = sliderDiameter \ 2 + 2
-    trackMaxPos = picScroll.ScaleWidth - (sliderDiameter \ 2) - 2
+    sliderY = m_SliderAreaHeight \ 2
     
-    sliderX = trackMinPos + ((controlVal - controlMin) / (controlMax - controlMin)) * (trackMaxPos - trackMinPos)
-    sliderY = picScroll.ScaleHeight \ 2
-
 End Sub
 
 'Returns a single increment amount for the current control.  The increment amount varies according to the significant digits setting;
@@ -686,3 +700,13 @@ Private Function getIncrementAmount() As Double
     getIncrementAmount = 1 / (10 ^ significantDigits)
 End Function
 
+'Return the min/max position of the track behind the slider.  This is used for a lot of things: rendering the track, calculating the
+' value of the slider during user interactions (by determing the slider position relative to these two values), etc.  The minimum
+' position is constant once the control is created, but the max position can change if the control size changes.
+Private Function getTrackMinPos() As Long
+    getTrackMinPos = m_sliderDiameter \ 2 + 2
+End Function
+
+Private Function getTrackMaxPos() As Long
+    getTrackMaxPos = m_SliderAreaWidth - (m_sliderDiameter \ 2) - 2
+End Function
