@@ -42,33 +42,10 @@ Begin VB.Form FormColorTemp
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.PictureBox picTempDemo 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Left            =   6360
-      ScaleHeight     =   23
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   303
-      TabIndex        =   1
-      Top             =   2400
-      Width           =   4575
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -77,14 +54,11 @@ Begin VB.Form FormColorTemp
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   7
-      Top             =   3720
+      TabIndex        =   6
+      Top             =   3240
       Width           =   6135
       _ExtentX        =   10821
       _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   50
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -94,18 +68,18 @@ Begin VB.Form FormColorTemp
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   100
+      Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltTemperature 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   1830
       Width           =   6135
       _ExtentX        =   10821
       _ExtentY        =   873
-      Min             =   1000
-      Max             =   15000
-      Value           =   5500
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -115,6 +89,10 @@ Begin VB.Form FormColorTemp
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1000
+      Max             =   15000
+      SliderTrackStyle=   3
+      Value           =   5500
    End
    Begin VB.Label lblCool 
       AutoSize        =   -1  'True
@@ -131,9 +109,9 @@ Begin VB.Form FormColorTemp
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   10125
-      TabIndex        =   5
-      Top             =   2880
+      Left            =   10320
+      TabIndex        =   4
+      Top             =   2400
       Width           =   735
    End
    Begin VB.Label lblWarm 
@@ -151,9 +129,9 @@ Begin VB.Form FormColorTemp
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   195
-      Left            =   6360
-      TabIndex        =   4
-      Top             =   2880
+      Left            =   6240
+      TabIndex        =   3
+      Top             =   2400
       Width           =   840
    End
    Begin VB.Label lblStrength 
@@ -172,8 +150,8 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
-      Top             =   3360
+      TabIndex        =   2
+      Top             =   2880
       Width           =   960
    End
    Begin VB.Label lblTemperature 
@@ -192,7 +170,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   1440
       Width           =   2280
    End
@@ -206,8 +184,8 @@ Attribute VB_Exposed = False
 'Color Temperature Adjustment Form
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 16/September/12
-'Last updated: 25/April/13
-'Last update: greatly simplify code by relying on new slider/text custom control
+'Last updated: 22/June/14
+'Last update: add background gradient support for the temperature slider
 '
 'Color temperature adjustment form.  A full discussion of color temperature and how it works is available at this wikipedia article:
 ' http://en.wikipedia.org/wiki/Color_temperature
@@ -345,34 +323,29 @@ End Sub
 
 'When the form is activated (e.g. made visible and receives focus),
 Private Sub Form_Activate()
-
-    'This short routine is for drawing the picture box below the temperature slider
-    Dim temperatureVal As Double
-    Dim r As Long, g As Long, b As Long
-    
-    'Simple gradient-ish code implementation of drawing temperature between 1000 and 12000 Kelvin
-    Dim x As Long
-    For x = 0 To picTempDemo.ScaleWidth
-    
-        'Based on our x-position, gradient a value between 1000 and 12000
-        temperatureVal = x / picTempDemo.ScaleWidth
-        temperatureVal = temperatureVal * sltTemperature.Max
-        temperatureVal = temperatureVal + sltTemperature.Min
-        
-        'Generate an RGB equivalent for this temperature
-        getRGBfromTemperature r, g, b, temperatureVal
-        
-        'Draw the color
-        picTempDemo.Line (x, 0)-(x, picTempDemo.ScaleHeight), RGB(r, g, b)
-        
-    Next x
-    
-    picTempDemo.Picture = picTempDemo.Image
-        
+            
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
         
+End Sub
+
+Private Sub Form_Load()
+
+    'Calculate gradient colors for the temperature slider, using the built-in Kelvin to RGB converter
+    Dim r As Long, g As Long, b As Long
+    
+    'Simple gradient-ish code implementation of drawing temperature between 1000 and 12000 Kelvin
+    getRGBfromTemperature r, g, b, sltTemperature.Min
+    sltTemperature.GradientColorLeft = RGB(r, g, b)
+        
+    getRGBfromTemperature r, g, b, sltTemperature.Max
+    sltTemperature.GradientColorRight = RGB(r, g, b)
+    
+    sltTemperature.GradientMiddleValue = 6500
+    getRGBfromTemperature r, g, b, sltTemperature.GradientMiddleValue
+    sltTemperature.GradientColorMiddle = RGB(r, g, b)
+
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

@@ -59,8 +59,6 @@ Begin VB.Form FormColorBalance
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -70,6 +68,13 @@ Begin VB.Form FormColorBalance
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      SliderTrackStyle=   3
+      GradientColorLeft=   16776960
+      GradientColorRight=   255
+      GradientColorMiddle=   8881021
+      GradientMiddleValue=   0
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
@@ -79,8 +84,6 @@ Begin VB.Form FormColorBalance
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -90,6 +93,12 @@ Begin VB.Form FormColorBalance
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      SliderTrackStyle=   3
+      GradientColorLeft=   16711935
+      GradientColorRight=   65280
+      GradientMiddleValue=   0
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
@@ -99,8 +108,6 @@ Begin VB.Form FormColorBalance
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -110,6 +117,12 @@ Begin VB.Form FormColorBalance
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      SliderTrackStyle=   3
+      GradientColorLeft=   65535
+      GradientColorRight=   16711680
+      GradientMiddleValue=   0
    End
    Begin PhotoDemon.smartOptionButton OptTone 
       Height          =   360
