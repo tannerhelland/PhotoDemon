@@ -703,6 +703,7 @@ Private Sub redrawSlider()
     'Additional draw variables utilized by multiple render styles
     Dim notchSize As Single
     Dim customX As Single, customY As Single
+    Dim relevantMin As Single
     
     'Draw the background track according to the current SliderTrackStyle property.
     If Me.Enabled Then
@@ -721,7 +722,6 @@ Private Sub redrawSlider()
                 'Next, determine a minimum value for the control, using the formula provided:
                 ' 1) If 0 is a valid control value, use 0.
                 ' 2) If 0 is not a valid control value, use the control minimum.
-                Dim relevantMin As Single
                 If (0 >= controlMin) And (0 <= controlMax) Then
                     relevantMin = 0
                 Else
@@ -735,7 +735,7 @@ Private Sub redrawSlider()
                 GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, customY, relevantSliderPosX, customY, sliderEdgeColor, 255, m_trackDiameter + 1, True, LineCapRound
                 
                 'Also, if the relevant minimum value is not the control's minimum value, draw a slight notch at the 0 position,
-                ' to help orient the user
+                ' to help orient the user to what the control's default value position is.
                 If relevantMin <> controlMin Then
                 
                     notchSize = (m_SliderAreaHeight - m_trackDiameter) \ 2 - 4
@@ -743,9 +743,9 @@ Private Sub redrawSlider()
                     'Draw a top notch and bottom notch
                     GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, 1, customX, 1 + notchSize, trackColor, 255, 1, True, LineCapFlat
                     GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, trackColor, 255, 1, True, LineCapFlat
-                
+                    
                 End If
-            
+                
             'No-frills slider: plain gray background (boooring - use only if absolutely necessary)
             Case NoFrills
                 GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
@@ -775,6 +775,27 @@ Private Sub redrawSlider()
                     'Draw a top notch and bottom notch
                     GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, 1, customX, 1 + notchSize, trackColor, 255, 1, True, LineCapFlat
                     GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, trackColor, 255, 1, True, LineCapFlat
+                
+                'Two-point and hue gradients use the same notch rules as standard sliders; show one if the relevant 0-location
+                ' is *not* located at the far left.
+                Else
+                
+                    'Next, determine a minimum value for the control, using the formula provided:
+                    ' 1) If 0 is a valid control value, use 0.
+                    ' 2) If 0 is not a valid control value, use the control minimum.
+                    If (0 >= controlMin) And (0 <= controlMax) Then
+                        relevantMin = 0
+                
+                        'Convert our newly calculated relevant min value into an actual pixel position on the track
+                        getCustomValueCoordinates relevantMin, customX, customY
+                        
+                        notchSize = (m_SliderAreaHeight - m_trackDiameter) \ 2 - 4
+                        
+                        'Draw a top notch and bottom notch
+                        GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, 1, customX, 1 + notchSize, trackColor, 255, 1, True, LineCapFlat
+                        GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, trackColor, 255, 1, True, LineCapFlat
+                        
+                    End If
                 
                 End If
             
