@@ -780,10 +780,8 @@ Private Sub redrawSlider()
                 ' is *not* located at the far left.
                 Else
                 
-                    'Next, determine a minimum value for the control, using the formula provided:
-                    ' 1) If 0 is a valid control value, use 0.
-                    ' 2) If 0 is not a valid control value, use the control minimum.
-                    If (0 >= controlMin) And (0 <= controlMax) Then
+                    If (0 > controlMin) And (0 <= controlMax) Then
+                        
                         relevantMin = 0
                 
                         'Convert our newly calculated relevant min value into an actual pixel position on the track

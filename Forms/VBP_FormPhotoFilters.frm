@@ -83,9 +83,6 @@ Begin VB.Form FormPhotoFilters
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   30
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -95,6 +92,11 @@ Begin VB.Form FormPhotoFilters
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   100
+      SliderTrackStyle=   2
+      Value           =   30
+      GradientColorLeft=   16777215
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -612,7 +614,13 @@ End Sub
 
 'Render a new preview
 Private Sub updatePreview()
+    
+    'Sync the density slider to match the currently selected color
+    If sltDensity.GradientColorRight <> fArray(curFilter).RGBColor Then sltDensity.GradientColorRight = fArray(curFilter).RGBColor
+    
+    'Render the preview
     If cmdBar.previewsAllowed Then ApplyPhotoFilter fArray(curFilter).RGBColor, sltDensity.Value, True, True, fxPreview
+    
 End Sub
 
 'Cast an image with a new temperature value
