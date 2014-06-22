@@ -553,7 +553,7 @@ Private Sub applyCursorToHwnds(Optional ByVal removeExistingClassCursor As Boole
 
     'If removeExistingClassCursor is set, use SetClassLong to remove any existing class-level cursor definition
     If removeExistingClassCursor Then m_PrevClassCursorHandle = SetClassLong(m_TrackingData(PDIT_DEFAULT, 0), GCL_HCURSOR, 0&)
-
+    
     'Apply the new cursor using SetCursor
     SetCursor m_CursorHandle
 
@@ -561,7 +561,8 @@ End Sub
 
 'Partner to applyCursorToHwnds, above.  To be used only when the mouse leaves a cursor-controlled area.
 Private Sub resetClassCursor()
-    SetClassLong m_TrackingData(PDIT_DEFAULT, 0), GCL_HCURSOR, m_PrevClassCursorHandle
+    SetClassLong m_TrackingData(PDIT_DEFAULT, 0), GCL_HCURSOR, LoadCursor(0, IDC_ARROW) 'For now, always reset the cursor to an arrow.  This is necessary until we can fix some bad SetClassLong handling elsewhere in PD (via setHandCursor, when applied to picture boxes) :: m_PrevClassCursorHandle
+    SetCursor LoadCursor(0, IDC_ARROW)
 End Sub
 
 'Given an hWnd, populate a generic TrackMouseEvent struct and pass it to the TrackMouseEvent function
