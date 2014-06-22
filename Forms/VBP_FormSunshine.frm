@@ -31,9 +31,6 @@ Begin VB.Form FormSunshine
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   200
-      Value           =   72
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -43,6 +40,9 @@ Begin VB.Form FormSunshine
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   200
+      Value           =   72
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -63,9 +63,6 @@ Begin VB.Form FormSunshine
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   360
-      Value           =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -75,6 +72,9 @@ Begin VB.Form FormSunshine
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   360
+      Value           =   100
    End
    Begin PhotoDemon.sliderTextCombo sltXCenter 
       Height          =   495
@@ -84,9 +84,6 @@ Begin VB.Form FormSunshine
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -96,6 +93,9 @@ Begin VB.Form FormSunshine
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   495
@@ -105,9 +105,6 @@ Begin VB.Form FormSunshine
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -117,6 +114,9 @@ Begin VB.Form FormSunshine
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -155,7 +155,6 @@ Begin VB.Form FormSunshine
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -165,6 +164,7 @@ Begin VB.Form FormSunshine
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   100
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -603,5 +603,13 @@ Private Sub fxPreview_ViewportChanged()
 End Sub
 
 Private Sub sltVariance_Change()
+    updatePreview
+End Sub
+
+Private Sub sltXCenter_Change()
+    updatePreview
+End Sub
+
+Private Sub sltYCenter_Change()
     updatePreview
 End Sub

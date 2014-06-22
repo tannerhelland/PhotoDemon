@@ -60,9 +60,6 @@ Begin VB.Form FormLensFlare
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -72,6 +69,9 @@ Begin VB.Form FormLensFlare
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   495
@@ -81,9 +81,6 @@ Begin VB.Form FormLensFlare
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -93,6 +90,9 @@ Begin VB.Form FormLensFlare
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -541,5 +541,13 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
+Private Sub sltXCenter_Change()
+    updatePreview
+End Sub
+
+Private Sub sltYCenter_Change()
     updatePreview
 End Sub
