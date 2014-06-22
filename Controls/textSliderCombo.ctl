@@ -151,6 +151,41 @@ Private m_trackDiameter As Single, m_sliderDiameter As Single
 'Width/height of the full slider area.  These are set at control intialization, and will only be updated if the control size changes.
 ' As ScaleWidth and ScaleHeight properties can be slow to read, we cache these values manually.
 Private m_SliderAreaWidth As Long, m_SliderAreaHeight As Long
+
+'Background track style.  This can be changed at run-time or design-time, and it will (obviously) affect the way the background
+' track is rendered.  For the custom-drawn method, the owner must supply their own DIB for the background area.  Note that the control
+' will automatically crop the supplied DIB to the rounded-rect shape required by the track, so the owner need only supply a stock
+' rectangular DIB.
+Public Enum SLIDER_TRACK_STYLE
+    DefaultStyle = 0
+    NoFrills = 1
+    GradientTwoPoint = 2
+    GradientThreePoint = 3
+    CustomOwnerDrawn = 4
+End Enum
+
+#If False Then
+    Const DefaultStyle = 0, NoFrills = 1, GradientTwoPoint = 2, GradientThreePoint = 3, CustomOwnerDrawn = 4
+#End If
+
+Private curSliderStyle As SLIDER_TRACK_STYLE
+
+Public Property Get SliderTrackStyle() As SLIDER_TRACK_STYLE
+    SliderTrackStyle = curSliderStyle
+End Property
+
+Public Property Let SliderTrackStyle(ByVal newStyle As SLIDER_TRACK_STYLE)
+    
+    'Store the new style
+    curSliderStyle = newStyle
+    
+    'Redraw the control
+    redrawSlider
+    
+    'Raise the property changed event
+    PropertyChanged "SliderTrackStyle"
+    
+End Property
     
 'If the current text value is NOT valid, this will return FALSE
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
@@ -419,9 +454,12 @@ Private Sub UserControl_Initialize()
     
 End Sub
 
+'Initialize control properties for the first time
 Private Sub UserControl_InitProperties()
 
-    'Reset all controls to their default state
+    'Reset all controls to their default state.  For each public property, matching internal tracker variables are also updated;
+    ' this is not necessary, but it's helpful for reminding me of the names of the internal tracker variables relevant to their
+    ' connected property.
     Set mFont = UserControl.Font
     mFont.Name = "Tahoma"
     mFont.Size = 10
@@ -442,8 +480,12 @@ Private Sub UserControl_InitProperties()
     SigDigits = 0
     significantDigits = 0
     
+    SliderTrackStyle = DefaultStyle
+    curSliderStyle = DefaultStyle
+    
 End Sub
 
+'Read control properties from file
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
@@ -452,6 +494,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Min = .ReadProperty("Min", 0)
         Max = .ReadProperty("Max", 10)
         SigDigits = .ReadProperty("SigDigits", 0)
+        SliderTrackStyle = .ReadProperty("SliderTrackStyle", DefaultStyle)
         Value = .ReadProperty("Value", 0)
     End With
     
@@ -459,6 +502,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     controlMax = Max
     controlVal = Value
     significantDigits = SigDigits
+    curSliderStyle = SliderTrackStyle
     
 End Sub
 
@@ -513,13 +557,71 @@ Private Sub redrawSlider()
     sliderBackgroundColor = RGB(255, 255, 255)
     sliderEdgeColor = RGB(60, 175, 230)
     
-    'Draw the background track
-    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
-    
     'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
     Dim relevantSliderPosX As Single, relevantSliderPosY As Single
     getSliderCoordinates relevantSliderPosX, relevantSliderPosY
     
+    'Draw the background track according to the current SliderTrackStyle property.
+    If Me.Enabled Then
+    
+        'This control supports a variety of different track styles.  Some of these styles require a DIB supplied by the owner, and
+        ' they *will not* render properly until that DIB is provided!
+        Select Case curSliderStyle
+        
+            'Default style: fill the "active" part of track with the control highlight color.  The "active part" is the chunk relative
+            ' to zero, if the control supports 0 as a value; otherwise, it is relative to the control minimum.
+            Case DefaultStyle
+            
+                'Start by drawing the default background track
+                GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+                
+                'Next, determine a minimum value for the control, using the formula provided:
+                ' 1) If 0 is a valid control value, use 0.
+                ' 2) If 0 is not a valid control value, use the control minimum.
+                Dim relevantMin As Single
+                If (0 >= controlMin) And (0 <= controlMax) Then
+                    relevantMin = 0
+                Else
+                    relevantMin = controlMin
+                End If
+                
+                'Convert our newly calculated relevant min value into an actual pixel position on the track
+                Dim customX As Single, customY As Single
+                getCustomValueCoordinates relevantMin, customX, customY
+                
+                'Draw a highlighted line between the slider position and our calculated relevant minimum
+                GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, customY, relevantSliderPosX, customY, sliderEdgeColor, 255, m_trackDiameter + 1, True, LineCapRound
+                
+                'Also, if the relevant minimum value is not the control's minimum value, draw a slight notch at the 0 position,
+                ' to help orient the user
+                If relevantMin <> controlMin Then
+                
+                    Dim notchSize As Single
+                    notchSize = (m_SliderAreaHeight - m_trackDiameter) \ 2 - 4
+                    
+                    'Draw a top notch and bottom notch
+                    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, 1, customX, 1 + notchSize, trackColor, 255, 1, True, LineCapFlat
+                    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, trackColor, 255, 1, True, LineCapFlat
+                
+                End If
+            
+            'No-frills slider: plain gray background (boooring - use only if absolutely necessary)
+            Case NoFrills
+                GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+            
+            Case GradientTwoPoint
+            
+            Case GradientThreePoint
+            
+            Case CustomOwnerDrawn
+        
+        End Select
+            
+    'Control is disabled; draw a plain track in the background
+    Else
+        GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+    End If
+        
     'The slider itself is only drawn if the control is enabled; otherwise, we do not display it at all.
     If Me.Enabled Then
     
@@ -587,12 +689,13 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
     'Store all associated properties
     With PropBag
+        .WriteProperty "Font", mFont, "Tahoma"
+        .WriteProperty "ForeColor", ForeColor, &H404040
         .WriteProperty "Min", controlMin, 0
         .WriteProperty "Max", controlMax, 10
         .WriteProperty "SigDigits", significantDigits, 0
+        .WriteProperty "SliderTrackStyle", curSliderStyle, DefaultStyle
         .WriteProperty "Value", controlVal, 0
-        .WriteProperty "Font", mFont, "Tahoma"
-        .WriteProperty "ForeColor", ForeColor, &H404040
     End With
     
 End Sub
@@ -691,6 +794,21 @@ Private Sub getSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Singl
     End If
     
     sliderY = m_SliderAreaHeight \ 2
+    
+End Sub
+
+'Retrieve the current coordinates of any custom value.  Note that the x/y pair returned are the custom value's *center point*.
+Private Sub getCustomValueCoordinates(ByVal customValue As Single, ByRef customX As Single, ByRef customY As Single)
+    
+    'This dumb catch exists for when sliders are first loaded, and their max/min may both be zero.  This causes a divide-by-zero
+    ' error in the horizontal slider position calculation, so if that happens, simply set the slider to its minimum position and exit.
+    If controlMin <> controlMax Then
+        customX = getTrackMinPos + ((customValue - controlMin) / (controlMax - controlMin)) * (getTrackMaxPos - getTrackMinPos)
+    Else
+        customX = getTrackMinPos
+    End If
+    
+    customY = m_SliderAreaHeight \ 2
     
 End Sub
 

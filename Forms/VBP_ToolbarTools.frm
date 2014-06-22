@@ -219,9 +219,6 @@ Begin VB.Form toolbar_Tools
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         Min             =   -2
-         Max             =   2
-         SigDigits       =   2
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -231,6 +228,9 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Min             =   -2
+         Max             =   2
+         SigDigits       =   2
       End
       Begin PhotoDemon.sliderTextCombo sltQuickFix 
          CausesValidation=   0   'False
@@ -242,8 +242,6 @@ Begin VB.Form toolbar_Tools
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -253,6 +251,8 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Min             =   -100
+         Max             =   100
       End
       Begin PhotoDemon.sliderTextCombo sltQuickFix 
          CausesValidation=   0   'False
@@ -264,8 +264,6 @@ Begin VB.Form toolbar_Tools
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -275,6 +273,8 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Min             =   -100
+         Max             =   100
       End
       Begin PhotoDemon.sliderTextCombo sltQuickFix 
          CausesValidation=   0   'False
@@ -286,8 +286,6 @@ Begin VB.Form toolbar_Tools
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -297,6 +295,8 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Min             =   -100
+         Max             =   100
       End
       Begin VB.Label lblOptions 
          Alignment       =   1  'Right Justify
@@ -636,7 +636,6 @@ Begin VB.Form toolbar_Tools
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         Max             =   10000
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -646,6 +645,7 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Max             =   10000
       End
       Begin PhotoDemon.textUpDown tudSel 
          Height          =   405
@@ -741,9 +741,6 @@ Begin VB.Form toolbar_Tools
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         Min             =   1
-         Max             =   10000
-         Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -753,6 +750,9 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Min             =   1
+         Max             =   10000
+         Value           =   1
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
          CausesValidation=   0   'False
@@ -763,7 +763,6 @@ Begin VB.Form toolbar_Tools
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         Max             =   100
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -773,6 +772,7 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Max             =   100
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
          CausesValidation=   0   'False
@@ -783,9 +783,6 @@ Begin VB.Form toolbar_Tools
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         Min             =   1
-         Max             =   10000
-         Value           =   10
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -795,6 +792,9 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Min             =   1
+         Max             =   10000
+         Value           =   10
       End
       Begin VB.Label lblSelection 
          Appearance      =   0  'Flat
