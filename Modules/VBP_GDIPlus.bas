@@ -337,7 +337,7 @@ Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal mGraphics A
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
-Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dX As Single, ByVal dY As Single, ByVal Order As Long) As Long
+Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal Order As Long) As Long
 
 'Helpful GDI functions for moving image data between GDI and GDI+
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -688,11 +688,11 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
         If GdipSetEffectParameters(hEffect, tmpParams, Len(tmpParams)) = 0 Then
     
             'The DrawImageFX call requires a target rect.  Create one now (in GDI+ format, e.g. RECTF)
-            Dim tmpRect As RECTF
-            tmpRect.Left = rLeft
-            tmpRect.Top = rTop
-            tmpRect.Width = rWidth
-            tmpRect.Height = rHeight
+            Dim tmpRECT As RECTF
+            tmpRECT.Left = rLeft
+            tmpRECT.Top = rTop
+            tmpRECT.Width = rWidth
+            tmpRECT.Height = rHeight
             
             'Create a temporary GDI+ transformation matrix as well
             Dim tmpMatrix As Long
@@ -700,7 +700,7 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
             
             'Attempt to render the blur effect
             Dim GDIPlusDebug As Long
-            GDIPlusDebug = GdipDrawImageFX(iGraphics, tBitmap, tmpRect, tmpMatrix, hEffect, 0&, UnitPixel)
+            GDIPlusDebug = GdipDrawImageFX(iGraphics, tBitmap, tmpRECT, tmpMatrix, hEffect, 0&, UnitPixel)
             If GDIPlusDebug > 0 Then Message "GDI+ failed to render blur effect (Error Code %1).", GDIPlusDebug
             
             'Delete our temporary transformation matrix
@@ -828,7 +828,7 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
 End Function
 
 'Use GDI+ to render a hollow circle, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal edgeColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -837,7 +837,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     
     'Create a pen, which will be used to stroke the circle
     Dim iPen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), drawRadius, UnitPixel, iPen
+    GdipCreatePen1 fillQuadWithVBRGB(edgeColor, cTransparency), drawRadius, UnitPixel, iPen
     
     'Render the circle
     GdipDrawEllipse iGraphics, iPen, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2
@@ -1018,7 +1018,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     End If
     
     Dim copyBitmapData As BitmapData
-    Dim tmpRect As RECTL
+    Dim tmpRECT As RECTL
     Dim iGraphics As Long
     
     'We now copy over image data in one of two ways.  If the image is 24bpp, our job is simple - use BitBlt and an hBitmap.
@@ -1040,7 +1040,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         End With
         
         'Next, prepare a clipping rect
-        With tmpRect
+        With tmpRECT
             .Left = 0
             .Top = 0
             .Width = imgWidth
@@ -1048,7 +1048,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         End With
         
         'Use LockBits to perform the copy for us.
-        GdipBitmapLockBits hImage, tmpRect, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppPARGB, copyBitmapData
+        GdipBitmapLockBits hImage, tmpRECT, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppPARGB, copyBitmapData
         GdipBitmapUnlockBits hImage, copyBitmapData
     
     Else
@@ -1072,7 +1072,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             End With
             
             'Next, prepare a clipping rect
-            With tmpRect
+            With tmpRECT
                 .Left = 0
                 .Top = 0
                 .Width = imgWidth
@@ -1080,7 +1080,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             End With
             
             'Use LockBits to perform the copy for us.
-            GdipBitmapLockBits hImage, tmpRect, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppCMYK, copyBitmapData
+            GdipBitmapLockBits hImage, tmpRECT, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppCMYK, copyBitmapData
             GdipBitmapUnlockBits hImage, copyBitmapData
                         
             'Apply the transformation using the dedicated CMYK transform handler
