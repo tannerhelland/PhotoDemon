@@ -328,7 +328,6 @@ Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, 
     ' Hue: [-1,5]
     ' Saturation: [0,1] (Note that if saturation = 0, hue is technically undefined)
     ' Lightness: [0,1]
-
     Max = Max3Float(rR, rG, rB)
     Min = Min3Float(rR, rG, rB)
         
@@ -379,7 +378,10 @@ Public Sub tHSLToRGB(h As Double, s As Double, l As Double, r As Long, g As Long
 
     Dim rR As Double, rG As Double, rB As Double
     Dim Min As Double, Max As Double
-
+    
+    'Failsafe hue check
+    If h > 5 Then h = h - 6
+    
     'Unsaturated pixels do not technically have hue - they only have luminance
     If s = 0 Then
         rR = l: rG = l: rB = l
@@ -449,8 +451,8 @@ Public Sub fRGBtoHSL(ByVal r As Double, ByVal g As Double, ByVal b As Double, By
 
     Dim minVal As Double, maxVal As Double, Delta As Double
     
-    minVal = fMin3(r, g, b)
-    maxVal = fMax3(r, g, b)
+    minVal = Min3Float(r, g, b)
+    maxVal = Max3Float(r, g, b)
     Delta = maxVal - minVal
 
     l = (maxVal + minVal) / 2
@@ -668,24 +670,24 @@ End Sub
 ' Note that the code assumes RGB values already in the [0, 1] range, and it will return HSV values in the [0, 1] range.
 Public Sub fRGBtoHSV(ByVal r As Double, ByVal g As Double, ByVal b As Double, ByRef h As Double, ByRef s As Double, ByRef v As Double)
 
-    Dim K As Double, tmpSwap As Double, chroma As Double
+    Dim k As Double, tmpSwap As Double, chroma As Double
     
     If (g < b) Then
         tmpSwap = b
         b = g
         g = tmpSwap
-        K = -1
+        k = -1
     End If
     
     If (r < g) Then
         tmpSwap = g
         g = r
         r = tmpSwap
-        K = -(2 / 6) - K
+        k = -(2 / 6) - k
     End If
     
     chroma = r - fMin(g, b)
-    h = Abs(K + (g - b) / (6 * chroma + 0.0000001))
+    h = Abs(k + (g - b) / (6 * chroma + 0.0000001))
     s = chroma / (r + 0.00000001)
     v = r
     

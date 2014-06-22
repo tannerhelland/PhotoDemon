@@ -45,8 +45,8 @@ Begin VB.Form FormColorize
    Begin PhotoDemon.smartCheckBox chkSaturation 
       Height          =   480
       Left            =   6240
-      TabIndex        =   5
-      Top             =   3240
+      TabIndex        =   3
+      Top             =   2760
       Width           =   2745
       _ExtentX        =   4842
       _ExtentY        =   847
@@ -62,46 +62,35 @@ Begin VB.Form FormColorize
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.HScrollBar hsHue 
-      Height          =   375
-      Left            =   6240
-      Max             =   359
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
+      Height          =   5625
+      Left            =   120
       TabIndex        =   1
-      Top             =   2160
-      Value           =   180
-      Width           =   5790
+      Top             =   120
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
-   Begin VB.PictureBox picHueDemo 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   8.25
+   Begin PhotoDemon.sliderTextCombo sltHue 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   2040
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Left            =   6480
-      ScaleHeight     =   23
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   352
-      TabIndex        =   2
-      Top             =   2640
-      Width           =   5310
-   End
-   Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
-      Left            =   120
-      TabIndex        =   3
-      Top             =   120
-      Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      Max             =   359
+      SliderTrackStyle=   4
+      Value           =   180
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -119,7 +108,7 @@ Begin VB.Form FormColorize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   1680
       Width           =   1545
    End
@@ -133,8 +122,8 @@ Attribute VB_Exposed = False
 'Colorize Form
 'Copyright ©2006-2014 by Tanner Helland
 'Created: 12/January/07
-'Last updated: 09/September/12
-'Last update: added "maintain saturation" check box
+'Last updated: 22/June/14
+'Last update: replace old scroll bar with slider/text combo
 '
 'Fairly simple and standard routine - look in the Miscellaneous Filters module
 ' for the HSL transformation code
@@ -150,7 +139,7 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 Private Sub cmdBar_OKClick()
-    Process "Colorize", , buildParams(CDblCustom((CDblCustom(hsHue.Value) - 60) / 60), CBool(chkSaturation.Value)), UNDO_LAYER
+    Process "Colorize", , buildParams(sltHue.Value, CBool(chkSaturation.Value)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -162,11 +151,14 @@ Private Sub chkSaturation_Click()
     updatePreview
 End Sub
 
-'Colorize an image using a hue defined between -1 and 5
+'Colorize an image using a hue defined between 0 and 359
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
 Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturation As Boolean = True, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Colorizing image..."
+    If Not toPreview Then Message "Colorizing image..."
+    
+    'Convert the incoming hue from [0, 360] to [-1, 5] range
+    hToUse = hToUse / 60
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -222,7 +214,7 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
         ImageData(QuickVal, y) = b
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -241,55 +233,23 @@ End Sub
 
 'Reset the hue bar to the center position
 Private Sub cmdBar_ResetClick()
-    hsHue.Value = 180
+    sltHue.Value = 180
 End Sub
 
 Private Sub Form_Activate()
-
-    'This short routine is for drawing the picture box below the hue slider
-    Dim hVal As Double
-    Dim r As Long, g As Long, b As Long
-    
-    'Simple gradient-ish code implementation of drawing hue
-    Dim x As Long
-    For x = 0 To picHueDemo.ScaleWidth
-    
-        'Based on our x-position, gradient a value between -1 and 5
-        hVal = x / picHueDemo.ScaleWidth
-        hVal = hVal * 360
-        hVal = (hVal - 60) / 60
-        
-        'Generate a hue for this position (the 1 and 0.5 correspond to full saturation and half luminance, respectively)
-        tHSLToRGB hVal, 1, 0.5, r, g, b
-        
-        'Draw the color
-        picHueDemo.Line (x, 0)-(x, picHueDemo.ScaleHeight), RGB(r, g, b)
-        
-    Next x
-    
-    picHueDemo.Picture = picHueDemo.Image
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-        
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'When the hue scroll bar is changed, redraw the preview
-Private Sub hsHue_Change()
-    updatePreview
-End Sub
-
-Private Sub hsHue_Scroll()
-    updatePreview
-End Sub
-
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ColorizeImage CSng((CSng(hsHue.Value) - 60) / 60), CBool(chkSaturation), True, fxPreview
+    If cmdBar.previewsAllowed Then ColorizeImage sltHue.Value, CBool(chkSaturation), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -297,4 +257,6 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
-
+Private Sub sltHue_Change()
+    updatePreview
+End Sub
