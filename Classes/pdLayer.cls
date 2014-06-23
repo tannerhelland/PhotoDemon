@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 20/June/14
-'Last update: add comprehensive support for non-destructive layer FX
+'Last updated: 23/June/14
+'Last update: convert non-destructive layer FX Saturation to Clarity.  (Saturation is already covered by the
+'              far-superior Vibrance option.)
 '
 'Once upon a time, the pdLayer class was simply a DIB wrapper.  Once PhotoDemon moved to a fully layer-compatible
 ' image editor, however, it became necessary to separate Layer-specific functions from generic DIB functions.
@@ -124,19 +125,19 @@ Private myLayerData As LayerData
 Public Enum LAYER_NONDESTRUCTIVE_FX
     NDFX_EXPOSURE = 0
     NDFX_CONTRAST = 1
-    NDFX_SATURATION = 2
+    NDFX_CLARITY = 2
     NDFX_VIBRANCE = 3
 End Enum
 
 #If False Then
-    Const NDFX_EXPOSURE = 0, NDFX_CONTRAST = 1, NDFX_SATURATION = 2, NDFX_VIBRANCE = 3
+    Const NDFX_EXPOSURE = 0, NDFX_CONTRAST = 1, NDFX_CLARITY = 2, NDFX_VIBRANCE = 3
 #End If
 
 'Local copy of non-destructive FX
 Private Type nonDestructiveFXSettings
     fx_Exposure As Double
     fx_Contrast As Long
-    fx_Saturation As Long
+    fx_Clarity As Long
     fx_Vibrance As Long
 End Type
 
@@ -317,9 +318,9 @@ Public Function getLayerNonDestructiveFXValue(ByVal ndEffect As LAYER_NONDESTRUC
         Case NDFX_CONTRAST
             getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Contrast
             
-        'Saturation
-        Case NDFX_SATURATION
-            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Saturation
+        'Clarity
+        Case NDFX_CLARITY
+            getLayerNonDestructiveFXValue = myNonDestructiveFX.fx_Clarity
             
         'Vibrance
         Case NDFX_VIBRANCE
@@ -342,9 +343,9 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
         Case NDFX_CONTRAST
             myNonDestructiveFX.fx_Contrast = newEffectValue
         
-        'Saturation
-        Case NDFX_SATURATION
-            myNonDestructiveFX.fx_Saturation = newEffectValue
+        'Clarity
+        Case NDFX_CLARITY
+            myNonDestructiveFX.fx_Clarity = newEffectValue
             
         'Vibrance
         Case NDFX_VIBRANCE
@@ -364,7 +365,7 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
         
             If .fx_Exposure <> 0 Then myLayerData.l_NonDestructiveFXActive = True
             If .fx_Contrast <> 0 Then myLayerData.l_NonDestructiveFXActive = True
-            If .fx_Saturation <> 0 Then myLayerData.l_NonDestructiveFXActive = True
+            If .fx_Clarity <> 0 Then myLayerData.l_NonDestructiveFXActive = True
             If .fx_Vibrance <> 0 Then myLayerData.l_NonDestructiveFXActive = True
         
         End With
@@ -439,7 +440,7 @@ Private Sub Class_Initialize()
     With myNonDestructiveFX
         .fx_Exposure = 0
         .fx_Contrast = 0
-        .fx_Saturation = 0
+        .fx_Clarity = 0
         .fx_Vibrance = 0
     End With
     
@@ -505,7 +506,7 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
     With myNonDestructiveFX
         xmlEngine.writeTag "NDFX_Exposure", .fx_Exposure
         xmlEngine.writeTag "NDFX_Contrast", .fx_Contrast
-        xmlEngine.writeTag "NDFX_Saturation", .fx_Saturation
+        xmlEngine.writeTag "NDFX_Clarity", .fx_Clarity
         xmlEngine.writeTag "NDFX_Vibrance", .fx_Vibrance
     End With
     
@@ -538,7 +539,7 @@ Public Function getLayerHeaderAsParamString() As String
     
     'Next, add any non-destructive FX parameters
     With myNonDestructiveFX
-        getLayerHeaderAsParamString = getLayerHeaderAsParamString & "|" & buildParams(.fx_Exposure, .fx_Contrast, .fx_Saturation, .fx_Vibrance)
+        getLayerHeaderAsParamString = getLayerHeaderAsParamString & "|" & buildParams(.fx_Exposure, .fx_Contrast, .fx_Clarity, .fx_Vibrance)
     End With
     
 End Function
@@ -572,7 +573,7 @@ Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
     With myNonDestructiveFX
         .fx_Exposure = cParams.GetDouble(12)
         .fx_Contrast = cParams.GetLong(13)
-        .fx_Saturation = cParams.GetLong(14)
+        .fx_Clarity = cParams.GetLong(14)
         .fx_Vibrance = cParams.GetLong(15)
     End With
         
@@ -625,7 +626,7 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
         With myNonDestructiveFX
             .fx_Exposure = xmlEngine.getUniqueTag_Double("NDFX_Exposure", 0)
             .fx_Contrast = xmlEngine.getUniqueTag_Long("NDFX_Contrast", 0)
-            .fx_Saturation = xmlEngine.getUniqueTag_Double("NDFX_Saturation", 0)
+            .fx_Clarity = xmlEngine.getUniqueTag_Double("NDFX_Clarity", 0)
             .fx_Vibrance = xmlEngine.getUniqueTag_Long("NDFX_Vibrance", 0)
         End With
         
@@ -683,7 +684,7 @@ Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage
     With myNonDestructiveFX
         .fx_Exposure = 0
         .fx_Contrast = 0
-        .fx_Saturation = 0
+        .fx_Clarity = 0
         .fx_Vibrance = 0
     End With
     
@@ -737,7 +738,7 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     With myNonDestructiveFX
         .fx_Exposure = srcLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE)
         .fx_Contrast = srcLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST)
-        .fx_Saturation = srcLayer.getLayerNonDestructiveFXValue(NDFX_SATURATION)
+        .fx_Clarity = srcLayer.getLayerNonDestructiveFXValue(NDFX_CLARITY)
         .fx_Vibrance = srcLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE)
     End With
     
@@ -1163,7 +1164,7 @@ Public Sub resetLayerParameters()
     With myNonDestructiveFX
         .fx_Exposure = 0
         .fx_Contrast = 0
-        .fx_Saturation = 0
+        .fx_Clarity = 0
         .fx_Vibrance = 0
     End With
 
