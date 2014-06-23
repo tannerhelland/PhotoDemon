@@ -650,16 +650,11 @@ Private Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDI
 
     'Calculate each non-destructive FX in turn
     
-    'Brightness and contrast are handled simultaneously, to reduce processing time
-    If (parentLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST) <> 0) Then
-        fastLayerExposureContrast parentLayer, targetDIB
+    'Brightness, contrast, and clarity are handled simultaneously, to reduce processing time
+    If (parentLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_CLARITY) <> 0) Then
+        fastLayerExposureContrastClarity parentLayer, targetDIB
     End If
-    
-    'Saturation
-    If (parentLayer.getLayerNonDestructiveFXValue(NDFX_SATURATION) <> 0) Then
-        fastLayerSaturation parentLayer, targetDIB
-    End If
-    
+        
     'Vibrance
     If (parentLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE) <> 0) Then
         fastLayerVibrance parentLayer, targetDIB
@@ -671,7 +666,7 @@ Private Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDI
 End Sub
 
 'Super-fast, no-frills brightness and/or contrast adjustment, designed for non-destructive compositing purposes
-Private Sub fastLayerExposureContrast(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
+Private Sub fastLayerExposureContrastClarity(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
 
     'Create a local array and point it at the target layer's DIB
     Dim ImageData() As Byte
@@ -690,12 +685,13 @@ Private Sub fastLayerExposureContrast(ByRef targetLayer As pdLayer, ByRef target
     qvDepth = targetDIB.getDIBColorDepth \ 8
     
     'Adjustment values
-    Dim exposureAdjustment As Double, contrastAdjustment As Long
+    Dim exposureAdjustment As Double, contrastAdjustment As Long, clarityAdjustment As Long
     exposureAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) / 2
     contrastAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST)
+    clarityAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_CLARITY)
     
     'Look-up tables are used to accelerate this function.
-    Dim ecLUT(0 To 255) As Byte
+    Dim eccLUT(0 To 255) As Byte
     Dim tmpVal As Double
     
     For x = 0 To 255
@@ -707,6 +703,13 @@ Private Sub fastLayerExposureContrast(ByRef targetLayer As pdLayer, ByRef target
             tmpVal = tmpVal * 255
         Else
             tmpVal = x
+        End If
+        
+        'Crop the lookup value to [0, 255] range
+        If tmpVal > 255 Then
+            tmpVal = 255
+        ElseIf tmpVal < 0 Then
+            tmpVal = 0
         End If
         
         'Calculate contrast
@@ -721,7 +724,23 @@ Private Sub fastLayerExposureContrast(ByRef targetLayer As pdLayer, ByRef target
             tmpVal = 0
         End If
         
-        ecLUT(x) = tmpVal
+        'Calculate clarity.  Clarity is simply a contrast adjustment limited to midtones.  Values at 127 are processed
+        ' most strongly, with a linear decrease as input values approach 0 or 255.  Also, I reduce the strength of the
+        ' adjustment by 20% to prevent blowout or gray-washing (for high or low adjustments, respectively).
+        If x < 127 Then
+            tmpVal = tmpVal + (tmpVal / 127) * (((tmpVal - 127) * clarityAdjustment) \ 100) * 0.8
+        Else
+            tmpVal = tmpVal + ((255 - tmpVal) / 127) * (((tmpVal - 127) * clarityAdjustment) \ 100) * 0.8
+        End If
+        
+        'Crop the lookup value to [0, 255] range
+        If tmpVal > 255 Then
+            tmpVal = 255
+        ElseIf tmpVal < 0 Then
+            tmpVal = 0
+        End If
+        
+        eccLUT(x) = tmpVal
         
     Next x
     
@@ -731,82 +750,9 @@ Private Sub fastLayerExposureContrast(ByRef targetLayer As pdLayer, ByRef target
     For y = 0 To finalY
             
         'Apply the changes in one fell swoop
-        ImageData(QuickVal, y) = ecLUT(ImageData(QuickVal, y))
-        ImageData(QuickVal + 1, y) = ecLUT(ImageData(QuickVal + 1, y))
-        ImageData(QuickVal + 2, y) = ecLUT(ImageData(QuickVal + 2, y))
-        
-    Next y
-    Next x
-    
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    
-End Sub
-
-'Super-fast, no-frills saturation adjustment, designed for non-destructive compositing purposes
-Private Sub fastLayerSaturation(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
-
-    'Create a local array and point it at the target layer's DIB
-    Dim ImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, targetDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-    
-    'Local loop variables
-    Dim x As Long, y As Long, finalX As Long, finalY As Long
-    finalX = targetDIB.getDIBWidth - 1
-    finalY = targetDIB.getDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = targetDIB.getDIBColorDepth \ 8
-        
-    'Color values
-    Dim r As Long, g As Long, b As Long
-    Dim rFloat As Single, gFloat As Single, bFloat As Single
-    Dim h As Single, s As Single, v As Single
-    
-    'Adjustment values
-    Dim saturationAdjustment As Double
-    saturationAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_SATURATION) / 200
-    
-    'Division lookup table
-    Dim fastDiv() As Single
-    ReDim fastDiv(0 To 255) As Single
-    
-    For x = 0 To 255
-        fastDiv(x) = x / 255
-    Next x
-    
-    'Now we can loop through each pixel in the image, converting values as we go
-    For x = 0 To finalX
-        QuickVal = x * qvDepth
-    For y = 0 To finalY
-            
-        'Retrieve RGB values
-        r = ImageData(QuickVal, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal + 2, y)
-        
-        'Convert to HSV
-        fastRGBtoHSV fastDiv(r), fastDiv(g), fastDiv(b), h, s, v
-        
-        'Calculate a new saturation
-        s = s + saturationAdjustment
-        If s < 1 Then
-            If s < 0 Then s = 0
-        Else
-            s = 1
-        End If
-        
-        'Convert back to RGB
-        fHSVtoRGB h, s, v, rFloat, gFloat, bFloat
-        
-        'Apply the new values to the image
-        ImageData(QuickVal, y) = rFloat * 255
-        ImageData(QuickVal + 1, y) = gFloat * 255
-        ImageData(QuickVal + 2, y) = bFloat * 255
+        ImageData(QuickVal, y) = eccLUT(ImageData(QuickVal, y))
+        ImageData(QuickVal + 1, y) = eccLUT(ImageData(QuickVal + 1, y))
+        ImageData(QuickVal + 2, y) = eccLUT(ImageData(QuickVal + 2, y))
         
     Next y
     Next x

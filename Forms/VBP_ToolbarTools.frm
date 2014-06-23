@@ -328,7 +328,7 @@ Begin VB.Form toolbar_Tools
          AutoSize        =   -1  'True
          BackColor       =   &H80000005&
          BackStyle       =   0  'Transparent
-         Caption         =   "saturation:"
+         Caption         =   "clarity:"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -341,10 +341,10 @@ Begin VB.Form toolbar_Tools
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   4
-         Left            =   4545
+         Left            =   4890
          TabIndex        =   40
          Top             =   210
-         Width           =   930
+         Width           =   585
       End
       Begin VB.Label lblOptions 
          Alignment       =   1  'Right Justify
