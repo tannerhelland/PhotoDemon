@@ -50,9 +50,6 @@ Begin VB.Form FormBilateral
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   3
-      Max             =   25
-      Value           =   9
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -62,6 +59,9 @@ Begin VB.Form FormBilateral
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   3
+      Max             =   25
+      Value           =   9
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -80,10 +80,6 @@ Begin VB.Form FormBilateral
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   255
-      SigDigits       =   2
-      Value           =   10
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -93,6 +89,10 @@ Begin VB.Form FormBilateral
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   255
+      SigDigits       =   2
+      Value           =   10
    End
    Begin PhotoDemon.sliderTextCombo sltSpatialPower 
       Height          =   495
@@ -102,10 +102,6 @@ Begin VB.Form FormBilateral
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   255
-      SigDigits       =   2
-      Value           =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -115,6 +111,10 @@ Begin VB.Form FormBilateral
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   255
+      SigDigits       =   2
+      Value           =   2
    End
    Begin PhotoDemon.sliderTextCombo sltColorFactor 
       Height          =   495
@@ -124,10 +124,6 @@ Begin VB.Form FormBilateral
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   255
-      SigDigits       =   2
-      Value           =   50
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -137,6 +133,10 @@ Begin VB.Form FormBilateral
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   255
+      SigDigits       =   2
+      Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltColorPower 
       Height          =   495
@@ -146,10 +146,6 @@ Begin VB.Form FormBilateral
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   255
-      SigDigits       =   2
-      Value           =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -159,6 +155,10 @@ Begin VB.Form FormBilateral
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   255
+      SigDigits       =   2
+      Value           =   2
    End
    Begin VB.Label Label2 
       AutoSize        =   -1  'True
@@ -268,7 +268,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Bilateral Smoothing Form
-'Copyright Â©2014 by Audioglider
+'Copyright ©2014 by Audioglider
 'Created: 19/June/14
 'Last updated: 19/June/14
 'Last update: Initial build
@@ -322,13 +322,13 @@ Private Sub initColorFunc(ByVal colorFactor As Double, ByVal colorPower As Doubl
 End Sub
 
 'Parameters: * kernelRadius [size of square for limiting surrounding pixels that take part in calculation.
-'                            NOTE: Small values < 9 on high-res images do not provide significant results.]
-'            * spatialFactor [determines smoothing power within a color domain (neighborhood pixels of similar color]
-'            * spatialPower [exponent power, used in spatial function calculation]
-'            * colorFactor [determines the variance of color for a color domain]
-'            * colorPower [exponent power, used in color function calculation]
+' NOTE: Small values < 9 on high-res images do not provide significant results.]
+' * spatialFactor [determines smoothing power within a color domain (neighborhood pixels of similar color]
+' * spatialPower [exponent power, used in spatial function calculation]
+' * colorFactor [determines the variance of color for a color domain]
+' * colorPower [exponent power, used in color function calculation]
 Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-    
+        
     If Not toPreview Then Message "Applying bilateral smoothing..."
     
     'Create a local array and point it at the pixel data of the current image
@@ -361,7 +361,7 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
@@ -460,18 +460,19 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Bilateral smooth", , buildParams(sltRadius.value, sltSpatialFactor.value, sltSpatialPower.value, sltColorFactor.value, sltColorPower.value), UNDO_LAYER
+    Process "Bilateral smoothing", , buildParams(sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value), UNDO_LAYER
 End Sub
+
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltRadius.value = 9
-    sltSpatialFactor.value = 10
-    sltColorFactor.value = 50
-    sltSpatialPower.value = 2
-    sltColorPower.value = 2
+    sltRadius.Value = 9
+    sltSpatialFactor.Value = 10
+    sltColorFactor.Value = 50
+    sltSpatialPower.Value = 2
+    sltColorPower.Value = 2
 End Sub
 
 Private Sub Form_Activate()
@@ -510,8 +511,9 @@ Private Sub sltSpatialFactor_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then BilateralSmoothing sltRadius.value, sltSpatialFactor.value, sltSpatialPower.value, sltColorFactor.value, sltColorPower.value, True, fxPreview
+    If cmdBar.previewsAllowed Then BilateralSmoothing sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, fxPreview
 End Sub
+
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
