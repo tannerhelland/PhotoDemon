@@ -1891,6 +1891,9 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     cMouseEvents.setSystemCursor IDC_SIZEALL
             
             End Select
+            
+        Case Else
+            cMouseEvents.setSystemCursor IDC_ARROW
                     
     End Select
 
