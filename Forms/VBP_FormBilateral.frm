@@ -90,8 +90,8 @@ Begin VB.Form FormBilateral
          Strikethrough   =   0   'False
       EndProperty
       Min             =   1
-      Max             =   255
-      SigDigits       =   2
+      Max             =   100
+      SigDigits       =   1
       Value           =   10
    End
    Begin PhotoDemon.sliderTextCombo sltSpatialPower 
@@ -112,7 +112,6 @@ Begin VB.Form FormBilateral
          Strikethrough   =   0   'False
       EndProperty
       Min             =   1
-      Max             =   255
       SigDigits       =   2
       Value           =   2
    End
@@ -134,8 +133,8 @@ Begin VB.Form FormBilateral
          Strikethrough   =   0   'False
       EndProperty
       Min             =   1
-      Max             =   255
-      SigDigits       =   2
+      Max             =   100
+      SigDigits       =   1
       Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltColorPower 
@@ -156,7 +155,6 @@ Begin VB.Form FormBilateral
          Strikethrough   =   0   'False
       EndProperty
       Min             =   1
-      Max             =   255
       SigDigits       =   2
       Value           =   2
    End
@@ -328,7 +326,11 @@ End Sub
 ' * colorFactor [determines the variance of color for a color domain]
 ' * colorPower [exponent power, used in color function calculation]
 Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
-        
+    
+    'As a convenience to the user, we display spatial and color factors with a [0, 100].  The color factor can
+    ' actually be bumped a bit, to [0, 255], so apply that now.
+    colorFactor = colorFactor * 2.55
+    
     If Not toPreview Then Message "Applying bilateral smoothing..."
     
     'Create a local array and point it at the pixel data of the current image
