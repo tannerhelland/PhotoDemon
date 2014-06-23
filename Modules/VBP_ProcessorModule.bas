@@ -1243,7 +1243,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormNoise.AddNoise cParams.GetLong(1), cParams.GetBool(2)
             End If
-            
+        
+        Case "Bilateral smoothing"
+            If showDialog Then
+                showPDDialog vbModal, FormBilateral
+            Else
+                FormBilateral.BilateralSmoothing cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
+            End If
+        
         Case "Median"
             If showDialog Then
                 FormMedian.showMedianDialog 50
