@@ -244,17 +244,33 @@ Public Function isMetadataFinished() As Boolean
         Exit Function
     End If
     
-    If InStr(1, tmpMetadata, "{ready" & m_LastRequestID & "}", vbBinaryCompare) > 0 Then
+    'Different verification modes require different checks for completion.
+    If captureModeActive Then
         
-        'Terminate the relevant mode
-        If captureModeActive Then captureModeActive = False
-        If verificationModeActive Then verificationModeActive = False
-        If databaseModeActive Then databaseModeActive = False
-        
-        isMetadataFinished = True
+        If InStr(1, tmpMetadata, "{ready" & m_LastRequestID & "}", vbBinaryCompare) > 0 Then
+            
+            'Terminate the relevant mode
+            captureModeActive = False
+            isMetadataFinished = True
+            
+        Else
+            isMetadataFinished = False
+        End If
         
     Else
-        isMetadataFinished = False
+    
+        If InStr(1, tmpMetadata, "{ready}", vbBinaryCompare) > 0 Then
+            
+            'Terminate the relevant mode
+            If verificationModeActive Then verificationModeActive = False
+            If databaseModeActive Then databaseModeActive = False
+            
+            isMetadataFinished = True
+            
+        Else
+            isMetadataFinished = False
+        End If
+    
     End If
     
 End Function
