@@ -365,7 +365,17 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-    If (Button And pdLeftButton) <> 0 Then m_MouseDown = False
+    
+    If ((Button And pdLeftButton) <> 0) And m_MouseDown Then
+        
+        'Perform a final mouse move update at the reported x/y position.  If intensive processing occurred while the slider was being
+        ' interacted with, this will ensure that the mouse location at its exact point of release is used.
+        Value = (controlMax - controlMin) * (((x + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
+        
+        m_MouseDown = False
+        
+    End If
+    
 End Sub
 
 Private Function isMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
