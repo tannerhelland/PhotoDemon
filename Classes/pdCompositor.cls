@@ -643,7 +643,7 @@ End Sub
 'Given a layer containing one or more non-destructive effect parameters, and a target DIB, apply the layer's specified FX against
 ' the DIB.  Why supply the DIB separately?  Because during viewport composition, all layers are resized and/or cropped to their
 ' size relevant to the viewport.  By doing this, we hugely decrease the performance hit from non-destructive edit calculations.
-Private Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB)
+Public Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB)
 
     'Start by unpremultiplying the layer alpha
     If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha False
