@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Input Handler (mouse, pen, etc) class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
-'Last updated: 16/June/14
-'Last update: start extending key tracking functions so we can add more key bundles to the tracker
+'Last updated: 25/June/14
+'Last update: use proper Hi/LoWord macros when extracting x/y locations from the lParam of mouse messages
 '
 'As I get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
 ' become clear.  Until now, a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel)
@@ -792,6 +792,22 @@ Private Function isRelevantKeyAffected(ByVal vKeyFromHook As Long, ParamArray li
 
 End Function
 
+Private Function getHiWord(ByVal lParam As Long) As Integer
+    If lParam And &H80000000 Then
+        getHiWord = (lParam \ 65535) - 1
+    Else
+        getHiWord = lParam \ 65535
+    End If
+End Function
+
+Private Function getLoWord(ByVal lParam As Long) As Integer
+    If lParam And &H8000& Then
+        getLoWord = &H8000 Or (lParam And &H7FFF&)
+    Else
+        getLoWord = lParam And &HFFFF&
+    End If
+End Function
+
 'This routine MUST BE KEPT as the next-to-last routine for this form. Its ordinal position determines its ability to hook properly.
 Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal lHookType As eHookType, ByRef lParamUser As Long)
 '*************************************************************************************************
@@ -1069,8 +1085,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' take the x/y values from the message and report them for now.
                 
                 'X/Y coords are packed into lParam as hi/lowords
-                mouseX = lParam And &HFFFF&
-                mouseY = lParam \ &H10000
+                Dim mouseXInt As Integer, mouseYInt As Integer
+                mouseXInt = getLoWord(lParam)
+                mouseYInt = getHiWord(lParam)
                 
                 'If the user has not moved the mouse an appreciable amount since the last MouseDown event,
                 ' call this a click and raise the corresponding Click() event.
@@ -1080,12 +1097,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' processing if the _Click event is implemented.
                 If m_MouseMoveCount < 2 Then
                     
-                    RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseX, mouseY, True)
-                    RaiseEvent ClickCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                    RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt, True)
+                    RaiseEvent ClickCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt)
                 
                 'The mouse has moved too much, so a Click event will not be raised.  Only raise a MouseUp event.
                 Else
-                    RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseX, mouseY, False)
+                    RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt, False)
                 End If
                 
             'Double-clicks
