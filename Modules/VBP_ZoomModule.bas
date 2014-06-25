@@ -210,9 +210,15 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
     zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
 
-    'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
-    srcWidth = srcImage.imgViewport.targetWidth / zoomVal
-    srcHeight = srcImage.imgViewport.targetHeight / zoomVal
+    'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient.
+    ' Because rounding errors may occur with cerain image sizes, apply a special check when zoom = 100.
+    If srcImage.currentZoomValue = g_Zoom.getZoom100Index Then
+        srcWidth = srcImage.imgViewport.targetWidth
+        srcHeight = srcImage.imgViewport.targetHeight
+    Else
+        srcWidth = Int(srcImage.imgViewport.targetWidth / zoomVal)
+        srcHeight = Int(srcImage.imgViewport.targetHeight / zoomVal)
+    End If
         
     'These variables are the offset, as determined by the scroll bar values
     If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then srcX = dstCanvas.getScrollValue(PD_HORIZONTAL) Else srcX = 0
@@ -220,13 +226,13 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
         
     'Before rendering the image, apply a checkerboard pattern to the target image's back buffer
     Drawing.fillDIBWithAlphaCheckerboard srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
-        
+    
     'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
     ' in the future... but for now, we leave it, just in case.
     If g_GDIPlusAvailable Then
         
         'Use our new rect-specific compositor to retrieve only the relevant section of the current viewport
-        srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth + 0.5, srcImage.imgViewport.targetHeight + 0.5, srcX, srcY, srcWidth, srcHeight, IIf(zoomVal <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
+        srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(zoomVal <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
         
     'This is an emergency fallback, only.  PD probably won't work at all without GDI+ - consider yourself warned!
     Else
