@@ -3,10 +3,10 @@ Attribute VB_Name = "Tool_Support"
 'Helper functions for various PhotoDemon tools
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/February/14
-'Last updated: 30/May/14
-'Last update: fix bogus Shift-Key modifier calculations when resizing a layer via the top-left or top-right corners
+'Last updated: 25/June/14
+'Last update: add new makeQuickFixesPermanent() function
 '
-'To keep the pdCanvas user control codebase lean, much of its MouseMove events redirect here, to specialized
+'To keep the pdCanvas user control codebase lean, many of its MouseMove events redirect here, to specialized
 ' functions that take mouse actions on the canvas and translate them into tool actions.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -267,3 +267,20 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
     
 End Sub
 
+'Assuming the user has made one or more edits via the Quick-Fix function, permanently apply those changes to the image now.
+Public Sub makeQuickFixesPermanent()
+
+    'Prepare a PD Compositor object, which will handle the actual compositing step
+    Dim tmpCompositor As pdCompositor
+    Set tmpCompositor = New pdCompositor
+    
+    'Apply the quick-fix adjustments
+    tmpCompositor.applyNDFXToDIB pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveDIB
+    
+    'Reset the quick-fix settings stored inside the pdLayer object
+    Dim i As Long
+    For i = 0 To toolbar_Tools.sltQuickFix.Count - 1
+        pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState i, 0
+    Next i
+    
+End Sub

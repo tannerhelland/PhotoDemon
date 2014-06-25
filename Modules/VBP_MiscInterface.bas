@@ -637,6 +637,10 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                     If Not toolbar_Tools.sltQuickFix(i).Enabled Then toolbar_Tools.sltQuickFix(i).Enabled = True
                 Next i
                 
+                For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
+                    If Not toolbar_Tools.cmdQuickFix(i).Enabled Then toolbar_Tools.cmdQuickFix(i).Enabled = True
+                Next i
+                
                 'Disable automatic NDFX syncing, then update all sliders to match the current layer's values
                 With toolbar_Tools
                     .setNDFXControlState False
@@ -654,6 +658,10 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                 'Disable all non-destructive FX controls
                 For i = 0 To toolbar_Tools.sltQuickFix.Count - 1
                     If toolbar_Tools.sltQuickFix(i).Enabled Then toolbar_Tools.sltQuickFix(i).Enabled = False
+                Next i
+                
+                For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
+                    If toolbar_Tools.cmdQuickFix(i).Enabled Then toolbar_Tools.cmdQuickFix(i).Enabled = False
                 Next i
                 
             End If

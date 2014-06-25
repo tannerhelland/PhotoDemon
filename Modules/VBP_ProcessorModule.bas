@@ -354,8 +354,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         
         
-        'TOOLS MENU FUNCTIONS
-        ' This includes things like macro recording.  These actions are never recorded.
+        'TOOL (AND TOOL MENU) FUNCTIONS
+        ' Macro recording actions.  Note that macro actions themselves are never recorded.
         Case "Start macro recording"
             StartMacro
         
@@ -364,7 +364,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Play macro"
             PlayMacro
-            
+        
+        
+        'Quick-fix tools
+        Case "Make quick-fixes permanent"
+            Tool_Support.makeQuickFixesPermanent
         
         
         'IMAGE MENU FUNCTIONS
@@ -1546,7 +1550,7 @@ MainErrHandler:
 End Sub
 
 'Sometimes, external functions may want to trigger Undo/Redo creation without the rigamarole of a full processor call.  This is often
-' necesssary when the user has made one or more non-destructive changes to an image, and they are about to apply a destructive edit,
+' necessary when the user has made one or more non-destructive changes to an image, and they are about to apply a destructive edit,
 ' or they are switching image/layers and we need to process the current one first.
 '
 'Undo handling for such functions happens in two steps: setting a checkpoint (which the Process function will do automatically after

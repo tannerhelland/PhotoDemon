@@ -213,9 +213,9 @@ Begin VB.Form toolbar_Tools
          CausesValidation=   0   'False
          Height          =   495
          Index           =   0
-         Left            =   1260
+         Left            =   1980
          TabIndex        =   36
-         Top             =   120
+         Top             =   105
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
@@ -236,9 +236,9 @@ Begin VB.Form toolbar_Tools
          CausesValidation=   0   'False
          Height          =   495
          Index           =   1
-         Left            =   1260
+         Left            =   1980
          TabIndex        =   37
-         Top             =   720
+         Top             =   705
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
@@ -258,9 +258,9 @@ Begin VB.Form toolbar_Tools
          CausesValidation=   0   'False
          Height          =   495
          Index           =   2
-         Left            =   5520
+         Left            =   6240
          TabIndex        =   39
-         Top             =   120
+         Top             =   105
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
@@ -280,9 +280,9 @@ Begin VB.Form toolbar_Tools
          CausesValidation=   0   'False
          Height          =   495
          Index           =   3
-         Left            =   5520
+         Left            =   6240
          TabIndex        =   41
-         Top             =   720
+         Top             =   705
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
@@ -297,6 +297,60 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Min             =   -100
          Max             =   100
+      End
+      Begin PhotoDemon.jcbutton cmdQuickFix 
+         Height          =   540
+         Index           =   0
+         Left            =   120
+         TabIndex        =   43
+         Top             =   75
+         Width           =   600
+         _ExtentX        =   1058
+         _ExtentY        =   953
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483643
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarTools.frx":4A2C
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ColorScheme     =   3
+      End
+      Begin PhotoDemon.jcbutton cmdQuickFix 
+         Height          =   540
+         Index           =   1
+         Left            =   120
+         TabIndex        =   44
+         Top             =   675
+         Width           =   600
+         _ExtentX        =   1058
+         _ExtentY        =   953
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483643
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarTools.frx":577E
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ColorScheme     =   3
       End
       Begin VB.Label lblOptions 
          Alignment       =   1  'Right Justify
@@ -317,7 +371,7 @@ Begin VB.Form toolbar_Tools
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   5
-         Left            =   4680
+         Left            =   5400
          TabIndex        =   42
          Top             =   810
          Width           =   795
@@ -341,7 +395,7 @@ Begin VB.Form toolbar_Tools
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   4
-         Left            =   4890
+         Left            =   5610
          TabIndex        =   40
          Top             =   210
          Width           =   585
@@ -365,7 +419,7 @@ Begin VB.Form toolbar_Tools
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   3
-         Left            =   450
+         Left            =   1170
          TabIndex        =   38
          Top             =   810
          Width           =   765
@@ -389,7 +443,7 @@ Begin VB.Form toolbar_Tools
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   2
-         Left            =   360
+         Left            =   1080
          TabIndex        =   35
          Top             =   210
          Width           =   855
@@ -570,9 +624,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":4A2C
+         ItemData        =   "VBP_ToolbarTools.frx":64D0
          Left            =   120
-         List            =   "VBP_ToolbarTools.frx":4A2E
+         List            =   "VBP_ToolbarTools.frx":64D2
          Style           =   2  'Dropdown List
          TabIndex        =   20
          TabStop         =   0   'False
@@ -593,9 +647,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":4A30
+         ItemData        =   "VBP_ToolbarTools.frx":64D4
          Left            =   8340
-         List            =   "VBP_ToolbarTools.frx":4A32
+         List            =   "VBP_ToolbarTools.frx":64D6
          Style           =   2  'Dropdown List
          TabIndex        =   2
          TabStop         =   0   'False
@@ -617,9 +671,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":4A34
+         ItemData        =   "VBP_ToolbarTools.frx":64D8
          Left            =   5640
-         List            =   "VBP_ToolbarTools.frx":4A36
+         List            =   "VBP_ToolbarTools.frx":64DA
          Style           =   2  'Dropdown List
          TabIndex        =   1
          TabStop         =   0   'False
@@ -1088,6 +1142,62 @@ Private Sub chkLayerNodes_Click()
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Layer nodes toggle"
 End Sub
 
+Private Sub cmdQuickFix_Click(Index As Integer)
+
+    'Do nothing unless an image has been loaded
+    If pdImages(g_CurrentImage) Is Nothing Then Exit Sub
+    If Not pdImages(g_CurrentImage).loadedSuccessfully Then Exit Sub
+
+    Dim i As Long
+
+    'Regardless of the action we're applying, we start by disabling all auto-refreshes
+    setNDFXControlState False
+    
+    Select Case Index
+    
+        'Reset quick-fix settings
+        Case 0
+            
+            'Resetting does not affect the Undo/Redo chain, so simply reset all sliders, then redraw the screen
+            For i = 0 To sltQuickFix.Count - 1
+                
+                sltQuickFix(i).Value = 0
+                pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState i, 0
+                
+            Next i
+            
+        'Make quick-fix settings permanent
+        Case 1
+            
+            'First, make sure at least one or more quick-fixes are active
+            If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState Then
+                
+                'Back-up the current quick-fix settings (because they will be reset after being applied to the image)
+                evaluateImageCheckpoint
+                
+                'Now we do something odd; we reset all sliders, then forcibly set an image checkpoint.  This prevents PD's internal
+                ' processor from auto-detecting the slider resets and applying *another* entry to the Undo/Redo chain.
+                For i = 0 To sltQuickFix.Count - 1
+                    sltQuickFix(i).Value = 0
+                Next i
+                
+                setImageCheckpoint
+                
+                'Ask the central processor to permanently apply the quick-fix changes
+                Process "Make quick-fixes permanent", , , UNDO_LAYER
+                                
+            End If
+    
+    End Select
+    
+    'Re-enable auto-refreshes
+    setNDFXControlState True
+    
+    'Redraw the viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
 Private Sub cmdTools_Click(Index As Integer)
     
     'Before changing to the new tool, see if the previously active layer has had any non-destructive changes made.
@@ -1118,10 +1228,11 @@ Private Sub Form_Load()
     
         'Tool button tooltips
         cmdTools(NAV_DRAG).ToolTip = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
-        cmdTools(NAV_DRAG).ToolTip = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
+        cmdTools(NAV_MOVE).ToolTip = g_Language.TranslateMessage("Move and resize image layers")
         cmdTools(SELECT_RECT).ToolTip = g_Language.TranslateMessage("Rectangular Selection")
         cmdTools(SELECT_CIRC).ToolTip = g_Language.TranslateMessage("Elliptical (Oval) Selection")
         cmdTools(SELECT_LINE).ToolTip = g_Language.TranslateMessage("Line Selection")
+        cmdTools(QUICK_FIX_LIGHTING).ToolTip = g_Language.TranslateMessage("Apply non-destructive lighting adjustments")
     
         'Selection visual styles (currently lightbox or highlight)
         toolbar_Tools.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
@@ -1155,6 +1266,10 @@ Private Sub Form_Load()
         toolbar_Tools.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
         toolbar_Tools.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
         toolbar_Tools.sltSelectionBorder.assignTooltip "This option adjusts the width of the selection border."
+        
+        'Quick-fix tools
+        cmdQuickFix(0).ToolTip = g_Language.TranslateMessage("Reset all quick-fix adjustment values")
+        cmdQuickFix(1).ToolTip = g_Language.TranslateMessage("Permanently apply quick-fix adjustments to the current layer.  (This may improve viewport render performance, and it can always be undone later.)")
         
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
@@ -1457,6 +1572,12 @@ End Sub
 Private Sub sltQuickFix_Change(Index As Integer)
 
     If (Not pdImages(g_CurrentImage) Is Nothing) And m_NonDestructiveFXAllowed Then
+        
+        'Even though this action is not destructive, we want to allow the user to save after making non-destructive changes.
+        If pdImages(g_CurrentImage).getSaveState Then
+            pdImages(g_CurrentImage).setSaveState False
+            syncInterfaceToCurrentImage
+        End If
         
         'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
         pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState Index, sltQuickFix(Index).Value
