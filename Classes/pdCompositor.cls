@@ -546,7 +546,7 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         .Right = srcX + srcWidth
         .Bottom = srcY + srcHeight
     End With
-    
+        
     'A few other things to note before we begin:
     ' - dstDIB will have already been created by the caller.  It may contain a background checkerboard, so we can't
     '    delete or recreate it.
@@ -554,6 +554,16 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     '    ratio will *always* be preserved by this function.
     ' - At present, GDI+ is used for all resizing.  Any other function with a StretchBlt-like interface could also
     '    be used, but GDI+ is currently the fastest method we have.
+    
+    'Check for the special case of 100% zoom (e.g. the source rect and dest rect are the same size).  When this happens, we can
+    ' shortcut our rendering by skipping the resize step entirely.
+    Dim isRectZoomless As Boolean
+    
+    If (dstWidth = srcWidth) And (dstHeight = srcHeight) Then
+        isRectZoomless = True
+    Else
+        isRectZoomless = False
+    End If
     
     'Start by creating a temporary DIB the size of the destination image (viewport).  All compositing will be done to this DIB,
     ' and as the final step, we will AlphaBlend the finished image onto dstDIB.
@@ -612,7 +622,18 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                 
                 'We now have everything we need to create a resized version of this layer!  Grab it now.
                 tmpDIB.createBlank dstRect.Right - dstRect.Left, dstRect.Bottom - dstRect.Top, 32, 0
-                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
+                
+                'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
+                ' we can completely skip the resize step and simply use BitBlt (way faster)
+                If isRectZoomless And (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
+                    BitBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
+                Else
+                    If interpolationType = InterpolationModeNearestNeighbor Then
+                        StretchBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, vbSrcCopy
+                    Else
+                        GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
+                    End If
+                End If
                 
                 'Before we can composite this temporary DIB against other DIBs, we need to check for any non-destructive FX that may be active.
                 If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, tmpDIB
