@@ -626,18 +626,67 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                 'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
                 ' we can completely skip the resize step and simply use BitBlt (way faster)
                 If isRectZoomless And (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
+                    
                     BitBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
+                    
+                    'Apply non-destructive FX now
+                    If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, tmpDIB
+                
                 Else
+                
+                    'If zoomed-out, switch to StretchBlt for performance gains.
                     If interpolationType = InterpolationModeNearestNeighbor Then
-                        StretchBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, vbSrcCopy
+                        
+                        'We are zoomed-out from the image.  Check for non-destructive FX being present.
+                        
+                        'Non-destructive FX are active.  To reduce processing time, chop out the source rectangle, apply the non-destructive FX,
+                        ' and *then* resize the data.
+                        If tmpLayerRef.getLayerNonDestructiveFXState Then
+                        
+                            'Extract the smaller source rectangle into its own DIB
+                            Dim tmpNDFXDIB As pdDIB
+                            Set tmpNDFXDIB = New pdDIB
+                            
+                            tmpNDFXDIB.createBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 32, 0
+                            BitBlt tmpNDFXDIB.getDIBDC, 0, 0, tmpNDFXDIB.getDIBWidth, tmpNDFXDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
+                            
+                            'Apply the non-destructive FX to the smaller source DIB; this is faster than applying it after the resize action,
+                            ' as we only have to process a small fraction of the pixels
+                            applyNDFXToDIB tmpLayerRef, tmpNDFXDIB
+                            
+                            'Copy the processed DIB into tmpDIB, which will be used for compositing later in this function
+                            If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
+                                StretchBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpNDFXDIB.getDIBDC, 0, 0, tmpNDFXDIB.getDIBWidth, tmpNDFXDIB.getDIBHeight, vbSrcCopy
+                            Else
+                                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpNDFXDIB, 0, 0, tmpNDFXDIB.getDIBWidth, tmpNDFXDIB.getDIBHeight, InterpolationModeNearestNeighbor
+                            End If
+                            
+                            'Erase the NDFX DIB
+                            Set tmpNDFXDIB = Nothing
+                            
+                        'Non-destructive FX are not active.  Resize the source rectangle immediately.
+                        Else
+                        
+                            'Check for non-destructive resizing.  If present, switch to GDI+; otherwise, StretchBlt is sufficient.
+                            If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
+                                StretchBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, vbSrcCopy
+                            Else
+                                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, InterpolationModeNearestNeighbor
+                            End If
+                            
+                        End If
+                    
                     Else
+                        
                         GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
+                        
+                        'Apply non-destructive FX now
+                        If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, tmpDIB
+                        
                     End If
+                    
                 End If
-                
-                'Before we can composite this temporary DIB against other DIBs, we need to check for any non-destructive FX that may be active.
-                If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, tmpDIB
-                
+                                
                 'tmpDIB now contains the chunk of this layer that appears on the viewport, with all non-destructive edits applied.
                 ' Time to composite it!
                 If tmpLayerRef.getLayerBlendMode <> BL_NORMAL Then
