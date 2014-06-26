@@ -637,9 +637,20 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
                     If Not toolbar_Tools.sltQuickFix(i).Enabled Then toolbar_Tools.sltQuickFix(i).Enabled = True
                 Next i
                 
-                For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
-                    If Not toolbar_Tools.cmdQuickFix(i).Enabled Then toolbar_Tools.cmdQuickFix(i).Enabled = True
-                Next i
+                'Quick fix buttons are only relevant if the current image has some non-destructive events applied
+                If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState() Then
+                    
+                    For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
+                        toolbar_Tools.cmdQuickFix(i).Enabled = True
+                    Next i
+                    
+                Else
+                    
+                    For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
+                        toolbar_Tools.cmdQuickFix(i).Enabled = False
+                    Next i
+                    
+                End If
                 
                 'Disable automatic NDFX syncing, then update all sliders to match the current layer's values
                 With toolbar_Tools

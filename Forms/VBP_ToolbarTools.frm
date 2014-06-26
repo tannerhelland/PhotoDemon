@@ -7,7 +7,7 @@ Begin VB.Form toolbar_Tools
    ClientHeight    =   2355
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   13665
+   ClientWidth     =   14205
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -22,7 +22,7 @@ Begin VB.Form toolbar_Tools
    MinButton       =   0   'False
    ScaleHeight     =   157
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   911
+   ScaleWidth      =   947
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
@@ -204,18 +204,18 @@ Begin VB.Form toolbar_Tools
       Left            =   0
       ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   918
+      ScaleWidth      =   950
       TabIndex        =   34
       Top             =   1020
       Visible         =   0   'False
-      Width           =   13770
+      Width           =   14250
       Begin PhotoDemon.sliderTextCombo sltQuickFix 
          CausesValidation=   0   'False
          Height          =   495
          Index           =   0
-         Left            =   1980
+         Left            =   1380
          TabIndex        =   36
-         Top             =   105
+         Top             =   90
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
@@ -231,12 +231,13 @@ Begin VB.Form toolbar_Tools
          Min             =   -2
          Max             =   2
          SigDigits       =   2
+         SliderTrackStyle=   2
       End
       Begin PhotoDemon.sliderTextCombo sltQuickFix 
          CausesValidation=   0   'False
          Height          =   495
          Index           =   1
-         Left            =   1980
+         Left            =   1380
          TabIndex        =   37
          Top             =   705
          Width           =   2670
@@ -258,9 +259,9 @@ Begin VB.Form toolbar_Tools
          CausesValidation=   0   'False
          Height          =   495
          Index           =   2
-         Left            =   6240
+         Left            =   5640
          TabIndex        =   39
-         Top             =   105
+         Top             =   90
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
@@ -280,7 +281,7 @@ Begin VB.Form toolbar_Tools
          CausesValidation=   0   'False
          Height          =   495
          Index           =   3
-         Left            =   6240
+         Left            =   5640
          TabIndex        =   41
          Top             =   705
          Width           =   2670
@@ -299,15 +300,15 @@ Begin VB.Form toolbar_Tools
          Max             =   100
       End
       Begin PhotoDemon.jcbutton cmdQuickFix 
-         Height          =   540
+         Height          =   570
          Index           =   0
-         Left            =   120
+         Left            =   13080
          TabIndex        =   43
          Top             =   75
-         Width           =   600
-         _ExtentX        =   1058
-         _ExtentY        =   953
-         ButtonStyle     =   7
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+         ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -326,15 +327,15 @@ Begin VB.Form toolbar_Tools
          ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdQuickFix 
-         Height          =   540
+         Height          =   570
          Index           =   1
-         Left            =   120
+         Left            =   13080
          TabIndex        =   44
-         Top             =   675
-         Width           =   600
-         _ExtentX        =   1058
-         _ExtentY        =   953
-         ButtonStyle     =   7
+         Top             =   705
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+         ButtonStyle     =   13
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -351,6 +352,108 @@ Begin VB.Form toolbar_Tools
          PictureEffectOnDown=   0
          CaptionEffects  =   0
          ColorScheme     =   3
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   4
+         Left            =   9960
+         TabIndex        =   45
+         Top             =   90
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   -100
+         Max             =   100
+         SliderTrackStyle=   3
+         GradientColorLeft=   16752699
+         GradientColorRight=   2990335
+         GradientColorMiddle=   16777215
+         GradientMiddleValue=   0
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   5
+         Left            =   9960
+         TabIndex        =   46
+         Top             =   705
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   -100
+         Max             =   100
+         SliderTrackStyle=   3
+         GradientColorLeft=   15102446
+         GradientColorRight=   8253041
+         GradientColorMiddle=   16777215
+         GradientMiddleValue=   0
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "temperature:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   7
+         Left            =   8775
+         TabIndex        =   48
+         Top             =   195
+         Width           =   1140
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "tint:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   6
+         Left            =   9570
+         TabIndex        =   47
+         Top             =   810
+         Width           =   345
       End
       Begin VB.Label lblOptions 
          Alignment       =   1  'Right Justify
@@ -371,7 +474,7 @@ Begin VB.Form toolbar_Tools
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   5
-         Left            =   5400
+         Left            =   4800
          TabIndex        =   42
          Top             =   810
          Width           =   795
@@ -395,9 +498,9 @@ Begin VB.Form toolbar_Tools
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   4
-         Left            =   5610
+         Left            =   5010
          TabIndex        =   40
-         Top             =   210
+         Top             =   195
          Width           =   585
       End
       Begin VB.Label lblOptions 
@@ -419,7 +522,7 @@ Begin VB.Form toolbar_Tools
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   3
-         Left            =   1170
+         Left            =   570
          TabIndex        =   38
          Top             =   810
          Width           =   765
@@ -443,9 +546,9 @@ Begin VB.Form toolbar_Tools
          ForeColor       =   &H00606060&
          Height          =   240
          Index           =   2
-         Left            =   1080
+         Left            =   480
          TabIndex        =   35
-         Top             =   210
+         Top             =   195
          Width           =   855
       End
    End
@@ -461,11 +564,11 @@ Begin VB.Form toolbar_Tools
       Left            =   15
       ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   918
+      ScaleWidth      =   950
       TabIndex        =   25
       Top             =   1020
       Visible         =   0   'False
-      Width           =   13770
+      Width           =   14250
       Begin PhotoDemon.smartCheckBox chkLayerBorder 
          Height          =   480
          Left            =   6480
@@ -605,11 +708,11 @@ Begin VB.Form toolbar_Tools
       Left            =   15
       ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   918
+      ScaleWidth      =   950
       TabIndex        =   0
       Top             =   1020
       Visible         =   0   'False
-      Width           =   13770
+      Width           =   14250
       Begin VB.ComboBox cmbSelRender 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
@@ -1092,8 +1195,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tools Toolbox
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 03/October/13
-'Last updated: 02/May/14
-'Last update: started adding additional options for the "move/size" tool.
+'Last updated: 26/June/14
+'Last update: add temperature and tint to the Quick Fix tool selection; minor UI adjustments
 '
 'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind the MDI model,
 ' and all toolbars were moved to their own forms.
@@ -1189,6 +1292,11 @@ Private Sub cmdQuickFix_Click(Index As Integer)
             End If
     
     End Select
+    
+    'After one of these buttons has been used, all quick-fix values will be reset - so we can disable the buttons accordingly.
+    For i = 0 To cmdQuickFix.Count - 1
+        If cmdQuickFix(i).Enabled Then cmdQuickFix(i).Enabled = False
+    Next i
     
     'Re-enable auto-refreshes
     setNDFXControlState True
@@ -1573,17 +1681,38 @@ Private Sub sltQuickFix_Change(Index As Integer)
 
     If (Not pdImages(g_CurrentImage) Is Nothing) And m_NonDestructiveFXAllowed Then
         
-        'Even though this action is not destructive, we want to allow the user to save after making non-destructive changes.
-        If pdImages(g_CurrentImage).getSaveState Then
-            pdImages(g_CurrentImage).setSaveState False
-            syncInterfaceToCurrentImage
-        End If
+        'Check the state of the layer's non-destructive FX tracker before making any changes
+        Dim initFXState As Boolean
+        initFXState = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState
         
         'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
         pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState Index, sltQuickFix(Index).Value
         
         'Redraw the viewport
         ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+        'If the layer now has non-destructive effects active, enable the quick fix buttons (if they aren't already)
+        Dim i As Long
+        
+        If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState Then
+        
+            For i = 0 To cmdQuickFix.Count - 1
+                If Not cmdQuickFix(i).Enabled Then cmdQuickFix(i).Enabled = True
+            Next i
+        
+        Else
+            
+            For i = 0 To cmdQuickFix.Count - 1
+                If cmdQuickFix(i).Enabled Then cmdQuickFix(i).Enabled = False
+            Next i
+        
+        End If
+        
+        'Even though this action is not destructive, we want to allow the user to save after making non-destructive changes.
+        If pdImages(g_CurrentImage).getSaveState And (pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState <> initFXState) Then
+            pdImages(g_CurrentImage).setSaveState False
+            syncInterfaceToCurrentImage
+        End If
         
     End If
 

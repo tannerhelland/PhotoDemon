@@ -675,10 +675,10 @@ Public Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB
     If (parentLayer.getLayerNonDestructiveFXValue(NDFX_EXPOSURE) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_CONTRAST) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_CLARITY) <> 0) Then
         fastLayerExposureContrastClarity parentLayer, targetDIB
     End If
-        
-    'Vibrance
-    If (parentLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE) <> 0) Then
-        fastLayerVibrance parentLayer, targetDIB
+    
+    'Vibrance, temperature, tint
+    If (parentLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_TEMPERATURE) <> 0) Or (parentLayer.getLayerNonDestructiveFXValue(NDFX_TINT) <> 0) Then
+        fastLayerVibranceTemperatureTint parentLayer, targetDIB
     End If
     
     'Re-premultiply alpha
@@ -686,7 +686,9 @@ Public Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB
 
 End Sub
 
-'Super-fast, no-frills brightness and/or contrast adjustment, designed for non-destructive compositing purposes
+'Super-fast, no-frills adjustment for Exposure, Contrast, and Clarity.
+' This function was designed for non-destructive compositing purposes, so it takes some shortcuts that PhotoDemon's dedicated functions
+' for these operations do not.  As such, do not expect it to output identical results.
 Private Sub fastLayerExposureContrastClarity(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
 
     'Create a local array and point it at the target layer's DIB
@@ -712,59 +714,68 @@ Private Sub fastLayerExposureContrastClarity(ByRef targetLayer As pdLayer, ByRef
     clarityAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_CLARITY)
     
     'Look-up tables are used to accelerate this function.
-    Dim eccLUT(0 To 255) As Byte
+    Dim eccLUT() As Byte
+    ReDim eccLUT(0 To 255) As Byte
     Dim tmpVal As Double
     
     For x = 0 To 255
         
         'Calculate exposure
         If exposureAdjustment <> 0 Then
+            
             tmpVal = x / 255
             tmpVal = tmpVal * 2 ^ (exposureAdjustment)
             tmpVal = tmpVal * 255
+            
+            'Crop the lookup value to [0, 255] range
+            If tmpVal > 255 Then
+                tmpVal = 255
+            ElseIf tmpVal < 0 Then
+                tmpVal = 0
+            End If
+        
         Else
             tmpVal = x
         End If
-        
-        'Crop the lookup value to [0, 255] range
-        If tmpVal > 255 Then
-            tmpVal = 255
-        ElseIf tmpVal < 0 Then
-            tmpVal = 0
-        End If
-        
+                
         'Calculate contrast
         If contrastAdjustment <> 0 Then
+            
             tmpVal = tmpVal + (((tmpVal - 127) * contrastAdjustment) \ 100)
-        End If
         
-        'Crop the lookup value to [0, 255] range
-        If tmpVal > 255 Then
-            tmpVal = 255
-        ElseIf tmpVal < 0 Then
-            tmpVal = 0
+            'Crop the lookup value to [0, 255] range
+            If tmpVal > 255 Then
+                tmpVal = 255
+            ElseIf tmpVal < 0 Then
+                tmpVal = 0
+            End If
+        
         End If
         
         'Calculate clarity.  Clarity is simply a contrast adjustment limited to midtones.  Values at 127 are processed
         ' most strongly, with a linear decrease as input values approach 0 or 255.  Also, I reduce the strength of the
         ' adjustment by 20% to prevent blowout or gray-washing (for high or low adjustments, respectively).
-        If x < 127 Then
-            tmpVal = tmpVal + (tmpVal / 127) * (((tmpVal - 127) * clarityAdjustment) \ 100) * 0.8
-        Else
-            tmpVal = tmpVal + ((255 - tmpVal) / 127) * (((tmpVal - 127) * clarityAdjustment) \ 100) * 0.8
-        End If
+        If clarityAdjustment <> 0 Then
+            
+            If x < 127 Then
+                tmpVal = tmpVal + (tmpVal / 127) * (((tmpVal - 127) * clarityAdjustment) \ 100) * 0.8
+            Else
+                tmpVal = tmpVal + ((255 - tmpVal) / 127) * (((tmpVal - 127) * clarityAdjustment) \ 100) * 0.8
+            End If
+            
+            'Crop the lookup value to [0, 255] range
+            If tmpVal > 255 Then
+                tmpVal = 255
+            ElseIf tmpVal < 0 Then
+                tmpVal = 0
+            End If
         
-        'Crop the lookup value to [0, 255] range
-        If tmpVal > 255 Then
-            tmpVal = 255
-        ElseIf tmpVal < 0 Then
-            tmpVal = 0
         End If
         
         eccLUT(x) = tmpVal
         
     Next x
-    
+        
     'Now we can loop through each pixel in the image, converting values as we go
     For x = 0 To finalX
         QuickVal = x * qvDepth
@@ -783,8 +794,10 @@ Private Sub fastLayerExposureContrastClarity(ByRef targetLayer As pdLayer, ByRef
     
 End Sub
 
-'Super-fast, no-frills vibrance adjustment, designed for non-destructive compositing purposes
-Private Sub fastLayerVibrance(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
+'Super-fast, no-frills adjustments for Vibrance, Temperature, and Tint.
+' This function was designed for non-destructive compositing purposes, so it takes some shortcuts that PhotoDemon's dedicated functions
+' for these operations do not.  As such, do not expect it to output identical results.
+Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef targetDIB As pdDIB)
 
     'Create a local array and point it at the target layer's DIB
     Dim ImageData() As Byte
@@ -802,18 +815,79 @@ Private Sub fastLayerVibrance(ByRef targetLayer As pdLayer, ByRef targetDIB As p
     Dim QuickVal As Long, qvDepth As Long
     qvDepth = targetDIB.getDIBColorDepth \ 8
     
-    'Adjustment value
-    Dim vibranceAdjustment As Double
+    'Adjustment values
+    Dim vibranceAdjustment As Double, tempAdjustment As Double, tintAdjustment As Double
     vibranceAdjustment = -0.02 * targetLayer.getLayerNonDestructiveFXValue(NDFX_VIBRANCE)
+    tempAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_TEMPERATURE) / 5
+    tintAdjustment = targetLayer.getLayerNonDestructiveFXValue(NDFX_TINT) / 5
     
     'Color and related variables
     Dim r As Long, g As Long, b As Long, maxVal As Long
     Dim amtVal As Double, avgVal As Double
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-    Dim grayLookUp(0 To 765) As Byte
+    Dim grayLookUp() As Long
+    ReDim grayLookUp(0 To 765) As Long
     For x = 0 To 765
         grayLookUp(x) = x \ 3
+    Next x
+    
+    'To handle temperature and tint, we will also be preparing RGB lookup tables
+    Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
+    ReDim rLookup(0 To 255) As Byte
+    ReDim gLookup(0 To 255) As Byte
+    ReDim bLookup(0 To 255) As Byte
+    
+    'Populate the look-up table
+    For x = 0 To 255
+    
+        'Calculate temperature
+        If tempAdjustment = 0 Then
+            r = x
+            g = x
+            b = x
+        Else
+        
+            'Temperature affects the red and blue channels
+            r = x + tempAdjustment
+            g = x
+            b = x - tempAdjustment
+        
+        End If
+        
+        'Calculate tint.  Note that RGB will have been already set in the previous step, so we work from the already
+        ' calculated values (instead of x).
+        If tintAdjustment <> 0 Then
+        
+            'Tint affects the green channel
+            g = g + tintAdjustment
+        
+        End If
+        
+        'Clip RGB
+        If r < 0 Then
+            r = 0
+        ElseIf r > 255 Then
+            r = 255
+        End If
+        
+        If g < 0 Then
+            g = 0
+        ElseIf g > 255 Then
+            g = 255
+        End If
+        
+        If b < 0 Then
+            b = 0
+        ElseIf b > 255 Then
+            b = 255
+        End If
+        
+        'Fill the look-up table
+        rLookup(x) = Round(r)
+        gLookup(x) = Round(g)
+        bLookup(x) = Round(b)
+    
     Next x
         
     'Now we can loop through each pixel in the image, converting values as we go
@@ -826,30 +900,34 @@ Private Sub fastLayerVibrance(ByRef targetLayer As pdLayer, ByRef targetDIB As p
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        'Calculate the gray value using the look-up table
-        avgVal = grayLookUp(r + g + b)
-        maxVal = Max3Int(r, g, b)
+        If vibranceAdjustment <> 0 Then
         
-        'Get adjusted average
-        amtVal = ((Abs(maxVal - avgVal) / 127) * vibranceAdjustment)
-        
-        'Apply new vibrance
-        If r <> maxVal Then r = r + (maxVal - r) * amtVal
-        If g <> maxVal Then g = g + (maxVal - g) * amtVal
-        If b <> maxVal Then b = b + (maxVal - b) * amtVal
-        
-        'Clamp values to [0,255] range
-        If r < 0 Then r = 0
-        If r > 255 Then r = 255
-        If g < 0 Then g = 0
-        If g > 255 Then g = 255
-        If b < 0 Then b = 0
-        If b > 255 Then b = 255
-        
+            'Calculate the gray value using the look-up table
+            avgVal = grayLookUp(r + g + b)
+            maxVal = Max3Int(r, g, b)
+            
+            'Get adjusted average
+            amtVal = ((Abs(maxVal - avgVal) / 127) * vibranceAdjustment)
+            
+            'Apply new vibrance
+            If r <> maxVal Then r = r + (maxVal - r) * amtVal
+            If g <> maxVal Then g = g + (maxVal - g) * amtVal
+            If b <> maxVal Then b = b + (maxVal - b) * amtVal
+            
+            'Clamp values to [0,255] range
+            If r < 0 Then r = 0
+            If r > 255 Then r = 255
+            If g < 0 Then g = 0
+            If g > 255 Then g = 255
+            If b < 0 Then b = 0
+            If b > 255 Then b = 255
+            
+        End If
+            
         'Apply the new values
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, y) = rLookup(r)
+        ImageData(QuickVal + 1, y) = gLookup(g)
+        ImageData(QuickVal, y) = bLookup(b)
         
     Next y
     Next x
