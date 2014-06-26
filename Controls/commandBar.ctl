@@ -1083,6 +1083,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
         Else
             controlValue = xmlEngine.getUniqueTag_String(controlName, "", , "presetEntry", "id", xmlSafePresetName)
         End If
+        
         If Len(controlValue) > 0 Then
         
             'An entry exists!  Assign out its value according to the type of control this is.
