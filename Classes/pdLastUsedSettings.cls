@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Auto-Save Form Settings custom class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/September/13
-'Last updated: 14/September/13
-'Last update: initial build
+'Last updated: 26/June/14
+'Last update: add recent localization fixes from the command bar UC version of this code
 '
 'This class is a spin-off of the (far more involved) command bar user control.  Its purpose is to assist with saving
 ' and loading the values of all controls on a given form.  When the parent form is loaded, this control will search
@@ -164,8 +164,17 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
                 
             Case "TextBox"
                 controlValue = Str(eControl.Text)
+                
+            'PhotoDemon's new resize control is a special case.  Because it uses multiple properties (despite being
+            ' a single control), we must combine its various values into a single string.
+            Case "smartResize"
+                controlValue = Str(eControl.imgWidth) & "|" & Str(eControl.imgHeight) & "|" & Str(eControl.lockAspectRatio) _
+                                & "|" & Str(eControl.unitOfMeasurement) & "|" & Str(eControl.imgDPI) & "|" & Str(eControl.unitOfResolution)
         
         End Select
+        
+        'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
+        If Len(controlValue) > 0 Then controlValue = Trim$(controlValue)
         
         'If this control has a valid value property, add it to the XML file
         If Len(controlValue) > 0 Then
@@ -232,15 +241,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
     ' but we need a valid tag name for this section, and we need it before doing subsequent processing.
     Dim xmlSafePresetName As String
     xmlSafePresetName = xmlEngine.getXMLSafeTagName(presetName)
-    
-    'Start by looking for this preset name in the file.  If it does not exist, continue with the load so that the
-    ' ReadCustomPresetData event is still fired - external functions may need access to this, so they can account
-    ' for first-run behavior.
-    'If Not xmlEngine.doesTagExist("presetEntry", "id", xmlSafePresetName) Then
-        'readXMLSettings = False
-        'Exit Function
-    'End If
-    
+        
     'Iterate through each control on the form.  Check its type, then look for a relevant "Value" property in the
     ' saved preset file.
     Dim controlName As String, controlType As String, controlValue As String
@@ -294,10 +295,36 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     eControl.Value = CLng(controlValue)
                     
                 Case "ListBox", "ComboBox"
-                    eControl.ListIndex = CLng(controlValue)
+                    If CLng(controlValue) < eControl.ListCount Then
+                        eControl.ListIndex = CLng(controlValue)
+                    Else
+                        If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1
+                    End If
                     
                 Case "TextBox"
                     eControl.Text = controlValue
+                    
+                'PD's "smart resize" control has some special needs, on account of using multiple value properties
+                ' within a single control.  Parse out those values from the control string.
+                Case "smartResize"
+                    
+                    Dim cParam As pdParamString
+                    Set cParam = New pdParamString
+                    cParam.setParamString controlValue
+                    
+                    'Kind of funny, but we must always set the lockAspectRatio to FALSE in order to apply a new size
+                    ' to the image.  (If we don't do this, the new sizes will be clamped to the current image's
+                    ' aspect ratio!)
+                    eControl.lockAspectRatio = False
+                    
+                    eControl.unitOfMeasurement = cParam.GetLong(4, MU_PIXELS)
+                    eControl.unitOfResolution = cParam.GetLong(6, RU_PPI)
+                    
+                    eControl.imgDPI = cParam.GetLong(5, 96)
+                    eControl.imgWidth = cParam.GetDouble(1, 1920)
+                    eControl.imgHeight = cParam.GetDouble(2, 1080)
+                    
+                    Set cParam = Nothing
             
             End Select
 
