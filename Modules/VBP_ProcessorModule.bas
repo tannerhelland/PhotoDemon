@@ -1581,19 +1581,20 @@ Public Function evaluateImageCheckpoint() As Boolean
     ' trigger an Undo/Redo point to capture those changes.
     If (Not pdImages(previousImageID) Is Nothing) Then
         If (Not pdImages(previousImageID).getLayerByID(previousLayerID) Is Nothing) Then
+            If (Not pdImages(previousImageID).undoManager Is Nothing) Then
             
-            'If the previous layer's param string doesn't match the new one, trigger immediate creation of an Undo entry.
-            If StrComp(pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, previousLayerParamString, vbTextCompare) <> 0 Then
-                
-                'Create an Undo entry
-                pdImages(g_CurrentImage).undoManager.createUndoData "Modify layer settings", pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, UNDO_LAYERHEADER, previousLayerID, -1
-                
-                'Note that Undo data has been created, so the caller will want to re-sync the interface (to make sure Undo/Redo buttons reflect
-                ' the change).  Some functions may do this regardless of the checkpoint merit, in which case they can ignore this return value.
-                checkpointWasMeaningful = True
-                
+                'If the previous layer's param string doesn't match the new one, trigger immediate creation of an Undo entry.
+                If StrComp(pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, previousLayerParamString, vbTextCompare) <> 0 Then
+                    
+                    'Create an Undo entry
+                    pdImages(previousImageID).undoManager.createUndoData "Modify layer settings", pdImages(previousImageID).getLayerByID(previousLayerID).getLayerHeaderAsParamString, UNDO_LAYERHEADER, previousLayerID, -1
+                    
+                    'Note that Undo data has been created, so the caller will want to re-sync the interface (to make sure Undo/Redo buttons reflect
+                    ' the change).  Some functions may do this regardless of the checkpoint merit, in which case they can ignore this return value.
+                    checkpointWasMeaningful = True
+                    
+                End If
             End If
-        
         End If
     End If
     
