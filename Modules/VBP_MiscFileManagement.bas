@@ -3,8 +3,8 @@ Attribute VB_Name = "File_And_Path_Handling"
 'Miscellaneous Functions Related to File and Folder Interactions
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 30/March/14
-'Last update: add $ qualifier to various string functions (e.g. Mid$())
+'Last updated: 27/June/14
+'Last update: update makeValidWindowsFilename function with missing characters
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -353,7 +353,7 @@ End Function
 Public Sub makeValidWindowsFilename(ByRef FileName As String)
 
     Dim strInvalidChars As String
-    strInvalidChars = "/*?""<>|"
+    strInvalidChars = "\/*?""<>|:"
     
     Dim invLoc As Long
     

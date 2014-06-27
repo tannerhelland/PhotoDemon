@@ -3,8 +3,8 @@ Attribute VB_Name = "Screen_Capture"
 'Screen Capture Interface
 'Copyright ©1999-2014 by Tanner Helland
 'Created: 12/June/99
-'Last updated: 15/February/14
-'Last update: use the window manager to refresh all windows after minimize/restore fires
+'Last updated: 27/June/14
+'Last update: sanitize window titles before converting them to filenames; otherwise, subsequent Save/Save As functions may fail
 '
 'Description: this module captures the screen.  The options are fairly minimal - it only captures
 '             the entire screen, but it does give the user the option to minimize the form first.
@@ -56,7 +56,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     'If the user wants us to minimize the form, obey their orders
     If captureFullDesktop And minimizePD Then ShowWindow FormMain.hWnd, SW_MINIMIZE
     
-    'The capture happens so quickly that the message box prompting the capture will be caught in the snapshot.  Sleep for 1/4 of a second
+    'The capture happens so quickly that the message box prompting the capture will be caught in the snapshot.  Sleep for 1/2 of a second
     ' to give the message box time to disappear
     Sleep 500
     
@@ -81,7 +81,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     
     'Set the picture of the form to equal its image
     Dim tmpFilename As String
-    tmpFilename = g_UserPreferences.getTempPath & PROGRAMNAME & " Screen Capture.tmp"
+    tmpFilename = g_UserPreferences.GetTempPath & PROGRAMNAME & " Screen Capture.tmp"
     
     'Ask the DIB to write out its data to file in BMP format
     tmpDIB.writeToBitmapFile tmpFilename
@@ -101,6 +101,9 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     Else
         sTitle = windowName
     End If
+    
+    'Sanitize the calculated string to remove any potentially invalid characters
+    makeValidWindowsFilename sTitle
     
     Dim sTitlePlusDate As String
     sTitlePlusDate = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
