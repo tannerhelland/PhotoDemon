@@ -2449,8 +2449,12 @@ End Function
 'Given two DIBs, fill one with an enlarged and edge-extended version of the other.  (This is often useful when something
 ' needs to be done to an image and edge output is tough to handle.  By extending image borders and clamping the extended
 ' area to the nearest valid pixels, the function can be run without specialized edge handling.)
+'
+'Please note that the extension value is for a SINGLE side.  The function will automatically double the horizontal and
+' vertical measurements, so that matching image sides receive identical extensions.
+'
 'Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function CreateExtendedDIB(ByVal hExtend As Long, ByVal vExtend As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Long
+Public Function padDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Long
 
     'Start by resizing the destination DIB
     dstDIB.createBlank srcDIB.getDIBWidth + hExtend * 2, srcDIB.getDIBHeight + vExtend * 2, srcDIB.getDIBColorDepth
@@ -2483,7 +2487,7 @@ Public Function CreateExtendedDIB(ByVal hExtend As Long, ByVal vExtend As Long, 
     StretchBlt dstDIB.getDIBDC, srcDIB.getDIBWidth + hExtend, srcDIB.getDIBHeight + vExtend, hExtend, vExtend, srcDIB.getDIBDC, srcDIB.getDIBWidth - 1, srcDIB.getDIBHeight - 1, 1, 1, vbSrcCopy
     
     'The destination DIB now contains a fully clamped, extended copy of the original image
-    CreateExtendedDIB = 1
+    padDIBClampedPixels = 1
     
 End Function
 
