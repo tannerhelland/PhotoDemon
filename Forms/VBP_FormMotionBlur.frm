@@ -59,8 +59,6 @@ Begin VB.Form FormMotionBlur
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   359.9
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -70,6 +68,8 @@ Begin VB.Form FormMotionBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   359.9
+      SigDigits       =   1
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
@@ -140,9 +140,6 @@ Begin VB.Form FormMotionBlur
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   500
-      Value           =   5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -152,6 +149,9 @@ Begin VB.Form FormMotionBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   500
+      Value           =   5
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -341,7 +341,7 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     'I built a separate function to enlarge the image and fill the blank borders with clamped pixels from the source image:
     Dim tmpClampDIB As pdDIB
     Set tmpClampDIB = New pdDIB
-    CreateExtendedDIB hScaleAmount, vScaleAmount, workingDIB, tmpClampDIB
+    padDIBClampedPixels hScaleAmount, vScaleAmount, workingDIB, tmpClampDIB
     
     'Create a second DIB, which will receive the results of this one
     Dim rotateDIB As pdDIB

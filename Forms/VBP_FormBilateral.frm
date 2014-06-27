@@ -296,27 +296,31 @@ Dim colorFunc() As Double
 Dim m_ToolTip As clsToolTip
 
 Private Sub initSpatialFunc(ByVal kernelSize As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double)
-    Dim c As Long, i As Long, k As Long
     
-    c = kernelSize / 2
+    Dim i As Long, k As Long
     
-    ReDim spatialFunc(0 To kernelSize, 0 To kernelSize)
-    For i = 0 To kernelSize - 1
-        For k = 0 To kernelSize - 1
-            spatialFunc(i, k) = Exp(-0.5 * ((Sqr(((i - c) * (i - c) + (k - c) * (k - c)) / spatialFactor) ^ spatialPower)))
+    ReDim spatialFunc(-kernelSize To kernelSize, -kernelSize To kernelSize)
+    
+    For i = -kernelSize To kernelSize
+        For k = -kernelSize To kernelSize
+            spatialFunc(i, k) = Exp(-0.5 * (Sqr(i * i + k * k) / spatialFactor) ^ spatialPower)
         Next k
     Next i
+    
 End Sub
 
 Private Sub initColorFunc(ByVal colorFactor As Double, ByVal colorPower As Double)
+    
     Dim i As Long, k As Long
     
     ReDim colorFunc(0 To colorsCount - 1, 0 To colorsCount - 1)
+    
     For i = 0 To colorsCount - 1
         For k = 0 To colorsCount - 1
             colorFunc(i, k) = Exp(-0.5 * ((Abs(i - k) / colorFactor) ^ colorPower))
         Next k
     Next i
+    
 End Sub
 
 'Parameters: * kernelRadius [size of square for limiting surrounding pixels that take part in calculation.
@@ -344,9 +348,15 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
     
+    'If this is a preview, we need to adjust the kernal
+    If toPreview Then kernelRadius = kernelRadius * curDIBValues.previewModifier
+    If kernelRadius < 1 Then kernelRadius = 1
+    
+    'To simplify the edge-handling required by this function, we're actually going to resize the source DIB with
+    ' clamped pixel edges.  This removes the need for any edge handling whatsoever.
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    padDIBClampedPixels kernelRadius, kernelRadius, workingDIB, srcDIB
     
     prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
@@ -360,17 +370,14 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim QuickValDst As Long, QuickValSrc As Long, QuickYSrc As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-    
-    'If this is a preview, we need to adjust the kernal
-    If toPreview Then kernelRadius = kernelRadius * curDIBValues.previewModifier
-    
+        
     'Color variables
     Dim srcR As Long, srcG As Long, srcB As Long
     Dim newR As Long, newG As Long, newB As Long
@@ -379,16 +386,19 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     Dim sCoefR As Double, sCoefG As Double, sCoefB As Double
     Dim sMembR As Double, sMembG As Double, sMembB As Double
     Dim coefR As Double, coefG As Double, coefB As Double
-    Dim xOffset As Long, yOffset As Long, xMax As Long, yMax As Long
+    Dim xOffset As Long, yOffset As Long, xMax As Long, yMax As Long, xMin As Long, yMin As Long
+    Dim spacialFuncCache As Double
+    Dim srcPixelX As Long, srcPixelY As Long
     Dim i As Long, k As Long
     
     'For performance improvements, color and spatial functions are precalculated prior to starting filter.
-    initSpatialFunc kernelRadius * 2 + 1, spatialFactor, spatialPower
+    initSpatialFunc kernelRadius, spatialFactor, spatialPower
     initColorFunc colorFactor, colorPower
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        QuickValDst = x * qvDepth
+        QuickValSrc = (x + kernelRadius) * qvDepth
     For y = initY To finalY
     
         sCoefR = 0
@@ -398,50 +408,74 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
         sMembG = 0
         sMembB = 0
         
-        srcR0 = srcImageData(QuickVal + 2, y)
-        srcG0 = srcImageData(QuickVal + 1, y)
-        srcB0 = srcImageData(QuickVal, y)
+        QuickYSrc = y + kernelRadius
         
+        srcR0 = srcImageData(QuickValSrc + 2, QuickYSrc)
+        srcG0 = srcImageData(QuickValSrc + 1, QuickYSrc)
+        srcB0 = srcImageData(QuickValSrc, QuickYSrc)
+        
+        'Cache y-loop boundaries so that they do not have to be re-calculated on the interior loop.  (X boundaries
+        ' don't matter, but since we're doing it, for y, mirror it to x.)
         xMax = x + kernelRadius
         yMax = y + kernelRadius
-        For xOffset = x - kernelRadius To xMax - 1
-            For yOffset = y - kernelRadius To yMax - 1
-                            
-                ' bounds check
-                If (xOffset >= initX) And (xOffset < finalX) And (yOffset >= initY) And (yOffset < finalY) Then
-                        
-                    srcR = srcImageData(xOffset * qvDepth + 2, yOffset)
-                    srcG = srcImageData(xOffset * qvDepth + 1, yOffset)
-                    srcB = srcImageData(xOffset * qvDepth, yOffset)
+        xMin = x - kernelRadius
+        yMin = y - kernelRadius
+        
+        For xOffset = xMin To xMax
+            For yOffset = yMin To yMax
                 
-                    coefR = spatialFunc(x - xOffset + kernelRadius, y - yOffset + kernelRadius) * colorFunc(srcR, srcR0)
-                    coefG = spatialFunc(x - xOffset + kernelRadius, y - yOffset + kernelRadius) * colorFunc(srcG, srcG0)
-                    coefB = spatialFunc(x - xOffset + kernelRadius, y - yOffset + kernelRadius) * colorFunc(srcB, srcB0)
+                'Cache the source pixel's x and y locations
+                srcPixelX = (xOffset + kernelRadius) * qvDepth
+                srcPixelY = (yOffset + kernelRadius)
                 
+                srcR = srcImageData(srcPixelX + 2, srcPixelY)
+                srcG = srcImageData(srcPixelX + 1, srcPixelY)
+                srcB = srcImageData(srcPixelX, srcPixelY)
+                
+                spacialFuncCache = spatialFunc(xOffset - x, yOffset - y)
+                
+                'As a general rule, when convolving data against a kernel, any kernel value below 3-sigma can effectively
+                ' be ignored (as its contribution to the convolution total is not statistically meaningful). Rather than
+                ' calculating an actual sigma against a standard deviation for this kernel, we can approximate a threshold
+                ' because we know that our source data - RGB colors - will only ever be on a [0, 255] range.  As such,
+                ' let's assume that any spatial value below 1 / 255 (roughly 0.0039) is unlikely to have a meaningful
+                ' impact on the final image; by simply ignoring values below that limit, we can save ourselves additional
+                ' processing time when the incoming spatial parameters are low (as is common for the cartoon-like effect).
+                If spacialFuncCache > 0.0039 Then
+                    
+                    coefR = spacialFuncCache * colorFunc(srcR, srcR0)
+                    coefG = spacialFuncCache * colorFunc(srcG, srcG0)
+                    coefB = spacialFuncCache * colorFunc(srcB, srcB0)
+                    
+                    'We could perform an additional 3-sigma check here to account for meaningless colorFunc values, but
+                    ' because we'd have to perform the check for each of R, G, and B, we risk inadvertently increasing
+                    ' processing time when the color modifiers are consistently high.  As such, I think it's best to
+                    ' limit our check to just the spatial modifier at present.
+                    
                     sCoefR = sCoefR + coefR
                     sCoefG = sCoefG + coefG
                     sCoefB = sCoefB + coefB
-                
+                    
                     sMembR = sMembR + coefR * srcR
                     sMembG = sMembG + coefG * srcG
                     sMembB = sMembB + coefB * srcB
-                        
+                    
                 End If
                         
             Next yOffset
         Next xOffset
-              
+        
         newR = sMembR / sCoefR
         newG = sMembG / sCoefG
         newB = sMembB / sCoefB
                 
         'Assign the new values to each color channel
-        dstImageData(QuickVal + 2, y) = newR
-        dstImageData(QuickVal + 1, y) = newG
-        dstImageData(QuickVal, y) = newB
+        dstImageData(QuickValDst + 2, y) = newR
+        dstImageData(QuickValDst + 1, y) = newG
+        dstImageData(QuickValDst, y) = newB
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
