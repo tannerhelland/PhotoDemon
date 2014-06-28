@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormBilateral 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Bilateral Smoothing"
+   Caption         =   " Remove noise (bilateral smoothing)"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -46,7 +46,7 @@ Begin VB.Form FormBilateral
       Height          =   495
       Left            =   6000
       TabIndex        =   5
-      Top             =   930
+      Top             =   1170
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -76,7 +76,7 @@ Begin VB.Form FormBilateral
       Height          =   495
       Left            =   6000
       TabIndex        =   6
-      Top             =   1770
+      Top             =   2130
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -98,7 +98,8 @@ Begin VB.Form FormBilateral
       Height          =   495
       Left            =   6000
       TabIndex        =   7
-      Top             =   2640
+      Top             =   5250
+      Visible         =   0   'False
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -119,7 +120,7 @@ Begin VB.Form FormBilateral
       Height          =   495
       Left            =   6000
       TabIndex        =   8
-      Top             =   3600
+      Top             =   3090
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -141,7 +142,7 @@ Begin VB.Form FormBilateral
       Height          =   495
       Left            =   6000
       TabIndex        =   10
-      Top             =   4560
+      Top             =   4050
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -161,7 +162,7 @@ Begin VB.Form FormBilateral
    Begin VB.Label Label2 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "color power:"
+      Caption         =   "color preservation:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -175,13 +176,13 @@ Begin VB.Form FormBilateral
       Height          =   285
       Left            =   6000
       TabIndex        =   11
-      Top             =   4200
-      Width           =   1350
+      Top             =   3690
+      Width           =   1995
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "color factor:"
+      Caption         =   "color strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -195,13 +196,13 @@ Begin VB.Form FormBilateral
       Height          =   285
       Left            =   6000
       TabIndex        =   9
-      Top             =   3240
-      Width           =   1290
+      Top             =   2730
+      Width           =   1560
    End
    Begin VB.Label lblLuminance 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "spatial power:"
+      Caption         =   "spatial power (currently hidden):"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -215,13 +216,14 @@ Begin VB.Form FormBilateral
       Height          =   285
       Left            =   6000
       TabIndex        =   3
-      Top             =   2280
-      Width           =   1500
+      Top             =   4890
+      Visible         =   0   'False
+      Width           =   3480
    End
    Begin VB.Label lblSaturation 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "spatial factor:"
+      Caption         =   "edge strength:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -235,8 +237,8 @@ Begin VB.Form FormBilateral
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   1440
-      Width           =   1440
+      Top             =   1770
+      Width           =   1545
    End
    Begin VB.Label lblHue 
       AutoSize        =   -1  'True
@@ -255,7 +257,7 @@ Begin VB.Form FormBilateral
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   600
+      Top             =   810
       Width           =   735
    End
 End
@@ -268,8 +270,8 @@ Attribute VB_Exposed = False
 'Bilateral Smoothing Form
 'Copyright ©2014 by Audioglider
 'Created: 19/June/14
-'Last updated: 19/June/14
-'Last update: Initial build
+'Last updated: 27/June/14
+'Last update: initial round of low-hanging optimizations and improvements
 '
 'This filter performs "selective" gaussian smoothing of areas of same color
 ' (domains) which removes noise and contrast artifacts while perserving
@@ -282,6 +284,10 @@ Attribute VB_Exposed = False
 '
 'More details on the algorithm can be found at:
 ' http://www.cs.duke.edu/~tomasi/papers/tomasi/tomasiIccv98.pdf
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
 '***************************************************************************
 
 Option Explicit
@@ -334,6 +340,14 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     'As a convenience to the user, we display spatial and color factors with a [0, 100].  The color factor can
     ' actually be bumped a bit, to [0, 255], so apply that now.
     colorFactor = colorFactor * 2.55
+    
+    'Spatial factor is left on a [0, 100] scale as a convenience to the user, but any value larger than about 10
+    ' tends to produce meaningless results.  As such, shrink the input by a factor of 10.
+    spatialFactor = spatialFactor / 10
+    If spatialFactor < 1# Then spatialFactor = 1#
+    
+    'Spatial power is currently hidden from the user.  As such, default it to value 2.
+    spatialPower = 2#
     
     If Not toPreview Then Message "Applying bilateral smoothing..."
     
@@ -506,7 +520,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltRadius.Value = 9
     sltSpatialFactor.Value = 10
-    sltColorFactor.Value = 50
+    sltColorFactor.Value = 10
     sltSpatialPower.Value = 2
     sltColorPower.Value = 2
 End Sub

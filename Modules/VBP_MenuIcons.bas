@@ -441,7 +441,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         '--> Noise sub-menu
         addMenuIcon "FILMGRAIN", 7, 8, 0      'Film grain
         addMenuIcon "ADDNOISE", 7, 8, 1       'Add Noise
-        'addMenuIcon "BILATERAL", 7, 8, 3      'Bilateral smoothing
+        addMenuIcon "BILATERAL", 7, 8, 3      'Bilateral smoothing
         addMenuIcon "MEDIAN", 7, 8, 4         'Median
         
     addMenuIcon "SHARPEN", 7, 9         'Sharpen

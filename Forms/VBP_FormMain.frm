@@ -1108,11 +1108,11 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Bilateral smoothing..."
+            Caption         =   "Remove noise..."
             Index           =   3
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Median..."
+            Caption         =   "Median smoothing..."
             Index           =   4
          End
       End
