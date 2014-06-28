@@ -58,6 +58,12 @@ Private gpsIndex As Long
 'Current metadata export setting for this image
 Private metadataExportPreference As Long
 
+'Return the original metadata XML string.  Note that aside from some minimal processing (e.g. removing ExifTool's {ready} marker),
+' this will be the unmodified XML string originally passed to this class, e.g. without any parsing or validation of the data!
+Public Function getOriginalXMLMetadataString() As String
+    getOriginalXMLMetadataString = originalMetadataXML
+End Function
+
 'Retrieve resolution data from the metadata collection, if it exists.  Returns TRUE if resolution metadata entrist exist; FALSE
 ' if they do not.  Note that this function always returns resolution in inches.  Pixels per CM measurements will be automatically
 ' converted to PPI.
@@ -234,19 +240,23 @@ End Function
 'Given a valid XML-formatted metadata string from ExifTool, parse it into usable PD metadata format.
 ' (The parent image's ID format is also passed to this function, because a custom "ready" tag with the image's ID must be manually
 '  removed from the XML string.)
-Public Sub loadAllMetadata(ByVal mdString As String, ByVal parentImageID As Long)
+Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As Long) As Boolean
 
     'If the ExifTool plugin can't be found, abandon all metadata loading attempts
     If Not g_ExifToolEnabled Then
         Message "ExifTool plugin missing.  Metadata import abandoned."
-        Exit Sub
+        loadAllMetadata = False
+        Exit Function
     End If
     
     maxMetadataCount = 0
     hasGPSCoordinates = False: gpsIndex = 0
     
     'If no metadata was found, we can safely exit now
-    If mdString = "" Then Exit Sub
+    If Len(mdString) = 0 Then
+        loadAllMetadata = False
+        Exit Function
+    End If
     
     'DEBUGGING ONLY: sometimes it is helpful to dump the full metadata text to the clipboard.  Uncomment as necessary.
     'Clipboard.Clear
@@ -589,10 +599,16 @@ Public Sub loadAllMetadata(ByVal mdString As String, ByVal parentImageID As Long
         
     Loop While curLine < UBound(xmlLines)
 
-    'If no metadata was found, exit now
-    If maxMetadataCount = 0 Then Exit Sub
+    'If no metadata was found, return a FAIL state.  (ExifTool should always return *some* metadata, e.g. file date/time and generic
+    ' stuff like that).  Otherwise, if at least one piece of valid metadata was found, return SUCCESS.
+    If maxMetadataCount = 0 Then
+        loadAllMetadata = False
+        Exit Function
+    Else
+        loadAllMetadata = True
+    End If
     
-End Sub
+End Function
 
 'Given a path to a saved image (yes, that's right - make certain it is already saved!) and a Long-type value specifying what metadata to save,
 ' embed all relevant metadata.  (Note: this needs to be done immediately following a save, and is generally handled by the

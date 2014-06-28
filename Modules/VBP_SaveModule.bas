@@ -3,8 +3,8 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 19/May/14
-'Last update: final work on custom Undo/Redo saving
+'Last updated: 28/June/14
+'Last update: add support for embedding metadata in PDI files
 '
 'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in the GDI+ module
 ' for consistency's sake).  Export functions are sorted by file type, and most serve as relatively lightweight wrappers to corresponding
@@ -271,7 +271,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         'PDI, PhotoDemon's internal format
         Case 100
             If g_ZLibEnabled Then
-                updateMRU = SavePhotoDemonImage(srcPDImage, dstPath)
+                updateMRU = SavePhotoDemonImage(srcPDImage, dstPath, , , , , , True)
             Else
             'If zLib doesn't exist...
                 pdMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
@@ -637,7 +637,7 @@ End Function
 '    the header represents a larger portion of the file.
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal writeMetadata As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -695,6 +695,14 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         End If
     
     Next i
+    
+    'Next, if the "write metadata" flag has been set, and the image has metadata, add a metadata entry to the file.
+    If (Not writeHeaderOnlyFile) And writeMetadata And srcPDImage.imgMetadata.hasXMLMetadata Then
+    
+        nodeIndex = pdiWriter.addNode("pdMetadata_Raw", -1, 2)
+        pdiWriter.addNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.getOriginalXMLMetadataString, compressHeaders, , embedChecksums
+    
+    End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
     SavePhotoDemonImage = pdiWriter.writePackageToFile(PDIPath)
