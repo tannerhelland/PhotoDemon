@@ -201,7 +201,7 @@ GRIDBLUR     CUSTOM  MOVEABLE        LOADONCALL      image_empty.png
 MOTIONBLUR   CUSTOM  MOVEABLE        LOADONCALL      weather_wind.png
 PIXELATE     CUSTOM  MOVEABLE        LOADONCALL      grid.png
 RADIALBLUR   CUSTOM  MOVEABLE        LOADONCALL      arrow_step_over.png
-SMARTBLUR    CUSTOM  MOVEABLE        LOADONCALL      brain.png
+SMARTBLUR    CUSTOM  MOVEABLE        LOADONCALL      pearl.png
 ZOOMBLUR     CUSTOM  MOVEABLE        LOADONCALL      arrow_in_out.png
 //
 
@@ -253,6 +253,7 @@ NOISE        CUSTOM  MOVEABLE        LOADONCALL      speaker.png
 //--> Noise sub-menu
 FILMGRAIN    CUSTOM  MOVEABLE        LOADONCALL      film.png
 ADDNOISE     CUSTOM  MOVEABLE        LOADONCALL      speaker_volume_control_up.png
+BILATERAL    CUSTOM  MOVEABLE        LOADONCALL      speaker_volume_control_mute.png
 MEDIAN       CUSTOM  MOVEABLE        LOADONCALL      balance.png
 //
 
