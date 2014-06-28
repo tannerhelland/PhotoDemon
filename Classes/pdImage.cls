@@ -93,7 +93,7 @@ Option Explicit
     'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
     Private hasBeenSaved As Boolean
         
-    'A copy of the form's current icon
+    'A copy of the image's current icon (at 16 and 32px sizes)
     Public curFormIcon32 As Long, curFormIcon16 As Long
     
     'If this image is simply being used for internal PhotoDemon processing, hide it from the user

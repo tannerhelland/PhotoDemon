@@ -1372,7 +1372,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
         End If
         
-        'With the main pdImage now assembled, the next task is to populate all layers with two pieces of information a piece:
+        'With the main pdImage now assembled, the next task is to populate all layers with two pieces of information:
         ' 1) The layer header, which contains stuff like layer name, opacity, blend mode, etc
         ' 2) The layer DIB, which is a raw stream of bytes containing the DIB's data
         
@@ -1408,6 +1408,23 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             End If
         
         Next i
+        
+        'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
+        If pdiReader.getNodeDataByName("pdMetadata_Raw", True, retBytes, sourceIsUndoFile) Then
+        
+            'Convert the received bytes into a string
+            retString = StrConv(retBytes, vbUnicode)
+            
+            'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
+            ' internal metadata struct.
+            If Not dstImage.imgMetadata.loadAllMetadata(retString, dstImage.imageID) Then
+                
+                'For invalid metadata, do not reject the rest of the PDI file.  Instead, just warn the user and carry on.
+                Debug.Print "PDI Metadata Node rejected by metadata parser."
+                
+            End If
+        
+        End If
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
@@ -1481,9 +1498,10 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
         ' confusing than a regular PDI load, because we have to maintain existing layer DIB data (ugh!).
         ' So basically, we must:
         ' 1) Extract each layer header from file, in turn
-        ' 2) See if the current pdImage layer version is in the proper position in the layer stack; if it isn't,
-        '    move it into place.
-        ' 3) Non-destructively ask the layer to overwrite its header with the header from the file.
+        ' 2) See if the current pdImage copy of this layer is in the proper position in the layer stack; if it isn't,
+        '    move it into the location specified by the PDI file.
+        ' 3) Ask the layer to non-destructively overwrite its header with the header from the PDI file (e.g. don't
+        '    touch its DIB contents).
         
         Dim layerNodeName As String, layerNodeID As Long, layerNodeType As Long
         
