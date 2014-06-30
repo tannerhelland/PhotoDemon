@@ -392,10 +392,9 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "MOTIONBLUR", 7, 3, 4     'Motion Blur
         addMenuIcon "RADIALBLUR", 7, 3, 5     'Radial Blur
         addMenuIcon "ZOOMBLUR", 7, 3, 6       'Zoom Blur
-        addMenuIcon "CHROMABLUR", 7, 3, 8     'Chroma Blur
-        addMenuIcon "FRAGMENT", 7, 3, 9       'Fragment
-        addMenuIcon "GRIDBLUR", 7, 3, 10      'Grid Blur
-        addMenuIcon "PIXELATE", 7, 3, 11      'Pixelate (formerly Mosaic)
+        addMenuIcon "FRAGMENT", 7, 3, 8       'Fragment
+        addMenuIcon "CHROMABLUR", 7, 3, 9     'Kuwahara
+        addMenuIcon "PIXELATE", 7, 3, 10      'Pixelate (formerly Mosaic)
         
     addMenuIcon "DISTORT", 7, 4         'Distort
         '--> Distort sub-menu

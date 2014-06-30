@@ -23,7 +23,7 @@ Begin VB.Form FormKuwahara
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin Photodemon.commandBar cmdBar 
+   Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
@@ -42,7 +42,7 @@ Begin VB.Form FormKuwahara
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin Photodemon.sliderTextCombo sltRadius 
+   Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6120
       TabIndex        =   3
@@ -60,10 +60,10 @@ Begin VB.Form FormKuwahara
          Strikethrough   =   0   'False
       EndProperty
       Min             =   1
-      Max             =   30
+      Max             =   20
       Value           =   5
    End
-   Begin Photodemon.fxPreviewCtl fxPreview 
+   Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   2
@@ -120,10 +120,14 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Kuwahara Blur Dialog
-'Copyright Â©2014 by Audioglider
+'Copyright ©2014 by Audioglider
 'Created: 22/June/14
 'Last updated: 22/June/14
 'Last update: Initial build
+'TODO: adopt Median filter optimization, where instead of rebuilding each quadrant from scratch for each pixel,
+'       we simply add and remove a single horizontal line to each (or a single vertical line when moving to a new
+'       row).  Similar to the Median filter, I expect this to provide an exponential performance improvement
+'       relative to filter radius.
 '
 'Kuwahara is a non-linear smoothing filter that preserves edges.
 '
@@ -134,6 +138,9 @@ Attribute VB_Exposed = False
 ' For each of the blocks calculate the mean and the variance. Set the
 ' middle pixel equal to the mean of the block with the smallest variance.
 '
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
 '***************************************************************************
 
 Option Explicit
@@ -143,6 +150,7 @@ Private Const DOUBLE_MAX As Double = 1.79769313486231E+308
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'Apply the Kuwahara filter to an image.
 Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying Kuwahara smoothing..."
@@ -182,6 +190,7 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
     
     'If this is a preview, we need to adjust the kernal
     If toPreview Then filterSize = filterSize * curDIBValues.previewModifier
+    If filterSize < 1 Then filterSize = 1
     
     Dim dx As Long, dy As Long
     Dim xdx(0 To 1) As Long, ydy(0 To 1) As Long
@@ -346,9 +355,14 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
     
 End Sub
 
+Private Sub cmdBar_OKClick()
+    Process "Kuwahara filter", , buildParams(sltRadius.Value), UNDO_LAYER
+End Sub
+
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub
+
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
@@ -375,8 +389,9 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then Kuwahara sltRadius.value, True, fxPreview
+    If cmdBar.previewsAllowed Then Kuwahara sltRadius.Value, True, fxPreview
 End Sub
+
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
