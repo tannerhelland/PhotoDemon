@@ -1011,6 +1011,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormFragment.Fragment cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
+            
+        Case "Kuwahara filter"
+            If showDialog Then
+                showPDDialog vbModal, FormKuwahara
+            Else
+                FormKuwahara.Kuwahara cParams.GetLong(1)
+            End If
         
         Case "Grid blur"
             FilterGridBlur

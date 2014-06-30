@@ -944,20 +944,16 @@ Begin VB.Form FormMain
             Index           =   7
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Chroma blur..."
+            Caption         =   "Fragment..."
             Index           =   8
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Fragment..."
+            Caption         =   "Kuwahara filter..."
             Index           =   9
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Grid blur"
-            Index           =   10
-         End
-         Begin VB.Menu MnuBlurFilter 
             Caption         =   "Pixelate..."
-            Index           =   11
+            Index           =   10
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -2591,21 +2587,27 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
         '<separator>
         Case 7
         
-        'Chroma blur
-        Case 8
-            Process "Chroma blur", True
-        
         'Fragment
-        Case 9
+        Case 8
             Process "Fragment", True
                 
-        'Grid blur
-        Case 10
-            Process "Grid blur", , , UNDO_LAYER
+        'Kuwahara
+        Case 9
+            Process "Kuwahara filter", True
             
         'Pixelate (mosaic)
-        Case 11
+        Case 10
             Process "Pixelate", True
+            
+        'Currently unused:
+        
+        'Chroma blur
+        'Case X
+            'Process "Chroma blur", True
+            
+        'Grid blur
+        'Case X
+        '    Process "Grid blur", , , UNDO_LAYER
             
     End Select
 
