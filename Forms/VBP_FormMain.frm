@@ -57,7 +57,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
@@ -904,7 +904,7 @@ Begin VB.Form FormMain
             Index           =   8
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Relief"
+            Caption         =   "Relief..."
             Index           =   9
          End
       End
@@ -2546,7 +2546,7 @@ Private Sub MnuArtistic_Click(Index As Integer)
             
         'Relief
         Case 9
-            Process "Relief", , , UNDO_LAYER
+            Process "Relief", True
     
     End Select
 
