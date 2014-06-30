@@ -948,8 +948,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             FilterPencil
             
         Case "Relief"
-            FilterRelief
-            
+            If showDialog Then
+                showPDDialog vbModal, FormRelief
+            Else
+                FormRelief.ApplyReliefEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
+            End If
+                        
             
         'Blur
         

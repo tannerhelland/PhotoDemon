@@ -40,29 +40,3 @@ Public Sub FilterPencil()
     ApplyConvolutionFilter tmpString
 
 End Sub
-
-'A typical relief filter, that makes the image seem pseudo-3D.
-Public Sub FilterRelief()
-
-    Dim tmpString As String
-    
-    'Start with a filter name
-    tmpString = g_Language.TranslateMessage("relief") & "|"
-    
-    'Next comes an invert parameter
-    tmpString = tmpString & "0|"
-    
-    'Next is the divisor and offset
-    tmpString = tmpString & "2|40|"
-    
-    'And finally, the convolution array itself
-    tmpString = tmpString & "0|0|0|0|0|"
-    tmpString = tmpString & "0|2|-1|0|0|"
-    tmpString = tmpString & "0|1|1|-1|0|"
-    tmpString = tmpString & "0|0|1|-2|0|"
-    tmpString = tmpString & "0|0|0|0|0"
-    
-    'Pass our new parameter string to the main convolution filter function
-    ApplyConvolutionFilter tmpString
-
-End Sub
