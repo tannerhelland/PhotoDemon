@@ -101,8 +101,9 @@ Private undoStack() As undoEntry
 
 'If the user performs 10 actions, then presses Undo 5 times and saves the image, we need to disable the Save button
 ' at that Undo point, because it was the last point at which the image was saved.  Thus we must track the last point
-' in the Undo/Redo stack where the image was saved.
-Private undoNumAtLastSave As Long
+' in the Undo/Redo stack where the image was saved.  Note that we separately track flat image saves (JPEG, PNG, etc),
+' and layered image saves (PDI).  External functions can request either or both of these values as they need 'em.
+Private undoNumAtLastSave_Flat As Long, undoNumAtLastSave_PDI As Long
 
 'We need access to the parent class so we can request things like "write your current data out to file".
 Public parentPDImage As pdImage
@@ -116,12 +117,34 @@ Private Const UNDO_THUMB_SMALL As Long = 48
 Private Const UNDO_THUMB_LARGE As Long = 256
 
 'When an image is saved, this class needs to be notified so that it can make a note of the current undo index
-Public Sub notifyImageSaved()
+Public Sub notifyImageSaved(ByVal typeOfSave As PD_SAVE_EVENT)
+    
+    Dim saveIndex As Long
+    
     If undoNum > 0 Then
-        undoNumAtLastSave = undoNum
+        saveIndex = undoNum
     Else
-        undoNumAtLastSave = 1
+        saveIndex = 1
     End If
+    
+    Select Case typeOfSave
+        
+        'This value should never be passed in!
+        Case pdSE_AnySave
+            Debug.Print "The pdSE_AnySave type is only for GETTING image save state, not SETTING it!  Fix this!"
+            undoNumAtLastSave_Flat = saveIndex
+            undoNumAtLastSave_PDI = saveIndex
+                
+        'Image has been saved to PDI format, meaning layers are intact
+        Case pdSE_SavePDI
+            undoNumAtLastSave_PDI = saveIndex
+                
+        'Image has been saved to some flat format (JPEG, PNG, etc)
+        Case pdSE_SaveFlat
+            undoNumAtLastSave_Flat = saveIndex
+        
+    End Select
+    
 End Sub
 
 Public Function getUndoState() As Boolean
@@ -199,7 +222,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'If this action changed pixel data, mark the image as NOT being saved in its current state.
     If (processType <> UNDO_NOTHING) And (processType <> UNDO_SELECTION) And (undoNum > 1) Then
-        parentPDImage.setSaveState False
+        parentPDImage.setSaveState False, pdSE_AnySave
     End If
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
@@ -217,7 +240,20 @@ End Sub
 'This special command can be used to revert the image to its last saved state.  For images that have never been
 ' saved (e.g. those pasted from the clipboard, etc), it will undo to the image's original state.
 Public Sub revertToLastSavedState()
-    moveToSpecificUndoPoint undoNumAtLastSave
+    
+    Dim targetUndoPoint As Long
+    
+    If undoNumAtLastSave_Flat > undoNumAtLastSave_PDI Then
+        targetUndoPoint = undoNumAtLastSave_Flat
+    Else
+        targetUndoPoint = undoNumAtLastSave_PDI
+    End If
+    
+    'Failsafe check to make sure the specified index is valid
+    If targetUndoPoint < 1 Then targetUndoPoint = 1
+    
+    moveToSpecificUndoPoint targetUndoPoint
+    
 End Sub
 
 'Move to a specific location in the Undo/Redo chain.  Note that this function may take some time if the requested
@@ -252,7 +288,9 @@ Public Sub moveToSpecificUndoPoint(ByVal undoIndex As Long)
     undoNum = undoIndex
     
     'Allow saving contingent on the image's state
-    If undoNum = undoNumAtLastSave Then parentPDImage.setSaveState True Else parentPDImage.setSaveState False
+    parentPDImage.setSaveState False, pdSE_AnySave
+    If undoNum = undoNumAtLastSave_PDI Then parentPDImage.setSaveState True, pdSE_SavePDI
+    If undoNum = undoNumAtLastSave_Flat Then parentPDImage.setSaveState True, pdSE_SaveFlat
     
     'See if Undoing is allowed
     If undoNum > 1 Then undoState = True Else undoState = False
@@ -309,15 +347,25 @@ Public Sub restoreUndoData()
     'If this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
     ' some other source), note that the image has now BEEN SAVED (because it has not changed at all from its original
     ' appearance).
-    If undoNum = undoNumAtLastSave Then
+    If (undoNum = undoNumAtLastSave_Flat) Or (undoNum = undoNumAtLastSave_PDI) Then
     
         'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
-        If Len(parentPDImage.locationOnDisk) > 0 Then parentPDImage.setSaveState True Else parentPDImage.setSaveState False
+        If Len(parentPDImage.locationOnDisk) > 0 Then
+            
+            If parentPDImage.currentFileFormat = FIF_PDI Then
+                parentPDImage.setSaveState True, pdSE_SavePDI
+            Else
+                parentPDImage.setSaveState True, pdSE_SaveFlat
+            End If
+            
+        Else
+            parentPDImage.setSaveState False, pdSE_AnySave
+        End If
         
     'If the image was imported (e.g. from a scanner or the clipboard), note that it has NOT BEEN SAVED just because
     ' the user Undo'd all the way back to its original state.
     Else
-        parentPDImage.setSaveState False
+        parentPDImage.setSaveState False, pdSE_AnySave
     End If
     
     'Select the relevant tool for this action, if we were supplied one previously
@@ -552,7 +600,9 @@ Public Sub RestoreRedoData()
         undoNum = undoNum + 1
         
         'Allow saving contingent on the image's state
-        If undoNum = undoNumAtLastSave Then parentPDImage.setSaveState True Else parentPDImage.setSaveState False
+        parentPDImage.setSaveState False, pdSE_AnySave
+        If undoNum = undoNumAtLastSave_PDI Then parentPDImage.setSaveState True, pdSE_SavePDI
+        If undoNum = undoNumAtLastSave_Flat Then parentPDImage.setSaveState True, pdSE_SaveFlat
     
     End If
     
@@ -662,7 +712,7 @@ End Sub
 
 'Return the tool associated with the current Undo state
 Public Function getUndoTool() As Long
-    getUndoTool = undoStack(undoNum - 1).relevantTool
+    If undoNum > 0 Then getUndoTool = undoStack(undoNum - 1).relevantTool
 End Function
 
 'Return the process type associated with the current Undo state
@@ -753,7 +803,8 @@ Private Sub Class_Initialize()
     
     undoNum = 0
     undoMax = 0
-    undoNumAtLastSave = 1
+    undoNumAtLastSave_Flat = 0
+    undoNumAtLastSave_PDI = 0
     undoState = False
     redoState = False
     
@@ -788,8 +839,9 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
     xmlEngine.writeTag "StackAbsoluteMaximum", undoTotal
     xmlEngine.writeTag "CurrentStackPointer", undoNum
     
-    'We probably don't need the undoNumAtLastSave value, but it doesn't hurt to embed it, "just in case"
-    xmlEngine.writeTag "UndoNumAtLastSave", undoNumAtLastSave
+    'We probably don't need the undoNumAtLastSave values, but it doesn't hurt to embed them, "just in case"
+    xmlEngine.writeTag "UndoNumAtLastSave_Flat", undoNumAtLastSave_Flat
+    xmlEngine.writeTag "UndoNumAtLastSave_PDI", undoNumAtLastSave_PDI
     
     xmlEngine.writeBlankLine
     
@@ -819,7 +871,7 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
     
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
     ' will use this as an image preview if something goes horribly wrong.
-    Saving.QuickSaveDIBAsPNG generateUndoHeaderFilename & ".asp", undoStack(undoNum - 1).thumbnailLarge
+    If undoNum > 0 Then Saving.QuickSaveDIBAsPNG generateUndoHeaderFilename & ".asp", undoStack(undoNum - 1).thumbnailLarge
     
 End Sub
 
@@ -841,7 +893,8 @@ Public Function reconstructStackFromExternalSource(ByRef srcXMLString As String)
             undoMax = xmlEngine.getUniqueTag_Long("StackHeight")
             undoTotal = xmlEngine.getUniqueTag_Long("StackAbsoluteMaximum")
             undoNum = xmlEngine.getUniqueTag_Long("CurrentStackPointer")
-            undoNumAtLastSave = xmlEngine.getUniqueTag_Long("UndoNumAtLastSave")
+            undoNumAtLastSave_Flat = xmlEngine.getUniqueTag_Long("UndoNumAtLastSave_Flat")
+            undoNumAtLastSave_PDI = xmlEngine.getUniqueTag_Long("UndoNumAtLastSave_PDI")
             
             'Next, we must reconstruct the Undo stack itself.  Start by preparing the stack array.
             ReDim undoStack(0 To undoTotal) As undoEntry

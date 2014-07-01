@@ -216,8 +216,8 @@ Public Function fullPDImageUnload(ByVal imageID As Long) As Boolean
     
 End Function
 
-'Previously, we could unload images by just unloading their containing form.  This is no longer possible, so we must
-' query unload images using this special function.
+'Previously, we could unload images by just unloading their containing form.  Since PhotoDemon moved away from an MDI interface,
+' this is no longer possible, so we must query unload images using this custom function.
 Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As Integer, ByVal imageID As Long) As Boolean
 
     Debug.Print "(Image #" & imageID & " received a Query_Unload trigger)"
@@ -229,7 +229,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
     If g_ConfirmClosingUnsaved And pdImages(imageID).IsActive And (Not pdImages(imageID).forInternalUseOnly) Then
     
         'Check the .HasBeenSaved property of the image associated with this form
-        If Not pdImages(imageID).getSaveState Then
+        If Not pdImages(imageID).getSaveState(pdSE_AnySave) Then
                         
             'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
             If Not g_DealWithAllUnsavedImages Then
@@ -242,7 +242,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 If g_ProgramShuttingDown Or g_ClosingAllImages Then
                     Dim i As Long
                     For i = 1 To g_NumOfImagesLoaded
-                        If pdImages(i).IsActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).getSaveState) Then
+                        If pdImages(i).IsActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).getSaveState(pdSE_AnySave)) Then
                             g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
                         End If
                     Next i

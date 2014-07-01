@@ -1709,8 +1709,8 @@ Private Sub sltQuickFix_Change(Index As Integer)
         End If
         
         'Even though this action is not destructive, we want to allow the user to save after making non-destructive changes.
-        If pdImages(g_CurrentImage).getSaveState And (pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState <> initFXState) Then
-            pdImages(g_CurrentImage).setSaveState False
+        If pdImages(g_CurrentImage).getSaveState(pdSE_AnySave) And (pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState <> initFXState) Then
+            pdImages(g_CurrentImage).setSaveState False, pdSE_AnySave
             syncInterfaceToCurrentImage
         End If
         

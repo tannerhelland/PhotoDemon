@@ -299,3 +299,20 @@ End Enum
 ' results, then restore the original message when done.  This makes the experience seamless for the user, but is hugely helpful
 ' to me when debugging asynchronous program behavior.
 Public g_LastPostedMessage As String
+
+'Supported save events.  To try and handle workflow issues gracefully, PhotoDemon will track image save state for a few
+' different save events.  See the pdImage function setSaveState for details.
+Public Enum PD_SAVE_EVENT
+    pdSE_AnySave = 0        'Any type of save event; used to set the enabled state of the main toolbar's Save button
+    pdSE_SavePDI = 1        'Image has been saved to PDI format in its current state
+    pdSE_SaveFlat = 2       'Image has been saved to some flattened format (JPEG, PNG, etc) in its current state
+End Enum
+
+#If False Then
+    Const pdSE_AnySave = 0, pdSE_SavePDI = 1, pdSE_SaveFlat = 2
+#End If
+
+'PhotoDemon's internal PDI format identifier.  We preface this with FIF_ because PhotoDemon uses FreeImage's format constants
+' to track save state.  However, FreeImage does not include PDI support, and because their VB6 interface may change between
+' versions, we don't want to store our constant in the FreeImage modules - so we keep it here!
+Public Const FIF_PDI As Long = 100

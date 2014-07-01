@@ -91,7 +91,7 @@ Option Explicit
     Public imgStorage As Dictionary
         
     'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
-    Private hasBeenSaved As Boolean
+    Private hasBeenSavedPDI As Boolean, hasBeenSavedFlat As Boolean
         
     'A copy of the image's current icon (at 16 and 32px sizes)
     Public curFormIcon32 As Long, curFormIcon16 As Long
@@ -249,11 +249,7 @@ End Function
 'Retrieve a reference to the currently active layer's DIB.  This is effectively a shortcut function when we
 ' need quick access to the current layer's DIB.
 Public Function getActiveDIB() As pdDIB
-    'If numOfLayers > 0 Then
-        Set getActiveDIB = imgLayers(curLayer).layerDIB
-    'Else
-    '    Set getActiveDIB = Nothing
-    'End If
+    Set getActiveDIB = imgLayers(curLayer).layerDIB
 End Function
 
 'Retrieve the currently active layer
@@ -663,8 +659,21 @@ End Sub
 
 'If the image has been saved to file in its current state, this will return TRUE.  Use this value to determine
 ' whether to enable a Save button, for example.
-Public Function getSaveState() As Boolean
-    getSaveState = hasBeenSaved
+Public Function getSaveState(ByVal desiredSaveType As PD_SAVE_EVENT) As Boolean
+    
+    Select Case desiredSaveType
+    
+        Case pdSE_AnySave
+            getSaveState = hasBeenSavedPDI Or hasBeenSavedFlat
+        
+        Case pdSE_SavePDI
+            getSaveState = hasBeenSavedPDI
+        
+        Case pdSE_SaveFlat
+            getSaveState = hasBeenSavedFlat
+    
+    End Select
+    
 End Function
 
 'External functions can use this function to request a thumbnail version of the contained image.  Note that the full
@@ -721,7 +730,10 @@ End Function
 'When this DIB is no longer being used, we can deactivate it to save on resources.
 Public Sub deactivateImage()
     
-    'Erase the main DIB
+    'Erase the main DIB.  (Note: in old versions, this was causing potential errors by functions that tried to directly
+    ' access the DIB; as of June '14, I think it's no longer problematic to immediately erase the stored DIB, but some
+    ' testing should be done to ensure there are no problems.)
+    
     'If Not (mainDIB Is Nothing) Then
     '    mainDIB.eraseDIB
     '    Set mainDIB = Nothing
@@ -764,18 +776,35 @@ End Sub
     
 'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
 ' processing based on the state of this variable, we provide this interface.
-Public Sub setSaveState(ByVal newSaveState As Boolean)
+Public Sub setSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As PD_SAVE_EVENT)
     
+    'The image has just been saved
     If newSaveState Then
         
-        hasBeenSaved = True
+        Select Case typeOfSaveEvent
+            
+            'This value should never be passed in!
+            Case pdSE_AnySave
+                Debug.Print "The pdSE_AnySave type is only for GETTING image save state, not SETTING it!  Fix this!"
+                
+            'Image has been saved to PDI format, meaning layers are intact
+            Case pdSE_SavePDI
+                hasBeenSavedPDI = True
+                
+            'Image has been saved to some flat format (JPEG, PNG, etc)
+            Case pdSE_SaveFlat
+                hasBeenSavedFlat = True
+            
+        End Select
         
         'Remember the undo value at this juncture; if the user performs additional actions, but "Undos" to this point,
         ' we want to disable the save button for them
-        undoManager.notifyImageSaved
-        
+        undoManager.notifyImageSaved typeOfSaveEvent
+    
+    'Some change has occurred, meaning the image has not been saved (to any format) in its current state
     Else
-        hasBeenSaved = False
+        hasBeenSavedPDI = False
+        hasBeenSavedFlat = False
     End If
         
 End Sub
@@ -806,7 +835,8 @@ Private Sub Class_Initialize()
     'Initially, mark the image as *not* having been saved
     IsActive = False
     loadedSuccessfully = False
-    hasBeenSaved = False
+    hasBeenSavedPDI = False
+    hasBeenSavedFlat = False
     forInternalUseOnly = False
     
     'Initialize the public storage dictionary

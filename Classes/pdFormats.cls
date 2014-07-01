@@ -483,7 +483,7 @@ Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
             getExtensionFromFIF = "webp"
         Case FIF_JXR
             getExtensionFromFIF = "jxr"
-        Case 100
+        Case FIF_PDI
             getExtensionFromFIF = "pdi"
         Case Else
             getExtensionFromFIF = ""
@@ -517,7 +517,7 @@ End Function
 Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColorDepth As Long) As Boolean
     
     'Check the special case of PDI (internal PhotoDemon images)
-    If outputFIF = 100 Then
+    If outputFIF = FIF_PDI Then
         isColorDepthSupported = True
         Exit Function
     End If
@@ -750,7 +750,7 @@ End Function
 Public Function getClosestColorDepth(ByVal outputFIF As Long, ByVal desiredColorDepth As Long) As Long
     
     'Check the special case of PDI (internal PhotoDemon images)
-    If outputFIF = 100 Then
+    If outputFIF = FIF_PDI Then
         getClosestColorDepth = desiredColorDepth
         Exit Function
     End If

@@ -915,7 +915,7 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         imgThumbnails(thumbIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + fixDPI(thumbBorder), offsetY + fixDPI(thumbBorder)
         
         'If the parent image has unsaved changes, also render a notification icon
-        If Not pdImages(imgThumbnails(thumbIndex).indexInPDImages).getSaveState Then
+        If Not pdImages(imgThumbnails(thumbIndex).indexInPDImages).getSaveState(pdSE_AnySave) Then
             unsavedChangesDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + fixDPI(thumbBorder) + fixDPI(2), offsetY + thumbHeight - fixDPI(thumbBorder) - unsavedChangesDIB.getDIBHeight - fixDPI(2)
         End If
         
