@@ -681,8 +681,8 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
                 loadSuccessful = LoadPhotoDemonImage(sFile(thisImage), targetDIB, targetImage)
                 
-                targetImage.originalFileFormat = 100
-                targetImage.currentFileFormat = 100
+                targetImage.originalFileFormat = FIF_PDI
+                targetImage.currentFileFormat = FIF_PDI
                 mustCountColors = False
             
             'Straight TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable for loading these, as
@@ -990,7 +990,11 @@ PDI_Load_Continuation:
                 targetImage.originalFileName = tmpFilename
                 
                 'Disable the save button, because this file exists on disk
-                targetImage.setSaveState True
+                If targetImage.currentFileFormat = FIF_PDI Then
+                    targetImage.setSaveState True, pdSE_SavePDI
+                Else
+                    targetImage.setSaveState True, pdSE_SaveFlat
+                End If
                 
             Else
             
@@ -1004,7 +1008,7 @@ PDI_Load_Continuation:
                 targetImage.originalFileName = tmpFilename
                 
                 'Similarly, enable the save button
-                targetImage.setSaveState False
+                targetImage.setSaveState False, pdSE_AnySave
                 
             End If
         

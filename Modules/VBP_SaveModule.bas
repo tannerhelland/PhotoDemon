@@ -62,7 +62,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     
     '100 is the magic number for saving PDI files (PhotoDemon's internal format).  PDI files do not need color depth checked,
     ' as the writer handles color depth independently for each layer.
-    If saveFormat = 100 Then
+    If saveFormat = FIF_PDI Then
         outputColorDepth = 32
         
     'The save format is not PDI.  Determine the ideal color depth.
@@ -269,7 +269,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
             
         'PDI, PhotoDemon's internal format
-        Case 100
+        Case FIF_PDI
             If g_ZLibEnabled Then
                 updateMRU = SavePhotoDemonImage(srcPDImage, dstPath, , , , , , True)
             Else
@@ -496,8 +496,12 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             StripOffExtension tmpFilename
             srcPDImage.originalFileName = tmpFilename
             
-            'Mark this file as having been saved
-            srcPDImage.setSaveState True
+            'Mark this file as having been saved.
+            If saveFormat = FIF_PDI Then
+                srcPDImage.setSaveState True, pdSE_SavePDI
+            Else
+                srcPDImage.setSaveState True, pdSE_SaveFlat
+            End If
             
             PhotoDemon_SaveImage = True
             
