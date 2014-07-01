@@ -153,12 +153,53 @@ Public Function saveableImagesPresent() As Long
         
     Loop
     
-    'Trim the XML array to its smallest relevant size, then return the number of images found
-    ReDim Preserve m_XmlEntries(0 To m_numOfXMLFound) As AutosaveXML
+    'Trim the XML array to its smallest relevant size
+    ReDim Preserve m_XmlEntries(0 To m_numOfXMLFound - 1) As AutosaveXML
     
+    'Sort the file array in ascending order, according to the image's original image ID values.  If the user chooses to load these
+    ' autosave files, the generated pdImage objects will likely get assigned a different ID value than what they had in the previous
+    ' session.  To make the existing Undo files align with the newly assigned ID value, the Undo files must be renamed (because
+    ' imageID is part of each Undo file's name - that's how we track separate Undo chains for each loaded image).  The trickiness
+    ' starts when a loaded autosave image is assigned a new ID value, and that ID happens to correspond to one of the ID values from
+    ' the *previous* session.  When it comes time to rename the Undo files, we may inadvertently overwrite another autosave image's
+    ' Undo data with the new image's data, if the new image ID matches the other image's old ID!  Needless to say, this causes all
+    ' sorts of havoc.  To prevent this from ever occurring, we manually sort images by ID order, to ensure that when new ID values
+    ' are assigned out, they never inadvertently overwrite another autosave image's original ID value.  (This works because ID values
+    ' are assigned in ascending order, so as long as the Autosave files are also loaded in ascending order, no new image ID will
+    ' ever overwrite an old image's ID, unless that image has not been selected for loading per the user's setting in the Autosave
+    ' dialog.)
+    If m_numOfXMLFound > 0 Then sortAutosaveEntries
+    
+    'Return the number of images found
     saveableImagesPresent = m_numOfXMLFound
 
 End Function
+
+'Sort the m_XmlEntries() array in ascending order, using original image ID as the sort parameter
+Private Sub sortAutosaveEntries()
+
+    Dim i As Long, j As Long
+    
+    'Loop through all entries in the autosave array, sorting them as we go
+    For i = 0 To m_numOfXMLFound - 1
+        For j = 0 To m_numOfXMLFound - 1
+            
+            'Compare two image ID values, and if one is less than the other, swap them
+            If m_XmlEntries(i).parentImageID < m_XmlEntries(j).parentImageID Then
+                swapAutosaveData m_XmlEntries(i), m_XmlEntries(j)
+            End If
+        Next j
+    Next i
+
+End Sub
+
+'Swap the values of two Autosave entries
+Private Sub swapAutosaveData(ByRef asOne As AutosaveXML, ByRef asTwo As AutosaveXML)
+    Dim asTmp As AutosaveXML
+    asTmp = asOne
+    asOne = asTwo
+    asTwo = asTmp
+End Sub
 
 'If the user declines to restore old AutoSave data, purge it from the system (to prevent it from showing up in future searches).
 Public Sub purgeOldAutosaveData()
