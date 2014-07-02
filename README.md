@@ -104,7 +104,7 @@ PhotoDemon would not be possible without the help of many talented contributors,
 * Everaldo and The Crystal Project for menu and button icons (LGPL) (http://www.everaldo.com/crystal/)
 * The Tango Icon Library for menu and button icons (public-domain) (http://tango.freedesktop.org/Tango_Icon_Library)
 * Phil Fresle for a native-VB implementation of SHA-2 hashing (http://www.frez.co.uk/vb6.aspx)
-* Adrian Pellas-Rice, Kornel Lesinski, Stuart Coyle, Greg Roelofs, and Anthony Dekker for the pngnq-s9 tool (http://sourceforge.net/projects/pngnqs9/)
+* Pornel Lesinski, Greg Roelofs, and Jef Poskanzer for the pngquant tool (http://pngquant.org/)
 * Jerry Huxtable and JHLabs for an excellent reference on Distort-style filters (Apache 2.0) (http://www.jhlabs.com/ip/filters/index.html)
 * Phil Harvey for the comprehensive ExifTool metadata handler (choice of GPL or Artistic License) (http://www.sno.phy.queensu.ca/~phil/exiftool/)
 * Bernhard Stockmann for his many excellent GIMP tutorials (http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html)

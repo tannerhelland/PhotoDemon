@@ -226,7 +226,6 @@ Private Sub Form_Load()
     GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""
     GenerateThankyou "Abhijit Mhapsekar"
-    GenerateThankyou "Adrian Pellas-Rice", "http://sourceforge.net/projects/pngnqs9/", True
     GenerateThankyou "Allan Lima"
     GenerateThankyou "Andrew Yeoman"
     GenerateThankyou "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1", True
@@ -283,7 +282,7 @@ Private Sub Form_Load()
     GenerateThankyou "ExifTool", "http://dev.perl.org/licenses/", True
     GenerateThankyou "EZTwain", "http://eztwain.com/ezt1faq.htm", True
     GenerateThankyou "FreeImage", "http://freeimage.sourceforge.net/license.html", True
-    GenerateThankyou "pngnq-s9", "http://sourceforge.net/projects/pngnqs9/", True
+    GenerateThankyou "PNGQuant", "http://pngquant.org/#source", True
     GenerateThankyou "zLib", "http://www.zlib.net/zlib_license.html", True
     GenerateThankyou "", ""
     GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon"), "http://photodemon.org", True

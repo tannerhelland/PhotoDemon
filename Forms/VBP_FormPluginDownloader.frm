@@ -125,7 +125,7 @@ Begin VB.Form FormPluginDownloader
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "ExifTool 9.54"
+         Caption         =   "ExifTool 9.62"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -278,7 +278,7 @@ Begin VB.Form FormPluginDownloader
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "pngnq-s9 2.0.1"
+         Caption         =   "pngquant 2.1.1"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -544,14 +544,14 @@ Dim isInternetConnected As Boolean
 Dim zLibSize As Double
 Dim freeImageSize As Double
 Dim ezTW32Size As Double
-Dim pngnqSize As Double
+Dim pngQuantSize As Double
 Dim exifToolSize As Double
 
 'Download size estimates if the user is not connected to the Internet
 Private Const estZLibSize As Long = 170000
 Private Const estFreeImageSize As Long = 1007000
 Private Const estEzTW32Size As Long = 27000
-Private Const estPngnqSize As Long = 298000
+Private Const estPngQuantSize As Long = 205000
 Private Const estExifToolSize As Long = 3510000
 
 'Total expected download size, amount download thus far
@@ -682,16 +682,16 @@ Private Sub Form_Load()
         freeImageSize = estFreeImageSize
     End If
     
-    'pngnq-s9
+    'PNGquant
     If isInternetConnected Then
-        URL = "http://www.photodemon.org/downloads/pngnq-s9.pdc"
-        pngnqSize = getPluginSize(hInternetSession, URL)
+        URL = "http://www.photodemon.org/downloads/pngquant.pdc"
+        pngQuantSize = getPluginSize(hInternetSession, URL)
         
         'If getPluginSize fails, it will return -1.  Set an estimated size and allow the software to continue
-        If pngnqSize = -1 Then pngnqSize = estPngnqSize
+        If pngQuantSize = -1 Then pngQuantSize = estPngQuantSize
         
     Else
-        pngnqSize = estPngnqSize
+        pngQuantSize = estPngQuantSize
     End If
     
     'ExifTool
@@ -758,9 +758,9 @@ Private Sub lblInterfaceTitle_Click(Index As Integer)
         Case 2
             OpenURL "http://eztwain.com/eztwain1.htm"
             
-        'pngnq-s9
+        'PNGQuant
         Case 3
-            OpenURL "http://sourceforge.net/projects/pngnqs9/"
+            OpenURL "http://pngquant.org/"
             
         'ExifTool
         Case 4
@@ -856,14 +856,14 @@ Private Function downloadAllPlugins() As Boolean
     
     curNumOfFiles = curNumOfFiles + 1
     
-    'Next is pngnq-s9
-    downloadSuccessful = downloadPlugin("http://www.photodemon.org/downloads/pngnq-s9.pdc", curNumOfFiles, numOfFiles, pngnqSize, True)
+    'Next is PNGQuant
+    downloadSuccessful = downloadPlugin("http://www.photodemon.org/downloads/pngquant.pdc", curNumOfFiles, numOfFiles, pngQuantSize, True)
     If downloadSuccessful = False Then
         pdMsgBox "Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)", vbOKOnly + vbInformation + vbApplicationModal, "Unspecified Download Error", PROGRAMNAME
         downloadAllPlugins = False
         Exit Function
     Else
-        g_ImageFormats.pngnqEnabled = True
+        g_ImageFormats.pngQuantEnabled = True
     End If
     
     curNumOfFiles = curNumOfFiles + 1
@@ -1032,7 +1032,7 @@ Private Sub updateDownloadSize()
     totalDownloadSize = totalDownloadSize + ezTW32Size
     numOfFiles = numOfFiles + 1
     
-    totalDownloadSize = totalDownloadSize + pngnqSize
+    totalDownloadSize = totalDownloadSize + pngQuantSize
     numOfFiles = numOfFiles + 1
         
     totalDownloadSize = totalDownloadSize + exifToolSize

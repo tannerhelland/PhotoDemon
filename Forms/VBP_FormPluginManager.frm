@@ -45,7 +45,7 @@ Begin VB.Form FormPluginManager
       Caption         =   "&Reset all plugin options"
       Height          =   495
       Left            =   120
-      TabIndex        =   71
+      TabIndex        =   66
       ToolTipText     =   "Use this to reset all plugin-related options to their default state.  This action cannot be undone."
       Top             =   6480
       Width           =   2775
@@ -82,132 +82,48 @@ Begin VB.Form FormPluginManager
       TabIndex        =   52
       Top             =   240
       Width           =   7695
-      Begin PhotoDemon.smartCheckBox chkPngnqYUVA 
+      Begin PhotoDemon.smartCheckBox chkPNGQuantIE6 
          Height          =   480
          Left            =   480
-         TabIndex        =   74
-         Top             =   2970
-         Width           =   6195
-         _ExtentX        =   10927
-         _ExtentY        =   847
-         Caption         =   "analyze colors using YUV instead of RGB (slower, but higher quality)"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkPngnqAlphaExtenuation 
-         Height          =   480
-         Left            =   480
-         TabIndex        =   73
-         Top             =   2520
-         Width           =   6525
-         _ExtentX        =   11509
-         _ExtentY        =   847
-         Caption         =   "when reducing alpha channels, attempt to preserve values of 0 and 255"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.HScrollBar hsPngnqDither 
-         Height          =   300
-         Left            =   840
-         Max             =   10
-         TabIndex        =   68
-         Top             =   5160
-         Value           =   5
-         Width           =   6735
-      End
-      Begin VB.HScrollBar hsPngnqSample 
-         Height          =   300
-         Left            =   840
-         Max             =   -1
-         Min             =   -10
-         TabIndex        =   64
-         Top             =   3960
-         Value           =   -3
-         Width           =   6735
-      End
-      Begin VB.Label lblHSDescription 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "full persistence"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   -1  'True
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   195
-         Index           =   3
-         Left            =   6240
-         TabIndex        =   70
-         Top             =   5550
-         Width           =   1080
-      End
-      Begin VB.Label lblHSDescription 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "none"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   -1  'True
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   195
-         Index           =   2
-         Left            =   1080
          TabIndex        =   69
-         Top             =   5550
-         Width           =   360
+         Top             =   2970
+         Width           =   6135
+         _extentx        =   10821
+         _extenty        =   847
+         caption         =   "improve IE6 compatibility (reduces image quality; use with caution)"
+         font            =   "VBP_FormPluginManager.frx":0000
       End
-      Begin VB.Label lblPngnqSetting 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "color dithering:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   1
+      Begin PhotoDemon.smartCheckBox chkPNGQuantDither 
+         Height          =   480
          Left            =   480
-         TabIndex        =   67
-         Top             =   4800
-         Width           =   1305
+         TabIndex        =   68
+         Top             =   2520
+         Width           =   3060
+         _extentx        =   5398
+         _extenty        =   847
+         caption         =   "use dithering to improve output"
+         value           =   1
+         font            =   "VBP_FormPluginManager.frx":0028
+      End
+      Begin PhotoDemon.sliderTextCombo sltPNGQuantSpeed 
+         Height          =   495
+         Left            =   720
+         TabIndex        =   84
+         Top             =   3960
+         Width           =   6855
+         _extentx        =   10398
+         _extenty        =   873
+         font            =   "VBP_FormPluginManager.frx":0050
+         min             =   1
+         max             =   11
+         slidertrackstyle=   1
+         value           =   3
       End
       Begin VB.Label lblHSDescription 
          Alignment       =   1  'Right Justify
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "large (slow, high quality)"
+         Caption         =   "fast, low quality"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -220,15 +136,15 @@ Begin VB.Form FormPluginManager
          ForeColor       =   &H00404040&
          Height          =   195
          Index           =   1
-         Left            =   5520
-         TabIndex        =   66
-         Top             =   4350
-         Width           =   1770
+         Left            =   5280
+         TabIndex        =   65
+         Top             =   4560
+         Width           =   1155
       End
       Begin VB.Label lblHSDescription 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "small (fast, low quality)"
+         Caption         =   "slow, high quality"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -241,15 +157,15 @@ Begin VB.Form FormPluginManager
          ForeColor       =   &H00404040&
          Height          =   195
          Index           =   0
-         Left            =   1110
-         TabIndex        =   65
-         Top             =   4350
-         Width           =   1665
+         Left            =   960
+         TabIndex        =   64
+         Top             =   4560
+         Width           =   1245
       End
       Begin VB.Label lblPngnqSetting 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "color sample size:"
+         Caption         =   "performance vs image quality (default = 3):"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -265,12 +181,12 @@ Begin VB.Form FormPluginManager
          Left            =   480
          TabIndex        =   63
          Top             =   3600
-         Width           =   1560
+         Width           =   3765
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "pngnq-s9 settings"
+         Caption         =   "PNGQuant settings"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -286,12 +202,12 @@ Begin VB.Form FormPluginManager
          Left            =   120
          TabIndex        =   62
          Top             =   2160
-         Width           =   1890
+         Width           =   1995
       End
       Begin VB.Label lblLicenseLink 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "custom license, see PNGNQ-S9-LICENSE file"
+         Caption         =   "BSD License"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   11.25
@@ -304,17 +220,17 @@ Begin VB.Form FormPluginManager
          ForeColor       =   &H00C07031&
          Height          =   270
          Index           =   3
-         Left            =   2760
-         MouseIcon       =   "VBP_FormPluginManager.frx":0000
+         Left            =   3060
+         MouseIcon       =   "VBP_FormPluginManager.frx":0078
          MousePointer    =   99  'Custom
          TabIndex        =   61
          Top             =   1560
-         Width           =   4290
+         Width           =   1185
       End
       Begin VB.Label lblLicense 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "pngnq-s9 license:"
+         Caption         =   "PNGQuant license:"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   11.25
@@ -330,12 +246,12 @@ Begin VB.Form FormPluginManager
          Left            =   480
          TabIndex        =   60
          Top             =   1560
-         Width           =   1680
+         Width           =   1800
       End
       Begin VB.Label lblHomepageLink 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "http://sourceforge.net/projects/pngnqs9/"
+         Caption         =   "http://pngquant.org/"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   11.25
@@ -348,17 +264,17 @@ Begin VB.Form FormPluginManager
          ForeColor       =   &H00C07031&
          Height          =   270
          Index           =   3
-         Left            =   2760
-         MouseIcon       =   "VBP_FormPluginManager.frx":0152
+         Left            =   3060
+         MouseIcon       =   "VBP_FormPluginManager.frx":01CA
          MousePointer    =   99  'Custom
          TabIndex        =   59
          Top             =   1080
-         Width           =   4065
+         Width           =   2040
       End
       Begin VB.Label lblHomepage 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "pngnq-s9 homepage:"
+         Caption         =   "PNGQuant homepage:"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   11.25
@@ -374,7 +290,7 @@ Begin VB.Form FormPluginManager
          Left            =   480
          TabIndex        =   58
          Top             =   1080
-         Width           =   2085
+         Width           =   2205
       End
       Begin VB.Label lbPluginSubheader 
          Alignment       =   1  'Right Justify
@@ -465,7 +381,7 @@ Begin VB.Form FormPluginManager
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "pngnq-s9 plugin information"
+         Caption         =   "PNGQuant plugin information"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -481,7 +397,7 @@ Begin VB.Form FormPluginManager
          Left            =   120
          TabIndex        =   53
          Top             =   15
-         Width           =   3045
+         Width           =   3150
       End
    End
    Begin VB.PictureBox picContainer 
@@ -495,7 +411,7 @@ Begin VB.Form FormPluginManager
       ScaleHeight     =   393
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   513
-      TabIndex        =   75
+      TabIndex        =   70
       Top             =   240
       Width           =   7695
       Begin VB.Label lblLicenseLink 
@@ -515,9 +431,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":02A4
+         MouseIcon       =   "VBP_FormPluginManager.frx":031C
          MousePointer    =   99  'Custom
-         TabIndex        =   84
+         TabIndex        =   79
          Top             =   1560
          Width           =   2325
       End
@@ -538,7 +454,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   480
-         TabIndex        =   83
+         TabIndex        =   78
          Top             =   1560
          Width           =   1545
       End
@@ -559,9 +475,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":03F6
+         MouseIcon       =   "VBP_FormPluginManager.frx":046E
          MousePointer    =   99  'Custom
-         TabIndex        =   82
+         TabIndex        =   77
          Top             =   1080
          Width           =   4575
       End
@@ -582,7 +498,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   480
-         TabIndex        =   81
+         TabIndex        =   76
          Top             =   1080
          Width           =   1950
       End
@@ -604,7 +520,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   3960
-         TabIndex        =   80
+         TabIndex        =   75
          Top             =   600
          Width           =   1395
       End
@@ -625,7 +541,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2400
-         TabIndex        =   79
+         TabIndex        =   74
          Top             =   600
          Width           =   960
       End
@@ -646,7 +562,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   5520
-         TabIndex        =   78
+         TabIndex        =   73
          Top             =   600
          Width           =   960
       End
@@ -668,7 +584,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   480
-         TabIndex        =   77
+         TabIndex        =   72
          Top             =   600
          Width           =   1740
       End
@@ -689,7 +605,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   6
          Left            =   120
-         TabIndex        =   76
+         TabIndex        =   71
          Top             =   15
          Width           =   2910
       End
@@ -853,7 +769,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":0548
+         MouseIcon       =   "VBP_FormPluginManager.frx":05C0
          MousePointer    =   99  'Custom
          TabIndex        =   45
          Top             =   1080
@@ -897,7 +813,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":069A
+         MouseIcon       =   "VBP_FormPluginManager.frx":0712
          MousePointer    =   99  'Custom
          TabIndex        =   43
          Top             =   1560
@@ -936,7 +852,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":07EC
+         MouseIcon       =   "VBP_FormPluginManager.frx":0864
          MousePointer    =   99  'Custom
          TabIndex        =   31
          Top             =   1560
@@ -981,7 +897,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":093E
+         MouseIcon       =   "VBP_FormPluginManager.frx":09B6
          MousePointer    =   99  'Custom
          TabIndex        =   29
          Top             =   1080
@@ -1277,7 +1193,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":0A90
+         MouseIcon       =   "VBP_FormPluginManager.frx":0B08
          MousePointer    =   99  'Custom
          TabIndex        =   35
          Top             =   1080
@@ -1321,7 +1237,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":0BE2
+         MouseIcon       =   "VBP_FormPluginManager.frx":0C5A
          MousePointer    =   99  'Custom
          TabIndex        =   33
          Top             =   1560
@@ -1360,9 +1276,9 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   4
          Left            =   6015
-         MouseIcon       =   "VBP_FormPluginManager.frx":0D34
+         MouseIcon       =   "VBP_FormPluginManager.frx":0DAC
          MousePointer    =   99  'Custom
-         TabIndex        =   88
+         TabIndex        =   83
          Top             =   4125
          Width           =   1350
       End
@@ -1383,7 +1299,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   1260
-         TabIndex        =   87
+         TabIndex        =   82
          Top             =   4440
          Width           =   3255
       End
@@ -1405,7 +1321,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   480
-         TabIndex        =   86
+         TabIndex        =   81
          Top             =   4440
          Width           =   675
       End
@@ -1426,7 +1342,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   4
          Left            =   240
-         TabIndex        =   85
+         TabIndex        =   80
          Top             =   4080
          Width           =   870
       End
@@ -1474,7 +1390,7 @@ Begin VB.Form FormPluginManager
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "pngnq-s9"
+         Caption         =   "PNGQuant"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -1490,7 +1406,7 @@ Begin VB.Form FormPluginManager
          Left            =   240
          TabIndex        =   19
          Top             =   3240
-         Width           =   1005
+         Width           =   1110
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
@@ -1745,7 +1661,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   0
          Left            =   5760
-         MouseIcon       =   "VBP_FormPluginManager.frx":0E86
+         MouseIcon       =   "VBP_FormPluginManager.frx":0EFE
          MousePointer    =   99  'Custom
          TabIndex        =   7
          Top             =   765
@@ -1769,7 +1685,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   1
          Left            =   6360
-         MouseIcon       =   "VBP_FormPluginManager.frx":0FD8
+         MouseIcon       =   "VBP_FormPluginManager.frx":1050
          MousePointer    =   99  'Custom
          TabIndex        =   6
          Top             =   1605
@@ -1793,7 +1709,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   2
          Left            =   5955
-         MouseIcon       =   "VBP_FormPluginManager.frx":112A
+         MouseIcon       =   "VBP_FormPluginManager.frx":11A2
          MousePointer    =   99  'Custom
          TabIndex        =   5
          Top             =   2445
@@ -1803,7 +1719,7 @@ Begin VB.Form FormPluginManager
          Alignment       =   1  'Right Justify
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "Disable pngnq-s9"
+         Caption         =   "Disable PNGQuant"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -1816,18 +1732,18 @@ Begin VB.Form FormPluginManager
          ForeColor       =   &H00C07031&
          Height          =   240
          Index           =   3
-         Left            =   5895
-         MouseIcon       =   "VBP_FormPluginManager.frx":127C
+         Left            =   5835
+         MouseIcon       =   "VBP_FormPluginManager.frx":12F4
          MousePointer    =   99  'Custom
          TabIndex        =   4
          Top             =   3285
-         Width           =   1470
+         Width           =   1530
       End
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   72
+      TabIndex        =   67
       Top             =   6360
       Width           =   10815
    End
@@ -1841,8 +1757,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Plugin Manager
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 21/December/12
-'Last updated: 20/September/13
-'Last update: expected version strings for each plugin are now declared in the Public_Constants module.
+'Last updated: 02/July/14
+'Last update: replaced all pngnq-s9 interactions with PNGQuant
 '
 'Dialog for presenting the user data related to the currently installed plugins.
 '
@@ -1911,7 +1827,7 @@ Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As L
    '*** Get size ****
    lBufferLen = GetFileVersionInfoSize(FullFileName, lDummy)
    If lBufferLen < 1 Then
-      'pdMsgBox "No Version Info available!"
+      'Debug.Print "Could not retrieve version information for (" & FullFileName & ")"
       Exit Sub
    End If
 
@@ -1941,7 +1857,7 @@ Private Sub CmdCancel_Click()
     g_ImageFormats.FreeImageEnabled = pEnabled(0)
     g_ZLibEnabled = pEnabled(1)
     g_ScanEnabled = pEnabled(2)
-    g_ImageFormats.pngnqEnabled = pEnabled(3)
+    g_ImageFormats.pngQuantEnabled = pEnabled(3)
     g_ExifToolEnabled = pEnabled(4)
     
     Unload Me
@@ -1961,23 +1877,21 @@ Private Sub CmdOK_Click()
     
     'Save all plugin-specific settings to the preferences file
     
-    'pngnq-s9 settings
-        
-        'Alpha extenuation
-        g_UserPreferences.SetPref_Boolean "Plugins", "Pngnq Alpha Extenuation", CBool(chkPngnqAlphaExtenuation.Value)
-        
-        'YUV
-        g_UserPreferences.SetPref_Boolean "Plugins", "Pngnq YUV", CBool(chkPngnqYUVA.Value)
-        
-        'Color sample size
-        g_UserPreferences.SetPref_Long "Plugins", "Pngnq Color Sample", -1 * hsPngnqSample.Value
+    'PNGQuant settings
         
         'Dithering
-        g_UserPreferences.SetPref_Long "Plugins", "Pngnq Dithering", hsPngnqDither.Value
+        g_UserPreferences.SetPref_Boolean "Plugins", "PNGQuant Dithering", CBool(chkPNGQuantDither.Value)
+        
+        'IE6 compatibility
+        g_UserPreferences.SetPref_Boolean "Plugins", "PNGQuant IE6 Compatibility", CBool(chkPNGQuantIE6.Value)
+        
+        'Performance vs speed
+        g_UserPreferences.SetPref_Long "Plugins", "PNGQuant Performance", sltPNGQuantSpeed.Value
+            
             
     'Write all enabled/disabled plugin changes to the preferences file
     If g_ImageFormats.FreeImageEnabled Then
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force FreeImag eDisable", False
+        g_UserPreferences.SetPref_Boolean "Plugins", "Force FreeImage Disable", False
     Else
         g_UserPreferences.SetPref_Boolean "Plugins", "Force FreeImage Disable", True
     End If
@@ -1996,11 +1910,11 @@ Private Sub CmdOK_Click()
         g_UserPreferences.SetPref_Boolean "Plugins", "Force EZTwain Disable", True
     End If
         
-    'pngnq-s9
-    If g_ImageFormats.pngnqEnabled Then
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force Pngnq Disable", False
+    'PNGQuant
+    If g_ImageFormats.pngQuantEnabled Then
+        g_UserPreferences.SetPref_Boolean "Plugins", "Force PNGQuant Disable", False
     Else
-        g_UserPreferences.SetPref_Boolean "Plugins", "Force Pngnq Disable", True
+        g_UserPreferences.SetPref_Boolean "Plugins", "Force PNGQuant Disable", True
     End If
     
     'ExifTool
@@ -2011,7 +1925,7 @@ Private Sub CmdOK_Click()
     End If
     
     'If the user has changed any plugin enable/disable settings, a number of things must be refreshed program-wide
-    If (pEnabled(0) <> g_ImageFormats.FreeImageEnabled) Or (pEnabled(1) <> g_ZLibEnabled) Or (pEnabled(2) <> g_ScanEnabled) Or (pEnabled(3) <> g_ImageFormats.pngnqEnabled) Or (pEnabled(4) <> g_ExifToolEnabled) Then
+    If (pEnabled(0) <> g_ImageFormats.FreeImageEnabled) Or (pEnabled(1) <> g_ZLibEnabled) Or (pEnabled(2) <> g_ScanEnabled) Or (pEnabled(3) <> g_ImageFormats.pngQuantEnabled) Or (pEnabled(4) <> g_ExifToolEnabled) Then
         LoadPlugins
         applyAllMenuIcons
         resetMenuIcons
@@ -2033,25 +1947,22 @@ Private Sub cmdReset_Click()
     
     'Reset all plugin-specific settings in the preferences file
     
-    'pngnq-s9 settings
-        
-        'Alpha extenuation
-        g_UserPreferences.SetPref_Boolean "Plugins", "Pngnq Alpha Extenuation", False
-        
-        'YUV
-        g_UserPreferences.SetPref_Boolean "Plugins", "Pngnq YUV", True
-        
-        'Color sample size
-        g_UserPreferences.SetPref_Long "Plugins", "Pngnq Color Sample", 3
+    'PNGQuant settings
         
         'Dithering
-        g_UserPreferences.SetPref_Long "Plugins", "Pngnq Dithering", 5
+        g_UserPreferences.SetPref_Boolean "Plugins", "PNGQuant Dithering", True
+        
+        'IE6 compatibility
+        g_UserPreferences.SetPref_Boolean "Plugins", "PNGQuant IE6 Compatibility", False
+        
+        'Performance vs speed
+        g_UserPreferences.SetPref_Long "Plugins", "PNGQuant Performance", 3
 
     'Enable all plugins if possible
     g_UserPreferences.SetPref_Boolean "Plugins", "Force FreeImage Disable", False
     g_UserPreferences.SetPref_Boolean "Plugins", "Force ZLib Disable", False
     g_UserPreferences.SetPref_Boolean "Plugins", "Force EZTwain Disable", False
-    g_UserPreferences.SetPref_Boolean "Plugins", "Force Pngnq Disable", False
+    g_UserPreferences.SetPref_Boolean "Plugins", "Force PNGQuant Disable", False
     g_UserPreferences.SetPref_Boolean "Plugins", "Force ExifTool Disable", False
     
     'Reload the plugins (from a system standpoint)
@@ -2069,7 +1980,7 @@ Private Sub Form_Load()
     pEnabled(0) = g_ImageFormats.FreeImageEnabled
     pEnabled(1) = g_ZLibEnabled
     pEnabled(2) = g_ScanEnabled
-    pEnabled(3) = g_ImageFormats.pngnqEnabled
+    pEnabled(3) = g_ImageFormats.pngQuantEnabled
     pEnabled(4) = g_ExifToolEnabled
     
     'Populate the left-hand list box with all relevant plugins
@@ -2078,7 +1989,7 @@ Private Sub Form_Load()
     lstPlugins.AddItem "FreeImage", 1
     lstPlugins.AddItem "zLib", 2
     lstPlugins.AddItem "EZTwain", 3
-    lstPlugins.AddItem "pngnq-s9", 4
+    lstPlugins.AddItem "PNGQuant", 4
     lstPlugins.AddItem "ExifTool", 5
     
     lstPlugins.ListIndex = 0
@@ -2136,21 +2047,18 @@ Private Sub LoadAllPluginSettings()
     lstPlugins.ListIndex = g_UserPreferences.GetPref_Long("Plugins", "Last Plugin Preferences Page", 0)
     picContainer(lstPlugins.ListIndex).Visible = True
     
-    'Load all plugin settings from the preferences file
+    'Load all specialty plugin settings from the preferences file
     
-    'pngnq-s9 settings
-        
-        'Alpha extenuation
-        If g_UserPreferences.GetPref_Boolean("Plugins", "Pngnq Alpha Extenuation", False) Then chkPngnqAlphaExtenuation.Value = vbChecked Else chkPngnqAlphaExtenuation.Value = vbUnchecked
-        
-        'YUV
-        If g_UserPreferences.GetPref_Boolean("Plugins", "Pngnq YUV", True) Then chkPngnqYUVA.Value = vbChecked Else chkPngnqYUVA.Value = vbUnchecked
-        
-        'Color sample size
-        hsPngnqSample.Value = -1 * g_UserPreferences.GetPref_Long("Plugins", "Pngnq Color Sample", 3)
+    'PNGQuant settings
         
         'Dithering
-        hsPngnqDither.Value = g_UserPreferences.GetPref_Long("Plugins", "Pngnq Dithering", 5)
+        If g_UserPreferences.GetPref_Boolean("Plugins", "PNGQuant Dithering", True) Then chkPNGQuantDither.Value = vbChecked Else chkPNGQuantDither.Value = vbUnchecked
+        
+        'IE6 compatibility
+        If g_UserPreferences.GetPref_Boolean("Plugins", "PNGQuant IE6 Compatibility", False) Then chkPNGQuantIE6.Value = vbChecked Else chkPNGQuantIE6.Value = vbUnchecked
+        
+        'Performance vs speed
+        sltPNGQuantSpeed.Value = g_UserPreferences.GetPref_Long("Plugins", "PNGQuant Performance", 3)
         
 End Sub
 
@@ -2169,8 +2077,8 @@ Private Sub UpdatePluginLabels()
     'EZTwain
     pluginStatus = pluginStatus And popPluginLabel(2, "EZTwain", EXPECTED_EZTWAIN_VERSION, isEZTwainAvailable, g_ScanEnabled)
     
-    'pngnq-s9
-    pluginStatus = pluginStatus And popPluginLabel(3, "pngnq-s9", EXPECTED_PNGNQ_VERSION, isPngnqAvailable, g_ImageFormats.pngnqEnabled)
+    'PNGQuant
+    pluginStatus = pluginStatus And popPluginLabel(3, "PNGQuant", EXPECTED_PNGQUANT_VERSION, isPngQuantAvailable, g_ImageFormats.pngQuantEnabled)
     
     'ExifTool
     pluginStatus = pluginStatus And popPluginLabel(4, "ExifTool", EXPECTED_EXIFTOOL_VERSION, isExifToolAvailable, g_ExifToolEnabled)
@@ -2193,7 +2101,7 @@ Private Sub CollectAllVersionNumbers()
     If isFreeImageAvailable Then CollectVersionInfo g_PluginPath & "freeimage.dll", 0 Else vString(0) = "none"
     If isZLibAvailable Then CollectVersionInfo g_PluginPath & "zlibwapi.dll", 1 Else vString(1) = "none"
     If isEZTwainAvailable Then CollectVersionInfo g_PluginPath & "eztw32.dll", 2 Else vString(2) = "none"
-    If isPngnqAvailable Then CollectVersionInfo g_PluginPath & "pngnq-s9.exe", 3 Else vString(3) = "none"
+    If isPngQuantAvailable Then CollectVersionInfo g_PluginPath & "pngquant.exe", 3 Else vString(3) = "none"
     If isExifToolAvailable Then CollectVersionInfo g_PluginPath & "exiftool.exe", 4 Else vString(4) = "none"
     
     'Special version-checking techniques are required for some plugins.
@@ -2201,9 +2109,8 @@ Private Sub CollectAllVersionNumbers()
     'The EZTwain DLL provides its own version-checking function
     If isEZTwainAvailable Then vString(2) = getEZTwainVersion Else vString(2) = "none"
     
-    'pngnq-s9 doesn't have a version-checking function, and it doesn't write version numbers to the .exe.
-    ' So for now, assume the latest version automatically.
-    If isPngnqAvailable Then vString(3) = getPngnqVersion Else vString(3) = "none"
+    'PNGQuant can write its version number to stdout.  Capture that now.
+    If isPngQuantAvailable Then vString(3) = getPngQuantVersion() Else vString(3) = "none"
     
     'ExifTool can write its version number to stdout.  Capture that now.
     If isExifToolAvailable Then vString(4) = getExifToolVersion() Else vString(4) = "none"
@@ -2295,9 +2202,9 @@ Private Sub lblDisable_Click(Index As Integer)
         Case 2
             g_ScanEnabled = Not g_ScanEnabled
             
-        'pngnq-s9
+        'PNGQuant
         Case 3
-            g_ImageFormats.pngnqEnabled = Not g_ImageFormats.pngnqEnabled
+            g_ImageFormats.pngQuantEnabled = Not g_ImageFormats.pngQuantEnabled
         
         'ExifTool
         Case 4
@@ -2326,9 +2233,9 @@ Private Sub lblHomepageLink_Click(Index As Integer)
         Case 2
             OpenURL "http://www.eztwain.com/eztwain1.htm"
         
-        'pngnq-s9
+        'PNGQuant
         Case 3
-            OpenURL "http://sourceforge.net/projects/pngnqs9/"
+            OpenURL "http://pngquant.org/"
             
         'ExifTool
         Case 4
@@ -2354,9 +2261,9 @@ Private Sub lblLicenseLink_Click(Index As Integer)
         Case 2
             OpenURL "http://www.eztwain.com/ezt1faq.htm"
             
-        'pngnq-s9
+        'PNGQuant
         Case 3
-            OpenURL "http://sourceforge.net/projects/pngnqs9/files/"
+            OpenURL "https://raw.githubusercontent.com/pornel/pngquant/master/COPYRIGHT"
             
         'ExifTool
         Case 4

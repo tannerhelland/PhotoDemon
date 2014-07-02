@@ -48,8 +48,8 @@ Public FreeImageEnabled As Boolean
 'Is GDI+ available?
 Public GDIPlusEnabled As Boolean
 
-'Is pngnq available?
-Public pngnqEnabled As Boolean
+'Is pngQuant available?
+Public pngQuantEnabled As Boolean
 
 'Number of available input, output formats
 Private numOfInputFormats As Long, numOfOutputFormats As Long
