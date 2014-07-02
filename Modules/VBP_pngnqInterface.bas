@@ -1,26 +1,25 @@
-Attribute VB_Name = "Plugin_pngnq_Interface"
+Attribute VB_Name = "Plugin_PNGQuant_Interface"
 '***************************************************************************
-'pngnq-s9 Interface
+'PNGQuant Interface (formerly pngnq-s9 interface)
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 19/December/12
-'Last updated: 26/December/12
-'Last update: added mechanism for version checking
+'Last updated: 02/July/14
+'Last update: migrate all plugin support to the official pngquant library.  Work on pngnq-s9 has pretty much
+'              evaporated since late 2012, so pngquant is the new workhorse for PD's specialized PNG needs.
 '
-'Module for handling all pngnq-s9 interfacing.  This module is pointless without the accompanying
-' pngnq-s9 plugin, which will be in the App/PhotoDemon/Plugins subdirectory as "pngnq-s9.exe"
+'Module for handling all PNGQuant interfacing.  This module is pointless without the accompanying
+' PNGQuant plugin, which will be in the App/PhotoDemon/Plugins subdirectory as "pngquant.exe"
 '
-'pngnq-s9 is a modified, much-improved variant of the free, open-source pngnq tool.  You can learn more
-' about the original pngnq at:
+'PNGQuant is a free, open-source lossy PNG compression library.  You can learn more about it here:
 '
-' http://pngnq.sourceforge.net/
+' http://pngquant.org/
 '
-'...and more about pngnq-s9 specifically at:
+'PhotoDemon has been designed against v2.1.1 (02 July '14).  It may not work with other versions.
+' Additional documentation regarding the use of PNGQuant is available as part of the official PNGQuant library,
+' downloadable from http://pngquant.org/.
 '
-' http://sourceforge.net/projects/pngnqs9/
-'
-'This project was designed against v2.0.1 of the pngnq-s9 tool (16 Oct '12).  It may not work with
-' other versions of the tool.  Additional documentation regarding the use of pngnq-s9 is available
-' as part of the official pngnq-s9 zip, downloadable from http://sourceforge.net/projects/pngnqs9/files/
+'PNGQuant is available under a BSD license.  Please see the App/PhotoDemon/Plugins/pngquant-README.txt file
+' for questions regarding copyright or licensing.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -29,20 +28,39 @@ Attribute VB_Name = "Plugin_pngnq_Interface"
 
 Option Explicit
 
-'Is pngnq-s9 available as a plugin?  (NOTE: this is now determined separately from pngnqEnabled.)
-Public Function isPngnqAvailable() As Boolean
-    If FileExist(g_PluginPath & "pngnq-s9.exe") Then isPngnqAvailable = True Else isPngnqAvailable = False
+'Is PNGQuant.exe available on this PC?
+Public Function isPngQuantAvailable() As Boolean
+    If FileExist(g_PluginPath & "pngquant.exe") Then isPngQuantAvailable = True Else isPngQuantAvailable = False
 End Function
 
-'Retrieve the pngnq-s9 version from the file.  There is currently not a good way to do this, so just report the
-' expected version (as it's incredibly unlikely that the user will attempt to use another version).
-Public Function getPngnqVersion() As String
+'Retrieve the PNGQuant plugin version.  Shelling the executable with the "--version" tag will cause it to return
+' the current version (and compile date) over stdout.
+Public Function getPngQuantVersion() As String
 
-    If Not isPngnqAvailable Then
-        getPngnqVersion = ""
+    If Not isPngQuantAvailable Then
+        getPngQuantVersion = ""
         Exit Function
+    
     Else
-        getPngnqVersion = "2.0.1.0"
+        
+        Dim pngqPath As String
+        pngqPath = g_PluginPath & "pngquant.exe"
+        
+        Dim outputString As String
+        If ShellExecuteCapture(pngqPath, "pngquant.exe --version", outputString) Then
+        
+            'The output string will be a simple version number and release date, e.g. "2.1.1 (February 2014)".
+            ' Split the output by spaces, then retrieve the first entry.
+            outputString = Trim$(outputString)
+            
+            Dim versionParts() As String
+            versionParts = Split(outputString, " ")
+            getPngQuantVersion = versionParts(0) & ".0"
+            
+        Else
+            getPngQuantVersion = ""
+        End If
+        
     End If
     
 End Function

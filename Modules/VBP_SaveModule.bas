@@ -908,7 +908,9 @@ SaveGIFError:
     
 End Function
 
-'Save a PNG (Portable Network Graphic) file.  GDI+ can also do this.
+'Save a PNG (Portable Network Graphic) file.  GDI+ can also do this.  Note that this function is enormous and quite complicated,
+' owing to the many interactions between color spaces, bit-depth, custom PNG features (like compression quality), and the
+' availability of plugins like PNGQuant that further compress saved PNG files.
 Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As String, ByVal outputColorDepth As Long, Optional ByVal pngParams As String = "") As Boolean
 
     On Error GoTo SavePNGError
@@ -935,7 +937,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         Exit Function
     End If
     
-    'Before doing anything else, make a special note of the outputColorDepth.  If it is 8bpp, we will use pngnq-s9 to help with the save.
+    'Before doing anything else, make a special note of the outputColorDepth.  If it is 8bpp, we will use PNGQuant to help with the save.
     Dim output8BPP As Boolean
     If outputColorDepth = 8 Then output8BPP = True Else output8BPP = False
         
@@ -953,11 +955,12 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then
         
-        'PhotoDemon now offers pngnq support via a plugin.  It can be used to render extremely high-quality 8bpp PNG files
-        ' with "full" transparency.  If the pngnq-s9 executable is available, the export process is a bit different.
+        'PhotoDemon provides PNGQuant plugin support.  PNGQuant can render extremely high-quality 8bpp PNG files
+        ' with "full" transparency.  If the pngquant executable is available, the export process of 8bpp PNGs is
+        ' a bit different.
         
-        'Before we can send stuff off to pngnq, however, we need to see if the image has more than 256 colors.  If it
-        ' doesn't, we can save the file without pngnq's help.
+        'Before we can send stuff off to PNGQuant, however, we need to see if the image has more than 256 colors.
+        ' If it doesn't, we can save the file without PNGQuant's help.
         
         'Check to see if the current image had its colors counted before coming here.  If not, count it.
         Dim numColors As Long
@@ -967,8 +970,8 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
             numColors = g_LastColorCount
         End If
         
-        'Pngnq can handle all types of transparency for us.  If pngnq cannot be found, we must rely on our own routines.
-        If Not g_ImageFormats.pngnqEnabled Then
+        'PNGQuant can handle all types of transparency for us, but if it doesn't exist, we must rely on our own routines.
+        If Not g_ImageFormats.pngQuantEnabled Then
         
             'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
             If tmpDIB.isAlphaBinary Then
@@ -1003,7 +1006,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                 
             End If
             
-        'If pngnq is available, force the output to 32bpp.  Pngnq will take care of the actual 8bpp reduction.
+        'If PNGQuant is available, force the output to 32bpp.  PNGQuant will take care of the actual 32bpp -> 8bpp reduction.
         Else
             outputColorDepth = 32
         End If
@@ -1014,8 +1017,9 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         ' If we are, composite the image against a white background.
         If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
     
-        'Also, if pngnq is enabled, we will use that for the transformation - so we need to reset the outgoing color depth to 24bpp
-        If (tmpDIB.getDIBColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngnqEnabled Then outputColorDepth = 24
+        'Also, if PNGquant is enabled, use it for the transformation - and note that we need to reset the
+        ' first PNG save (pre-PNGQuant) color depth to 24bpp
+        If (tmpDIB.getDIBColorDepth = 24) And (outputColorDepth = 8) And g_ImageFormats.pngQuantEnabled Then outputColorDepth = 24
     
     End If
     
@@ -1028,11 +1032,11 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     'If the image is being reduced from some higher bit-depth to 1bpp, manually force a conversion with dithering
     If outputColorDepth = 1 Then fi_DIB = FreeImage_Dither(fi_DIB, FID_FS)
     
-    'If the image contains alpha and pngnq is not available, we need to manually convert the FreeImage copy of the image to 8bpp.
+    'If the image contains alpha and PNGquant is not available, we need to manually convert the FreeImage copy of the image to 8bpp.
     ' Then we need to apply alpha using the cut-off established earlier in this section.
-    If handleAlpha And (Not g_ImageFormats.pngnqEnabled) Then
+    If handleAlpha And (Not g_ImageFormats.pngQuantEnabled) Then
     
-        fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_NNQUANT, True)
+        fi_DIB = FreeImage_ColorQuantizeEx(fi_DIB, FIQ_WUQUANT, True)
         
         'We now need to find the palette index of a known transparent pixel
         Dim transpX As Long, transpY As Long
@@ -1087,58 +1091,47 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
             SavePNGImage = False
             Exit Function
         
-        'Save was successful.  'If pngnq is being used to help with the 8bpp reduction, now is when we use it.
+        'Save was successful.  If PNGQuant is being used to help with the 8bpp reduction, activate it now.
         Else
             
-            If g_ImageFormats.pngnqEnabled And output8BPP Then
+            If g_ImageFormats.pngQuantEnabled And output8BPP Then
             
-                'Build a full shell path for the pngnq operation
+                'Build a full shell path for the pngquant operation
                 Dim shellPath As String
-                shellPath = g_PluginPath & "pngnq-s9.exe "
+                shellPath = g_PluginPath & "pngquant.exe "
                 
                 'Force overwrite if a file with that name already exists
                 shellPath = shellPath & "-f "
                 
-                'Display verbose status messages (consider removing this for production build)
+                'Display verbose status messages (consider removing this for production builds)
                 shellPath = shellPath & "-v "
                 
-                'Turn off the alpha importance heuristic (this leads to better results on semi-transparent images, and improves
-                ' processing time for 24bpp images)
-                shellPath = shellPath & "-A "
+                'Request the addition of a custom "-8bpp.png" extension; without this, PNGquant will use its own extension
+                ' (-fs8.png or -or8.png, depending on the use of dithering)
+                shellPath = shellPath & "--ext -8bpp.png "
                 
                 'Now, add options that the user may have specified.
                 
-                'Alpha extenuation (only relevant for 32bpp images)
+                'Dithering override
                 If tmpDIB.getDIBColorDepth = 32 Then
-                    If g_UserPreferences.GetPref_Boolean("Plugins", "Pngnq Alpha Extenuation", False) Then
-                        shellPath = shellPath & "-t15 "
-                    Else
-                        shellPath = shellPath & "-t0 "
+                    If Not g_UserPreferences.GetPref_Boolean("Plugins", "PNGQuant Dithering", True) Then
+                        shellPath = shellPath & "--nofs "
                     End If
                 End If
         
-                'YUV
-                If g_UserPreferences.GetPref_Boolean("Plugins", "Pngnq YUV", True) Then
-                    shellPath = shellPath & "-Cy "
-                Else
-                    shellPath = shellPath & "-Cr "
+                'Improved IE6 compatibility
+                If g_UserPreferences.GetPref_Boolean("Plugins", "PNGQuant IE6 Compatibility", False) Then
+                    shellPath = shellPath & "--iebug "
                 End If
         
-                'Color sample size
-                shellPath = shellPath & "-s" & g_UserPreferences.GetPref_Long("Plugins", "Pngnq Color Sample", 3) & " "
-        
-                'Dithering
-                If g_UserPreferences.GetPref_Long("Plugins", "Pngnq Dithering", 5) = 0 Then
-                    shellPath = shellPath & "-Qn "
-                Else
-                    shellPath = shellPath & "-Q" & g_UserPreferences.GetPref_Long("Plugins", "Pngnq Dithering", 5) & " "
-                End If
+                'Performance
+                shellPath = shellPath & "--speed " & g_UserPreferences.GetPref_Long("Plugins", "PNGQuant Performance", 3) & " "
                 
                 'Append the name of the current image
                 shellPath = shellPath & """" & PNGPath & """"
                 
-                'Use pngnq to create a new file
-                Message "Using the pngnq-s9 plugin to write a high-quality 8bpp PNG file.  This may take a moment..."
+                'Use PNGQuant to create a new file
+                Message "Using the PNGQuant plugin to write a high-quality 8bpp PNG file.  This may take a moment..."
                 
                 'Before launching the shell, launch a single DoEvents.  This gives us some leeway before Windows marks the program
                 ' as unresponsive...
@@ -1148,30 +1141,30 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                 shellCheck = ShellAndWait(shellPath, vbMinimizedNoFocus)
             
                 'If the shell was successful and the image was created successfully, overwrite the original 32bpp save
-                ' (from FreeImage) with the new 8bpp one (from pngnq-s9)
+                ' (from FreeImage) with the new 8bpp one (from PNGQuant)
                 If shellCheck Then
                 
-                    Message "Pngnq-s9 transformation complete.  Verifying output..."
+                    Message "PNGQuant transformation complete.  Verifying output..."
                 
-                    'pngnq is going to create a new file with the name "filename-nq8.png".  We need to rename that file
-                    ' to whatever name the user supplied
+                    'If successful, PNGQuant created a new file with the name "filename-8bpp.png".  We need to rename that file
+                    ' to whatever name the user originally supplied - but only if the 8bpp transformation was successful!
                     Dim srcFile As String
                     srcFile = PNGPath
                     StripOffExtension srcFile
-                    srcFile = srcFile & "-nq8.png"
+                    srcFile = srcFile & "-8bpp.png"
                     
-                    'Make sure both FreeImage and pngnq were able to generate valid files, then rewrite the FreeImage one
-                    ' with the pngnq one.
+                    'Make sure both FreeImage and PNGQuant were able to generate valid files, then rewrite the FreeImage one
+                    ' with the PNGQuant one.
                     If FileExist(srcFile) And FileExist(PNGPath) Then
                         Kill PNGPath
                         FileCopy srcFile, PNGPath
                         Kill srcFile
                     Else
-                        Message "Pngnq-s9 could not write file.  Saving 32bpp image instead..."
+                        Message "PNGQuant could not write file.  Saving 32bpp image instead..."
                     End If
                     
                 Else
-                    Message "Pngnq-s9 could not write file.  Saving 32bpp image instead..."
+                    Message "PNGQuant could not write file.  Saving 32bpp image instead..."
                 End If
             
             End If

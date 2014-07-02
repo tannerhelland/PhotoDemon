@@ -431,13 +431,12 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "ForceExifToolDisable", "False"
         xmlEngine.writeTag "ForceEZTwainDisable", "False"
         xmlEngine.writeTag "ForceFreeImageDisable", "False"
-        xmlEngine.writeTag "ForcePngnqDisable", "False"
+        xmlEngine.writeTag "ForcePngQuantDisable", "False"
         xmlEngine.writeTag "ForceZLibDisable", "False"
         xmlEngine.writeTag "LastPluginPreferencesPage", "0"
-        xmlEngine.writeTag "PngnqAlphaExtenuation", "False"
-        xmlEngine.writeTag "PngnqColorSample", "3"
-        xmlEngine.writeTag "PngnqDithering", "5"
-        xmlEngine.writeTag "PngnqYUV", "True"
+        xmlEngine.writeTag "PNGQuantDithering", "True"
+        xmlEngine.writeTag "PNGQuantIE6Compatibility", "False"
+        xmlEngine.writeTag "PNGQuantPerformance", "3"
     xmlEngine.closeTag "Plugins"
     xmlEngine.writeBlankLine
 

@@ -2304,18 +2304,18 @@ Public Sub LoadPlugins()
         'Additionally related to FreeImage - enable/disable the arbitrary rotation option contingent on FreeImage's enabling
         FormMain.MnuRotate(3).Visible = g_ImageFormats.FreeImageEnabled
     
-    'Check for pngnq interface
-    If isPngnqAvailable Then
+    'Check for the PNGQuant interface
+    If isPngQuantAvailable Then
         
-        'Check to see if pngnq-s9 has been forcibly disabled
-        If g_UserPreferences.GetPref_Boolean("Plugins", "Force Pngnq Disable", False) Then
-            g_ImageFormats.pngnqEnabled = False
+        'Check to see if PNGQuant has been forcibly disabled
+        If g_UserPreferences.GetPref_Boolean("Plugins", "Force PNGQuant Disable", False) Then
+            g_ImageFormats.pngQuantEnabled = False
         Else
-            g_ImageFormats.pngnqEnabled = True
+            g_ImageFormats.pngQuantEnabled = True
         End If
         
     Else
-        g_ImageFormats.pngnqEnabled = False
+        g_ImageFormats.pngQuantEnabled = False
     End If
     
     'Check for ExifTool metadata interface
