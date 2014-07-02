@@ -22,14 +22,6 @@ Option Explicit
 
 '***************************************************************************
 'Functions required to initialize an OLE interface from within VB
-
-Private Type Guid
-  Data1 As Long
-  Data2 As Integer
-  Data3 As Integer
-  Data4(0 To 7) As Byte
-End Type
-
 Private Declare Sub OleInitialize Lib "ole32" (pvReserved As Any)
 Private Declare Sub OleUninitialize Lib "ole32" ()
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As String, pclsid As Guid) As Long
@@ -37,8 +29,8 @@ Private Declare Function IIDFromString Lib "ole32" (ByVal lpsz As String, lpiid 
 Private Declare Function CoCreateInstance Lib "ole32" (rclsid As Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, riid As Guid, ppv As Any) As Long
 
 Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function PutMem2 Lib "msvbvm60" (ByVal pWORDDst As Long, ByVal NewValue As Long) As Long
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal pDWORDDst As Long, ByVal NewValue As Long) As Long
+Private Declare Function PutMem2 Lib "msvbvm60" (ByVal pWORDDst As Long, ByVal newValue As Long) As Long
+Private Declare Function PutMem4 Lib "msvbvm60" (ByVal pDWORDDst As Long, ByVal newValue As Long) As Long
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWORDSrc As Long, ByVal pDWORDDst As Long) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
 Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long

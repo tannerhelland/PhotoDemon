@@ -132,7 +132,7 @@ Private Function getMRUHash(ByVal FilePath As String) As String
                 
         'The SHA-256 function returns a 64 character string (256 / 8 = 32 bytes, but 64 characters due to hex representation).
         ' This is too long for a filename, so take only the first sixteen characters of the hash.
-        hString = Left(hString, 16)
+        hString = Left$(hString, 16)
         
         'Save this hash to our hashes array
         mruHashes(numOfMRUHashes).mruInitPath = FilePath

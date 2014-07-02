@@ -229,3 +229,7 @@ Public g_DisableUserInput As Boolean
 ' results, then restore the original message when done.  This makes the experience seamless for the user, but is hugely helpful
 ' to me when debugging asynchronous program behavior.
 Public g_LastPostedMessage As String
+
+'ID for this PD instance.  When started, each PhotoDemon instance is assigned a pseudo-random (GUID-based) session ID, which it
+' then appends to things like Undo/Redo files.  This allows for multiple side-by-side program instances without collisions.
+Public g_SessionID As String

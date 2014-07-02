@@ -108,6 +108,10 @@ Public Sub LoadTheProgram()
     'While here, also initialize the image format handler (as plugins and other load functions interact with it)
     Set g_ImageFormats = New pdFormats
     
+    'And finally, as part of this step, retrieve a unique session ID.  This will be used to separate the temp files for this
+    ' program instance from any other potential instances.
+    g_SessionID = OS_Interactions.getUniqueSessionID()
+    Debug.Print "Session ID: " & g_SessionID
     
     
     '*************************************************************************************************************************************
