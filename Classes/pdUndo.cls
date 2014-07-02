@@ -650,15 +650,15 @@ Private Function generateUndoFilename(ByVal uIndex As Long) As String
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If Not (parentPDImage Is Nothing) Then
-        generateUndoFilename = g_UserPreferences.GetTempPath & "~cPDU_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
+        generateUndoFilename = g_UserPreferences.GetTempPath & "~cPDU_(" & g_SessionID & ")_" & parentPDImage.imageID & "_" & uIndex & "_.pdtmp"
     End If
     
 End Function
 
 'Publicly accessible mechanism for generating a unique Undo/Redo file name.  Any changes to the private function, above,
 ' should be mirrored here.
-Public Function generateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long) As String
-    generateUndoFilenameExternal = g_UserPreferences.GetTempPath & "~cPDU_" & imageID & "_" & uIndex & "_.pdtmp"
+Public Function generateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long, ByVal originalSessionID As String) As String
+    generateUndoFilenameExternal = g_UserPreferences.GetTempPath & "~cPDU_(" & originalSessionID & ")_" & imageID & "_" & uIndex & "_.pdtmp"
 End Function
 
 'Generate a unique Undo/Redo header filename, including full temp path.  Note that this function does *NOT* take an
@@ -670,7 +670,7 @@ Private Function generateUndoHeaderFilename() As String
     ' our reference to it, so the parentPDImage.imageID reference below will fail - to prevent that, we must check the
     ' parent reference in advance.
     If Not (parentPDImage Is Nothing) Then
-        generateUndoHeaderFilename = g_UserPreferences.GetTempPath & "~PDU_StackSummary_" & parentPDImage.imageID & "_.pdtmp"
+        generateUndoHeaderFilename = g_UserPreferences.GetTempPath & "~PDU_StackSummary_(" & g_SessionID & ")_" & parentPDImage.imageID & "_.pdtmp"
     End If
     
 End Function
@@ -842,6 +842,10 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
     'We probably don't need the undoNumAtLastSave values, but it doesn't hurt to embed them, "just in case"
     xmlEngine.writeTag "UndoNumAtLastSave_Flat", undoNumAtLastSave_Flat
     xmlEngine.writeTag "UndoNumAtLastSave_PDI", undoNumAtLastSave_PDI
+    
+    'Finally, add the current session ID, a 16-character string unique to each running PD instance.  This ID is appended to all
+    ' Undo files, which allows multiple PD sessions to run concurrently without trouble.
+    xmlEngine.writeTag "OriginalSessionID", g_SessionID
     
     xmlEngine.writeBlankLine
     
