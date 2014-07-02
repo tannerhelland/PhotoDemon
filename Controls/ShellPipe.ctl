@@ -839,7 +839,8 @@ Private Sub WriteData()
                 ErrNum = Err.LastDllError
                 RaiseEvent Error(ErrNum, "ShellPipe.WriteData.WriteFile", Cancel)
                 If Not Cancel Then
-                    Err.Raise ErrNum, TypeName(Me), "WriteData WriteFile error"
+                    'Err.Raise ErrNum, TypeName(Me), "WriteData WriteFile error"
+                    Debug.Print "WARNING! Asynchronous ExifTool interface had a write failure; is ExifTool still running??"
                 End If
             End If
         End If
