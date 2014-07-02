@@ -336,9 +336,9 @@ Private Function displayAutosaveEntries() As Boolean
     ' Our goal now is to present that image data to the user, so they can select which images (if any) they want us
     ' to restore.
     
-    'The Image_Autosave_Handler module will already contain a list of all Undo XML files found by the Autosave engine.
+    'The Autosave_Handler module will already contain a list of all Undo XML files found by the Autosave engine.
     ' It has stored this data in its private m_XmlEntries() array.  We can request a copy of this array as follows:
-    Image_Autosave_Handler.getXMLAutosaveEntries m_XmlEntries(), m_numOfXMLFound
+    Autosave_Handler.getXMLAutosaveEntries m_XmlEntries(), m_numOfXMLFound
     
     'All XML entries will now have been matched up with their latest Undo entry.  Fill the listbox with their data,
     ' ignoring any entries that do not have binary image data attached.

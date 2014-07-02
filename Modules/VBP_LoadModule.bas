@@ -93,6 +93,11 @@ Public Sub LoadTheProgram()
     
     If DISPLAY_TIMINGS Then perfCheck.markEvent "Initialize preferences engine"
     
+    'Before initializing the preference engine, generate a unique session ID for this PhotoDemo instance.  This ID will be used to
+    ' separate the temp files for this program instance from any other simultaneous instances.
+    g_SessionID = OS_Interactions.getUniqueSessionID()
+    Debug.Print "Unique session ID successfully generated: " & g_SessionID
+    
     Set g_UserPreferences = New pdPreferences
     
     'Ask the preferences handler to generate key program folders.  (If these folders don't exist, the handler will create them.)
@@ -107,11 +112,6 @@ Public Sub LoadTheProgram()
             
     'While here, also initialize the image format handler (as plugins and other load functions interact with it)
     Set g_ImageFormats = New pdFormats
-    
-    'And finally, as part of this step, retrieve a unique session ID.  This will be used to separate the temp files for this
-    ' program instance from any other potential instances.
-    g_SessionID = OS_Interactions.getUniqueSessionID()
-    Debug.Print "Session ID: " & g_SessionID
     
     
     '*************************************************************************************************************************************
@@ -972,7 +972,7 @@ PDI_Load_Continuation:
             targetImage.locationOnDisk = sFile(thisImage)
             
             'Ask the AutoSave engine to retrieve this image's data from the matching XML autosave file
-            Image_Autosave_Handler.alignLoadedImageWithAutosave targetImage
+            Autosave_Handler.alignLoadedImageWithAutosave targetImage
             
             'This is a bit wacky, but - the MRU engine will automatically update this entry based on its location
             ' on disk (per PD convention) AS STORED IN THE sFile ARRAY.  But as this file's location on disk is
