@@ -40,36 +40,6 @@ Public g_Language As pdTranslate
 Public g_CurrentTool As PDTools
 Public g_PreviousTool As PDTools
 
-'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form.
-' In theory, adding new tools should be as easy as changing these numbers.  All tool-related code is tied into these
-' constants, so any changes here should automatically propagate throughout the software.  (In practice, be sure to
-' double-check everything!!)
-Public Enum PDTools
-    NAV_DRAG = 0
-    NAV_MOVE = 1
-    SELECT_RECT = 2
-    SELECT_CIRC = 3
-    SELECT_LINE = 4
-    QUICK_FIX_LIGHTING = 5
-End Enum
-
-#If False Then
-    Const NAV_DRAG = 0
-    Const NAV_MOVE = 1
-    Const SELECT_RECT = 2
-    Const SELECT_CIRC = 3
-    Const SELECT_LINE = 4
-    Const QUICK_FIX_LIGHTING = 5
-#End If
-
-'How should the selection be rendered?
-Public Enum SelectionRender
-    sLightbox = 0
-    sHighlightBlue = 1
-    sHighlightRed = 2
-    sInvertRect = 3
-End Enum
-
 'Primary zoom handler for the program
 Public g_Zoom As pdZoom
 
@@ -163,18 +133,6 @@ Public g_JPEGThumbnail As Long
 Public g_JPEGAutoQuality As jpegAutoQualityMode
 Public g_JPEGAdvancedColorMatching As Boolean
 
-Public Enum jpegAutoQualityMode
-    doNotUseAutoQuality = 0
-    noDifference = 1
-    tinyDifference = 2
-    minorDifference = 3
-    majorDifference = 4
-End Enum
-
-#If False Then
-    Private Const doNotUseAutoQuality = 0, noDifference = 1, tinyDifference = 2, minorDifference = 3, majorDifference = 4
-#End If
-
 'JPEG-2000 export compression ratio; this is set by the JP2 export dialog if the user clicks "OK" (not Cancel)
 Public g_JP2Compression As Long
 
@@ -233,19 +191,6 @@ Public g_UndoRedoActive As Boolean
 ' are being run in a compiled EXE, when actually their properties are just being written as part of .exe compiling.
 Public g_UserModeFix As Boolean
 
-'PhotoDemon's language files provide a small amount of metadata to help the program know how to use them.  This type
-' was previously declared inside the pdTranslate class, but with the addition of a Language Editor, I have moved it
-' here, so the entire project can access the type.
-Public Type pdLanguageFile
-    Author As String
-    FileName As String
-    langID As String
-    langName As String
-    langType As String
-    langVersion As String
-    langStatus As String
-End Type
-
 'GDI+ availability is determined at the very start of the program; we rely on it heavily, so expect problems if
 ' it can't be initialized!
 Public g_GDIPlusAvailable As Boolean
@@ -277,21 +222,6 @@ Public g_MouseAccuracy As Double
 ' to restore this variable to FALSE when you're done, including catching any error states!
 Public g_DisableUserInput As Boolean
 
-'Replacement mouse button type.  VB doesn't report X-button clicks in their native button type, but PD does.  Whether
-' this is useful is anybody's guess, but it doesn't hurt to have... right?  Also, note that the left/middle/right button
-' values are identical to VB, so existing code won't break if using this enum against VB's standard mouse constants.
-Public Enum PDMouseButtonConstants
-    pdLeftButton = 1
-    pdRightButton = 2
-    pdMiddleButton = 4
-    pdXButtonOne = 8
-    pdXButtonTwo = 16
-End Enum
-
-#If False Then
-    Private Const pdLeftButton = 1, pdRightButton = 2, pdMiddleButton = 4, pdXButtonOne = 8, pdXButtonTwo = 16
-#End If
-
 'Last message sent to PD's central Message() function.  Note that this string *includes any custom attachments* and is calculated
 ' *post-translation*, e.g. instead of being "Error %1", the "%1" will be populated with whatever value was supplied, and "Error"
 ' will be translated into the currently active language.  The purpose of this variable is to assist asynchronous functions.  When
@@ -299,20 +229,3 @@ End Enum
 ' results, then restore the original message when done.  This makes the experience seamless for the user, but is hugely helpful
 ' to me when debugging asynchronous program behavior.
 Public g_LastPostedMessage As String
-
-'Supported save events.  To try and handle workflow issues gracefully, PhotoDemon will track image save state for a few
-' different save events.  See the pdImage function setSaveState for details.
-Public Enum PD_SAVE_EVENT
-    pdSE_AnySave = 0        'Any type of save event; used to set the enabled state of the main toolbar's Save button
-    pdSE_SavePDI = 1        'Image has been saved to PDI format in its current state
-    pdSE_SaveFlat = 2       'Image has been saved to some flattened format (JPEG, PNG, etc) in its current state
-End Enum
-
-#If False Then
-    Const pdSE_AnySave = 0, pdSE_SavePDI = 1, pdSE_SaveFlat = 2
-#End If
-
-'PhotoDemon's internal PDI format identifier.  We preface this with FIF_ because PhotoDemon uses FreeImage's format constants
-' to track save state.  However, FreeImage does not include PDI support, and because their VB6 interface may change between
-' versions, we don't want to store our constant in the FreeImage modules - so we keep it here!
-Public Const FIF_PDI As Long = 100
