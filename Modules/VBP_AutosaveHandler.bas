@@ -37,6 +37,7 @@ Public Type AutosaveXML
     parentImageID As Long
     friendlyName As String
     originalPath As String
+    originalSessionID As String
     undoStackHeight As Long
     undoStackAbsoluteMaximum As Long
     undoStackPointer As Long
@@ -68,10 +69,11 @@ Public Function wasLastShutdownClean() As Boolean
         xmlEngine.prepareNewXML "Safe shutdown"
         
         xmlEngine.writeBlankLine
-        xmlEngine.writeComment "This file is used to see if the previous PhotoDemon session terminated unexpectedly."
+        xmlEngine.writeComment "This file is used to detect unsafe shutdowns from previous PhotoDemon sessions."
         xmlEngine.writeBlankLine
         xmlEngine.writeTag "SessionDate", Format$(Now, "Long Date")
         xmlEngine.writeTag "SessionTime", Format$(Now, "h:mm AMPM")
+        xmlEngine.writeTag "SessionID", g_SessionID
         xmlEngine.writeBlankLine
         
         xmlEngine.writeXMLToFile safeShutdownPath
@@ -131,6 +133,7 @@ Public Function saveableImagesPresent() As Long
                     .xmlPath = g_UserPreferences.GetTempPath & chkFile
                     .friendlyName = xmlEngine.getUniqueTag_String("friendlyName")
                     .originalPath = xmlEngine.getUniqueTag_String("originalPath")
+                    .originalSessionID = xmlEngine.getUniqueTag_String("OriginalSessionID")
                     .parentImageID = xmlEngine.getUniqueTag_Long("imageID", -1)
                     .undoNumAtLastSave = xmlEngine.getUniqueTag_Long("UndoNumAtLastSave", 0)
                     .undoStackAbsoluteMaximum = xmlEngine.getUniqueTag_Long("StackAbsoluteMaximum", 0)
@@ -166,8 +169,7 @@ Public Function saveableImagesPresent() As Long
     ' sorts of havoc.  To prevent this from ever occurring, we manually sort images by ID order, to ensure that when new ID values
     ' are assigned out, they never inadvertently overwrite another autosave image's original ID value.  (This works because ID values
     ' are assigned in ascending order, so as long as the Autosave files are also loaded in ascending order, no new image ID will
-    ' ever overwrite an old image's ID, unless that image has not been selected for loading per the user's setting in the Autosave
-    ' dialog.)
+    ' ever overwrite an old image's ID.)
     If m_numOfXMLFound > 0 Then sortAutosaveEntries
     
     'Return the number of images found
@@ -219,8 +221,8 @@ Public Sub purgeOldAutosaveData()
     
         'Delete all possible child references for this image.
         For j = 0 To m_XmlEntries(i).undoStackAbsoluteMaximum
-        
-            tmpFilename = tmpUndoEngine.generateUndoFilenameExternal(m_XmlEntries(i).parentImageID, j)
+            
+            tmpFilename = tmpUndoEngine.generateUndoFilenameExternal(m_XmlEntries(i).parentImageID, j, m_XmlEntries(i).originalSessionID)
         
             'Check image data first...
             If FileExist(tmpFilename) Then Kill tmpFilename
@@ -319,15 +321,14 @@ Public Sub loadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
         newImageID = i + 1
         oldImageID = fullXMLList(i).parentImageID
         
-        'If the image's new ID does not match its original one, rename all Undo files to match
-        If newImageID <> oldImageID Then renameAllUndoFiles fullXMLList(i), newImageID, oldImageID
+        renameAllUndoFiles fullXMLList(i), newImageID, oldImageID
         
         'Make a copy of the current Undo XML file for this image, as it will be overwritten as soon as we load the first
         ' Undo entry as a new image.
         xmlEngine.loadXMLFile fullXMLList(i).xmlPath
         
         'We now have everything we need.  Load the base Undo entry as a new image.
-        autosaveFile(0) = tmpUndoEngine.generateUndoFilenameExternal(newImageID, 0)
+        autosaveFile(0) = tmpUndoEngine.generateUndoFilenameExternal(newImageID, 0, g_SessionID)
         LoadFileAsNewImage autosaveFile, False, fullXMLList(i).friendlyName, fullXMLList(i).friendlyName
         
         'The new image has been successfully noted, but we must now overwrite some of the data PD has assigned it with
@@ -368,8 +369,8 @@ Private Sub renameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImage
     Dim i As Long
     For i = 0 To autosaveData.undoStackAbsoluteMaximum
     
-        oldFilename = tmpUndoEngine.generateUndoFilenameExternal(oldImageID, i)
-        newFilename = tmpUndoEngine.generateUndoFilenameExternal(newImageID, i)
+        oldFilename = tmpUndoEngine.generateUndoFilenameExternal(oldImageID, i, autosaveData.originalSessionID)
+        newFilename = tmpUndoEngine.generateUndoFilenameExternal(newImageID, i, g_SessionID)
         
         'Check image data first...
         If FileExist(oldFilename) Then
