@@ -96,6 +96,46 @@ Private Declare Function DuplicateHandle Lib "kernel32" (ByVal hSourceProcessHan
 Private Declare Function GetCurrentProcess Lib "kernel32" () As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, lpOverlapped As Any) As Long
 
+'A great deal of extra code is required for finding ExifTool instances left by previous unsafe shutdowns, and silently terminating them.
+Private Declare Function AdjustTokenPrivileges Lib "advapi32" (ByVal TokenHandle As Long, ByVal DisableAllPrivileges As Long, NewState As TOKEN_PRIVILEGES, ByVal BufferLength As Long, PreviousState As Any, ReturnLength As Any) As Long
+Private Declare Function CreateToolhelpSnapshot Lib "kernel32" Alias "CreateToolhelp32Snapshot" (ByVal lFlags As Long, lProcessID As Long) As Long
+Private Declare Function LookupPrivilegeValue Lib "advapi32" Alias "LookupPrivilegeValueA" (ByVal lpSystemName As String, ByVal lpName As String, lpLuid As LUID) As Long
+Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
+Private Declare Function OpenProcessToken Lib "advapi32" (ByVal ProcessHandle As Long, ByVal DesiredAccess As Long, TokenHandle As Long) As Long
+Private Declare Function ProcessFirst Lib "kernel32" Alias "Process32First" (ByVal hSnapshot As Long, uProcess As PROCESSENTRY32) As Long
+Private Declare Function ProcessNext Lib "kernel32" Alias "Process32Next" (ByVal hSnapshot As Long, uProcess As PROCESSENTRY32) As Long
+Private Declare Function TerminateProcess Lib "kernel32" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
+ 
+Private Type LUID
+    lowPart As Long
+    highPart As Long
+End Type
+ 
+Private Type TOKEN_PRIVILEGES
+    PrivilegeCount As Long
+    LuidUDT As LUID
+    Attributes As Long
+End Type
+ 
+Private Const TOKEN_ADJUST_PRIVILEGES = &H20
+Private Const TOKEN_QUERY = &H8
+Private Const SE_PRIVILEGE_ENABLED = &H2
+Private Const PROCESS_ALL_ACCESS = &H1F0FFF
+ 
+Type PROCESSENTRY32
+    dwSize As Long
+    cntUsage As Long
+    th32ProcessID As Long
+    th32DefaultHeapID As Long
+    th32ModuleID As Long
+    cntThreads As Long
+    th32ParentProcessID As Long
+    pcPriClassBase As Long
+    dwFlags As Long
+    szexeFile As String * MAX_PATH_LEN
+End Type
+
+
 'This type is what PhotoDemon uses internally for storing and displaying metadata
 Public Type mdItem
     FullGroupAndName As String
@@ -680,5 +720,103 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
     If hCurProcess Then CloseHandle hCurProcess
     
     ShellExecuteCapture = True
+    
+End Function
+
+'If an unclean shutdown is detected, use this function to try and terminate any ExifTool instances left over by the previous session.
+' Many thanks to http://www.vbforums.com/showthread.php?321553-VB6-Killing-Processes&p=1898861#post1898861 for guidance on this task.
+Public Sub killStrandedExifToolInstances()
+    
+    'Prepare to purge all running ExifTool instances
+    Const TH32CS_SNAPPROCESS As Long = 2&
+    Const PROCESS_ALL_ACCESS = 0
+    Dim uProcess As PROCESSENTRY32
+    Dim rProcessFound As Long, hSnapshot As Long, exitCode As Long, myProcess As Long
+    Dim szExename As String
+    Dim AppKill As Boolean
+    Dim i As Long
+    
+    On Local Error GoTo CouldntKillExiftoolInstances
+    
+    'Prepare a generic process reference
+    uProcess.dwSize = Len(uProcess)
+    hSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
+    rProcessFound = ProcessFirst(hSnapshot, uProcess)
+    
+    'Iterate through all running processes, looking for ExifTool instances
+    Do While rProcessFound
+    
+        'Retrieve the EXE name of this process
+        i = InStr(1, uProcess.szexeFile, Chr(0))
+        szExename = LCase$(Left$(uProcess.szexeFile, i - 1))
+        
+        'If the process name is "exiftool.exe", terminate it
+        If Right$(szExename, Len("exiftool.exe")) = "exiftool.exe" Then
+            
+            'Retrieve a handle to the ExifTool instance
+            myProcess = OpenProcess(PROCESS_ALL_ACCESS, False, uProcess.th32ProcessID)
+            
+            'Attempt to kill it
+            If KillProcess(uProcess.th32ProcessID, 0) Then
+                Debug.Print "(Old ExifTool instance " & uProcess.th32ProcessID & " terminated successfully.)"
+            Else
+                Debug.Print "(Old ExifTool instance " & uProcess.th32ProcessID & " was not terminated; sorry!)"
+            End If
+             
+        End If
+        
+        'Find the next process, then continue
+        rProcessFound = ProcessNext(hSnapshot, uProcess)
+    
+    Loop
+    
+    'Release our generic process snapshot, then exit
+    CloseHandle hSnapshot
+    
+    Debug.Print "All old ExifTool instances were auto-terminated successfully."
+    
+    Exit Sub
+    
+CouldntKillExiftoolInstances:
+    
+    Debug.Print "Old ExifTool instances could not be auto-terminated.  Sorry!"
+    
+End Sub
+ 
+'Terminate a process (referenced by its handle), and return success/failure
+Function KillProcess(ByVal hProcessID As Long, Optional ByVal exitCode As Long) As Boolean
+
+    Dim hToken As Long
+    Dim hProcess As Long
+    Dim tp As TOKEN_PRIVILEGES
+     
+    'Any number of things can cause the termination process to fail, unfortunately.  Check several known issues in advance.
+    If OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES Or TOKEN_QUERY, hToken) = 0 Then GoTo CleanUp
+    If LookupPrivilegeValue("", "SeDebugPrivilege", tp.LuidUDT) = 0 Then GoTo CleanUp
+    
+    tp.PrivilegeCount = 1
+    tp.Attributes = SE_PRIVILEGE_ENABLED
+     
+    If AdjustTokenPrivileges(hToken, False, tp, 0, ByVal 0&, ByVal 0&) = 0 Then GoTo CleanUp
+     
+    'Try to access the ExifTool process
+    hProcess = OpenProcess(PROCESS_ALL_ACCESS, 0, hProcessID)
+    
+    'Access granted!  Terminate the process
+    If hProcess Then
+     
+        KillProcess = (TerminateProcess(hProcess, exitCode) <> 0)
+        CloseHandle hProcess
+        
+    End If
+    
+    'Restore original privileges
+    tp.Attributes = 0
+    AdjustTokenPrivileges hToken, False, tp, 0, ByVal 0&, ByVal 0&
+     
+CleanUp:
+    
+    'Free our privilege handle
+    If hToken Then CloseHandle hToken
     
 End Function

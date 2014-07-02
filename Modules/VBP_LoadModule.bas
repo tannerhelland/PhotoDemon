@@ -2319,6 +2319,17 @@ Public Sub LoadPlugins()
     End If
     
     'Check for ExifTool metadata interface
+    
+    'Before starting ExifTool, make sure any previous PhotoDemon sessions terminated safely.  If they did not, look for still-running
+    ' ExifTool instances, and terminate them before continuing.
+    If Not peekLastShutdownClean Then
+    
+        Message "Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up..."
+        Plugin_ExifTool_Interface.killStrandedExifToolInstances
+        
+    End If
+    
+    'Continue with ExifTool initialization like normal...
     If isExifToolAvailable Then
         
         'Check to see if ExifTool has been forcibly disabled

@@ -48,6 +48,19 @@ End Type
 Private m_numOfXMLFound As Long
 Private m_XmlEntries() As AutosaveXML
 
+'If a function wants to quickly check for previous unclean shutdowns, but *not* generate a new safe shutdown file, use this
+' function instead of wasLastShutdownClean(), below.  Note that this function should only be used during Loading stages,
+' because once PD has been loaded, the function will no longer be accurate.
+Public Function peekLastShutdownClean() As Boolean
+
+    Dim safeShutdownPath As String
+    safeShutdownPath = g_UserPreferences.getPresetPath & "SafeShutdown.xml"
+    
+    'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
+    If FileExist(safeShutdownPath) Then peekLastShutdownClean = False Else peekLastShutdownClean = True
+
+End Function
+
 'Check to make sure the last program shutdown was clean.  If it was, return TRUE (and write out a new safe shutdown file).
 ' If it was not, return FALSE.
 Public Function wasLastShutdownClean() As Boolean
@@ -157,7 +170,11 @@ Public Function saveableImagesPresent() As Long
     Loop
     
     'Trim the XML array to its smallest relevant size
-    ReDim Preserve m_XmlEntries(0 To m_numOfXMLFound - 1) As AutosaveXML
+    If m_numOfXMLFound > 0 Then
+        ReDim Preserve m_XmlEntries(0 To m_numOfXMLFound - 1) As AutosaveXML
+    Else
+        ReDim m_XmlEntries(0) As AutosaveXML
+    End If
     
     'Sort the file array in ascending order, according to the image's original image ID values.  If the user chooses to load these
     ' autosave files, the generated pdImage objects will likely get assigned a different ID value than what they had in the previous
