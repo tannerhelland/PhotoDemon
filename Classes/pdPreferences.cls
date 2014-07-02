@@ -248,6 +248,7 @@ Public Sub loadUserSettings()
             Print #fileNum, "**********************************************"
             Print #fileNum, "Date: " & Date
             Print #fileNum, "Time: " & Time
+            Print #fileNum, "Session ID: " & g_SessionID
         Close #fileNum
         
     End If

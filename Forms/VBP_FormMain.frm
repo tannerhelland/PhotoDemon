@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -2134,43 +2134,52 @@ Private Sub Form_Load()
     
     Message "Checking for old autosave data..."
     
-    If Not Image_Autosave_Handler.wasLastShutdownClean Then
+    'DO NOT CHECK FOR AUTOSAVE DATA if another PhotoDemon session is active.
+    If Not App.PrevInstance Then
     
-        'Oh no!  Something went horribly wrong with the last PD session.  See if there's any AutoSave data worth recovering.
-        If Image_Autosave_Handler.saveableImagesPresent > 0 Then
+        If Not Autosave_Handler.wasLastShutdownClean Then
         
-            'Autosave data was found!  Present it to the user.
-            Dim userWantsAutosaves As VbMsgBoxResult
-            Dim listOfFilesToSave() As AutosaveXML
+            'Oh no!  Something went horribly wrong with the last PD session.  See if there's any AutoSave data worth recovering.
+            If Autosave_Handler.saveableImagesPresent > 0 Then
             
-            userWantsAutosaves = displayAutosaveWarning(listOfFilesToSave)
-            
-            'If the user wants to restore old Autosave data, do so now.
-            If (userWantsAutosaves = vbYes) Then
-            
-                'listOfFilesToSave contains the list of Autosave files the user wants restored.
-                ' Hand them off to the autosave handler, which will load and restore each file in turn.
-                Image_Autosave_Handler.loadTheseAutosaveFiles listOfFilesToSave
+                'Autosave data was found!  Present it to the user.
+                Dim userWantsAutosaves As VbMsgBoxResult
+                Dim listOfFilesToSave() As AutosaveXML
                 
-                'Synchronize the interface to the restored files
-                syncInterfaceToCurrentImage
-                            
+                userWantsAutosaves = displayAutosaveWarning(listOfFilesToSave)
+                
+                'If the user wants to restore old Autosave data, do so now.
+                If (userWantsAutosaves = vbYes) Then
+                
+                    'listOfFilesToSave contains the list of Autosave files the user wants restored.
+                    ' Hand them off to the autosave handler, which will load and restore each file in turn.
+                    Autosave_Handler.loadTheseAutosaveFiles listOfFilesToSave
+                    
+                    'Synchronize the interface to the restored files
+                    syncInterfaceToCurrentImage
+                                
+                Else
+                    
+                    'The user has no interest in recovering AutoSave data.  Purge all the entries we found, so they don't show
+                    ' up in future AutoSave searches.
+                    Autosave_Handler.purgeOldAutosaveData
+                
+                End If
+                
+            
+            'There's not any AutoSave data worth recovering.  Ask the user to submit a bug report??
             Else
-                
-                'The user has no interest in recovering AutoSave data.  Purge all the entries we found, so they don't show
-                ' up in future AutoSave searches.
-                Image_Autosave_Handler.purgeOldAutosaveData
+            
+                'TODO
             
             End If
-            
         
-        'There's not any AutoSave data worth recovering.  Ask the user to submit a bug report??
         Else
-        
-            'TODO
-        
+            Message "Previous shutdown was clean (no autosave data found)."
         End If
-    
+        
+    Else
+        Message "Multiple PhotoDemon sessions active; autosave check abandoned."
     End If
     
     
@@ -2458,8 +2467,8 @@ Private Sub Form_Unload(Cancel As Integer)
     Next tmpForm
     
     'The very last thing we do before terminating is notify the Autosave handler that everything shut down correctly
-    Image_Autosave_Handler.purgeOldAutosaveData
-    Image_Autosave_Handler.notifyCleanShutdown
+    Autosave_Handler.purgeOldAutosaveData
+    Autosave_Handler.notifyCleanShutdown
     
 End Sub
 

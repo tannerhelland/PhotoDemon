@@ -1,4 +1,4 @@
-Attribute VB_Name = "Image_Autosave_Handler"
+Attribute VB_Name = "Autosave_Handler"
 '***************************************************************************
 'Image Autosave Handler
 'Copyright ©2013-2014 by Tanner Helland
