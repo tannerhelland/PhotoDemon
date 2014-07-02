@@ -254,13 +254,6 @@ Private Declare Function DestroyIcon Lib "user32.dll" ( _
 Private Declare Function CreateIconIndirect Lib "user32.dll" ( _
     ByRef piconinfo As ICONINFO) As Long
 
-Private Type Guid
-   Data1 As Long
-   Data2 As Integer
-   Data3 As Integer
-   Data4(0 To 7) As Byte
-End Type
-
 Private Type PictDesc
    cbSizeofStruct As Long
    picType As Long
@@ -307,8 +300,8 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dX As Long, _
-    ByVal dY As Long, _
+    ByVal dx As Long, _
+    ByVal dy As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal Scan As Long, _
@@ -321,8 +314,8 @@ Private Declare Function StretchDIBits Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dX As Long, _
-    ByVal dY As Long, _
+    ByVal dx As Long, _
+    ByVal dy As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal wSrcWidth As Long, _
