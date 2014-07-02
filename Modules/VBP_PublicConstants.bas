@@ -1,7 +1,8 @@
 Attribute VB_Name = "Public_Constants"
 Option Explicit
 
-'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects
+'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects.
+' DO NOT ENABLE THIS IN PRODUCTION BUILDS!
 Public Const DISPLAY_TIMINGS As Boolean = True
 
 'Enable this constant if you want PhotoDemon to use experimental methods (when available).  This is helpful
@@ -64,22 +65,6 @@ Public Const EULER As Double = 2.71828182845905
 'Data constants
 Public Const LONG_MAX As Long = 2147483647
 
-'Edge-handling methods for distort-style filters
-Public Enum EDGE_OPERATOR
-    EDGE_CLAMP = 0
-    EDGE_REFLECT = 1
-    EDGE_WRAP = 2
-    EDGE_ERASE = 3
-    EDGE_ORIGINAL = 4
-End Enum
-#If False Then
-    Const EDGE_CLAMP = 0
-    Const EDGE_REFLECT = 1
-    Const EDGE_WRAP = 2
-    Const EDGE_ERASE = 3
-    Const EDGE_ORIGINAL = 4
-#End If
-
 'Maximum width (in pixels) for custom-built tooltips
 Public Const PD_MAX_TOOLTIP_WIDTH As Long = 400
 
@@ -88,128 +73,8 @@ Public Const BIF_RETURNONLYFSDIRS = 1
 Public Const BFFM_INITIALIZED = 1
 Public Const MAX_PATH_LEN = 260
 
-'Orientation (used in a whole bunch of different situations)
-Public Enum PD_ORIENTATION
-    PD_HORIZONTAL = 0
-    PD_VERTICAL = 1
-    PD_BOTH = 2
-End Enum
+'PhotoDemon's internal PDI format identifier.  We preface this with FIF_ because PhotoDemon uses FreeImage's format constants
+' to track save state.  However, FreeImage does not include PDI support, and because their VB6 interface may change between
+' versions, we don't want to store our constant in the FreeImage modules - so we keep it here!
+Public Const FIF_PDI As Long = 100
 
-#If False Then
-    Const PD_HORIZONTAL = 0, PD_VERTICAL = 1, PD_BOTH = 2
-#End If
-
-'Some PhotoDemon actions can operate on the whole image, or on just a specific layer (e.g. resize).  When initiating
-' one of these dual-action operations, the constants below can be used to specify the mode.
-Public Enum PD_ACTION_TARGET
-    PD_AT_WHOLEIMAGE = 0
-    PD_AT_SINGLELAYER = 1
-End Enum
-
-#If False Then
-    Const PD_AT_WHOLEIMAGE = 0, PD_AT_SINGLELAYER = 1
-#End If
-
-'When an action triggers the creation of Undo/Redo data, it must specify what kind of Undo/Redo data it wants created.
-' This type is used by PD to determine the most efficient way to store/restore previous actions.
-Public Enum PD_UNDO_TYPE
-    UNDO_NOTHING = -1
-    UNDO_EVERYTHING = 0
-    UNDO_IMAGE = 1
-    UNDO_IMAGEHEADER = 2
-    UNDO_LAYER = 3
-    UNDO_LAYERHEADER = 4
-    UNDO_SELECTION = 5
-End Enum
-
-#If False Then
-    Const UNDO_NOTHING = -1, UNDO_EVERYTHING = 0, UNDO_IMAGE = 1, UNDO_IMAGEHEADER = 2, UNDO_LAYER = 3, UNDO_LAYERHEADER = 4, UNDO_SELECTION = 5
-#End If
-
-Public Type RGBQUAD
-   Blue As Byte
-   Green As Byte
-   Red As Byte
-   Alpha As Byte
-End Type
-
-'Enums for App Command messages, which are (optionally) returned by the pdInput class
-Public Enum AppCommandConstants
-   AC_BROWSER_BACKWARD = 1
-   AC_BROWSER_FORWARD = 2
-   AC_BROWSER_REFRESH = 3
-   AC_BROWSER_STOP = 4
-   AC_BROWSER_SEARCH = 5
-   AC_BROWSER_FAVORITES = 6
-   AC_BROWSER_HOME = 7
-   AC_VOLUME_MUTE = 8
-   AC_VOLUME_DOWN = 9
-   AC_VOLUME_UP = 10
-   AC_MEDIA_NEXTTRACK = 11
-   AC_MEDIA_PREVIOUSTRACK = 12
-   AC_MEDIA_STOP = 13
-   AC_MEDIA_PLAY_PAUSE = 14
-   AC_LAUNCH_MAIL = 15
-   AC_LAUNCH_MEDIA_SELECT = 16
-   AC_LAUNCH_APP1 = 17
-   AC_LAUNCH_APP2 = 18
-   AC_BASS_DOWN = 19
-   AC_BASS_BOOST = 20
-   AC_BASS_UP = 21
-   AC_TREBLE_DOWN = 22
-   AC_TREBLE_UP = 23
-   AC_MICROPHONE_VOLUME_MUTE = 24
-   AC_MICROPHONE_VOLUME_DOWN = 25
-   AC_MICROPHONE_VOLUME_UP = 26
-   AC_HELP = 27
-   AC_FIND = 28
-   AC_NEW = 29
-   AC_OPEN = 30
-   AC_CLOSE = 31
-   AC_SAVE = 32
-   AC_PRINT = 33
-   AC_UNDO = 34
-   AC_REDO = 35
-   AC_COPY = 36
-   AC_CUT = 37
-   AC_PASTE = 38
-   AC_REPLY_TO_MAIL = 39
-   AC_FORWARD_MAIL = 40
-   AC_SEND_MAIL = 41
-   AC_SPELL_CHECK = 42
-   AC_DICTATE_OR_COMMAND_CONTROL_TOGGLE = 43
-   AC_MIC_ON_OFF_TOGGLE = 44
-   AC_CORRECTION_LIST = 45
-End Enum
-
-#If False Then
-    Private Const AC_BROWSER_BACKWARD = 1, AC_BROWSER_FORWARD = 2, AC_BROWSER_REFRESH = 3, AC_BROWSER_STOP = 4, AC_BROWSER_SEARCH = 5, AC_BROWSER_FAVORITES = 6, AC_BROWSER_HOME = 7, AC_VOLUME_MUTE = 8, AC_VOLUME_DOWN = 9, AC_VOLUME_UP = 10, AC_MEDIA_NEXTTRACK = 11, AC_MEDIA_PREVIOUSTRACK = 12, AC_MEDIA_STOP = 13, _
-    AC_MEDIA_PLAY_PAUSE = 14, AC_LAUNCH_MAIL = 15, AC_LAUNCH_MEDIA_SELECT = 16, AC_LAUNCH_APP1 = 17, AC_LAUNCH_APP2 = 18, AC_BASS_DOWN = 19, AC_BASS_BOOST = 20, AC_BASS_UP = 21, AC_TREBLE_DOWN = 22, AC_TREBLE_UP = 23, AC_MICROPHONE_VOLUME_MUTE = 24, AC_MICROPHONE_VOLUME_DOWN = 25, AC_MICROPHONE_VOLUME_UP = 26, _
-    AC_HELP = 27, AC_FIND = 28, AC_NEW = 29, AC_OPEN = 30, AC_CLOSE = 31, AC_SAVE = 32, AC_PRINT = 33, AC_UNDO = 34, AC_REDO = 35, AC_COPY = 36, AC_CUT = 37, AC_PASTE = 38, AC_REPLY_TO_MAIL = 39, AC_FORWARD_MAIL = 40, AC_SEND_MAIL = 41, AC_SPELL_CHECK = 42, AC_DICTATE_OR_COMMAND_CONTROL_TOGGLE = 43, _
-    AC_MIC_ON_OFF_TOGGLE = 44, AC_CORRECTION_LIST = 45
-#End If
-
-'Supported edge-detection algorithms
-Public Enum PD_EDGE_DETECTION
-    PD_EDGE_ARTISTIC_CONTOUR = 0
-    PD_EDGE_HILITE = 1
-    PD_EDGE_LAPLACIAN = 2
-    PD_EDGE_PHOTODEMON = 3
-    PD_EDGE_PREWITT = 4
-    PD_EDGE_ROBERTS = 5
-    PD_EDGE_SOBEL = 6
-End Enum
-
-#If False Then
-    Private Const PD_EDGE_ARTISTIC_CONTOUR = 0, PD_EDGE_HILITE = 1, PD_EDGE_LAPLACIAN = 2, PD_EDGE_PHOTODEMON = 3, PD_EDGE_PREWITT = 4, PD_EDGE_ROBERTS = 5, PD_EDGE_SOBEL = 6
-#End If
-
-Public Enum PD_EDGE_DETECTION_DIRECTION
-    PD_EDGE_DIR_ALL = 0
-    PD_EDGE_DIR_HORIZONTAL = 1
-    PD_EDGE_DIR_VERTICAL = 2
-End Enum
-
-#If False Then
-    Private Const PD_EDGE_DIR_ALL = 0, PD_EDGE_DIR_HORIZONTAL = 1, PD_EDGE_DIR_VERTICAL = 2
-#End If
