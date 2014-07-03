@@ -1459,8 +1459,7 @@ LoadPDIFail:
             Message "PDI node could not be read; file may be invalid or corrupted.  Load abandoned."
             
         Case Else
-
-        Message "An error has occurred (#" & Err.Number & " - " & Err.Description & ").  PDI load abandoned."
+            Message "An error has occurred (#%1 - %2).  PDI load abandoned.", Err.Number, Err.Description
         
     End Select
     
