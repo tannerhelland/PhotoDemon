@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.2.0</langversion>
+<langversion>6.4.0</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -297,38 +297,23 @@ S'il vous plaît utiliser un autre programme pour enregistrer cette image dans un
 </phrase>
 
 <phrase>
-<original>Verfiying alpha channel</original>
-<translation>Verification canal alpha</translation>
-</phrase>
-
-<phrase>
-<original>Alpha channel deemed unnecessary.  Converting image to 24bpp</original>
-<translation>Le canal Alpha n'est pas jugée nécessaire. Convertir l'image en 24 bits</translation>
-</phrase>
-
-<phrase>
-<original>Alpha channel verified.  Leaving image in 32bpp mode.</original>
-<translation>Canal Alpha vérifiée. Image en mode 32 bpp à gauche.</translation>
-</phrase>
-
-<phrase>
-<original>Alpha channel validation ignored at user's request.</original>
-<translation>Canal alpha ignoré validation sur demande de l'utilisateur.</translation>
-</phrase>
-
-<phrase>
 <original>Color count successful (%1 BPP, grayscale)</original>
 <translation>Nombre de couleurs réussie (%1 bpp, en niveaux de gris)</translation>
 </phrase>
 
 <phrase>
-<original>Color count successful (%1 BPP, indexed color)</original>
-<translation>Nombre de couleurs réussie (%1 bpp, couleurs indexées)</translation>
+<original>Color count successful (%1 BPP, color)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Determining image title</original>
 <translation>Détermination de titre de l'image</translation>
+</phrase>
+
+<phrase>
+<original>Finalizing image details</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -342,8 +327,13 @@ S'il vous plaît utiliser un autre programme pour enregistrer cette image dans un
 </phrase>
 
 <phrase>
-<original>Finishing image metadata parsing</original>
-<translation>Finition analyse métadonnées de l'image </translation>
+<original>Metadata parsing hasn't finished; switching to asynchronous wait mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Creating initial auto-save entry (this may take a moment)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -418,6 +408,26 @@ S'il vous plaît utiliser un autre programme pour enregistrer ces images dans un 
 </phrase>
 
 <phrase>
+<original>Selected file is not in PDI format.  Load abandoned.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>An error has occurred (#</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(IDE NOT RECOMMENDED - PLEASE COMPILE)</original>
 <translation>(IDE Non recommandé - S'IL VOUS PLAÎT compilation)</translation>
 </phrase>
@@ -425,6 +435,11 @@ S'il vous plaît utiliser un autre programme pour enregistrer ces images dans un 
 <phrase>
 <original>Moving plugins to updated folder location</original>
 <translation>Déménagement plugins à l'emplacement du dossier mis à jour</translation>
+</phrase>
+
+<phrase>
+<original>Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -442,7 +457,7 @@ S'il vous plaît utiliser un autre programme pour enregistrer ces images dans un 
 <translation>Duplication Image complète.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 70 phrases. 12 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 84 phrases. 23 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -558,6 +573,11 @@ Pour activer les économies PDI, s'il vous plaît permettre %1 pour télécharger le
 </phrase>
 
 <phrase>
+<original>Saving %1 layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
 
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
@@ -577,18 +597,23 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier 
 </phrase>
 
 <phrase>
-<original>Using the pngnq-s9 plugin to write a high-quality 8bpp PNG file.  This may take a moment</original>
-<translation>Utilisation de la pngnq -s9 plugin pour écrire un de haute qualité 8bpp fichier PNG. Cela peut prendre un moment</translation>
+<original>Writing %1 file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Pngnq-s9 transformation complete.  Verifying output</original>
-<translation>Pngnq-s9 transformation complète. Vérification de sortie</translation>
+<original>Using the PNGQuant plugin to write a high-quality 8bpp PNG file.  This may take a moment</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Pngnq-s9 could not write file.  Saving 32bpp image instead</original>
-<translation>Pngnq-s9 ne pouvait pas écrire dans le fichier. Enregistrer l'image 32bpp au lieu</translation>
+<original>PNGQuant transformation complete.  Verifying output</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PNGQuant could not write file.  Saving 32bpp image instead</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -621,7 +646,22 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier 
 <translation>Couleur trouvé. Enregistrement 24 bits en couleur JPEG.</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 103 phrases. 70 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<phrase>
+<original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
+<translation>Vignette sauver échoué (FreeImage retourné poignée blanc). S'il vous plaît signaler cette erreur à l'aide Aide -> Envoyer le rapport de bug.</translation>
+</phrase>
+
+<phrase>
+<original>Thumbnail save failed (unspecified GDI+ error).</original>
+<translation>Sauvegarde vignette a échoué (erreur non spécifiée GDI).</translation>
+</phrase>
+
+<!-- VBP_SaveModule.bas contains 110 phrases. 72 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -634,8 +674,8 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier 
 <!-- BEGIN text for VBP_FormReduceColors.frm (FormReduceColors) -->
 
 <phrase>
-<original>Reduce Image Colors</original>
-<translation>Réduire les couleurs de l'image</translation>
+<original>Indexed color</original>
+<translation>couleurs indexées</translation>
 </phrase>
 
 <phrase>
@@ -649,8 +689,13 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier 
 </phrase>
 
 <phrase>
-<original>Note: the FreeImage plugin is missing.  Please install it if you wish to use this tool.</original>
-<translation>Remarque: le plugin FreeImage est manquant. S'il vous plaît installer si vous souhaitez utiliser cet outil.</translation>
+<original>Note: this operation will flatten the image before converting it to indexed color mode.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>The FreeImage plugin is missing.  Please install it if you wish to use this tool.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -664,8 +709,13 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier 
 </phrase>
 
 <phrase>
-<original>Quantizing image using the FreeImage library</original>
-<translation>Quantification de l'image à l'aide de la bibliothèque FreeImage</translation>
+<original>Flattening image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Indexing colors</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -682,7 +732,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
  Pour activer le support pour cette fonctionnalité, s'il vous plaît copiez le fichier FreeImage.dll dans le répertoire plug-in et de recharger le programme.</translation>
 </phrase>
 
-<!-- VBP_FormReduceColors.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_FormReduceColors.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for VBP_FormReduceColors.frm-->
 
@@ -704,11 +754,21 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
+<original>Select an image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Save an image</original>
 <translation>Enregistrer une image</translation>
 </phrase>
 
-<!-- VBP_MenuModule.bas contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_MenuModule.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_MenuModule.bas-->
 
@@ -725,8 +785,8 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>URL found on clipboard.  Attempting to download image at that location</original>
-<translation>URL dans le Presse-papiers. Tentative de téléchargement à cet endroit</translation>
+<original>Image URL found on clipboard.  Attempting to download</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -744,7 +804,22 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>Erreur Presse-papiers Windows</translation>
 </phrase>
 
-<!-- VBP_ClipboardModule.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>Imported Image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image imported successfully</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please supply a valid image URL and try again.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ClipboardModule.bas contains 19 phrases. 10 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_ClipboardModule.bas-->
 
@@ -821,6 +896,11 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
+<original>Bicubic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>B-Spline</original>
 <translation>B-Spline</translation>
 </phrase>
@@ -841,8 +921,8 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Resize</original>
-<translation>Modifier la taille de</translation>
+<original>Resize layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -881,18 +961,13 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>Resampling image using the FreeImage plugin</original>
-<translation>Le rééchantillonnage d'image en utilisant le plugin FreeImage</translation>
-</phrase>
-
-<phrase>
 <original>Resizing image</original>
 <translation>Redimensionnement de l'image</translation>
 </phrase>
 
 <phrase>
-<original>Resampling image</original>
-<translation>Le rééchantillonnage d'image</translation>
+<original>Resizing layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -900,7 +975,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>Prêt.</translation>
 </phrase>
 
-<!-- VBP_FormResize.frm contains 54 phrases. 24 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- VBP_FormResize.frm contains 59 phrases. 29 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <!-- END text for VBP_FormResize.frm-->
 
@@ -957,17 +1032,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>Appliquer trame flou</translation>
 </phrase>
 
-<phrase>
-<original>Converting image to isometric view</original>
-<translation>Convertir image en isométrique</translation>
-</phrase>
-
-<phrase>
-<original>Action canceled.</original>
-<translation>Action annulée.</translation>
-</phrase>
-
-<!-- VBP_Filters_Area.bas contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- VBP_Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Area.bas-->
 
@@ -1088,6 +1153,11 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- BEGIN text for VBP_ZoomModule.bas -->
 
 <phrase>
+<original>WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
 <translation>Il n'y a pas assez de mémoire disponible pour continuer cette opération. S'il vous plaît libérer de la mémoire système jusqu'à (RAM) et essayez à nouveau. Si le problème persiste, diminuez la valeur de zoom et essayez à nouveau.</translation>
 </phrase>
@@ -1112,7 +1182,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>Rendu Viewport suspendue en raison d'une erreur inattendue (# %1)</translation>
 </phrase>
 
-<!-- VBP_ZoomModule.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- VBP_ZoomModule.bas contains 6 phrases.  All 6 were unique, so 6 new phrases were written to file. -->
 
 <!-- END text for VBP_ZoomModule.bas-->
 
@@ -1150,11 +1220,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- BEGIN text for VBP_ProcessorModule.bas -->
 
 <phrase>
-<original>Finalize selection for macro</original>
-<translation>Finaliser la sélection des macro</translation>
-</phrase>
-
-<phrase>
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
@@ -1176,6 +1241,11 @@ s'il vous plaît envoyer ce bug via le Help -> Envoyer de rapport de bogues menu.
 <phrase>
 <original>seconds</original>
 <translation>secondes</translation>
+</phrase>
+
+<phrase>
+<original>Action canceled.</original>
+<translation>Action annulée.</translation>
 </phrase>
 
 <phrase>
@@ -1308,7 +1378,7 @@ Lors de terminé, cliquez sur le bouton Envoyer. Je vous remercie!</translation>
 <translation>Instructions de rapports de bogues</translation>
 </phrase>
 
-<!-- VBP_ProcessorModule.bas contains 29 phrases. 7 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- VBP_ProcessorModule.bas contains 28 phrases. 6 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for VBP_ProcessorModule.bas-->
 
@@ -1931,13 +2001,33 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>&Copy to clipboard</original>
-<translation>&Copier dans le presse papier</translation>
+<original>Cu&t</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Cut from layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>&Copy</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Copy from layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>&Paste as new image</original>
 <translation>&Coller comme nouvelle image</translation>
+</phrase>
+
+<phrase>
+<original>Paste as new layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1981,28 +2071,8 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Transparency</original>
-<translation>Transparence</translation>
-</phrase>
-
-<phrase>
-<original>Add basic transparency</original>
-<translation>Ajouter de la transparence de base</translation>
-</phrase>
-
-<phrase>
-<original>Make color transparent</original>
-<translation>Assurez couleur transparente</translation>
-</phrase>
-
-<phrase>
-<original>Remove transparency</original>
-<translation>Retirez la transparence</translation>
-</phrase>
-
-<phrase>
-<original>Content-aware resize</original>
-<translation>Redimensionnement sensible au contenu</translation>
+<original>Resize</original>
+<translation>Modifier la taille de</translation>
 </phrase>
 
 <phrase>
@@ -2011,18 +2081,33 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
+<original>Fit canvas to active layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas around all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Crop to selection</original>
 <translation>Découper la sélection</translation>
 </phrase>
 
 <phrase>
-<original>Autocrop</original>
-<translation>Découpage automatique de l'image</translation>
+<original>Trim empty borders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Rotate</original>
 <translation>Rotation</translation>
+</phrase>
+
+<phrase>
+<original>Straighten</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2056,16 +2141,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Convert to isometric view</original>
-<translation>Frais de port à la vue isométrique</translation>
-</phrase>
-
-<phrase>
-<original>Indexed color</original>
-<translation>couleurs indexées</translation>
-</phrase>
-
-<phrase>
 <original>Tile</original>
 <translation>Tuiles</translation>
 </phrase>
@@ -2088,6 +2163,151 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Map photo location</original>
 <translation>dossier emplacement photo</translation>
+</phrase>
+
+<phrase>
+<original>&Layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Blank layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Duplicate of current layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>From file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Delete</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Current layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hidden layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Merge up</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Merge down</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Raise layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lower layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layer to top</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layer to bottom</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Orientation</original>
+<translation>Orientation</translation>
+</phrase>
+
+<phrase>
+<original>Rotate 90° clockwise</original>
+<translation>Rotation 90° à droite</translation>
+</phrase>
+
+<phrase>
+<original>Rotate 90° counter-clockwise</original>
+<translation>Rotation de 90° dans le sens antihoraire</translation>
+</phrase>
+
+<phrase>
+<original>Rotate 180°</original>
+<translation>Rotation 180°</translation>
+</phrase>
+
+<phrase>
+<original>Rotate arbitrary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Size</original>
+<translation>Taille</translation>
+</phrase>
+
+<phrase>
+<original>Reset to actual size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Content-aware resize</original>
+<translation>Redimensionnement sensible au contenu</translation>
+</phrase>
+
+<phrase>
+<original>Transparency</original>
+<translation>Transparence</translation>
+</phrase>
+
+<phrase>
+<original>Add basic transparency</original>
+<translation>Ajouter de la transparence de base</translation>
+</phrase>
+
+<phrase>
+<original>Make color transparent</original>
+<translation>Assurez couleur transparente</translation>
+</phrase>
+
+<phrase>
+<original>Remove transparency</original>
+<translation>Retirez la transparence</translation>
+</phrase>
+
+<phrase>
+<original>Flatten image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Merge visible layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2133,6 +2353,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Sharpen</original>
 <translation>Affiler</translation>
+</phrase>
+
+<phrase>
+<original>Erase selected area</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2241,11 +2466,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Photo filters</original>
-<translation>Tous les filtres</translation>
-</phrase>
-
-<phrase>
 <original>Colorize</original>
 <translation>Décolorer</translation>
 </phrase>
@@ -2301,11 +2521,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Exposure</original>
-<translation>exposition</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Ombres et des saillants</translation>
 </phrase>
@@ -2328,6 +2543,26 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Monochrome to grayscale</original>
 <translation>Monochrome en niveaux de gris</translation>
+</phrase>
+
+<phrase>
+<original>Photography</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exposure</original>
+<translation>exposition</translation>
+</phrase>
+
+<phrase>
+<original>Photo filters</original>
+<translation>Tous les filtres</translation>
+</phrase>
+
+<phrase>
+<original>Split toning</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2358,6 +2593,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Film noir</original>
 <translation>Film noir</translation>
+</phrase>
+
+<phrase>
+<original>Glass tiles</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2401,18 +2641,13 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Chroma blur</original>
-<translation>Chroma flou</translation>
-</phrase>
-
-<phrase>
 <original>Gaussian blur</original>
 <translation>Fondu gaussien</translation>
 </phrase>
 
 <phrase>
-<original>Grid blur</original>
-<translation>Fondu Grille</translation>
+<original>Surface blur</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2426,13 +2661,18 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Smart blur</original>
-<translation>Flou optimisé</translation>
+<original>Zoom blur</original>
+<translation>Zoom flou</translation>
 </phrase>
 
 <phrase>
-<original>Zoom blur</original>
-<translation>Zoom flou</translation>
+<original>Fragment</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Kuwahara filter</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2451,21 +2691,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Miscellaneous</original>
-<translation>divers</translation>
-</phrase>
-
-<phrase>
-<original>Pan and zoom</original>
-<translation>Panoramique et zoom</translation>
-</phrase>
-
-<phrase>
-<original>Perspective</original>
-<translation>perspective</translation>
-</phrase>
-
-<phrase>
 <original>Pinch and whirl</original>
 <translation>Pincer et vertébrale</translation>
 </phrase>
@@ -2476,23 +2701,8 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Polar conversion</original>
-<translation>Conversion polaire</translation>
-</phrase>
-
-<phrase>
 <original>Ripple</original>
 <translation>Ondulation</translation>
-</phrase>
-
-<phrase>
-<original>Shear</original>
-<translation>Shear</translation>
-</phrase>
-
-<phrase>
-<original>Spherize</original>
-<translation>Sphérisation</translation>
 </phrase>
 
 <phrase>
@@ -2511,13 +2721,18 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
+<original>Miscellaneous</original>
+<translation>divers</translation>
+</phrase>
+
+<phrase>
 <original>Edge</original>
 <translation>Bord</translation>
 </phrase>
 
 <phrase>
-<original>Emboss or engrave</original>
-<translation>Emboss ou graver</translation>
+<original>Emboss</original>
+<translation>Relief</translation>
 </phrase>
 
 <phrase>
@@ -2536,33 +2751,33 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Experimental</original>
-<translation>Expérimental</translation>
+<original>Light and shadow</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Alien</original>
-<translation>Extraterrestre</translation>
+<original>Lens flare</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Dream</original>
-<translation>Rêve</translation>
+<original>Rainbow</original>
+<translation>Arc en ciel</translation>
 </phrase>
 
 <phrase>
-<original>Radioactive</original>
-<translation>Radioactif</translation>
+<original>Sunshine</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Synthesize</original>
-<translation>Synthétiser</translation>
+<original>Dilate</original>
+<translation>Dilater</translation>
 </phrase>
 
 <phrase>
-<original>Thermograph (heat map)</original>
-<translation>Thermographe (Carte de chaleur)</translation>
+<original>Erode</original>
+<translation>Éroder</translation>
 </phrase>
 
 <phrase>
@@ -2596,11 +2811,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Rainbow</original>
-<translation>Arc en ciel</translation>
-</phrase>
-
-<phrase>
 <original>Steel</original>
 <translation>Acier</translation>
 </phrase>
@@ -2621,8 +2831,13 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Median</original>
-<translation>Médiane</translation>
+<original>Remove noise</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Median smoothing</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2641,18 +2856,68 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Dilate</original>
-<translation>Dilater</translation>
-</phrase>
-
-<phrase>
-<original>Erode</original>
-<translation>Éroder</translation>
-</phrase>
-
-<phrase>
 <original>Vignetting</original>
 <translation>Vignettage</translation>
+</phrase>
+
+<phrase>
+<original>Transform</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pan and zoom</original>
+<translation>Panoramique et zoom</translation>
+</phrase>
+
+<phrase>
+<original>Perspective</original>
+<translation>perspective</translation>
+</phrase>
+
+<phrase>
+<original>Polar conversion</original>
+<translation>Conversion polaire</translation>
+</phrase>
+
+<phrase>
+<original>Shear</original>
+<translation>Shear</translation>
+</phrase>
+
+<phrase>
+<original>Spherize</original>
+<translation>Sphérisation</translation>
+</phrase>
+
+<phrase>
+<original>Experimental</original>
+<translation>Expérimental</translation>
+</phrase>
+
+<phrase>
+<original>Alien</original>
+<translation>Extraterrestre</translation>
+</phrase>
+
+<phrase>
+<original>Dream</original>
+<translation>Rêve</translation>
+</phrase>
+
+<phrase>
+<original>Radioactive</original>
+<translation>Radioactif</translation>
+</phrase>
+
+<phrase>
+<original>Synthesize</original>
+<translation>Synthétiser</translation>
+</phrase>
+
+<phrase>
+<original>Thermograph (heat map)</original>
+<translation>Thermographe (Carte de chaleur)</translation>
 </phrase>
 
 <phrase>
@@ -2716,13 +2981,18 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>File toolbar</original>
-<translation>Barre d'outils Fichier</translation>
+<original>File toolbox</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Selection toolbar</original>
-<translation>Barre d'outils de sélection</translation>
+<original>Layers toolbox</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Tools toolbox</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2826,8 +3096,128 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
+<original>Photo filter</original>
+<translation>filtre photo</translation>
+</phrase>
+
+<phrase>
+<original>Merge layer up</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Merge layer down</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Delete layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Delete hidden layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add blank layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Duplicate Layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New layer from file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Raise layer to top</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lower layer to bottom</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Straighten layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90° clockwise</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 90° counter-clockwise</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer 180°</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary layer rotation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Flip layer horizontally</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Flip layer vertically</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset layer size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Dilate (maximum rank)</original>
+<translation>Dilater (rang maximum)</translation>
+</phrase>
+
+<phrase>
+<original>Erode (minimum rank)</original>
+<translation>Erode (rang minimum)</translation>
+</phrase>
+
+<phrase>
+<original>Remove selection</original>
+<translation>supprimer la sélection</translation>
+</phrase>
+
+<phrase>
+<original>Asynchronous metadata check complete!  Updating metadata collection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Checking for old autosave data</original>
 <translation>Vérification des anciennes données de sauvegarde automatique</translation>
+</phrase>
+
+<phrase>
+<original>Previous shutdown was clean (no autosave data found).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Multiple PhotoDemon sessions active; autosave check abandoned.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2876,11 +3266,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Please load an image.  (The large 'Open Image' button at the top-left should do the trick!)</original>
-<translation>S'il vous plaît charger une image. ( Le grand Bouton "Ouvrir une image" en haut à gauche devrait faire l'affaire !)</translation>
-</phrase>
-
-<phrase>
 <original>Figured glass</original>
 <translation>Verre Figure</translation>
 </phrase>
@@ -2888,11 +3273,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Kaleidoscope</original>
 <translation>Kaléidoscope</translation>
-</phrase>
-
-<phrase>
-<original>Photo filter</original>
-<translation>filtre photo</translation>
 </phrase>
 
 <phrase>
@@ -2916,11 +3296,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Edge enhance</original>
-<translation>Améliorer</translation>
-</phrase>
-
-<phrase>
 <original>Undo</original>
 <translation>Annuler</translation>
 </phrase>
@@ -2936,8 +3311,8 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Copy to clipboard</original>
-<translation>copier dans le presse papier</translation>
+<original>Cut</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3049,13 +3424,28 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifie
 </phrase>
 
 <phrase>
+<original>Fit canvas to layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fit canvas to all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Crop</original>
 <translation>Récolte</translation>
 </phrase>
 
 <phrase>
-<original>Isometric conversion</original>
-<translation>Conversion isométrique</translation>
+<original>Flip image horizontally</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Flip image vertically</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3138,28 +3528,43 @@ Note: un texte de programme de la mineure (comme les info-bulles de survol) ne p
 </phrase>
 
 <phrase>
+<original>Bilateral smoothing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>Médiane</translation>
+</phrase>
+
+<phrase>
 <original>Play macro</original>
 <translation>Jouer Macro</translation>
 </phrase>
 
 <phrase>
-<original>Rotate 90° clockwise</original>
-<translation>Rotation 90° à droite</translation>
+<original>Straighten image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Rotate 90° counter-clockwise</original>
-<translation>Rotation de 90° dans le sens antihoraire</translation>
+<original>Rotate image 90° clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Rotate 180°</original>
-<translation>Rotation 180°</translation>
+<original>Rotate image 90° counter-clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Arbitrary rotation</original>
-<translation>Rotation aléatoire</translation>
+<original>Rotate image 180°</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Arbitrary image rotation</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3170,11 +3575,6 @@ Note: un texte de programme de la mineure (comme les info-bulles de survol) ne p
 <phrase>
 <original>Select all</original>
 <translation>Sélectionner tout</translation>
-</phrase>
-
-<phrase>
-<original>Remove selection</original>
-<translation>supprimer la sélection</translation>
 </phrase>
 
 <phrase>
@@ -3243,16 +3643,6 @@ Note: un texte de programme de la mineure (comme les info-bulles de survol) ne p
 </phrase>
 
 <phrase>
-<original>Dilate (maximum rank)</original>
-<translation>Dilater (rang maximum)</translation>
-</phrase>
-
-<phrase>
-<original>Erode (minimum rank)</original>
-<translation>Erode (rang minimum)</translation>
-</phrase>
-
-<phrase>
 <original>Add alpha channel</original>
 <translation>Ajouter un canal alpha</translation>
 </phrase>
@@ -3267,7 +3657,7 @@ Note: un texte de programme de la mineure (comme les info-bulles de survol) ne p
 <translation>Retirer canal alpha</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 418 phrases. 129 were duplicates of existing phrases, so only 289 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 500 phrases. 147 were duplicates of existing phrases, so only 353 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -3488,7 +3878,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 <translation>croquis au crayon</translation>
 </phrase>
 
-<!-- VBP_Filters_Edge.bas contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_Filters_Edge.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Edge.bas-->
 
@@ -3500,58 +3890,23 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 </phrase>
 
 <phrase>
-<original>description</original>
-<translation>Description</translation>
+<original>other options</original>
+<translation>autres options</translation>
 </phrase>
 
 <phrase>
-<original>(no item selected)</original>
-<translation>Aucun article sélectionné</translation>
+<original>detection direction(s)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Find edges (Prewitt horizontal)</original>
-<translation>Détection des contours (Prewitt horizontal)</translation>
+<original>edge detection technique</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Find edges (Prewitt vertical)</original>
-<translation>Détection des contours (Prewitt vertical)</translation>
-</phrase>
-
-<phrase>
-<original>Find edges (Sobel horizontal)</original>
-<translation>Détection des contours (Sobel horizontal)</translation>
-</phrase>
-
-<phrase>
-<original>Find edges (Sobel vertical)</original>
-<translation>Détection des contours (Sobel vertical)</translation>
-</phrase>
-
-<phrase>
-<original>Find edges (Laplacian)</original>
-<translation>Détection des contours (Laplacien)</translation>
-</phrase>
-
-<phrase>
-<original>Artistic contour</original>
-<translation>Contour artistique</translation>
-</phrase>
-
-<phrase>
-<original>Find edges (Hilite)</original>
-<translation>Détection des contours (Hilite)</translation>
-</phrase>
-
-<phrase>
-<original>Find edges (PhotoDemon linear)</original>
-<translation>Détection des contours (PhotoDemon linéaire)</translation>
-</phrase>
-
-<phrase>
-<original>Find edges (PhotoDemon cubic)</original>
-<translation>Détection des contours (PhotoDemon cubique)</translation>
+<original>Applying pass %1 of %2 for %3 filter</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3560,38 +3915,28 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 </phrase>
 
 <phrase>
-<original>PhotoDemon cubic edge detection</original>
-<translation>PhotoDemon détection des contours cubique</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon linear edge detection</original>
-<translation>PhotoDemon détection des contours linéaire</translation>
-</phrase>
-
-<phrase>
-<original>Prewitt horizontal edge detection</original>
-<translation>Prewitt détection des contours horizontal</translation>
-</phrase>
-
-<phrase>
-<original>Prewitt vertical edge detection</original>
-<translation>Prewitt détection des contours vertical</translation>
-</phrase>
-
-<phrase>
-<original>Sobel horizontal edge detection</original>
-<translation>Sobel détection des contours horizontal</translation>
-</phrase>
-
-<phrase>
-<original>Sobel vertical edge detection</original>
-<translation>Sobel détection des contours vertical</translation>
-</phrase>
-
-<phrase>
 <original>Laplacian edge detection</original>
 <translation>Laplacian détection des contours</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon edge detection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Prewitt edge detection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Roberts cross edge detection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Sobel edge detection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3600,28 +3945,8 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 </phrase>
 
 <phrase>
-<original>Prewitt Horizontal</original>
-<translation>Prewitt horizontal</translation>
-</phrase>
-
-<phrase>
-<original>Prewitt Vertical</original>
-<translation>Prewitt vertical</translation>
-</phrase>
-
-<phrase>
-<original>Sobel Horizontal</original>
-<translation>Sobel horizontal</translation>
-</phrase>
-
-<phrase>
-<original>Sobel Vertical</original>
-<translation>Sobel vertical</translation>
-</phrase>
-
-<phrase>
-<original>Laplacian</original>
-<translation>Laplacien</translation>
+<original>Artistic contour</original>
+<translation>Contour artistique</translation>
 </phrase>
 
 <phrase>
@@ -3630,45 +3955,35 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 </phrase>
 
 <phrase>
-<original>PhotoDemon Linear</original>
-<translation>PhotoDemon linéaire</translation>
+<original>Laplacian</original>
+<translation>Laplacien</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon Cubic</original>
-<translation>PhotoDemon cubique</translation>
+<original>PhotoDemon</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Simple matrix method</original>
-<translation>Méthode matricielle simple</translation>
+<original>Prewitt</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Algorithm designed to present a clean, artistic prediction of image edges.</original>
-<translation>Algorithme conçu pour fournir un environnement propre, la prévision de bords de l'image artistique à présenter.</translation>
+<original>Roberts cross</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Simple mathematical routine based on linear relationships between diagonal pixels.</original>
-<translation>Simple routine mathématique basée sur des relations linéaires entre les pixels en diagonale.</translation>
+<original>Sobel</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Advanced mathematical routine based on cubic relationships between diagonal pixels.</original>
-<translation>Avancée de routine mathématique basée sur les relations cubes en diagonale entre les pixels.</translation>
-</phrase>
-
-<!-- VBP_FormFindEdges.frm contains 57 phrases. 24 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- VBP_FormFindEdges.frm contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_FormFindEdges.frm-->
 
 <!-- BEGIN text for VBP_Filters_Natural.bas -->
-
-<phrase>
-<original>Sprinkling image with shimmering rainbows</original>
-<translation>Arrosage image avec en-ciel étincelants</translation>
-</phrase>
 
 <phrase>
 <original>Generating artificial fog</original>
@@ -3705,7 +4020,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 <translation>Coulée d'acier qui couve sur l'image</translation>
 </phrase>
 
-<!-- VBP_Filters_Natural.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- VBP_Filters_Natural.bas contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Natural.bas-->
 
@@ -3882,101 +4197,6 @@ de fichiers</translation>
 <phrase>
 <original>File Format Options</original>
 <translation>les options de format de fichier</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>lors de la fermeture des fichiers image, m'avertir moi au sujet de modifications non enregistrées</translation>
-</phrase>
-
-<phrase>
-<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
-<translation>Cochez cette case si vous souhaitez être averti lorsque vous essayez de fermer une image avec les modifications non enregistrées</translation>
-</phrase>
-
-<phrase>
-<original>when saving images that originally contained metadata</original>
-<translation>lors de l'enregistrement des images qui contenait à l'origine des métadonnées</translation>
-</phrase>
-
-<phrase>
-<original>metadata (EXIF, GPS, comments, etc.)</original>
-<translation>métadonnées (EXIF, GPS, commentaires, etc)</translation>
-</phrase>
-
-<phrase>
-<original>set outgoing color depth</original>
-<translation>régler la profondeur de couleur sortant</translation>
-</phrase>
-
-<phrase>
-<original>color depth of saved images</original>
-<translation>profondeur de couleur des images enregistrées</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>économiser de comportement: écraser vs faire une copie</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>quand "Enregistrer" est utilisé</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>fermer images non enregistrées</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>lorsque vous utilisez le " Enregistrer sous", définissez le format de fichier par défaut selon</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>format de fichier par défaut lors de l'enregistrement</translation>
-</phrase>
-
-<phrase>
-<original>count unique colors in incoming images (to determine optimal color depth)</original>
-<translation>compter couleurs uniques en images entrantes (pour déterminer la profondeur optimale des couleurs)</translation>
-</phrase>
-
-<phrase>
-<original>automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)</original>
-<translation>appliquer automatiquement tone mapping pour HDR et RAW (48, 64, 96, 128bpp)</translation>
-</phrase>
-
-<phrase>
-<original>color depth</original>
-<translation>profondeur de couleur</translation>
-</phrase>
-
-<phrase>
-<original>if an image contains multiple pages</original>
-<translation>si une image contient plusieurs pages</translation>
-</phrase>
-
-<phrase>
-<original>multi-page images (animated GIF, icons, TIFF)</original>
-<translation>images de plusieurs pages (GIF animé, icônes, TIFF)</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>Gamme images haute dynamique (HDR)</translation>
-</phrase>
-
-<phrase>
-<original>zoom</original>
-<translation>zoom</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>quand une image est d'abord chargé, réglez son zoom de la fenêtre de</translation>
 </phrase>
 
 <phrase>
@@ -4237,6 +4457,101 @@ de fichiers</translation>
 <phrase>
 <original>please select a file type</original>
 <translation>s'il vous plaît sélectionner un type de fichier</translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>lors de la fermeture des fichiers image, m'avertir moi au sujet de modifications non enregistrées</translation>
+</phrase>
+
+<phrase>
+<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
+<translation>Cochez cette case si vous souhaitez être averti lorsque vous essayez de fermer une image avec les modifications non enregistrées</translation>
+</phrase>
+
+<phrase>
+<original>when saving images that originally contained metadata</original>
+<translation>lors de l'enregistrement des images qui contenait à l'origine des métadonnées</translation>
+</phrase>
+
+<phrase>
+<original>metadata (EXIF, GPS, comments, etc.)</original>
+<translation>métadonnées (EXIF, GPS, commentaires, etc)</translation>
+</phrase>
+
+<phrase>
+<original>set outgoing color depth</original>
+<translation>régler la profondeur de couleur sortant</translation>
+</phrase>
+
+<phrase>
+<original>color depth of saved images</original>
+<translation>profondeur de couleur des images enregistrées</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>économiser de comportement: écraser vs faire une copie</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>quand "Enregistrer" est utilisé</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>fermer images non enregistrées</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>lorsque vous utilisez le " Enregistrer sous", définissez le format de fichier par défaut selon</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>format de fichier par défaut lors de l'enregistrement</translation>
+</phrase>
+
+<phrase>
+<original>count unique colors in incoming images (to determine optimal color depth)</original>
+<translation>compter couleurs uniques en images entrantes (pour déterminer la profondeur optimale des couleurs)</translation>
+</phrase>
+
+<phrase>
+<original>automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)</original>
+<translation>appliquer automatiquement tone mapping pour HDR et RAW (48, 64, 96, 128bpp)</translation>
+</phrase>
+
+<phrase>
+<original>color depth</original>
+<translation>profondeur de couleur</translation>
+</phrase>
+
+<phrase>
+<original>if an image contains multiple pages</original>
+<translation>si une image contient plusieurs pages</translation>
+</phrase>
+
+<phrase>
+<original>multi-page images (animated GIF, icons, TIFF)</original>
+<translation>images de plusieurs pages (GIF animé, icônes, TIFF)</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>Gamme images haute dynamique (HDR)</translation>
+</phrase>
+
+<phrase>
+<original>zoom</original>
+<translation>zoom</translation>
+</phrase>
+
+<phrase>
+<original>when an image is first loaded, set its viewport zoom to</original>
+<translation>quand une image est d'abord chargé, réglez son zoom de la fenêtre de</translation>
 </phrase>
 
 <phrase>
@@ -4959,7 +5274,27 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 <translation>Faire pivoter l'image dans le sens antihoraire</translation>
 </phrase>
 
-<!-- VBP_Filters_Rotate.bas contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<phrase>
+<original>Fitting image canvas around layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image is fully transparent.  Trim abandoned.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image is already trimmed.  (No changes were made to the image.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Trimming image to new dimensions</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_Filters_Rotate.bas contains 35 phrases. 15 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Rotate.bas-->
 
@@ -4971,13 +5306,13 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 </phrase>
 
 <phrase>
-<original>emboss</original>
-<translation>Relief</translation>
+<original>depth</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>engrave</original>
-<translation>Gravure</translation>
+<original>angle</original>
+<translation>angle</translation>
 </phrase>
 
 <phrase>
@@ -4986,16 +5321,16 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 </phrase>
 
 <phrase>
+<original>thickness</original>
+<translation>épaisseur</translation>
+</phrase>
+
+<phrase>
 <original>Embossing image</original>
 <translation>Gaufrage l'image</translation>
 </phrase>
 
-<phrase>
-<original>Engraving image</original>
-<translation>Image de gravure</translation>
-</phrase>
-
-<!-- VBP_FormEmbossEngrave.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_FormEmbossEngrave.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormEmbossEngrave.frm-->
 
@@ -5044,11 +5379,6 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 <phrase>
 <original>layout options</original>
 <translation>Options de mise en page</translation>
-</phrase>
-
-<phrase>
-<original>orientation</original>
-<translation>Orientation</translation>
 </phrase>
 
 <phrase>
@@ -5121,18 +5451,13 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 <translation>L'image imprimée avec succès. (Remarque: en fonction de l'imprimante apparaissent des écrans de confirmation supplémentaires.)</translation>
 </phrase>
 
-<!-- VBP_FormPrint.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- VBP_FormPrint.frm contains 29 phrases. 6 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPrint.frm-->
 
 <!-- BEGIN text for pdImage.cls -->
 
-<phrase>
-<original>Could not write Autosave data - did the containing drive run out of free space?</original>
-<translation>Impossible d'écrire des données de sauvegarde automatique - n'a le lecteur contenant un manque d'espace libre?</translation>
-</phrase>
-
-<!-- pdImage.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdImage.cls contains 0 phrases. -->
 
 <!-- END text for pdImage.cls-->
 
@@ -5144,28 +5469,23 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 </phrase>
 
 <phrase>
-<original>gray level (midtones)</original>
-<translation>niveau de gris (tons moyens)</translation>
+<original>Auto-Levels</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>ceiling (highlights)</original>
-<translation>plafond (faits saillants)</translation>
+<original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>floor (shadows)</original>
-<translation>étage (ombres)</translation>
+<original>RGB</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>white point</original>
-<translation>point blanc</translation>
-</phrase>
-
-<phrase>
-<original>black point</original>
-<translation>point noir</translation>
+<original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5183,7 +5503,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 <translation>Tracer les niveaux nouvelle image</translation>
 </phrase>
 
-<!-- VBP_FormImageLevels.frm contains 10 phrases.  One was a duplicate of an existing phrase, so only 9 new phrases were written to file. -->
+<!-- VBP_FormImageLevels.frm contains 12 phrases. 4 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormImageLevels.frm-->
 
@@ -5248,8 +5568,13 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 </phrase>
 
 <phrase>
-<original>Attempting to connect to Internet</original>
-<translation>Essayez de vous connecter à Internet</translation>
+<original>Image download complete.</original>
+<translation>Télécharger l'image complète.</translation>
+</phrase>
+
+<phrase>
+<original>Attempting to connect to the Internet</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5268,13 +5593,13 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 </phrase>
 
 <phrase>
-<original>%1 could not locate a valid image at that URL.  Please double-check the path.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-<translation>%1 n'a pas pu localiser une image valide à cette URL. S'il vous plaît vérifier à nouveau le chemin. Si le problème persiste, essayez de télécharger l'image manuellement à l'aide de votre navigateur Internet de votre choix. Une fois téléchargé, vous pouvez ouvrir le fichier dans %1 juste comme n'importe quel autre fichier image.</translation>
+<original>%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Online Image Not Found</original>
-<translation>Image en ligne introuvable</translation>
+<original>Online File Not Found</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5288,13 +5613,13 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 </phrase>
 
 <phrase>
-<original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-<translation>%1 a perdu l'accès à l'Internet. S'il vous plaît vérifier votre connexion Internet. Si le problème persiste, essayez de télécharger l'image manuellement à l'aide de votre navigateur Internet de votre choix. Une fois téléchargé, vous pouvez ouvrir le fichier dans %1 juste comme n'importe quel autre fichier image.</translation>
+<original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Image URL verified.  Downloading image (%1 of %2 bytes received)</original>
-<translation>URL de l'image vérifiée. Téléchargement des images (%1 du %2 octets reçus)</translation>
+<original>Downloading file (%1 of %2 bytes received)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5310,24 +5635,15 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 <phrase>
 <original>Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
 
-You will need to download this image using your Internet browser of choice, then manually load it into %2.
+You will need to download this file using your Internet browser, then manually load it into %2.
 
 I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
-<translation>Malheureusement, %1 est la prévention %2 de télécharger directement cette image. (Téléchargements directs sont parfois confondu par les serveurs mal configurés hotlinking.) 
-
- Vous aurez besoin de télécharger cette image en utilisant votre navigateur Internet de son choix, puis chargez-le manuellement en %2.
- 
- je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a rien %2 peut faire au sujet de configurations de serveur avares.: (</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Download Unsuccessful</original>
 <translation>Télécharger Échec</translation>
-</phrase>
-
-<phrase>
-<original>Image download complete.</original>
-<translation>Télécharger l'image complète.</translation>
 </phrase>
 
 <phrase>
@@ -5753,6 +6069,11 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 </phrase>
 
 <phrase>
+<original>Note: this operation will flatten the image before tiling it.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>width</original>
 <translation>largeur</translation>
 </phrase>
@@ -5783,6 +6104,11 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 </phrase>
 
 <phrase>
+<original>Tiled image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>current screen size</original>
 <translation>Taille de l'écran</translation>
 </phrase>
@@ -5802,7 +6128,7 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 <translation>L'image finale sera %1 %3 de large par %2 %3 de hauteur.</translation>
 </phrase>
 
-<!-- VBP_FormTile.frm contains 32 phrases. 21 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- VBP_FormTile.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for VBP_FormTile.frm-->
 
@@ -5908,61 +6234,6 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 <phrase>
 <original>Preparing import flags</original>
 <translation>Préparation des drapeaux d'importation</translation>
-</phrase>
-
-<phrase>
-<original>Animated GIF file detected.</original>
-<translation>Fichier GIF d'animation détecté.</translation>
-</phrase>
-
-<phrase>
-<original>Multiple icons detected.</original>
-<translation>Icônes multiples détecté.</translation>
-</phrase>
-
-<phrase>
-<original>Multipage TIFF file detected.</original>
-<translation>Fichier TIFF multipage détecté.</translation>
-</phrase>
-
-<phrase>
-<original>All frames will be loaded, per the user's request.</original>
-<translation>Tous les cadres sont chargés demande de l'utilisateur.</translation>
-</phrase>
-
-<phrase>
-<original>All icons will be loaded, per the user's request.</original>
-<translation>Toutes les icônes seront chargés, par la demande de l' utilisateur.</translation>
-</phrase>
-
-<phrase>
-<original>All pages will be loaded, per the user's request.</original>
-<translation>Toutes les pages sont chargées, chacune demande de l'utilisateur.</translation>
-</phrase>
-
-<phrase>
-<original>Only the first frame will be loaded, per the user's request.</original>
-<translation>Seule la première image est chargé, conformément à la demande de l'utilisateur.</translation>
-</phrase>
-
-<phrase>
-<original>Only the first icon will be loaded, per the user's request.</original>
-<translation>Seule la première icône sera chargée, selon la demande de l'utilisateur.</translation>
-</phrase>
-
-<phrase>
-<original>Only the first page will be loaded, per the user's request.</original>
-<translation>Seule la première page est chargée, une demande de l'utilisateur.</translation>
-</phrase>
-
-<phrase>
-<original>Ignoring extra images in the file, per user's saved preference.</original>
-<translation>Ignorant des images supplémentaires dans le fichier, une préférence utilisateur enregistré.</translation>
-</phrase>
-
-<phrase>
-<original>Loading all images in the file, per user's saved preference.</original>
-<translation>Charger toutes les images dans le fichier, stockés par préférence des utilisateurs.</translation>
 </phrase>
 
 <phrase>
@@ -6075,7 +6346,7 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 <translation>Import via FreeImage a échoué (erreur # %1)</translation>
 </phrase>
 
-<!-- VBP_FreeImage_Expanded.bas contains 39 phrases. 3 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- VBP_FreeImage_Expanded.bas contains 28 phrases. 3 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for VBP_FreeImage_Expanded.bas-->
 
@@ -6258,6 +6529,11 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
+<original>Please load or import an image to begin editing.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>[untitled image]</original>
 <translation>[image anonyme]</translation>
 </phrase>
@@ -6292,7 +6568,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation>ignorer</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -6379,8 +6655,8 @@ S'il vous plaît entrer une valeur numérique.</translation>
 </phrase>
 
 <phrase>
-<original>Rotating image (this may take a few seconds)</original>
-<translation>Rotation de l'image (cela peut prendre plusieurs secondes)</translation>
+<original>Rotating layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6403,7 +6679,12 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation>FreeImage non présent</translation>
 </phrase>
 
-<!-- VBP_FormRotate.frm contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<phrase>
+<original>Rotate layer</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormRotate.frm contains 19 phrases. 8 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for VBP_FormRotate.frm-->
 
@@ -7065,58 +7346,48 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>analyze colors using YUV instead of RGB (slower, but higher quality)</original>
-<translation>analyser les couleurs avec YUV au lieu de RGB</translation>
+<original>improve IE6 compatibility (reduces image quality; use with caution)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>when reducing alpha channels, attempt to preserve values of 0 and 255</original>
-<translation>en abaissant les canaux alpha, essayez les valeurs 0 et 255 pour maintenir</translation>
+<original>use dithering to improve output</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>full persistence</original>
-<translation>persistance complète</translation>
+<original>fast, low quality</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>color dithering</original>
-<translation>couleur de tramage</translation>
+<original>slow, high quality</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>large (slow, high quality)</original>
-<translation>grande (lent, de haute qualité)</translation>
+<original>performance vs image quality (default = 3)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>small (fast, low quality)</original>
-<translation>petite (rapide, mauvaise qualité)</translation>
+<original>PNGQuant settings</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>color sample size</original>
-<translation>taille de l'échantillon de couleur</translation>
+<original>BSD License</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>pngnq-s9 settings</original>
-<translation>pngnq - s9 paramètres</translation>
+<original>PNGQuant license</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>custom license, see PNGNQ-S9-LICENSE file</original>
-<translation>reportez-vous fichier PNGNQ-S9-LICENSE</translation>
-</phrase>
-
-<phrase>
-<original>pngnq-s9 license</original>
-<translation>pngnq -s9 licence</translation>
-</phrase>
-
-<phrase>
-<original>pngnq-s9 homepage</original>
-<translation>pngnq -s9 page d'accueil</translation>
+<original>PNGQuant homepage</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7130,8 +7401,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>pngnq-s9 plugin information</original>
-<translation>informations pngnq -s9 plug-in</translation>
+<original>PNGQuant plugin information</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7250,8 +7521,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Disable pngnq-s9</original>
-<translation>Désactiver pngnq -s9</translation>
+<original>Disable PNGQuant</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7309,7 +7580,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>non présent</translation>
 </phrase>
 
-<!-- VBP_FormPluginManager.frm contains 84 phrases. 32 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_FormPluginManager.frm contains 81 phrases. 31 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPluginManager.frm-->
 
@@ -7605,7 +7876,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for VBP_FormGaussianBlur.frm-->
 
-<!-- BEGIN text for VBP_FormSmartBlur.frm (FormSmartBlur) -->
+<!-- BEGIN text for VBP_FormSmartBlur.frm (FormSurfaceBlur) -->
 
 <phrase>
 <original>smooth areas</original>
@@ -7628,8 +7899,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Analyzing image in preparation for smart blur</original>
-<translation>L'analyse de l'image en cours de préparation pour le flou intelligent</translation>
+<original>Analyzing image in preparation for surface blur</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7766,11 +8037,41 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>shadows</original>
+<translation>Ombre</translation>
+</phrase>
+
+<phrase>
+<original>midtones</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>highlights</original>
+<translation>Saillants</translation>
+</phrase>
+
+<phrase>
+<original>preserve luminance</original>
+<translation>préserver luminance</translation>
+</phrase>
+
+<phrase>
+<original>new balance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tonal range</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Adjusting color balance</original>
 <translation>Réglage de la balance des couleurs</translation>
 </phrase>
 
-<!-- VBP_FormColorBalance.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormColorBalance.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormColorBalance.frm-->
 
@@ -7901,16 +8202,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>thickness</original>
-<translation>épaisseur</translation>
-</phrase>
-
-<phrase>
 <original>Tracing image contour</original>
 <translation>Contour tracé de l'image</translation>
 </phrase>
 
-<!-- VBP_FormContour.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormContour.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormContour.frm-->
 
@@ -7938,21 +8234,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>highlights</original>
-<translation>Saillants</translation>
-</phrase>
-
-<phrase>
-<original>shadows</original>
-<translation>Ombre</translation>
-</phrase>
-
-<phrase>
 <original>Adjusting shadows, midtones, and highlights</original>
 <translation>Réglage des ombres, les tons moyens et les faits saillants</translation>
 </phrase>
 
-<!-- VBP_FormShadowHighlight.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- VBP_FormShadowHighlight.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormShadowHighlight.frm-->
 
@@ -8835,11 +9121,6 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 </phrase>
 
 <phrase>
-<original>other options</original>
-<translation>autres options</translation>
-</phrase>
-
-<phrase>
 <original>horizontal offset</original>
 <translation>décalage horizontal</translation>
 </phrase>
@@ -8850,16 +9131,11 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 </phrase>
 
 <phrase>
-<original>angle</original>
-<translation>angle</translation>
-</phrase>
-
-<phrase>
 <original>Wrapping image around sphere</original>
 <translation>d'emballage L'image autour sphère</translation>
 </phrase>
 
-<!-- VBP_FormSpherize.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_FormSpherize.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormSpherize.frm-->
 
@@ -9328,11 +9604,6 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 <!-- BEGIN text for VBP_FormChannelMixer.frm (FormChannelMixer) -->
 
 <phrase>
-<original>preserve luminance</original>
-<translation>préserver luminance</translation>
-</phrase>
-
-<phrase>
 <original>output channel</original>
 <translation>canal de sortie</translation>
 </phrase>
@@ -9347,7 +9618,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 <translation>Canaux de mélange des couleurs</translation>
 </phrase>
 
-<!-- VBP_FormChannelMixer.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormChannelMixer.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormChannelMixer.frm-->
 
@@ -9385,12 +9656,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 <translation>remplir les zones vides avec</translation>
 </phrase>
 
-<phrase>
-<original>note: empty areas will be made transparent</original>
-<translation>Remarque: Les zones vides seront rendues transparentes</translation>
-</phrase>
-
-<!-- VBP_FormCanvasSize.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormCanvasSize.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormCanvasSize.frm-->
 
@@ -9566,13 +9832,8 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 </phrase>
 
 <phrase>
-<original>additional options</original>
-<translation>des options supplémentaires</translation>
-</phrase>
-
-<phrase>
-<original>Applying new luminance curve to image</original>
-<translation>Application nouvelle courbe de luminance pour l'image</translation>
+<original>Applying new curve to image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9600,7 +9861,17 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 <translation>logarithmique</translation>
 </phrase>
 
-<!-- VBP_FormCurves.frm contains 16 phrases. 6 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<phrase>
+<original>input</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>output</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormCurves.frm contains 23 phrases. 12 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for VBP_FormCurves.frm-->
 
@@ -9657,12 +9928,6 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 <!-- VBP_FormOilPainting.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormOilPainting.frm-->
-
-<!-- BEGIN text for bluMouseEvents.cls -->
-
-<!-- bluMouseEvents.cls contains 0 phrases. -->
-
-<!-- END text for bluMouseEvents.cls-->
 
 <!-- BEGIN text for VBP_FormConvert32bpp.frm (FormTransparency_Basic) -->
 
@@ -10336,7 +10601,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 <translation>L'enregistrement de macro en cours</translation>
 </phrase>
 
-<!-- VBP_ToolbarPrimary.frm contains 13 phrases. 12 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_ToolbarPrimary.frm contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_ToolbarPrimary.frm-->
 
@@ -10347,6 +10612,46 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 <!-- END text for pdWindowManager.cls-->
 
 <!-- BEGIN text for VBP_ToolbarTools.frm (toolbar_Tools) -->
+
+<phrase>
+<original>tint</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>clarity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interaction options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>This option controls the selection's area.  You can switch between the three settings without losing the current selection.</original>
@@ -10389,13 +10694,28 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 </phrase>
 
 <phrase>
+<original>quick fix</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>nav</original>
 <translation>nav</translation>
 </phrase>
 
 <phrase>
+<original>Make quick-fixes permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Hand (click-and-drag image scrolling)</original>
 <translation>Main (image, cliquez et faites glisser le défilement)</translation>
+</phrase>
+
+<phrase>
+<original>Move and resize image layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10411,6 +10731,11 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 <phrase>
 <original>Line Selection</original>
 <translation>Sélection de ligne</translation>
+</phrase>
+
+<phrase>
+<original>Apply non-destructive lighting adjustments</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10484,6 +10809,16 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 </phrase>
 
 <phrase>
+<original>Reset all quick-fix adjustment values</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>size (x, y)</original>
 <translation>taille (x, y)</translation>
 </phrase>
@@ -10503,7 +10838,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 <translation>largeur de ligne</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 53 phrases. 22 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 75 phrases. 30 were duplicates of existing phrases, so only 45 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -10530,7 +10865,17 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <!-- BEGIN text for pdUndo.cls -->
 
-<!-- pdUndo.cls contains 0 phrases. -->
+<phrase>
+<original>Reconstructing image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image successfully restored.</original>
+<translation></translation>
+</phrase>
+
+<!-- pdUndo.cls contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for pdUndo.cls-->
 
@@ -10578,22 +10923,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 <translation>Enregistrement miniatures récente menu de fichiers</translation>
 </phrase>
 
-<phrase>
-<original>Thumbnail saved successfully.</original>
-<translation>Vignette sauvegardé avec succès.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Vignette sauver échoué (FreeImage retourné poignée blanc). S'il vous plaît signaler cette erreur à l'aide Aide -> Envoyer le rapport de bug.</translation>
-</phrase>
-
-<phrase>
-<original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>Sauvegarde vignette a échoué (erreur non spécifiée GDI).</translation>
-</phrase>
-
-<!-- pdRecentFiles.cls contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- pdRecentFiles.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdRecentFiles.cls-->
 
@@ -10929,6 +11259,11 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 <!-- BEGIN text for VBP_FormChromaBlur.frm (FormChromaBlur) -->
 
 <phrase>
+<original>Chroma Blur</original>
+<translation>Chroma flou</translation>
+</phrase>
+
+<phrase>
 <original>Blurring chroma (color) data</original>
 <translation>Chroma flou (couleur) des données</translation>
 </phrase>
@@ -10938,18 +11273,28 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 <translation>Fusion luminance et la chrominance dans l'image finale</translation>
 </phrase>
 
-<!-- VBP_FormChromaBlur.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormChromaBlur.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormChromaBlur.frm-->
 
 <!-- BEGIN text for VBP_AutosaveHandler.bas -->
 
 <phrase>
-<original>unknown image %1</original>
-<translation>Image inconnue %1</translation>
+<original>Purging old autosave data</original>
+<translation></translation>
 </phrase>
 
-<!-- VBP_AutosaveHandler.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<phrase>
+<original>Autosave reconstruction complete for %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_AutosaveHandler.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_AutosaveHandler.bas-->
 
@@ -11068,18 +11413,33 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 </phrase>
 
 <phrase>
-<original>Zoom Out</original>
+<original>Zoom out</original>
 <translation>Zoom arrière</translation>
 </phrase>
 
 <phrase>
-<original>size</original>
-<translation>Taille</translation>
+<original>Fit image on screen</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>(messages will appear here at run-time)</original>
 <translation>(les messages apparaissent ici au moment de l'exécution)</translation>
+</phrase>
+
+<phrase>
+<original>Add new layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Shift key: preserve layer aspect ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layer beneath mouse: %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11098,6 +11458,19 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 </phrase>
 
 <phrase>
+<original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Drag an image onto this space to begin editing.
+
+You can also use the Open Image button on the left,
+or the File > Open and File > Import menus.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>px</original>
 <translation>px</translation>
 </phrase>
@@ -11112,13 +11485,23 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
 <!-- BEGIN text for VBP_ToolSupport.bas -->
 
-<!-- VBP_ToolSupport.bas contains 0 phrases. -->
+<phrase>
+<original>Resize layer (on-canvas)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move layer</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolSupport.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolSupport.bas-->
 
@@ -11191,17 +11574,570 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <!-- END text for VBP_FormExportJXR.frm-->
 
+<!-- BEGIN text for pdLayer.cls -->
+
+<phrase>
+<original>New Layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New Image Layer</original>
+<translation></translation>
+</phrase>
+
+<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for pdLayer.cls-->
+
+<!-- BEGIN text for VBP_LayerHandler.bas -->
+
+<phrase>
+<original>New layer added successfully.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Image file could not be loaded (unknown error occurred).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Merged layers</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_LayerHandler.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for VBP_LayerHandler.bas-->
+
+<!-- BEGIN text for VBP_ToolbarLayers.frm (toolbar_Layers) -->
+
+<phrase>
+<original>Layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>blend</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click to hide this layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click to show this layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click to duplicate this layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer beneath it.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge down, because there are no visible layers beneath it.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer above it.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge up, because there are no visible layers above it.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click to make this the active layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This is the currently active layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rearrange layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Normal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Darken</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Multiply</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Color burn</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Linear burn</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lighten</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Screen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Color dodge</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Linear dodge</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Overlay</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Soft light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hard light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Vivid light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Linear light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pin light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hard mix</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Difference</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exclusion</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Subtract</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Divide</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Luminosity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Add a blank layer to the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Delete the currently selected layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer upward in the layer stack.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer downward in the layer stack.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(hidden)</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolbarLayers.frm contains 69 phrases. 30 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+
+<!-- END text for VBP_ToolbarLayers.frm-->
+
+<!-- BEGIN text for pdPacker.cls -->
+
+<phrase>
+<original>File doesn't have valid pdPackage header.  Abandoning load.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>File doesn't match requested sub-type value.  Abandoning load.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>File node is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>File node is compressed, but zLib dll is missing.  Decompression is impossible, abandoning load.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Checksum failed for node #</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPacker.cls contains 6 phrases.  All 6 were unique, so 6 new phrases were written to file. -->
+
+<!-- END text for pdPacker.cls-->
+
+<!-- BEGIN text for cBasicBuffer.cls -->
+
+<!-- cBasicBuffer.cls contains 0 phrases. -->
+
+<!-- END text for cBasicBuffer.cls-->
+
+<!-- BEGIN text for pdCompositor.cls -->
+
+<!-- pdCompositor.cls contains 0 phrases. -->
+
+<!-- END text for pdCompositor.cls-->
+
+<!-- BEGIN text for VBP_FormSplitTone.frm (FormSplitTone) -->
+
+<phrase>
+<original>toning strength</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>shadow color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>highlight color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>balance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Split-toning image</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormSplitTone.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for VBP_FormSplitTone.frm-->
+
+<!-- BEGIN text for VBP_FormFragment.frm (FormFragment) -->
+
+<phrase>
+<original>number of fragments</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying beer goggles</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormFragment.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FormFragment.frm-->
+
+<!-- BEGIN text for VBP_FormStraighten.frm (FormStraighten) -->
+
+<phrase>
+<original>straightening angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Straightening image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Straightening layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Straighten complete.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormStraighten.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for VBP_FormStraighten.frm-->
+
+<!-- BEGIN text for VBP_FormGlassTiles.frm (FormGlassTiles) -->
+
+<phrase>
+<original>curvature</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generating glass tiles</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormGlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FormGlassTiles.frm-->
+
+<!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
+
+<!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
+
+<!-- END text for OutsideDevelopment_SPBuffer.cls-->
+
+<!-- BEGIN text for pdInput.cls -->
+
+<!-- pdInput.cls contains 0 phrases. -->
+
+<!-- END text for pdInput.cls-->
+
+<!-- BEGIN text for VBP_FormSunshine.frm (FormSunshine) -->
+
+<phrase>
+<original>color variance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>number of rays</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generating rays of happiness</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormSunshine.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for VBP_FormSunshine.frm-->
+
+<!-- BEGIN text for VBP_FormNewLayer.frm (FormNewLayer) -->
+
+<phrase>
+<original>transparent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>white</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>custom color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>new layer type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>new layer name</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layer %1</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormNewLayer.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for VBP_FormNewLayer.frm-->
+
+<!-- BEGIN text for VBP_FormRainbow.frm (FormRainbow) -->
+
+<phrase>
+<original>saturation boost</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Sprinkling image with shimmering rainbows</original>
+<translation>Arrosage image avec en-ciel étincelants</translation>
+</phrase>
+
+<!-- VBP_FormRainbow.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FormRainbow.frm-->
+
+<!-- BEGIN text for VBP_FormEdgeEnhance.frm (FormEdgeEnhance) -->
+
+<phrase>
+<original>Enhance image edges</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormEdgeEnhance.frm contains 30 phrases. 29 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormEdgeEnhance.frm-->
+
+<!-- BEGIN text for VBP_FormLensFlare.frm (FormLensFlare) -->
+
+<phrase>
+<original>Applying lens flare</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormLensFlare.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormLensFlare.frm-->
+
+<!-- BEGIN text for pdProfiler.cls -->
+
+<!-- pdProfiler.cls contains 0 phrases. -->
+
+<!-- END text for pdProfiler.cls-->
+
+<!-- BEGIN text for VBP_FormBilateral.frm (FormBilateral) -->
+
+<phrase>
+<original>Remove noise (bilateral smoothing)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color preservation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color strength</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>spatial power (currently hidden)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edge strength</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying bilateral smoothing</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormBilateral.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for VBP_FormBilateral.frm-->
+
+<!-- BEGIN text for VBP_FormKuwahara.frm (FormKuwahara) -->
+
+<phrase>
+<original>Kuwahara</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying Kuwahara smoothing</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormKuwahara.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FormKuwahara.frm-->
+
+<!-- BEGIN text for VBP_FormRelief.frm (FormRelief) -->
+
+<phrase>
+<original>Carving image relief</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormRelief.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormRelief.frm-->
+
+<!-- BEGIN text for VBP_PublicEnumsTypes.bas -->
+
+<!-- VBP_PublicEnumsTypes.bas contains 0 phrases. -->
+
+<!-- END text for VBP_PublicEnumsTypes.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>1963</phrasecount>
+<phrasecount>2126</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3357 phrases. -->
-<!-- 1394 are duplicates, so only 1963 unique phrases have been written to file. -->
-<!-- These 1963 phrases contain approximately 12148 total words. -->
+<!-- As of this build, PhotoDemon contains 3710 phrases. -->
+<!-- 1584 are duplicates, so only 2126 unique phrases have been written to file. -->
+<!-- These 2126 phrases contain approximately 12695 total words. -->
 
 </pdData>
-
-
-
-
 

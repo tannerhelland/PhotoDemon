@@ -1377,7 +1377,7 @@ Private Sub Form_Load()
         
         'Quick-fix tools
         cmdQuickFix(0).ToolTip = g_Language.TranslateMessage("Reset all quick-fix adjustment values")
-        cmdQuickFix(1).ToolTip = g_Language.TranslateMessage("Permanently apply quick-fix adjustments to the current layer.  (This may improve viewport render performance, and it can always be undone later.)")
+        cmdQuickFix(1).ToolTip = g_Language.TranslateMessage("Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.")
         
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
