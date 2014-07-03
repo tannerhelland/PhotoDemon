@@ -269,16 +269,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
             
                 'Our custom controls all have a .Value property
                 Case "sliderTextCombo", "textUpDown"
-                    
-                    Select Case eControl.SigDigits
-                
-                        Case 0
-                            eControl.Value = CLng(controlValue)
-                            
-                        Case 1, 2
-                            eControl.Value = CDblCustom(controlValue)
-                                            
-                    End Select
+                    eControl.Value = CDblCustom(controlValue)
                     
                 Case "smartCheckBox"
                     eControl.Value = CLng(controlValue)
