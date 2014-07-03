@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -739,28 +739,36 @@ Begin VB.Form FormMain
             Index           =   3
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Vibrance..."
+            Caption         =   "Temperature..."
             Index           =   4
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "-"
+            Caption         =   "Tint..."
             Index           =   5
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Black and white..."
+            Caption         =   "Vibrance..."
             Index           =   6
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Colorize..."
+            Caption         =   "-"
             Index           =   7
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Replace color..."
+            Caption         =   "Black and white..."
             Index           =   8
          End
          Begin VB.Menu MnuColor 
-            Caption         =   "Sepia"
+            Caption         =   "Colorize..."
             Index           =   9
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Replace color..."
+            Index           =   10
+         End
+         Begin VB.Menu MnuColor 
+            Caption         =   "Sepia"
+            Index           =   11
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -820,10 +828,6 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuLighting 
             Caption         =   "Shadows and highlights..."
             Index           =   4
-         End
-         Begin VB.Menu MnuLighting 
-            Caption         =   "Temperature..."
-            Index           =   5
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -2644,28 +2648,36 @@ Private Sub MnuColor_Click(Index As Integer)
         'HSL
         Case 3
             Process "Hue and saturation", True
+            
+        'Temperature
+        Case 4
+            Process "Temperature", True
+            
+        'Tint
+        Case 5
+            Process "Tint", True
         
         'Vibrance
-        Case 4
+        Case 6
             Process "Vibrance", True
         
         '<separator>
-        Case 5
+        Case 7
         
         'Grayscale (black and white)
-        Case 6
+        Case 8
             Process "Black and white", True
         
         'Colorize
-        Case 7
+        Case 9
             Process "Colorize", True
             
         'Replace color
-        Case 8
+        Case 10
             Process "Replace color", True
                 
         'Sepia
-        Case 9
+        Case 11
             Process "Sepia", , , UNDO_LAYER
 
     End Select
@@ -3197,10 +3209,6 @@ Private Sub MnuLighting_Click(Index As Integer)
         Case 4
             Process "Shadows and highlights", True
             
-        'Temperature
-        Case 5
-            Process "Temperature", True
-    
     End Select
 
 End Sub

@@ -2076,11 +2076,11 @@ Public Sub LoadAccelerators()
         
             'Color adjustments
             .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", FormMain.MnuColor(3), True, True, True, UNDO_NOTHING
+            .AddAccelerator vbKeyT, vbCtrlMask, "Temperature", FormMain.MnuColor(4), True, True, True, UNDO_NOTHING
             
             'Lighting adjustments
             .AddAccelerator vbKeyG, vbCtrlMask, "Gamma", FormMain.MnuLighting(2), True, True, True, UNDO_NOTHING
             .AddAccelerator vbKeyH, vbCtrlMask Or vbShiftMask, "Shadows and highlights", FormMain.MnuLighting(4), True, True, True, UNDO_NOTHING
-            .AddAccelerator vbKeyT, vbCtrlMask, "Temperature", FormMain.MnuLighting(5), True, True, True, UNDO_NOTHING
             
             'Adjustments -> Invert submenu
             .AddAccelerator vbKeyI, vbCtrlMask, "Invert RGB", FormMain.mnuInvert, True, True, False, UNDO_LAYER

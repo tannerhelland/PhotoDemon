@@ -770,6 +770,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormColorTemp.ApplyTemperatureToImage cParams.GetLong(1), cParams.GetBool(2), cParams.GetDouble(3)
             End If
             
+        Case "Tint"
+            If showDialog Then
+                showPDDialog vbModal, FormTint
+            Else
+                FormTint.adjustTint cParams.GetLong(1)
+            End If
+            
         Case "Vibrance"
             If showDialog Then
                 showPDDialog vbModal, FormVibrance
