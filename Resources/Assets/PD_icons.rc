@@ -134,7 +134,8 @@ CHANNELMIN   CUSTOM  MOVEABLE        LOADONCALL      channel_minimum.png
 COLORBALANCE CUSTOM  MOVEABLE        LOADONCALL      chart_pie_separate.png
 WHITEBAL     CUSTOM  MOVEABLE        LOADONCALL      weather_clouds.png
 HSL          CUSTOM  MOVEABLE        LOADONCALL      color.png
-PHOTOFILTER  CUSTOM  MOVEABLE        LOADONCALL      photo_album.png
+TEMPERATURE  CUSTOM  MOVEABLE        LOADONCALL      thermometer.png
+TINT         CUSTOM  MOVEABLE        LOADONCALL      tint.png
 VIBRANCE     CUSTOM  MOVEABLE        LOADONCALL      image_saturation_up.png
 COLORIZE     CUSTOM  MOVEABLE        LOADONCALL      color_swatch.png
 GRAYSCALE    CUSTOM  MOVEABLE        LOADONCALL      image_gray.png
@@ -150,7 +151,6 @@ EXPOSURE     CUSTOM  MOVEABLE        LOADONCALL      occluder.png
 GAMMA        CUSTOM  MOVEABLE        LOADONCALL      television_test.png
 LEVELS       CUSTOM  MOVEABLE        LOADONCALL      color_adjustment.png
 SHDWHGHLGHT  CUSTOM  MOVEABLE        LOADONCALL      ghost.png
-TEMPERATURE  CUSTOM  MOVEABLE        LOADONCALL      thermometer.png
 //
 
 HISTOGRAM    CUSTOM  MOVEABLE        LOADONCALL      chart.png
@@ -172,7 +172,11 @@ MONOCHROME   CUSTOM  MOVEABLE        LOADONCALL      checkerboard.png
 COLORTOMONO  CUSTOM  MOVEABLE        LOADONCALL      color_to_monochrome.png
 MONOTOCOLOR  CUSTOM  MOVEABLE        LOADONCALL      monochrome_to_color.png
 //
+
+PHOTOFILTER  CUSTOM  MOVEABLE        LOADONCALL      photo_album.png
+//--> Photography sub-menu
 SPLITTONE    CUSTOM  MOVEABLE        LOADONCALL      split_tone.png
+
 
 //Filters menu
 //FADELAST     CUSTOM  MOVEABLE        LOADONCALL      layers_arrange_back.png

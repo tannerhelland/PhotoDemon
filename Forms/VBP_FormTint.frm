@@ -1,8 +1,8 @@
 VERSION 5.00
-Begin VB.Form FormBlackLight 
+Begin VB.Form FormTint 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Black light"
+   Caption         =   " Tint"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -23,28 +23,6 @@ Begin VB.Form FormBlackLight
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.sliderTextCombo sltIntensity 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   2760
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   1
-      SigDigits       =   2
-      Value           =   2
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   0
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
@@ -73,10 +51,36 @@ Begin VB.Form FormBlackLight
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.Label Label1 
+   Begin PhotoDemon.sliderTextCombo sltTint 
+      CausesValidation=   0   'False
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   2760
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   -100
+      Max             =   100
+      SliderTrackStyle=   3
+      GradientColorLeft=   15102446
+      GradientColorRight=   8253041
+      GradientColorMiddle=   16777215
+      GradientMiddleValue=   0
+   End
+   Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "intensity:"
+      Caption         =   "tint:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -88,26 +92,33 @@ Begin VB.Form FormBlackLight
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
+      Index           =   0
       Left            =   6000
       TabIndex        =   1
       Top             =   2400
-      Width           =   975
+      Width           =   435
    End
 End
-Attribute VB_Name = "FormBlackLight"
+Attribute VB_Name = "FormTint"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Blacklight Form
-'Copyright ©2001-2014 by Tanner Helland
-'Created: some time 2001
-'Last updated: 01/October/13
-'Last update: use a floating-point slider for more precise results
+'Tint Dialog
+'Copyright ©2013-2014 by Tanner Helland
+'Created: 03/July/14
+'Last updated: 03/July/14
+'Last update: initial build
 '
-'I found this effect on accident, and it has gradually become one of my favorite effects.
-' Visually stunning on many photographs.
+'Tint is a simple adjustment along the magenta/green axis of the image.  While of limited use in a
+' separate dialog like this, PhotoDemon sticks to convention by providing it as a "quick-fix" non-destructive
+' action, which also means that it needs to exist as a dedicated menu entry.
+'
+'The formula used here is more nuanced than the "quick fix" version.  This tool will attempt to preserve image
+' luminance, by compensating for the loss (or gain) of green light via adjustments to the red and blue channels.
+' This provides a better end result, but note that it *will* differ from a matching adjustment via the
+' tint quick-fix slider.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -119,11 +130,11 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'Perform a blacklight filter
-'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
-Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'Change the tint of an image
+' INPUT: tint adjustment, [-100, 100], 0 = no change
+Public Sub adjustTint(ByVal tintAdjustment As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If Not toPreview Then Message "Illuminating image with imaginary blacklight..."
+    If Not toPreview Then Message "Re-tinting image..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -151,40 +162,42 @@ Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toP
     
     'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
+    Dim h As Double, s As Double, v As Double, origV As Double
     Dim grayVal As Byte
     
-    'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-    Dim grayLookUp(0 To 765) As Byte
-    For x = 0 To 765
-        grayLookUp(x) = x \ 3
+    'Build a look-up table of tint values.  (Tint only affects the green channel)
+    Dim gLookUp() As Long
+    ReDim gLookUp(0 To 255) As Long
+    For x = 0 To 255
+        g = x + (tintAdjustment \ 2)
+        If g > 255 Then g = 255
+        If g < 0 Then g = 0
+        gLookUp(x) = g
     Next x
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
-    
+        
         'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        'Calculate the gray value using the look-up table
-        grayVal = grayLookUp(r + g + b)
+        'Calculate luminance
+        origV = getLuminance(r, g, b) / 255
         
-        'Perform the blacklight conversion
-        r = Abs(r - grayVal) * Weight
-        g = Abs(g - grayVal) * Weight
-        b = Abs(b - grayVal) * Weight
+        'Convert the re-tinted colors to HSL
+        tRGBToHSL r, gLookUp(g), b, h, s, v
         
-        If r > 255 Then r = 255
-        If g > 255 Then g = 255
-        If b > 255 Then b = 255
+        'Convert back to RGB
+        tHSLToRGB h, s, origV, r, g, b
         
-        'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = r
+        'Assign new values
+        ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal + 2, y) = b
+        ImageData(QuickVal, y) = b
         
     Next y
         If Not toPreview Then
@@ -205,15 +218,11 @@ Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toP
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Black light", , buildParams(sltIntensity), UNDO_LAYER
+    Process "Tint", , buildParams(sltTint), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
-End Sub
-
-Private Sub cmdBar_ResetClick()
-    sltIntensity.Value = 2#
 End Sub
 
 Private Sub Form_Activate()
@@ -236,11 +245,11 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
-'Update the preview whenever the combination slider/text control has its value changed
-Private Sub sltIntensity_Change()
+Private Sub sltTint_Change()
     updatePreview
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then fxBlackLight sltIntensity, True, fxPreview
+    If cmdBar.previewsAllowed Then adjustTint sltTint, True, fxPreview
 End Sub
+
