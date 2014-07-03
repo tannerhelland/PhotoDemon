@@ -423,10 +423,27 @@ Public Property Let Value(ByVal newValue As Double)
         
         'Mirror the value to the text box
         If Not textBoxInitiated Then
-            If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then
+            
+            'Normally, we want to make sure that the control's value has changed; otherwise, updating the text box causes unnecessary
+            ' recursive refreshing.  However, we can't compare the text box value to the control value if the user has entered invalid
+            ' input, so first make sure that the text box contains meaningful data.
+            If IsTextEntryValid(False) Then
+                
+                'The text box contains valid numerical data.  If it matches the current control value, skip the refresh step.
+                If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then
+                    txtPrimary.Text = getFormattedStringValue(controlVal)
+                    txtPrimary.Refresh
+                End If
+            
+            'The text box is currently in an error state.  Copy the new text into place without a duplication check.
+            Else
+            
+                If shpError.Visible Then shpError.Visible = False
                 txtPrimary.Text = getFormattedStringValue(controlVal)
                 txtPrimary.Refresh
+            
             End If
+            
         End If
                 
         'Redraw the slider to reflect the new value
@@ -1023,7 +1040,7 @@ End Sub
 'Check a passed value against a min and max value to see if it is valid.  Additionally, make sure the value is
 ' numeric, and allow the user to display a warning message if necessary.
 Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = False) As Boolean
-        
+    
     'Some locales use a comma as a decimal separator.  Check for this and replace as necessary.
     Dim chkString As String
     chkString = txtPrimary
