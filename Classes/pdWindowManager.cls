@@ -301,6 +301,7 @@ Private Declare Function AdjustWindowRect Lib "user32" (ByRef lpRect As winRect,
 Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal targetHWnd As Long, ByVal lpString As String) As Long
 Private Declare Function AnimateWindow Lib "user32" (ByVal targetHWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal targetHWnd As Long) As Long
+Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'Enforce a specific minimum width/height for the main window
 Private Const PD_MAIN_WINDOW_MINIMUM_HEIGHT As Long = 640
@@ -1472,7 +1473,7 @@ Public Sub registerParentForm(ByRef parentForm As Form)
     
     'Because I care about PD being a good "desktop citizen", I deactivate top-most status of all toolbars (and other windows, as necessary),
     ' when PD loses focus.  To do that successfully, we must intercept app activation messages.
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_ACTIVATEAPP, WM_ACTIVATE
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE_AFTER, WM_ACTIVATEAPP, WM_ACTIVATE
     
     'Look for previous location data in the window location file.  If said data exists, load it and move the window to that location.
     restoreWindowLocation numOfPDWindows, 0
@@ -2107,10 +2108,26 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' in completely unpredictable ways.  This code block (which can be safely commented out) is helpful for seeing
                 ' what messages the window manager receives from different actions.
                 If Not g_IsProgramCompiled Then
-                    If (wParam = SC_MAXIMIZE) Then Debug.Print "Received system maximize message " & bBefore
-                    If (wParam = SC_RESTORE) Then Debug.Print "Received system restore window message " & bBefore
-                    If (wParam = SC_SIZE) Then Debug.Print "Received system window size message " & bBefore
-                    If (wParam = SC_MOVE) Then Debug.Print "Received system window move message " & bBefore
+                
+                    Select Case wParam
+                    
+                        Case SC_MAXIMIZE
+                            Debug.Print "Received system maximize message " & bBefore
+                            
+                        Case SC_RESTORE
+                            Debug.Print "Received system restore window message " & bBefore
+                            
+                        Case SC_SIZE
+                            Debug.Print "Received system window size message " & bBefore
+                            
+                        Case SC_MOVE
+                            Debug.Print "Received system window move message " & bBefore
+                            
+                        Case Else
+                            Debug.Print "Received unknown system window message: " & wParam
+                            
+                    End Select
+                    
                 End If
                 
                 If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Or (wParam = SC_MOVE) Then
@@ -2206,6 +2223,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         Case Else
                             Debug.Print "> PhotoDemon regained focus! <"
                             
+                            'Reactivate window state
                             If isPDDeactivated Then
                                 resetTopmostForAllWindows True
                                 isPDDeactivated = False
@@ -2213,6 +2231,23 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             
                     End Select
                     
+                Else
+                
+                    If (wParam <> WA_INACTIVE) Then
+                    
+                        'This rather nasty hack is required to work around the "Show Desktop" event.  For reasons known only
+                        ' to MS engineers, the Show Desktop command does not send *ANY* WM_SYSCOMMAND messages to your window.
+                        ' Thus, you have literally no way to track whether the option is used, except to track window focus.
+                        ' Because Show Desktop causes visual corruption of child windows, we must force a redraw of all open
+                        ' toolboxes; do this by manually sending a "restore" command to the main PD window.
+                        SendMessageA mainWindowHwnd, WM_SYSCOMMAND, SC_RESTORE, ByVal 0&
+                        
+                        'Floating toolbars may fall out of sync due to the non-standard restore event; if floating, manually
+                        ' restore their z-order.
+                        If toolbarsFloating Then resetTopmostForAllWindows True
+                        
+                    End If
+                
                 End If
                         
         End Select
