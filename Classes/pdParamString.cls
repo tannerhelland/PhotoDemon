@@ -15,8 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Specialized String Parameter Handler
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 25/March/13
-'Last updated: 21/May/14
-'Last update: add character escaping for the rare case that the pipe "|" character shows up in a param string entry
+'Last updated: 03/July/14
+'Last update: added failsafe conversions for variable decimal characters in values retrieved as Longs.  (Just because a
+'              function requests a Long does not necessarily mean the stored value is a Long; this fix ensures that
+'              regardless of locale, the subsequent CLng() function won't throw a type mismatch error.)
 '
 'PhotoDemon has unique needs regarding parameter passing.  Because it allows the user to record all actions as part of
 ' macros, the program needs a way to not only trade around parameters, but also store them in a file.
@@ -179,10 +181,10 @@ End Function
 Public Function GetInteger(ByVal pIndex As Long, Optional ByVal defaultReturn As Integer = 0) As Integer
 
     If m_numOfParams = 1 Then
-        GetInteger = CInt(m_ParamString)
+        GetInteger = CInt(CDblCustom(m_ParamString))
     Else
         If doesParamExist(pIndex) Then
-            GetInteger = CInt(m_Params(pIndex - 1))
+            GetInteger = CInt(CDblCustom(m_Params(pIndex - 1)))
         Else
             GetInteger = defaultReturn
         End If
@@ -194,10 +196,10 @@ End Function
 Public Function GetLong(ByVal pIndex As Long, Optional ByVal defaultReturn As Long = 0) As Long
 
     If m_numOfParams = 1 Then
-        GetLong = CLng(m_ParamString)
+        GetLong = CLng(CDblCustom(m_ParamString))
     Else
         If doesParamExist(pIndex) Then
-            GetLong = CLng(m_Params(pIndex - 1))
+            GetLong = CLng(CDblCustom(m_Params(pIndex - 1)))
         Else
             GetLong = defaultReturn
         End If
@@ -209,10 +211,10 @@ End Function
 Public Function GetSingle(ByVal pIndex As Long, Optional ByVal defaultReturn As Single = 0#) As Single
 
     If m_numOfParams = 1 Then
-        GetSingle = CSng(m_ParamString)
+        GetSingle = CDblCustom(m_ParamString)
     Else
         If doesParamExist(pIndex) Then
-            GetSingle = CSng(m_Params(pIndex - 1))
+            GetSingle = CDblCustom(m_Params(pIndex - 1))
         Else
             GetSingle = defaultReturn
         End If
