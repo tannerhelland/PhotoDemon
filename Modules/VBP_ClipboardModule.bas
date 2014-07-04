@@ -146,6 +146,9 @@ End Sub
 ' The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image, or as a new layer in an existing image.
 Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
+    Dim pasteWasSuccessful As Boolean
+    pasteWasSuccessful = False
+    
     Dim tmpClipboardFile As String, tmpDownloadFile As String
     Dim sFile(0) As String
     Dim sTitle As String, sFilename As String
@@ -193,8 +196,9 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                 Message "Clipboard data imported successfully "
                 
                 clpObject.ClipboardClose
-                Exit Sub
-        
+                
+                pasteWasSuccessful = True
+                
             End If
         
             clpObject.ClipboardClose
@@ -206,7 +210,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     'If no PNG data was found, look for an HTML fragment.  Chrome and Firefox will include an HTML fragment link to any
     ' copied image from within the browser, which we can use to download the image in question.
     ' (If successful, this IF block will manually exit the sub upon completion.)
-    If clpObject.IsDataAvailableForFormatName(FormMain.hWnd, "HTML Format") Then
+    If clpObject.IsDataAvailableForFormatName(FormMain.hWnd, "HTML Format") And (Not pasteWasSuccessful) Then
     
         Dim HtmlID As Long
         HtmlID = clpObject.FormatIDForName(FormMain.hWnd, "HTML Format")
@@ -256,8 +260,11 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                             If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
                             
                             Message "Clipboard data imported successfully "
-                    
+                            
                             clpObject.ClipboardClose
+                            
+                            pasteWasSuccessful = True
+                            
                             Exit Sub
                         
                         Else
@@ -282,7 +289,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
     
     'Make sure the clipboard format is a bitmap
-    If Clipboard.GetFormat(vbCFBitmap) Then
+    If Clipboard.GetFormat(vbCFBitmap) And (Not pasteWasSuccessful) Then
         
         'Copy the image into an StdPicture object
         Dim tmpPicture As StdPicture
@@ -318,10 +325,11 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         If FileExist(tmpClipboardFile) Then Kill tmpClipboardFile
             
         Message "Clipboard data imported successfully "
+        
+        pasteWasSuccessful = True
     
     'Next, see if the clipboard contains text.  If it does, it may be a hyperlink - if so, try and load it.
-    ' TODO: make hyperlinks work with "Paste as new layer".  Right now they will always default to loading as a new image.
-    ElseIf Clipboard.GetFormat(vbCFText) Then
+    ElseIf Clipboard.GetFormat(vbCFText) And (Not pasteWasSuccessful) Then
         
         tmpDownloadFile = Trim$(Clipboard.GetText)
         
@@ -349,7 +357,8 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                 Message "Clipboard data imported successfully "
         
                 clpObject.ClipboardClose
-                Exit Sub
+                
+                pasteWasSuccessful = True
             
             Else
             
@@ -378,9 +387,15 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             LoadFileAsNewImage listFiles
         End If
         
+        pasteWasSuccessful = True
+        
     Else
         pdMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
     End If
+    
+    'If a paste operation was successful, switch the current tool to the layer move/resize tool, which is most likely needed after a
+    ' new layer has been pasted.
+    If pasteWasSuccessful Then toolbar_Tools.selectNewTool NAV_MOVE
     
 End Sub
 

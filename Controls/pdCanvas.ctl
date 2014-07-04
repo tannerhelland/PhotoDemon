@@ -1207,7 +1207,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                     ' over a layer, it will return -1.
                     If layerUnderMouse > -1 Then
                         m_LayerAutoActivateIndex = layerUnderMouse
-                        Message "Layer beneath mouse: %1", pdImages(g_CurrentImage).getLayerByIndex(layerUnderMouse).getLayerName
+                        Message "Target layer: %1", pdImages(g_CurrentImage).getLayerByIndex(layerUnderMouse).getLayerName
                     
                     'The mouse is not over a layer.  Default to the active layer, which allows the user to interact with the
                     ' layer even if it lies off-canvas.
