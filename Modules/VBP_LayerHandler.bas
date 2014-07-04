@@ -3,8 +3,8 @@ Attribute VB_Name = "Layer_Handler"
 'Layer Interface
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 24/March/14
-'Last updated: 24/May/14
-'Last update: add support for auto-activating the layer beneath a given mouse position
+'Last updated: 04/July/14
+'Last update: added eraseLayerByIndex() function
 '
 'This module provides all layer-related functions that interact with PhotoDemon's central processor.  Most of these
 ' functions are triggered by either the Layer menu, or the Layer toolbox.
@@ -164,6 +164,21 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
         Else
             Message "Image file could not be loaded (unknown error occurred)."
         End If
+    
+    End If
+
+End Sub
+
+'Make a given layer fully transparent.  This is used by the Edit > Cut menu at present, if the user cuts without first making a selection.
+Public Sub eraseLayerByIndex(ByVal layerIndex As Long)
+
+    If Not pdImages(g_CurrentImage) Is Nothing Then
+    
+        'Create a blank layer at the current layer DIB's dimensions
+        With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
+            .layerDIB.createBlank .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, 32, 0, 0
+            .notifyLayerModified
+        End With
     
     End If
 
@@ -810,7 +825,7 @@ Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optio
     End If
 
     'With the active layer out of the way, iterate through all image layers in reverse (e.g. top-to-bottom).  If one is located
-    ' beneath the mouse,
+    ' beneath the mouse, and the hovered image section is non-transparent (pending the user's preference for this), return it.
     Dim i As Long
     For i = pdImages(g_CurrentImage).getNumOfLayers - 1 To 0 Step -1
     
@@ -820,42 +835,18 @@ Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optio
             'Only evaluate the current layer if the mouse is over it
             If getRGBAPixelFromLayer(i, curX, curY, tmpRGBA) Then
             
-                'A layer was identified beneath the mouse!  Now things get a bit tricky.
-                ' NOTE: I have disabled this behavior until I can come up with a good solution on how to handle layer resizing
-                '       while this "feature" is active.  If a layer has transparent pixels around its edges, resizing it becomes
-                '       nearly impossible, because you have to blindly guess where the resize nodes are located, as they don't
-                '       appear until the mouse is actually over them.  This is stupid.  As such, I'm disabling the transparent
-                '       pixel modifier for now, and simply returning the layer beneath the mouse regardless of its transparency
-                '       at the current point.
+                'A layer was identified beneath the mouse!  If the pixel is non-transparent, return this layer as the selected one.
+                If Not CBool(toolbar_Tools.chkIgnoreTransparent) Then
+                    getLayerUnderMouse = i
+                    Exit Function
+                Else
                 
-                'If the user doesn't want us to ignore transparent pixels, this is easy - just return true.
-                'If Not CBool(toolbar_Tools.chkIgnoreTransparent) Then
-                    'getLayerUnderMouse = i
-                    'Exit Function
+                    If tmpRGBA.Alpha > 0 Then
+                        getLayerUnderMouse = i
+                        Exit Function
+                    End If
                 
-                'The user wants to ignore transparent pixels when auto-activating layers.  Before doing this, stop to see if
-                ' the mouse is currently over a POI for this layer.  If it is, return the layer regardless of pixel transparency.
-                'Else
-                '
-                '    curPOI = pdImages(g_CurrentImage).getLayerByIndex(i).checkForPointOfInterest(curX, curY)
-                '
-                '    'If the mouse is over a point of interest, return this layer regardless of underlying alpha
-                '    If curPOI >= 0 And curPOI <= 3 Then
-                '        getLayerUnderMouse = i
-                '        Exit Function
-                '
-                '    'If the mouse is not over a point of interest, actually check alpha, and return this layer conditionally
-                '    ' if the layer is NOT fully transparent at this point.
-                '    Else
-                '
-                        If tmpRGBA.Alpha > 0 Then
-                            getLayerUnderMouse = i
-                            Exit Function
-                        End If
-                '
-                '    End If
-                '
-                'End If
+                End If
                             
             End If
         
