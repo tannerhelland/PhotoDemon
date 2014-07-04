@@ -73,11 +73,28 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
         
         'For "cut merged", ignore transparent layers
         If cutMerged Then
-            If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then pdImages(g_CurrentImage).eraseProcessedSelection i
+        
+            If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
+                
+                'If a selection is active, erase the selected area.  Otherwise, wipe the whole layer.
+                If pdImages(g_CurrentImage).selectionActive Then
+                    pdImages(g_CurrentImage).eraseProcessedSelection i
+                Else
+                    Layer_Handler.eraseLayerByIndex i
+                End If
+                
+            End If
         
         'For "cut from layer", erase the selection regardless of layer visibility
         Else
-            pdImages(g_CurrentImage).eraseProcessedSelection i
+        
+            'If a selection is active, erase the selected area.  Otherwise, delete the given layer.
+            If pdImages(g_CurrentImage).selectionActive Then
+                pdImages(g_CurrentImage).eraseProcessedSelection i
+            Else
+                Layer_Handler.deleteLayer i
+            End If
+            
         End If
         
     Next i

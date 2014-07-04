@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -2836,7 +2836,14 @@ Private Sub MnuEdit_Click(Index As Integer)
             
         'Cut from layer
         Case 5
-            Process "Cut from layer", False, , UNDO_LAYER, , True
+        
+            'If a selection is active, the Undo/Redo engine can simply back up the current layer contents.  If, however, no selection is active,
+            ' we must delete the entire layer.  That requires a backup of the full image contents.
+            If pdImages(g_CurrentImage).selectionActive Then
+                Process "Cut from layer", False, , UNDO_LAYER, , True
+            Else
+                Process "Cut from layer", False, , UNDO_IMAGE, , True
+            End If
             
         'Copy from image
         Case 6
