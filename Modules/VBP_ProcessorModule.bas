@@ -342,6 +342,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             ClipboardPaste False
         
         Case "Paste as new layer"
+        
             'Perform a quick check; if no images have been loaded, secretly reroute the Ctrl+Shift+V shortcut as "Paste as new image"
             If g_OpenImageCount > 0 Then
                 ClipboardPaste True
