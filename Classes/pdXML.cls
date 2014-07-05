@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon XML Interface (reading, writing, parsing, etc)
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 30/July/13
-'Last updated: 08/April/14
-'Last update: added functions for reading/writing XML data directly from/to VB strings (instead of files).
+'Last updated: 05/July/14
+'Last update: new function for creating new XML sections if they don't already exist in the file
 '
 'In 2013, PD became increasingly reliant on XML-format files.  The translation engine was the first to require XML
 ' interoperability (by design), followed a few months later by the metadata engine.  After the success of these
@@ -26,14 +26,15 @@ Attribute VB_Exposed = False
 ' will simply be ignored by old copies of the software).
 '
 'Rather than write unique XML parsers for each custom filetype, this universal class was created.  It is meant to
-' serve as a broad-purpose XML file interface, with strong support for reading, writing, and parsing XML files.
+' serve as a broad-purpose XML file interface, with strong support for reading, writing, parsing, and performing
+' in-place updates to XML data.
 '
-'The primary focus of this class is supporting the barebones XML features required for various PhotoDemon filetypes.
-' IT IS NOT MEANT TO BE A FULL-FEATURED TO-SPEC XML PARSER, but it could certainly be extended to support additional
-' XML features as needed.
+'The primary focus of this class is supporting the (relatively barebones) XML features required for various
+' PhotoDemon filetypes.  IT IS NOT MEANT TO BE A FULL-FEATURED TO-SPEC XML PARSER, but it could certainly be
+' extended to support additional XML features as needed.
 '
 'Many thanks to Frank Donckers, who helped prototype the original translation XML engine (which heavily influenced
-' the design and code of this class).
+' the design of this class).
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -159,6 +160,47 @@ Public Function writeTag(ByVal tagName As String, ByVal tagContents As String, O
 
 End Function
 
+'Add a new section to the XML file.  To keep things simple, this is always done at the END of the file.
+Public Function writeNewSection(ByVal sectionName As String, Optional ByVal sectionAttribute As String = "", Optional ByVal sectionAttributeValue As String = "") As Boolean
+    
+    'First, make sure the section does not already exist
+    If InStr(1, xmlContents, "<" & sectionName & ">", vbTextCompare) > 0 Then
+        writeNewSection = False
+        Exit Function
+    End If
+    
+    'Find the </pdData> tag that signifies the end of PD-compatible XML data
+    Dim tagLocation As Long
+    tagLocation = InStrRev(xmlContents, ROOT_TAG_CLOSE, , vbBinaryCompare)
+    
+    If tagLocation > 0 Then
+    
+        'Split the XML file into two halves: the half before the root tag, and the half after
+        Dim topHalf As String, bottomHalf As String
+        splitStringIn2 xmlContents, tagLocation - 1, topHalf, bottomHalf
+        
+        'Build a string with the tag name and value we were passed
+        Dim newTagSection As String
+        newTagSection = "<" & sectionName
+        
+        If Len(sectionAttribute) > 0 Then
+            newTagSection = newTagSection & " " & sectionAttribute & "=""" & sectionAttributeValue & """>"
+        Else
+            newTagSection = newTagSection & ">"
+        End If
+        
+        newTagSection = newTagSection & vbCrLf & "</" & sectionName & ">" & vbCrLf & vbCrLf
+        
+        'Reassemble the primary XML string
+        xmlContents = topHalf & newTagSection & bottomHalf
+        
+        writeNewSection = True
+    Else
+        writeNewSection = False
+    End If
+    
+End Function
+
 'Simple - does a given tag exist?  Both simple and complex tags will be checked.
 Public Function doesTagExist(ByVal tagName As String, Optional ByVal attributeName As String = "", Optional ByVal attributeValue As String = "") As Boolean
 
@@ -252,15 +294,30 @@ Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, 
             sectionLocation = InStr(sectionStartLocation, xmlContents, closeTag, vbTextCompare)
         Else
             
-            'If the section tag was not found, we should really create the section for the user.  But as that's not a
-            ' a possibility at present, simply fail and exit.  (In the future, if new sections are added to the
-            ' user prefs file, I will need to implement this.)
-            updateTag = False
-            Exit Function
+            'If the section tag was not found, and createIfMissing is TRUE, create the section for the user.
+            If createIfMissing Then
+                writeNewSection sectionName, sectionAttribute, sectionAttributeValue
+                
+                'Find the start location again
+                sectionStartLocation = InStr(1, xmlContents, startTag, vbTextCompare)
+                sectionLocation = InStr(sectionStartLocation, xmlContents, closeTag, vbTextCompare)
+                
+            Else
+                updateTag = False
+                Exit Function
+            End If
+            
         End If
     
     Else
         sectionLocation = InStrRev(xmlContents, closeTag, , vbTextCompare)
+        
+        'If the section wasn't found, add it
+        If sectionLocation = 0 Then
+            writeNewSection sectionName
+            sectionLocation = InStrRev(xmlContents, closeTag, , vbTextCompare)
+        End If
+        
     End If
     
     'We can only update the tag if its section was found.
@@ -325,7 +382,7 @@ Public Function writeTagWithAttribute(ByVal tagName As String, ByVal tagAttribut
     If writeAtStart Then
         tagLocation = InStr(1, xmlContents, ROOT_TAG, vbBinaryCompare)
     Else
-        tagLocation = InStr(1, xmlContents, ROOT_TAG_CLOSE, vbBinaryCompare)
+        tagLocation = InStrRev(xmlContents, ROOT_TAG_CLOSE, , vbBinaryCompare)
     End If
 
     If tagLocation > 0 Then
