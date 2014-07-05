@@ -287,15 +287,19 @@ Public Sub loadUserSettings()
     'For performance reasons, cache the system color management setting
     g_UseSystemColorProfile = g_UserPreferences.GetPref_Boolean("Transparency", "Use System Color Profile", True)
     
+    'For performance reasons, cache any performance-related settings.  (This is much faster than reading the preferences from file
+    ' every time they're needed.)
+    g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
+    
     'Initialize a few other settings to default values, despite them not coming from the preferences file
         
     'Mark the Macro recorder as "not recording"
     MacroStatus = MacroSTOP
     
-    'No images have been loaded yet
+    'Note that no images have been loaded yet
     g_NumOfImagesLoaded = 0
     
-    'Set the default MDI window index to 0
+    'Set the default active image index to 0
     g_CurrentImage = 0
     
     'Set the number of open image windows to 0
@@ -425,7 +429,13 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "Selections", SelectionPath
     xmlEngine.closeTag "Paths"
     xmlEngine.writeBlankLine
-
+    
+    'Write out the "performance" block of preferences:
+    xmlEngine.writeTag "Performance", "", True
+        xmlEngine.writeTag "ViewportRenderPerformance", "1"
+    xmlEngine.closeTag "Performance"
+    xmlEngine.writeBlankLine
+    
     'Write out the "plugins" block preferences:
     xmlEngine.writeTag "Plugins", "", True
         xmlEngine.writeTag "ForceExifToolDisable", "False"
@@ -622,7 +632,24 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
             WritePreference = True
             xmlEngine.writeXMLToFile PreferencesPath
         Else
-            WritePreference = False
+            
+            'Update tag will fail if the requested preferences section doesn't exist (which may happen after the user upgrades from
+            ' an old PhotoDemon version, but keeps their old preferences file).  To prevent the problem from recurring, add this
+            ' section to the preferences file.
+            If xmlEngine.writeNewSection(strSectionHeader) Then
+            
+                'Try the write again
+                If xmlEngine.updateTag(strVariableName, strValue, strSectionHeader) Then
+                    WritePreference = True
+                    xmlEngine.writeXMLToFile PreferencesPath
+                Else
+                    WritePreference = False
+                End If
+            
+            Else
+                WritePreference = False
+            End If
+            
         End If
         
     End If

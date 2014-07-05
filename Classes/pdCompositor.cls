@@ -678,7 +678,12 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                     
                     Else
                         
-                        GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
+                        'If the user has requested MAX PERFORMANCE rendering, override the requested interpolation type with nearest neighbor
+                        If g_ViewportPerformance = PD_PERF_FASTEST Then
+                            GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, InterpolationModeNearestNeighbor
+                        Else
+                            GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
+                        End If
                         
                         'Apply non-destructive FX now
                         If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, tmpDIB
@@ -882,9 +887,9 @@ Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
     Next x
     
     'To handle temperature and tint, we will also be preparing RGB lookup tables
-    Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
+    Dim rLookup() As Byte, gLookUp() As Byte, bLookup() As Byte
     ReDim rLookup(0 To 255) As Byte
-    ReDim gLookup(0 To 255) As Byte
+    ReDim gLookUp(0 To 255) As Byte
     ReDim bLookup(0 To 255) As Byte
     
     'Populate the look-up table
@@ -934,7 +939,7 @@ Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
         
         'Fill the look-up table
         rLookup(x) = Round(r)
-        gLookup(x) = Round(g)
+        gLookUp(x) = Round(g)
         bLookup(x) = Round(b)
     
     Next x
@@ -975,7 +980,7 @@ Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
             
         'Apply the new values
         ImageData(QuickVal + 2, y) = rLookup(r)
-        ImageData(QuickVal + 1, y) = gLookup(g)
+        ImageData(QuickVal + 1, y) = gLookUp(g)
         ImageData(QuickVal, y) = bLookup(b)
         
     Next y

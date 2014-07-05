@@ -233,3 +233,9 @@ Public g_LastPostedMessage As String
 'ID for this PD instance.  When started, each PhotoDemon instance is assigned a pseudo-random (GUID-based) session ID, which it
 ' then appends to things like Undo/Redo files.  This allows for multiple side-by-side program instances without collisions.
 Public g_SessionID As String
+
+'As of v6.4, PhotoDemon supports some user preferences for performance tweaking.  Because performance settings tend to affect
+' performance-sensitive parts of the program, such preferences are cached to global variables (rather than constantly pulled
+' on-demand from file, which is slow!).
+Public g_ViewportPerformance As PD_PERFORMANCE_SETTING
+
