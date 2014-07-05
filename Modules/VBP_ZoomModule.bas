@@ -231,7 +231,9 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     ' in the future... but for now, we leave it, just in case.
     If g_GDIPlusAvailable Then
         
-        'Use our new rect-specific compositor to retrieve only the relevant section of the current viewport
+        'Use our new rect-specific compositor to retrieve only the relevant section of the current viewport.  Interpolation mode depends
+        ' on the current zoom value, and it will be further modified by the compositor depending on the user's viewport render
+        ' performance preference.
         srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(zoomVal <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
         
     'This is an emergency fallback, only.  PD probably won't work at all without GDI+ - consider yourself warned!

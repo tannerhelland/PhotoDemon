@@ -164,7 +164,7 @@ Begin VB.Form FormPreferences
          Strikethrough   =   0   'False
       EndProperty
       BackColor       =   -2147483643
-      Caption         =   "Tools"
+      Caption         =   "Performance"
       ForeColor       =   4210752
       ForeColorHover  =   4194304
       Mode            =   1
@@ -357,16 +357,8 @@ Begin VB.Form FormPreferences
       TabIndex        =   11
       Top             =   240
       Width           =   8295
-      Begin PhotoDemon.smartCheckBox chkSelectionClearCrop 
-         Height          =   480
-         Left            =   240
-         TabIndex        =   96
-         Top             =   480
-         Width           =   6480
-         _ExtentX        =   11430
-         _ExtentY        =   847
-         Caption         =   "automatically clear the active selection after ""Crop to Selection"" is used"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+      Begin VB.ComboBox cmbPerfViewport 
+         BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
             Charset         =   0
@@ -375,11 +367,41 @@ Begin VB.Form FormPreferences
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         ItemData        =   "VBP_FormPreferences.frx":9690
+         Left            =   180
+         List            =   "VBP_FormPreferences.frx":9692
+         Style           =   2  'Dropdown List
+         TabIndex        =   121
+         Top             =   810
+         Width           =   7920
       End
-      Begin VB.Label lblTitle 
+      Begin VB.Label lblPerformanceSub 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "selections"
+         Caption         =   "when rendering the image canvas:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   0
+         Left            =   180
+         TabIndex        =   122
+         Top             =   435
+         Width           =   2985
+      End
+      Begin VB.Label lblPerformanceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "viewport rendering"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -391,11 +413,11 @@ Begin VB.Form FormPreferences
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   285
-         Index           =   1
+         Index           =   0
          Left            =   0
          TabIndex        =   12
          Top             =   0
-         Width           =   1020
+         Width           =   2010
       End
    End
    Begin VB.PictureBox picContainer 
@@ -416,7 +438,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.jcbutton cmdCopyReportClipboard 
          Height          =   525
          Left            =   7680
-         TabIndex        =   121
+         TabIndex        =   120
          Top             =   4170
          Width           =   525
          _ExtentX        =   873
@@ -433,7 +455,7 @@ Begin VB.Form FormPreferences
          EndProperty
          BackColor       =   0
          Caption         =   ""
-         PictureNormal   =   "VBP_FormPreferences.frx":9690
+         PictureNormal   =   "VBP_FormPreferences.frx":9694
          PictureEffectOnOver=   0
          PictureEffectOnDown=   0
          CaptionEffects  =   0
@@ -454,14 +476,14 @@ Begin VB.Form FormPreferences
          Locked          =   -1  'True
          MultiLine       =   -1  'True
          ScrollBars      =   2  'Vertical
-         TabIndex        =   120
+         TabIndex        =   119
          Top             =   2520
          Width           =   7335
       End
       Begin PhotoDemon.smartCheckBox chkLogMessages 
          Height          =   480
          Left            =   240
-         TabIndex        =   97
+         TabIndex        =   96
          Top             =   360
          Width           =   3195
          _ExtentX        =   5636
@@ -532,7 +554,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   6
          Left            =   0
-         TabIndex        =   119
+         TabIndex        =   118
          Top             =   2040
          Width           =   3120
       End
@@ -774,7 +796,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.textUpDown tudRecentFiles 
          Height          =   420
          Left            =   3900
-         TabIndex        =   109
+         TabIndex        =   108
          Top             =   4605
          Width           =   1335
          _ExtentX        =   2355
@@ -795,7 +817,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.colorSelector csCanvasColor 
          Height          =   435
          Left            =   6960
-         TabIndex        =   104
+         TabIndex        =   103
          Top             =   780
          Width           =   1215
          _ExtentX        =   2143
@@ -912,7 +934,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   108
+         TabIndex        =   107
          Top             =   4680
          Width           =   3480
       End
@@ -933,7 +955,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   13
          Left            =   0
-         TabIndex        =   107
+         TabIndex        =   106
          Top             =   3240
          Width           =   1515
       End
@@ -1089,7 +1111,7 @@ Begin VB.Form FormPreferences
          EndProperty
          Height          =   375
          Left            =   7380
-         TabIndex        =   118
+         TabIndex        =   117
          Top             =   2760
          Width           =   810
       End
@@ -1107,7 +1129,7 @@ Begin VB.Form FormPreferences
          Height          =   375
          Left            =   780
          Locked          =   -1  'True
-         TabIndex        =   117
+         TabIndex        =   116
          Text            =   "(none)"
          Top             =   2760
          Width           =   6525
@@ -1126,7 +1148,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   780
          Style           =   2  'Dropdown List
-         TabIndex        =   115
+         TabIndex        =   114
          Top             =   1950
          Width           =   7440
       End
@@ -1134,7 +1156,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   0
          Left            =   240
-         TabIndex        =   112
+         TabIndex        =   111
          Top             =   840
          Width           =   2760
          _ExtentX        =   4868
@@ -1154,7 +1176,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.colorSelector csAlphaOne 
          Height          =   435
          Left            =   6240
-         TabIndex        =   105
+         TabIndex        =   104
          Top             =   4230
          Width           =   945
          _ExtentX        =   1667
@@ -1218,7 +1240,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.colorSelector csAlphaTwo 
          Height          =   435
          Left            =   7320
-         TabIndex        =   106
+         TabIndex        =   105
          Top             =   4230
          Width           =   945
          _ExtentX        =   1667
@@ -1228,7 +1250,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   1
          Left            =   240
-         TabIndex        =   113
+         TabIndex        =   112
          Top             =   1200
          Width           =   3660
          _ExtentX        =   6456
@@ -1261,7 +1283,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   2
          Left            =   780
-         TabIndex        =   116
+         TabIndex        =   115
          Top             =   2430
          Width           =   2880
       End
@@ -1282,7 +1304,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   1
          Left            =   780
-         TabIndex        =   114
+         TabIndex        =   113
          Top             =   1590
          Width           =   1635
       End
@@ -1303,7 +1325,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   0
          Left            =   240
-         TabIndex        =   111
+         TabIndex        =   110
          Top             =   480
          Width           =   3285
       End
@@ -1324,7 +1346,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   0
          Left            =   0
-         TabIndex        =   110
+         TabIndex        =   109
          Top             =   0
          Width           =   1980
       End
@@ -1926,7 +1948,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkConfirmUnsaved 
          Height          =   480
          Left            =   240
-         TabIndex        =   103
+         TabIndex        =   102
          ToolTipText     =   "Check this if you want to be warned when you try to close an image with unsaved changes"
          Top             =   360
          Width           =   5445
@@ -1957,7 +1979,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   99
+         TabIndex        =   98
          Top             =   5925
          Width           =   7980
       End
@@ -2032,7 +2054,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   3
          Left            =   240
-         TabIndex        =   100
+         TabIndex        =   99
          Top             =   4140
          Width           =   4785
       End
@@ -2053,7 +2075,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   98
+         TabIndex        =   97
          Top             =   3690
          Width           =   4065
       End
@@ -2259,7 +2281,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkInitialColorDepth 
          Height          =   480
          Left            =   240
-         TabIndex        =   101
+         TabIndex        =   100
          Top             =   360
          Width           =   6765
          _ExtentX        =   11933
@@ -2278,7 +2300,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkToneMapping 
          Height          =   480
          Left            =   240
-         TabIndex        =   102
+         TabIndex        =   101
          Top             =   1440
          Width           =   7245
          _ExtentX        =   12779
@@ -2879,12 +2901,13 @@ Private Sub CmdOK_Click()
     
     '***************************************************************************
     
-    'START Tools preferences
+    'START Performance preferences
     
-        'START/END clear selections after "Crop to Selection"
-            g_UserPreferences.SetPref_Boolean "Tools", "Clear Selection After Crop", CBool(chkSelectionClearCrop.Value)
+        'START/END viewport render performance
+            g_UserPreferences.SetPref_Long "Performance", "Viewport Render Performance", cmbPerfViewport.ListIndex
+            g_ViewportPerformance = cmbPerfViewport.ListIndex
     
-    'END Tools preferences
+    'END Performance preferences
     
     '***************************************************************************
     
@@ -3258,14 +3281,29 @@ Private Sub LoadAllPreferences()
     
     '***************************************************************************
     
-    'START Tools preferences
+    'START Performance preferences
     
+        'Previously, this section was used for "tools" preferences.  PhotoDemon no longer provides dedicated tool preferences
+        ' in this dialog; instead, this section is used for Performance preferences.  I have left the old Tool preference code
+        ' and text here so it can be re-used in the future if tool preferences are reinstated.
+        
         'START Clear selections after "Crop to Selection"
-            If g_UserPreferences.GetPref_Boolean("Tools", "Clear Selection After Crop", True) Then chkSelectionClearCrop.Value = vbChecked Else chkSelectionClearCrop.Value = vbUnchecked
-            chkSelectionClearCrop.ToolTipText = g_Language.TranslateMessage("When the ""Crop to Selection"" command is used, the resulting image will always contain a selection the same size as the full image.  There is generally no need to retain this, so PhotoDemon can automatically clear it for you.")
+            'If g_UserPreferences.GetPref_Boolean("Tools", "Clear Selection After Crop", True) Then chkSelectionClearCrop.Value = vbChecked Else chkSelectionClearCrop.Value = vbUnchecked
+            'chkSelectionClearCrop.ToolTipText = g_Language.TranslateMessage("When the ""Crop to Selection"" command is used, the resulting image will always contain a selection the same size as the full image.  There is generally no need to retain this, so PhotoDemon can automatically clear it for you.")
         'END Clear selections after "Crop to Selection"
         
-    'END Tools preferences
+        'START Viewport rendering performance
+            cmbPerfViewport.Clear
+            cmbPerfViewport.AddItem " always maximize quality", 0
+            cmbPerfViewport.AddItem " automatically balance performance and quality", 1
+            cmbPerfViewport.AddItem " always maximize performance", 2
+            cmbPerfViewport.ListIndex = g_ViewportPerformance
+            
+            cmbPerfViewport.ToolTipText = g_Language.TranslateMessage("Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.")
+        'END Viewport rendering performance
+            
+        
+    'END Performance preferences
     
     '***************************************************************************
     

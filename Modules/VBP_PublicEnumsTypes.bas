@@ -222,4 +222,13 @@ End Enum
     Private Const PD_EDGE_DIR_ALL = 0, PD_EDGE_DIR_HORIZONTAL = 1, PD_EDGE_DIR_VERTICAL = 2
 #End If
 
+'PhotoDemon performance settings are generally provided in three groups: Max Quality, Balanced, and Max Performance
+Public Enum PD_PERFORMANCE_SETTING
+    PD_PERF_BESTQUALITY = 0
+    PD_PERF_BALANCED = 1
+    PD_PERF_FASTEST = 2
+End Enum
 
+#If False Then
+    Private Const PD_PERF_BESTQUALITY = 0, PD_PERF_BALANCED = 1, PD_PERF_FASTEST = 2
+#End If
