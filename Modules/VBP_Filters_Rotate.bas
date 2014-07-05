@@ -60,9 +60,9 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     SetProgBarMax 4
     
     'Build a grayscale lookup table.  We will only be comparing luminance - not colors - when determining where to crop.
-    Dim gLookup(0 To 765) As Long
+    Dim gLookUp(0 To 765) As Long
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
     
     'The new edges of the image will mark these values for us
@@ -74,7 +74,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     '1-1) Start by determining the color of the top-left pixel.  This will be our baseline.
     Dim initColor As Long, curColor As Long
-    initColor = gLookup(CLng(srcImageData(0, 0)) + CLng(srcImageData(1, 0)) + CLng(srcImageData(2, 0)))
+    initColor = gLookUp(CLng(srcImageData(0, 0)) + CLng(srcImageData(1, 0)) + CLng(srcImageData(2, 0)))
     
     Dim colorFails As Boolean
     colorFails = False
@@ -83,7 +83,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     For y = 0 To finalY
     For x = 0 To finalX
         QuickVal = x * qvDepth
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+        curColor = gLookUp(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -122,14 +122,14 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     
     Message "Analyzing left edge of image..."
-    initColor = gLookup(CLng(srcImageData(0, initY)) + CLng(srcImageData(1, initY)) + CLng(srcImageData(2, initY)))
+    initColor = gLookUp(CLng(srcImageData(0, initY)) + CLng(srcImageData(1, initY)) + CLng(srcImageData(2, initY)))
     SetProgBarVal 1
     
     For x = 0 To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+        curColor = gLookUp(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -149,14 +149,14 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
     Message "Analyzing right edge of image..."
     QuickVal = finalX * qvDepth
-    initColor = gLookup(CLng(srcImageData(QuickVal, initY)) + CLng(srcImageData(QuickVal + 1, 0)) + CLng(srcImageData(QuickVal + 2, 0)))
+    initColor = gLookUp(CLng(srcImageData(QuickVal, initY)) + CLng(srcImageData(QuickVal + 1, 0)) + CLng(srcImageData(QuickVal + 2, 0)))
     SetProgBarVal 2
     
     For x = finalX To 0 Step -1
         QuickVal = x * qvDepth
     For y = initY To finalY
     
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+        curColor = gLookUp(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -176,7 +176,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     initX = newLeft
     finalX = newRight
     QuickVal = initX * qvDepth
-    initColor = gLookup(CLng(srcImageData(QuickVal, finalY)) + CLng(srcImageData(QuickVal + 1, finalY)) + CLng(srcImageData(QuickVal + 2, finalY)))
+    initColor = gLookUp(CLng(srcImageData(QuickVal, finalY)) + CLng(srcImageData(QuickVal + 1, finalY)) + CLng(srcImageData(QuickVal + 2, finalY)))
     
     Message "Analyzing bottom edge of image..."
     SetProgBarVal 3
@@ -184,7 +184,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     For y = finalY To initY Step -1
     For x = initX To finalX
         QuickVal = x * qvDepth
-        curColor = gLookup(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
+        curColor = gLookUp(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -389,24 +389,15 @@ Public Sub MenuCropToSelection()
     DisplaySize pdImages(g_CurrentImage)
     
     'Deactivate the current selection, as it's no longer needed
-    If g_UserPreferences.GetPref_Boolean("Tools", "Clear Selection After Crop", True) Then
+    ' NOTE: this preference is still created in new preference files, but it is no longer exposed to the user.  I'm leaving the preference check
+    '        here (just commented out) in case this is ever revisited, but for now, the active selection is always cleared after a crop has been
+    '        applied.  The work involved in properly translating the crop (including as-of-yet unwritten code for non-transformable crops) is
+    '        extensive, and its dubious benefit has left me unwilling to work on it just yet.
+    'If g_UserPreferences.GetPref_Boolean("Tools", "Clear Selection After Crop", True) Then
         pdImages(g_CurrentImage).selectionActive = False
         pdImages(g_CurrentImage).mainSelection.lockRelease
         Message "Crop complete.  (Note: the selected area was automatically unselected.)"
-    Else
-        pdImages(g_CurrentImage).mainSelection.lockRelease
-        pdImages(g_CurrentImage).mainSelection.selLeft = 0
-        pdImages(g_CurrentImage).mainSelection.selTop = 0
-        pdImages(g_CurrentImage).mainSelection.selWidth = pdImages(g_CurrentImage).Width
-        pdImages(g_CurrentImage).mainSelection.selHeight = pdImages(g_CurrentImage).Height
-        pdImages(g_CurrentImage).mainSelection.lockIn
-        For i = 0 To toolbar_Tools.cmbSelRender.Count - 1
-            toolbar_Tools.cmbSelRender(i).ListIndex = sHighlightRed
-        Next i
-        Message "Crop complete.  Selection drawing mode changed to make selection visible."
-    End If
-    
-    Message "Finished. "
+    'End If
     
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Crop to selection"
     
