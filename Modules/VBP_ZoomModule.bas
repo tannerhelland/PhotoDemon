@@ -232,9 +232,16 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     If g_GDIPlusAvailable Then
         
         'Use our new rect-specific compositor to retrieve only the relevant section of the current viewport.  Interpolation mode depends
-        ' on the current zoom value, and it will be further modified by the compositor depending on the user's viewport render
-        ' performance preference.
-        srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(zoomVal <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
+        ' on the current zoom value, and the user's viewport performance preference.
+        
+        'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
+        If g_ViewportPerformance = PD_PERF_FASTEST Then
+            srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, InterpolationModeNearestNeighbor
+            
+        'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom
+        Else
+            srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(zoomVal <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
+        End If
         
     'This is an emergency fallback, only.  PD probably won't work at all without GDI+ - consider yourself warned!
     Else
