@@ -290,6 +290,7 @@ Public Sub loadUserSettings()
     'For performance reasons, cache any performance-related settings.  (This is much faster than reading the preferences from file
     ' every time they're needed.)
     g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
+    g_ThumbnailPerformance = g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
         
@@ -433,6 +434,7 @@ Private Sub createNewPreferencesFile()
     'Write out the "performance" block of preferences:
     xmlEngine.writeTag "Performance", "", True
         xmlEngine.writeTag "ViewportRenderPerformance", "1"
+        xmlEngine.writeTag "ThumbnailPerformance", "1"
     xmlEngine.closeTag "Performance"
     xmlEngine.writeBlankLine
     
