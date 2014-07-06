@@ -236,6 +236,7 @@ Public g_SessionID As String
 
 'As of v6.4, PhotoDemon supports some user preferences for performance tweaking.  Because performance settings tend to affect
 ' performance-sensitive parts of the program, such preferences are cached to global variables (rather than constantly pulled
-' on-demand from file, which is slow!).
+' on-demand from file, which is unacceptably slow for performance-sensitive pipelines).
 Public g_ViewportPerformance As PD_PERFORMANCE_SETTING
+Public g_ThumbnailPerformance As PD_PERFORMANCE_SETTING
 

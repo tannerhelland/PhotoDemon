@@ -709,7 +709,13 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Dim compositeImage As pdDIB
     Set compositeImage = New pdDIB
     compositeImage.createBlank tIcoWidth, tIcoHeight, 32, 0
-    Me.getCompositedRect compositeImage, 0, 0, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, InterpolationModeHighQualityBicubic
+    
+    'Note that the user's thumbnail performance setting affects the quality used here.
+    If g_ThumbnailPerformance = PD_PERF_FASTEST Then
+        Me.getCompositedRect compositeImage, 0, 0, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, InterpolationModeNearestNeighbor
+    Else
+        Me.getCompositedRect compositeImage, 0, 0, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, InterpolationModeHighQualityBicubic
+    End If
     
     'Prepare the destination DIB
     dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0

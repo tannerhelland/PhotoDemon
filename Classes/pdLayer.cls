@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 23/June/14
-'Last update: convert non-destructive layer FX Saturation to Clarity.  (Saturation is already covered by the
-'              far-superior Vibrance option.)
+'Last updated: 06/July/14
+'Last update: add variable performance/quality options to the thumbnail request functions
 '
 'Once upon a time, the pdLayer class was simply a DIB wrapper.  Once PhotoDemon moved to a fully layer-compatible
 ' image editor, however, it became necessary to separate Layer-specific functions from generic DIB functions.
@@ -1052,9 +1051,9 @@ Private Sub updateInternalThumbnail()
     'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
     ' is faster (I've actually profiled it!), but if FreeImage is not available, GDI+ will suffice.
     If g_ImageFormats.FreeImageEnabled Then
-        FreeImageResizeDIBFast layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, FILTER_BILINEAR, True
+        FreeImageResizeDIBFast layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, FILTER_BOX, FILTER_BILINEAR), True
     Else
-        GDIPlusResizeDIB layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+        GDIPlusResizeDIB layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
     End If
     
     'Uncomment the line below to profile different thumbnail resize strategies
@@ -1080,9 +1079,9 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
         dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
         
         If g_ImageFormats.FreeImageEnabled Then
-            FreeImageResizeDIBFast dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, FILTER_BILINEAR, True
+            FreeImageResizeDIBFast dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, FILTER_BOX, FILTER_BILINEAR), True
         Else
-            GDIPlusResizeDIB dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, 0, 0, layerThumbnail.getDIBWidth, layerThumbnail.getDIBHeight, InterpolationModeHighQualityBicubic
+            GDIPlusResizeDIB dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, 0, 0, layerThumbnail.getDIBWidth, layerThumbnail.getDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
         End If
         
     Else
