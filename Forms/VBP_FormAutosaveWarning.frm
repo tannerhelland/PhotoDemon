@@ -241,16 +241,20 @@ Friend Sub fillArrayWithSaveResults(ByRef dstArray() As AutosaveXML)
     Next i
     
     'Prepare the destination array
-    ReDim dstArray(0 To numOfEntriesBeingSaved - 1) As AutosaveXML
+    If numOfEntriesBeingSaved > 0 Then
     
-    'Fill the array with all selected entries
-    numOfEntriesBeingSaved = 0
-    For i = 0 To lstAutosaves.ListCount - 1
-        If lstAutosaves.Selected(i) Then
-            dstArray(numOfEntriesBeingSaved) = m_XmlEntries(lstAutosaves.ItemData(i))
-            numOfEntriesBeingSaved = numOfEntriesBeingSaved + 1
-        End If
-    Next i
+        ReDim dstArray(0 To numOfEntriesBeingSaved - 1) As AutosaveXML
+    
+        'Fill the array with all selected entries
+        numOfEntriesBeingSaved = 0
+        For i = 0 To lstAutosaves.ListCount - 1
+            If lstAutosaves.Selected(i) Then
+                dstArray(numOfEntriesBeingSaved) = m_XmlEntries(lstAutosaves.ItemData(i))
+                numOfEntriesBeingSaved = numOfEntriesBeingSaved + 1
+            End If
+        Next i
+        
+    End If
     
 End Sub
 
@@ -270,8 +274,8 @@ Public Sub showDialog()
     'Display a brief explanation of the dialog at the top of the window
     lblWarning(1).Caption = g_Language.TranslateMessage("A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?")
         
-    'Provide a default answer of "restore all images" (in the event that the user clicks the "x" button in the top-right)
-    userAnswer = vbOK
+    'Provide a default answer of "do not restore" (in the event that the user clicks the "x" button in the top-right)
+    userAnswer = vbNo
 
     'Apply any custom styles to the form
     Set m_ToolTip = New clsToolTip
@@ -300,8 +304,25 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
-    userAnswer = vbYes
+    
+    Dim numOfEntriesBeingSaved As Long
+    numOfEntriesBeingSaved = 0
+    
+    'Count how many entries the user is saving
+    Dim i As Long
+    For i = 0 To lstAutosaves.ListCount - 1
+        If lstAutosaves.Selected(i) Then numOfEntriesBeingSaved = numOfEntriesBeingSaved + 1
+    Next i
+    
+    'If the user has selected at least one file to restore, return YES; otherwise, NO.
+    If numOfEntriesBeingSaved > 0 Then
+        userAnswer = vbYes
+    Else
+        userAnswer = vbNo
+    End If
+    
     Me.Hide
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
