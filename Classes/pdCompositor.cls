@@ -634,10 +634,11 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                 
                 Else
                 
-                    'If zoomed-out, switch to StretchBlt for performance gains.
-                    If interpolationType = InterpolationModeNearestNeighbor Then
+                    'If zoomed-in, we can switch to StretchBlt for performance gains.  (As nearest-neighbor interpolation will
+                    ' be used regardless of the caller's requested interpolation type.)
+                    If srcWidth < dstWidth Then
                         
-                        'We are zoomed-out from the image.  Check for non-destructive FX being present.
+                        'We are zoomed-in to the image, e.g. zoom is larger than 100%.  Check for non-destructive FX being present.
                         
                         'Non-destructive FX are active.  To reduce processing time, chop out the source rectangle, apply the non-destructive FX,
                         ' and *then* resize the data.
@@ -676,14 +677,12 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                             
                         End If
                     
+                    'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
+                    ' option at present.
                     Else
                         
                         'If the user has requested MAX PERFORMANCE rendering, override the requested interpolation type with nearest neighbor
-                        If g_ViewportPerformance = PD_PERF_FASTEST Then
-                            GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, InterpolationModeNearestNeighbor
-                        Else
-                            GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
-                        End If
+                        GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
                         
                         'Apply non-destructive FX now
                         If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, tmpDIB
