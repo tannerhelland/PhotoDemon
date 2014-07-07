@@ -223,8 +223,6 @@ Begin VB.Form toolbar_Layers
       Width           =   2760
       _ExtentX        =   4868
       _ExtentY        =   873
-      Max             =   100
-      Value           =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -234,6 +232,8 @@ Begin VB.Form toolbar_Layers
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   100
+      Value           =   100
    End
    Begin VB.Label lblLayerSettings 
       Alignment       =   1  'Right Justify
@@ -336,6 +336,10 @@ Dim m_ToolTip As clsToolTip
 Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
 
+'A separate mouse handler helps with dynamically resizing the layer toolbox
+Private WithEvents cMouseEventsForm As pdInput
+Attribute cMouseEventsForm.VB_VarHelpID = -1
+
 'Height of each layer content block.  Note that this is effectively a "magic number", in pixels, representing the
 ' height of each layer block in the layer selection UI.  This number will be dynamically resized per the current
 ' screen DPI by the "redrawLayerList" and "renderLayerBlock" functions.
@@ -389,6 +393,13 @@ Private m_InOLEDragDropMode As Boolean
 ' Also, the layer-to-be-moved is tracked, as is the initial layer index (which is required for processing the final
 ' action, e.g. the one that triggers Undo/Redo creation).
 Private m_LayerRearrangingMode As Boolean, m_LayerIndexToRearrange As Long, m_InitialLayerIndex As Long
+
+'When we are responsible for this window resizing (because the user is resizing our window manually), we set this to TRUE.
+' This variable is then checked before requesting additional redraws during our resize event.
+Private weAreResponsibleForResize As Boolean
+
+'When the mouse is over the layer list, this will be set to TRUE
+Private m_MouseOverLayerBox As Boolean
 
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
@@ -715,8 +726,14 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
 
 End Sub
 
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseOverLayerBox = True
+End Sub
+
 'Mouse has left the layer box
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    m_MouseOverLayerBox = False
 
     'Note that no layer is currently hovered
     curLayerHover = -1
@@ -921,6 +938,20 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
 
 End Sub
 
+'Forward any key events from the form to the layer box handler
+Private Sub cMouseEventsForm_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+    Call cMouseEvents_KeyDownArrows(Shift, upArrow, rightArrow, downArrow, leftArrow)
+End Sub
+
+Private Sub cMouseEventsForm_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean)
+    Call cMouseEvents_KeyDownEdits(Shift, kReturn, kEnter, kSpaceBar, kBackspace, kInsert, kDelete, kTab, kEscape)
+End Sub
+
+'Forward mousewheel events to the layer box handler
+Private Sub cMouseEventsForm_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    Call cMouseEvents_MouseWheelVertical(Button, Shift, x, y, scrollAmount)
+End Sub
+
 Private Sub Form_Load()
     
     'Populate the blend mode box
@@ -976,9 +1007,19 @@ Private Sub Form_Load()
     'Enable custom input handling for the layer box
     Set cMouseEvents = New pdInput
     cMouseEvents.addInputTracker picLayers.hWnd, True, True, , True
-    cMouseEvents.addInputTracker Me.hWnd
     cMouseEvents.requestKeyTracking picLayers.hWnd
     cMouseEvents.setKeyTrackers picLayers.hWnd, True, True, True
+    m_MouseOverLayerBox = False
+    
+    'Enable simple mouse handling for the form as well
+    Set cMouseEventsForm = New pdInput
+    cMouseEventsForm.addInputTracker Me.hWnd, True, , , True
+    cMouseEventsForm.requestKeyTracking Me.hWnd
+    cMouseEventsForm.setKeyTrackers Me.hWnd, True, True, True
+    
+    'To prevent the parent form's cursor handler from overriding that of the child, we must manually notify pdInput to
+    ' ignore cursor handling in certain situations.
+    cMouseEventsForm.setCursorOverrideState True
     
     'No layer has been hovered yet
     curLayerHover = -1
@@ -1046,28 +1087,53 @@ Private Sub initializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
         
 End Sub
 
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+
+    'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
+    ' the layer toolbox.
+    Dim mouseInResizeTerritory As Boolean
+    
+    'How close does the mouse have to be to the form border to allow resizing; currently we use 7 pixels, while accounting
+    ' for DPI variance (e.g. 7 pixels at 96 dpi)
+    Dim resizeBorderAllowance As Long
+    resizeBorderAllowance = fixDPI(7)
+    
+    Dim hitCode As Long
+    
+    'Check the mouse position to see if it's in resize territory (along the left edge of the toolbox)
+    If (y > 0) And (y < Me.ScaleHeight) And (x < resizeBorderAllowance) Then
+        mouseInResizeTerritory = True
+        hitCode = HTLEFT
+    End If
+    
+    'If the left mouse button is down, and the mouse is in resize territory, initiate an API resize event
+    If mouseInResizeTerritory Then
+    
+        'Change the cursor to a resize cursor
+        cMouseEventsForm.setSystemCursor IDC_SIZEWE
+        
+        If (Button = vbLeftButton) Then
+            weAreResponsibleForResize = True
+            ReleaseCapture
+            SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
+            
+            'Notify the window manager of the change, so it can reflow any neighboring windows
+            'g_WindowManager.notifyToolboxResized
+            
+        End If
+        
+    Else
+        If Not m_MouseOverLayerBox Then cMouseEventsForm.setSystemCursor IDC_ARROW
+    End If
+
+End Sub
+
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    weAreResponsibleForResize = False
+End Sub
+
 Private Sub Form_Resize()
-
-    'When the parent form is resized, resize the layer list (and other items) to properly fill the
-    ' available vertical space.
-    
-    'This value will be used to check for minimizing.  If the window is going down, we do not want to attempt a resize!
-    Dim sizeCheck As Long
-    
-    'Start by moving the button box to the bottom of the available area
-    sizeCheck = Me.ScaleHeight - picLayerButtons.Height - fixDPI(8)
-    If sizeCheck > 0 Then picLayerButtons.Top = sizeCheck Else Exit Sub
-    
-    'Next, stretch the layer box to fill the available space
-    sizeCheck = (picLayerButtons.Top - picLayers.Top) - fixDPI(8)
-    If sizeCheck > 0 Then picLayers.Height = (picLayerButtons.Top - picLayers.Top) - fixDPI(8) Else Exit Sub
-    
-    'Make the toolbar the same height as the layer box
-    vsLayer.Height = picLayers.Height
-    
-    'Redraw the internal layer UI DIB
-    resizeLayerUI
-
+    reflowInterface
 End Sub
 
 'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
@@ -1080,7 +1146,7 @@ Private Sub Form_Unload(Cancel As Integer)
         g_WindowManager.unregisterForm Me
     Else
         Cancel = True
-        toggleToolbarVisibility TOOLS_TOOLBOX
+        toggleToolbarVisibility LAYER_TOOLBOX
     End If
     
 End Sub
@@ -1139,6 +1205,15 @@ Private Sub cacheLayerThumbnails()
         
     End If
     
+    'See if the vertical scroll bar needs to be displayed
+    updateLayerScrollbarVisibility
+                
+End Sub
+
+'When an action occurs that potentially affects the visibility of the vertical scroll bar (such as resizing the form
+' vertically, or adding a new layer to the image), call this function to update the scroll bar visibility as necessary.
+Private Sub updateLayerScrollbarVisibility()
+
     'Determine if the vertical scrollbar needs to be visible or not (because there are so many layers that they overflow the box)
     Dim maxLayerBoxSize As Long
     maxLayerBoxSize = fixDPIFloat(BLOCKHEIGHT) * numOfThumbnails - 1
@@ -1163,7 +1238,7 @@ Private Sub cacheLayerThumbnails()
         picLayers.Width = (vsLayer.Left - picLayers.Left)
         
     End If
-            
+
 End Sub
 
 'Draw the layer box (from scratch)
@@ -1500,4 +1575,56 @@ End Sub
 
 Private Sub vsLayer_Scroll()
     redrawLayerBox
+End Sub
+
+'Whenever the layer toolbox is resized, we must reflow all objects to fill the available space.  Note that we do not do
+' specialized handling for the vertical direction; vertically, the only change we handle is resizing the layer box itself
+' to fill whatever vertical space is available.
+Private Sub reflowInterface()
+
+    'When the parent form is resized, resize the layer list (and other items) to properly fill the
+    ' available horizontal and vertical space.
+    
+    'This value will be used to check for minimizing.  If the window is going down, we do not want to attempt a resize!
+    Dim sizeCheck As Long
+    
+    'Start by moving the button box to the bottom of the available area
+    sizeCheck = Me.ScaleHeight - picLayerButtons.Height - fixDPI(8)
+    If sizeCheck > 0 Then picLayerButtons.Top = sizeCheck Else Exit Sub
+    
+    'Next, stretch the layer box to fill the available space
+    sizeCheck = (picLayerButtons.Top - picLayers.Top) - fixDPI(8)
+    If sizeCheck > 0 Then picLayers.Height = (picLayerButtons.Top - picLayers.Top) - fixDPI(8) Else Exit Sub
+    
+    'Make the toolbar the same height as the layer box
+    vsLayer.Height = picLayers.Height
+    
+    'Vertical resizing has now been covered successfully.  Time to handle horizontal resizing.
+    
+    'Horizontally stretch the opacity and blend mode UI objects
+    sltLayerOpacity.Width = Me.ScaleWidth - (sltLayerOpacity.Left + fixDPI(2))
+    cboBlendMode.Width = Me.ScaleWidth - (cboBlendMode.Left + fixDPI(8))
+    lnSeparator(0).x2 = Me.ScaleWidth - lnSeparator(0).x1
+    
+    'Resize the layer box and associated scrollbar
+    vsLayer.Left = Me.ScaleWidth - vsLayer.Width - fixDPI(8)
+    updateLayerScrollbarVisibility
+       
+    'Reflow the bottom button box; this is inevitably more complicated, owing to the spacing requirements of the buttons
+    picLayerButtons.Width = Me.ScaleWidth
+    
+    '48px (at 96 DPI) is the ideal distance between buttons: 36px for the button, plus 12px for spacing.
+    ' The total size of the button area of the box is thus 4 * 36 + 3 * 12, for FOUR buttons and THREE spacers.
+    Dim buttonAreaWidth As Long, buttonAreaLeft As Long
+    buttonAreaWidth = fixDPI(4 * 36 + 3 * 12)
+    buttonAreaLeft = (Me.ScaleWidth - buttonAreaWidth) \ 2
+    
+    Dim i As Long
+    For i = 0 To cmdLayerAction.Count - 1
+        cmdLayerAction(i).Left = buttonAreaLeft + (i * 48)
+    Next i
+    
+    'Redraw the internal layer UI DIB
+    resizeLayerUI
+
 End Sub

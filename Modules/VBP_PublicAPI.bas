@@ -2,13 +2,12 @@ Attribute VB_Name = "Public_API"
 'Any and all *publicly* necessary API declarations can be found here
 ' (Note 1: privately declared API calls have obviously been left in their respective forms/modules)
 ' (Note 2: it makes more sense to keep API-related constants here than in the constants module)
-' (Note 3: I haven't searched every form/module/class for duplicate API calls... yet)
 
 Option Explicit
 
 Public Type POINTAPI
-   x As Long
-   y As Long
+   X As Long
+   Y As Long
 End Type
 
 Public Type RECT
@@ -64,9 +63,9 @@ Public Declare Function MonitorFromWindow Lib "user32" (ByVal myHwnd As Long, By
 Public Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal rastOp As Long) As Boolean
 Public Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Public Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
-Public Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
-Public Declare Function SetDIBitsToDC Lib "gdi32" Alias "SetDIBitsToDevice" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long) As Long
-Public Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Public Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
+Public Declare Function SetDIBitsToDC Lib "gdi32" Alias "SetDIBitsToDevice" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long) As Long
+Public Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 Public Const STRETCHBLT_COLORONCOLOR As Long = 3
 Public Const STRETCHBLT_HALFTONE As Long = 4
 
@@ -119,4 +118,12 @@ Public Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As 
 'Hook functions generally need to return the value of this function if they don't process a given message
 Public Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, lParam As Any) As Long
 
-
+'PhotoDemon allows the user to resize some toolboxes to their liking.  These constants are used with the SendMessage API
+' to enable this behavior.  (In the case of the image tabstrip, note that it can be aligned to any window edge, which
+' means the inside edge type can change; we thus have to support all edge types in order to interact with SendMessage
+' regardless of tabstrip alignment.)
+Public Const WM_NCLBUTTONDOWN As Long = &HA1
+Public Const HTLEFT As Long = 10
+Public Const HTTOP As Long = 12
+Public Const HTRIGHT As Long = 11
+Public Const HTBOTTOM As Long = 15

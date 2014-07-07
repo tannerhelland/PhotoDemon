@@ -68,20 +68,20 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This class can raise many events.  The following events are raised for all tracked hWnds:
-Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
-Event ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
+Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
+Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal zoomAmount As Double)
+Event ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal ClickEventAlsoFiring As Boolean)
 
 'The following events are raised only if specifically requested in the addInputTracker function
-Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
 
 'The following events are raised only if specifically requested via the dedicated requestKeyTracking and setKeyTrackers functions
 Event KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
@@ -265,6 +265,16 @@ Private m_MouseMoveCount As Long
 ' the addOverrideHwnds sub for details)
 Private m_numOfOverrideControls As Long
 Private m_OverrideHwnds() As Long
+
+'In rare cases (e.g. the layer toolbox), a parent form and child control may have separate cursor tracking activated in two different
+' instances of this class.  When this happens, we don't want to automatically handle WM_SETCURSOR messages; otherwise, the parent's
+' cursor setting will always override the child.  In this rare instance, this override value will be set to TRUE to notify the class
+' that WM_SETCURSOR can be ignored for the parent object.  (Note that this behavior must be manually set via setCursorOverrideState.)
+Private m_OverrideSetCursorMessages As Boolean
+
+Public Sub setCursorOverrideState(ByVal newOverride As Boolean)
+    m_OverrideSetCursorMessages = newOverride
+End Sub
 
 'VB is a source of endless focus when it comes to handling focus on UCs.  In VB's mind, user controls should fight
 ' tooth-and-nail to make sure the UC itself never receives focus, even if we explicitly state that the UC can and should be
@@ -663,8 +673,8 @@ Private Function getCurrentCursorPosition(ByVal srcHwnd As Long, ByRef controlX 
         'Convert the screen coordinates into the coordinate space of the supplied hWnd
         If ScreenToClient(srcHwnd, tmpPoint) <> 0 Then
             
-            controlX = tmpPoint.x
-            controlY = tmpPoint.y
+            controlX = tmpPoint.X
+            controlY = tmpPoint.Y
             
             getCurrentCursorPosition = True
             
@@ -1259,7 +1269,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'While handling cursor duties, we must respond to WM_SETCURSOR events.
             Case WM_SETCURSOR
             
-                If m_TrackingData(PDIT_CURSOR, indexOfHwnd) Then applyCursorToHwnds
+                If m_TrackingData(PDIT_CURSOR, indexOfHwnd) And (Not m_OverrideSetCursorMessages) Then applyCursorToHwnds
                 
             'A floating toolbox window is being activated or deactivated.  This is important as pdInput uses
             ' activation status to install and remove keyboard hooks.
