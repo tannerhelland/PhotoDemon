@@ -1065,6 +1065,9 @@ Private Sub Form_Load()
     Const CB_SETMINVISIBLE As Long = 339
     SendMessage cboBlendMode.hWnd, 339, CLng(cboBlendMode.ListCount), ByVal 0&
     
+    'Reflow the interface to match its current size
+    reflowInterface
+    
 End Sub
 
 'Load a UI image from the resource section and into a DIB
@@ -1110,7 +1113,8 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     If mouseInResizeTerritory Then
     
         'Change the cursor to a resize cursor
-        cMouseEventsForm.setSystemCursor IDC_SIZEWE
+        'cMouseEventsForm.setSystemCursor IDC_SIZEWE
+        setSizeWECursor Me
         
         If (Button = vbLeftButton) Then
             weAreResponsibleForResize = True
@@ -1123,7 +1127,8 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         End If
         
     Else
-        If Not m_MouseOverLayerBox Then cMouseEventsForm.setSystemCursor IDC_ARROW
+        'If Not m_MouseOverLayerBox Then cMouseEventsForm.setSystemCursor IDC_ARROW
+        setArrowCursor Me
     End If
 
 End Sub
@@ -1611,17 +1616,18 @@ Private Sub reflowInterface()
     updateLayerScrollbarVisibility
        
     'Reflow the bottom button box; this is inevitably more complicated, owing to the spacing requirements of the buttons
-    picLayerButtons.Width = Me.ScaleWidth
+    picLayerButtons.Left = picLayers.Left
+    picLayerButtons.Width = picLayers.Width
     
-    '48px (at 96 DPI) is the ideal distance between buttons: 36px for the button, plus 12px for spacing.
-    ' The total size of the button area of the box is thus 4 * 36 + 3 * 12, for FOUR buttons and THREE spacers.
+    '44px (at 96 DPI) is the ideal distance between buttons: 36px for the button, plus 8px for spacing.
+    ' The total size of the button area of the box is thus 4 * 36 + 3 * 8, for FOUR buttons and THREE spacers.
     Dim buttonAreaWidth As Long, buttonAreaLeft As Long
-    buttonAreaWidth = fixDPI(4 * 36 + 3 * 12)
-    buttonAreaLeft = (Me.ScaleWidth - buttonAreaWidth) \ 2
+    buttonAreaWidth = fixDPI(4 * 36 + 3 * 8)
+    buttonAreaLeft = (picLayerButtons.ScaleWidth - buttonAreaWidth) \ 2
     
     Dim i As Long
     For i = 0 To cmdLayerAction.Count - 1
-        cmdLayerAction(i).Left = buttonAreaLeft + (i * 48)
+        cmdLayerAction(i).Left = buttonAreaLeft + (i * fixDPIFloat(44))
     Next i
     
     'Redraw the internal layer UI DIB
