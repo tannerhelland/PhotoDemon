@@ -3783,7 +3783,7 @@ Private Sub MnuWindow_Click(Index As Integer)
         Case 1
             toggleToolbarVisibility LAYER_TOOLBOX
             
-        'Show/hide selection toolbox
+        'Show/hide tools toolbox
         Case 2
             toggleToolbarVisibility TOOLS_TOOLBOX
         
