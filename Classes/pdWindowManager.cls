@@ -62,6 +62,8 @@ Private Const WM_NCMOUSEMOVE As Long = &HA0
 Private Const WM_SIZING As Long = &H214
 Private Const WM_SIZE As Long = &H5
 Private Const WM_ERASEBKGND As Long = &H14
+Private Const WM_SHOWWINDOW As Long = &H18
+Private Const WM_WINDOWPOSCHANGED As Long = &H47
 
 'Subclassed messages for detecting when PD is losing focus to another app, or regaining it from another app
 Private Const WM_ACTIVATE      As Long = &H6
@@ -302,6 +304,25 @@ Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVa
 Private Declare Function AnimateWindow Lib "user32" (ByVal targetHWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal targetHWnd As Long) As Long
 Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdateRectPtr As Long, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
+
+'RedrawWindow API constants
+Private Const RDW_INVALIDATE As Long = &H1
+Private Const RDW_INTERNALPAINT As Long = &H2
+Private Const RDW_ERASE As Long = &H4
+ 
+Private Const RDW_VALIDATE As Long = &H8
+Private Const RDW_NOINTERNALPAINT As Long = &H10
+Private Const RDW_NOERASE As Long = &H20
+ 
+Private Const RDW_NOCHILDREN As Long = &H40
+Private Const RDW_ALLCHILDREN As Long = &H80
+
+Private Const RDW_UPDATENOW As Long = &H100
+Private Const RDW_ERASENOW As Long = &H200
+ 
+Private Const RDW_FRAME As Long = &H400
+Private Const RDW_NOFRAME As Long = &H800
 
 'Enforce a specific minimum width/height for the main window
 Private Const PD_MAIN_WINDOW_MINIMUM_HEIGHT As Long = 640
@@ -1013,7 +1034,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 If pdWindows(winIndex).previousRenderStyle <> DOCK_STYLE Then
                     
                     'Remove the window border
-                    newWinStyle = WS_CHILD
+                    newWinStyle = WS_CHILD Or WS_CLIPCHILDREN
                     If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE 'Or WS_EX_LAYERED
@@ -1230,11 +1251,11 @@ Public Function restoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
                     .lastPosition.y2 = .lastPosition.y1 + pdWindows(windowIndex).originalHeightClient
                 End If
             ElseIf (.typeOfWindow = TOOLBAR_WINDOW) And (.optionalToolbarType = LAYER_TOOLBOX) Then
-                If toolbarsFloating Then
-                    .lastPosition.x2 = .lastPosition.x1 + pdWindows(windowIndex).originalWidthFull
-                Else
-                    .lastPosition.x2 = .lastPosition.x1 + pdWindows(windowIndex).originalWidthClient
-                End If
+                'If toolbarsFloating Then
+                '    .lastPosition.x2 = .lastPosition.x1 + pdWindows(windowIndex).originalWidthFull
+                'Else
+                '    .lastPosition.x2 = .lastPosition.x1 + pdWindows(windowIndex).originalWidthClient
+                'End If
             End If
             
             'Window and border state
@@ -1527,7 +1548,7 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
     'Subclass this window, and add a user param of 64 + "index in array".  We can use this value to recognize this hWnd as belonging
     ' to a child window, and quickly look it up in our window tracking array.
     cSubclass.ssc_Subclass pdWindows(numOfPDWindows).hWnd, 64 + numOfPDWindows, , Me
-    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_AFTER, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_ACTIVATE, WM_MOVE, WM_SIZE
+    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_AFTER, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_ACTIVATE, WM_MOVE, WM_SIZE, WM_WINDOWPOSCHANGED
     cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_BEFORE, WM_MOVING, WM_SIZING
     
     'Paint this window with the proper visual style (based on whether it's docked or floating)
@@ -1733,6 +1754,25 @@ Public Sub notifyImageTabStripResized()
     
 End Sub
 
+'When the user has manually resized one of the toolboxes, we need to adjust other toolboxes to match.
+Public Sub notifyToolboxResized(Optional ByVal hWndOfResizeSource As Long = 0)
+    
+    'Retrieve the main form's current winRect
+    Dim curWinRect As winRect
+    GetWindowRect mainWindowHwnd, curWinRect
+    
+    'Resize and/or move each child window as necessary
+    Dim i As Long
+    For i = 0 To numOfPDWindows - 1
+        If (pdWindows(i).hWnd <> hWndOfResizeSource) And (pdWindows(i).hWnd <> mainWindowHwnd) Then requestWindowRedraw i, curWinRect
+    Next i
+    
+    'Ask the main form's canvas to redraw itself (note: this should happen automatically, when the main from is resized
+    ' by the above loop.
+    FormMain.refreshAllCanvases
+    
+End Sub
+
 'Whenever a size change occurs that requires multiple windows to be redrawn, this function can be called.  It will automatically handle redraw duties.
 Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winRect)
 
@@ -1904,6 +1944,20 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'Check child window messages
         Select Case uMsg
             
+            Case WM_WINDOWPOSCHANGED
+            
+                If Not toolbarsFloating Then
+                
+                    'Because toolbox windows are now created with the WS_CLIPCHILDREN flag, we must manually invalidate all children
+                    ' to force a full refresh.
+                    For i = 0 To numOfPDWindows - 1
+                        If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then
+                            RedrawWindow pdWindows(i).hWnd, 0, 0, RDW_INVALIDATE Or RDW_ALLCHILDREN Or RDW_UPDATENOW
+                        End If
+                    Next i
+                    
+                End If
+                
             'The window has moved
             Case WM_MOVE, WM_SIZE
             
@@ -1971,6 +2025,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Store the new offset values
                 pdWindows(winIndex).offsetX = curWinRect.x1 - parentRect.x1
                 pdWindows(winIndex).offsetY = curWinRect.y1 - parentRect.y1
+                
+                If (Not mainFormTriggeredChange) And (uMsg = WM_SIZING) Then notifyToolboxResized lng_hWnd
                 
             'The mouse is moving inside this child window.
             Case WM_MOUSEMOVE, WM_NCMOUSEMOVE
@@ -2164,7 +2220,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         'restoreActiveImageToForeground "PD maximized or restored"
                                             
                     End If
-                    
+                                        
                 'When minimizing, check all windows, and if one has not been minimized, minimize it now
                 ElseIf wParam = SC_MINIMIZE Then
                 
@@ -2234,14 +2290,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 Else
                 
                     If (wParam <> WA_INACTIVE) Then
-                    
+                        
                         'This rather nasty hack is required to work around the "Show Desktop" event.  For reasons known only
                         ' to MS engineers, the Show Desktop command does not send *ANY* WM_SYSCOMMAND messages to your window.
                         ' Thus, you have literally no way to track whether the option is used, except to track window focus.
                         ' Because Show Desktop causes visual corruption of child windows, we must force a redraw of all open
                         ' toolboxes; do this by manually sending a "restore" command to the main PD window.
                         SendMessageA mainWindowHwnd, WM_SYSCOMMAND, SC_RESTORE, ByVal 0&
-                        
+                                                
                         'Floating toolbars may fall out of sync due to the non-standard restore event; if floating, manually
                         ' restore their z-order.
                         If toolbarsFloating Then resetTopmostForAllWindows True
