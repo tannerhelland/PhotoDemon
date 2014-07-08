@@ -91,6 +91,7 @@ Begin VB.Form FormColorize
       Max             =   359
       SliderTrackStyle=   4
       Value           =   180
+      NotchPosition   =   1
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True

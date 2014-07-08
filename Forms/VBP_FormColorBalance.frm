@@ -74,7 +74,6 @@ Begin VB.Form FormColorBalance
       GradientColorLeft=   16776960
       GradientColorRight=   255
       GradientColorMiddle=   8881021
-      GradientMiddleValue=   0
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
@@ -98,7 +97,6 @@ Begin VB.Form FormColorBalance
       SliderTrackStyle=   3
       GradientColorLeft=   16711935
       GradientColorRight=   65280
-      GradientMiddleValue=   0
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
@@ -122,7 +120,6 @@ Begin VB.Form FormColorBalance
       SliderTrackStyle=   3
       GradientColorLeft=   65535
       GradientColorRight=   16711680
-      GradientMiddleValue=   0
    End
    Begin PhotoDemon.smartOptionButton OptTone 
       Height          =   360
@@ -428,7 +425,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     bModifier = bModifier + bVal
     
     'Because these modifiers are constant throughout the image, we can build look-up tables for them
-    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    Dim rLookup(0 To 255) As Byte, gLookUp(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -527,7 +524,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         b = Clamp0255(b + (bRgn(TONE_HIGHLIGHTS) * bTransfer(TONE_HIGHLIGHTS, b)))
         
         rLookup(x) = r
-        gLookup(x) = g
+        gLookUp(x) = g
         bLookup(x) = b
     
     Next x
@@ -548,7 +545,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         origLuminance = getLuminance(r, g, b) / 255
         
         r = rLookup(r)
-        g = gLookup(g)
+        g = gLookUp(g)
         b = bLookup(b)
         
         'If the user doesn't want us to maintain luminance, our work is done - assign the new values.

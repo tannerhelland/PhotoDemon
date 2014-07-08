@@ -32,9 +32,6 @@ Begin VB.Form FormVignette
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -44,6 +41,11 @@ Begin VB.Form FormVignette
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -124,9 +126,6 @@ Begin VB.Form FormVignette
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   60
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -136,6 +135,11 @@ Begin VB.Form FormVignette
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   100
+      Value           =   60
+      NotchPosition   =   2
+      NotchValueCustom=   50
    End
    Begin PhotoDemon.sliderTextCombo sltFeathering 
       Height          =   495
@@ -145,9 +149,6 @@ Begin VB.Form FormVignette
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   30
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -157,6 +158,9 @@ Begin VB.Form FormVignette
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   100
+      Value           =   30
    End
    Begin PhotoDemon.sliderTextCombo sltTransparency 
       Height          =   495
@@ -166,9 +170,6 @@ Begin VB.Form FormVignette
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   80
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -178,6 +179,9 @@ Begin VB.Form FormVignette
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   100
+      Value           =   80
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
@@ -197,9 +201,6 @@ Begin VB.Form FormVignette
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -209,6 +210,11 @@ Begin VB.Form FormVignette
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent

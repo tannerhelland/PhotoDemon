@@ -103,9 +103,6 @@ Begin VB.Form FormKaleidoscope
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   16
-      Value           =   3
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -115,6 +112,11 @@ Begin VB.Form FormKaleidoscope
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   16
+      Value           =   3
+      NotchPosition   =   2
+      NotchValueCustom=   8
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
@@ -124,8 +126,6 @@ Begin VB.Form FormKaleidoscope
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   360
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -135,6 +135,8 @@ Begin VB.Form FormKaleidoscope
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   360
+      SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltAngle2 
       Height          =   495
@@ -144,8 +146,6 @@ Begin VB.Form FormKaleidoscope
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   360
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -155,6 +155,8 @@ Begin VB.Form FormKaleidoscope
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   360
+      SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
@@ -164,9 +166,6 @@ Begin VB.Form FormKaleidoscope
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -176,6 +175,11 @@ Begin VB.Form FormKaleidoscope
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   100
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.sliderTextCombo sltXCenter 
       Height          =   495
@@ -185,9 +189,6 @@ Begin VB.Form FormKaleidoscope
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -197,6 +198,11 @@ Begin VB.Form FormKaleidoscope
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   495
@@ -206,9 +212,6 @@ Begin VB.Form FormKaleidoscope
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -218,6 +221,11 @@ Begin VB.Form FormKaleidoscope
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True

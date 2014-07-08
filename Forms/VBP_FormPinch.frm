@@ -122,9 +122,6 @@ Begin VB.Form FormPinch
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -360
-      Max             =   360
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -134,6 +131,9 @@ Begin VB.Form FormPinch
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -360
+      Max             =   360
+      SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
@@ -143,9 +143,6 @@ Begin VB.Form FormPinch
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -155,6 +152,11 @@ Begin VB.Form FormPinch
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   100
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.sliderTextCombo sltAmount 
       Height          =   495
@@ -164,10 +166,6 @@ Begin VB.Form FormPinch
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -1
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -177,6 +175,10 @@ Begin VB.Form FormPinch
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -1
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.2
    End
    Begin PhotoDemon.sliderTextCombo sltXCenter 
       Height          =   495
@@ -186,9 +188,6 @@ Begin VB.Form FormPinch
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -198,6 +197,11 @@ Begin VB.Form FormPinch
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   495
@@ -207,9 +211,6 @@ Begin VB.Form FormPinch
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -219,6 +220,11 @@ Begin VB.Form FormPinch
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent

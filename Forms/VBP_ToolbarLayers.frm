@@ -234,6 +234,8 @@ Begin VB.Form toolbar_Layers
       EndProperty
       Max             =   100
       Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin VB.Label lblLayerSettings 
       Alignment       =   1  'Right Justify
@@ -1125,7 +1127,6 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
     If mouseInResizeTerritory Then
     
         'Change the cursor to a resize cursor
-        'cMouseEventsForm.setSystemCursor IDC_SIZEWE
         setSizeWECursor Me
         
         If (Button = vbLeftButton) Then
@@ -1138,16 +1139,15 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             ' MouseUp event, so instead, we mimic it by checking MouseMove and m_WeAreResponsibleForResize = TRUE.
             Exit Sub
             
-            'Notify the window manager of the change, so it can reflow any neighboring windows
-            'g_WindowManager.notifyToolboxResized
-            
         End If
         
     Else
         setArrowCursor Me
     End If
     
-    'Check for mouse release
+    'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
+    ' means we can free the release code and resize the window now.  (On some OS/theme combinations, the canvas will
+    ' live-resize as the mouse is moved.  On others, the canvas won't redraw until the mouse is released.)
     If m_WeAreResponsibleForResize Then
         
         m_WeAreResponsibleForResize = False

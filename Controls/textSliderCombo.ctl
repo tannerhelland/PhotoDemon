@@ -176,8 +176,63 @@ Private curSliderStyle As SLIDER_TRACK_STYLE
 Private gradColorLeft As Long, gradColorRight As Long, gradColorMiddle As Long
 Private gradMiddleValue As Double
 
+'Notch positioning.  This can be changed at run-time or design-time, and it will (obviously) affect where the "zero-position" notch
+' appears.  When "Automatic" is selected, PD will automatically set the notch to one of two places: 0 (if 0 is a selectable position),
+' or the control's minimum value.  For some controls, no notch may be wanted - in this case, use the "none" style.  Finally, a custom
+' position may be required for some tools, like Gamma, where the default value isn't obvious (1.0 in that case), or the Opacity slider,
+' where the default is 100, not 0.
+Public Enum SLIDER_NOTCH_POSITION
+    AutomaticPosition = 0
+    DoNotDisplayNotch = 1
+    CustomPosition = 2
+End Enum
+
+#If False Then
+    Const AutomaticPosition = 0, DoNotDisplayNotch = 1, CustomPosition = 2
+#End If
+
+'Current notch positioning.  If CustomPosition is set, the corresponding NotchCustomValue will be used.
+Private curNotchPosition As SLIDER_NOTCH_POSITION
+Private customNotchValue As Double
+
 'Internal gradient DIB.  This is recreated as necessary to reflect the gradient colors and positions.
 Private m_GradientDIB As pdDIB
+
+'Notch positioning technique.  If CUSTOM is set, make sure to supply a custom value to match!
+Public Property Get NotchPosition() As SLIDER_NOTCH_POSITION
+    NotchPosition = curNotchPosition
+End Property
+
+Public Property Let NotchPosition(ByVal newPosition As SLIDER_NOTCH_POSITION)
+    
+    'Store the new position
+    curNotchPosition = newPosition
+    
+    'Redraw the control
+    redrawSlider
+    
+    'Raise the property changed event
+    PropertyChanged "NotchPosition"
+    
+End Property
+
+'Custom notch value.  This value is only used if NotchPosition = CustomPosition.
+Public Property Get NotchValueCustom() As Double
+    NotchValueCustom = customNotchValue
+End Property
+
+Public Property Let NotchValueCustom(ByVal newValue As Double)
+    
+    'Store the new position
+    customNotchValue = newValue
+    
+    'Redraw the control
+    redrawSlider
+    
+    'Raise the property changed event
+    PropertyChanged "NotchValueCustom"
+    
+End Property
 
 'Gradient colors.  For the two-color gradient style, only colors Left and Right are relevant.  Color Middle is used for the
 ' 3-color style only, and note that it *must* be accompanied by an owner-supplied middle position value.
@@ -603,8 +658,16 @@ Private Sub UserControl_InitProperties()
     gradColorMiddle = RGB(121, 131, 135)
     
     'This default gradient middle value is useless; if you use the 3-color gradient style, MAKE CERTAIN TO SPECIFY THIS VALUE!
-    GradientMiddleValue = -1
-    gradMiddleValue = -1
+    GradientMiddleValue = 0
+    gradMiddleValue = 0
+    
+    'Default notch position; for most controls, it should be set to AUTOMATIC.  If CUSTOM is set, make sure to supply whatever
+    ' custom value you want in the corresponding property!
+    NotchPosition = AutomaticPosition
+    curNotchPosition = AutomaticPosition
+    
+    NotchValueCustom = 0
+    customNotchValue = 0
     
 End Sub
 
@@ -622,7 +685,9 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         GradientColorLeft = .ReadProperty("GradientColorLeft", RGB(0, 0, 0))
         GradientColorRight = .ReadProperty("GradientColorRight", RGB(255, 255, 255))
         GradientColorMiddle = .ReadProperty("GradientColorMiddle", RGB(121, 131, 135))
-        GradientMiddleValue = .ReadProperty("GradientMiddleValue", -1)
+        GradientMiddleValue = .ReadProperty("GradientMiddleValue", 0)
+        NotchPosition = .ReadProperty("NotchPosition", 0)
+        NotchValueCustom = .ReadProperty("NotchValueCustom", 0)
     End With
     
     'These values should have already been set by their respective property read, but I list them here to help me remember
@@ -637,6 +702,9 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     'gradColorRight = GradientColorRight
     'gradColorMiddle = GradientColorMiddle
     'gradMiddleValue = GradientMiddleValue
+    
+    'curNotchPosition = NotchPosition
+    'customNotchValue = NotchValueCustom
     
 End Sub
 
@@ -696,7 +764,9 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "GradientColorLeft", gradColorLeft, RGB(0, 0, 0)
         .WriteProperty "GradientColorRight", gradColorRight, RGB(255, 255, 255)
         .WriteProperty "GradientColorMiddle", gradColorMiddle, RGB(121, 131, 135)
-        .WriteProperty "GradientMiddleValue", gradMiddleValue, -1
+        .WriteProperty "GradientMiddleValue", gradMiddleValue, 0
+        .WriteProperty "NotchPosition", curNotchPosition, 0
+        .WriteProperty "NotchValueCustom", customNotchValue, 0
     End With
     
 End Sub
@@ -761,18 +831,6 @@ Private Sub redrawSlider()
                 'Draw a highlighted line between the slider position and our calculated relevant minimum
                 GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, customY, relevantSliderPosX, customY, sliderEdgeColor, 255, m_trackDiameter + 1, True, LineCapRound
                 
-                'Also, if the relevant minimum value is not the control's minimum value, draw a slight notch at the 0 position,
-                ' to help orient the user to what the control's default value position is.
-                If relevantMin <> controlMin Then
-                
-                    notchSize = (m_SliderAreaHeight - m_trackDiameter) \ 2 - 4
-                    
-                    'Draw a top notch and bottom notch
-                    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, 1, customX, 1 + notchSize, trackColor, 255, 1, True, LineCapFlat
-                    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, trackColor, 255, 1, True, LineCapFlat
-                    
-                End If
-                
             'No-frills slider: plain gray background (boooring - use only if absolutely necessary)
             Case NoFrills
                 GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
@@ -790,45 +848,14 @@ Private Sub redrawSlider()
                 ' sharp 1px border.
                 m_GradientDIB.alphaBlendToDC tmpDIB.getDIBDC, 255, getTrackMinPos - (m_trackDiameter \ 2), 0
                 
-                'Three-point gradients will have a middle point that sits somewhere inside the slider area.  Draw notches around that point
-                ' to help orient the user.
-                If curSliderStyle = GradientThreePoint Then
-                
-                    notchSize = (m_SliderAreaHeight - m_trackDiameter) \ 2 - 4
-                    
-                    'Convert the gradient middle point into an actual pixel position on the track
-                    getCustomValueCoordinates GradientMiddleValue, customX, customY
-                    
-                    'Draw a top notch and bottom notch
-                    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, 1, customX, 1 + notchSize, trackColor, 255, 1, True, LineCapFlat
-                    GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, trackColor, 255, 1, True, LineCapFlat
-                
-                'Two-point and hue gradients use the same notch rules as standard sliders; show one if the relevant 0-location
-                ' is *not* located at the far left.
-                Else
-                
-                    If (0 > controlMin) And (0 <= controlMax) Then
-                        
-                        relevantMin = 0
-                
-                        'Convert our newly calculated relevant min value into an actual pixel position on the track
-                        getCustomValueCoordinates relevantMin, customX, customY
-                        
-                        notchSize = (m_SliderAreaHeight - m_trackDiameter) \ 2 - 4
-                        
-                        'Draw a top notch and bottom notch
-                        GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, 1, customX, 1 + notchSize, trackColor, 255, 1, True, LineCapFlat
-                        GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, trackColor, 255, 1, True, LineCapFlat
-                        
-                    End If
-                
-                End If
-            
             Case CustomOwnerDrawn
         
         End Select
-            
-    'Control is disabled; draw a plain track in the background
+        
+        'Before carrying on, draw a slight notch above and below the slider track, using the value specified by the associated property
+        drawNotchToDIB tmpDIB, trackColor
+        
+    'Control is disabled; draw a plain track in the background, but no notch or other frills
     Else
         GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
     End If
@@ -859,6 +886,71 @@ Private Sub redrawSlider()
     Set backDIB = Nothing
     Set tmpDIB = Nothing
 
+End Sub
+
+'Render a slight notch at the specified position on the specified DIB.  Note that this sub WILL automatically convert a custom notch
+' value into it's appropriate x-coordinate; the caller is not responsible for that.
+Private Sub drawNotchToDIB(ByRef dstDIB As pdDIB, ByVal trackColor As Long)
+    
+    'First, see if a notch needs to be drawn.  If the notch mode is "none", exit now.
+    If curNotchPosition = DoNotDisplayNotch Then Exit Sub
+    
+    Dim renderNotchValue As Double, renderNotchPosition As Double
+    
+    'For controls where the notch would be drawn at the "minimum value" position, I prefer to keep a clean visual style and
+    ' not draw a redundant notch (as the filled slider conveys the exact same message).  For such controls, notch display
+    ' is automatically overridden.
+    Dim overrideNotchDraw As Boolean
+    overrideNotchDraw = False
+    
+    'Next, calculate a notch position as necessary.  If the notch mode is "automatic", this function is responsible for
+    ' determining what notch value to use.
+    If curNotchPosition = AutomaticPosition Then
+    
+        'The automatic position varies according to a few factors.  First, some slider styles have their own notch calculations.
+        If curSliderStyle = GradientThreePoint Then
+        
+            'Three-point gradients always display a notch at the position of the middle gradient point; this is the assumed default
+            ' value of the control.
+            renderNotchValue = GradientMiddleValue
+        
+        'All other slider styles use the same heuristic for automatic notch positioning.  If 0 is available, use it.
+        ' Otherwise, use the control's minimum value.
+        Else
+            
+            If (0 > controlMin) And (0 <= controlMax) Then
+                renderNotchValue = 0
+            Else
+                renderNotchValue = controlMin
+                
+                'To keep sliders visually clean, notches are not drawn unless useful, and notches at the obvious minimum position
+                ' serve no purpose - so override the entire notch drawing process.
+                overrideNotchDraw = True
+            End If
+            
+        End If
+    
+    'If the notch position is not "do not display", and also not "automatic", it must be custom.  Retrieve that value now.
+    Else
+        renderNotchValue = customNotchValue
+    End If
+    
+    If Not overrideNotchDraw Then
+    
+        'Convert our calculated notch *value* into an actual *pixel position* on the track
+        Dim customX As Single, customY As Single
+        getCustomValueCoordinates renderNotchValue, customX, customY
+        
+        'Calculate the height of the notch; this varies by DPI, which is automatically factored into m_trackDiameter
+        Dim notchSize As Single
+        notchSize = (m_SliderAreaHeight - m_trackDiameter) \ 2 - 4
+        
+        'Draw a notch above and below the slider's track, then exit
+        GDI_Plus.GDIPlusDrawLineToDC dstDIB.getDIBDC, customX, 1, customX, 1 + notchSize, trackColor, 255, 1, True, LineCapFlat
+        GDI_Plus.GDIPlusDrawLineToDC dstDIB.getDIBDC, customX, m_SliderAreaHeight - 1, customX, m_SliderAreaHeight - 1 - notchSize, trackColor, 255, 1, True, LineCapFlat
+        
+    End If
+    
 End Sub
 
 'When using a two-color or three-color gradient track style, this function can be called to recreate the background track DIB.

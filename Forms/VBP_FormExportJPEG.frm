@@ -124,6 +124,218 @@ Begin VB.Form dialog_ExportJPEG
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4695
+      Index           =   0
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   481
+      TabIndex        =   4
+      Top             =   1080
+      Width           =   7215
+      Begin VB.ComboBox cmbSaveQuality 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   120
+         Style           =   2  'Dropdown List
+         TabIndex        =   8
+         Top             =   240
+         Width           =   2775
+      End
+      Begin VB.ComboBox cmbSubsample 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   720
+         Style           =   2  'Dropdown List
+         TabIndex        =   7
+         ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
+         Top             =   4230
+         Width           =   6375
+      End
+      Begin VB.ComboBox cmbAutoQuality 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   360
+         Style           =   2  'Dropdown List
+         TabIndex        =   5
+         Top             =   1245
+         Width           =   6735
+      End
+      Begin PhotoDemon.smartCheckBox chkOptimize 
+         Height          =   540
+         Left            =   360
+         TabIndex        =   6
+         Top             =   2670
+         Width           =   3105
+         _ExtentX        =   5477
+         _ExtentY        =   953
+         Caption         =   "optimize compression tables"
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkProgressive 
+         Height          =   540
+         Left            =   360
+         TabIndex        =   9
+         Top             =   3150
+         Width           =   2835
+         _ExtentX        =   5001
+         _ExtentY        =   953
+         Caption         =   "use progressive encoding"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkSubsample 
+         Height          =   540
+         Left            =   360
+         TabIndex        =   10
+         ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
+         Top             =   3630
+         Width           =   2820
+         _ExtentX        =   4974
+         _ExtentY        =   953
+         Caption         =   "use specific subsampling:"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuality 
+         Height          =   495
+         Left            =   2880
+         TabIndex        =   11
+         Top             =   180
+         Width           =   4335
+         _ExtentX        =   7223
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   1
+         Max             =   99
+         Value           =   90
+         NotchPosition   =   1
+      End
+      Begin PhotoDemon.smartCheckBox chkColorMatching 
+         Height          =   480
+         Left            =   360
+         TabIndex        =   12
+         Top             =   1665
+         Width           =   5085
+         _ExtentX        =   8969
+         _ExtentY        =   847
+         Caption         =   "use perceptive color matching (slower, more accurate)"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "automatic quality detection:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   120
+         TabIndex        =   21
+         Top             =   810
+         Width           =   2940
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "advanced quality settings:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   120
+         TabIndex        =   13
+         Top             =   2310
+         Width           =   2745
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
       Index           =   1
       Left            =   5880
       ScaleHeight     =   313
@@ -255,217 +467,6 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   16
          Top             =   600
          Width           =   4245
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   0
-      Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
-      TabIndex        =   4
-      Top             =   1080
-      Width           =   7215
-      Begin VB.ComboBox cmbSaveQuality 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   120
-         Style           =   2  'Dropdown List
-         TabIndex        =   8
-         Top             =   240
-         Width           =   2775
-      End
-      Begin VB.ComboBox cmbSubsample 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   720
-         Style           =   2  'Dropdown List
-         TabIndex        =   7
-         ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-         Top             =   4230
-         Width           =   6375
-      End
-      Begin VB.ComboBox cmbAutoQuality 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   360
-         Style           =   2  'Dropdown List
-         TabIndex        =   5
-         Top             =   1245
-         Width           =   6735
-      End
-      Begin PhotoDemon.smartCheckBox chkOptimize 
-         Height          =   540
-         Left            =   360
-         TabIndex        =   6
-         Top             =   2670
-         Width           =   3105
-         _ExtentX        =   5477
-         _ExtentY        =   953
-         Caption         =   "optimize compression tables"
-         Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkProgressive 
-         Height          =   540
-         Left            =   360
-         TabIndex        =   9
-         Top             =   3150
-         Width           =   2835
-         _ExtentX        =   5001
-         _ExtentY        =   953
-         Caption         =   "use progressive encoding"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkSubsample 
-         Height          =   540
-         Left            =   360
-         TabIndex        =   10
-         ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-         Top             =   3630
-         Width           =   2820
-         _ExtentX        =   4974
-         _ExtentY        =   953
-         Caption         =   "use specific subsampling:"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuality 
-         Height          =   495
-         Left            =   2880
-         TabIndex        =   11
-         Top             =   180
-         Width           =   4335
-         _ExtentX        =   7223
-         _ExtentY        =   873
-         Min             =   1
-         Max             =   99
-         Value           =   90
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkColorMatching 
-         Height          =   480
-         Left            =   360
-         TabIndex        =   12
-         Top             =   1665
-         Width           =   5085
-         _ExtentX        =   8969
-         _ExtentY        =   847
-         Caption         =   "use perceptive color matching (slower, more accurate)"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "automatic quality detection:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   120
-         TabIndex        =   21
-         Top             =   810
-         Width           =   2940
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "advanced quality settings:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   13
-         Top             =   2310
-         Width           =   2745
       End
    End
 End

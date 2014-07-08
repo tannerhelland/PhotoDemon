@@ -73,7 +73,6 @@ Begin VB.Form FormSplitTone
       Max             =   100
       SliderTrackStyle=   3
       GradientColorMiddle=   16777215
-      GradientMiddleValue=   0
    End
    Begin PhotoDemon.colorSelector cpHighlight 
       Height          =   615
@@ -114,6 +113,8 @@ Begin VB.Form FormSplitTone
       EndProperty
       Max             =   100
       Value           =   50
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin VB.Label lblStrength 
       AutoSize        =   -1  'True

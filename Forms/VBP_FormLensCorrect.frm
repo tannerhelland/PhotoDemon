@@ -121,9 +121,6 @@ Begin VB.Form FormLensCorrect
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   20
-      SigDigits       =   2
-      Value           =   3
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -133,6 +130,9 @@ Begin VB.Form FormLensCorrect
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   20
+      SigDigits       =   2
+      Value           =   3
    End
    Begin PhotoDemon.sliderTextCombo sltZoom 
       Height          =   495
@@ -142,10 +142,6 @@ Begin VB.Form FormLensCorrect
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   3
-      SigDigits       =   2
-      Value           =   1.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -155,6 +151,12 @@ Begin VB.Form FormLensCorrect
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   3
+      SigDigits       =   2
+      Value           =   1.5
+      NotchPosition   =   2
+      NotchValueCustom=   1
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
@@ -164,9 +166,6 @@ Begin VB.Form FormLensCorrect
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   100
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -176,6 +175,11 @@ Begin VB.Form FormLensCorrect
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   100
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True

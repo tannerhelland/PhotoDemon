@@ -49,9 +49,6 @@ Begin VB.Form dialog_ExportWebP
       Width           =   5775
       _ExtentX        =   15055
       _ExtentY        =   873
-      Min             =   1
-      Max             =   100
-      Value           =   80
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -61,6 +58,10 @@ Begin VB.Form dialog_ExportWebP
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   100
+      Value           =   80
+      NotchPosition   =   1
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom

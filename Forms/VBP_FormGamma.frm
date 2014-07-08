@@ -93,10 +93,6 @@ Begin VB.Form FormGamma
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   0.01
-      Max             =   3
-      SigDigits       =   2
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -107,6 +103,12 @@ Begin VB.Form FormGamma
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   0
+      Min             =   0.01
+      Max             =   3
+      SigDigits       =   2
+      Value           =   1
+      NotchPosition   =   2
+      NotchValueCustom=   1
    End
    Begin PhotoDemon.sliderTextCombo sltGamma 
       Height          =   495
@@ -117,10 +119,6 @@ Begin VB.Form FormGamma
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   0.01
-      Max             =   3
-      SigDigits       =   2
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -131,6 +129,12 @@ Begin VB.Form FormGamma
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   0
+      Min             =   0.01
+      Max             =   3
+      SigDigits       =   2
+      Value           =   1
+      NotchPosition   =   2
+      NotchValueCustom=   1
    End
    Begin PhotoDemon.sliderTextCombo sltGamma 
       Height          =   495
@@ -141,10 +145,6 @@ Begin VB.Form FormGamma
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   0.01
-      Max             =   3
-      SigDigits       =   2
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -155,6 +155,12 @@ Begin VB.Form FormGamma
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   0
+      Min             =   0.01
+      Max             =   3
+      SigDigits       =   2
+      Value           =   1
+      NotchPosition   =   2
+      NotchValueCustom=   1
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -358,7 +364,7 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
     If bGamma = 0 Then bGamma = 0.01
     
     'Gamma can be easily applied using a look-up table
-    Dim gLookup(0 To 2, 0 To 255) As Byte
+    Dim gLookUp(0 To 2, 0 To 255) As Byte
     Dim tmpVal As Double
     
     For y = 0 To 2
@@ -377,7 +383,7 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
         
-        gLookup(y, x) = tmpVal
+        gLookUp(y, x) = tmpVal
     Next x
     Next y
         
@@ -392,9 +398,9 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
         b = ImageData(QuickVal, y)
                 
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = gLookup(0, r)
-        ImageData(QuickVal + 1, y) = gLookup(1, g)
-        ImageData(QuickVal, y) = gLookup(2, b)
+        ImageData(QuickVal + 2, y) = gLookUp(0, r)
+        ImageData(QuickVal + 1, y) = gLookUp(1, g)
+        ImageData(QuickVal, y) = gLookUp(2, b)
         
     Next y
         If toPreview = False Then

@@ -70,9 +70,6 @@ Begin VB.Form FormGrayscale
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   873
-      Min             =   2
-      Max             =   256
-      Value           =   4
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -82,6 +79,11 @@ Begin VB.Form FormGrayscale
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   2
+      Max             =   256
+      Value           =   4
+      NotchPosition   =   2
+      NotchValueCustom=   256
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
