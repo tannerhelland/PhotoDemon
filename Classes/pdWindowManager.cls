@@ -15,9 +15,14 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 03/June/14
-'Last update: new setFirstRunMainWindowPosition() position to be used when PD is run for the first time; it will calculate
-'              an initial window size and placement appropriate for the current monitor resolution.
+'Last updated: 08/July/14
+'Last update: myriad window manager optimizations.  Now that I'm more familiar with the inner workings of Windows' handling
+'              of windows, I've been better able to make use of features like layered windows to improve performance, while
+'              also clearing out some old "be extra cautious" code from when floating image windows were supported.  I'd
+'              like to continue to trim down this class, but it should be noted that changes here have sweeping repercussions
+'              across OS version, theming, and many other factors outside my control - so changes need to be very carefully
+'              tested on as many PCs as possible, to make sure I haven't broken things that used to work.  (Note that custom
+'              window management features like "Aero Snap" are particularly problematic in this regard - so test carefully!)
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2014, it became time to rewrite its window method once again - this time, to a tabbed interface in line with the major
@@ -368,8 +373,9 @@ Private numOfExtraWindows As Long
 
 'When the main form is minimized, a flurry of window messages are sent to all child windows, including instructions to resize to (0, 0).
 ' To prevent this size from being synched as the "last-known window size", we track minimize mode, and disregard all location and
-' size synching while it is active.
+' size syncing while it is active.
 Private insideMinimizeMode As Boolean
+Private m_MainFormRectBeforeMinimize As winRect, m_MainFormStateBeforeMinimize As Long
 
 'Retrieve the current tabstrip alignment
 Public Function getImageTabstripAlignment() As AlignConstants
@@ -870,8 +876,8 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
     End If
     
     'Reposition the window, but note that we do not want it moved - only resized
-    SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOMOVE Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOREDRAW
-    UpdateWindow pdWindows(winIndex).hWnd
+    SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOMOVE Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOREDRAW Or SWP_NOSENDCHANGING
+    'UpdateWindow pdWindows(winIndex).hWnd
     
     'SOME THOUGHTS:
     ' The code above still works, but it shouldn't - SetWindowPos is not requesting a redraw, so why is the window being redrawn?
@@ -990,10 +996,14 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                     SetParent pdWindows(winIndex).hWnd, 0
                     
                     'Set the border style to fixed toolbar
-                    newWinStyle = WS_BORDER Or WS_CAPTION Or WS_SYSMENU
-                    If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
+                    newWinStyle = WS_BORDER Or WS_CAPTION Or WS_SYSMENU Or WS_CLIPCHILDREN
+                    If (Not isFirstLoad) And pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
-                    SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW 'Or WS_EX_LAYERED
+                    SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW Or WS_EX_LAYERED
+                    
+                    'Start with full window opacity; it's important to call this here, as WS_EX_LAYERED won't stick until
+                    ' SetLayeredWindowAttributes has been called at least once (http://msdn.microsoft.com/en-us/library/windows/desktop/ms632599%28v=vs.85%29.aspx#layered)
+                    setWindowTranslucency pdWindows(winIndex).hWnd, 255
                     
                     'Remember the window's current style.  This saves us having to redraw it in the future if its style is acceptable.
                     pdWindows(winIndex).previousRenderStyle = FLOAT_STYLE
@@ -1035,7 +1045,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                     
                     'Remove the window border
                     newWinStyle = WS_CHILD Or WS_CLIPCHILDREN
-                    If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
+                    If (Not isFirstLoad) And pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE 'Or WS_EX_LAYERED
                     SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, pdWindows(winIndex).originalWidthClient, pdWindows(winIndex).originalHeightClient, SWP_NOMOVE Or SWP_FRAMECHANGED Or SWP_NOOWNERZORDER Or SWP_NOCOPYBITS
@@ -1648,18 +1658,7 @@ End Sub
 
 'Set a toolbar window's translucency.  We do this to make them semi-transparent when they do not have the mouse over them.
 Private Sub setWindowTranslucency(ByVal srcHwnd As Long, Optional ByVal nTransparency As Long = 255)
-
-    Dim tmpAttributes As Long
-    tmpAttributes = GetWindowLong(srcHwnd, GWL_EXSTYLE)
-    
-    If nTransparency = 255 Then
-        SetLayeredWindowAttributes srcHwnd, 0, nTransparency, LWA_ALPHA
-        SetWindowLong srcHwnd, GWL_EXSTYLE, tmpAttributes And Not WS_EX_LAYERED
-    Else
-        SetWindowLong srcHwnd, GWL_EXSTYLE, tmpAttributes Or WS_EX_LAYERED
-        SetLayeredWindowAttributes srcHwnd, 0, nTransparency, LWA_ALPHA
-    End If
-       
+    SetLayeredWindowAttributes srcHwnd, 0, nTransparency, LWA_ALPHA
 End Sub
 
 'Window z-order is a difficult thing to get right.  It's a complicated interplay of what is floating, what is not, and it must
@@ -1755,21 +1754,18 @@ Public Sub notifyImageTabStripResized()
 End Sub
 
 'When the user has manually resized one of the toolboxes, we need to adjust other toolboxes to match.
-Public Sub notifyToolboxResized(Optional ByVal hWndOfResizeSource As Long = 0)
+Public Sub notifyToolboxResized(Optional ByVal hWndOfResizeSource As Long = 0, Optional ByVal refreshCanvasToo As Boolean = True)
     
     'Retrieve the main form's current winRect
     Dim curWinRect As winRect
     GetWindowRect mainWindowHwnd, curWinRect
     
-    'Resize and/or move each child window as necessary
-    Dim i As Long
-    For i = 0 To numOfPDWindows - 1
-        If (pdWindows(i).hWnd <> hWndOfResizeSource) And (pdWindows(i).hWnd <> mainWindowHwnd) Then requestWindowRedraw i, curWinRect
-    Next i
+    'The image tabstrip should be immediately resized; without this, the forms may overlap in an ugly way until
+    ' the mouse button is released.
+    If pdWindows(imageTabstripIndex).isVisible Then requestWindowRedraw imageTabstripIndex, curWinRect
     
-    'Ask the main form's canvas to redraw itself (note: this should happen automatically, when the main from is resized
-    ' by the above loop.
-    FormMain.refreshAllCanvases
+    'Ask the main form's canvas to redraw itself, per the passed parameter
+    If refreshCanvasToo Then FormMain.refreshAllCanvases
     
 End Sub
 
@@ -1934,7 +1930,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     Dim i As Long
     
     'Before doing anything else, check the user-supplied param.  If it is >= 64, we know this is a child (toolbar or image) window.
-    ' (We know this because we add the user parameter when subclassing starts, and we add it using the system 64 + "index in array").
+    ' (We know this because we add the user parameter when subclassing starts, and we add it using the system "64 + index in array").
     If lParamUser >= 64 Then
     
         'Retrieve the window's index in our master tracking array
@@ -2026,30 +2022,34 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 pdWindows(winIndex).offsetX = curWinRect.x1 - parentRect.x1
                 pdWindows(winIndex).offsetY = curWinRect.y1 - parentRect.y1
                 
-                If (Not mainFormTriggeredChange) And (uMsg = WM_SIZING) Then notifyToolboxResized lng_hWnd
+                If (Not mainFormTriggeredChange) And (uMsg = WM_SIZING) Then notifyToolboxResized lng_hWnd, IIf(g_IsThemingEnabled, True, False)
                 
             'The mouse is moving inside this child window.
             Case WM_MOUSEMOVE, WM_NCMOUSEMOVE
             
-                Select Case pdWindows(winIndex).typeOfWindow
+                If toolbarsFloating Then
                 
-                    'If this is a toolbar window, and it was previously made transparent, restore its opacity now.
-                    Case TOOLBAR_WINDOW
-                        If pdWindows(winIndex).hasBeenMadeTransparent And toolbarsFloating Then
-                            pdWindows(winIndex).hasBeenMadeTransparent = False
-                            setWindowTranslucency lng_hWnd, 255
-                        End If
+                    Select Case pdWindows(winIndex).typeOfWindow
                     
-                    'If this is an image window, and we have non-transparent floating toolbar windows, change that now.
-                    Case IMAGE_TABSTRIP
-                        For i = 0 To numOfPDWindows - 1
-                            If (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) And (Not pdWindows(i).hasBeenMadeTransparent) And toolbarsFloating Then
-                                pdWindows(i).hasBeenMadeTransparent = True
-                                setWindowTranslucency pdWindows(i).hWnd, INACTIVE_TOOLBOX_OPACITY
+                        'If this is a toolbar window, and it was previously made transparent, restore its opacity now.
+                        Case TOOLBAR_WINDOW
+                            If pdWindows(winIndex).hasBeenMadeTransparent Then
+                                pdWindows(winIndex).hasBeenMadeTransparent = False
+                                setWindowTranslucency lng_hWnd, 255
                             End If
-                        Next i
-                
-                End Select
+                        
+                        'If this is an image window, and we have non-transparent floating toolbar windows, change that now.
+                        Case IMAGE_TABSTRIP
+                            For i = 0 To numOfPDWindows - 1
+                                If (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) And (Not pdWindows(i).hasBeenMadeTransparent) Then
+                                    pdWindows(i).hasBeenMadeTransparent = True
+                                    setWindowTranslucency pdWindows(i).hWnd, INACTIVE_TOOLBOX_OPACITY
+                                End If
+                            Next i
+                    
+                    End Select
+                    
+                End If
                 
         End Select
     
@@ -2067,20 +2067,20 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
                 'lParam contains a pointer to the window's rect location.  Retrieve it now.
                 Call CopyMemory(curWinRect, ByVal lParam, Len(curWinRect))
-                
+
                 mainFormTriggeredChange = True
-                
+
                 'Move each child window, while retaining the current offset.  Note that docked (child) windows do not have to
                 ' be manually moved - Windows takes care of this for us.
                 For i = 0 To numOfPDWindows - 1
                     moveWindowToLastKnownLocation i, curWinRect
                 Next i
-                
+
                 mainFormTriggeredChange = False
-                
+
                 'Remember the main window's location
                 updateStoredWindowLocation mainWindowIndex
-                
+
                 'Notify the color management engine that the main window may have changed monitors, so it may need to
                 ' be redrawn with a new color profile.
                 If g_OpenImageCount > 0 Then checkParentMonitor
@@ -2089,19 +2089,19 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             Case WM_SIZING, WM_SIZE
                 
                 mainFormTriggeredChange = True
-                
+
                 'Note that in the case of WM_SIZING, we want to make sure the user is not stretching the window below an acceptable
                 ' minimum size.  Check that now.
                 If uMsg = WM_SIZING Then
-                
+
                     userSizeTooSmall = False
-                    
+
                     'wParam contains a value that identifies the edge being used for the resize.
                     resizeHandle = wParam
-                    
+
                     'lParam contains a pointer to the window's rect location.  Retrieve it now.
                     CopyMemory curWinRect, ByVal lParam, Len(curWinRect)
-                    
+
                     'If the user has set the window size too small, force the window to a minimum size (640x480).
                     If (curWinRect.x2 - curWinRect.x1) < PD_MAIN_WINDOW_MINIMUM_WIDTH Then
                         userSizeTooSmall = True
@@ -2111,7 +2111,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             curWinRect.x2 = curWinRect.x1 + PD_MAIN_WINDOW_MINIMUM_WIDTH
                         End If
                     End If
-                    
+
                     If (curWinRect.y2 - curWinRect.y1) < PD_MAIN_WINDOW_MINIMUM_HEIGHT Then
                         userSizeTooSmall = True
                         If (resizeHandle = WMSZ_TOPLEFT) Or (resizeHandle = WMSZ_TOP) Or (resizeHandle = WMSZ_TOPRIGHT) Then
@@ -2120,34 +2120,34 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             curWinRect.y2 = curWinRect.y1 + PD_MAIN_WINDOW_MINIMUM_HEIGHT
                         End If
                     End If
-                    
+
                     If userSizeTooSmall Then
-                    
+
                         'Copy the new rect into place
                         CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
-                        
+
                         'Because subsequent functions need access to the new rect data, we cheat a bit here - we use SetWindowPos to immediately
                         ' update the main window's rect, but we combine flags so that no new window messages are sent (to prevent infinite recursion of
                         ' window changes causing more window changes).
-                        SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER 'Or SWP_NOSENDCHANGING
-                        
+                        SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
+
                     End If
-                
+
                 End If
-                
+
                 'Re-retrieve the current window rect for subsequent functions
                 GetWindowRect lng_hWnd, curWinRect
-                
+
                 'Remember the main window's location
                 updateStoredWindowLocation mainWindowIndex
-                
+
                 'Resize and/or move each child window as necessary
                 For i = 0 To numOfPDWindows - 1
-                    
-                    requestWindowRedraw i, curWinRect
-                    
+
+                    If i <> mainWindowIndex Then requestWindowRedraw i, curWinRect
+
                 Next i
-                
+
                 mainFormTriggeredChange = False
                                
                                 
@@ -2159,98 +2159,67 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' To obtain the correct result when testing the value of wParam, an application must combine the value 0xFFF0 with
                 ' the wParam value by using the bitwise AND operator.
                 wParam = wParam And WM_SYSCOMMAND_WPARAM_MASK
-                
+
                 'WM_SYSCOMMAND functions are difficult to handle, especially on Win 7 where Aero Snap features interact with them
                 ' in completely unpredictable ways.  This code block (which can be safely commented out) is helpful for seeing
                 ' what messages the window manager receives from different actions.
                 If Not g_IsProgramCompiled Then
-                
+
                     Select Case wParam
-                    
+
                         Case SC_MAXIMIZE
                             Debug.Print "Received system maximize message " & bBefore
-                            
+
                         Case SC_RESTORE
                             Debug.Print "Received system restore window message " & bBefore
-                            
+
                         Case SC_SIZE
                             Debug.Print "Received system window size message " & bBefore
-                            
+
                         Case SC_MOVE
                             Debug.Print "Received system window move message " & bBefore
-                            
+
                         Case Else
                             Debug.Print "Received unknown system window message: " & wParam
-                            
+
                     End Select
-                    
+
                 End If
                 
-                If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Or (wParam = SC_MOVE) Then
+                'RANDOM NOTE: for reasons I don't fully understand, bBefore will not always evaluate properly if used as a standalone
+                ' boolean value (e.g. If Not bBefore Then...).  It must be *explicitly* checked against a VB Boolean type in order
+                ' to return correct values.
+                
+                'The OS will automatically handle window restoration for us, but we need to make sure to resync all window positions
+                ' afterwards.  If we don't do this, PD's internal window position values will fall out of sync.
+                If ((wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Or (wParam = SC_MOVE)) And (bBefore = False) Then
+                
+                    GetWindowRect mainWindowHwnd, curWinRect
+                    For i = 0 To numOfPDWindows - 1
+                        requestWindowResync i
+                        requestWindowRedraw i, pdWindows(mainWindowIndex).lastPosition
+                    Next i
                     
-                    If Not bBefore Then
-                        
-                        'Manually retrieve the new window position.
-                        GetWindowRect lng_hWnd, curWinRect
-                        
-                        'If the window was previously minimized, restore any child windows now
-                        For i = 0 To numOfPDWindows - 1
-                            If pdWindows(i).forciblyMinimized Then
-                                pdWindows(i).forciblyMinimized = False
-                                pdWindows(i).formReference.WindowState = vbNormal
-                                moveWindowToLastKnownLocation i, curWinRect, True
-                            End If
-                        Next i
-                        
-                        'Resize each child window, while retaining its current offset
-                        For i = 0 To numOfPDWindows - 1
-                            requestWindowRedraw i, curWinRect
-                            
-                            'Toolbar windows may not redraw properly after restoration, so forcibly update them now
-                            If pdWindows(i).typeOfWindow = TOOLBAR_WINDOW Then forceFullWindowRefresh i
-                            
-                        Next i
-                        
-                        If (wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Then
-                            Debug.Print "LEAVING MINIMIZED MODE"
-                            insideMinimizeMode = False
-                        End If
-                        
-                        'Because image window zOrder may get botched by this action, forcibly restore the active image to the foreground.
-                        'restoreActiveImageToForeground "PD maximized or restored"
-                                            
-                    End If
-                                        
+                    If insideMinimizeMode Then insideMinimizeMode = False
+                
+                End If
+                
                 'When minimizing, check all windows, and if one has not been minimized, minimize it now
-                ElseIf wParam = SC_MINIMIZE Then
-                
-                    If bBefore Then
-                
-                        Debug.Print "ENTERING MINIMIZED MODE"
-                        insideMinimizeMode = True
+                If (wParam = SC_MINIMIZE) And (bBefore = True) Then
                     
-                        For i = 0 To numOfPDWindows - 1
-                            If Not (pdWindows(i).formReference Is Nothing) Then
-                                If pdWindows(i).formReference.WindowState <> vbMinimized Then
-                                    Debug.Print "forcibly minimizing window: " & pdWindows(i).formReference.Caption
-                                    
-                                    'Update the window's location before minimizing it
-                                    requestWindowResync i
-                                    pdWindows(i).forciblyMinimized = True
-                                    pdWindows(i).formReference.WindowState = vbMinimized
-                                    
-                                End If
-                            End If
-                        Next i
+                    'As a failsafe, update each window's location before minimizing it
+                    For i = 0 To numOfPDWindows - 1
+                        requestWindowResync i
+                    Next i
                     
-                    End If
+                    insideMinimizeMode = True
                     
                 End If
                     
             'Mouse has been moved.  If toolbars are floating, make them translucent.
             Case WM_MOUSEMOVE, WM_NCMOUSEMOVE
             
-                If Not bBefore Then
+                If bBefore = False Then
                 
                     For i = 0 To numOfPDWindows - 1
                         If (pdWindows(i).typeOfWindow = TOOLBAR_WINDOW) And (Not pdWindows(i).hasBeenMadeTransparent) And toolbarsFloating Then
@@ -2297,7 +2266,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         ' Because Show Desktop causes visual corruption of child windows, we must force a redraw of all open
                         ' toolboxes; do this by manually sending a "restore" command to the main PD window.
                         SendMessageA mainWindowHwnd, WM_SYSCOMMAND, SC_RESTORE, ByVal 0&
-                                                
+                        
+                        'Manually refresh the main window.  (Note that curWinRect doesn't matter here.)
+                        requestWindowRedraw mainWindowIndex, curWinRect
+                        
                         'Floating toolbars may fall out of sync due to the non-standard restore event; if floating, manually
                         ' restore their z-order.
                         If toolbarsFloating Then resetTopmostForAllWindows True

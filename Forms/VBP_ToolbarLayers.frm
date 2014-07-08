@@ -373,7 +373,7 @@ End Enum
 
 'Sometimes we need to make changes that will raise redraw-causing events.  Set this variable to TRUE if you want
 ' such functions to ignore their automatic redrawing.
-Private disableRedraws As Boolean
+Private m_DisableRedraws As Boolean
 
 'Extra interface images are loaded as resources at run-time
 Private img_EyeOpen As pdDIB, img_EyeClosed As pdDIB
@@ -396,7 +396,7 @@ Private m_LayerRearrangingMode As Boolean, m_LayerIndexToRearrange As Long, m_In
 
 'When we are responsible for this window resizing (because the user is resizing our window manually), we set this to TRUE.
 ' This variable is then checked before requesting additional redraws during our resize event.
-Private weAreResponsibleForResize As Boolean
+Private m_WeAreResponsibleForResize As Boolean
 
 'When the mouse is over the layer list, this will be set to TRUE
 Private m_MouseOverLayerBox As Boolean
@@ -408,7 +408,7 @@ Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     If refreshThumbnailCache Then cacheLayerThumbnails
     
     'Sync opacity, blend mode, and other controls to the currently active layer
-    disableRedraws = True
+    m_DisableRedraws = True
     If (g_OpenImageCount > 0) Then
         If (Not pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then
             
@@ -421,7 +421,7 @@ Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
         End If
     End If
     
-    disableRedraws = False
+    m_DisableRedraws = False
     
     'resizeLayerUI already calls all the proper redraw functions for us, so simply link it here
     resizeLayerUI
@@ -478,8 +478,8 @@ End Sub
 Private Sub cboBlendMode_Click()
 
     'By default, changing the drop-down will automatically update the blend mode of the selected layer, and the main viewport
-    ' will be redrawn.  When changing the blend mode programmatically, set disableRedraws to TRUE to prevent cylical redraws.
-    If disableRedraws Then Exit Sub
+    ' will be redrawn.  When changing the blend mode programmatically, set m_DisableRedraws to TRUE to prevent cylical redraws.
+    If m_DisableRedraws Then Exit Sub
 
     If g_OpenImageCount > 0 Then
     
@@ -755,6 +755,18 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         cMouseEvents.setSystemCursor IDC_ARROW
     End If
     
+    'If the user is attempting to resize the form, very slow PCs might not catch the mouse move after releasing
+    ' the resize bar.  Check for mouse release here as well, just to be safe.
+    If m_WeAreResponsibleForResize Then
+        
+        m_WeAreResponsibleForResize = False
+        
+        'If theming is disabled, window performance is so poor that the window manager will automatically
+        ' disable canvas updates until the mouse is released.  Request a full update now.
+        If (Not g_IsThemingEnabled) Then g_WindowManager.notifyToolboxResized Me.hWnd, True
+        
+    End If
+    
     'Don't process further MouseMove events if no images are loaded
     If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
     
@@ -1016,7 +1028,7 @@ Private Sub Form_Load()
     cMouseEventsForm.addInputTracker Me.hWnd, True, , , True
     cMouseEventsForm.requestKeyTracking Me.hWnd
     cMouseEventsForm.setKeyTrackers Me.hWnd, True, True, True
-    
+        
     'To prevent the parent form's cursor handler from overriding that of the child, we must manually notify pdInput to
     ' ignore cursor handling in certain situations.
     cMouseEventsForm.setCursorOverrideState True
@@ -1117,9 +1129,14 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         setSizeWECursor Me
         
         If (Button = vbLeftButton) Then
-            weAreResponsibleForResize = True
+            m_WeAreResponsibleForResize = True
             ReleaseCapture
             SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
+            
+            'A premature exit is required, because the end of this sub contains code to detect the release of the
+            ' mouse after a drag event.  Because the event is not being initiated normally, we can't detect a standard
+            ' MouseUp event, so instead, we mimic it by checking MouseMove and m_WeAreResponsibleForResize = TRUE.
+            Exit Sub
             
             'Notify the window manager of the change, so it can reflow any neighboring windows
             'g_WindowManager.notifyToolboxResized
@@ -1127,14 +1144,20 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         End If
         
     Else
-        'If Not m_MouseOverLayerBox Then cMouseEventsForm.setSystemCursor IDC_ARROW
         setArrowCursor Me
     End If
+    
+    'Check for mouse release
+    If m_WeAreResponsibleForResize Then
+        
+        m_WeAreResponsibleForResize = False
+        
+        'If theming is disabled, window performance is so poor that the window manager will automatically
+        ' disable canvas updates until the mouse is released.  Request a full update now.
+        If (Not g_IsThemingEnabled) Then g_WindowManager.notifyToolboxResized Me.hWnd, True
+        
+    End If
 
-End Sub
-
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
-    weAreResponsibleForResize = False
 End Sub
 
 Private Sub Form_Resize()
@@ -1523,9 +1546,9 @@ End Sub
 Private Sub sltLayerOpacity_Change()
 
     'By default, changing the scroll bar will automatically update the opacity value of the selected layer, and
-    ' the main viewport will be redrawn.  When changing the scrollbar programmatically, set disableRedraws to TRUE
+    ' the main viewport will be redrawn.  When changing the scrollbar programmatically, set m_DisableRedraws to TRUE
     ' to prevent cylical redraws.
-    If disableRedraws Then Exit Sub
+    If m_DisableRedraws Then Exit Sub
 
     If g_OpenImageCount > 0 Then
     
