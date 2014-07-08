@@ -71,6 +71,8 @@ Begin VB.Form FormColorTemp
       Min             =   1
       Max             =   100
       Value           =   50
+      NotchPosition   =   2
+      NotchValueCustom=   50
    End
    Begin PhotoDemon.sliderTextCombo sltTemperature 
       Height          =   495

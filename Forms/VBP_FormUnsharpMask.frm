@@ -59,7 +59,6 @@ Begin VB.Form FormUnsharpMask
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
-      Max             =   255
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -69,6 +68,7 @@ Begin VB.Form FormUnsharpMask
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   255
    End
    Begin PhotoDemon.sliderTextCombo sltAmount 
       Height          =   495
@@ -78,9 +78,6 @@ Begin VB.Form FormUnsharpMask
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
-      Min             =   0.1
-      SigDigits       =   1
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -90,6 +87,11 @@ Begin VB.Form FormUnsharpMask
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   0.1
+      SigDigits       =   1
+      Value           =   1
+      NotchPosition   =   2
+      NotchValueCustom=   1
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
@@ -99,10 +101,6 @@ Begin VB.Form FormUnsharpMask
       Width           =   5925
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   0.1
-      Max             =   200
-      SigDigits       =   1
-      Value           =   5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -112,6 +110,10 @@ Begin VB.Form FormUnsharpMask
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   0.1
+      Max             =   200
+      SigDigits       =   1
+      Value           =   5
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat

@@ -72,6 +72,8 @@ Begin VB.Form FormLensFlare
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   495
@@ -93,6 +95,8 @@ Begin VB.Form FormLensFlare
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True

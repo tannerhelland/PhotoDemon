@@ -96,6 +96,8 @@ Begin VB.Form FormSunshine
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   495
@@ -117,6 +119,8 @@ Begin VB.Form FormSunshine
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
+      NotchPosition   =   2
+      NotchValueCustom=   0.5
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom

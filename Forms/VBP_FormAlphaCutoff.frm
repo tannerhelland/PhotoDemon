@@ -60,8 +60,6 @@ Begin VB.Form dialog_AlphaCutoff
       Width           =   6615
       _ExtentX        =   11456
       _ExtentY        =   873
-      Max             =   255
-      Value           =   127
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -71,6 +69,10 @@ Begin VB.Form dialog_AlphaCutoff
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   255
+      Value           =   127
+      NotchPosition   =   2
+      NotchValueCustom=   127
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat

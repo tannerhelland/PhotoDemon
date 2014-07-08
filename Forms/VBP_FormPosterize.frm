@@ -99,9 +99,6 @@ Begin VB.Form FormPosterize
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   2
-      Max             =   64
-      Value           =   6
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -111,6 +108,9 @@ Begin VB.Form FormPosterize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   2
+      Max             =   64
+      Value           =   6
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
@@ -120,9 +120,6 @@ Begin VB.Form FormPosterize
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   2
-      Max             =   64
-      Value           =   7
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -132,6 +129,9 @@ Begin VB.Form FormPosterize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   2
+      Max             =   64
+      Value           =   7
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
@@ -141,9 +141,6 @@ Begin VB.Form FormPosterize
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   2
-      Max             =   64
-      Value           =   6
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -153,6 +150,9 @@ Begin VB.Form FormPosterize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   2
+      Max             =   64
+      Value           =   6
    End
    Begin VB.Label lblRedValues 
       AutoSize        =   -1  'True
@@ -335,12 +335,12 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     
     'New code for so-called "Intelligent Coloring"
     Dim rLookup() As Long
-    Dim gLookup() As Long
+    Dim gLookUp() As Long
     Dim bLookup() As Long
     Dim countLookup() As Long
     
     ReDim rLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
-    ReDim gLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
+    ReDim gLookUp(0 To rValue, 0 To gValue, 0 To bValue) As Long
     ReDim bLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
     ReDim countLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
     
@@ -378,7 +378,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
         'If we're doing Intelligent Coloring, place color values into a look-up table
         If smartColors = True Then
             rLookup(cR, cG, cb) = rLookup(cR, cG, cb) + r
-            gLookup(cR, cG, cb) = gLookup(cR, cG, cb) + g
+            gLookUp(cR, cG, cb) = gLookUp(cR, cG, cb) + g
             bLookup(cR, cG, cb) = bLookup(cR, cG, cb) + b
             'Also, keep track of how many colors fall into this bucket (so we can later determine an average color)
             countLookup(cR, cG, cb) = countLookup(cR, cG, cb) + 1
@@ -427,10 +427,10 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
         For b = 0 To bValue
             If countLookup(r, g, b) <> 0 Then
                 rLookup(r, g, b) = Int(Int(rLookup(r, g, b)) / Int(countLookup(r, g, b)))
-                gLookup(r, g, b) = Int(Int(gLookup(r, g, b)) / Int(countLookup(r, g, b)))
+                gLookUp(r, g, b) = Int(Int(gLookUp(r, g, b)) / Int(countLookup(r, g, b)))
                 bLookup(r, g, b) = Int(Int(bLookup(r, g, b)) / Int(countLookup(r, g, b)))
                 If rLookup(r, g, b) > 255 Then rLookup(r, g, b) = 255
-                If gLookup(r, g, b) > 255 Then gLookup(r, g, b) = 255
+                If gLookUp(r, g, b) > 255 Then gLookUp(r, g, b) = 255
                 If bLookup(r, g, b) > 255 Then bLookup(r, g, b) = 255
             End If
         Next b
@@ -451,7 +451,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
             cb = bQuick(b)
             
             ImageData(QuickVal + 2, y) = rLookup(cR, cG, cb)
-            ImageData(QuickVal + 1, y) = gLookup(cR, cG, cb)
+            ImageData(QuickVal + 1, y) = gLookUp(cR, cG, cb)
             ImageData(QuickVal, y) = bLookup(cR, cG, cb)
             
         Next y
@@ -509,12 +509,12 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     
     'New code for so-called "Intelligent Coloring"
     Dim rLookup() As Long
-    Dim gLookup() As Long
+    Dim gLookUp() As Long
     Dim bLookup() As Long
     Dim countLookup() As Long
     
     ReDim rLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
-    ReDim gLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
+    ReDim gLookUp(0 To rValue, 0 To gValue, 0 To bValue) As Long
     ReDim bLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
     ReDim countLookup(0 To rValue, 0 To gValue, 0 To bValue) As Long
     
@@ -564,7 +564,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         'If we're doing Intelligent Coloring, place color values into a look-up table
         If smartColors = True Then
             rLookup(cR, cG, cb) = rLookup(cR, cG, cb) + r
-            gLookup(cR, cG, cb) = gLookup(cR, cG, cb) + g
+            gLookUp(cR, cG, cb) = gLookUp(cR, cG, cb) + g
             bLookup(cR, cG, cb) = bLookup(cR, cG, cb) + b
             'Also, keep track of how many colors fall into this bucket (so we can later determine an average color)
             countLookup(cR, cG, cb) = countLookup(cR, cG, cb) + 1
@@ -631,10 +631,10 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
         For b = 0 To bValue
             If countLookup(r, g, b) <> 0 Then
                 rLookup(r, g, b) = Int(Int(rLookup(r, g, b)) / Int(countLookup(r, g, b)))
-                gLookup(r, g, b) = Int(Int(gLookup(r, g, b)) / Int(countLookup(r, g, b)))
+                gLookUp(r, g, b) = Int(Int(gLookUp(r, g, b)) / Int(countLookup(r, g, b)))
                 bLookup(r, g, b) = Int(Int(bLookup(r, g, b)) / Int(countLookup(r, g, b)))
                 If rLookup(r, g, b) > 255 Then rLookup(r, g, b) = 255
-                If gLookup(r, g, b) > 255 Then gLookup(r, g, b) = 255
+                If gLookUp(r, g, b) > 255 Then gLookUp(r, g, b) = 255
                 If bLookup(r, g, b) > 255 Then bLookup(r, g, b) = 255
             End If
         Next b
@@ -667,7 +667,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
             cb = bQuick(b)
             
             ImageData(QuickVal + 2, y) = rLookup(cR, cG, cb)
-            ImageData(QuickVal + 1, y) = gLookup(cR, cG, cb)
+            ImageData(QuickVal + 1, y) = gLookUp(cR, cG, cb)
             ImageData(QuickVal, y) = bLookup(cR, cG, cb)
             
             'Calculate the error for this pixel

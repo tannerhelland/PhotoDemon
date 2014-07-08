@@ -88,10 +88,18 @@ Begin VB.Form FormPluginManager
          TabIndex        =   69
          Top             =   2970
          Width           =   6135
-         _extentx        =   10821
-         _extenty        =   847
-         caption         =   "improve IE6 compatibility (reduces image quality; use with caution)"
-         font            =   "VBP_FormPluginManager.frx":0000
+         _ExtentX        =   10821
+         _ExtentY        =   847
+         Caption         =   "improve IE6 compatibility (reduces image quality; use with caution)"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin PhotoDemon.smartCheckBox chkPNGQuantDither 
          Height          =   480
@@ -99,11 +107,19 @@ Begin VB.Form FormPluginManager
          TabIndex        =   68
          Top             =   2520
          Width           =   3060
-         _extentx        =   5398
-         _extenty        =   847
-         caption         =   "use dithering to improve output"
-         value           =   1
-         font            =   "VBP_FormPluginManager.frx":0028
+         _ExtentX        =   5398
+         _ExtentY        =   847
+         Caption         =   "use dithering to improve output"
+         Value           =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
       End
       Begin PhotoDemon.sliderTextCombo sltPNGQuantSpeed 
          Height          =   495
@@ -111,13 +127,23 @@ Begin VB.Form FormPluginManager
          TabIndex        =   84
          Top             =   3960
          Width           =   6855
-         _extentx        =   10398
-         _extenty        =   873
-         font            =   "VBP_FormPluginManager.frx":0050
-         min             =   1
-         max             =   11
-         slidertrackstyle=   1
-         value           =   3
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   1
+         Max             =   11
+         SliderTrackStyle=   1
+         Value           =   3
+         NotchPosition   =   2
+         NotchValueCustom=   3
       End
       Begin VB.Label lblHSDescription 
          Alignment       =   1  'Right Justify
@@ -165,7 +191,7 @@ Begin VB.Form FormPluginManager
       Begin VB.Label lblPngnqSetting 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "performance vs image quality (default = 3):"
+         Caption         =   "performance vs image quality:"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -181,7 +207,7 @@ Begin VB.Form FormPluginManager
          Left            =   480
          TabIndex        =   63
          Top             =   3600
-         Width           =   3765
+         Width           =   2610
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
@@ -221,7 +247,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   3060
-         MouseIcon       =   "VBP_FormPluginManager.frx":0078
+         MouseIcon       =   "VBP_FormPluginManager.frx":0000
          MousePointer    =   99  'Custom
          TabIndex        =   61
          Top             =   1560
@@ -265,7 +291,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   3060
-         MouseIcon       =   "VBP_FormPluginManager.frx":01CA
+         MouseIcon       =   "VBP_FormPluginManager.frx":0152
          MousePointer    =   99  'Custom
          TabIndex        =   59
          Top             =   1080
@@ -431,7 +457,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":031C
+         MouseIcon       =   "VBP_FormPluginManager.frx":02A4
          MousePointer    =   99  'Custom
          TabIndex        =   79
          Top             =   1560
@@ -475,7 +501,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":046E
+         MouseIcon       =   "VBP_FormPluginManager.frx":03F6
          MousePointer    =   99  'Custom
          TabIndex        =   77
          Top             =   1080
@@ -769,7 +795,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":05C0
+         MouseIcon       =   "VBP_FormPluginManager.frx":0548
          MousePointer    =   99  'Custom
          TabIndex        =   45
          Top             =   1080
@@ -813,7 +839,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2640
-         MouseIcon       =   "VBP_FormPluginManager.frx":0712
+         MouseIcon       =   "VBP_FormPluginManager.frx":069A
          MousePointer    =   99  'Custom
          TabIndex        =   43
          Top             =   1560
@@ -852,7 +878,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":0864
+         MouseIcon       =   "VBP_FormPluginManager.frx":07EC
          MousePointer    =   99  'Custom
          TabIndex        =   31
          Top             =   1560
@@ -897,7 +923,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "VBP_FormPluginManager.frx":09B6
+         MouseIcon       =   "VBP_FormPluginManager.frx":093E
          MousePointer    =   99  'Custom
          TabIndex        =   29
          Top             =   1080
@@ -1193,7 +1219,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":0B08
+         MouseIcon       =   "VBP_FormPluginManager.frx":0A90
          MousePointer    =   99  'Custom
          TabIndex        =   35
          Top             =   1080
@@ -1237,7 +1263,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2880
-         MouseIcon       =   "VBP_FormPluginManager.frx":0C5A
+         MouseIcon       =   "VBP_FormPluginManager.frx":0BE2
          MousePointer    =   99  'Custom
          TabIndex        =   33
          Top             =   1560
@@ -1276,7 +1302,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   4
          Left            =   6015
-         MouseIcon       =   "VBP_FormPluginManager.frx":0DAC
+         MouseIcon       =   "VBP_FormPluginManager.frx":0D34
          MousePointer    =   99  'Custom
          TabIndex        =   83
          Top             =   4125
@@ -1661,7 +1687,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   0
          Left            =   5760
-         MouseIcon       =   "VBP_FormPluginManager.frx":0EFE
+         MouseIcon       =   "VBP_FormPluginManager.frx":0E86
          MousePointer    =   99  'Custom
          TabIndex        =   7
          Top             =   765
@@ -1685,7 +1711,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   1
          Left            =   6360
-         MouseIcon       =   "VBP_FormPluginManager.frx":1050
+         MouseIcon       =   "VBP_FormPluginManager.frx":0FD8
          MousePointer    =   99  'Custom
          TabIndex        =   6
          Top             =   1605
@@ -1709,7 +1735,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   2
          Left            =   5955
-         MouseIcon       =   "VBP_FormPluginManager.frx":11A2
+         MouseIcon       =   "VBP_FormPluginManager.frx":112A
          MousePointer    =   99  'Custom
          TabIndex        =   5
          Top             =   2445
@@ -1733,7 +1759,7 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   3
          Left            =   5835
-         MouseIcon       =   "VBP_FormPluginManager.frx":12F4
+         MouseIcon       =   "VBP_FormPluginManager.frx":127C
          MousePointer    =   99  'Custom
          TabIndex        =   4
          Top             =   3285

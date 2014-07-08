@@ -49,9 +49,17 @@ Begin VB.Form FormGlassTiles
       TabIndex        =   0
       Top             =   5790
       Width           =   12090
-      _extentx        =   21325
-      _extenty        =   1323
-      font            =   "VBP_FormGlassTiles.frx":0000
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
@@ -59,13 +67,21 @@ Begin VB.Form FormGlassTiles
       TabIndex        =   5
       Top             =   600
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormGlassTiles.frx":0028
-      min             =   -45
-      max             =   45
-      sigdigits       =   1
-      value           =   45
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   -45
+      Max             =   45
+      SigDigits       =   1
+      Value           =   45
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -73,9 +89,9 @@ Begin VB.Form FormGlassTiles
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
-      disablezoompan  =   -1
+      _ExtentX        =   9922
+      _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltSize 
       Height          =   495
@@ -83,12 +99,20 @@ Begin VB.Form FormGlassTiles
       TabIndex        =   6
       Top             =   1680
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormGlassTiles.frx":0050
-      min             =   2
-      max             =   200
-      value           =   40
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   2
+      Max             =   200
+      Value           =   40
    End
    Begin PhotoDemon.sliderTextCombo sltCurvature 
       Height          =   495
@@ -96,13 +120,21 @@ Begin VB.Form FormGlassTiles
       TabIndex        =   7
       Top             =   2760
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormGlassTiles.frx":0078
-      min             =   -20
-      max             =   20
-      sigdigits       =   1
-      value           =   8
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   -20
+      Max             =   20
+      SigDigits       =   1
+      Value           =   8
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
       Height          =   495
@@ -110,11 +142,21 @@ Begin VB.Form FormGlassTiles
       TabIndex        =   11
       Top             =   3840
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormGlassTiles.frx":00A0
-      min             =   1
-      value           =   5
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   1
+      Value           =   5
+      NotchPosition   =   2
+      NotchValueCustom=   5
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
