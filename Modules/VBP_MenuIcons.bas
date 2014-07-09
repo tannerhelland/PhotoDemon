@@ -365,8 +365,9 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Photography
     addMenuIcon "PHOTOFILTER", 6, 14      'Photography top-level
         addMenuIcon "EXPOSURE", 6, 14, 0     'Exposure
-        addMenuIcon "PHOTOFILTER", 6, 14, 1  'Photo filters
-        addMenuIcon "SPLITTONE", 6, 14, 2    'Split-toning
+        addMenuIcon "HDR", 6, 14, 1          'HDR
+        addMenuIcon "PHOTOFILTER", 6, 14, 2  'Photo filters
+        addMenuIcon "SPLITTONE", 6, 14, 3    'Split-toning
     
     
     'Effects (Filters) Menu

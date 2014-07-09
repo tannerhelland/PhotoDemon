@@ -687,7 +687,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Move selection"
             Selection_Handler.CreateNewSelection cParams.getParamString
             
-        ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
+        ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is resized
         Case "Resize selection"
             Selection_Handler.CreateNewSelection cParams.getParamString
         
@@ -882,6 +882,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormExposure.Exposure cParams.GetDouble(1)
             End If
         
+        Case "HDR"
+            If showDialog Then
+                showPDDialog vbModal, FormHDR
+            Else
+                FormHDR.ApplyImitationHDR cParams.GetDouble(1), cParams.GetDouble(2)
+            End If
+            
         Case "Photo filter"
             If showDialog Then
                 showPDDialog vbModal, FormPhotoFilters
