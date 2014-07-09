@@ -147,7 +147,6 @@ LIGHTING     CUSTOM  MOVEABLE        LOADONCALL      light_bulb.png
 //--> Lighting sub-menu
 BRIGHT       CUSTOM  MOVEABLE        LOADONCALL      contrast.png
 CURVES       CUSTOM  MOVEABLE        LOADONCALL      layer_shape_curve.png
-EXPOSURE     CUSTOM  MOVEABLE        LOADONCALL      occluder.png
 GAMMA        CUSTOM  MOVEABLE        LOADONCALL      television_test.png
 LEVELS       CUSTOM  MOVEABLE        LOADONCALL      color_adjustment.png
 SHDWHGHLGHT  CUSTOM  MOVEABLE        LOADONCALL      ghost.png
@@ -175,6 +174,8 @@ MONOTOCOLOR  CUSTOM  MOVEABLE        LOADONCALL      monochrome_to_color.png
 
 PHOTOFILTER  CUSTOM  MOVEABLE        LOADONCALL      photo_album.png
 //--> Photography sub-menu
+EXPOSURE     CUSTOM  MOVEABLE        LOADONCALL      occluder.png
+HDR          CUSTOM  MOVEABLE        LOADONCALL      images_flickr.png
 SPLITTONE    CUSTOM  MOVEABLE        LOADONCALL      split_tone.png
 
 

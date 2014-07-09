@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -850,12 +850,16 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuAdjustmentsPhoto 
-            Caption         =   "Photo filters..."
+            Caption         =   "HDR..."
             Index           =   1
          End
          Begin VB.Menu MnuAdjustmentsPhoto 
-            Caption         =   "Split toning..."
+            Caption         =   "Photo filters..."
             Index           =   2
+         End
+         Begin VB.Menu MnuAdjustmentsPhoto 
+            Caption         =   "Split toning..."
+            Index           =   3
          End
       End
    End
@@ -1197,6 +1201,9 @@ Begin VB.Form FormMain
          End
          Begin VB.Menu MnuDream 
             Caption         =   "Dream"
+         End
+         Begin VB.Menu MnuHDR 
+            Caption         =   "HDR"
          End
          Begin VB.Menu MnuRadioactive 
             Caption         =   "Radioactive"
@@ -1545,13 +1552,17 @@ Private Sub MnuAdjustmentsPhoto_Click(Index As Integer)
         'Exposure
         Case 0
             Process "Exposure", True
-    
-        'Photo filters
+        
+        'HDR
         Case 1
+            Process "HDR", True
+        
+        'Photo filters
+        Case 2
             Process "Photo filter", True
             
         'Split-toning
-        Case 2
+        Case 3
             Process "Split toning", True
     
     End Select
