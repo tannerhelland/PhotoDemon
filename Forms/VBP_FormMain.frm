@@ -652,40 +652,60 @@ Begin VB.Form FormMain
    Begin VB.Menu MnuAdjustmentsTop 
       Caption         =   "&Adjustments"
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Black and white..."
+         Caption         =   "Auto"
          Index           =   0
-      End
-      Begin VB.Menu MnuAdjustments 
-         Caption         =   "Brightness and contrast..."
-         Index           =   1
-      End
-      Begin VB.Menu MnuAdjustments 
-         Caption         =   "Color balance..."
-         Index           =   2
-      End
-      Begin VB.Menu MnuAdjustments 
-         Caption         =   "Curves..."
-         Index           =   3
-      End
-      Begin VB.Menu MnuAdjustments 
-         Caption         =   "Levels..."
-         Index           =   4
-      End
-      Begin VB.Menu MnuAdjustments 
-         Caption         =   "Vibrance..."
-         Index           =   5
-      End
-      Begin VB.Menu MnuAdjustments 
-         Caption         =   "White balance..."
-         Index           =   6
+         Begin VB.Menu MnuAutoAdjust 
+            Caption         =   "Auto color"
+            Index           =   0
+         End
+         Begin VB.Menu MnuAutoAdjust 
+            Caption         =   "Auto contrast"
+            Index           =   1
+         End
+         Begin VB.Menu MnuAutoAdjust 
+            Caption         =   "Auto tone"
+            Index           =   2
+         End
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "-"
+         Index           =   1
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Black and white..."
+         Index           =   2
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Brightness and contrast..."
+         Index           =   3
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Color balance..."
+         Index           =   4
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Curves..."
+         Index           =   5
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Levels..."
+         Index           =   6
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Vibrance..."
          Index           =   7
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Channels"
+         Caption         =   "White balance..."
          Index           =   8
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "-"
+         Index           =   9
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Channels"
+         Index           =   10
          Begin VB.Menu MnuColorComponents 
             Caption         =   "Channel mixer..."
             Index           =   0
@@ -721,7 +741,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Color"
-         Index           =   9
+         Index           =   11
          Begin VB.Menu MnuColor 
             Caption         =   "Color balance..."
             Index           =   0
@@ -773,7 +793,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Histogram"
-         Index           =   10
+         Index           =   12
          Begin VB.Menu MnuHistogram 
             Caption         =   "Display histogram"
          End
@@ -789,7 +809,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Invert"
-         Index           =   11
+         Index           =   13
          Begin VB.Menu MnuNegative 
             Caption         =   "Invert CMYK (film negative)"
          End
@@ -808,7 +828,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Lighting"
-         Index           =   12
+         Index           =   14
          Begin VB.Menu MnuLighting 
             Caption         =   "Brightness and contrast..."
             Index           =   0
@@ -832,7 +852,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Monochrome"
-         Index           =   13
+         Index           =   15
          Begin VB.Menu MnuMonochrome 
             Caption         =   "Color to monochrome..."
             Index           =   0
@@ -844,7 +864,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Photography"
-         Index           =   14
+         Index           =   16
          Begin VB.Menu MnuAdjustmentsPhoto 
             Caption         =   "Exposure..."
             Index           =   0
@@ -2494,32 +2514,38 @@ Private Sub MnuAdjustments_Click(Index As Integer)
 
     Select Case Index
     
-        'Black and white
+        'Auto (top-level)
         Case 0
+            
+        '<separator>
+        Case 1
+            
+        'Black and white
+        Case 2
             Process "Black and white", True
         
         'Brightness and contrast
-        Case 1
+        Case 3
             Process "Brightness and contrast", True
         
         'Color balance
-        Case 2
+        Case 4
             Process "Color balance", True
         
         'Curves
-        Case 3
+        Case 5
             Process "Curves", True
         
         'Levels
-        Case 4
+        Case 6
             Process "Levels", True
         
         'Vibrance
-        Case 5
+        Case 7
             Process "Vibrance", True
         
         'White balance
-        Case 6
+        Case 8
             Process "White balance", True
     
     End Select

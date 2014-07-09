@@ -305,69 +305,72 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     'Adjustments Menu
     
+    'Automatic adjustments
+    addMenuIcon "AUTOADJUST", 6, 0      'Auto-adjust (top-level)
+    
     'Adjustment shortcuts (top-level menu items)
-    addMenuIcon "GRAYSCALE", 6, 0       'Black and white
-    addMenuIcon "BRIGHT", 6, 1          'Brightness/Contrast
-    addMenuIcon "COLORBALANCE", 6, 2    'Color balance
-    addMenuIcon "CURVES", 6, 3          'Curves
-    addMenuIcon "LEVELS", 6, 4          'Levels
-    addMenuIcon "VIBRANCE", 6, 5        'Vibrance
-    addMenuIcon "WHITEBAL", 6, 6        'White Balance
+    addMenuIcon "GRAYSCALE", 6, 2       'Black and white
+    addMenuIcon "BRIGHT", 6, 3          'Brightness/Contrast
+    addMenuIcon "COLORBALANCE", 6, 4    'Color balance
+    addMenuIcon "CURVES", 6, 5          'Curves
+    addMenuIcon "LEVELS", 6, 6          'Levels
+    addMenuIcon "VIBRANCE", 6, 7        'Vibrance
+    addMenuIcon "WHITEBAL", 6, 8        'White Balance
        
     'Channels
-    addMenuIcon "CHANNELMIX", 6, 8     'Channels top-level
-        addMenuIcon "CHANNELMIX", 6, 8, 0    'Channel mixer
-        addMenuIcon "RECHANNEL", 6, 8, 1     'Rechannel
-        addMenuIcon "CHANNELMAX", 6, 8, 3    'Channel max
-        addMenuIcon "CHANNELMIN", 6, 8, 4    'Channel min
-        addMenuIcon "COLORSHIFTL", 6, 8, 6   'Shift Left
-        addMenuIcon "COLORSHIFTR", 6, 8, 7   'Shift Right
+    addMenuIcon "CHANNELMIX", 6, 10    'Channels top-level
+        addMenuIcon "CHANNELMIX", 6, 10, 0   'Channel mixer
+        addMenuIcon "RECHANNEL", 6, 10, 1    'Rechannel
+        addMenuIcon "CHANNELMAX", 6, 10, 3   'Channel max
+        addMenuIcon "CHANNELMIN", 6, 10, 4   'Channel min
+        addMenuIcon "COLORSHIFTL", 6, 10, 6  'Shift Left
+        addMenuIcon "COLORSHIFTR", 6, 10, 7  'Shift Right
             
     'Color
-    addMenuIcon "HSL", 6, 9            'Color balance
-        addMenuIcon "COLORBALANCE", 6, 9, 0  'Color balance
-        addMenuIcon "WHITEBAL", 6, 9, 1      'White Balance
-        addMenuIcon "HSL", 6, 9, 3           'HSL adjustment
-        addMenuIcon "TEMPERATURE", 6, 9, 4   'Temperature
-        addMenuIcon "TINT", 6, 9, 5          'Tint
-        addMenuIcon "VIBRANCE", 6, 9, 6      'Vibrance
-        addMenuIcon "GRAYSCALE", 6, 9, 8     'Black and white
-        addMenuIcon "COLORIZE", 6, 9, 9      'Colorize
-        addMenuIcon "REPLACECLR", 6, 9, 10   'Replace color
-        addMenuIcon "SEPIA", 6, 9, 11         'Sepia
+    addMenuIcon "HSL", 6, 11           'Color balance
+        addMenuIcon "COLORBALANCE", 6, 11, 0 'Color balance
+        addMenuIcon "WHITEBAL", 6, 11, 1     'White Balance
+        addMenuIcon "HSL", 6, 11, 3          'HSL adjustment
+        addMenuIcon "TEMPERATURE", 6, 11, 4  'Temperature
+        addMenuIcon "TINT", 6, 11, 5         'Tint
+        addMenuIcon "VIBRANCE", 6, 11, 6     'Vibrance
+        addMenuIcon "GRAYSCALE", 6, 11, 8    'Black and white
+        addMenuIcon "COLORIZE", 6, 11, 9     'Colorize
+        addMenuIcon "REPLACECLR", 6, 11, 10  'Replace color
+        addMenuIcon "SEPIA", 6, 11, 11       'Sepia
     
     'Histogram
-    addMenuIcon "HISTOGRAM", 6, 10      'Histogram top-level
-        addMenuIcon "HISTOGRAM", 6, 10, 0     'Display Histogram
-        addMenuIcon "EQUALIZE", 6, 10, 2      'Equalize
-        addMenuIcon "STRETCH", 6, 10, 3       'Stretch
+    addMenuIcon "HISTOGRAM", 6, 12      'Histogram top-level
+        addMenuIcon "HISTOGRAM", 6, 12, 0     'Display Histogram
+        addMenuIcon "EQUALIZE", 6, 12, 2      'Equalize
+        addMenuIcon "STRETCH", 6, 12, 3       'Stretch
     
     'Invert
-    addMenuIcon "INVERT", 6, 11         'Invert top-level
-        addMenuIcon "INVCMYK", 6, 11, 0     'Invert CMYK
-        addMenuIcon "INVHUE", 6, 11, 1       'Invert Hue
-        addMenuIcon "INVRGB", 6, 11, 2       'Invert RGB
-        addMenuIcon "INVCOMPOUND", 6, 11, 4  'Compound Invert
+    addMenuIcon "INVERT", 6, 13         'Invert top-level
+        addMenuIcon "INVCMYK", 6, 13, 0     'Invert CMYK
+        addMenuIcon "INVHUE", 6, 13, 1       'Invert Hue
+        addMenuIcon "INVRGB", 6, 13, 2       'Invert RGB
+        addMenuIcon "INVCOMPOUND", 6, 13, 4  'Compound Invert
         
     'Lighting
-    addMenuIcon "LIGHTING", 6, 12       'Lighting top-level
-        addMenuIcon "BRIGHT", 6, 12, 0       'Brightness/Contrast
-        addMenuIcon "CURVES", 6, 12, 1       'Curves
-        addMenuIcon "GAMMA", 6, 12, 2        'Gamma Correction
-        addMenuIcon "LEVELS", 6, 12, 3       'Levels
-        addMenuIcon "SHDWHGHLGHT", 6, 12, 4  'Shadow/Highlight
+    addMenuIcon "LIGHTING", 6, 14       'Lighting top-level
+        addMenuIcon "BRIGHT", 6, 14, 0       'Brightness/Contrast
+        addMenuIcon "CURVES", 6, 14, 1       'Curves
+        addMenuIcon "GAMMA", 6, 14, 2        'Gamma Correction
+        addMenuIcon "LEVELS", 6, 14, 3       'Levels
+        addMenuIcon "SHDWHGHLGHT", 6, 14, 4  'Shadow/Highlight
         
     'Monochrome
-    addMenuIcon "MONOCHROME", 6, 13      'Monochrome
-        addMenuIcon "COLORTOMONO", 6, 13, 0   'Color to monochrome
-        addMenuIcon "MONOTOCOLOR", 6, 13, 1   'Monochrome to grayscale
+    addMenuIcon "MONOCHROME", 6, 15      'Monochrome
+        addMenuIcon "COLORTOMONO", 6, 15, 0   'Color to monochrome
+        addMenuIcon "MONOTOCOLOR", 6, 15, 1   'Monochrome to grayscale
         
     'Photography
-    addMenuIcon "PHOTOFILTER", 6, 14      'Photography top-level
-        addMenuIcon "EXPOSURE", 6, 14, 0     'Exposure
-        addMenuIcon "HDR", 6, 14, 1          'HDR
-        addMenuIcon "PHOTOFILTER", 6, 14, 2  'Photo filters
-        addMenuIcon "SPLITTONE", 6, 14, 3    'Split-toning
+    addMenuIcon "PHOTOFILTER", 6, 16      'Photography top-level
+        addMenuIcon "EXPOSURE", 6, 16, 0     'Exposure
+        addMenuIcon "HDR", 6, 16, 1          'HDR
+        addMenuIcon "PHOTOFILTER", 6, 16, 2  'Photo filters
+        addMenuIcon "SPLITTONE", 6, 16, 3    'Split-toning
     
     
     'Effects (Filters) Menu
