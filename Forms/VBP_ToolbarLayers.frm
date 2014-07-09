@@ -533,23 +533,31 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
         
         If (Not pdImages(g_CurrentImage) Is Nothing) And (Button = pdLeftButton) Then
             
+            'If the user has initiated an action, this value will be set to TRUE.  We don't currently make use of it,
+            ' but it could prove helpful in the future.
+            Dim actionInitiated As Boolean
+            actionInitiated = False
+            
             'Check the clicked position against a series of rects, each one representing a unique interaction.
             
             'Has the user clicked a visibility rectangle?
             If isPointInRect(x, y, m_VisibilityRect) Then
                 
                 Layer_Handler.setLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).getLayerByIndex(clickedLayer).getLayerVisibility, True
+                actionInitiated = True
             
             'Duplicate rectangle?
             ElseIf isPointInRect(x, y, m_DuplicateRect) Then
             
                 Process "Duplicate Layer", False, Str(clickedLayer), UNDO_IMAGE
+                actionInitiated = True
             
             'Merge down rectangle?
             ElseIf isPointInRect(x, y, m_MergeDownRect) Then
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0 Then
                     Process "Merge layer down", False, Str(clickedLayer), UNDO_IMAGE
+                    actionInitiated = True
                 End If
             
             'Merge up rectangle?
@@ -557,6 +565,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             
                 If Layer_Handler.isLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
                     Process "Merge layer up", False, Str(clickedLayer), UNDO_IMAGE
+                    actionInitiated = True
                 End If
             
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
@@ -569,7 +578,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             'Redraw the layer box to represent any changes from this interaction.
             ' NOTE: this is not currently necessary, as all interactions will automatically force a redraw on their own.
             'redrawLayerBox
-            
+                        
         End If
         
     End If
@@ -1246,7 +1255,6 @@ Private Sub updateLayerScrollbarVisibility()
     Dim maxLayerBoxSize As Long
     maxLayerBoxSize = fixDPIFloat(BLOCKHEIGHT) * numOfThumbnails - 1
     
-    vsLayer.Value = 0
     If maxLayerBoxSize < picLayers.ScaleHeight Then
         
         'Hide the layer box scroll bar
