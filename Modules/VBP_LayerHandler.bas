@@ -51,8 +51,12 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long)
 End Sub
 
 'Add a non-blank 32bpp layer to the image.  (This function is used by the Add New Layer button on the layer box.)
-Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVal dLayerColor As Long, Optional ByVal dLayerName As String = "")
+Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = "")
 
+    'Before making any changes, make a note of the currently active layer
+    Dim prevActiveLayerID As Long
+    prevActiveLayerID = pdImages(g_CurrentImage).getActiveLayerID
+    
     'Validate the requested layer index
     If dLayerIndex < 0 Then dLayerIndex = 0
     If dLayerIndex > pdImages(g_CurrentImage).getNumOfLayers - 1 Then dLayerIndex = pdImages(g_CurrentImage).getNumOfLayers - 1
@@ -93,17 +97,46 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVa
     'Assign the newly created DIB and layer name to the layer object
     pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer tmpDIB, , dLayerName
     
-    'Make the newly created layer the active layer
-    pdImages(g_CurrentImage).setActiveLayerByID newLayerID
+    pdImages(g_CurrentImage).setActiveLayerByID prevActiveLayerID
+    
+    'Move the layer into position as necessary.
+    If dLayerPosition <> 0 Then
+    
+        Select Case dLayerPosition
+        
+            'Place below current layer
+            Case 1
+                moveLayerAdjacent pdImages(g_CurrentImage).getLayerIndexFromID(newLayerID), False, False
+            
+            'Move to top of stack
+            Case 2
+                moveLayerToEndOfStack pdImages(g_CurrentImage).getLayerIndexFromID(newLayerID), True, False
+            
+            'Move to bottom of stack
+            Case 3
+                moveLayerToEndOfStack pdImages(g_CurrentImage).getLayerIndexFromID(newLayerID), False, False
+        
+        End Select
+        
+        'Note that each of the movement functions, above, will call the necessary interface refresh functions,
+        ' so we don't need to manually do it here.
+        
+    End If
+    
+    'Make the newly created layer the active layer; this will also redraw the interface to match
+    If dLayerAutoSelect Then
+        Debug.Print "newlayerid"
+        setActiveLayerByID newLayerID, False
+    Else
+        Debug.Print "prevlayerid"
+        setActiveLayerByID prevActiveLayerID, False
+    End If
+    
+    'Redraw the main viewport
+    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
-    
-    'Render the new image to screen (not technically necessary, but doesn't hurt)
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
-            
-    'Synchronize the interface to the new image
-    syncInterfaceToCurrentImage
     
 End Sub
 
@@ -469,62 +502,72 @@ Public Sub deleteHiddenLayers()
 End Sub
 
 'Move a layer up or down in the stack (referred to as "raise" and "lower" in the menus)
-Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As Boolean)
+Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As Boolean, Optional ByVal updateInterface As Boolean = True)
 
     'Make a copy of the currently active layer's ID
     Dim curActiveLayerID As Long
     curActiveLayerID = pdImages(g_CurrentImage).getActiveLayerID
     
     'Ask the parent pdImage to move the layer for us
-    pdImages(g_CurrentImage).moveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex, directionIsUp
+    pdImages(g_CurrentImage).moveLayerByIndex dLayerIndex, directionIsUp
     
     'Restore the active layer
     setActiveLayerByID curActiveLayerID, False
     
-    'Redraw the layer box, and note that thumbnails need to be re-cached
-    toolbar_Layers.forceRedraw True
+    If updateInterface Then
     
-    'Redraw the viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        'Redraw the layer box, and note that thumbnails need to be re-cached
+        toolbar_Layers.forceRedraw True
+        
+        'Redraw the viewport
+        ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+    End If
 
 End Sub
 
 'Move a layer to the top or bottom of the stack (referred to as "raise to top" and "lower to bottom" in the menus)
-Public Sub moveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfStack As Boolean)
+Public Sub moveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfStack As Boolean, Optional ByVal updateInterface As Boolean = True)
 
     'Make a copy of the currently active layer's ID
     Dim curActiveLayerID As Long
     curActiveLayerID = pdImages(g_CurrentImage).getActiveLayerID
     
+    Dim i As Long
+    
     'Until this layer is at the desired end of the stack, ask the parent to keep moving it for us!
     If moveToTopOfStack Then
     
-        Do While pdImages(g_CurrentImage).getLayerIndexFromID(curActiveLayerID) < pdImages(g_CurrentImage).getNumOfLayers - 1
+        For i = dLayerIndex To pdImages(g_CurrentImage).getNumOfLayers - 1
             
             'Ask the parent pdImage to move the layer up for us
-            pdImages(g_CurrentImage).moveLayerByIndex pdImages(g_CurrentImage).getLayerIndexFromID(curActiveLayerID), True
+            pdImages(g_CurrentImage).moveLayerByIndex i, True
             
-        Loop
+        Next i
     
     Else
     
-        Do While pdImages(g_CurrentImage).getLayerIndexFromID(curActiveLayerID) > 0
+        For i = dLayerIndex To 0 Step -1
             
             'Ask the parent pdImage to move the layer up for us
-            pdImages(g_CurrentImage).moveLayerByIndex pdImages(g_CurrentImage).getLayerIndexFromID(curActiveLayerID), False
+            pdImages(g_CurrentImage).moveLayerByIndex i, False
             
-        Loop
+        Next i
     
     End If
     
     'Restore the active layer.  (This will also re-synchronize the interface against the new image.)
     setActiveLayerByID curActiveLayerID, False
     
-    'Redraw the layer box, and note that thumbnails need to be re-cached
-    toolbar_Layers.forceRedraw True
+    If updateInterface Then
     
-    'Redraw the viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        'Redraw the layer box, and note that thumbnails need to be re-cached
+        toolbar_Layers.forceRedraw True
+        
+        'Redraw the viewport
+        ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+    End If
 
 End Sub
 
