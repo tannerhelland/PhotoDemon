@@ -495,6 +495,14 @@ End Sub
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
 Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetDIB As pdDIB, Optional ByVal pageNumber As Long = 0)
     
+    'NOTE ABOUT DOEVENTS:
+    ' Normally, PD avoids DoEvents for all the obvious reasons.  You'll notice that this function, however, uses DoEvents liberally.  Why?
+    ' While this function is busy loading the image in question, the ExifTool plugin is running asynchronously, parsing image metadata
+    ' and forwarding it to the main form's ShellPipe control as it proceeds.  By using DoEvents throughout this function, we yield control
+    ' to that ShellPipe control, allowing it to periodically clear stdout so ExifTool can continue pushing metadata through.  That said,
+    ' a LOT of precautions are taken to make sure DoEvents doesn't cause reentry and other issues, so don't try to mimic this behavior
+    ' unless you understand all the repercussions!
+    
     '*************************************************************************************************************************************
     ' Prepare all variables related to image loading
     '*************************************************************************************************************************************
@@ -506,14 +514,18 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     ' this automatically; GDI+ may not.  Use a tracking variable to determine if a manual color count needs to be performed.
     Dim mustCountColors As Boolean
     Dim colorCountCheck As Long
-            
-    'To improve load time, declare a variety of other variables outside the image load loop
+    
+    'File extension determines how an image is loaded; certain formats require separate plugins (e.g. FreeImage)
     Dim FileExtension As String
     Dim loadSuccessful As Boolean
     
     Dim loadedByOtherMeans As Boolean
     loadedByOtherMeans = False
-            
+    
+    'Individual image files might contain multiple layers.  If such an image is found, this will be set to TRUE.
+    Dim imageHasMultiplePages As Boolean
+    Dim numOfPages As Long
+    
     'If multiple files are being loaded, we want to suppress all warnings and errors until the very end.
     Dim multipleFilesLoading As Boolean
     If UBound(sFile) > 0 Then multipleFilesLoading = True Else multipleFilesLoading = False
@@ -570,7 +582,9 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     '*************************************************************************************************************************************
             
     'Because this routine accepts an array of images, we have to be prepared for the possibility that more than
-    ' one image file is being opened.  This loop will execute until all files are loaded.
+    ' one image file is being opened.  This loop will execute until all files are loaded.  If a file fails to
+    ' load, it will automatically move on to the next one, and an error message will be displayed after all
+    ' files have been processed.
     Dim thisImage As Long
     
     For thisImage = 0 To UBound(sFile)
@@ -582,13 +596,13 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         '*************************************************************************************************************************************
     
         'Reset the multipage checker (which is now handled on a per-image basis)
-        g_imageHasMultiplePages = False
+        imageHasMultiplePages = False
+        numOfPages = 0
         
         '...and reset the "need to check colors" variable.  If FreeImage is used, color depth of the source file is retrieved automatically.
         ' If FreeImage is not used, we manually calculate a bit-depth for incoming images.
         mustCountColors = False
-    
-    
+        
     
         '*************************************************************************************************************************************
         ' Before attempting to load this image, make sure it exists
@@ -613,7 +627,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         
         '*************************************************************************************************************************************
-        ' If the image being loaded is a primary image (e.g. one opened normally), prepare a blank form to receive it
+        ' If the image being loaded is a primary image (e.g. one opened normally), prepare a blank pdImage object to receive it
         '*************************************************************************************************************************************
         
         If isThisPrimaryImage Then
@@ -713,9 +727,13 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                     'Start by seeing if the image file contains multiple pages.  If it does, we will load each page as a separate layer.
                     If isMultiImage(sFile(thisImage)) > 0 Then
                         
-                        'TODO: load each page individually, to a unique layer
+                        'TODO: preferences or prompt for how to handle such files
                         
-                        'TEMP SOLUTION: just load the first page
+                        'Mark the image as having multiple pages
+                        imageHasMultiplePages = True
+                        numOfPages = isMultiImage(sFile(thisImage))
+                        
+                        'Start by loading just the first page
                         pageNumber = 0
                         loadSuccessful = LoadFreeImageV4(sFile(thisImage), targetDIB, pageNumber, isThisPrimaryImage)
                      
@@ -1075,6 +1093,87 @@ PDI_Load_Continuation:
             
         End If
         
+        
+        
+        '*************************************************************************************************************************************
+        ' If the just-loaded image was in a multipage format (icon, animated GIF, multipage TIFF), perform a few extra checks.
+        '*************************************************************************************************************************************
+        
+        'Before continuing on to the next image (if any), see if the just-loaded image contains multiple pages within the file.
+        ' If it does, load each page into its own layer.
+        If imageHasMultiplePages Then
+            
+            Dim pageTracker As Long
+            
+            'Call LoadFileAsNewImage again for each individual frame in the multipage file
+            For pageTracker = 1 To numOfPages - 1
+                
+                'To load each page as its own image, use the code below
+                'If UCase(GetExtension(sFile(thisImage))) = "GIF" Then
+                '    LoadFileAsNewImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                'ElseIf UCase(GetExtension(sFile(thisImage))) = "ICO" Then
+                '    LoadFileAsNewImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                'Else
+                '    LoadFileAsNewImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
+                'End If
+                
+                
+                'To load each page to its own layer, use the code below
+                
+                'Create a blank layer in the receiving image, and retrieve a pointer to it
+                newLayerID = pdImages(g_CurrentImage).createBlankLayer
+                
+                'Clear the temporary DIB
+                Set targetDIB = New pdDIB
+                
+                'Load the next page into the temporary DIB
+                loadSuccessful = LoadFreeImageV4(sFile(thisImage), targetDIB, pageTracker, isThisPrimaryImage)
+                
+                'If the load was successful, copy the DIB into place
+                If loadSuccessful Then
+                
+                    'Convert 24bpp layers to 32bpp
+                    If targetDIB.getDIBColorDepth = 24 Then targetDIB.convertTo32bpp
+                    
+                    'Determine a name for each layer, contingent on its size and type
+                    Dim layerNameAddon As String
+                    
+                    If UCase(GetExtension(sFile(thisImage))) = "GIF" Then
+                        layerNameAddon = g_Language.TranslateMessage("frame")
+                    ElseIf UCase(GetExtension(sFile(thisImage))) = "ICO" Then
+                        layerNameAddon = g_Language.TranslateMessage("icon")
+                    Else
+                        layerNameAddon = g_Language.TranslateMessage("page")
+                    End If
+                    
+                    layerNameAddon = " (" & layerNameAddon & " " & CStr(pageTracker + 1) & ")"
+                    
+                    'Copy the DIB into the layer, with a relevant name attached
+                    If Len(imgName) = 0 Then
+                        targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, getFilenameWithoutExtension(sFile(thisImage)) & layerNameAddon
+                    Else
+                        targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, imgName & layerNameAddon
+                    End If
+                    
+                    'Refresh the screen so the user knows the page loaded correctly
+                    syncInterfaceToCurrentImage
+                    
+                    'Redraw the main viewport
+                    PrepareViewport targetImage, FormMain.mainCanvas(0)
+                
+                'If the load was unsuccessful, delete the blank layer we created
+                Else
+                    pdImages(g_CurrentImage).deleteLayerByIndex pdImages(g_CurrentImage).getLayerIndexFromID(newLayerID)
+                End If
+            
+            'Continue on with the next page
+            Next pageTracker
+        
+        End If
+        
+        
+        
+        
         '*************************************************************************************************************************************
         ' Hopefully metadata processing has finished, but if it hasn't, start a timer on the main form, which will wait for it to complete.
         '*************************************************************************************************************************************
@@ -1138,32 +1237,6 @@ PDI_Load_Continuation:
         If isThisPrimaryImage Then Message "Image loaded successfully."
         
         
-        
-        '*************************************************************************************************************************************
-        ' If the just-loaded image was in a multipage format (icon, animated GIF, multipage TIFF), perform a few extra checks.
-        '*************************************************************************************************************************************
-        
-        'Before continuing on to the next image (if any), see if the just-loaded image was in multipage format.  If it was, the user
-        ' may have requested that we load all frames from this image.
-        If g_imageHasMultiplePages Then
-            
-            Dim pageTracker As Long
-            
-            Dim tmpStringArray(0) As String
-            tmpStringArray(0) = sFile(thisImage)
-            
-            'Call LoadFileAsNewImage again for each individual frame in the multipage file
-            For pageTracker = 1 To g_imagePageCount
-                If UCase(GetExtension(sFile(thisImage))) = "GIF" Then
-                    LoadFileAsNewImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("frame") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
-                ElseIf UCase(GetExtension(sFile(thisImage))) = "ICO" Then
-                    LoadFileAsNewImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("icon") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
-                Else
-                    LoadFileAsNewImage tmpStringArray, False, targetImage.originalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), targetImage.originalFileName & " (" & g_Language.TranslateMessage("page") & " " & (pageTracker + 1) & ")." & GetExtension(sFile(thisImage)), , , , pageTracker
-                End If
-            Next pageTracker
-        
-        End If
         
     '*************************************************************************************************************************************
     ' Move on to the next image.

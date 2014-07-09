@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_FreeImage_Expanded_Interface"
 'FreeImage Interface (Advanced)
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 3/September/12
-'Last updated: 07/December/13
-'Last update: if CMYK files have an embedded ICC profile, retrieve the raw CMYK bits and apply the sRGB conversion ourselves.
+'Last updated: 08/July/14
+'Last update: remove global page count variables in favor of more OOP-appropriate functions
 '
 'This module represents a new - and significantly more comprehensive - approach to loading images via the
 ' FreeImage libary. It handles a variety of decisions on a per-format basis to ensure optimal load speed
@@ -22,11 +22,6 @@ Attribute VB_Name = "Plugin_FreeImage_Expanded_Interface"
 Option Explicit
 
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
-
-'When loading a multipage image, the user will be prompted to load each page as an individual image.  If the user agrees,
-' this variable will be set to TRUE.  LoadFileAsNewImage will then use this variable to launch the import of the subsequent pages.
-Public g_imageHasMultiplePages As Boolean
-Public g_imagePageCount As Long
     
 'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
 Public Function isFreeImageAvailable() As Boolean
@@ -655,7 +650,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     'Copy the bits from the FreeImage DIB to our DIB
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
     
-    
+    Debug.Print fi_hDIB, fi_multi_hDIB
     
     '****************************************************************************
     ' Release all FreeImage-specific structures and links
