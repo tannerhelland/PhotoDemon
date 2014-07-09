@@ -122,6 +122,9 @@ EXPRTSELMASK CUSTOM  MOVEABLE        LOADONCALL      mask.png
 
 //Adjustments menu
 
+AUTOADJUST   CUSTOM  MOVEABLE        LOADONCALL      light_bulb.png
+//--> Auto sub-menu
+
 CHANNELMIX   CUSTOM  MOVEABLE        LOADONCALL      block.png
 //--> Channels sub-menu
 RECHANNEL    CUSTOM  MOVEABLE        LOADONCALL      arrow_merge_blue.png
@@ -143,7 +146,7 @@ REPLACECLR   CUSTOM  MOVEABLE        LOADONCALL      node_delete_child.png
 SEPIA        CUSTOM  MOVEABLE        LOADONCALL      zone.png
 //
 
-LIGHTING     CUSTOM  MOVEABLE        LOADONCALL      light_bulb.png
+LIGHTING     CUSTOM  MOVEABLE        LOADONCALL      flashlight.png
 //--> Lighting sub-menu
 BRIGHT       CUSTOM  MOVEABLE        LOADONCALL      contrast.png
 CURVES       CUSTOM  MOVEABLE        LOADONCALL      layer_shape_curve.png
