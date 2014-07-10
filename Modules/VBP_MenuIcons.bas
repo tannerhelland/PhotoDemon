@@ -307,7 +307,8 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     'Automatic adjustments
     addMenuIcon "AUTOADJUST", 6, 0      'Auto-adjust (top-level)
-    
+        addMenuIcon "LEVELS", 6, 0, 2       'Auto-levels
+        
     'Adjustment shortcuts (top-level menu items)
     addMenuIcon "GRAYSCALE", 6, 2       'Black and white
     addMenuIcon "BRIGHT", 6, 3          'Brightness/Contrast
