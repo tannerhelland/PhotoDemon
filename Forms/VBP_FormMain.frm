@@ -57,7 +57,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
@@ -1096,7 +1096,7 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Fog"
+            Caption         =   "Fog..."
             Index           =   2
          End
          Begin VB.Menu MnuNatureFilter 
@@ -1222,8 +1222,8 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuDream 
             Caption         =   "Dream"
          End
-         Begin VB.Menu MnuFireTest 
-            Caption         =   "New fire effect"
+         Begin VB.Menu MnuFogTest 
+            Caption         =   "New fog effect"
          End
          Begin VB.Menu MnuRadioactive 
             Caption         =   "Radioactive"
@@ -1640,6 +1640,10 @@ Private Sub MnuEffectTransform_Click(Index As Integer)
         
     End Select
 
+End Sub
+
+Private Sub MnuFogTest_Click()
+    showPDDialog vbModal, FormFog
 End Sub
 
 'Menu: top-level layer actions
@@ -3407,7 +3411,7 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
         
         'Fog
         Case 2
-            Process "Fog", , , UNDO_LAYER
+            Process "Fog", True
         
         'Freeze
         Case 3
