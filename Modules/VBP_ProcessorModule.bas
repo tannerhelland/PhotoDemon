@@ -1252,8 +1252,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
             
         Case "Fog"
-            MenuFogEffect
-        
+            If showDialog Then
+                showPDDialog vbModal, FormFog
+            Else
+                FormFog.fxFog cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
+            End If
+            
         Case "Freeze"
             MenuFrozen
             
