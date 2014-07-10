@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -1092,7 +1092,7 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Burn"
+            Caption         =   "Burn..."
             Index           =   1
          End
          Begin VB.Menu MnuNatureFilter 
@@ -1222,8 +1222,8 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuDream 
             Caption         =   "Dream"
          End
-         Begin VB.Menu MnuHDR 
-            Caption         =   "HDR"
+         Begin VB.Menu MnuFireTest 
+            Caption         =   "New fire effect"
          End
          Begin VB.Menu MnuRadioactive 
             Caption         =   "Radioactive"
@@ -3403,7 +3403,7 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
             
         'Burn
         Case 1
-            Process "Burn", , , UNDO_LAYER
+            Process "Burn", True
         
         'Fog
         Case 2
