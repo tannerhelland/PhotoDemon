@@ -206,9 +206,9 @@ Public Sub MenuWater()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
                  
     'Loop through each pixel in the image, converting values as we go
@@ -232,7 +232,7 @@ Public Sub MenuWater()
         If qvDepth = 4 Then a = getInterpolatedVal(srcX, srcY, srcImageData, 3, qvDepth)
             
         'Now, modify the colors to give a bluish-green tint to the image
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookUp(r + g + b)
         
         r = gray - g - b
         g = gray - r - b
@@ -441,9 +441,9 @@ Public Sub MenuLava()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -455,7 +455,7 @@ Public Sub MenuLava()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookUp(r + g + b)
         
         r = grayVal
         g = Abs(b - 128)
@@ -479,81 +479,6 @@ Public Sub MenuLava()
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData
     
-End Sub
-
-'Ignite an image via this classy "burn" filter
-Public Sub MenuBurn()
-
-    Message "Lighting image on fire..."
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
-    Dim grayVal As Long
-    
-    'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
-    For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
-    Next x
-        
-    'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-        
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        
-        grayVal = gLookup(r + g + b)
-        
-        r = grayVal * 3
-        g = grayVal
-        b = gLookup(grayVal)
-        
-        If r > 255 Then r = 255
-        
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-        
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
-    Next x
-        
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
- 
 End Sub
 
 'Give the image a metallic shimmer with this "steel" filter
@@ -589,9 +514,9 @@ Public Sub MenuSteel()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -604,7 +529,7 @@ Public Sub MenuSteel()
         g = Abs(r - 64)
         b = Abs(g - 64)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookUp(r + g + b)
         
         r = grayVal + 70
         r = r + (((r - 128) * 100) \ 100)

@@ -1245,7 +1245,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             MenuAtmospheric
             
         Case "Burn"
-            MenuBurn
+            If showDialog Then
+                showPDDialog vbModal, FormBurn
+            Else
+                FormBurn.fxBurn cParams.GetDouble(1), cParams.GetLong(2), cParams.GetLong(3)
+            End If
             
         Case "Fog"
             MenuFogEffect
