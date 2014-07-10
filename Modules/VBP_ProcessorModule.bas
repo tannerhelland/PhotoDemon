@@ -699,6 +699,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'ADJUSTMENT FUNCTIONS
         ' Any action that is used to fix or correct problems with an image, including basic color space transformations (e.g. grayscale/sepia)
         
+        'Auto functions
+        Case "Auto levels"
+            FormLevels.MapImageLevels FormLevels.getIdealLevelParamString(pdImages(g_CurrentImage).getActiveDIB)
+            Unload FormLevels
+        
         'Luminance adjustment functions
         Case "Brightness and contrast"
             If showDialog Then

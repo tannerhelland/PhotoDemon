@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -655,15 +655,15 @@ Begin VB.Form FormMain
          Caption         =   "Auto"
          Index           =   0
          Begin VB.Menu MnuAutoAdjust 
-            Caption         =   "Auto color"
+            Caption         =   "Color"
             Index           =   0
          End
          Begin VB.Menu MnuAutoAdjust 
-            Caption         =   "Auto contrast"
+            Caption         =   "Contrast"
             Index           =   1
          End
          Begin VB.Menu MnuAutoAdjust 
-            Caption         =   "Auto tone"
+            Caption         =   "Levels"
             Index           =   2
          End
       End
@@ -1585,6 +1585,26 @@ Private Sub MnuAdjustmentsPhoto_Click(Index As Integer)
         Case 3
             Process "Split toning", True
     
+    End Select
+
+End Sub
+
+Private Sub MnuAutoAdjust_Click(Index As Integer)
+
+    Select Case Index
+    
+        'Color
+        Case 0
+            pdMsgBox "Still under construction - sorry!", vbInformation Or vbOKOnly Or vbApplicationModal, "Toolnot available yet"
+        
+        'Contrast
+        Case 1
+            pdMsgBox "Still under construction - sorry!", vbInformation Or vbOKOnly Or vbApplicationModal, "Toolnot available yet"
+        
+        'Levels
+        Case 2
+            Process "Auto levels", , , UNDO_LAYER
+        
     End Select
 
 End Sub
