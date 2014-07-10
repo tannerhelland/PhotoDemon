@@ -1244,13 +1244,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Atmosphere"
             MenuAtmospheric
             
-        Case "Burn"
-            If showDialog Then
-                showPDDialog vbModal, FormBurn
-            Else
-                FormBurn.fxBurn cParams.GetDouble(1), cParams.GetLong(2), cParams.GetLong(3)
-            End If
-            
         Case "Fog"
             If showDialog Then
                 showPDDialog vbModal, FormFog
@@ -1260,6 +1253,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Freeze"
             MenuFrozen
+            
+        Case "Ignite"
+            If showDialog Then
+                showPDDialog vbModal, FormIgnite
+            Else
+                FormIgnite.fxBurn cParams.GetDouble(1), cParams.GetLong(2), cParams.GetLong(3)
+            End If
             
         Case "Lava"
             MenuLava

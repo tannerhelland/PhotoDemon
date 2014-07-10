@@ -1,8 +1,8 @@
 VERSION 5.00
-Begin VB.Form FormBurn 
+Begin VB.Form FormIgnite 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Burn (fire effect)"
+   Caption         =   " Ignite (fire effect)"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -183,7 +183,7 @@ Begin VB.Form FormBurn
       Width           =   1575
    End
 End
-Attribute VB_Name = "FormBurn"
+Attribute VB_Name = "FormIgnite"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -400,7 +400,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Burn", , buildParams(sltIntensity, sltRadius, sltOpacity), UNDO_LAYER
+    Process "Ignite", , buildParams(sltIntensity, sltRadius, sltOpacity), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
