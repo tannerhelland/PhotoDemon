@@ -435,9 +435,9 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "NATURAL", 7, 7         'Natural
         '--> Natural sub-menu
         addMenuIcon "ATMOSPHERE", 7, 7, 0     'Atmosphere
-        addMenuIcon "BURN", 7, 7, 1           'Burn
-        addMenuIcon "FOG", 7, 7, 2            'Fog
-        addMenuIcon "FREEZE", 7, 7, 3         'Freeze
+        addMenuIcon "FOG", 7, 7, 1            'Fog
+        addMenuIcon "FREEZE", 7, 7, 2         'Freeze
+        addMenuIcon "BURN", 7, 7, 3           'Ignite
         addMenuIcon "LAVA", 7, 7, 4           'Lava
         addMenuIcon "STEEL", 7, 7, 5          'Steel
         addMenuIcon "RAIN", 7, 7, 6           'Water
