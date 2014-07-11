@@ -204,13 +204,14 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "UNDO", 1, 0           'Undo
     addMenuIcon "REDO", 1, 1           'Redo
     addMenuIcon "REPEAT", 1, 2         'Repeat Last Action
-    addMenuIcon "CUT", 1, 4            'Cut
-    addMenuIcon "CUT_LAYER", 1, 5      'Cut from layer
-    addMenuIcon "COPY", 1, 6           'Copy
-    addMenuIcon "COPY_LAYER", 1, 7     'Copy from layer
-    addMenuIcon "PASTE_IMAGE", 1, 8    'Paste as new image
-    addMenuIcon "PASTE_LAYER", 1, 9    'Paste as new layer
-    addMenuIcon "CLEAR", 1, 11         'Empty Clipboard
+    'addMenuIcon "FADE_LAST", 1, 4      'Fade previous action...
+    addMenuIcon "CUT", 1, 6            'Cut
+    addMenuIcon "CUT_LAYER", 1, 7      'Cut from layer
+    addMenuIcon "COPY", 1, 8           'Copy
+    addMenuIcon "COPY_LAYER", 1, 9     'Copy from layer
+    addMenuIcon "PASTE_IMAGE", 1, 10   'Paste as new image
+    addMenuIcon "PASTE_LAYER", 1, 11   'Paste as new layer
+    addMenuIcon "CLEAR", 1, 13         'Empty Clipboard
     
     'View Menu
     addMenuIcon "FITONSCREEN", 2, 0    'Fit on Screen
@@ -375,105 +376,103 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     
     'Effects (Filters) Menu
-    'addMenuIcon "FADELAST", 7, 0        'Fade Last
-    
-    addMenuIcon "ARTISTIC", 7, 2        'Artistic
+    addMenuIcon "ARTISTIC", 7, 0        'Artistic
         '--> Artistic sub-menu
-        addMenuIcon "COMICBOOK", 7, 2, 0      'Comic book
-        addMenuIcon "FIGGLASS", 7, 2, 1       'Figured glass
-        addMenuIcon "FILMNOIR", 7, 2, 2       'Film Noir
-        addMenuIcon "GLASSTILES", 7, 2, 3     'Glass tiles
-        addMenuIcon "KALEIDOSCOPE", 7, 2, 4   'Kaleidoscope
-        addMenuIcon "MODERNART", 7, 2, 5      'Modern Art
-        addMenuIcon "OILPAINTING", 7, 2, 6    'Oil painting
-        addMenuIcon "PENCIL", 7, 2, 7         'Pencil
-        addMenuIcon "POSTERIZE", 7, 2, 8      'Posterize
-        addMenuIcon "RELIEF", 7, 2, 9         'Relief
+        addMenuIcon "COMICBOOK", 7, 0, 0      'Comic book
+        addMenuIcon "FIGGLASS", 7, 0, 1       'Figured glass
+        addMenuIcon "FILMNOIR", 7, 0, 2       'Film Noir
+        addMenuIcon "GLASSTILES", 7, 0, 3     'Glass tiles
+        addMenuIcon "KALEIDOSCOPE", 7, 0, 4   'Kaleidoscope
+        addMenuIcon "MODERNART", 7, 0, 5      'Modern Art
+        addMenuIcon "OILPAINTING", 7, 0, 6    'Oil painting
+        addMenuIcon "PENCIL", 7, 0, 7         'Pencil
+        addMenuIcon "POSTERIZE", 7, 0, 8      'Posterize
+        addMenuIcon "RELIEF", 7, 0, 9         'Relief
     
-    addMenuIcon "BLUR", 7, 3            'Blur
+    addMenuIcon "BLUR", 7, 1            'Blur
         '--> Blur sub-menu
-        addMenuIcon "BOXBLUR", 7, 3, 0        'Box Blur
-        addMenuIcon "GAUSSBLUR", 7, 3, 1      'Gaussian Blur
-        addMenuIcon "SMARTBLUR", 7, 3, 2      'Surface Blur (formerly Smart Blur)
-        addMenuIcon "MOTIONBLUR", 7, 3, 4     'Motion Blur
-        addMenuIcon "RADIALBLUR", 7, 3, 5     'Radial Blur
-        addMenuIcon "ZOOMBLUR", 7, 3, 6       'Zoom Blur
-        addMenuIcon "FRAGMENT", 7, 3, 8       'Fragment
-        addMenuIcon "CHROMABLUR", 7, 3, 9     'Kuwahara
-        addMenuIcon "PIXELATE", 7, 3, 10      'Pixelate (formerly Mosaic)
+        addMenuIcon "BOXBLUR", 7, 1, 0        'Box Blur
+        addMenuIcon "GAUSSBLUR", 7, 1, 1      'Gaussian Blur
+        addMenuIcon "SMARTBLUR", 7, 1, 2      'Surface Blur (formerly Smart Blur)
+        addMenuIcon "MOTIONBLUR", 7, 1, 4     'Motion Blur
+        addMenuIcon "RADIALBLUR", 7, 1, 5     'Radial Blur
+        addMenuIcon "ZOOMBLUR", 7, 1, 6       'Zoom Blur
+        addMenuIcon "FRAGMENT", 7, 1, 8       'Fragment
+        addMenuIcon "CHROMABLUR", 7, 1, 9     'Kuwahara
+        addMenuIcon "PIXELATE", 7, 1, 10      'Pixelate (formerly Mosaic)
         
-    addMenuIcon "DISTORT", 7, 4         'Distort
+    addMenuIcon "DISTORT", 7, 2         'Distort
         '--> Distort sub-menu
-        addMenuIcon "LENSDISTORT", 7, 4, 0    'Apply lens distortion
-        addMenuIcon "FIXLENS", 7, 4, 1        'Remove or correct existing lens distortion
+        addMenuIcon "LENSDISTORT", 7, 2, 0    'Apply lens distortion
+        addMenuIcon "FIXLENS", 7, 2, 1        'Remove or correct existing lens distortion
         
-        addMenuIcon "PINCHWHIRL", 7, 4, 3     'Pinch and whirl
-        addMenuIcon "POKE", 7, 4, 4           'Poke
-        addMenuIcon "RIPPLE", 7, 4, 5         'Ripple
-        addMenuIcon "SQUISH", 7, 4, 6         'Squish (formerly Fixed Perspective)
-        addMenuIcon "SWIRL", 7, 4, 7          'Swirl
-        addMenuIcon "WAVES", 7, 4, 8          'Waves
+        addMenuIcon "PINCHWHIRL", 7, 2, 3     'Pinch and whirl
+        addMenuIcon "POKE", 7, 2, 4           'Poke
+        addMenuIcon "RIPPLE", 7, 2, 5         'Ripple
+        addMenuIcon "SQUISH", 7, 2, 6         'Squish (formerly Fixed Perspective)
+        addMenuIcon "SWIRL", 7, 2, 7          'Swirl
+        addMenuIcon "WAVES", 7, 2, 8          'Waves
         
-        addMenuIcon "MISCDISTORT", 7, 4, 10   'Miscellaneous distort functions
+        addMenuIcon "MISCDISTORT", 7, 2, 10   'Miscellaneous distort functions
                 
-    addMenuIcon "EDGES", 7, 5           'Edges
+    addMenuIcon "EDGES", 7, 3           'Edges
         '--> Edges sub-menu
-        addMenuIcon "EMBOSS", 7, 5, 0         'Emboss / Engrave
-        addMenuIcon "EDGEENHANCE", 7, 5, 1    'Enhance Edges
-        addMenuIcon "EDGES", 7, 5, 2          'Find Edges
-        addMenuIcon "TRACECONTOUR", 7, 5, 3   'Trace Contour
+        addMenuIcon "EMBOSS", 7, 3, 0         'Emboss / Engrave
+        addMenuIcon "EDGEENHANCE", 7, 3, 1    'Enhance Edges
+        addMenuIcon "EDGES", 7, 3, 2          'Find Edges
+        addMenuIcon "TRACECONTOUR", 7, 3, 3   'Trace Contour
         
-    addMenuIcon "SUNSHINE", 7, 6        'Lights and shadows
+    addMenuIcon "SUNSHINE", 7, 4        'Lights and shadows
         '--> Lights and shadows sub-menu
-        addMenuIcon "BLACKLIGHT", 7, 6, 0     'Blacklight
-        addMenuIcon "LENSFLARE", 7, 6, 1      'Lens flare
-        addMenuIcon "RAINBOW", 7, 6, 2        'Rainbow
-        addMenuIcon "SUNSHINE", 7, 6, 3       'Sunshine
-        addMenuIcon "DILATE", 7, 6, 5         'Dilate
-        addMenuIcon "ERODE", 7, 6, 6          'Erode
+        addMenuIcon "BLACKLIGHT", 7, 4, 0     'Blacklight
+        addMenuIcon "LENSFLARE", 7, 4, 1      'Lens flare
+        addMenuIcon "RAINBOW", 7, 4, 2        'Rainbow
+        addMenuIcon "SUNSHINE", 7, 4, 3       'Sunshine
+        addMenuIcon "DILATE", 7, 4, 5         'Dilate
+        addMenuIcon "ERODE", 7, 4, 6          'Erode
     
-    addMenuIcon "NATURAL", 7, 7         'Natural
+    addMenuIcon "NATURAL", 7, 5         'Natural
         '--> Natural sub-menu
-        addMenuIcon "ATMOSPHERE", 7, 7, 0     'Atmosphere
-        addMenuIcon "FOG", 7, 7, 1            'Fog
-        addMenuIcon "FREEZE", 7, 7, 2         'Freeze
-        addMenuIcon "BURN", 7, 7, 3           'Ignite
-        addMenuIcon "LAVA", 7, 7, 4           'Lava
-        addMenuIcon "STEEL", 7, 7, 5          'Steel
-        addMenuIcon "RAIN", 7, 7, 6           'Water
+        addMenuIcon "ATMOSPHERE", 7, 5, 0     'Atmosphere
+        addMenuIcon "FOG", 7, 5, 1            'Fog
+        addMenuIcon "FREEZE", 7, 5, 2         'Freeze
+        addMenuIcon "BURN", 7, 5, 3           'Ignite
+        addMenuIcon "LAVA", 7, 5, 4           'Lava
+        addMenuIcon "STEEL", 7, 5, 5          'Steel
+        addMenuIcon "RAIN", 7, 5, 6           'Water
         
-    addMenuIcon "NOISE", 7, 8           'Noise
+    addMenuIcon "NOISE", 7, 6           'Noise
         '--> Noise sub-menu
-        addMenuIcon "FILMGRAIN", 7, 8, 0      'Film grain
-        addMenuIcon "ADDNOISE", 7, 8, 1       'Add Noise
-        addMenuIcon "BILATERAL", 7, 8, 3      'Bilateral smoothing
-        addMenuIcon "MEDIAN", 7, 8, 4         'Median
+        addMenuIcon "FILMGRAIN", 7, 6, 0      'Film grain
+        addMenuIcon "ADDNOISE", 7, 6, 1       'Add Noise
+        addMenuIcon "BILATERAL", 7, 6, 3      'Bilateral smoothing
+        addMenuIcon "MEDIAN", 7, 6, 4         'Median
         
-    addMenuIcon "SHARPEN", 7, 9         'Sharpen
+    addMenuIcon "SHARPEN", 7, 7         'Sharpen
         '--> Sharpen sub-menu
-        addMenuIcon "SHARPEN", 7, 9, 0       'Sharpen
-        addMenuIcon "UNSHARP", 7, 9, 1       'Unsharp
+        addMenuIcon "SHARPEN", 7, 7, 0       'Sharpen
+        addMenuIcon "UNSHARP", 7, 7, 1       'Unsharp
         
-    addMenuIcon "STYLIZE", 7, 10        'Stylize
+    addMenuIcon "STYLIZE", 7, 8        'Stylize
         '--> Stylize sub-menu
-        addMenuIcon "ANTIQUE", 7, 10, 0       'Antique (Sepia)
-        addMenuIcon "DIFFUSE", 7, 10, 1       'Diffuse
-        addMenuIcon "SOLARIZE", 7, 10, 2      'Solarize
-        addMenuIcon "TWINS", 7, 10, 3         'Twins
-        addMenuIcon "VIGNETTE", 7, 10, 4      'Vignetting
+        addMenuIcon "ANTIQUE", 7, 8, 0       'Antique (Sepia)
+        addMenuIcon "DIFFUSE", 7, 8, 1       'Diffuse
+        addMenuIcon "SOLARIZE", 7, 8, 2      'Solarize
+        addMenuIcon "TWINS", 7, 8, 3         'Twins
+        addMenuIcon "VIGNETTE", 7, 8, 4      'Vignetting
         
-    addMenuIcon "PANANDZOOM", 7, 11        'Transform
+    addMenuIcon "PANANDZOOM", 7, 9        'Transform
         '--> Transform sub-menu
-        addMenuIcon "PANANDZOOM", 7, 11, 0    'Pan and zoom
-        addMenuIcon "PERSPECTIVE", 7, 11, 1   'Perspective (free)
-        addMenuIcon "POLAR", 7, 11, 2         'Polar conversion
-        addMenuIcon "ROTATECW", 7, 11, 3      'Rotate
-        addMenuIcon "SHEAR", 7, 11, 4         'Shear
-        addMenuIcon "SPHERIZE", 7, 11, 5      'Spherize
+        addMenuIcon "PANANDZOOM", 7, 9, 0    'Pan and zoom
+        addMenuIcon "PERSPECTIVE", 7, 9, 1   'Perspective (free)
+        addMenuIcon "POLAR", 7, 9, 2         'Polar conversion
+        addMenuIcon "ROTATECW", 7, 9, 3      'Rotate
+        addMenuIcon "SHEAR", 7, 9, 4         'Shear
+        addMenuIcon "SPHERIZE", 7, 9, 5      'Spherize
         
-    addMenuIcon "CUSTFILTER", 7, 13     'Custom Filter
+    addMenuIcon "CUSTFILTER", 7, 11     'Custom Filter
     
-    addMenuIcon "OTHER", 7, 15           'Experimental
+    addMenuIcon "OTHER", 7, 13           'Experimental
         '--> Experimental sub-menu
         'addMenuIcon "ALIEN", 7, 14, 0          'Alien
         'addMenuIcon "DREAM", 7, 14, 1          'Dream
@@ -628,6 +627,7 @@ End Sub
 'Convert a DIB - any DIB! - to an icon via CreateIconIndirect.  Transparency will be preserved, and by default, the icon will be created
 ' at the current image's size (though you can specify a custom size if you wish).  Ideally, the passed DIB will have been created using
 ' the pdImage function "requestThumbnail".
+'
 'FreeImage is currently required for this function, because it provides a simple way to move between DIBs and DDBs.  I could rewrite
 ' the function without FreeImage's help, but frankly don't consider it worth the trouble.
 Public Function getIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long = 0) As Long

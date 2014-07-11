@@ -170,12 +170,19 @@ End Sub
 'Load the last Undo file and alpha-blend it with the current image
 Public Sub MenuFadeLastEffect()
 
-    Message "Fading last effect..."
+    Dim relevantLayerID As Long
+    Dim actionName As String
     
     'Create a temporary DIB and use it to load the last Undo file's pixel data
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createFromFile pdImages(g_CurrentImage).undoManager.getLastUndoFile()
+    
+    If Not pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, relevantLayerID, actionName, False) Then
+        Debug.Print "WARNING! Fade commnand irrelevant; why are you calling this function?  Check Undo state first!"
+        Exit Sub
+    End If
+    
+    Message "Fading previous action (%1)...", g_Language.TranslateMessage(actionName)
     
     'Create a local array and point it at the pixel data of that undo file
     Dim uImageData() As Byte
@@ -186,14 +193,14 @@ Public Sub MenuFadeLastEffect()
     'Create another array, but point it at the pixel data of the current image
     Dim cImageData() As Byte
     Dim cSA As SAFEARRAY2D
-    prepSafeArray cSA, pdImages(g_CurrentImage).getActiveDIB()
+    prepSafeArray cSA, pdImages(g_CurrentImage).getLayerByID(relevantLayerID).layerDIB
     CopyMemory ByVal VarPtrArray(cImageData()), VarPtr(cSA), 4
     
     'Because the undo file and current image may be different sizes (if the last action was a resize, for example), we need to
     ' find the minimum width and height to make sure there are no out-of-bound errors.
     Dim minWidth As Long, minHeight As Long
-    If tmpDIB.getDIBWidth < pdImages(g_CurrentImage).Width Then minWidth = tmpDIB.getDIBWidth Else minWidth = pdImages(g_CurrentImage).Width
-    If tmpDIB.getDIBHeight < pdImages(g_CurrentImage).Height Then minHeight = tmpDIB.getDIBHeight Else minHeight = pdImages(g_CurrentImage).Height
+    If tmpDIB.getDIBWidth < pdImages(g_CurrentImage).getLayerByID(relevantLayerID).layerDIB.getDIBWidth Then minWidth = tmpDIB.getDIBWidth Else minWidth = pdImages(g_CurrentImage).getLayerByID(relevantLayerID).layerDIB.getDIBWidth
+    If tmpDIB.getDIBHeight < pdImages(g_CurrentImage).getLayerByID(relevantLayerID).layerDIB.getDIBHeight Then minHeight = tmpDIB.getDIBHeight Else minHeight = pdImages(g_CurrentImage).getLayerByID(relevantLayerID).layerDIB.getDIBHeight
         
     'Set the progress bar maximum value to that minimum width value
     SetProgBarMax minWidth
@@ -201,7 +208,7 @@ Public Sub MenuFadeLastEffect()
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValUndo As Long, qvDepth As Long, qvDepthUndo As Long
-    qvDepth = pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth \ 8
+    qvDepth = pdImages(g_CurrentImage).getLayerByID(relevantLayerID).layerDIB.getDIBColorDepth \ 8
     qvDepthUndo = tmpDIB.getDIBColorDepth \ 8
         
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -247,7 +254,7 @@ Public Sub MenuFadeLastEffect()
     Set tmpDIB = Nothing
     
     'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-    pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
+    pdImages(g_CurrentImage).getLayerByID(relevantLayerID).notifyLayerModified
     
     'Render the final image to the screen
     SetProgBarVal 0
@@ -293,9 +300,9 @@ Public Sub MenuHeatMap()
     Dim h As Double, s As Double, l As Double
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -307,7 +314,7 @@ Public Sub MenuHeatMap()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookUp(r + g + b)
         
         'Based on the luminance of this pixel, apply a predetermined hue gradient (stretching between -1 and 5)
         hVal = (CSng(grayVal) / 255) * 360
@@ -604,9 +611,9 @@ Public Sub MenuSynthesize()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -618,7 +625,7 @@ Public Sub MenuSynthesize()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookUp(r + g + b)
         
         r = g + b - grayVal
         g = r + b - grayVal
@@ -753,9 +760,9 @@ Public Sub MenuAntique()
     progBarCheck = findBestProgBarValue()
     
     'We're going to need grayscale values as part of the effect; grayscale is easily optimized via a look-up table
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
     
     'We're going to use gamma conversion as part of the effect; gamma is easily optimized via a look-up table
@@ -792,7 +799,7 @@ Public Sub MenuAntique()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        gray = gLookup(r + g + b)
+        gray = gLookUp(r + g + b)
         
         r = (r + gray) \ 2
         g = (g + gray) \ 2
@@ -964,9 +971,9 @@ Public Sub MenuDream()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
         
     'Apply the filter
@@ -978,7 +985,7 @@ Public Sub MenuDream()
         newG = ImageData(QuickVal + 1, y)
         newB = ImageData(QuickVal, y)
         
-        grayVal = gLookup(newR + newG + newB)
+        grayVal = gLookUp(newR + newG + newB)
         
         r = Abs(newR - grayVal) + Abs(newR - newG) + Abs(newR - newB) + (newR \ 2)
         g = Abs(newG - grayVal) + Abs(newG - newB) + Abs(newG - newR) + (newG \ 2)
@@ -1119,9 +1126,9 @@ Public Sub MenuFilmNoir()
     Dim grayVal As Long
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
     
     'Same goes for contrast
@@ -1143,7 +1150,7 @@ Public Sub MenuFilmNoir()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookUp(r + g + b)
         grayVal = cLookup(grayVal)
         
         ImageData(QuickVal + 2, y) = grayVal
@@ -1273,9 +1280,9 @@ Public Sub MenuTest()
     progBarCheck = findBestProgBarValue()
     
     'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookup(0 To 765) As Byte
+    Dim gLookUp(0 To 765) As Byte
     For x = 0 To 765
-        gLookup(x) = CByte(x \ 3)
+        gLookUp(x) = CByte(x \ 3)
     Next x
     
     'Finally, a bunch of variables used in color calculation
@@ -1293,7 +1300,7 @@ Public Sub MenuTest()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        grayVal = gLookup(r + g + b)
+        grayVal = gLookUp(r + g + b)
         
         'Put interesting color transformations here.  As an example, here's one possible sepia formula.
         newR = grayVal + 40

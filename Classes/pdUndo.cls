@@ -55,9 +55,8 @@ Attribute VB_Exposed = False
 '
 'Undo/Redo data is still saved to the HDD, and will remain that way for the forseeable future.  Unlimited operations
 ' are allowed.  This class does not check HDD space availability, so errors may be thrown if the user runs out of free
-' space.  Similarly, clearing the specified TEMP folder in the middle of program operation could cause a lot of bad
-' things to happen, including hard crashes.  I should probably handle such a case at some point in the future, but no
-' one has ever complained, so it remains a low priority for me.
+' space.  Similarly, clearing the specified TEMP folder in the middle of program operation is a bad idea.  PD will not
+' crash, but as expected, Undo/Redo functionality will cease to work.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -139,7 +138,7 @@ Public Sub notifyImageSaved(ByVal typeOfSave As PD_SAVE_EVENT)
         Case pdSE_SavePDI
             undoNumAtLastSave_PDI = saveIndex
                 
-        'Image has been saved to some flat format (JPEG, PNG, etc)
+        'Image has been saved to some flat format (JPEG, PNG, etc).  Layers are not intact.
         Case pdSE_SaveFlat
             undoNumAtLastSave_Flat = saveIndex
         
@@ -551,9 +550,13 @@ Private Function findNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
             'UNDO_LAYER contains relevant diff information for matching UNDO_LAYER and UNDO_LAYER_HEADER actions,
             ' but *only if the layer ID matches the requested one!*
             Case UNDO_LAYER
-                If ((undoTypeCheck = UNDO_LAYER) Or (undoTypeCheck = UNDO_LAYERHEADER)) And (relevantLayerID = undoStack(i).undoLayerID) Then
-                    findNearestDiffIndex = i
-                    Exit For
+                If ((undoTypeCheck = UNDO_LAYER) Or (undoTypeCheck = UNDO_LAYERHEADER)) Then
+                    
+                    If (relevantLayerID = undoStack(i).undoLayerID) Then
+                        findNearestDiffIndex = i
+                        Exit For
+                    End If
+                    
                 End If
                 
             'UNDO_LAYERHEADER contains relevant diff information for matching UNDO_LAYER_HEADER actions,
@@ -632,9 +635,72 @@ Public Sub RestoreRedoData()
     
 End Sub
 
-'Return the path of the last Undo file (used only for the "Fade last effect" function at present)
-Public Function getLastUndoFile() As String
-    getLastUndoFile = generateUndoFilename(undoNum - 2)
+'Find the last modified layer in the image, and fill a supplied DIB with the contents of that layer *prior to its current state*,
+' (obviously, as the caller has access to the current state).  This is currently used by the "Edit > Fade..." feature.
+'
+'The relevant layer index is returned by this function because the user may switch to a new layer, but we still want Fade to be
+' available.  (The Undo/Redo engine stores this data anyway, so it's not problematic to receive it.)  To help with menu captioning,
+' this function will also return the name of the action responsible for the change.
+'
+'This function will return FALSE if no layer-specific changes have been made, and thus no Fade action would be relevant.
+Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLayerID As Long, Optional ByRef nameOfProcessorAction As String, Optional ByVal checkStateOnly As Boolean = True) As Boolean
+    
+    'First things first: start searching the Undo/Redo stack for a layer-specific edit.  We don't care what edit, just that it's
+    ' layer-specific.
+    Dim actionFound As Boolean
+    actionFound = False
+    
+    Dim layerChangeIndex As Long
+    layerChangeIndex = -1
+    
+    Dim i As Long
+    For i = undoNum - 1 To 0 Step -1
+    
+        'A layer-specific edit has been found.  This is the last action the user committed that modified a layer, so it will contain
+        ' a copy of the image as it appeared *after the change was made*.  What this function needs to do is find the state of this
+        ' layer *prior to the change* - and now that we know which layer is affected, we can do that!
+        If undoStack(i).undoType = UNDO_LAYER Then
+            actionFound = True
+            affectedLayerID = undoStack(i).undoLayerID
+            nameOfProcessorAction = undoStack(i).processID
+            layerChangeIndex = i
+            Exit For
+        End If
+    
+    Next i
+    
+    'If a relevant layer was found, actionFound will be set to TRUE.  If a relevant layer was not found, return FALSE and exit.
+    If actionFound Then
+        
+        'Some functions, like syncInterfaceToCurrentImage, only care if a recent Layer modification exists.  They don't actually need
+        ' us to return the relevant DIB.  If checkStateOnly = TRUE, exit now.
+        If checkStateOnly Then
+            fillDIBWithLastUndoCopy = True
+            Exit Function
+        End If
+        
+        'Armed with the knowledge of which layer is being affected, we now need to find the last relevant DIFF index for that layer.
+        ' Use the built-in function to do that.
+        Dim relevantDiffIndex As Long
+        relevantDiffIndex = findNearestDiffIndex(layerChangeIndex, UNDO_LAYER, affectedLayerID)
+        
+        'relevantDiffIndex will now contain the index in the UndoStack array corresponding to the previous state of the affected layer.
+        ' Load the relevant portion of that Undo file into the target DIB.
+        Dim tmpLayer As pdLayer
+        Set tmpLayer = New pdLayer
+        LoadUndo generateUndoFilename(relevantDiffIndex), undoStack(relevantDiffIndex).undoType, UNDO_LAYER, affectedLayerID, True, tmpLayer
+        
+        'tmpLayer will now contain a copy of the relevant DIB (inside .layerDIB).  Copy it into the destination DIB, then exit.
+        Set dstDIB = New pdDIB
+        dstDIB.createFromExistingDIB tmpLayer.layerDIB
+        
+        Set tmpLayer = Nothing
+        fillDIBWithLastUndoCopy = True
+        
+    Else
+        fillDIBWithLastUndoCopy = False
+    End If
+    
 End Function
 
 'Get the filename of the current Undo file, using the same formula as generateUndoFilename below

@@ -198,36 +198,44 @@ Begin VB.Form FormMain
          Index           =   3
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Cu&t"
+         Caption         =   "Fade..."
          Index           =   4
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Cut from layer"
+         Caption         =   "-"
          Index           =   5
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Copy"
+         Caption         =   "Cu&t"
          Index           =   6
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Copy from layer"
+         Caption         =   "Cut from layer"
          Index           =   7
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Paste as new image"
+         Caption         =   "&Copy"
          Index           =   8
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Paste as new layer"
+         Caption         =   "Copy from layer"
          Index           =   9
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "-"
+         Caption         =   "&Paste as new image"
          Index           =   10
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Empty clipboard"
+         Caption         =   "Paste as new layer"
          Index           =   11
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "-"
+         Index           =   12
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "&Empty clipboard"
+         Index           =   13
       End
    End
    Begin VB.Menu MnuView 
@@ -885,13 +893,6 @@ Begin VB.Form FormMain
    End
    Begin VB.Menu MnuEffectsTop 
       Caption         =   "Effe&cts"
-      Begin VB.Menu MnuFadeLastEffect 
-         Caption         =   "Fade last effect"
-         Enabled         =   0   'False
-      End
-      Begin VB.Menu MnuFilterSepBar0 
-         Caption         =   "-"
-      End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Artistic"
          Index           =   0
@@ -1204,8 +1205,9 @@ Begin VB.Form FormMain
             Index           =   5
          End
       End
-      Begin VB.Menu MnuFilterSepBar1 
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "-"
+         Index           =   11
       End
       Begin VB.Menu MnuCustomFilter 
          Caption         =   "Custom filter..."
@@ -1222,8 +1224,8 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuDream 
             Caption         =   "Dream"
          End
-         Begin VB.Menu MnuFogTest 
-            Caption         =   "New fog effect"
+         Begin VB.Menu MnuNatureTest 
+            Caption         =   "New freeze effect"
          End
          Begin VB.Menu MnuRadioactive 
             Caption         =   "Radioactive"
@@ -1642,10 +1644,6 @@ Private Sub MnuEffectTransform_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuFogTest_Click()
-    showPDDialog vbModal, FormFog
-End Sub
-
 'Menu: top-level layer actions
 Private Sub MnuLayer_Click(Index As Integer)
 
@@ -1874,6 +1872,10 @@ Private Sub MnuLightShadow_Click(Index As Integer)
     
     End Select
 
+End Sub
+
+Private Sub MnuNatureTest_Click()
+    'showPDDialog vbModal, FormFreeze2
 End Sub
 
 Private Sub shellPipeMain_ErrDataArrival(ByVal CharsTotal As Long)
@@ -2891,12 +2893,19 @@ Private Sub MnuEdit_Click(Index As Integer)
         '<separator>
         Case 3
         
-        'Cut from image
+        'Fade...
         Case 4
+            Process "Fade", , , UNDO_LAYER
+        
+        '<separator>
+        Case 5
+        
+        'Cut from image
+        Case 6
             Process "Cut", False, , UNDO_IMAGE, , True
             
         'Cut from layer
-        Case 5
+        Case 7
         
             'If a selection is active, the Undo/Redo engine can simply back up the current layer contents.  If, however, no selection is active,
             ' we must delete the entire layer.  That requires a backup of the full image contents.
@@ -2907,35 +2916,31 @@ Private Sub MnuEdit_Click(Index As Integer)
             End If
             
         'Copy from image
-        Case 6
+        Case 8
             Process "Copy", False, , UNDO_NOTHING, , False
         
         'Copy from layer
-        Case 7
+        Case 9
             Process "Copy from layer", False, , UNDO_NOTHING, , False
         
         'Paste as new image
-        Case 8
+        Case 10
             Process "Paste as new image", False, , UNDO_NOTHING, , False
         
         'Paste as new layer
-        Case 9
+        Case 11
             Process "Paste as new layer", False, , UNDO_IMAGE, , False
         
         '<separator>
-        Case 10
+        Case 12
         
         'Empty clipboard
-        Case 11
+        Case 13
             Process "Empty clipboard", False, , UNDO_NOTHING, , False
                 
     
     End Select
     
-End Sub
-
-Private Sub MnuFadeLastEffect_Click()
-    Process "Fade last effect", , , UNDO_LAYER
 End Sub
 
 'All file menu actions are launched from here
