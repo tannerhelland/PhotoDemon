@@ -1386,7 +1386,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
             
         'SPECIAL OPERATIONS
-        Case "Fade last effect"
+        Case "Fade"
             MenuFadeLastEffect
             
         'This secret action is used internally by PD when we need some response from the processor engine - like checking for
@@ -1466,7 +1466,24 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so we ignore it
         '     during macro playback)
         If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not showDialog) And recordAction And (Not pdImages(g_CurrentImage) Is Nothing) Then
-            pdImages(g_CurrentImage).undoManager.createUndoData processID, processParameters, createUndo, pdImages(g_CurrentImage).getActiveLayerID, relevantTool
+        
+            'An Undo file should be created.  In most cases, the parameters used are automatic (e.g. the image's active layer is
+            ' assumed as the target, etc).  In some rare cases, however, we may need to supply custom parameters to the Undo engine.
+            ' Check for those now.
+            Dim affectedLayerID As Long
+            affectedLayerID = pdImages(g_CurrentImage).getActiveLayerID
+            
+            'The "Edit > Fade" action is unique, because it does not necessarily affect the active layer (e.g. if the user blurs
+            ' a layer, then switches to a new layer, Fade will affect the *old layer* only).  Find the relevant layer ID
+            ' before calling the Undo engine.
+            If processID = "Fade" Then
+                Dim tmpDIB As pdDIB
+                pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
+            End If
+        
+            'Create the Undo data
+            pdImages(g_CurrentImage).undoManager.createUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool
+            
         End If
     
     End If

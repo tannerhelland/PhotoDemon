@@ -124,8 +124,12 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tZoom, False
         metaToggle tNonDestructiveFX, False
         
+        '"Fade..." in the Edit menu is disabled when no images are loaded
+        FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Fade...")
+        FormMain.MnuEdit(4).Enabled = False
+        
         '"Paste as new layer" is disabled when no images are loaded (but "Paste as new image" remains active)
-        FormMain.MnuEdit(6).Enabled = False
+        FormMain.MnuEdit(8).Enabled = False
                         
         Message "Please load or import an image to begin editing."
         
@@ -178,7 +182,7 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tMacro, True
         
         'Paste as new layer is always available if one (or more) images are loaded
-        If Not FormMain.MnuEdit(6).Enabled Then FormMain.MnuEdit(6).Enabled = True
+        If Not FormMain.MnuEdit(8).Enabled Then FormMain.MnuEdit(8).Enabled = True
         
         'Display this image's path in the title bar.
         FormMain.Caption = getWindowCaption(pdImages(g_CurrentImage))
@@ -195,19 +199,30 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tSave, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
         
         'Undo, Redo, and RepeatLast are all closely related
-        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState
-        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState
-        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then metaToggle tRepeatLast, pdImages(g_CurrentImage).undoManager.getUndoState
-        
-        '"Fade last effect" is reserved for filters and effects only, so if the last Undo action was selection-only
-        ' (e.g. "feather selection"), do not enable the "Fade Last Effect" menu.
         If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
-            If (pdImages(g_CurrentImage).undoManager.getUndoProcessType = 0) Or (pdImages(g_CurrentImage).undoManager.getUndoProcessType = 1) Then
-                FormMain.MnuFadeLastEffect.Enabled = True
+            metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState, True
+            metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState, True
+            metaToggle tRepeatLast, pdImages(g_CurrentImage).undoManager.getUndoState
+        
+            '"Edit > Fade..." is also handled by the current image's undo manager (as it maintains the list of changes applied
+            ' to the image, and links to copies of previous image state DIBs).
+            Dim tmpDIB As pdDIB, tmpLayerIndex As Long, tmpActionName As String
+            
+            'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
+            ' enable FadeLastEffect, and rename the menu caption so the user knows what is being faded.
+            If pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
+                FormMain.MnuEdit(4).Enabled = True
+                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Fade %1...", g_Language.TranslateMessage(tmpActionName))
             Else
-                FormMain.MnuFadeLastEffect.Enabled = False
+                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Fade...")
+                FormMain.MnuEdit(4).Enabled = False
             End If
+            
+            'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
+            resetMenuIcons
+        
         End If
+        
         
         'Determine whether metadata is present, and dis/enable metadata menu items accordingly
         metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
@@ -428,7 +443,7 @@ End Sub
 
 'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
 ' and toolbar buttons)
-Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boolean)
+Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boolean, Optional ByVal suspendAssociatedRedraws As Boolean = False)
     
     Dim i As Long
     
@@ -436,119 +451,119 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
         'Save (left-hand panel button AND menu item)
         Case tSave
-            If FormMain.MnuFile(7).Enabled <> newState Then
-                toolbar_File.cmdSave.Enabled = newState
-                FormMain.MnuFile(7).Enabled = newState
+            If FormMain.MnuFile(7).Enabled <> NewState Then
+                toolbar_File.cmdSave.Enabled = NewState
+                FormMain.MnuFile(7).Enabled = NewState
                 
                 'The File -> Revert menu is also tied to Save state (if the image has not been saved in its current state,
                 ' we allow the user to revert to the last save state).
-                FormMain.MnuFile(9).Enabled = newState
+                FormMain.MnuFile(9).Enabled = NewState
                 
             End If
             
         'Save As (menu item only)
         Case tSaveAs
-            If FormMain.MnuFile(8).Enabled <> newState Then
-                toolbar_File.cmdSaveAs.Enabled = newState
-                FormMain.MnuFile(8).Enabled = newState
+            If FormMain.MnuFile(8).Enabled <> NewState Then
+                toolbar_File.cmdSaveAs.Enabled = NewState
+                FormMain.MnuFile(8).Enabled = NewState
             End If
             
         'Close and Close All
         Case tClose
-            If FormMain.MnuFile(4).Enabled <> newState Then
-                FormMain.MnuFile(4).Enabled = newState
-                FormMain.MnuFile(5).Enabled = newState
-                toolbar_File.cmdClose.Enabled = newState
+            If FormMain.MnuFile(4).Enabled <> NewState Then
+                FormMain.MnuFile(4).Enabled = NewState
+                FormMain.MnuFile(5).Enabled = NewState
+                toolbar_File.cmdClose.Enabled = NewState
             End If
         
         'Undo (left-hand panel button AND menu item)
         Case tUndo
         
-            If FormMain.MnuEdit(0).Enabled <> newState Then
-                toolbar_File.cmdUndo.Enabled = newState
-                FormMain.MnuEdit(0).Enabled = newState
+            If FormMain.MnuEdit(0).Enabled <> NewState Then
+                toolbar_File.cmdUndo.Enabled = NewState
+                FormMain.MnuEdit(0).Enabled = NewState
             End If
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
-            If newState Then
-                toolbar_File.cmdUndo.ToolTip = pdImages(g_CurrentImage).undoManager.getUndoProcessID
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & pdImages(g_CurrentImage).undoManager.getUndoProcessID & vbTab & "Ctrl+Z"
+            If NewState Then
+                toolbar_File.cmdUndo.ToolTip = g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID)
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID) & vbTab & "Ctrl+Z"
             Else
                 toolbar_File.cmdUndo.ToolTip = ""
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
             End If
             
             'When changing menu text, icons must be reapplied.
-            resetMenuIcons
+            If Not suspendAssociatedRedraws Then resetMenuIcons
         
         'Redo (left-hand panel button AND menu item)
         Case tRedo
-            If FormMain.MnuEdit(1).Enabled <> newState Then
-                toolbar_File.cmdRedo.Enabled = newState
-                FormMain.MnuEdit(1).Enabled = newState
+            If FormMain.MnuEdit(1).Enabled <> NewState Then
+                toolbar_File.cmdRedo.Enabled = NewState
+                FormMain.MnuEdit(1).Enabled = NewState
             End If
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
-            If newState Then
-                toolbar_File.cmdRedo.ToolTip = pdImages(g_CurrentImage).undoManager.getRedoProcessID
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & pdImages(g_CurrentImage).undoManager.getRedoProcessID & vbTab & "Ctrl+Y"
+            If NewState Then
+                toolbar_File.cmdRedo.ToolTip = g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID)
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID) & vbTab & "Ctrl+Y"
             Else
                 toolbar_File.cmdRedo.ToolTip = ""
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
             End If
             
             'When changing menu text, icons must be reapplied.
-            resetMenuIcons
+            If Not suspendAssociatedRedraws Then resetMenuIcons
         
         'Repeat last action (menu item only)
         Case tRepeatLast
-            If FormMain.MnuEdit(2).Enabled <> newState Then FormMain.MnuEdit(2).Enabled = newState
+            If FormMain.MnuEdit(2).Enabled <> NewState Then FormMain.MnuEdit(2).Enabled = NewState
             
         'Copy (menu item only)
         Case tCopy
-            If FormMain.MnuEdit(4).Enabled <> newState Then FormMain.MnuEdit(4).Enabled = newState
-            If FormMain.MnuEdit(5).Enabled <> newState Then FormMain.MnuEdit(5).Enabled = newState
-            If FormMain.MnuEdit(6).Enabled <> newState Then FormMain.MnuEdit(6).Enabled = newState
-            If FormMain.MnuEdit(7).Enabled <> newState Then FormMain.MnuEdit(7).Enabled = newState
-            If FormMain.MnuEdit(9).Enabled <> newState Then FormMain.MnuEdit(9).Enabled = newState
+            If FormMain.MnuEdit(6).Enabled <> NewState Then FormMain.MnuEdit(6).Enabled = NewState
+            If FormMain.MnuEdit(7).Enabled <> NewState Then FormMain.MnuEdit(7).Enabled = NewState
+            If FormMain.MnuEdit(8).Enabled <> NewState Then FormMain.MnuEdit(8).Enabled = NewState
+            If FormMain.MnuEdit(9).Enabled <> NewState Then FormMain.MnuEdit(9).Enabled = NewState
+            If FormMain.MnuEdit(11).Enabled <> NewState Then FormMain.MnuEdit(11).Enabled = NewState
             
         'View (top-menu level)
         Case tView
-            If FormMain.MnuView.Enabled <> newState Then FormMain.MnuView.Enabled = newState
+            If FormMain.MnuView.Enabled <> NewState Then FormMain.MnuView.Enabled = NewState
         
         'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus
         Case tImageOps
-            If FormMain.MnuImageTop.Enabled <> newState Then
-                FormMain.MnuImageTop.Enabled = newState
+            If FormMain.MnuImageTop.Enabled <> NewState Then
+                FormMain.MnuImageTop.Enabled = NewState
                 
                 'Use this same command to disable other menus
                 
                 'File -> Print
-                FormMain.MnuFile(13).Enabled = newState
+                FormMain.MnuFile(13).Enabled = NewState
                 
                 'Layer menu
-                FormMain.MnuLayerTop.Enabled = newState
+                FormMain.MnuLayerTop.Enabled = NewState
                 
                 'Select menu
-                FormMain.MnuSelectTop.Enabled = newState
+                FormMain.MnuSelectTop.Enabled = NewState
                 
                 'Adjustments menu
-                FormMain.MnuAdjustmentsTop.Enabled = newState
+                FormMain.MnuAdjustmentsTop.Enabled = NewState
                 
                 'Effects menu
-                FormMain.MnuEffectsTop.Enabled = newState
+                FormMain.MnuEffectsTop.Enabled = NewState
                 
             End If
             
         'Macro (within the Tools menu)
         Case tMacro
-            If FormMain.mnuTool(3).Enabled <> newState Then FormMain.mnuTool(3).Enabled = newState
+            If FormMain.mnuTool(3).Enabled <> NewState Then FormMain.mnuTool(3).Enabled = NewState
         
         'Selections in general
         Case tSelection
             
             'If selections are not active, clear all the selection value textboxes
-            If Not newState Then
+            If Not NewState Then
                 For i = 0 To toolbar_Tools.tudSel.Count - 1
                     toolbar_Tools.tudSel(i).Value = 0
                 Next i
@@ -558,42 +573,42 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             ' even without a selection present; this allows the user to set certain parameters in advance, so when they actually
             ' draw a selection, it already has the attributes they want.
             For i = 0 To toolbar_Tools.tudSel.Count - 1
-                toolbar_Tools.tudSel(i).Enabled = newState
+                toolbar_Tools.tudSel(i).Enabled = NewState
             Next i
             
             'En/disable all selection menu items that rely on an existing selection to operate
-            If FormMain.MnuSelect(2).Enabled <> newState Then
+            If FormMain.MnuSelect(2).Enabled <> NewState Then
                 
                 'Select none, invert selection
-                FormMain.MnuSelect(1).Enabled = newState
-                FormMain.MnuSelect(2).Enabled = newState
+                FormMain.MnuSelect(1).Enabled = NewState
+                FormMain.MnuSelect(2).Enabled = NewState
                 
                 'Grow/shrink/border/feather/sharpen selection
                 For i = 4 To 8
-                    FormMain.MnuSelect(i).Enabled = newState
+                    FormMain.MnuSelect(i).Enabled = NewState
                 Next i
                 
                 'Erase selected area
-                FormMain.MnuSelect(10).Enabled = newState
+                FormMain.MnuSelect(10).Enabled = NewState
                 
                 'Save selection
-                FormMain.MnuSelect(13).Enabled = newState
+                FormMain.MnuSelect(13).Enabled = NewState
                 
                 'Export selection top-level menu
-                FormMain.MnuSelect(14).Enabled = newState
+                FormMain.MnuSelect(14).Enabled = NewState
                 
             End If
                                     
             'Selection enabling/disabling also affects the Crop to Selection command
-            If FormMain.MnuImage(8).Enabled <> newState Then FormMain.MnuImage(8).Enabled = newState
+            If FormMain.MnuImage(8).Enabled <> NewState Then FormMain.MnuImage(8).Enabled = NewState
             
         'Transformable selection controls specifically
         Case tSelectionTransform
         
             'Under certain circumstances, it is desirable to disable only the selection location boxes
             For i = 0 To toolbar_Tools.tudSel.Count - 1
-                If (Not newState) Then toolbar_Tools.tudSel(i).Value = 0
-                toolbar_Tools.tudSel(i).Enabled = newState
+                If (Not NewState) Then toolbar_Tools.tudSel(i).Value = 0
+                toolbar_Tools.tudSel(i).Enabled = NewState
             Next i
                 
         'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a separate fallback for
@@ -601,7 +616,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         Case tMetadata
         
             If g_ExifToolEnabled Then
-                If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
+                If FormMain.MnuMetadata(0).Enabled <> NewState Then FormMain.MnuMetadata(0).Enabled = NewState
             Else
                 If FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = False
             End If
@@ -610,27 +625,27 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
         Case tGPSMetadata
         
             If g_ExifToolEnabled Then
-                If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
+                If FormMain.MnuMetadata(3).Enabled <> NewState Then FormMain.MnuMetadata(3).Enabled = NewState
             Else
                 If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False
             End If
         
         'Zoom controls not just the drop-down zoom box, but the zoom in, zoom out, and zoom fit buttons as well
         Case tZoom
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled <> newState Then
-                FormMain.mainCanvas(0).getZoomDropDownReference().Enabled = newState
-                FormMain.mainCanvas(0).enableZoomIn newState
-                FormMain.mainCanvas(0).enableZoomOut newState
-                FormMain.mainCanvas(0).enableZoomFit newState
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled <> NewState Then
+                FormMain.mainCanvas(0).getZoomDropDownReference().Enabled = NewState
+                FormMain.mainCanvas(0).enableZoomIn NewState
+                FormMain.mainCanvas(0).enableZoomOut NewState
+                FormMain.mainCanvas(0).enableZoomFit NewState
             End If
             
             'When disabling zoom controls, reset the zoom drop-down to 100%
-            If Not newState Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+            If Not NewState Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
             
         'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
         Case tNonDestructiveFX
         
-            If newState Then
+            If NewState Then
                 
                 'Start by enabling all non-destructive FX controls
                 For i = 0 To toolbar_Tools.sltQuickFix.Count - 1

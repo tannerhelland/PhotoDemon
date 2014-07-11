@@ -1877,7 +1877,11 @@ End Function
 'Load data from a PD-generated Undo file.  This function is fairly complex, on account of PD's new diff-based Undo engine.
 ' Note that two types of Undo data must be specified: the Undo type of the file requested (because this function has no
 ' knowledge of that, by design), and what type of Undo data the caller wants extracted from the file.
-Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVal undoTypeOfAction As Long, Optional ByVal targetLayerID As Long = -1, Optional ByVal suspendRedraw As Boolean = False)
+'
+'New as of 11 July '14 is the ability to specify a custom layer destination, for layer-relevant load operations.  If this value is NOTHING,
+' the function will automatically load the data to the relevant layer in the parent pdImage object.  If this layer is supplied, however,
+' the supplied layer reference will be used instead.
+Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVal undoTypeOfAction As Long, Optional ByVal targetLayerID As Long = -1, Optional ByVal suspendRedraw As Boolean = False, Optional ByRef customLayerDestination As pdLayer = Nothing)
     
     'Certain load functions require access to a DIB, so declare a generic one in advance
     Dim tmpDIB As pdDIB
@@ -1929,16 +1933,20 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             behavior accordingly.
         Case UNDO_LAYER
             
+            'New as of 11 July '14 is the ability for the caller to supply their own destination layer for layer-specific Undo data.
+            ' Check this optional parameter, and if it is NOT supplied, point it at the relevant layer in the parent pdImage object.
+            If (customLayerDestination Is Nothing) Then Set customLayerDestination = pdImages(g_CurrentImage).getLayerByID(targetLayerID)
+            
             'Layer data can appear in multiple types of Undo files
             Select Case undoTypeOfFile
             
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer with the data from the file.
                 Case UNDO_LAYER
-                    Loading.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).getLayerByID(targetLayerID), False
+                    Loading.LoadPhotoDemonLayer undoFile & ".layer", customLayerDestination, False
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
                 Case UNDO_EVERYTHING, UNDO_IMAGE
-                    Loading.LoadSingleLayerFromPDI undoFile, pdImages(g_CurrentImage).getLayerByID(targetLayerID), targetLayerID, False
+                    Loading.LoadSingleLayerFromPDI undoFile, customLayerDestination, targetLayerID, False
                 
             End Select
         
@@ -2085,14 +2093,14 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyY, vbCtrlMask, "Redo", FormMain.MnuEdit(1), True, True, False, UNDO_NOTHING
         .AddAccelerator vbKeyF, vbCtrlMask, "Repeat last action", FormMain.MnuEdit(2), True, True, False, UNDO_IMAGE
         
-        .AddAccelerator vbKeyX, vbCtrlMask, "Cut", FormMain.MnuEdit(4), True, True, False, UNDO_IMAGE
-        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Cut from layer", FormMain.MnuEdit(5), True, True, False, UNDO_LAYER
+        .AddAccelerator vbKeyX, vbCtrlMask, "Cut", FormMain.MnuEdit(6), True, True, False, UNDO_IMAGE
+        .AddAccelerator vbKeyX, vbCtrlMask Or vbShiftMask, "Cut from layer", FormMain.MnuEdit(7), True, True, False, UNDO_LAYER
         
-        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", FormMain.MnuEdit(6), True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy from layer", FormMain.MnuEdit(7), True, True, False, UNDO_NOTHING
+        .AddAccelerator vbKeyC, vbCtrlMask, "Copy", FormMain.MnuEdit(8), True, True, False, UNDO_NOTHING
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy from layer", FormMain.MnuEdit(9), True, True, False, UNDO_NOTHING
         
-        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", FormMain.MnuEdit(8), True, False, False, UNDO_NOTHING
-        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new layer", FormMain.MnuEdit(9), True, False, False, UNDO_IMAGE
+        .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", FormMain.MnuEdit(10), True, False, False, UNDO_NOTHING
+        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new layer", FormMain.MnuEdit(11), True, False, False, UNDO_IMAGE
         
         
         'View menu
@@ -2210,10 +2218,10 @@ Public Sub DrawAccelerators()
     
     'Because the Import -> From Clipboard menu shares the same shortcut as Edit -> Paste as new image, we must
     ' manually add its shortcut (as only the Edit -> Paste will be handled automatically).
-    FormMain.MnuImportClipboard.Caption = FormMain.MnuImportClipboard.Caption & vbTab & "Ctrl+Shift+V"
+    FormMain.MnuImportClipboard.Caption = FormMain.MnuImportClipboard.Caption & vbTab & "Ctrl+V"
     
     'Similarly for the Layer -> New -> From Clipboard menu
-    FormMain.MnuLayerNew(3).Caption = FormMain.MnuLayerNew(3).Caption & vbTab & "Ctrl+V"
+    FormMain.MnuLayerNew(3).Caption = FormMain.MnuLayerNew(3).Caption & vbTab & "Ctrl+Shift+V"
     
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module
     
