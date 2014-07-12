@@ -1387,7 +1387,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         'SPECIAL OPERATIONS
         Case "Fade"
-            MenuFadeLastEffect
+            If showDialog Then
+                showPDDialog vbModal, FormFadeLast
+            Else
+                FormFadeLast.fxFadeLastAction cParams.GetDouble(1), cParams.GetLong(2)
+            End If
             
         'This secret action is used internally by PD when we need some response from the processor engine - like checking for
         ' non-destructive layer changes - but the user is not actually modifying the image.
