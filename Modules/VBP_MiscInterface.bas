@@ -1461,3 +1461,37 @@ Public Sub enableUserInput()
     FormMain.Enabled = True
 
 End Sub
+
+'Given a combo box, populate it with all currently supported blend modes
+Public Sub populateBlendModeComboBox(ByRef dstCombo As ComboBox, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
+    
+    dstCombo.Clear
+    
+    dstCombo.AddItem "Normal", 0
+    dstCombo.AddItem "Darken", 1
+    dstCombo.AddItem "Multiply", 2
+    dstCombo.AddItem "Color burn", 3
+    dstCombo.AddItem "Linear burn", 4
+    dstCombo.AddItem "Lighten", 5
+    dstCombo.AddItem "Screen", 6
+    dstCombo.AddItem "Color dodge", 7
+    dstCombo.AddItem "Linear dodge", 8
+    dstCombo.AddItem "Overlay", 9
+    dstCombo.AddItem "Soft light", 10
+    dstCombo.AddItem "Hard light", 11
+    dstCombo.AddItem "Vivid light", 12
+    dstCombo.AddItem "Linear light", 13
+    dstCombo.AddItem "Pin light", 14
+    dstCombo.AddItem "Hard mix", 15
+    dstCombo.AddItem "Difference", 16
+    dstCombo.AddItem "Exclusion", 17
+    dstCombo.AddItem "Subtract", 18
+    dstCombo.AddItem "Divide", 19
+    dstCombo.AddItem "Hue", 20
+    dstCombo.AddItem "Saturation", 21
+    dstCombo.AddItem "Color", 22
+    dstCombo.AddItem "Luminosity", 23
+    
+    dstCombo.ListIndex = blendIndex
+    
+End Sub
