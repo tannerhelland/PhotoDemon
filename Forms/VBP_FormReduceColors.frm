@@ -348,18 +348,6 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
     
 End Sub
 
-Private Sub sltBlue_Change()
-    updatePreview
-End Sub
-
-Private Sub sltGreen_Change()
-    updatePreview
-End Sub
-
-Private Sub sltRed_Change()
-    updatePreview
-End Sub
-
 'Use this sub to update the on-screen preview
 Private Sub updatePreview()
     
