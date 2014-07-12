@@ -108,7 +108,7 @@ End Sub
 'For some odd functions (e.g. export JPEG dialog), it's helpful to have the full power of prepImageData, but against
 ' a target other than the current image's main layer.  This function is roughly equivalent to prepImageData, below, but
 ' stripped down and specifically designed for PREVIEWS ONLY.  A source image must be explicitly supplied.
-Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As pdDIB, ByRef previewTarget As fxPreviewCtl)
+Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As pdDIB, ByRef previewTarget As fxPreviewCtl, Optional ByVal leaveAlphaPremultiplied As Boolean = False)
     
     'Prepare our temporary DIB
     Set workingDIB = New pdDIB
@@ -183,7 +183,7 @@ Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
     If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingDIB
     
     'For 32bpp layers, fix premultiplication now, as all effects assume UN-premultiplied alpha
-    If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha False
+    If (workingDIB.getDIBColorDepth = 32) And (Not leaveAlphaPremultiplied) Then workingDIB.fixPremultipliedAlpha False
     
     'With our temporary DIB successfully created, populate the relevant SafeArray variable
     prepSafeArray tmpSA, workingDIB
@@ -217,12 +217,12 @@ Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
 End Sub
 
 'The counterpart to previewNonStandardImage, above
-Public Sub finalizeNonstandardPreview(ByRef previewTarget As fxPreviewCtl)
+Public Sub finalizeNonstandardPreview(ByRef previewTarget As fxPreviewCtl, Optional ByVal alphaAlreadyPremultiplied As Boolean = False)
     
     'Because is a preview, we only need to repaint a preview box
     
     'Fix premultiplied alpha if necessary
-    If workingDIB.getDIBColorDepth = 32 Then workingDIB.fixPremultipliedAlpha True
+    If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIB.fixPremultipliedAlpha True
     
     'Pass the modified image on to the specified preview control
     previewTarget.setFXImage workingDIB
