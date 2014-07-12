@@ -2895,7 +2895,7 @@ Private Sub MnuEdit_Click(Index As Integer)
         
         'Fade...
         Case 4
-            Process "Fade", , , UNDO_LAYER
+            Process "Fade", True
         
         '<separator>
         Case 5
