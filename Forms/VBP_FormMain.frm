@@ -189,8 +189,7 @@ Begin VB.Form FormMain
          Index           =   1
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Repeat &last action"
-         Enabled         =   0   'False
+         Caption         =   "Undo history..."
          Index           =   2
       End
       Begin VB.Menu MnuEdit 
@@ -198,44 +197,49 @@ Begin VB.Form FormMain
          Index           =   3
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Fade..."
+         Caption         =   "Repeat &last action"
+         Enabled         =   0   'False
          Index           =   4
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "-"
+         Caption         =   "Fade..."
          Index           =   5
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Cu&t"
+         Caption         =   "-"
          Index           =   6
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Cut from layer"
+         Caption         =   "Cu&t"
          Index           =   7
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Copy"
+         Caption         =   "Cut from layer"
          Index           =   8
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Copy from layer"
+         Caption         =   "&Copy"
          Index           =   9
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Paste as new image"
+         Caption         =   "Copy from layer"
          Index           =   10
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "Paste as new layer"
+         Caption         =   "&Paste as new image"
          Index           =   11
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "-"
+         Caption         =   "Paste as new layer"
          Index           =   12
       End
       Begin VB.Menu MnuEdit 
-         Caption         =   "&Empty clipboard"
+         Caption         =   "-"
          Index           =   13
+      End
+      Begin VB.Menu MnuEdit 
+         Caption         =   "&Empty clipboard"
+         Index           =   14
       End
    End
    Begin VB.Menu MnuView 
@@ -2885,27 +2889,32 @@ Private Sub MnuEdit_Click(Index As Integer)
         Case 1
             Process "Redo", False
         
-        'Repeat last
+        'Undo history
         Case 2
-            'TODO: figure out Undo handling for "Repeat last action"
-            Process "Repeat last action", False, , UNDO_IMAGE
-        
+            pdMsgBox "PhotoDemon's Undo History feature is still under construction, but it will be coming soon!", vbInformation + vbOKOnly + vbApplicationModal, "Undo History coming soon"
+            'Process "Undo history", True
+            
         '<separator>
         Case 3
         
-        'Fade...
+        'Repeat last
         Case 4
+            'TODO: figure out Undo handling for "Repeat last action"
+            Process "Repeat last action", False, , UNDO_IMAGE
+                
+        'Fade...
+        Case 5
             Process "Fade", True
         
         '<separator>
-        Case 5
+        Case 6
         
         'Cut from image
-        Case 6
+        Case 7
             Process "Cut", False, , UNDO_IMAGE, , True
             
         'Cut from layer
-        Case 7
+        Case 8
         
             'If a selection is active, the Undo/Redo engine can simply back up the current layer contents.  If, however, no selection is active,
             ' we must delete the entire layer.  That requires a backup of the full image contents.
@@ -2916,26 +2925,26 @@ Private Sub MnuEdit_Click(Index As Integer)
             End If
             
         'Copy from image
-        Case 8
+        Case 9
             Process "Copy", False, , UNDO_NOTHING, , False
         
         'Copy from layer
-        Case 9
+        Case 10
             Process "Copy from layer", False, , UNDO_NOTHING, , False
         
         'Paste as new image
-        Case 10
+        Case 11
             Process "Paste as new image", False, , UNDO_NOTHING, , False
         
         'Paste as new layer
-        Case 11
+        Case 12
             Process "Paste as new layer", False, , UNDO_IMAGE, , False
         
         '<separator>
-        Case 12
+        Case 13
         
         'Empty clipboard
-        Case 13
+        Case 14
             Process "Empty clipboard", False, , UNDO_NOTHING, , False
                 
     

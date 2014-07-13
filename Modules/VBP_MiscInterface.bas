@@ -56,7 +56,6 @@ Public Enum metaInitializer
      tClose
      tUndo
      tRedo
-     tRepeatLast
      tCopy
      tPaste
      tView
@@ -71,7 +70,7 @@ Public Enum metaInitializer
 End Enum
 
 #If False Then
-    Private Const tSave = 0, tSaveAs = 0, tClose = 0, tUndo = 0, tRedo = 0, tRepeatLast = 0, tCopy = 0, tPaste = 0, tView = 0, tImageOps = 0
+    Private Const tSave = 0, tSaveAs = 0, tClose = 0, tUndo = 0, tRedo = 0, tCopy = 0, tPaste = 0, tView = 0, tImageOps = 0
     Private Const tMetadata = 0, tGPSMetadata = 0, tMacro = 0, tSelection = 0, tSelectionTransform = 0, tZoom = 0, tNonDestructiveFX = 0
 #End If
 
@@ -113,9 +112,8 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tSave, False
         metaToggle tSaveAs, False
         metaToggle tClose, False
-        metaToggle tUndo, False
-        metaToggle tRedo, False
-        metaToggle tRepeatLast, False
+        metaToggle tUndo, False, True
+        metaToggle tRedo, False, True
         metaToggle tCopy, False
         metaToggle tView, False
         metaToggle tImageOps, False
@@ -124,9 +122,19 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tZoom, False
         metaToggle tNonDestructiveFX, False
         
-        '"Fade..." in the Edit menu is disabled when no images are loaded
-        FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Fade...")
+        'Undo history is disabled when no images are loaded
+        FormMain.MnuEdit(2).Enabled = False
+        
+        '"Repeat..." and "Fade..." in the Edit menu are disabled when no images are loaded
         FormMain.MnuEdit(4).Enabled = False
+        FormMain.MnuEdit(5).Enabled = False
+        
+        FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
+        FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
+        
+        'All relevant menu icons can now be redrawn.  (This must be redone after menu captions change, as icons are associated
+        ' with captions.)
+        resetMenuIcons
         
         '"Paste as new layer" is disabled when no images are loaded (but "Paste as new image" remains active)
         FormMain.MnuEdit(8).Enabled = False
@@ -182,7 +190,7 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tMacro, True
         
         'Paste as new layer is always available if one (or more) images are loaded
-        If Not FormMain.MnuEdit(8).Enabled Then FormMain.MnuEdit(8).Enabled = True
+        If Not FormMain.MnuEdit(9).Enabled Then FormMain.MnuEdit(9).Enabled = True
         
         'Display this image's path in the title bar.
         FormMain.Caption = getWindowCaption(pdImages(g_CurrentImage))
@@ -198,24 +206,37 @@ Public Sub syncInterfaceToCurrentImage()
         'Save is a bit funny, because if the image HAS been saved to file, we DISABLE the save button.
         metaToggle tSave, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
         
-        'Undo, Redo, and RepeatLast are all closely related
+        'Undo, Redo, Repeat and Fade are all closely related
         If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
+        
             metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState, True
             metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState, True
-            metaToggle tRepeatLast, pdImages(g_CurrentImage).undoManager.getUndoState
-        
-            '"Edit > Fade..." is also handled by the current image's undo manager (as it maintains the list of changes applied
-            ' to the image, and links to copies of previous image state DIBs).
+            
+            'Undo history is enabled if either Undo or Redo is active
+            If pdImages(g_CurrentImage).undoManager.getUndoState Or pdImages(g_CurrentImage).undoManager.getRedoState Then
+                FormMain.MnuEdit(2).Enabled = True
+            Else
+                FormMain.MnuEdit(2).Enabled = False
+            End If
+            
+            '"Edit > Repeat..." and "Edit > Fade..." are also handled by the current image's undo manager (as it
+            ' maintains the list of changes applied to the image, and links to copies of previous image state DIBs).
             Dim tmpDIB As pdDIB, tmpLayerIndex As Long, tmpActionName As String
             
             'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
-            ' enable FadeLastEffect, and rename the menu caption so the user knows what is being faded.
+            ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
             If pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
+                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
+                FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
+                
                 FormMain.MnuEdit(4).Enabled = True
-                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Fade %1...", g_Language.TranslateMessage(tmpActionName))
+                FormMain.MnuEdit(5).Enabled = True
             Else
-                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Fade...")
+                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
+                FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
+                
                 FormMain.MnuEdit(4).Enabled = False
+                FormMain.MnuEdit(5).Enabled = False
             End If
             
             'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
@@ -514,18 +535,14 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
             'When changing menu text, icons must be reapplied.
             If Not suspendAssociatedRedraws Then resetMenuIcons
-        
-        'Repeat last action (menu item only)
-        Case tRepeatLast
-            If FormMain.MnuEdit(2).Enabled <> NewState Then FormMain.MnuEdit(2).Enabled = NewState
             
         'Copy (menu item only)
         Case tCopy
-            If FormMain.MnuEdit(6).Enabled <> NewState Then FormMain.MnuEdit(6).Enabled = NewState
             If FormMain.MnuEdit(7).Enabled <> NewState Then FormMain.MnuEdit(7).Enabled = NewState
             If FormMain.MnuEdit(8).Enabled <> NewState Then FormMain.MnuEdit(8).Enabled = NewState
             If FormMain.MnuEdit(9).Enabled <> NewState Then FormMain.MnuEdit(9).Enabled = NewState
-            If FormMain.MnuEdit(11).Enabled <> NewState Then FormMain.MnuEdit(11).Enabled = NewState
+            If FormMain.MnuEdit(10).Enabled <> NewState Then FormMain.MnuEdit(10).Enabled = NewState
+            If FormMain.MnuEdit(12).Enabled <> NewState Then FormMain.MnuEdit(12).Enabled = NewState
             
         'View (top-menu level)
         Case tView

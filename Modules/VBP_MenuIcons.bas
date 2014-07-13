@@ -203,15 +203,17 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Edit Menu
     addMenuIcon "UNDO", 1, 0           'Undo
     addMenuIcon "REDO", 1, 1           'Redo
-    addMenuIcon "REPEAT", 1, 2         'Repeat Last Action
-    'addMenuIcon "FADE_LAST", 1, 4      'Fade previous action...
-    addMenuIcon "CUT", 1, 6            'Cut
-    addMenuIcon "CUT_LAYER", 1, 7      'Cut from layer
-    addMenuIcon "COPY", 1, 8           'Copy
-    addMenuIcon "COPY_LAYER", 1, 9     'Copy from layer
-    addMenuIcon "PASTE_IMAGE", 1, 10   'Paste as new image
-    addMenuIcon "PASTE_LAYER", 1, 11   'Paste as new layer
-    addMenuIcon "CLEAR", 1, 13         'Empty Clipboard
+    
+    addMenuIcon "REPEAT", 1, 4         'Repeat previous action
+    'addMenuIcon "FADE_LAST", 1, 5      'Fade previous action...
+    
+    addMenuIcon "CUT", 1, 7            'Cut
+    addMenuIcon "CUT_LAYER", 1, 8      'Cut from layer
+    addMenuIcon "COPY", 1, 9           'Copy
+    addMenuIcon "COPY_LAYER", 1, 10    'Copy from layer
+    addMenuIcon "PASTE_IMAGE", 1, 11   'Paste as new image
+    addMenuIcon "PASTE_LAYER", 1, 12   'Paste as new layer
+    addMenuIcon "CLEAR", 1, 14         'Empty Clipboard
     
     'View Menu
     addMenuIcon "FITONSCREEN", 2, 0    'Fit on Screen
@@ -561,6 +563,12 @@ Public Sub resetMenuIcons()
     addMenuIcon "UNDO", 1, 0     'Undo
     addMenuIcon "REDO", 1, 1     'Redo
     
+    'Redraw the Repeat and Fade menus
+    addMenuIcon "REPEAT", 1, 4   'Repeat previous action
+    
+    'NOTE! In the future, when icons are available for the Repeat and Fade menu items, we will need to add their refreshes
+    ' to this list (as their captions dynamically change at run-time).
+    
     'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
     addMenuIcon "NEXTIMAGE", 9, 7       'Next image
     addMenuIcon "PREVIMAGE", 9, 8       'Previous image
@@ -579,7 +587,8 @@ Public Sub resetMenuIcons()
     ' (Note added 01 Jan 2014 - RR has reported an IDE error on the following line, which means this function is somehow being
     '  triggered before loadMenuIcons above.  I cannot reproduce this behavior, so instead, we now perform a single initialization
     '  check before attempting to load MRU icons.)
-    If Not cMRUIcons Is Nothing Then
+    If Not (cMRUIcons Is Nothing) Then
+        
         cMRUIcons.Clear
         Dim tmpFilename As String
         
