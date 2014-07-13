@@ -680,6 +680,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     ' 2) Second, obtain the current layer DIB (raw data only, no header!) and write it out
     Dim layerXMLHeader As String
     Dim layerDIBCopy() As Byte
+    Dim layerDIBPointer As Long, layerDIBLength As Long
     
     Dim i As Long
     For i = 0 To srcPDImage.getNumOfLayers - 1
@@ -694,8 +695,8 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         
         'If this is not a header-only file, retrieve the layer's DIB and add it to the data section of this node
         If Not writeHeaderOnlyFile Then
-            srcPDImage.getLayerByIndex(i).layerDIB.copyImageBytesIntoStream layerDIBCopy
-            pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, compressLayers, , embedChecksums
+            srcPDImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
+            pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, , embedChecksums
         End If
     
     Next i
@@ -764,9 +765,9 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     ' into the pdPackage instance
     If Not writeHeaderOnlyFile Then
     
-        Dim layerDIBCopy() As Byte
-        srcLayer.layerDIB.copyImageBytesIntoStream layerDIBCopy
-        pdiWriter.addNodeData nodeIndex, False, layerDIBCopy, compressLayers, , embedChecksums
+        Dim layerDIBPointer As Long, layerDIBLength As Long
+        srcLayer.layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
+        pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, , embedChecksums
         
     End If
     

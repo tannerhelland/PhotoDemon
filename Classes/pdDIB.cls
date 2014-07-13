@@ -1493,6 +1493,13 @@ Public Sub copyImageBytesIntoStream(ByRef dstArray() As Byte)
 
 End Sub
 
+'Shortcut to copyImageBytesIntoStream; this function gives a pointer to DIB byte 0, and the size of the DIB's contents.  This can be used
+' to mimic byte array behavior, without the overhead of actually initializing a VB array and copying the DIB into it.
+Public Sub retrieveDIBPointerAndSize(ByRef dibPointer As Long, ByRef dibSize As Long)
+    dibPointer = dibBits
+    dibSize = dibArrayWidth * dibHeight
+End Sub
+
 'The counterpart to copyImageBytesIntoStream, above.  This function will blindly copy an array of bytes over the current
 ' image's data.  For it to work, the DIB must have been correctly created at the right size and color depth BEFORE CALLING
 ' THIS FUNCTION.  Otherwise, you will get errors.
@@ -1549,14 +1556,14 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     Dim checkAlpha As Byte, tmpAlpha As Double
     
     'Because our alpha values are pre-multiplied, we can composite them against the background color via use of a look-up table.
-    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    Dim rLookup(0 To 255) As Byte, gLookUp(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
     'Populate a unique lookup table for each color, based on each possible alpha value (0 to 255)
     For x = 0 To 255
         
         tmpAlpha = 1 - (x / 255)
         rLookup(x) = newR * tmpAlpha
-        gLookup(x) = newG * tmpAlpha
+        gLookUp(x) = newG * tmpAlpha
         bLookup(x) = newB * tmpAlpha
     
     Next x
@@ -1576,7 +1583,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
             If parentIsPremultiplied Then
             
                 iData(QuickX + 2, y) = iData(QuickX + 2, y) + rLookup(checkAlpha)
-                iData(QuickX + 1, y) = iData(QuickX + 1, y) + gLookup(checkAlpha)
+                iData(QuickX + 1, y) = iData(QuickX + 1, y) + gLookUp(checkAlpha)
                 iData(QuickX, y) = iData(QuickX, y) + bLookup(checkAlpha)
                 
             Else

@@ -282,20 +282,20 @@ End Function
 ' 3) Whether to calculate a checksum for the uncompressed data bytes.  This is completely optional.  If a checksum is found in
 '    the file, pdPackage will automatically process it at load-time, and reject the file if checksums do not match.  Note that
 '    checksumming the data increases write time non-trivially.
-Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
+Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If nodeIndex < 0 Or nodeIndex > m_NumOfNodes - 1 Then
         Debug.Print "Node index out of range - try again with a valid node index!"
-        addNodeData = False
+        addNodeDataFromPointer = False
         Exit Function
     End If
     
     'Update the pre-compression values for this data chunk.
     If useHeaderBuffer Then
-        m_NodeDirectory(nodeIndex).NodeHeaderOriginalSize = UBound(DataBytes) + 1
+        m_NodeDirectory(nodeIndex).NodeHeaderOriginalSize = dataLength
     Else
-        m_NodeDirectory(nodeIndex).NodeDataOriginalSize = UBound(DataBytes) + 1
+        m_NodeDirectory(nodeIndex).NodeDataOriginalSize = dataLength
     End If
     
     'Mark the offset for this data chunk.
@@ -309,12 +309,12 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
     ' because the data is simply added to the pdPackages data chunk.  Order is irrelevant.
     If (Not compressData) Or (Not m_ZLibAvailable) Then
     
-        m_DataBuffer.WriteBytes DataBytes
+        m_DataBuffer.WriteBytesFromPointer dataPointer, dataLength
         
         If useHeaderBuffer Then
-            m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(DataBytes) + 1
+            m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = dataLength
         Else
-            m_NodeDirectory(nodeIndex).NodeDataPackedSize = UBound(DataBytes) + 1
+            m_NodeDirectory(nodeIndex).NodeDataPackedSize = dataLength
         End If
         
     'Data compression was requested.  We now have a bit of extra work to do.
@@ -324,23 +324,23 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
         ' the input buffer, plus 12 extra bytes for a header.  This is the "worst possible scenario" for zLib compression.
         Dim compressedData() As Byte
         Dim OriginalSize As Long, compressedSize As Long
-        OriginalSize = UBound(DataBytes) + 1
+        OriginalSize = dataLength
         compressedSize = OriginalSize + (OriginalSize * 0.01) + 12
         ReDim compressedData(0 To compressedSize - 1) As Byte
         
         'Request compression from zLib.  It'll take care of the rest.
         Dim zLibResult As Long
         If compressionLevel >= 0 Then
-            zLibResult = compress2(compressedData(0), compressedSize, DataBytes(0), UBound(DataBytes) + 1, compressionLevel)
+            zLibResult = compress2(compressedData(0), compressedSize, ByVal dataPointer, dataLength, compressionLevel)
         Else
-            zLibResult = compress(compressedData(0), compressedSize, DataBytes(0), UBound(DataBytes) + 1)
+            zLibResult = compress(compressedData(0), compressedSize, ByVal dataPointer, dataLength)
         End If
         
         'Make sure zLib compressed the data successfully.
         If zLibResult = 0 Then
         
             'zLib was successful.  Add the compressed data stream to the data buffer.
-            m_DataBuffer.WriteBytes compressedData, compressedSize
+            m_DataBuffer.WriteBytesFromPointer VarPtr(compressedData(0)), UBound(compressedData) + 1
         
             If useHeaderBuffer Then
                 m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(compressedData) + 1
@@ -354,12 +354,12 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
         'zLib failed.  Write the original, uncompressed data to file instead.
         Else
             
-            m_DataBuffer.WriteBytes DataBytes
+            m_DataBuffer.WriteBytesFromPointer dataPointer, dataLength
         
             If useHeaderBuffer Then
-                m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(DataBytes) + 1
+                m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = dataLength
             Else
-                m_NodeDirectory(nodeIndex).NodeDataPackedSize = UBound(DataBytes) + 1
+                m_NodeDirectory(nodeIndex).NodeDataPackedSize = dataLength
             End If
             
             'Something went horribly wrong.  Write the uncompressed original data to the buffer, and provide a debug warning.
@@ -375,7 +375,7 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
         'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
         ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
         Dim zLibAdlerSum As Long
-        zLibAdlerSum = adler32(adler32(0, ByVal 0&, 0), DataBytes(0), UBound(DataBytes) + 1)
+        zLibAdlerSum = adler32(adler32(0, ByVal 0&, 0), ByVal dataPointer, dataLength)
         
         If useHeaderBuffer Then
             m_NodeDirectory(nodeIndex).NodeHeaderAdler32 = zLibAdlerSum
@@ -386,11 +386,18 @@ Public Function addNodeData(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Bo
     End If
     
     'This chunk was added successfully!  Return TRUE and exit.
-    addNodeData = True
+    addNodeDataFromPointer = True
     
 End Function
 
-'Thin wrapper for addNodeData, above, but allows the user to supply a string.
+'Thin wrapper to addNodeDataFromPointer, above; if possible, use that function directly to avoid any unnecessary copying of arrays
+Public Function addNodeDataFromByteArray(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
+
+    addNodeDataFromByteArray = addNodeDataFromPointer(nodeIndex, useHeaderBuffer, VarPtr(DataBytes(0)), UBound(DataBytes) + 1, compressData, compressionLevel, requestChecksum)
+    
+End Function
+
+'Thin wrapper for addNodeDataFromPointer, above, but allows the user to supply a string.
 Public Function addNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
 
     'Prepare a temporary array to hold the string
@@ -398,7 +405,7 @@ Public Function addNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBu
     tmpStringCopy = StrConv(srcDataString, vbFromUnicode)
     
     'Forward the byte array to the actual addNodeData function, and return its result.
-    addNodeDataFromString = addNodeData(nodeIndex, useHeaderBuffer, tmpStringCopy, compressData, compressionLevel, requestChecksum)
+    addNodeDataFromString = addNodeDataFromPointer(nodeIndex, useHeaderBuffer, VarPtr(tmpStringCopy(0)), UBound(tmpStringCopy) + 1, compressData, compressionLevel, requestChecksum)
 
 End Function
 
