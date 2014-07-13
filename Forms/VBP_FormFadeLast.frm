@@ -152,7 +152,7 @@ Attribute VB_Exposed = False
 ' destructive edit with the original layer contents.  Opacity and blend mode can be custom-set, allowing for great
 ' flexibility when trying to get an edit "just right".
 '
-'Note that this function relies heavily on the pdUndo class for retrieving previous image states.
+'Note that this function relies heavily on the pdUndo class for retrieving data on previous image states.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -209,11 +209,16 @@ Private Sub Form_Load()
     Set m_prevLayerDIB = New pdDIB
     
     If Not pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(m_prevLayerDIB, m_relevantLayerID, m_actionName, False) Then
+        
+        'Many checks are performed prior to initiating this form, to make sure a valid previous Undo state exists - so this failsafe
+        ' code should never trigger.  FYI!
         Debug.Print "WARNING! Fade data could not be retrieved; something went horribly wrong!"
         Unload Me
+        
     End If
     
-    'Also retrieve a copy of the layer being operated on, as it appears right now
+    'Also retrieve a copy of the layer being operated on, as it appears right now; this is faster than re-retrieving a copy
+    ' every time we need to redraw the preview box.
     Set m_curLayerDIB = New pdDIB
     m_curLayerDIB.createFromExistingDIB pdImages(g_CurrentImage).getLayerByID(m_relevantLayerID).layerDIB
     
@@ -226,7 +231,9 @@ End Sub
 'Fade the current image against its most recent previous state, using the opacity and blend mode supplied by the user.
 Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As LAYER_BLENDMODE, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    'Status bar and message updates are only provided for non-previews.
+    'Status bar and message updates are only provided for non-previews.  Also, because PD's central compositor does all the legwork
+    ' for this function, and it does not provide detailed progress reports, we use a cheap progress bar estimation method.
+    ' (It really shouldn't matter as this function is extremely fast.)
     If Not toPreview Then
         SetProgBarMax 2
         SetProgBarVal 0
@@ -234,12 +241,12 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
     End If
     
     'During a preview, this function will operate on small, preview-sized copies of both the old and current layer states.
-    ' These approach allows us to render a much faster preview (vs processing the entire layer).
+    ' This approach allows us to render a much faster preview (vs entire full-size layers).
     Dim curLayerDIBCopy As pdDIB, prevLayerDIBCopy As pdDIB
     
     Dim tmpSafeArray As SAFEARRAY2D
     
-    'Previous layer; note that the method used to retrieve this layer varies according to preview state
+    'Retrieve previous layer; note that the method used to retrieve this layer varies according to preview state.
     If toPreview Then
         previewNonStandardImage tmpSafeArray, m_prevLayerDIB, fxPreview, True
         Set prevLayerDIBCopy = New pdDIB
@@ -248,7 +255,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
         Set prevLayerDIBCopy = m_prevLayerDIB
     End If
     
-    'Current layer; basically the same as above, but using a copy of the relevant layer's current state
+    'Retrieve current layer (same steps as above)
     If toPreview Then
         previewNonStandardImage tmpSafeArray, m_curLayerDIB, fxPreview, True
         Set curLayerDIBCopy = New pdDIB
@@ -256,8 +263,6 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
     Else
         Set curLayerDIBCopy = m_curLayerDIB
     End If
-        
-    'START CODING HERE
     
     'All of the hard blending work will be handled by PD's central compositor, which makes our lives much easier!
     Dim cComposite As pdCompositor
@@ -283,7 +288,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
         workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
         finalizeNonstandardPreview fxPreview, True
         
-    'This is not a preview.  Overwrite the relevant layer contents, then refresh the interface to match.
+    'If this is not a preview, overwrite the relevant layer's contents, then refresh the interface to match.
     Else
         
         pdImages(g_CurrentImage).getLayerByID(m_relevantLayerID).layerDIB.createFromExistingDIB tmpLayerBottom.layerDIB
