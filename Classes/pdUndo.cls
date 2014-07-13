@@ -660,11 +660,17 @@ Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
         ' a copy of the image as it appeared *after the change was made*.  What this function needs to do is find the state of this
         ' layer *prior to the change* - and now that we know which layer is affected, we can do that!
         If undoStack(i).undoType = UNDO_LAYER Then
-            actionFound = True
-            affectedLayerID = undoStack(i).undoLayerID
-            nameOfProcessorAction = undoStack(i).processID
-            layerChangeIndex = i
-            Exit For
+            
+            'Certain actions are irrelevant to this function; in particular, "Fade" and "Repeat" cannot be "faded" or "repeated".
+            ' In these instances, we want to continue searching backward, to find the original function that was faded or repeated.
+            If (StrComp(undoStack(i).processID, "Fade", vbTextCompare) <> 0) And (StrComp(undoStack(i).processID, "Repeat", vbTextCompare) <> 0) Then
+                actionFound = True
+                affectedLayerID = undoStack(i).undoLayerID
+                nameOfProcessorAction = undoStack(i).processID
+                layerChangeIndex = i
+                Exit For
+            End If
+            
         End If
     
     Next i
