@@ -20,7 +20,7 @@ Attribute VB_Exposed = False
 
 'To the best of my knowledge, this code has been released into the public domain.
 
-'Many thanks to dilettante for this excellent minimal byte buffer interface, which PD uses to simplify the process of
+'Many thanks to dilettante for this excellent minimal byte buffer interface, which PhotoDemon uses to simplify the process of
 ' reading/writing various internal file formats (including PDI files).
 
 
@@ -406,6 +406,49 @@ Public Sub WriteBytes(ByRef Bytes() As Byte, Optional ByVal Length As Long = -1)
     If mPosition > mSize Then
         mSize = mPosition
     End If
+End Sub
+
+'Added by Tanner: add bytes to the buffer, using only a raw pointer (to the first entry of the array, not the SafeArray
+' struct itself!) and a length, *which must be byte-accurate*!.
+Public Sub WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLength As Long)
+    
+    'Copy provided bytes into Buffer at current Position, extending
+    'Size as required, updating Position to next byte offset.
+    Dim WriteCountMinus1 As Long
+    Dim WriteCount As Long
+    Dim NeedAtLeastUBound As Long
+    Dim UBoundOfBuffer As Long
+    
+    'If not open, first call here auto-opens.
+    If Not mOpen Then OpenBuf
+        
+    'Length is supplied by the user; pray they calculated it correctly!
+    WriteCountMinus1 = dataLength - 1
+    
+    'Original code follows...
+    
+    WriteCount = WriteCountMinus1 + 1
+    NeedAtLeastUBound = mPosition + WriteCountMinus1
+    UBoundOfBuffer = UBound(Buffer)
+    
+    If NeedAtLeastUBound > UBoundOfBuffer Then
+        
+        'Extend Buffer to make room, by at least ChunkSize.
+        If WriteCount > mChunkSize Then
+            ReDim Preserve Buffer(NeedAtLeastUBound)
+        Else
+            ReDim Preserve Buffer(UBoundOfBuffer + mChunkSize)
+            'UBoundOfBuffer is now invalid, but we won't use it again.
+        End If
+        
+    End If
+    
+    MoveMemory Buffer(mPosition), ByVal dataPointer, WriteCount
+    mPosition = mPosition + WriteCount
+    If mPosition > mSize Then
+        mSize = mPosition
+    End If
+    
 End Sub
 
 Public Sub WriteInteger(ByVal Value As Integer)
