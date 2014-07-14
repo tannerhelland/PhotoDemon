@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -939,6 +939,10 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuArtistic 
             Caption         =   "Relief..."
             Index           =   9
+         End
+         Begin VB.Menu MnuArtistic 
+            Caption         =   "Stained glass..."
+            Index           =   10
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -2626,6 +2630,10 @@ Private Sub MnuArtistic_Click(Index As Integer)
         'Relief
         Case 9
             Process "Relief", True
+            
+        'Stained glass
+        Case 10
+            Process "Stained glass", True
     
     End Select
 

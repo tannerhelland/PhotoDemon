@@ -149,6 +149,12 @@ Public Function distanceTwoPoints(ByVal x1 As Double, ByVal y1 As Double, ByVal 
     distanceTwoPoints = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
 End Function
 
+'Return the distance between two points, but ignores the square root function; if calculating something simple, like "minimum distance only",
+' we only need relative values - not absolute ones - so we can skip that step for an extra performance boost.
+Public Function distanceTwoPointsShortcut(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
+    distanceTwoPointsShortcut = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
+End Function
+
 'Return the distance between two 3D points
 Public Function distanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, ByVal z1 As Double, ByVal x2 As Double, ByVal y2 As Double, ByVal z2 As Double)
     distanceThreeDimensions = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2 + (z1 - z2) ^ 2)

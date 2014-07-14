@@ -980,7 +980,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormRelief.ApplyReliefEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
-                        
+            
+        Case "Stained glass"
+            If showDialog Then
+                showPDDialog vbModal, FormStainedGlass
+            Else
+                FormStainedGlass.fxStainedGlass cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5)
+            End If
             
         'Blur
         
