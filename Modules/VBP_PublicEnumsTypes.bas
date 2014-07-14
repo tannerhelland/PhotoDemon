@@ -232,3 +232,17 @@ End Enum
 #If False Then
     Private Const PD_PERF_BESTQUALITY = 0, PD_PERF_BALANCED = 1, PD_PERF_FASTEST = 2
 #End If
+
+'Information about each Undo entry is stored in an array; the array is dynamically resized as necessary when new
+' Undos are created.  We track the ID of each action in preparation for a future History browser that allows the
+' user to jump to any arbitrary Undo/Redo state.  (Also, to properly update the text of the Undo/Redo menu and
+' buttons so the user knows which action they are undo/redoing.)
+Public Type undoEntry
+    processID As String             'Name of the associated action (e.g. "Gaussian blur")
+    processParamString As String    'Processor string supplied to the action
+    undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
+    undoLayerID As Long             'If the undoType is UNDO_LAYER or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
+    relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
+    thumbnailSmall As pdDIB         'A small thumbnail associated with the current action.  In the future, this will be used by the Undo History window.
+    thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
+End Type

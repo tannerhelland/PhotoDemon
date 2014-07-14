@@ -1220,7 +1220,7 @@ PDI_Load_Continuation:
         '(Note that all Undo behavior is disabled during batch processing, to improve performance, so we can skip this step.)
         If isThisPrimaryImage And (MacroStatus <> MacroBATCH) Then
             Message "Creating initial auto-save entry (this may take a moment)..."
-            targetImage.undoManager.createUndoData "Initial image load", "", UNDO_EVERYTHING
+            targetImage.undoManager.createUndoData "Original image", "", UNDO_EVERYTHING
         End If
         
         'Also, set an initial image checkpoint, in case the user decides to immediately start applying non-destructive

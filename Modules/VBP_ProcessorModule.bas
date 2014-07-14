@@ -325,6 +325,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 createCustomFormIcon pdImages(g_CurrentImage)
                 toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
             End If
+            
+        Case "Undo history"
+            If showDialog Then
+                showPDDialog vbModal, FormUndoHistory
+            Else
+                pdImages(g_CurrentImage).undoManager.moveToSpecificUndoPoint cParams.GetLong(1)
+            End If
         
         Case "Cut"
             ClipboardCut True
