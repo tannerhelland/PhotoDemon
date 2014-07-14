@@ -116,8 +116,8 @@ Public parentPDImage As pdImage
 Private Const pdUndoVersionID As Long = 64
 
 'The size of the Undo/Redo Thumbnail
-Private Const UNDO_THUMB_SMALL As Long = 32
-Private Const UNDO_THUMB_LARGE As Long = 48
+Private Const UNDO_THUMB_SMALL As Long = 48
+Private Const UNDO_THUMB_LARGE As Long = 256
 
 'When an image is saved, this class needs to be notified so that it can make a note of the current undo index
 Public Sub notifyImageSaved(ByVal typeOfSave As PD_SAVE_EVENT)

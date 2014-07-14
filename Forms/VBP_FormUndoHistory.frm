@@ -242,7 +242,7 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
         'Render the thumbnail for this entry onto its block
         Dim thumbWidth As Long
         thumbWidth = offsetX + fixDPI(4) + undoEntries(blockIndex).thumbnailLarge.getDIBWidth
-        undoEntries(blockIndex).thumbnailLarge.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + fixDPI(4), offsetY + ((fixDPI(BLOCKHEIGHT) - undoEntries(blockIndex).thumbnailLarge.getDIBHeight) \ 2)
+        undoEntries(blockIndex).thumbnailSmall.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + fixDPI(4), offsetY + ((fixDPI(BLOCKHEIGHT) - undoEntries(blockIndex).thumbnailLarge.getDIBHeight) \ 2)
             
         'Render the index and name fields
         firstFont.attachToDC bufferDIB.getDIBDC
