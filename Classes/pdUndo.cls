@@ -191,9 +191,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     ' a separate undoTotal variable.
     undoMax = undoNum
     
-    'Store a copy of the current image thumbnail, which we will eventually use as part of the Undo/Redo browser
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
+    'Next, we will store a copy of the current image thumbnail in two sizes: 256x256, and 48x48
     
     'First, obtain a large copy of the thumbnail.  The source of the thumbnail changes depending on the undo type.
     Set undoStack(undoNum).thumbnailLarge = New pdDIB
@@ -225,13 +223,9 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'Next, create a smaller copy of the thumbnail using FreeImage resize.  (This is much faster than regenerating
     ' the thumbnail from scratch, especially if an image has many layers.)
-    tmpDIB.createBlank fixDPI(UNDO_THUMB_SMALL), fixDPI(UNDO_THUMB_SMALL), 32, 0
-    FreeImageResizeDIBFast tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, undoStack(undoNum).thumbnailLarge, FILTER_BILINEAR, True
-    
-    'Copy the small resized thumbnail into the Undo thumbnail stack
     Set undoStack(undoNum).thumbnailSmall = New pdDIB
-    undoStack(undoNum).thumbnailSmall.createFromExistingDIB tmpDIB
-    Set tmpDIB = Nothing
+    undoStack(undoNum).thumbnailSmall.createBlank fixDPI(UNDO_THUMB_SMALL), fixDPI(UNDO_THUMB_SMALL), 32, 0
+    FreeImageResizeDIBFast undoStack(undoNum).thumbnailSmall, 0, 0, undoStack(undoNum).thumbnailSmall.getDIBWidth, undoStack(undoNum).thumbnailSmall.getDIBHeight, undoStack(undoNum).thumbnailLarge, FILTER_BILINEAR, True
     
     'Increase our Undo count
     undoNum = undoNum + 1
