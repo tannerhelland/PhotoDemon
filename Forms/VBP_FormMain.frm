@@ -2891,8 +2891,7 @@ Private Sub MnuEdit_Click(Index As Integer)
         
         'Undo history
         Case 2
-            pdMsgBox "PhotoDemon's Undo History feature is still under construction, but it will be coming soon!", vbInformation + vbOKOnly + vbApplicationModal, "Undo History coming soon"
-            'Process "Undo history", True
+            Process "Undo history", True
             
         '<separator>
         Case 3

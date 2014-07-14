@@ -82,19 +82,23 @@ Private undoTotal As Long
 Private undoState As Boolean
 Private redoState As Boolean
 
+'Note that the UndoType struct is now declared publicly, so you can find it in the Public_Enums_and_Types module.
+' (Declaration mirrored here for clarity)
+
 'Information about each Undo entry is stored in an array; the array is dynamically resized as necessary when new
 ' Undos are created.  We track the ID of each action in preparation for a future History browser that allows the
 ' user to jump to any arbitrary Undo/Redo state.  (Also, to properly update the text of the Undo/Redo menu and
 ' buttons so the user knows which action they are undo/redoing.)
-Private Type undoEntry
-    processID As String             'Name of the associated action (e.g. "Gaussian blur")
-    processParamString As String    'Processor string supplied to the action
-    undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
-    undoLayerID As Long             'If the undoType is UNDO_LAYER or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
-    relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
-    thumbnailSmall As pdDIB         'A small thumbnail associated with the current action.  In the future, this will be used by the Undo History window.
-    thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
-End Type
+
+' Public Type undoEntry
+'     processID As String             'Name of the associated action (e.g. "Gaussian blur")
+'     processParamString As String    'Processor string supplied to the action
+'     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
+'     undoLayerID As Long             'If the undoType is UNDO_LAYER or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
+'     relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
+'     thumbnailSmall As pdDIB         'A small thumbnail associated with the current action.  In the future, this will be used by the Undo History window.
+'     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
+' End Type
 
 Private undoStack() As undoEntry
 
@@ -112,8 +116,8 @@ Public parentPDImage As pdImage
 Private Const pdUndoVersionID As Long = 64
 
 'The size of the Undo/Redo Thumbnail
-Private Const UNDO_THUMB_SMALL As Long = 48
-Private Const UNDO_THUMB_LARGE As Long = 256
+Private Const UNDO_THUMB_SMALL As Long = 32
+Private Const UNDO_THUMB_LARGE As Long = 48
 
 'When an image is saved, this class needs to be notified so that it can make a note of the current undo index
 Public Sub notifyImageSaved(ByVal typeOfSave As PD_SAVE_EVENT)
@@ -191,9 +195,33 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     
-    'First, obtain a large copy of the thumbnail
+    'First, obtain a large copy of the thumbnail.  The source of the thumbnail changes depending on the undo type.
     Set undoStack(undoNum).thumbnailLarge = New pdDIB
-    parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+    
+    Select Case processType
+    
+        Case UNDO_NOTHING
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+        
+        Case UNDO_EVERYTHING
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+            
+        Case UNDO_IMAGE
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+        
+        Case UNDO_IMAGEHEADER
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+        
+        Case UNDO_LAYER
+            parentPDImage.getLayerByID(targetLayerID).requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+        
+        Case UNDO_LAYERHEADER
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+        
+        Case UNDO_SELECTION
+            parentPDImage.mainSelection.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+            
+    End Select
     
     'Next, create a smaller copy of the thumbnail using FreeImage resize.  (This is much faster than regenerating
     ' the thumbnail from scratch, especially if an image has many layers.)
@@ -749,7 +777,7 @@ End Function
 
 'Erase all undo files that this class has created
 Public Sub clearUndos()
-
+    
     'Remember that we have no Undo files for this image
     undoState = False
     
@@ -1016,3 +1044,38 @@ Public Function reconstructStackFromExternalSource(ByRef srcXMLString As String)
     End If
 
 End Function
+
+'External functions can request a copy of the Undo stack by calling this function and supply the three required parameters
+' (all passed ByRef, obviously):
+' 1) Number of Undo entries
+' 2) Current Undo entry
+' 3) Array of type undoEntry, to receive the full contents of the stack
+Friend Sub copyUndoStack(ByRef numOfUndos As Long, ByRef curUndoNumber As Long, ByRef stackList() As undoEntry)
+
+    numOfUndos = undoMax
+    curUndoNumber = undoNum
+    
+    ReDim stackList(0 To undoMax) As undoEntry
+    
+    Dim i As Long
+    For i = 0 To undoMax - 1
+        
+        With stackList(i)
+            
+            .processID = undoStack(i).processID
+            .processParamString = undoStack(i).processParamString
+            .relevantTool = undoStack(i).relevantTool
+            .undoLayerID = undoStack(i).undoLayerID
+            .undoType = undoStack(i).undoType
+            
+            Set .thumbnailLarge = New pdDIB
+            .thumbnailLarge.createFromExistingDIB undoStack(i).thumbnailLarge
+            
+            Set .thumbnailSmall = New pdDIB
+            .thumbnailSmall.createFromExistingDIB undoStack(i).thumbnailSmall
+            
+        End With
+        
+    Next i
+
+End Sub
