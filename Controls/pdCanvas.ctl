@@ -315,8 +315,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 30/May/14
-'Last update: convert canvas to pdInput for all mouse handling
+'Last updated: 14/July/14
+'Last update: fix active layer reset when mouse leaves canvas area, and interactions have occurred
 '
 'In years past, PhotoDemon would use a separate canvas (a full VB Form) for each loaded image.  In 2013, as part of the massive
 ' window manager rewrite, I rewrote the program to only have a single canvas active at any time.  The canvas was rebuilt as a user
@@ -373,10 +373,9 @@ Private m_IsMouseOverCanvas As Boolean
 'Track initial mouse button locations
 Private m_initMouseX As Double, m_initMouseY As Double
 
-'Because the active layer may be automatically changed when the user hovers over a new layer, we track the original
-' layer when the mouse enters the canvas.  If the user hasn't interacted with anything by the time the mouse leaves,
-' we reinstate the original layer.
-Private m_OriginalActiveLayerIndex As Long, m_UserInteractedWithCanvas As Boolean
+'In the future, it may be helpful to know if the user interacted with the canvas, or if the mouse simply passed over it
+' en route to something else.
+Private m_UserInteractedWithCanvas As Boolean
 
 'On the canvas's MouseDown event, mark the relevant point of interest index for this layer (if any).
 ' If a point of interest has not been selected, this value will be reset to -1.
@@ -978,10 +977,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     
     'Note that the user has attempted to interact with the canvas.
     m_UserInteractedWithCanvas = True
-    
-    'Because the user has interacted with the canvas, we want to make the currently active layer permanent.
-    m_OriginalActiveLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
-    
+        
     'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
     ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
     Dim imgX As Double, imgY As Double
@@ -1098,10 +1094,7 @@ End Sub
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
         
     m_IsMouseOverCanvas = True
-    
-    'Note the currently active layer ID.  We may need to reset this when the mouse leaves the canvas.
-    If Not (pdImages(g_CurrentImage) Is Nothing) Then m_OriginalActiveLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
-    
+        
     'Note that the user has yet to interact with anything on the canvas.
     m_UserInteractedWithCanvas = False
     
@@ -1118,19 +1111,7 @@ End Sub
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     m_IsMouseOverCanvas = False
-    
-    'If the user did not interact with anything on the canvas, restore the original active layer.
-    ' (Similarly, if the user *did* interact with the canvas but the mouse passed over other layers on the way out, restore
-    '  focus to the last layer the user interacted with.)
-    If (Not pdImages(g_CurrentImage) Is Nothing) Then
         
-        If pdImages(g_CurrentImage).getActiveLayerIndex <> m_OriginalActiveLayerIndex Then
-            Layer_Handler.setActiveLayerByIndex m_OriginalActiveLayerIndex, False
-            RenderViewport pdImages(g_CurrentImage), Me
-        End If
-    
-    End If
-    
     If (Not lMouseDown) And (Not rMouseDown) Then ClearImageCoordinatesDisplay
 
 End Sub
