@@ -18,7 +18,31 @@ Attribute VB_Exposed = False
 'Last updated: 14/July/14
 'Last update: initial build
 '
-'TODO: what are Voronoi diagrams?
+'While this class is called pdVoronoi, it's primarily a Worley Noise implementation (http://en.wikipedia.org/wiki/Worley_noise),
+' that uses only the Voronoi aspects most relevant to image processing (http://en.wikipedia.org/wiki/Voronoi_diagram).
+' For a full Voronoi toolkit, you'll need to look elsewhere, but if all you need is the bits relevant to generating Worley Noise,
+' you're in for a treat, because this class is completely free of dependencies to other PhotoDemon code - so have at it!
+'
+'Voronoi diagrams work by taking a series of points, and for the relevant space around them, finding the nearest Voronoi
+' point to each location.  When performed at a sufficiently detailed level (e.g. for each pixel in a grid), you are left
+' with a puzzle-like appearance a la http://en.wikipedia.org/wiki/Voronoi_diagram#mediaviewer/File:Euclidean_Voronoi_Diagram.png
+'
+'For image processing, Voronoi noise is an especially helpful technique for image segmentation.  It's biggest issue is that
+' it is painfully slow - comparing each of many millions of pixels to thousands (or more) Voronoi points, searching for the
+' nearest one, is an exercise that will bring even modern PCs to a grinding halt.
+'
+'The way we circumvent this is by carefully partitioning our Voronoi points into a grid shape, then randomizing each point
+' within a predetermined radius only.  While this limits the exoticness of the resulting Voronoi diagram, it allows us to
+' search only a relevant neighborhood for each pixel, which allows us to process a photograph in several seconds instead of
+' several hours - a worthwhile improvement!
+'
+'Three standard distance methods (cartesian, manhattan, and chebyshev) are provided.  Set the desired distance method using
+' the setDistanceMode function, and make sure to use it *before* calling the getNearestPointIndex function!
+'
+'Some helper functions exist to aid with image-processing-specific tasks like cell shading, and these relying on the caching
+' of certain values within the heavily used getNearestPointIndex function.  If you don't need the data these caches provide,
+' feel free to comment out everything related to the vPointsMaxDistance() array.  It won't result in a huge speed gain, but
+' you'll save a bit of cache thrashing, which never hurts.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
