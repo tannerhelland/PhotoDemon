@@ -2250,3 +2250,48 @@ Public Sub borderSelection(ByVal borderRadius As Long)
     shrinkDIB.eraseDIB
         
 End Sub
+
+'External functions can use this function to request a thumbnail version of the selection mask.
+Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+    
+    If selMask Is Nothing Then
+        requestThumbnail = False
+        Exit Function
+    End If
+    
+    'Thumbnails have some interesting requirements.  We always want them to be square, with the image set in the middle
+    ' of the thumbnail (with aspect ratio preserved) and any empty edges made transparent.
+    
+    'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
+    ' aspect ratio and center the image on the thumbnail.
+    Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
+    
+    'Start by determining proper dimensions for the resized thumbnail image.
+    convertAspectRatio selMask.getDIBWidth, selMask.getDIBHeight, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
+    
+    'If the form is wider than it is tall, center the thumbnail vertically
+    If tIcoWidth > tIcoHeight Then
+        tX = 0
+        tY = (thumbnailSize - tIcoHeight) / 2
+    
+    '...otherwise, center it horizontally
+    Else
+        tY = 0
+        tX = (thumbnailSize - tIcoWidth) / 2
+    End If
+    
+    'Prepare the destination DIB
+    dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+    
+    'Note that the user's thumbnail performance setting affects the quality used here.
+    If g_ThumbnailPerformance = PD_PERF_FASTEST Then
+        If g_ImageFormats.FreeImageEnabled Then
+            requestThumbnail = FreeImageResizeDIBFast(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, FILTER_BILINEAR, True)
+        Else
+            requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.getDIBWidth, selMask.getDIBHeight, InterpolationModeNearestNeighbor)
+        End If
+    Else
+        requestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.getDIBWidth, selMask.getDIBHeight, InterpolationModeHighQualityBicubic)
+    End If
+    
+End Function
