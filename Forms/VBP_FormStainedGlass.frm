@@ -292,7 +292,19 @@ Attribute VB_Exposed = False
 'Last updated: 14/July/14
 'Last update: initial build
 '
-'TODO: explain how Voronoi diagrams are used to generate the effect
+'PhotoDemon's stained glass effect is implemented using Worley Noise (http://en.wikipedia.org/wiki/Worley_noise),
+' which is basically a special algorithmic approach to Voronoi diagrams (http://en.wikipedia.org/wiki/Voronoi_diagram).
+'
+'The associated pdVoronoi class does most the heavy lifting for this effect.  The main fxStainedGlass function basically
+' forwards all relevant parameters to a pdVoronoi instance, applies a first pass over the image, caching matching
+' Voronoi indices as it goes, then using those indices in a second pass to recolor the image.
+'
+'Parameters are currently available for a number of tweaks; these will be refined further as the tool nears completion.
+' (As a warning, some methods may be dropped in the interest of simplifying the dialog.)
+'
+'Finally, note that multiple lookup tables are used to improve the performance of this function.  While these may
+' seem excessive, the fact that we can produce the entire effect without copying the current image is pretty awesome,
+' so despite the many lookup tables, this actually uses less RAM than many other effects in PD.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -308,7 +320,12 @@ Dim m_ToolTip As clsToolTip
 Private m_RndSeed As Long
 
 'Apply a Stained Glass effect to an image
-' Inputs: size of each cell, turbulence of the cells (range [0, 1]), color sampling method (0 = point, 1 = area)
+' Inputs:
+'  cellSize = size, in pixels, of each initial grid box in the Voronoi array.  Do not make this less than 3.
+'  fxTurbulence = how much to distort cell shape, range [0, 1], 0 = perfect grid
+'  colorSamplingMethod = how to determine cell color (0 = just use pixel at Voronoi point, 1 = average all pixels in cell)
+'  shadeMethod = whether to apply shading (0 = no shading, 1 = test shading method, more methods coming??)
+'  distance method = 0 - Cartesian, 1 - Manhattan, 2 - Chebyshev
 Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, ByVal colorSamplingMethod As Long, ByVal shadeMethod As Long, ByVal distanceMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Carving image from stained glass..."
@@ -318,6 +335,9 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'NOTE: to add grid lines, we will need a second copy of the image.  In the meantime, I have commented that code out,
+    '       as only one copy of the image is necessary if grid lines are not drawn.
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent processed pixels from spreading across the image as we go.)
@@ -342,9 +362,11 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     Dim QuickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
-    'Because this is a two-pass filter, we have to manually change the progress bar maximum
+    'Because this is a two-pass filter, we have to manually change the progress bar maximum to 2 * width
     If Not toPreview Then
         SetProgBarMax finalX * 2
+    
+    'If this is a preview, reduce cell size to better portray how the final image will look
     Else
         cellSize = cellSize * curDIBValues.previewModifier
         If cellSize < 3 Then cellSize = 3
@@ -355,20 +377,23 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
     
-    'Create a Voronoi class to help us with processing; it's at the heart of this function.
+    'Create a Voronoi class to help us with processing; it does all the messy Voronoi work for us.
     Dim cVoronoi As pdVoronoi
     Set cVoronoi = New pdVoronoi
     
+    'Pass all meaningful parameters on to the Voronoi class
     cVoronoi.initPoints cellSize, workingDIB.getDIBWidth, workingDIB.getDIBHeight
     cVoronoi.randomizePoints fxTurbulence, m_RndSeed
     cVoronoi.setDistanceMode distanceMethod
     
-    'Create several look-up tables; one for each channel (RGBA), and one for the number of points tied to that index.
-    ' The last lookup table is necessary to average the contents of each panel to arrive at an ideal color representation.
+    'Create several look-up tables, specifically:
+    ' One table for each color channel (RGBA)
+    ' One table for number of pixels in each Voronoi cell
     Dim rLookup() As Long, gLookUp() As Long, bLookup() As Long, aLookup() As Long
     Dim numPixels() As Long
     
-    'Size all pixels to match the number of possible Voronoi points
+    'Size all pixels to match the number of possible Voronoi points; the nearest Voronoi point for each pixel
+    ' will be used to determine the relevant point in the lookup tables.
     Dim numVoronoiPoints As Long
     numVoronoiPoints = cVoronoi.getTotalNumOfVoronoiPoints() - 1
     
@@ -381,39 +406,43 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     'Color values must be retrieved
     Dim r As Long, g As Long, b As Long, a As Long
     
-    'Finally, we will also make a look-up table of nearest Voronoi values at the size of the image; this makes our
-    ' second pass through the image much, much faster than it would otherwise be.
+    'Finally, we will also make a (large) look-up table that stores the nearest Voronoi point index for
+    ' each pixel in the image.  While this consumes a lot of memory, it makes our second pass through the
+    ' image (the recoloring pass) much, much faster than it would otherwise be.
     Dim vLookup() As Long
     ReDim vLookup(initX To finalX, initY To finalY) As Long
     
     Dim nearestPoint As Long
     
-    'Loop through each pixel in the image, tallying Voronoi values as we go
+    'Loop through each pixel in the image, calculating nearest Voronoi points as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        'Use the Voronoi class to find the nearest point
+        'Use the Voronoi class to find the nearest point to this pixel
         nearestPoint = cVoronoi.getNearestPointIndex(x, y)
         
-        'Populate all relevant look-up tables
+        'Store the nearest point index in our master lookup table
         vLookup(x, y) = nearestPoint
         
+        'If the user has elected to recolor each cell using the average color for the cell, we need to track
+        ' color values.  This is no different from a histogram approach, except in this case, each histogram
+        ' bucket corresponds to one Voronoi point.
         If colorSamplingMethod = 1 Then
         
-            'Get red, green, and blue values from the array
+            'Retrieve RGBA values for this pixel
             r = dstImageData(QuickVal + 2, y)
             g = dstImageData(QuickVal + 1, y)
             b = dstImageData(QuickVal, y)
             If qvDepth = 3 Then a = dstImageData(QuickVal + 3, y)
         
-            'Store color and alpha values
+            'Store those RGBA values into their respective lookup "bin"
             rLookup(nearestPoint) = rLookup(nearestPoint) + r
             gLookUp(nearestPoint) = gLookUp(nearestPoint) + g
             bLookup(nearestPoint) = bLookup(nearestPoint) + b
             If qvDepth = 3 Then aLookup(nearestPoint) = aLookup(nearestPoint) + a
             
-            'Update the number of pixels sharing this point as their nearest point
+            'Increment the count of all pixels who share this Voronoi point as their nearest point
             numPixels(nearestPoint) = numPixels(nearestPoint) + 1
             
         End If
@@ -434,24 +463,29 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     
     For x = 0 To numVoronoiPoints
     
+        'The user wants a "fast and dirty" approach to coloring.  For each cell, use only the color of the
+        ' corresponding Voronoi point pixel of that cell.
         If colorSamplingMethod = 0 Then
         
             'Retrieve the location of this Voronoi point
             thisPoint = cVoronoi.getVoronoiCoordinates(x)
             
+            'Validate its bounds
             If thisPoint.x < initX Then thisPoint.x = initX
             If thisPoint.x > finalX Then thisPoint.x = finalX
             
             If thisPoint.y < initX Then thisPoint.y = initY
             If thisPoint.y > finalY Then thisPoint.y = finalY
             
-            'Retrieve the color at this Voronoi point, and assign it to the lookup arrays
+            'Retrieve the color at this Voronoi point's location, and assign it to the lookup arrays
             QuickVal = thisPoint.x * qvDepth
             rLookup(x) = dstImageData(QuickVal + 2, thisPoint.y)
             gLookUp(x) = dstImageData(QuickVal + 1, thisPoint.y)
             bLookup(x) = dstImageData(QuickVal, thisPoint.y)
             If qvDepth = 3 Then aLookup(x) = dstImageData(QuickVal + 3, thisPoint.y)
         
+        'The user wants us to find the average color for each cell.  This is effectively just a blur operation;
+        ' for each bin in the lookup table, divide the total RGBA values by the number of pixels in that bin.
         Else
         
             numPixelsCache = numPixels(x)
@@ -467,7 +501,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     
     Next x
     
-    'Our pixel cache is now unneeded; free it
+    'Our pixel count cache is now unneeded; free it
     Erase numPixels
     
     Dim shadeAdjustment As Double
@@ -477,18 +511,23 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        'Use the lookup table to more quickly access the nearest point
+        'Use the lookup table from step 1 to find the matching Voronoi point index for this pixel.
+        ' (NOTE: this step could be replaced by another calculation operation, but it would be slower.)
         nearestPoint = vLookup(x, y)
         
-        'Apply the RGB values from that point, using shading as appropriate
+        'Retrieve the RGB values from that bin
         r = rLookup(nearestPoint)
         g = gLookUp(nearestPoint)
         b = bLookup(nearestPoint)
         If qvDepth = 3 Then a = aLookup(nearestPoint)
         
+        'The user has requested shading.  Right now there is only one shading method, but in the future,
+        ' I'd like to add more (see https://code.google.com/p/fractalterraingeneration/wiki/Cell_Noise)
         If shadeMethod > 0 Then
             
-            'Apply shading now, with help from the Voronoi class
+            'Retrieve a shade value on the scale [0, 1] from the Voronoi class; it will calculate this
+            ' value using the relationship between this point's distance to the nearest Voronoi point,
+            ' and the maximum distance for this cell.
             shadeAdjustment = cVoronoi.getShadingValue(x, y, shadeMethod, nearestPoint)
             
             r = r * shadeAdjustment
@@ -497,6 +536,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
             
         End If
         
+        'Set the new RGBA values to the image
         dstImageData(QuickVal + 2, y) = r
         dstImageData(QuickVal + 1, y) = g
         dstImageData(QuickVal, y) = b
@@ -511,6 +551,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         End If
     Next x
     
+    'NOTE: when we add line drawing, make sure to free the second image copy here!
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     'CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     'Erase srcImageData
