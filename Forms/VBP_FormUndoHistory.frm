@@ -275,10 +275,10 @@ Private Function getStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional
             newText = ""
             
         Case UNDO_LAYER
-            newText = g_Language.TranslateMessage("layer affected: ") & " """ & pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName() & """"
+            newText = pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName()
         
         Case UNDO_LAYERHEADER
-            newText = g_Language.TranslateMessage("layer affected: ") & " """ & pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName() & """"
+            newText = pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName()
         
         Case UNDO_SELECTION
             newText = g_Language.TranslateMessage("selection shape shown")
