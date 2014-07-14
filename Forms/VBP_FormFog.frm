@@ -471,17 +471,17 @@ Private Sub cmdBar_ResetClick()
     sltQuality = 5
     
     'Calculate a random z offset for the noise function
-    Rnd (-Timer * Now)
-    Randomize
-    m_zOffset = Rnd * &HFFFFFFFF
+    Rnd -1
+    Randomize (Timer * Now)
+    m_zOffset = Rnd * &HEFFFFFFF
     
 End Sub
 
 Private Sub cmdRandomize_Click()
 
     'Calculate a random z offset for the noise function
-    Rnd (-Timer * Now)
-    Randomize
+    Rnd -1
+    Randomize (Timer * Now)
     m_zOffset = Rnd * &HEFFFFFFF
     
     updatePreview
@@ -506,9 +506,9 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Calculate a random z offset for the noise function
-    Rnd (-Timer * Now)
-    Randomize
-    m_zOffset = Rnd * &HFFFFFFFF
+    Rnd -1
+    Randomize (Timer * Now)
+    m_zOffset = Rnd * &HEFFFFFFF
     
 End Sub
 

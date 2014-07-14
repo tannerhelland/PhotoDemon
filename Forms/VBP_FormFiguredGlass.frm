@@ -51,9 +51,6 @@ Begin VB.Form FormFiguredGlass
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   100
-      SigDigits       =   1
-      Value           =   10
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -63,6 +60,9 @@ Begin VB.Form FormFiguredGlass
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   100
+      SigDigits       =   1
+      Value           =   10
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   330
@@ -142,9 +142,6 @@ Begin VB.Form FormFiguredGlass
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -154,6 +151,9 @@ Begin VB.Form FormFiguredGlass
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   1
+      SigDigits       =   2
+      Value           =   0.5
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -439,8 +439,9 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Calculate a random z offset for the noise function
-    Randomize Timer
-    m_zOffset = Rnd * &HFFFFFFFF
+    Rnd -1
+    Randomize (Timer * Now)
+    m_zOffset = Rnd * &HEFFFFFFF
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
