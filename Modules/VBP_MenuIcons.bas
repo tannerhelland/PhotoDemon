@@ -203,9 +203,10 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Edit Menu
     addMenuIcon "UNDO", 1, 0           'Undo
     addMenuIcon "REDO", 1, 1           'Redo
+    addMenuIcon "UNDOHISTORY", 1, 2    'Undo history browser
     
     addMenuIcon "REPEAT", 1, 4         'Repeat previous action
-    'addMenuIcon "FADE_LAST", 1, 5      'Fade previous action...
+    addMenuIcon "FADE", 1, 5           'Fade previous action...
     
     addMenuIcon "CUT", 1, 7            'Cut
     addMenuIcon "CUT_LAYER", 1, 8      'Cut from layer
@@ -564,7 +565,8 @@ Public Sub resetMenuIcons()
     addMenuIcon "REDO", 1, 1     'Redo
     
     'Redraw the Repeat and Fade menus
-    addMenuIcon "REPEAT", 1, 4   'Repeat previous action
+    addMenuIcon "REPEAT", 1, 4         'Repeat previous action
+    addMenuIcon "FADE", 1, 5           'Fade previous action...
     
     'NOTE! In the future, when icons are available for the Repeat and Fade menu items, we will need to add their refreshes
     ' to this list (as their captions dynamically change at run-time).

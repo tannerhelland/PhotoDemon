@@ -33,7 +33,11 @@ EXIT         CUSTOM  MOVEABLE        LOADONCALL      exit.png
 //Edit menu
 UNDO         CUSTOM  MOVEABLE        LOADONCALL      edit_undo.png
 REDO         CUSTOM  MOVEABLE        LOADONCALL      edit_redo.png
+UNDOHISTORY  CUSTOM  MOVEABLE        LOADONCALL      ui_scroll_pane_blog.png
+
 REPEAT       CUSTOM  MOVEABLE        LOADONCALL      arrow_repeat.png
+FADE         CUSTOM  MOVEABLE        LOADONCALL      image_saturation.png
+
 CUT          CUSTOM  MOVEABLE        LOADONCALL      scissors.png
 CUT_LAYER    CUSTOM  MOVEABLE        LOADONCALL      scissors_layer.png
 COPY         CUSTOM  MOVEABLE        LOADONCALL      document_copy.png
