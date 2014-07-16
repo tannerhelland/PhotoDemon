@@ -1078,6 +1078,7 @@ Public Sub refreshTooltipObject()
     With m_ToolTip
         .Create Me
         .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
+        .DelayTime(ttDelayShow) = 10000
         If g_Language.translationActive Then
             .AddTool picScroll, g_Language.TranslateMessage(m_ToolString)
         Else
