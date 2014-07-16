@@ -240,3 +240,9 @@ Public g_SessionID As String
 Public g_ViewportPerformance As PD_PERFORMANCE_SETTING
 Public g_ThumbnailPerformance As PD_PERFORMANCE_SETTING
 
+'As of v6.4, PhotoDemon allows the user to specify compression settings for Undo/Redo data.  By default, Undo/Redo data is
+' uncompressed, which takes up a lot of (cheap) disk space but provides excellent performance.  The user can modify this
+' setting to their liking, but they'll have to live with the performance implications.  The default setting for this value
+' is 0, for no compression.
+Public g_UndoCompressionLevel As Long
+

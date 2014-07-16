@@ -397,6 +397,112 @@ Begin VB.Form FormPreferences
          Top             =   810
          Width           =   7920
       End
+      Begin PhotoDemon.sliderTextCombo sltUndoCompression 
+         Height          =   495
+         Left            =   240
+         TabIndex        =   130
+         Top             =   3720
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   9
+         SliderTrackStyle=   1
+         NotchPosition   =   2
+      End
+      Begin VB.Label lblPNGCompression 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "no compression (fastest)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   195
+         Index           =   3
+         Left            =   360
+         TabIndex        =   129
+         Top             =   4200
+         Width           =   1785
+      End
+      Begin VB.Label lblPNGCompression 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "maximum compression (slowest)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   195
+         Index           =   2
+         Left            =   4980
+         TabIndex        =   128
+         Top             =   4200
+         Width           =   2295
+      End
+      Begin VB.Label lblPerformanceSub 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "undo/redo data will be compressed at the following level:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   2
+         Left            =   240
+         TabIndex        =   127
+         Top             =   3360
+         Width           =   4935
+      End
+      Begin VB.Label lblPerformanceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "undo/redo data compression"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         TabIndex        =   126
+         Top             =   2880
+         Width           =   3045
+      End
       Begin VB.Label lblPerformanceTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
@@ -2972,6 +3078,10 @@ Private Sub CmdOK_Click()
         'START/END thumbnail render performance
             g_UserPreferences.SetPref_Long "Performance", "Thumbnail Performance", cmbPerfThumbnail.ListIndex
             g_ThumbnailPerformance = cmbPerfThumbnail.ListIndex
+            
+        'START/END undo/redo data compression
+            g_UserPreferences.SetPref_Long "Performance", "Undo Compression", sltUndoCompression.Value
+            g_UndoCompressionLevel = sltUndoCompression.Value
     
     'END Performance preferences
     
@@ -3377,6 +3487,11 @@ Private Sub LoadAllPreferences()
             
             cmbPerfThumbnail.ToolTipText = g_Language.TranslateMessage("PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance.")
         'END Thumbnail rendering performance
+        
+        'START Undo data compression
+            sltUndoCompression.ToolTipText = g_Language.TranslateMessage("By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but it increases the amount of disk space used.  Compressing undo data will reduce performance, but also reduce disk space usage.  (Note that undo data is always cleared when PhotoDemon exits, so this only affects disk space usage while the program is running.)")
+            sltUndoCompression.Value = g_UndoCompressionLevel
+        'END Undo data compression
         
     'END Performance preferences
     

@@ -641,7 +641,7 @@ End Function
 '    the header represents a larger portion of the file.
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal writeMetadata As Boolean = False) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal writeMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -689,14 +689,18 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         ' while the layerID is stored as the nodeID.
         nodeIndex = pdiWriter.addNode("pdLayer " & i, srcPDImage.getLayerByIndex(i).getLayerID, 1)
         
-        'Retrieve the layer header and add it to the header section of this node
+        'Retrieve the layer header and add it to the header section of this node.
+        ' (Note: compression level of text data, like layer headers, is not controlled by the user.  For short strings like
+        '        these headers, there is no meaningful gain from higher compression settings, but higher settings kills
+        '        performance, so we stick with the default recommended zLib compression level.)
         layerXMLHeader = srcPDImage.getLayerByIndex(i).getLayerHeaderAsXML(True)
         pdiWriter.addNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , embedChecksums
         
         'If this is not a header-only file, retrieve the layer's DIB and add it to the data section of this node
+        ' (Note: the user's compression setting *is* used for the very large binary DIB data section.)
         If Not writeHeaderOnlyFile Then
             srcPDImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-            pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, , embedChecksums
+            pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
         End If
     
     Next i
@@ -724,7 +728,7 @@ End Function
 
 'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal (it is used by the
 ' Undo/Redo engine only), it is not as fleshed-out as the actual SavePhotoDemonImage function.
-Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False) As Boolean
+Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1) As Boolean
     
     On Error GoTo SavePDLayerError
     
@@ -767,7 +771,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     
         Dim layerDIBPointer As Long, layerDIBLength As Long
         srcLayer.layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-        pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, , embedChecksums
+        pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
         
     End If
     
@@ -2361,25 +2365,27 @@ End Sub
 ' here must also be mirrored there.
 Public Function saveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1) As Boolean
 
+    Debug.Print "UNDO LEVEL: " & g_UndoCompressionLevel
+
     'What kind of Undo data we save is determined by the current processType.
     Select Case processType
     
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_EVERYTHING
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel)
             srcPDImage.mainSelection.writeSelectionToFile dstUndoFilename & ".selection"
             
         'A full copy of the pdImage stack
         Case UNDO_IMAGE
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel)
         
         'A full copy of the pdImage stack, *without any layer DIB data*
         Case UNDO_IMAGEHEADER
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False, True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, True
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_LAYER
-            Saving.SavePhotoDemonLayer srcPDImage.getLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, False, False, False
+            Saving.SavePhotoDemonLayer srcPDImage.getLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel)
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
         Case UNDO_LAYERHEADER
@@ -2389,8 +2395,9 @@ Public Function saveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         Case UNDO_SELECTION
             srcPDImage.mainSelection.writeSelectionToFile dstUndoFilename & ".selection"
             
-        'Anything else (for now, default to the full pdImage stack until all other undo types are covered!)
+        'Anything else (this should never happen, but good to have a failsafe)
         Case Else
+            Debug.Print "Unknown Undo data write requested - is it possible to avoid this request entirely??"
             Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False
         
     End Select
