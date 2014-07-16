@@ -201,6 +201,7 @@ OILPAINTING  CUSTOM  MOVEABLE        LOADONCALL      palette_paintbrush.png
 PENCIL       CUSTOM  MOVEABLE        LOADONCALL      pencil.png
 POSTERIZE    CUSTOM  MOVEABLE        LOADONCALL      categories.png
 RELIEF       CUSTOM  MOVEABLE        LOADONCALL      wall.png
+STAINEDGLASS CUSTOM  MOVEABLE        LOADONCALL      church.png
 //
 
 BLUR         CUSTOM  MOVEABLE        LOADONCALL      glass.png

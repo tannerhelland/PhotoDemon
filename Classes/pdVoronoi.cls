@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Voronoi class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/July/14
-'Last updated: 14/July/14
-'Last update: initial build
+'Last updated: 15/July/14
+'Last update: new shading features, general clean-up
 '
 'While this class is called pdVoronoi, it's primarily a Worley Noise implementation (http://en.wikipedia.org/wiki/Worley_noise),
 ' that uses only the Voronoi aspects most relevant to image processing (http://en.wikipedia.org/wiki/Voronoi_diagram).
@@ -41,8 +41,13 @@ Attribute VB_Exposed = False
 '
 'Some helper functions exist to aid with image-processing-specific tasks like cell shading, and these relying on the caching
 ' of certain values within the heavily used getNearestPointIndex function.  If you don't need the data these caches provide,
-' feel free to comment out everything related to the vPointsMaxDistance() array.  It won't result in a huge speed gain, but
+' feel free to comment out everything related to the vPointsMaxDistance() arrays.  It won't result in a huge speed gain, but
 ' you'll save a bit of cache thrashing, which never hurts.
+'
+'Finally, many thanks to Robert Rayment, who did extensive profiling and research on Voronoi implementations before I even
+' began work on this class.  His comments were invaluable in determining the shape and style of this class.  FYI, Robert's
+' PaintRR project has a faster and simpler version of this routine worth checking out if PD's method seems like overkill!
+' Link here: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -62,8 +67,25 @@ End Enum
     Const DIST_CARTESIAN = 0, DIST_MANHATTAN = 1, DIST_CHEBYSHEV = 2
 #End If
 
+'Available shading methods
+Public Enum VORONOI_SHADING
+    NO_SHADE = 1
+    SHADE_F1 = 2
+    SHADE_F2 = 3
+    SHADE_F2_MINUS_F1 = 4
+    SHADE_F1_DIVIDE_F2 = 5
+End Enum
+
+#If False Then
+    Const NO_SHADE = 1, SHADE_F1 = 2, SHADE_F2 = 3, SHADE_F2_MINUS_F1 = 4, SHADE_F1_DIVIDE_F2 = 5
+#End If
+
 'This vPoints() array will store the coordinates of each point in the Voronoi diagram
 Private vPoints() As POINTAPI
+
+'The vPointsMaxDistance() array will store the maximum value of the shade calculation for a given cell, during the nearest
+' point search stage.  This allows us to later return shade on the scale [0, 1] regardless of shading method, without having
+' to perform a second distance check.
 Private vPointsMaxDistance() As Single
 
 'Size of a given cell (in one dimension), as supplied by the user
@@ -78,11 +100,18 @@ Private m_imgWidth As Long, m_imgHeight As Long
 'Points have been successfully initialized
 Private m_PointsInitialized As Boolean
 
-'When calculating distances, the class will automatically update these values as necessary.
-Private m_maxDistance As Double
-
 'Technique used to calculate distance between points; this is set via the setDistanceMode() sub
 Private m_distanceMode As VORONOI_DISTANCE
+
+'Technique used to calculate shading; this is set via the setShadingMode() sub
+Private m_shadingMode As VORONOI_SHADING
+
+'Turbulence currently used for the function
+Private m_Turbulence As Double
+
+'Radius of nearby points to search.  For certain functions, we can get away with only searching the nearest 9 points;
+' unfortunately, certain combinations of patterns require a larger search area.
+Private m_VoronoiSearchRadius As Long
 
 'Given a DIB and the user's requested number of rows and columns, populate an initial vPoints() array.
 ' In the future, I may allow the user to supply a specific point pattern, e.g. "Triangle" or "Square" or "Hexagon".
@@ -98,11 +127,11 @@ Public Sub initPoints(ByVal cellSize As Long, ByVal srcImageWidth As Long, srcIm
     m_imgHeight = srcImageHeight
     
     'Calculate the number of rows and columns in the array, as a function of cell size and image size
-    m_numRows = m_imgWidth / m_cellSize
-    m_numColumns = m_imgHeight / m_cellSize
+    m_numRows = m_imgHeight / m_cellSize
+    m_numColumns = m_imgWidth / m_cellSize
     
     'Resize all arrays to match
-    ReDim vPoints(0 To m_numRows - 1, 0 To m_numColumns - 1) As POINTAPI
+    ReDim vPoints(0 To m_numColumns - 1, 0 To m_numRows - 1) As POINTAPI
     ReDim vPointsMaxDistance(0 To getTotalNumOfVoronoiPoints() - 1) As Single
     
     'So that each point is centered nicely inside a cell, we'll make use of half width and height values
@@ -111,15 +140,12 @@ Public Sub initPoints(ByVal cellSize As Long, ByVal srcImageWidth As Long, srcIm
     
     'Populate initial point positions
     Dim x As Long, y As Long
-    For x = 0 To m_numRows - 1
-    For y = 0 To m_numColumns - 1
-        vPoints(x, y).x = (x / m_numRows) * m_imgWidth + hCellSize
-        vPoints(x, y).y = (y / m_numColumns) * m_imgHeight + hCellSize
+    For x = 0 To m_numColumns - 1
+    For y = 0 To m_numRows - 1
+        vPoints(x, y).x = (x / m_numColumns) * m_imgWidth + hCellSize
+        vPoints(x, y).y = (y / m_numRows) * m_imgHeight + hCellSize
     Next y
     Next x
-    
-    'Reset certain cached values
-    m_maxDistance = 0
     
     'Note that initialization was succesful
     m_PointsInitialized = True
@@ -141,59 +167,96 @@ Public Function randomizePoints(ByVal fxTurbulence As Double, Optional ByVal rnd
     Rnd -1
     Randomize rndSeed
     
+    'Cache the turbulence value
+    m_Turbulence = fxTurbulence
+    
     'Perturb each point in the array by an amount proportional to the cell size; at max turbulence, points can
     ' be perturbed by "cell size / 2".
     Dim tmpCellSize As Long
     tmpCellSize = m_cellSize \ 2
     
     Dim x As Long, y As Long
-    For x = 0 To m_numRows - 1
-    For y = 0 To m_numColumns - 1
+    For x = 0 To m_numColumns - 1
+    For y = 0 To m_numRows - 1
         vPoints(x, y).x = vPoints(x, y).x + (1 - (Rnd * 2)) * fxTurbulence * tmpCellSize
         vPoints(x, y).y = vPoints(x, y).y + (1 - (Rnd * 2)) * fxTurbulence * tmpCellSize
     Next y
     Next x
-
+    
+    'Update the Voronoi search radius to account for the new turbulence parameter
+    determineVoronoiSearchRadius
+    
     randomizePoints = True
 
 End Function
+
+'Internal function for determining optimal Voronoi search radius.  If an F2 distance is involved, or the turbulence parameter
+' is quite high, the search radius must be extended.  This function will automatically be called after the shading mode or
+' turbulence parameter is changed.
+' (NOTE: in PhotoDemon, I limit the turbulence factor to 1/2 of the cell size, which saves us from having to extend the
+'        search radius due to turbulence.  Individuals needing greater turbulence will thus need to uncomment the
+'        "If m_Turbulence..." line below.)
+Private Sub determineVoronoiSearchRadius()
+    
+    'Regardless of input values, we must always search at least 1px in all directions.
+    m_VoronoiSearchRadius = 1
+    
+    If m_shadingMode > SHADE_F1 Then m_VoronoiSearchRadius = m_VoronoiSearchRadius + 1
+    'If m_Turbulence > 0.5 Then m_VoronoiSearchRadius = m_VoronoiSearchRadius + 1
+    
+End Sub
 
 'Set the mode used to calculate distance
 Public Sub setDistanceMode(ByVal newMode As VORONOI_DISTANCE)
     m_distanceMode = newMode
 End Sub
 
+'Set the mode used to calculate shading
+Public Sub setShadingMode(ByVal newMode As VORONOI_SHADING)
+
+    m_shadingMode = newMode
+    
+    'Update the Voronoi search radius to account for the new shading mode
+    determineVoronoiSearchRadius
+    
+End Sub
+
 'Given a location IN THE SOURCE IMAGE, return the INDEX of the nearest point in the Voronoi diagram.
-Public Function getNearestPointIndex(ByVal srcX As Long, ByVal srcY As Long) As Long
+Public Function getNearestPointIndex(ByVal srcX As Long, ByVal srcY As Long, Optional ByRef secondNearestPointIndex As Long = -1) As Long
     
     'Start by finding the (x, y) coordinates of the relevant cell
     Dim cellX As Long, cellY As Long
-    cellX = (srcX / m_imgWidth) * m_numRows
-    cellY = (srcY / m_imgHeight) * m_numColumns
+    cellX = (srcX / m_imgWidth) * m_numColumns
+    cellY = (srcY / m_imgHeight) * m_numRows
     
-    'Search the neighboring cells to find the closest point
-    Dim minDistance As Double
+    'Search neighboring cells to find the closest point, and possibly the second-closest point as well.
+    ' (Note: assigning Long-type hex declarations to Doubles makes me uncomfortable, but VB doesn't seem to mind,
+    '        so I'm running with it.)
+    Dim minDistance As Double, minDistance2 As Double
     minDistance = &HEFFFFFF
+    minDistance2 = &HEFFFFFF
     
-    Dim nearestIndex As Long
+    Dim nearestIndex As Long, nearestIndex2 As Long
     
-    'Start by determining the valid min/max indices for our search
+    'Start by determining the valid min/max indices for our search.  The search radius required for proper operation
+    ' varies according to certain input parameters; the m_VoronoiSearchRadius will have been automatically updated by
+    ' any relevant functions prior to being utilized here.
     Dim searchMinX As Long, searchMaxX As Long, searchMinY As Long, searchMaxY As Long
     
-    searchMinX = cellX - 1
+    searchMinX = cellX - m_VoronoiSearchRadius
     If searchMinX < 0 Then searchMinX = 0
     
-    searchMinY = cellY - 1
+    searchMaxX = cellX + m_VoronoiSearchRadius
+    If searchMaxX > m_numColumns - 1 Then searchMaxX = m_numColumns - 1
+    
+    searchMinY = cellY - m_VoronoiSearchRadius
     If searchMinY < 0 Then searchMinY = 0
     
-    searchMaxX = cellX + 1
-    If searchMaxX > m_numRows - 1 Then searchMaxX = m_numRows - 1
+    searchMaxY = cellY + m_VoronoiSearchRadius
+    If searchMaxY > m_numRows - 1 Then searchMaxY = m_numRows - 1
     
-    searchMaxY = cellY + 1
-    If searchMaxY > m_numColumns - 1 Then searchMaxY = m_numColumns - 1
-    
-    'Search all neighboring celles for the nearest Voronoi point
-    Dim curDistance As Double
+    'Search all neighboring cells for the nearest Voronoi point
+    Dim curDistance As Double, curShadeDistance As Double
     
     Dim x As Long, y As Long
     For x = searchMinX To searchMaxX
@@ -203,7 +266,11 @@ Public Function getNearestPointIndex(ByVal srcX As Long, ByVal srcY As Long) As 
         Select Case m_distanceMode
         
             Case DIST_CARTESIAN
-                curDistance = cartesianDistanceShortcut(srcX, srcY, vPoints(x, y).x, vPoints(x, y).y)
+                If m_shadingMode = NO_SHADE Then
+                    curDistance = cartesianDistanceShortcut(srcX, srcY, vPoints(x, y).x, vPoints(x, y).y)
+                Else
+                    curDistance = cartesianDistance(srcX, srcY, vPoints(x, y).x, vPoints(x, y).y)
+                End If
             
             Case DIST_MANHATTAN
                 curDistance = manhattanDistance(srcX, srcY, vPoints(x, y).x, vPoints(x, y).y)
@@ -212,26 +279,99 @@ Public Function getNearestPointIndex(ByVal srcX As Long, ByVal srcY As Long) As 
                 curDistance = chebyshevDistance(srcX, srcY, vPoints(x, y).x, vPoints(x, y).y)
             
         End Select
-                
-        If (curDistance < minDistance) Then
+        
+        'Check to see if this is the minimum recorded distance for this Voronoi cell
+        If (curDistance <= minDistance) Then
+        
+            'As we are now updating the nearest point, we can also update the second-nearest point using the existing
+            ' nearest-point distance.
+            If minDistance < minDistance2 Then
+                minDistance2 = minDistance
+                nearestIndex2 = nearestIndex
+            End If
+            
+            'Update the nearest distance and index markers
             minDistance = curDistance
             nearestIndex = getCellIndex(x, y)
+            
+        ElseIf (curDistance <= minDistance2) Then
+            minDistance2 = curDistance
+            nearestIndex2 = getCellIndex(x, y)
         End If
-    
+        
     Next y
     Next x
-        
-    'Cache max distance as necessary
-    If minDistance > vPointsMaxDistance(nearestIndex) Then vPointsMaxDistance(nearestIndex) = minDistance
-        
-    'Return the nearest index
+    
+    'Update the maximum distance cache for this cell as necessary
+    curShadeDistance = getShadingDistance(minDistance, minDistance2)
+    If curShadeDistance > vPointsMaxDistance(nearestIndex) Then vPointsMaxDistance(nearestIndex) = curShadeDistance
+    
+    'Return the nearest and second-nearest indices for this pixel
+    secondNearestPointIndex = nearestIndex2
     getNearestPointIndex = nearestIndex
     
 End Function
 
+'Given a pixel location (x, y) and a Voronoi point index, return the distance between the two using the current
+' class-wide distance formula.
+Public Function getDistance(ByVal srcX As Long, ByVal srcY As Long, ByVal vPointIndex As Long) As Double
+
+    'Start by finding the (x, y) coordinates of the relevant cell
+    Dim cellCoords As POINTAPI
+    cellCoords = getVoronoiCoordinates(vPointIndex)
+    
+    'Find the distance to this point, using the method requested by the user
+    Select Case m_distanceMode
+    
+        Case DIST_CARTESIAN
+            If m_shadingMode = NO_SHADE Then
+                getDistance = cartesianDistanceShortcut(srcX, srcY, cellCoords.x, cellCoords.y)
+            Else
+                getDistance = cartesianDistance(srcX, srcY, cellCoords.x, cellCoords.y)
+            End If
+        
+        Case DIST_MANHATTAN
+            getDistance = manhattanDistance(srcX, srcY, cellCoords.x, cellCoords.y)
+        
+        Case DIST_CHEBYSHEV
+            getDistance = chebyshevDistance(srcX, srcY, cellCoords.x, cellCoords.y)
+        
+    End Select
+
+End Function
+
+'Different shade methods calculate shading distance differently.  Call this function with the distance to the nearest
+' and second-nearest Voronoi points, and it will return a shade calculation based on the currently selected shade method.
+Private Function getShadingDistance(Optional ByRef nearestDistance As Double, Optional ByRef secondNearestDistance As Double) As Double
+
+     Select Case m_shadingMode
+        
+            Case NO_SHADE
+                getShadingDistance = nearestDistance
+        
+            Case SHADE_F1
+                getShadingDistance = nearestDistance
+            
+            Case SHADE_F2
+                getShadingDistance = secondNearestDistance
+            
+            Case SHADE_F2_MINUS_F1
+                getShadingDistance = secondNearestDistance - nearestDistance
+            
+            Case SHADE_F1_DIVIDE_F2
+                If secondNearestDistance <> 0 Then
+                    getShadingDistance = nearestDistance / secondNearestDistance
+                Else
+                    getShadingDistance = nearestDistance
+                End If
+        
+        End Select
+
+End Function
+
 'Given a 2D coordinate in the master point array, return a unique 1-D index for that point
 Private Function getCellIndex(ByVal cellX As Long, ByVal cellY As Long)
-    getCellIndex = (cellY * m_numRows) + cellX
+    getCellIndex = cellX + (cellY * m_numColumns)
 End Function
 
 'If external functions need to know how many Voronoi points are possible, they can use this function
@@ -239,30 +379,73 @@ Public Function getTotalNumOfVoronoiPoints() As Long
     getTotalNumOfVoronoiPoints = m_numRows * m_numColumns
 End Function
 
-Public Function getShadingValue(ByVal srcX As Long, ByVal srcY As Long, ByRef shadeMethod As Long, Optional ByVal pointIndex As Long = -1) As Double
+'If external functions want to know the maximum distance for a given cell, they can use this function
+Public Function getMaxDistanceForCell(ByVal pointIndex As Long) As Double
+    getMaxDistanceForCell = vPointsMaxDistance(pointIndex)
+End Function
 
-    Dim vDistance As Double
+'Given a pixel location (x, y), and optionally the nearest and/or second nearest Voronoi point index, return a shading value
+' for that pixel using the class-wide current shading method.
+Public Function getShadingValue(ByVal srcX As Long, ByVal srcY As Long, Optional ByVal nearestPointIndex As Long = -1, Optional ByVal secondNearestPointIndex As Long = -1) As Double
+
+    'If shading is not active, return 1 and exit
+    If m_shadingMode = NO_SHADE Then
+        getShadingValue = 1
+        Exit Function
+    End If
+
+    Dim vDistance1 As Double, vDistance2 As Double
     
-    'For now, assume that the nearest point value is known
+    'Retrieve the (x, y) coordinates of the nearest Voronoi point.  Note that if caller already cached this value in a previous
+    ' step, they can supply it as the nearestPointIndex parameter - that makes this function much faster!
     Dim srcPoint As POINTAPI
-    srcPoint = getVoronoiCoordinates(pointIndex)
     
-    'Find the distance to this point, using the method requested by the user
-    Select Case m_distanceMode
+    'Note that in the special case of shading using only the F2 value (the 2nd-closest point), we can completely
+    ' avoid calculating the distance to the nearest point!
+    If m_shadingMode <> SHADE_F2 Then
     
-        Case DIST_CARTESIAN
-            vDistance = cartesianDistanceShortcut(srcX, srcY, srcPoint.x, srcPoint.y)
+        'If the user did not supply a point index, calculate one now
+        If nearestPointIndex = -1 Then nearestPointIndex = getNearestPointIndex(srcX, srcY)
         
-        Case DIST_MANHATTAN
-            vDistance = manhattanDistance(srcX, srcY, srcPoint.x, srcPoint.y)
+        'Find the distance to this point, using the method requested by the user.  (This step could be avoided
+        ' by allowing the user to also cache distance - I haven't done that at present, but it's a possibility for
+        ' future optimizations.)
+        vDistance1 = getDistance(srcX, srcY, nearestPointIndex)
         
-        Case DIST_CHEBYSHEV
-            vDistance = chebyshevDistance(srcX, srcY, srcPoint.x, srcPoint.y)
-        
-    End Select
+    End If
     
-    getShadingValue = 1 - (vDistance / vPointsMaxDistance(pointIndex))
-
+    'If the class is using a shading method that also requires knowledge of F2, find that now, using steps
+    ' identical to those above, but with F2 instead of F1.  (As before, if the shading method relies only the distance
+    ' to the nearest point, we can completely skip this step.
+    If m_shadingMode <> SHADE_F1 Then
+    
+        If secondNearestPointIndex = -1 Then
+            getNearestPointIndex srcX, srcY, secondNearestPointIndex
+        End If
+        
+        'Find the distance to this point, using the method requested by the user.  (This step could be avoided
+        ' by allowing the user to also cache distance - I haven't done that at present, but it's a possibility for
+        ' future optimizations.)
+        vDistance2 = getDistance(srcX, srcY, secondNearestPointIndex)
+    
+    End If
+    
+    'If the max distance is greater than 0, return it.  If it equals zero (e.g. the source location lies directly
+    ' atop a Voronoi point), the calculation will hit a divide-by-zero error, so catch that case and return 1 explicitly.
+    If vPointsMaxDistance(nearestPointIndex) > 0 Then
+    
+        'Use the getShadingDistance function to calculate a shade value for this pixel, per the user's requested
+        ' shading method.
+        getShadingValue = (getShadingDistance(vDistance1, vDistance2) / vPointsMaxDistance(nearestPointIndex))
+        
+        'Certain shade functions return inverted results; catch these in advance, so the caller can deal with all
+        ' output universally, instead of having to manually reverse values.
+        If (m_shadingMode = SHADE_F1) Or (m_shadingMode = SHADE_F1_DIVIDE_F2) Then getShadingValue = 1 - getShadingValue
+        
+    Else
+        getShadingValue = 1
+    End If
+    
 End Function
 
 'If external functions need the coordinates of a given Voronoi points, they can use this function
@@ -272,10 +455,11 @@ Friend Function getVoronoiCoordinates(ByVal pointIndex As Long) As POINTAPI
         
         'Solve for the row and column of the index in question
         Dim vRow As Long, vColumn As Long
-        vColumn = pointIndex \ m_numRows
-        vRow = pointIndex Mod m_numRows
+        vRow = pointIndex \ m_numColumns
+        vColumn = pointIndex Mod m_numColumns
         
-        getVoronoiCoordinates = vPoints(vRow, vColumn)
+        'Return the coordinate at that point
+        getVoronoiCoordinates = vPoints(vColumn, vRow)
         
     End If
     
@@ -284,24 +468,29 @@ End Function
 Private Sub Class_Initialize()
     m_PointsInitialized = False
     m_distanceMode = DIST_CARTESIAN
+    m_shadingMode = NO_SHADE
 End Sub
 
 'Return the distance between two points, but ignore the square root function; if calculating something simple, like "minimum distance only",
 ' we only need relative values - not absolute ones - so we can skip that step for a slight performance boost.
-Private Function cartesianDistanceShortcut(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
+Private Function cartesianDistanceShortcut(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Double
     cartesianDistanceShortcut = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
+End Function
+
+Private Function cartesianDistance(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Double
+    cartesianDistance = Sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
 End Function
 
 '"Manhattan Distance" is the walking distance between two points, no angular traveling allowed (e.g. only pure
 ' horizontal and vertical movement).
-Private Function manhattanDistance(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
+Private Function manhattanDistance(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Double
     manhattanDistance = Abs(x1 - x2) + Abs(y1 - y2)
 End Function
 
 '"Chebyshev Distance" is similar to "Manhattan Distance", above, except that pure diagonal movement is now allowed.
 ' It is sometimes called "Chessboard Distance", since it matches the number of moves a King piece must make to travel
 ' between two points.
-Private Function chebyshevDistance(ByVal x1 As Double, ByVal y1 As Double, ByVal x2 As Double, ByVal y2 As Double) As Double
+Private Function chebyshevDistance(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Double
     If Abs(x1 - x2) > Abs(y1 - y2) Then
         chebyshevDistance = Abs(x1 - x2)
     Else

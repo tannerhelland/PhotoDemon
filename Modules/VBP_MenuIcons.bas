@@ -391,6 +391,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "PENCIL", 7, 0, 7         'Pencil
         addMenuIcon "POSTERIZE", 7, 0, 8      'Posterize
         addMenuIcon "RELIEF", 7, 0, 9         'Relief
+        addMenuIcon "STAINEDGLASS", 7, 0, 10  'Stained glass
     
     addMenuIcon "BLUR", 7, 1            'Blur
         '--> Blur sub-menu
