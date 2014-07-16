@@ -291,6 +291,7 @@ Public Sub loadUserSettings()
     ' every time they're needed.)
     g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
     g_ThumbnailPerformance = g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
+    g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 0)
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
         
@@ -435,6 +436,7 @@ Private Sub createNewPreferencesFile()
     xmlEngine.writeTag "Performance", "", True
         xmlEngine.writeTag "ViewportRenderPerformance", "1"
         xmlEngine.writeTag "ThumbnailPerformance", "1"
+        xmlEngine.writeTag "UndoCompression", "0"
     xmlEngine.closeTag "Performance"
     xmlEngine.writeBlankLine
     
