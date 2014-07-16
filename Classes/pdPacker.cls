@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" Interface (e.g. Zip-like archive handler)
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 10/April/14
-'Last update: fix endianness of initial file marker, improve node creation performance by modifying BasicBuffer to
-'             accept a Length parameter (thus avoiding the need for costly ReDim Preserve statements).
+'Last updated: 16/July/14
+'Last update: fix calculation of compressed buffer size if zLib is in use
 'Dependencies: clsBasicBuffer by dilettante (used to read/write byte array buffers more easily)
 '
 'This class provides an interface for creating and reading "pdPackage" files.  pdPackages are zip-like archive files
@@ -340,12 +339,12 @@ Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         If zLibResult = 0 Then
         
             'zLib was successful.  Add the compressed data stream to the data buffer.
-            m_DataBuffer.WriteBytesFromPointer VarPtr(compressedData(0)), UBound(compressedData) + 1
+            m_DataBuffer.WriteBytesFromPointer VarPtr(compressedData(0)), compressedSize
         
             If useHeaderBuffer Then
-                m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = UBound(compressedData) + 1
+                m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = compressedSize
             Else
-                m_NodeDirectory(nodeIndex).NodeDataPackedSize = UBound(compressedData) + 1
+                m_NodeDirectory(nodeIndex).NodeDataPackedSize = compressedSize
             End If
             
             'For fun, supply some debug info on the compression.
