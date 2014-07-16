@@ -40,7 +40,7 @@ Begin VB.Form FormStainedGlass
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   9
-      Top             =   5250
+      Top             =   5205
       Width           =   5775
    End
    Begin VB.ComboBox cboColorSampling 
@@ -59,7 +59,7 @@ Begin VB.Form FormStainedGlass
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   7
-      Top             =   4350
+      Top             =   4260
       Width           =   5775
    End
    Begin PhotoDemon.commandBar cmdBar 
@@ -115,7 +115,7 @@ Begin VB.Form FormStainedGlass
       Height          =   495
       Left            =   6000
       TabIndex        =   5
-      Top             =   1410
+      Top             =   1395
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -138,7 +138,7 @@ Begin VB.Form FormStainedGlass
       Height          =   495
       Left            =   6000
       TabIndex        =   11
-      Top             =   3360
+      Top             =   3315
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -160,7 +160,7 @@ Begin VB.Form FormStainedGlass
       Height          =   495
       Left            =   6000
       TabIndex        =   13
-      Top             =   2400
+      Top             =   2370
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -197,7 +197,7 @@ Begin VB.Form FormStainedGlass
       Index           =   6
       Left            =   6000
       TabIndex        =   12
-      Top             =   2040
+      Top             =   2010
       Width           =   1695
    End
    Begin VB.Label lblTitle 
@@ -218,7 +218,7 @@ Begin VB.Form FormStainedGlass
       Index           =   5
       Left            =   6000
       TabIndex        =   10
-      Top             =   4890
+      Top             =   4845
       Width           =   1830
    End
    Begin VB.Label lblTitle 
@@ -239,7 +239,7 @@ Begin VB.Form FormStainedGlass
       Index           =   3
       Left            =   6000
       TabIndex        =   8
-      Top             =   3000
+      Top             =   2955
       Width           =   1635
    End
    Begin VB.Label lblTitle 
@@ -260,7 +260,7 @@ Begin VB.Form FormStainedGlass
       Index           =   1
       Left            =   6000
       TabIndex        =   6
-      Top             =   3990
+      Top             =   3900
       Width           =   1650
    End
    Begin VB.Label lblTitle 
@@ -281,7 +281,7 @@ Begin VB.Form FormStainedGlass
       Index           =   2
       Left            =   6000
       TabIndex        =   4
-      Top             =   1050
+      Top             =   1035
       Width           =   1200
    End
    Begin VB.Label lblTitle 
