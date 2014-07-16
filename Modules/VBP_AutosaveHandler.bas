@@ -348,24 +348,31 @@ Public Sub loadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
         autosaveFile(0) = tmpUndoEngine.generateUndoFilenameExternal(newImageID, 0, g_SessionID)
         LoadFileAsNewImage autosaveFile, False, fullXMLList(i).friendlyName, fullXMLList(i).friendlyName
         
-        'The new image has been successfully noted, but we must now overwrite some of the data PD has assigned it with
-        ' its original data (such as its "location on disk", which should reflect its original location - not its
-        ' temporary file location!)
-        pdImages(g_CurrentImage).locationOnDisk = fullXMLList(i).originalPath
-        pdImages(g_CurrentImage).originalFileNameAndExtension = fullXMLList(i).friendlyName
+        'It is possible, but extraordinarily rare, for the LoadFileAsNewImage function to fail (for example, if the user removed
+        ' a portable drive with the Autosave data in the midst of the load).  We can identify a fail state by the expected pdImage
+        ' object being freed prematurely.
+        If Not pdImages(g_CurrentImage) Is Nothing Then
         
-        'It is now time to artificially reconstruct the image's Undo/Redo stack, using the data from the autosave file.
-        ' The Undo engine itself handles this step.
-        If pdImages(g_CurrentImage).undoManager.reconstructStackFromExternalSource(xmlEngine.returnCurrentXMLString) Then
-        
-            'The Undo stack was reconstructed successfully.  Ask it to advance the stack pointer to its location from
-            ' the last session.
-            pdImages(g_CurrentImage).undoManager.moveToSpecificUndoPoint fullXMLList(i).undoStackPointer
+            'The new image has been successfully noted, but we must now overwrite some of the data PD has assigned it with
+            ' its original data (such as its "location on disk", which should reflect its original location - not its
+            ' temporary file location!)
+            pdImages(g_CurrentImage).locationOnDisk = fullXMLList(i).originalPath
+            pdImages(g_CurrentImage).originalFileNameAndExtension = fullXMLList(i).friendlyName
             
-            Message "Autosave reconstruction complete for %1", fullXMLList(i).friendlyName
-        
-        Else
-            Message "Autosave could not be fully reconstructed.  Partial reconstruction attempted instead."
+            'It is now time to artificially reconstruct the image's Undo/Redo stack, using the data from the autosave file.
+            ' The Undo engine itself handles this step.
+            If pdImages(g_CurrentImage).undoManager.reconstructStackFromExternalSource(xmlEngine.returnCurrentXMLString) Then
+            
+                'The Undo stack was reconstructed successfully.  Ask it to advance the stack pointer to its location from
+                ' the last session.
+                pdImages(g_CurrentImage).undoManager.moveToSpecificUndoPoint fullXMLList(i).undoStackPointer
+                
+                Message "Autosave reconstruction complete for %1", fullXMLList(i).friendlyName
+            
+            Else
+                Message "Autosave could not be fully reconstructed.  Partial reconstruction attempted instead."
+            End If
+            
         End If
     
     Next i
