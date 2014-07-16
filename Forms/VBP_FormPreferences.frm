@@ -3489,7 +3489,7 @@ Private Sub LoadAllPreferences()
         'END Thumbnail rendering performance
         
         'START Undo data compression
-            sltUndoCompression.ToolTipText = g_Language.TranslateMessage("By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but it increases the amount of disk space used.  Compressing undo data will reduce performance, but also reduce disk space usage.  (Note that undo data is always cleared when PhotoDemon exits, so this only affects disk space usage while the program is running.)")
+            sltUndoCompression.ToolTipText = g_Language.TranslateMessage("By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but increases disk space usage.  Compressing undo data will reduce disk space usage, at some cost to performance.  (Note that undo data is erased when PhotoDemon exits, so this setting only affects disk space usage while PhotoDemon is running.)")
             sltUndoCompression.Value = g_UndoCompressionLevel
         'END Undo data compression
         
