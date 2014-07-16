@@ -39,27 +39,8 @@ Begin VB.Form FormStainedGlass
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   11
-      Top             =   5160
-      Width           =   5775
-   End
-   Begin VB.ComboBox cboShading 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   8
-      Top             =   4320
+      TabIndex        =   9
+      Top             =   5250
       Width           =   5775
    End
    Begin VB.ComboBox cboColorSampling 
@@ -78,7 +59,7 @@ Begin VB.Form FormStainedGlass
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   7
-      Top             =   2880
+      Top             =   4350
       Width           =   5775
    End
    Begin PhotoDemon.commandBar cmdBar 
@@ -113,7 +94,7 @@ Begin VB.Form FormStainedGlass
       Height          =   495
       Left            =   6000
       TabIndex        =   3
-      Top             =   690
+      Top             =   450
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
@@ -134,7 +115,7 @@ Begin VB.Form FormStainedGlass
       Height          =   495
       Left            =   6000
       TabIndex        =   5
-      Top             =   1800
+      Top             =   1410
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -153,10 +134,76 @@ Begin VB.Form FormStainedGlass
       NotchPosition   =   2
       NotchValueCustom=   100
    End
+   Begin PhotoDemon.sliderTextCombo sltEdge 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   3360
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Max             =   1
+      SigDigits       =   2
+      NotchPosition   =   2
+      NotchValueCustom=   100
+   End
+   Begin PhotoDemon.sliderTextCombo sltShadeQuality 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   2400
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   1
+      Max             =   5
+      Value           =   5
+      NotchPosition   =   2
+      NotchValueCustom=   100
+   End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "distance technique:"
+      Caption         =   "shading quality:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   6
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   2040
+      Width           =   1695
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "distance method:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -170,35 +217,14 @@ Begin VB.Form FormStainedGlass
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   12
-      Top             =   4800
-      Width           =   2040
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "EXPERIMENTAL SETTINGS:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   4
-      Left            =   6000
       TabIndex        =   10
-      Top             =   3480
-      Width           =   2985
+      Top             =   4890
+      Width           =   1830
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "shading:"
+      Caption         =   "edge thickness:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -212,9 +238,9 @@ Begin VB.Form FormStainedGlass
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   9
-      Top             =   3960
-      Width           =   915
+      TabIndex        =   8
+      Top             =   3000
+      Width           =   1635
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -234,7 +260,7 @@ Begin VB.Form FormStainedGlass
       Index           =   1
       Left            =   6000
       TabIndex        =   6
-      Top             =   2520
+      Top             =   3990
       Width           =   1650
    End
    Begin VB.Label lblTitle 
@@ -255,7 +281,7 @@ Begin VB.Form FormStainedGlass
       Index           =   2
       Left            =   6000
       TabIndex        =   4
-      Top             =   1440
+      Top             =   1050
       Width           =   1200
    End
    Begin VB.Label lblTitle 
@@ -276,7 +302,7 @@ Begin VB.Form FormStainedGlass
       Index           =   0
       Left            =   6000
       TabIndex        =   1
-      Top             =   360
+      Top             =   120
       Width           =   900
    End
 End
@@ -289,8 +315,8 @@ Attribute VB_Exposed = False
 'Stained Glass Effect Interface
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/July/14
-'Last updated: 14/July/14
-'Last update: initial build
+'Last updated: 15/July/14
+'Last update: added features, refined code, many optimizations and small improvements
 '
 'PhotoDemon's stained glass effect is implemented using Worley Noise (http://en.wikipedia.org/wiki/Worley_noise),
 ' which is basically a special algorithmic approach to Voronoi diagrams (http://en.wikipedia.org/wiki/Voronoi_diagram).
@@ -305,6 +331,11 @@ Attribute VB_Exposed = False
 'Finally, note that multiple lookup tables are used to improve the performance of this function.  While these may
 ' seem excessive, the fact that we can produce the entire effect without copying the current image is pretty awesome,
 ' so despite the many lookup tables, this actually uses less RAM than many other effects in PD.
+'
+'I should give a special thanks to Robert Rayment, who did extensive profiling and research on this filter before I ever
+' began work on it.  His comments were invaluable in determining the shape and style of this class.  FYI, Robert's PaintRR
+' project has a faster and simpler version of this routine worth checking out if PD's methods seem like overkill!
+' Link here: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -324,31 +355,17 @@ Private m_RndSeed As Long
 '  cellSize = size, in pixels, of each initial grid box in the Voronoi array.  Do not make this less than 3.
 '  fxTurbulence = how much to distort cell shape, range [0, 1], 0 = perfect grid
 '  colorSamplingMethod = how to determine cell color (0 = just use pixel at Voronoi point, 1 = average all pixels in cell)
-'  shadeMethod = whether to apply shading (0 = no shading, 1 = test shading method, more methods coming??)
-'  distance method = 0 - Cartesian, 1 - Manhattan, 2 - Chebyshev
-Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, ByVal colorSamplingMethod As Long, ByVal shadeMethod As Long, ByVal distanceMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'  shadeQuality = how detailed to shade each cell (1 = flat, 5 = detailed non-linear depth rendering)
+'  distanceMethod = 0 - Cartesian, 1 - Manhattan, 2 - Chebyshev
+Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, ByVal colorSamplingMethod As Long, ByVal shadeQuality As Long, ByVal edgeThreshold As Double, ByVal distanceMethod As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Carving image from stained glass..."
-        
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-    
-    'NOTE: to add grid lines, we will need a second copy of the image.  In the meantime, I have commented that code out,
-    '       as only one copy of the image is necessary if grid lines are not drawn.
-    
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent processed pixels from spreading across the image as we go.)
-    'Dim srcDIB As pdDIB
-    'Set srcDIB = New pdDIB
-    'srcDIB.createFromExistingDIB workingDIB
-    
-    'Dim srcImageData() As Byte
-    'Dim srcSA As SAFEARRAY2D
-    'prepSafeArray srcSA, srcDIB
-    'CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -381,10 +398,11 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     Dim cVoronoi As pdVoronoi
     Set cVoronoi = New pdVoronoi
     
-    'Pass all meaningful parameters on to the Voronoi class
+    'Pass all meaningful input parameters on to the Voronoi class
     cVoronoi.initPoints cellSize, workingDIB.getDIBWidth, workingDIB.getDIBHeight
     cVoronoi.randomizePoints fxTurbulence, m_RndSeed
     cVoronoi.setDistanceMode distanceMethod
+    cVoronoi.setShadingMode shadeQuality
     
     'Create several look-up tables, specifically:
     ' One table for each color channel (RGBA)
@@ -392,42 +410,50 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     Dim rLookup() As Long, gLookUp() As Long, bLookup() As Long, aLookup() As Long
     Dim numPixels() As Long
     
+    'Finally, we will also make two image-sized look-up tables that store the nearest Voronoi point index for
+    ' each pixel in the image, and if certain shading types are active, the second-nearest Voronoi point as well.
+    ' While this consumes a lot of memory, it makes our second pass through the image (the recoloring pass) much
+    ' faster than it would otherwise be.
+    Dim vLookup() As Long, vLookup2() As Long
+    
     'Size all pixels to match the number of possible Voronoi points; the nearest Voronoi point for each pixel
     ' will be used to determine the relevant point in the lookup tables.
     Dim numVoronoiPoints As Long
     numVoronoiPoints = cVoronoi.getTotalNumOfVoronoiPoints() - 1
     
+    'If the number of unique Voronoi points is less than 32767 (the limit for an unsigned Int), we could get away with
+    ' using an Integer lookup table instead of Longs, but as VB6 doesn't provide an easy way to change array types
+    ' post-declaration, we are stuck using the worst-case scenario of Longs.
     ReDim rLookup(0 To numVoronoiPoints) As Long
     ReDim gLookUp(0 To numVoronoiPoints) As Long
     ReDim bLookup(0 To numVoronoiPoints) As Long
     ReDim aLookup(0 To numVoronoiPoints) As Long
     ReDim numPixels(0 To numVoronoiPoints) As Long
+    ReDim vLookup(initX To finalX, initY To finalY) As Long
+    ReDim vLookup2(initX To finalX, initY To finalY) As Long
     
-    'Color values must be retrieved
+    'Color values must be individually processed to account for shading, so we need to declare them
     Dim r As Long, g As Long, b As Long, a As Long
     
-    'Finally, we will also make a (large) look-up table that stores the nearest Voronoi point index for
-    ' each pixel in the image.  While this consumes a lot of memory, it makes our second pass through the
-    ' image (the recoloring pass) much, much faster than it would otherwise be.
-    Dim vLookup() As Long
-    ReDim vLookup(initX To finalX, initY To finalY) As Long
-    
-    Dim nearestPoint As Long
+    'The Voronoi approach we use requires knowledge of the distance to the nearest Voronoi point, and depending on
+    ' shading quality, distance to the second-nearest point as well.
+    Dim nearestPoint As Long, secondNearestPoint As Long
     
     'Loop through each pixel in the image, calculating nearest Voronoi points as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        'Use the Voronoi class to find the nearest point to this pixel
-        nearestPoint = cVoronoi.getNearestPointIndex(x, y)
+        'Use the Voronoi class to find the nearest points to this pixel
+        nearestPoint = cVoronoi.getNearestPointIndex(x, y, secondNearestPoint)
         
-        'Store the nearest point index in our master lookup table
+        'Store the nearest and second-nearest point indices in our master lookup table
         vLookup(x, y) = nearestPoint
+        vLookup2(x, y) = secondNearestPoint
         
         'If the user has elected to recolor each cell using the average color for the cell, we need to track
         ' color values.  This is no different from a histogram approach, except in this case, each histogram
-        ' bucket corresponds to one Voronoi point.
+        ' bucket corresponds to one Voronoi cell.
         If colorSamplingMethod = 1 Then
         
             'Retrieve RGBA values for this pixel
@@ -504,32 +530,101 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     'Our pixel count cache is now unneeded; free it
     Erase numPixels
     
-    Dim shadeAdjustment As Double
-    
+    'Shading requires a number of specialized variables
+    Dim shadeAdjustment As Double, shadeThreshold As Double, edgeAdjustment As Double, maxDistance As Double
+            
     'Loop through the image, changing colors to match our calculated Voronoi values
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        'Use the lookup table from step 1 to find the matching Voronoi point index for this pixel.
-        ' (NOTE: this step could be replaced by another calculation operation, but it would be slower.)
+        'Use the lookup table from step 1 to find the nearest and second-nearest Voronoi point indices for this pixel.
+        ' (NOTE: this step could be rewritten to simply re-request a distance calculation from the Voronoi class,
+        '        but that would slow the function considerably.)
         nearestPoint = vLookup(x, y)
+        secondNearestPoint = vLookup2(x, y)
         
-        'Retrieve the RGB values from that bin
+        'Retrieve the RGB values from the relevant Voronoi cell bin
         r = rLookup(nearestPoint)
         g = gLookUp(nearestPoint)
         b = bLookup(nearestPoint)
         If qvDepth = 3 Then a = aLookup(nearestPoint)
         
-        'The user has requested shading.  Right now there is only one shading method, but in the future,
-        ' I'd like to add more (see https://code.google.com/p/fractalterraingeneration/wiki/Cell_Noise)
-        If shadeMethod > 0 Then
+        'If the user is using a custom edge value, we need to perform a number of extra calculations.  If they are
+        ' just doing a generic filter, however, we can greatly shortcut the process.
+        If edgeThreshold = 0 Then
+        
+            If shadeQuality <> NO_SHADE Then
+                
+                'Retrieve a shade value on the scale [0, 1] from the Voronoi class; it will calculate this
+                ' value using the relationship between this point's distance to the nearest Voronoi point,
+                ' and the maximum shading value for this cell.
+                shadeAdjustment = cVoronoi.getShadingValue(x, y, nearestPoint, secondNearestPoint)
+                
+                'Modify the RGB values for this pixel by the retrieved shading adjustment
+                r = r * shadeAdjustment
+                g = g * shadeAdjustment
+                b = b * shadeAdjustment
+                
+            End If
+        
+        'The user has modified the edge threshold.  Break out your mathbook!
+        Else
             
-            'Retrieve a shade value on the scale [0, 1] from the Voronoi class; it will calculate this
-            ' value using the relationship between this point's distance to the nearest Voronoi point,
-            ' and the maximum distance for this cell.
-            shadeAdjustment = cVoronoi.getShadingValue(x, y, shadeMethod, nearestPoint)
+            'We will now proceed to calculate and apply an edge modification on top of the pixel's existing shading value.
+            ' Basically, the edge parameter controls an artificial fade for pixels whose distances fall below the edge
+            ' threshold value.  Pixels above the threshold value are untouched (meaning they receive only their default
+            ' shading adjustment).
             
+            'We can shortcut the edge calculation process for the basic, non-shade method.
+            If shadeQuality = NO_SHADE Then
+                shadeAdjustment = 1
+            Else
+                shadeAdjustment = cVoronoi.getShadingValue(x, y, nearestPoint, secondNearestPoint)
+            End If
+            
+            'Retrieve the maximum distance for this Voronoi cell, and use that to calculate a cell threshold value.
+            maxDistance = cVoronoi.getMaxDistanceForCell(nearestPoint)
+            shadeThreshold = (edgeThreshold * maxDistance)
+            
+            'Different shading methods require different calculations to make the edge algorithm work similarly.
+            ' Sort by shade method, and calculate only a relevant edge adjustment value.
+            If shadeQuality < SHADE_F2_MINUS_F1 Then
+                edgeAdjustment = maxDistance - cVoronoi.getDistance(x, y, nearestPoint)
+            Else
+                
+                If shadeQuality = SHADE_F2_MINUS_F1 Then
+                    edgeAdjustment = (cVoronoi.getDistance(x, y, secondNearestPoint) - cVoronoi.getDistance(x, y, nearestPoint))
+                Else
+                    edgeAdjustment = shadeAdjustment
+                End If
+                
+            End If
+            
+            'If our calculated adjustment falls below the shading threshold we calculated, this pixel is a candidate for
+            ' edge enhancement.
+            If edgeAdjustment < shadeThreshold Then
+                
+                'Check for the special case of 0 shade thresholds; to avoid divide-by-zero errors, we must handle
+                ' such pixels separately.
+                If shadeThreshold <> 0 Then
+                    edgeAdjustment = edgeAdjustment / shadeThreshold
+                Else
+                    edgeAdjustment = 0
+                End If
+                
+                'To provide a slightly better look, we actually use an n^2 fall-off instead of a linear one
+                shadeAdjustment = shadeAdjustment * edgeAdjustment * edgeAdjustment
+                
+                'To avoid potential overflow errors, make sure our edge parameter only shrinks RGB values.
+                ' (This case should never occur, but given the number of parameters at play in this tool,
+                '  it doesn't hurt to exert a little extra caution!)
+                If shadeAdjustment > 1 Then shadeAdjustment = 1
+                
+            End If
+            
+            'With our shade adjustment finalized, we can finally calculate final RGB values for this pixel.  Note
+            ' that shading does not currently affect alpha.
             r = r * shadeAdjustment
             g = g * shadeAdjustment
             b = b * shadeAdjustment
@@ -551,10 +646,20 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         End If
     Next x
     
-    'NOTE: when we add line drawing, make sure to free the second image copy here!
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-    'CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    'Erase srcImageData
+    'For fun, you can uncomment the code block below to render the calculated Voronoi points onto the image.
+'    For x = 0 To numVoronoiPoints
+'
+'        thisPoint = cVoronoi.getVoronoiCoordinates(x)
+'
+'        QuickVal = thisPoint.x * qvDepth
+'
+'        'Draw the Voronoi point onto the image
+'        dstImageData(QuickVal + 2, thisPoint.y) = 255
+'        dstImageData(QuickVal + 1, thisPoint.y) = 255
+'        dstImageData(QuickVal, thisPoint.y) = 0
+'        If qvDepth = 3 Then dstImageData(QuickVal + 3, y) = 255
+'
+'    Next x
     
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
@@ -572,13 +677,9 @@ Private Sub cboDistance_Click()
     updatePreview
 End Sub
 
-Private Sub cboShading_Click()
-    updatePreview
-End Sub
-
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Stained glass", , buildParams(sltSize, sltTurbulence, cboColorSampling.ListIndex, cboShading.ListIndex, cboDistance.ListIndex), UNDO_LAYER
+    Process "Stained glass", , buildParams(sltSize, sltTurbulence, cboColorSampling.ListIndex, sltShadeQuality, sltEdge, cboDistance.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -609,16 +710,10 @@ Private Sub Form_Load()
     
     'Provide with user with several color sampling options
     cboColorSampling.Clear
-    cboColorSampling.AddItem "pixel at center of cell"
-    cboColorSampling.AddItem "average of all pixels in cell"
+    cboColorSampling.AddItem "fast"
+    cboColorSampling.AddItem "accurate"
     cboColorSampling.ListIndex = 0
-    
-    'Provide several experimental shading options
-    cboShading.Clear
-    cboShading.AddItem "none"
-    cboShading.AddItem "pixel distance / max distance for cell"
-    cboShading.ListIndex = 0
-    
+        
     'Provide three experimental distance functions
     cboDistance.Clear
     cboDistance.AddItem "Cartesian (traditional)"
@@ -639,11 +734,19 @@ End Sub
 
 'Redraw the effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then fxStainedGlass sltSize, sltTurbulence, cboColorSampling.ListIndex, cboShading.ListIndex, cboDistance.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then fxStainedGlass sltSize, sltTurbulence, cboColorSampling.ListIndex, sltShadeQuality, sltEdge, cboDistance.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
+Private Sub sltEdge_Change()
+    updatePreview
+End Sub
+
+Private Sub sltShadeQuality_Change()
     updatePreview
 End Sub
 
