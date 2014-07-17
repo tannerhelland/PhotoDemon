@@ -2296,7 +2296,7 @@ Public Sub fillDIBWithJP2Version(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     Dim fi_Check As Long
     fi_Check = FreeImage_SaveToMemoryEx(FIF_JP2, fi_DIB, jp2Array, JP2Quality, True)
     
-    fi_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0)
+    fi_DIB = FreeImage_LoadFromMemoryEx(jp2Array, 0, , FIF_JP2)
     
     'Copy the newly decompressed JPEG-2000 into the destination pdDIB object.
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
@@ -2321,7 +2321,7 @@ Public Sub fillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     Dim fi_Check As Long
     fi_Check = FreeImage_SaveToMemoryEx(FIF_WEBP, fi_DIB, webPArray, WebPQuality, True)
     
-    fi_DIB = FreeImage_LoadFromMemoryEx(webPArray, 0)
+    fi_DIB = FreeImage_LoadFromMemoryEx(webPArray, , , FIF_WEBP)
     
     'Copy the newly decompressed image into the destination pdDIB object.
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
@@ -2346,7 +2346,7 @@ Public Sub fillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     Dim fi_Check As Long
     fi_Check = FreeImage_SaveToMemoryEx(FIF_JXR, fi_DIB, jxrArray, jxrQuality, True)
     
-    fi_DIB = FreeImage_LoadFromMemoryEx(jxrArray, 0)
+    fi_DIB = FreeImage_LoadFromMemoryEx(jxrArray, 0, , FIF_JXR)
     
     'Copy the newly decompressed image into the destination pdDIB object.
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&

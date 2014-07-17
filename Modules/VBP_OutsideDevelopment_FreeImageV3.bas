@@ -2939,7 +2939,7 @@ End Function
 Public Function FreeImage_LoadFromMemoryEx(ByRef Data As Variant, _
                                   Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, _
                                   Optional ByRef SizeInBytes As Long, _
-                                  Optional ByRef Format As FREE_IMAGE_FORMAT) As Long
+                                  Optional ByRef Format As FREE_IMAGE_FORMAT = FIF_UNKNOWN) As Long
 
 Dim hStream As Long
 Dim lDataPtr As Long
@@ -2972,12 +2972,47 @@ Dim lDataPtr As Long
    ' open the memory stream
    hStream = FreeImage_OpenMemoryByPtr(lDataPtr, SizeInBytes)
    If (hStream) Then
+   
       ' on success, detect image type
-      Format = FreeImage_GetFileTypeFromMemory(hStream)
+      If Format = FIF_UNKNOWN Then Format = FreeImage_GetFileTypeFromMemory(hStream)
+      
       If (Format <> FIF_UNKNOWN) Then
          ' load the image from memory stream only, if known image type
          FreeImage_LoadFromMemoryEx = FreeImage_LoadFromMemory(Format, hStream, Flags)
       End If
+      
+      ' close the memory stream when open
+      Call FreeImage_CloseMemory(hStream)
+   End If
+
+End Function
+
+Public Function FreeImage_LoadFromMemoryEx_Tanner(ByVal DataPtr As Long, ByVal SizeInBytes As Long, Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, Optional ByRef fileFormat As FREE_IMAGE_FORMAT = FIF_UNKNOWN) As Long
+
+    Dim hStream As Long
+    Dim lDataPtr As Long
+
+    'FreeImage_LoadFromMemoryEx routinely fails without explanation, and I'm hoping to find out why!
+
+   ' get both pointer and size in bytes of the memory block provided
+   ' through the Variant parameter 'data'.
+   'lDataPtr = pGetMemoryBlockPtrFromVariant(Data, SizeInBytes)
+   
+   ' open the memory stream
+   hStream = FreeImage_OpenMemoryByPtr(DataPtr, SizeInBytes)
+   If (hStream) Then
+   
+      ' on success, detect image type
+      If fileFormat = FIF_UNKNOWN Then fileFormat = FreeImage_GetFileTypeFromMemory(hStream)
+      
+      If (fileFormat <> FIF_UNKNOWN) Then
+         ' load the image from memory stream only, if known image type
+         FreeImage_LoadFromMemoryEx_Tanner = FreeImage_LoadFromMemory(fileFormat, hStream, Flags)
+      Else
+        Debug.Print "Format could not be ascertained!!"
+      
+      End If
+      
       ' close the memory stream when open
       Call FreeImage_CloseMemory(hStream)
    End If
@@ -3024,7 +3059,7 @@ Dim lSizeInBytes As Long
          If (FreeImage_SaveToMemoryEx) Then
             If (FreeImage_AcquireMemoryInt(hStream, lpData, lSizeInBytes)) Then
                On Error Resume Next
-               ReDim Data(lSizeInBytes - 1)
+               ReDim Data(lSizeInBytes - 1) As Byte
                If (Err.Number = ERROR_SUCCESS) Then
                   On Error GoTo 0
                   Call CopyMemory(Data(0), ByVal lpData, lSizeInBytes)
