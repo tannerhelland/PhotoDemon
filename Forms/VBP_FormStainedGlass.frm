@@ -646,24 +646,15 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         End If
     Next x
     
-    'For fun, you can uncomment the code block below to render the calculated Voronoi points onto the image.
-'    For x = 0 To numVoronoiPoints
-'
-'        thisPoint = cVoronoi.getVoronoiCoordinates(x)
-'
-'        QuickVal = thisPoint.x * qvDepth
-'
-'        'Draw the Voronoi point onto the image
-'        dstImageData(QuickVal + 2, thisPoint.y) = 255
-'        dstImageData(QuickVal + 1, thisPoint.y) = 255
-'        dstImageData(QuickVal, thisPoint.y) = 0
-'        If qvDepth = 3 Then dstImageData(QuickVal + 3, y) = 255
-'
-'    Next x
-    
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
+    'For fun, you can uncomment the code block below to render the calculated Voronoi points onto the image.
+'    For x = 0 To numVoronoiPoints
+'        thisPoint = cVoronoi.getVoronoiCoordinates(x)
+'        GDIPlusDrawCircleToDC workingDIB.getDIBDC, thisPoint.x, thisPoint.y, 2, RGB(255, 0, 255)
+'    Next x
+        
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
     
