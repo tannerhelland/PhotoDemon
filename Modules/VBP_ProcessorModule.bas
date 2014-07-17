@@ -151,7 +151,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         End With
         
         'If the user wants us to time how long this action takes, mark the current time now
-        If DISPLAY_TIMINGS Then m_ProcessingTime = Timer
+        If g_DisplayTimingReports Then m_ProcessingTime = Timer
         
         'Finally, perform a check for any on-canvas modifications that have not yet had their Undo data saved.
         
@@ -1420,7 +1420,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'If the user wants us to time this action, display the results now.  (Note - only do this for actions that will change the image
     ' in some way, as determined by the createUndo param)
-    If DISPLAY_TIMINGS And (createUndo <> UNDO_NOTHING) Then
+    If g_DisplayTimingReports And (createUndo <> UNDO_NOTHING) Then
         
         Dim timingString As String
         

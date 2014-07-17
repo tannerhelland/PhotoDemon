@@ -246,3 +246,8 @@ Public g_ThumbnailPerformance As PD_PERFORMANCE_SETTING
 ' is 0, for no compression.
 Public g_UndoCompressionLevel As Long
 
+'Set this value to TRUE if you want PhotoDemon to report time-to-completion for various program actions.
+' NOTE: this value is currently set automatically, in the LoadTheProgram sub.  PRE-ALPHA and ALPHA builds will report
+'       timing for a variety of actions; BETA and PRODUCTION builds will not.  This can be overridden by changing the
+'       activation code in LoadTheProgram.
+Public g_DisplayTimingReports As Boolean
