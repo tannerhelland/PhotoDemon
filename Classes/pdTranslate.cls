@@ -918,6 +918,6 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         
     Next
     
-    'If DISPLAY_TIMINGS Then MsgBox "Translation of " & srcForm.Name & " took " & (Timer - localTimeTaken) & " seconds."
+    'If g_DisplayTimingReports Then MsgBox "Translation of " & srcForm.Name & " took " & (Timer - localTimeTaken) & " seconds."
     
 End Sub

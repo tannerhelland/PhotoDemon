@@ -203,9 +203,10 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     'If the image associated with this form is inactive, ignore this request
     If Not srcImage.IsActive Then Exit Sub
     
-    'This function can return timing reports if desired; set the public DISPLAY_TIMINGS constant to TRUE to enable.
+    'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
+    ' but disabled for BETA and PRODUCTION builds; see the
     Dim startTime As Double
-    If DISPLAY_TIMINGS Then startTime = Timer
+    If g_DisplayTimingReports Then startTime = Timer
     
     'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
     zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
@@ -265,7 +266,7 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     'Pass control to the viewport renderer, which will handle the final compositing
     RenderViewport srcImage, dstCanvas
     
-    If DISPLAY_TIMINGS Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"
+    If g_DisplayTimingReports Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"
     
 End Sub
 

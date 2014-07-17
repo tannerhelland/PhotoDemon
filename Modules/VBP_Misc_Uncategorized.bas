@@ -216,11 +216,30 @@ Public Function getPhotoDemonNameAndVersion() As String
         
     Else
     
-        'Odd-numbered development releases of the pattern X.9 are betas for the next major version, e.g. (X+1).0
+        'Odd-numbered development releases of the pattern X.9 are production builds for the next major version, e.g. (X+1).0
+        
+        'Build state can be retrieved from the public const PD_BUILD_QUALITY
+        Dim buildStateString As String
+        
+        Select Case PD_BUILD_QUALITY
+        
+            Case PD_PRE_ALPHA
+                buildStateString = g_Language.TranslateMessage("pre-alpha")
+            
+            Case PD_ALPHA
+                buildStateString = g_Language.TranslateMessage("alpha")
+            
+            Case PD_BETA
+                buildStateString = g_Language.TranslateMessage("beta")
+        
+        End Select
+        
+        'Assemble a full title string, while handling the special case of .9 version numbers, which serve as production
+        ' builds for the next .0 release.
         If App.Minor = 9 Then
-            getPhotoDemonNameAndVersion = App.Title & " " & CStr(App.Major + 1) & ".0 beta (build " & CStr(App.Revision) & ")"
+            getPhotoDemonNameAndVersion = App.Title & " " & CStr(App.Major + 1) & ".0 " & buildStateString & " (build " & CStr(App.Revision) & ")"
         Else
-            getPhotoDemonNameAndVersion = App.Title & " " & App.Major & "." & CStr(App.Minor + 1) & " beta (build " & CStr(App.Revision) & ")"
+            getPhotoDemonNameAndVersion = App.Title & " " & App.Major & "." & CStr(App.Minor + 1) & " " & buildStateString & " (build " & CStr(App.Revision) & ")"
         End If
         
     End If

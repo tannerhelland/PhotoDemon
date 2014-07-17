@@ -221,7 +221,7 @@ Private Sub Form_Load()
     GenerateThankyou ""
     GenerateThankyou ""
     GenerateThankyou ""
-    GenerateThankyou "PhotoDemon " & App.Major & "." & App.Minor & "." & App.Revision, "©2014 Tanner Helland and contributors"
+    GenerateThankyou getPhotoDemonNameAndVersion(), "©2014 Tanner Helland and contributors"
     GenerateThankyou g_Language.TranslateMessage("the fast, free, portable photo editor"), ""
     GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""

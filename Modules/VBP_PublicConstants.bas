@@ -1,9 +1,21 @@
 Attribute VB_Name = "Public_Constants"
 Option Explicit
 
-'Enable this constant if you want PhotoDemon to report time-to-completion for filters and effects.
-' DO NOT ENABLE THIS IN PRODUCTION BUILDS!
-Public Const DISPLAY_TIMINGS As Boolean = True
+Public Enum BUILD_QUALITY
+    PD_PRE_ALPHA = 0
+    PD_ALPHA = 1
+    PD_BETA = 2
+    PD_PRODUCTION = 3
+End Enum
+
+#If False Then
+    Const PD_PRE_ALPHA = 0, PD_ALPHA = 1, PD_BETA = 2, PD_PRODUCTION = 3
+#End If
+
+'Quality of the current build.  This value automatically dictates a number of behaviors throughout the program,
+' like reporting time-to-completion for effects and enabling detailed debug reports.  Do not change unless you
+' fully understand the consequences!
+Public Const PD_BUILD_QUALITY As Long = PD_ALPHA
 
 'Enable this constant if you want PhotoDemon to use experimental methods (when available).  This is helpful
 ' during debugging, but SHOULD NEVER BE ENABLED IN PRODUCTION BUILDS!
