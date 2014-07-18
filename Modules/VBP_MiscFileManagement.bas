@@ -13,6 +13,38 @@ Attribute VB_Name = "File_And_Path_Handling"
 
 Option Explicit
 
+'API calls for retrieving detailed date time for a given file
+Private Const MAX_PATH = 260
+Private Const INVALID_HANDLE_VALUE = -1
+
+Private Type WIN32_FIND_DATA
+    dwFileAttributes As Long
+    ftCreationTime As Currency
+    ftLastAccessTime As Currency
+    ftLastWriteTime As Currency
+    nFileSizeHigh As Long
+    nFileSizeLow As Long
+    dwReserved0 As Long
+    dwReserved1 As Long
+    cFileName As String * MAX_PATH
+    cAlternate As String * 14
+End Type
+
+Private Declare Function FindFirstFile Lib "kernel32" Alias "FindFirstFileA" (ByVal lpFileName As String, lpFindFileData As WIN32_FIND_DATA) As Long
+Private Declare Function FindNextFile Lib "kernel32" Alias "FindNextFileA" (ByVal hFindFile As Long, lpFindFileData As WIN32_FIND_DATA) As Long
+Private Declare Function FindClose Lib "kernel32" (ByVal hFindFile As Long) As Long
+Private Declare Function FileTimeToLocalFileTime Lib "kernel32" (ByRef lpFileTime As Currency, ByRef lpLocalFileTime As Currency) As Long
+
+' Difference between day zero for VB dates and Win32 dates (or #12-30-1899# - #01-01-1601#)
+Private Const rDayZeroBias As Double = 109205#   ' Abs(CDbl(#01-01-1601#))
+
+' 10000000 nanoseconds * 60 seconds * 60 minutes * 24 hours / 10000 comes to 86400000 (the 10000 adjusts for fixed point in Currency)
+Private Const rMillisecondPerDay As Double = 10000000# * 60# * 60# * 24# / 10000#
+
+'Min/max date values
+Private Const datMin As Date = #1/1/100#
+Private Const datMax As Date = #12/31/9999 11:59:59 PM#
+
 'Used to quickly check if a file (or folder) exists.  Thanks to Bonnie West's "Optimum FileExists Function"
 ' for this technique: http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1
 Private Const ERROR_SHARING_VIOLATION As Long = 32
@@ -421,4 +453,48 @@ Public Function TrimNull(ByVal origString As String) As String
        TrimNull = origString
     End If
   
+End Function
+
+'Retrieve the requested date type (creation, access, or last-modified time) of a file.
+' Thank you to http://vb.mvps.org/hardcore/html/filedatestimes.htm for this function.
+Public Function FileAnyDateTime(ByRef sPath As String, Optional ByRef datCreation As Date = datMin, Optional ByRef datAccess As Date = datMin) As Date
+    
+    ' Take the easy way if no optional arguments
+    If datCreation = datMin And datAccess = datMin Then
+        FileAnyDateTime = VBA.FileDateTime(sPath)
+        Exit Function
+    End If
+
+    Dim fnd As WIN32_FIND_DATA
+    Dim hFind As Long
+    
+    ' Get all three times in UDT
+    hFind = FindFirstFile(sPath, fnd)
+    If hFind = INVALID_HANDLE_VALUE Then Debug.Print "Requested file " & sPath & " was not found!"
+    FindClose hFind
+    
+    ' Convert them to Visual Basic format
+    datCreation = Win32ToVbTime(fnd.ftCreationTime)
+    datAccess = Win32ToVbTime(fnd.ftLastAccessTime)
+    FileAnyDateTime = Win32ToVbTime(fnd.ftLastWriteTime)
+    
+End Function
+
+'Sub function for FileAnyDateTime, above.  Once again, thank you to
+' http://vb.mvps.org/hardcore/html/filedatestimes.htm for the code.
+Private Function Win32ToVbTime(ft As Currency) As Date
+    
+    Dim ftl As Currency
+    
+    ' Call API to convert from UTC time to local time
+    If FileTimeToLocalFileTime(ft, ftl) Then
+        ' Local time is nanoseconds since 01-01-1601
+        ' In Currency that comes out as milliseconds
+        ' Divide by milliseconds per day to get days since 1601
+        ' Subtract days from 1601 to 1899 to get VB Date equivalent
+        Win32ToVbTime = CDate((ftl / rMillisecondPerDay) - rDayZeroBias)
+    Else
+        Debug.Print "FileTimeToLocalFileTime failed!"
+    End If
+    
 End Function
