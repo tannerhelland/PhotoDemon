@@ -460,13 +460,13 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
             r = dstImageData(QuickVal + 2, y)
             g = dstImageData(QuickVal + 1, y)
             b = dstImageData(QuickVal, y)
-            If qvDepth = 3 Then a = dstImageData(QuickVal + 3, y)
-        
+            If qvDepth = 4 Then a = dstImageData(QuickVal + 3, y)
+            
             'Store those RGBA values into their respective lookup "bin"
             rLookup(nearestPoint) = rLookup(nearestPoint) + r
             gLookUp(nearestPoint) = gLookUp(nearestPoint) + g
             bLookup(nearestPoint) = bLookup(nearestPoint) + b
-            If qvDepth = 3 Then aLookup(nearestPoint) = aLookup(nearestPoint) + a
+            If qvDepth = 4 Then aLookup(nearestPoint) = aLookup(nearestPoint) + a
             
             'Increment the count of all pixels who share this Voronoi point as their nearest point
             numPixels(nearestPoint) = numPixels(nearestPoint) + 1
@@ -508,7 +508,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
             rLookup(x) = dstImageData(QuickVal + 2, thisPoint.y)
             gLookUp(x) = dstImageData(QuickVal + 1, thisPoint.y)
             bLookup(x) = dstImageData(QuickVal, thisPoint.y)
-            If qvDepth = 3 Then aLookup(x) = dstImageData(QuickVal + 3, thisPoint.y)
+            If qvDepth = 4 Then aLookup(x) = dstImageData(QuickVal + 3, thisPoint.y)
         
         'The user wants us to find the average color for each cell.  This is effectively just a blur operation;
         ' for each bin in the lookup table, divide the total RGBA values by the number of pixels in that bin.
@@ -520,7 +520,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
                 rLookup(x) = rLookup(x) \ numPixelsCache
                 gLookUp(x) = gLookUp(x) \ numPixelsCache
                 bLookup(x) = bLookup(x) \ numPixelsCache
-                If qvDepth = 3 Then aLookup(x) = aLookup(x) \ numPixelsCache
+                If qvDepth = 4 Then aLookup(x) = aLookup(x) \ numPixelsCache
             End If
             
         End If
@@ -548,7 +548,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         r = rLookup(nearestPoint)
         g = gLookUp(nearestPoint)
         b = bLookup(nearestPoint)
-        If qvDepth = 3 Then a = aLookup(nearestPoint)
+        If qvDepth = 4 Then a = aLookup(nearestPoint)
         
         'If the user is using a custom edge value, we need to perform a number of extra calculations.  If they are
         ' just doing a generic filter, however, we can greatly shortcut the process.
@@ -635,7 +635,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         dstImageData(QuickVal + 2, y) = r
         dstImageData(QuickVal + 1, y) = g
         dstImageData(QuickVal, y) = b
-        If qvDepth = 3 Then dstImageData(QuickVal + 3, y) = a
+        If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = a
         
     Next y
         If (Not toPreview) Then
