@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -2490,14 +2490,44 @@ End Sub
 'UNLOAD EVERYTHING
 Private Sub Form_Unload(Cancel As Integer)
     
+    'FYI, this function includes a fair amount of debug code!
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Shutdown initiated"
+    #End If
+    
     'Release GDIPlus (if applicable)
-    If g_ImageFormats.GDIPlusEnabled Then releaseGDIPlus
+    If g_ImageFormats.GDIPlusEnabled Then
+        
+        releaseGDIPlus
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "GDI+ released"
+        #End If
+    
+    End If
     
     'Release ExifTool (if available)
-    If g_ExifToolEnabled Then terminateExifTool
+    If g_ExifToolEnabled Then
+        
+        terminateExifTool
+    
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ExifTool terminated"
+        #End If
+        
+    End If
     
     'Releast FreeImage (if available)
-    If Not (g_FreeImageHandle = 0) Then FreeLibrary g_FreeImageHandle
+    If Not (g_FreeImageHandle = 0) Then
+    
+        FreeLibrary g_FreeImageHandle
+    
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "FreeImage released"
+        #End If
+        
+    End If
     
     'Stop tracking hotkeys
     ctlAccelerator.Enabled = False
@@ -2540,6 +2570,10 @@ Private Sub Form_Unload(Cancel As Integer)
     'The very last thing we do before terminating is notify the Autosave handler that everything shut down correctly
     Autosave_Handler.purgeOldAutosaveData
     Autosave_Handler.notifyCleanShutdown
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Shutdown appears to be clean.  pdDebug will now be terminated."
+    #End If
     
 End Sub
 

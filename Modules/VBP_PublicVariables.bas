@@ -251,3 +251,7 @@ Public g_UndoCompressionLevel As Long
 '       timing for a variety of actions; BETA and PRODUCTION builds will not.  This can be overridden by changing the
 '       activation code in LoadTheProgram.
 Public g_DisplayTimingReports As Boolean
+
+'PhotoDemon's central debugger.  This class is accessed by pre-alpha, alpha, and beta builds, and it is used to log
+' generic debug messages on client PCs, which we can (hopefully) use to recreate crashes as necessary.
+Public pdDebug As pdDebugger

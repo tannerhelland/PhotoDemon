@@ -2364,9 +2364,7 @@ End Sub
 'Note that this function interacts closely with the matching LoadUndo function in the Loading module.  Any novel Undo diff types added
 ' here must also be mirrored there.
 Public Function saveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1) As Boolean
-
-    Debug.Print "UNDO LEVEL: " & g_UndoCompressionLevel
-
+    
     'What kind of Undo data we save is determined by the current processType.
     Select Case processType
     

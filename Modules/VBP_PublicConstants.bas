@@ -15,10 +15,16 @@ End Enum
 'Quality of the current build.  This value automatically dictates a number of behaviors throughout the program,
 ' like reporting time-to-completion for effects and enabling detailed debug reports.  Do not change unless you
 ' fully understand the consequences!
+'
+'IMPORTANT NOTE!  In conjunction with this constant, a compile-time constant called "DEBUGMODE" should be set to 1
+' for any non-production (release) builds.  This compile-time constant enables various conditional compilation
+' segments through the program, including the bulk of PD's debugging code.
+'
+' Obvious corollary: ALWAYS SET DEBUGMODE TO 0 IN PRODUCTION BUILDS!
 Public Const PD_BUILD_QUALITY As Long = PD_ALPHA
 
 'Enable this constant if you want PhotoDemon to use experimental methods (when available).  This is helpful
-' during debugging, but SHOULD NEVER BE ENABLED IN PRODUCTION BUILDS!
+' for triggering alternate code paths during debugging, but IT SHOULD NEVER BE ENABLED IN PRODUCTION BUILDS!
 Public Const PD_EXPERIMENTAL_MODE As Boolean = False
 
 'Identifier for pdImage data saved to file.  (ASCII characters "PDID", as hex, listed here in little-endian notation.)

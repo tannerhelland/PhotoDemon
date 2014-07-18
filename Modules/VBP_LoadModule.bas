@@ -125,6 +125,7 @@ Public Sub LoadTheProgram()
     Set g_ImageFormats = New pdFormats
     
     
+    
     '*************************************************************************************************************************************
     ' PhotoDemon works very well with multiple monitors.  Check for such a situation now.
     '*************************************************************************************************************************************
@@ -215,6 +216,19 @@ Public Sub LoadTheProgram()
     '
     'Now that this has been thoroughly tested, I'm postponing actual enabling of it until PD supports metadata editing.
     'If g_ExifToolEnabled Then writeTagDatabase
+    
+    
+    
+    '*************************************************************************************************************************************
+    ' If this is not a production build, initialize PhotoDemon's central debugger
+    '*************************************************************************************************************************************
+    
+    'We wait until after the translation and plugin engines are initialized; this allows us to report their information in the debug log
+    Set pdDebug = New pdDebugger
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.InitializeDebugger True
+    #End If
     
     
     

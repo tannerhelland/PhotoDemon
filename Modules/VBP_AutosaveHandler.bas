@@ -117,7 +117,7 @@ Public Function saveableImagesPresent() As Long
     ' is awesome, it automatically saves very nice Undo XML files that contain key data for each pdImage opened by the program.
     ' In the event of an unsafe shutdown, these XML files help us easily reconstruct any "lost" images.
     
-    'Note: the pattern of PhotoDemon's Undo XML summary files is:
+    'Note: as of July '14, the pattern of PhotoDemon's Undo XML summary files is:
     ' g_UserPreferences.GetTempPath & "~PDU_StackSummary_" & parentPDImage.imageID & "_.pdtmp"
     
     'Reset our XML detection arrays

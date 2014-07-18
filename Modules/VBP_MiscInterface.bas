@@ -1350,7 +1350,8 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         
     End If
     
-    'If the message request is for a novel string, display it.  Otherwise, exit now.
+    'If the message request is for a novel string (e.g. one that differs from the previous message request), display it.
+    ' Otherwise, exit now.
     If StrComp(m_PrevMessage, tmpDupeCheckString, vbBinaryCompare) <> 0 Then
     
         'Cache the contents of the untranslated message, so we can check for duplicates on the next message request
@@ -1359,14 +1360,16 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         Dim newString As String
         newString = mString
     
-        'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet
+        'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet.
+        ' This only happens for a few messages when the program is first loaded, and at some point, I will eventually getting
+        ' around to removing them entirely.
         If (Not (g_Language Is Nothing)) Then
             If g_Language.readyToTranslate Then
                 If g_Language.translationActive Then newString = g_Language.TranslateMessage(mString)
             End If
         End If
         
-        'Once the message is translated, we can add back in any optional parameters
+        'Once the message is translated, we can add back in any optional text supplied in the ParamArray
         If Not IsMissing(ExtraText) Then
         
             For i = LBound(ExtraText) To UBound(ExtraText)
@@ -1375,16 +1378,19 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         
         End If
         
+        'While macros are active, append a "Recording" message to help orient ht euser
         If MacroStatus = MacroSTART Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
         
         'Post the message to the screen
         If MacroStatus <> MacroBATCH Then FormMain.mainCanvas(0).displayCanvasMessage newString
         
-        'Update the global "previous message" string
+        'Update the global "previous message" string, so external functions can access it.
         g_LastPostedMessage = newString
         
-        'In the IDE, mirror the message output to the Debug window
-        If Not g_IsProgramCompiled Then Debug.Print newString
+        'In debug modes, mirror the message output to PD's central Debugger
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction newString, True
+        #End If
         
         'If we're logging program messages, open up a log file and dump the message there
         If g_LogProgramMessages Then
