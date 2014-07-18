@@ -30,7 +30,72 @@ Private Type OSVERSIONINFO
     szCSDVersion As String * 128
 End Type
 
-Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (ByRef lpVersionInformation As OSVERSIONINFO) As Long
+Private Type OSVERSIONINFOEX
+    dwOSVersionInfoSize As Long
+    dwMajorVersion As Long
+    dwMinorVersion As Long
+    dwBuildNumber As Long
+    dwPlatformId As Long
+    szCSDVersion As String * 128
+    wServicePackMajor  As Integer
+    wServicePackMinor  As Integer
+    wSuiteMask         As Integer
+    wProductType       As Byte
+    wReserved          As Byte
+End Type
+
+Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (ByRef lpVersionInformation As OSVERSIONINFOEX) As Long
+
+'Type and call for receiving additional OS data (32/64 bit for PD's purposes)
+Private Type SYSTEM_INFO
+    wProcessorArchitecture        As Integer
+    wReserved                     As Integer
+    dwPageSize                    As Long
+    lpMinimumApplicationAddress   As Long
+    lpMaximumApplicationAddress   As Long
+    dwActiveProcessorMask         As Long
+    dwNumberOfProcessors          As Long
+    dwProcessorType               As Long
+    dwAllocationGranularity       As Long
+    wProcessorLevel               As Integer
+    wProcessorRevision            As Integer
+End Type
+
+Private Const VER_NT_WORKSTATION As Long = &H1&
+
+Private Declare Sub GetNativeSystemInfo Lib "kernel32" (ByRef lpSystemInfo As SYSTEM_INFO)
+
+'Constants for GetSystemInfo and GetNativeSystemInfo API functions (SYSTEM_INFO structure)
+Private Const PROCESSOR_ARCHITECTURE_AMD64      As Long = 9         'x64 (AMD or Intel)
+Private Const PROCESSOR_ARCHITECTURE_IA64       As Long = 6         'Intel Itanium Processor Family (IPF)
+Private Const PROCESSOR_ARCHITECTURE_INTEL      As Long = 0
+Private Const PROCESSOR_ARCHITECTURE_UNKNOWN    As Long = &HFFFF&
+
+'Query for specific processor features
+Private Declare Function IsProcessorFeaturePresent Lib "kernel32" (ByVal ProcessorFeature As Long) As Boolean
+
+Private Const PF_3DNOW_INSTRUCTIONS_AVAILABLE As Long = 7
+Private Const PF_MMX_INSTRUCTIONS_AVAILABLE As Long = 3
+Private Const PF_NX_ENABLED As Long = 12
+Private Const PF_SSE3_INSTRUCTIONS_AVAILABLE As Long = 13
+Private Const PF_VIRT_FIRMWARE_ENABLED As Long = 21
+Private Const PF_XMMI_INSTRUCTIONS_AVAILABLE As Long = 6
+Private Const PF_XMMI64_INSTRUCTIONS_AVAILABLE As Long = 10
+
+'Query system memory counts and availability
+Private Type MemoryStatusEx
+    dwLength As Long
+    dwMemoryLoad As Long
+    ullTotalPhys As Currency
+    ullAvailPhys As Currency
+    ullTotalPageFile As Currency
+    ullAvailPageFile As Currency
+    ullTotalVirtual As Currency
+    ullAvailVirtual As Currency
+    ullAvailExtendedVirtual As Currency
+End Type
+
+Private Declare Function GlobalMemoryStatusEx Lib "kernel32" (ByRef lpBuffer As MemoryStatusEx) As Long
 
 'Types and calls necessary for calculating PhotoDemon's current memory usage
 Private Type PROCESS_MEMORY_COUNTERS
@@ -422,7 +487,7 @@ End Sub
 'Check for a version >= Vista.
 Public Function getVistaOrLaterStatus() As Boolean
 
-    Dim tOSVI As OSVERSIONINFO
+    Dim tOSVI As OSVERSIONINFOEX
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
@@ -433,12 +498,153 @@ End Function
 'Check for a version >= Win 7
 Public Function getWin7OrLaterStatus() As Boolean
 
-    Dim tOSVI As OSVERSIONINFO
+    Dim tOSVI As OSVERSIONINFOEX
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
     getWin7OrLaterStatus = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 1))
 
+End Function
+
+'Return the current OS version as a string.  (At present, this data is added to debug logs.)
+Public Function getOSVersionAsString() As String
+    
+    'Retrieve OS version data
+    Dim tOSVI As OSVERSIONINFOEX
+    tOSVI.dwOSVersionInfoSize = Len(tOSVI)
+    GetVersionEx tOSVI
+    
+    Dim osName As String
+    
+    Select Case tOSVI.dwMajorVersion
+    
+        Case 6
+            
+            Select Case tOSVI.dwMinorVersion
+            
+                Case 3
+                    If (tOSVI.wProductType And VER_NT_WORKSTATION) <> 0 Then
+                        osName = "Windows 8.1"
+                    Else
+                        osName = "Windows Server 2012 R2"
+                    End If
+                    
+                Case 2
+                    If (tOSVI.wProductType And VER_NT_WORKSTATION) <> 0 Then
+                        osName = "Windows 8"
+                    Else
+                        osName = "Windows Server 2012"
+                    End If
+                    
+                Case 1
+                    If (tOSVI.wProductType And VER_NT_WORKSTATION) <> 0 Then
+                        osName = "Windows 7"
+                    Else
+                        osName = "Windows Server 2008 R2"
+                    End If
+                
+                Case 0
+                    If (tOSVI.wProductType And VER_NT_WORKSTATION) <> 0 Then
+                        osName = "Windows Vista"
+                    Else
+                        osName = "Windows Server 2008"
+                    End If
+            
+            End Select
+        
+        Case 5
+            osName = "Windows XP"
+    
+    End Select
+    
+    'Retrieve 32/64 bit OS version
+    Dim osBitness As String
+    
+    Dim tSYSINFO As SYSTEM_INFO
+    Call GetNativeSystemInfo(tSYSINFO)
+    
+    Select Case tSYSINFO.wProcessorArchitecture
+    
+        Case PROCESSOR_ARCHITECTURE_AMD64
+            osBitness = " 64-bit "
+            
+        Case PROCESSOR_ARCHITECTURE_IA64
+            osBitness = " Itanium "
+            
+        Case Else
+            osBitness = " 32-bit "
+    
+    End Select
+    
+    Dim buildString As String
+    buildString = TrimNull(tOSVI.szCSDVersion)
+    
+    With tOSVI
+        getOSVersionAsString = osName & " " & IIf(Len(buildString) > 0, buildString, "") & osBitness & "(" & .dwMajorVersion & "." & .dwMinorVersion & "." & .dwBuildNumber & ")"
+    End With
+
+End Function
+
+'Return the number of logical cores on this system
+Public Function getNumLogicalCores() As Long
+    
+    Dim tSYSINFO As SYSTEM_INFO
+    Call GetNativeSystemInfo(tSYSINFO)
+    
+    getNumLogicalCores = tSYSINFO.dwNumberOfProcessors
+
+End Function
+
+'Return a list of PD-relevant processor features, in string format
+Public Function getProcessorFeatures() As String
+
+    Dim listFeatures As String
+    listFeatures = ""
+    
+    If IsProcessorFeaturePresent(PF_3DNOW_INSTRUCTIONS_AVAILABLE) Then listFeatures = listFeatures & "3DNow!" & ", "
+    If IsProcessorFeaturePresent(PF_MMX_INSTRUCTIONS_AVAILABLE) Then listFeatures = listFeatures & "MMX" & ", "
+    If IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE) Then listFeatures = listFeatures & "SSE" & ", "
+    If IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE) Then listFeatures = listFeatures & "SSE2" & ", "
+    If IsProcessorFeaturePresent(PF_SSE3_INSTRUCTIONS_AVAILABLE) Then listFeatures = listFeatures & "SSE3" & ", "
+    If IsProcessorFeaturePresent(PF_NX_ENABLED) Then listFeatures = listFeatures & "DEP" & ", "
+    If IsProcessorFeaturePresent(PF_VIRT_FIRMWARE_ENABLED) Then listFeatures = listFeatures & "Virtualization" & ", "
+    
+    'Trim the trailing comma and blank space
+    If Len(listFeatures) > 0 Then
+        getProcessorFeatures = Left$(listFeatures, Len(listFeatures) - 2)
+    Else
+        getProcessorFeatures = "(none)"
+    End If
+    
+End Function
+
+'Query total system RAM
+Public Function getTotalSystemRAM() As String
+
+    Dim memStatus As MemoryStatusEx
+    memStatus.dwLength = Len(memStatus)
+    Call GlobalMemoryStatusEx(memStatus)
+    
+    getTotalSystemRAM = CStr(Int(CDbl(memStatus.ullTotalPhys / 1024) * 10)) & " MB"
+    
+End Function
+
+'Query RAM available to PD
+Public Function getRAMAvailableToPD() As String
+
+    Dim memStatus As MemoryStatusEx
+    memStatus.dwLength = Len(memStatus)
+    Call GlobalMemoryStatusEx(memStatus)
+    
+    Dim tmpString As String
+    
+    tmpString = CStr(Int(CDbl(memStatus.ullTotalVirtual / 1024) * 10)) & " MB"
+    tmpString = tmpString & " (real), "
+    tmpString = tmpString & CStr(Int(CDbl(memStatus.ullAvailPageFile / 1024) * 10)) & " MB"
+    tmpString = tmpString & " (hypothetical)"
+    
+    getRAMAvailableToPD = tmpString
+    
 End Function
 
 'Function for returning PhotoDemon's current memory usage.  This is a modified version of code first published by Mike Raynder.
@@ -571,17 +777,19 @@ End Function
 
 'Used to extract the EXE name from a running process
 Private Function GetExeName(ByVal sPath As String) As String
-  Dim lPos1 As Long
-  Dim lPos2 As Long
   
-  On Error Resume Next
-  
-  lPos1 = InStr(1, sPath, Chr$(0))
-  lPos2 = InStrRev(sPath, "\")
-  If lPos1 > 0 Then
-    GetExeName = UCase$(Mid$(sPath, lPos2 + 1, lPos1 - lPos2))
-  Else
-    GetExeName = UCase$(Mid$(sPath, lPos2 + 1))
-  End If
+    Dim lPos1 As Long
+    Dim lPos2 As Long
+      
+    On Error Resume Next
+      
+    lPos1 = InStr(1, sPath, Chr$(0))
+    lPos2 = InStrRev(sPath, "\")
+    
+    If lPos1 > 0 Then
+        GetExeName = UCase$(Mid$(sPath, lPos2 + 1, lPos1 - lPos2))
+    Else
+        GetExeName = UCase$(Mid$(sPath, lPos2 + 1))
+    End If
   
 End Function
