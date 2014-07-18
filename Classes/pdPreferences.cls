@@ -80,6 +80,12 @@ Private LanguagePath As String
 Private UserLanguagePath As String
 Private SelectionPath As String
 Private PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
+Private DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps are placed here.
+
+'Get the current Debug path
+Public Function getDebugPath() As String
+    getDebugPath = DebugPath
+End Function
 
 'Get the current Preset path
 Public Function getPresetPath() As String
@@ -199,11 +205,17 @@ Public Sub initializePaths()
     IconPath = DataPath & "Icons\"
     If Not DirectoryExist(IconPath) Then MkDir IconPath
         
+    DebugPath = DataPath & "Debug\"
+    If Not DirectoryExist(DebugPath) Then MkDir DebugPath
+    
     'The user preferences file is also located in the \Data subdirectory
     PreferencesPath = DataPath & PROGRAMNAME & "_settings.xml"
     
     'Historically, language files were stored in a different location.  We need to move any valid language files from
     ' the old language directory to the new language directory.
+    ' (NOTE: this is no longer necessary, but in case it becomes necessary to move language files in the future, I have
+    '         left this code here as a helpful reminder.)
+    
     'On Error Resume Next
     'Dim chkFile As String
     '
