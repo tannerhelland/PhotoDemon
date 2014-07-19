@@ -60,6 +60,13 @@ Private m_logPath As String
 ' the case of a debugger, we need the file kept as up-to-date as possible in case of crashes).
 Private m_FileHandle As Integer
 
+'For technical reasons (how's that for nondescript), the public instance of this class cannot be formally initialized
+' until fairly late into PD's load process.  However, there are technical details that would be nice to know prior to
+' that point.  To work around this, I allow the class to log messages prior to being formally initialized.  When it
+' *is* finally initialized, it will dump all the cached messages to the log file, with their original timestamps.
+Dim backupMessages() As String
+Dim numBackupMessages As Long
+
 'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
 ' this session's data, among other things, so don't attempt to use the class until this has been called!
 ' Returns: TRUE if successful, FALSE otherwise.
@@ -86,7 +93,13 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         
         'If a log file already exists at that location, remove it.  (Only 10 log files are allowed, so if we reach 11,
         ' the oldest one will be overwritten.)
-        If FileExist(m_logPath) Then Kill m_logPath
+        Dim overwroteOldLog As Boolean
+        overwroteOldLog = False
+        
+        If FileExist(m_logPath) Then
+            Kill m_logPath
+            overwroteOldLog = True
+        End If
         
         'Build a new log file, and populate it with some default information.
         m_logDatatoFile = True
@@ -95,21 +108,26 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         
         Open m_logPath For Append As #m_FileHandle
             Print #m_FileHandle, "**********************************************"
-            Print #m_FileHandle, "PhotoDemon Custom Debug Log #" & m_debuggerID
+            Print #m_FileHandle, ""
+            Print #m_FileHandle, "-- PHOTODEMON DEBUG LOG #" & m_debuggerID & " --"
+            Print #m_FileHandle, ""
             Print #m_FileHandle, "Date: " & Date
             Print #m_FileHandle, "Time: " & Time
             Print #m_FileHandle, "Session ID: " & g_SessionID
             Print #m_FileHandle, "Program compiled: " & CStr(g_IsProgramCompiled)
+            Print #m_FileHandle, "Log is original: " & CStr(Not overwroteOldLog)
             Print #m_FileHandle, ""
             
             Print #m_FileHandle, "-- SYSTEM INFORMATION --"
+            Print #m_FileHandle, ""
             Print #m_FileHandle, "OS Version: " & OS_Interactions.getOSVersionAsString
             Print #m_FileHandle, "Processor cores (logical): " & OS_Interactions.getNumLogicalCores
             Print #m_FileHandle, "Processor features: " & OS_Interactions.getProcessorFeatures
             Print #m_FileHandle, "System RAM: " & OS_Interactions.getTotalSystemRAM
             Print #m_FileHandle, "Max memory available to PhotoDemon: " & OS_Interactions.getRAMAvailableToPD
             Print #m_FileHandle, ""
-            Print #m_FileHandle, "-- PRORGRAM INFORMATION -- "
+            Print #m_FileHandle, "-- PROGRAM INFORMATION -- "
+            Print #m_FileHandle, ""
             Print #m_FileHandle, "Version: " & getPhotoDemonNameAndVersion
             Print #m_FileHandle, "Translations active: " & CStr(g_Language.translationActive())
             Print #m_FileHandle, "Language in use: " & CStr(g_Language.getCurrentLanguage())
@@ -120,6 +138,8 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             Print #m_FileHandle, "EZTwain enabled: " & CStr(g_ScanEnabled)
             Print #m_FileHandle, "PngQuant enabled: " & CStr(g_ImageFormats.pngQuantEnabled)
             Print #m_FileHandle, ""
+            Print #m_FileHandle, "**********************************************"
+            Print #m_FileHandle, ""
             Print #m_FileHandle, "-- SESSION REPORT --"
             
         'Close the file to force an immediate write
@@ -128,10 +148,34 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
     End If
     
     m_debuggerActive = True
-    InitializeDebugger = True
     
     'Log an initial event, to note that debug mode was successfully initiated
     Me.LogAction "Debugger initialized successfully"
+    
+    'If messages were logged prior to this class being formally initialized, dump them now
+    If (numBackupMessages > 0) And (writeLogDataToFile) Then
+    
+        Me.LogAction "(The following " & numBackupMessages & " actions were logged prior to initialization; "
+        Me.LogAction " they are presented here with their original timestamps.)"
+        
+        m_FileHandle = FreeFile
+        Open m_logPath For Append As #m_FileHandle
+        
+        Dim i As Long
+        For i = 0 To numBackupMessages - 1
+            Print #m_FileHandle, backupMessages(i)
+        Next i
+        
+        Close #m_FileHandle
+        
+        Me.LogAction "(End of pre-initialization data)"
+        
+        Erase backupMessages
+        numBackupMessages = 0
+        
+    End If
+    
+    InitializeDebugger = True
     
 End Function
 
@@ -198,21 +242,21 @@ End Function
 ' Input: debug string, and a BOOL indicating whether the message comes from PD's central user-visible "Message()" function
 Public Sub LogAction(ByVal actionString As String, Optional ByVal isUserVisibleMessage As Boolean = False)
 
+    'Generate a timestamp for this request
+    Dim curTime As String
+    curTime = Format$(Now, "ttttt", vbUseSystemDayOfWeek, vbUseSystem)
+
+    'Modify the string to reflect whether it's a DEBUG message or user-visible MESSAGE() message
+    If isUserVisibleMessage Then
+        actionString = "(M) " & curTime & " | " & actionString
+    Else
+        actionString = "-D- " & curTime & " | " & actionString
+    End If
+
+    'Mirror output to the Immediate window
+    Debug.Print actionString
+    
     If m_debuggerActive Then
-    
-        'Generate a timestamp for this request
-        Dim curTime As String
-        curTime = Format$(Now, "ttttt", vbUseSystemDayOfWeek, vbUseSystem)
-    
-        'Modify the string to reflect whether it's a DEBUG message or user-visible MESSAGE() message
-        If isUserVisibleMessage Then
-            actionString = "(M) " & curTime & " | " & actionString
-        Else
-            actionString = "-D- " & curTime & " | " & actionString
-        End If
-    
-        'Mirror output to the Immediate window
-        Debug.Print actionString
         
         'If file logging is active, also mirror output to this session's log file
         If m_logDatatoFile Then
@@ -225,14 +269,29 @@ Public Sub LogAction(ByVal actionString As String, Optional ByVal isUserVisibleM
         End If
     
     Else
+    
+        'As described at the top of this class, I like to cache certain relevant messages before the main loader is able to
+        ' formally initialize this class.  When that happens, we cache the messages in a temporary array; when the class is
+        ' formally initialized, we'll dump that array out to file.
+        backupMessages(numBackupMessages) = actionString
+        numBackupMessages = numBackupMessages + 1
+        
+        If numBackupMessages > UBound(backupMessages) Then ReDim Preserve backupMessages(0 To numBackupMessages * 2 - 1) As String
+        
         Debug.Print "You can't use the pdDebugger class's .LogAction function without first initializing the class via InitializeDebugger!"
+        
     End If
 
 End Sub
 
 Private Sub Class_Initialize()
+    
     m_debuggerActive = False
     m_logDatatoFile = False
+    
+    ReDim backupMessages(0 To 15) As String
+    numBackupMessages = 0
+
 End Sub
 
 Private Sub Class_Terminate()

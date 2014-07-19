@@ -36,6 +36,10 @@ Public Sub LoadTheProgram()
     'If the program is in pre-alpha or alpha state, enable timing reports.
     If (PD_BUILD_QUALITY = PD_PRE_ALPHA) Or (PD_BUILD_QUALITY = PD_ALPHA) Then g_DisplayTimingReports = True
     
+    'Regardless of debug mode or not, we instantiate a pdDebug instance.  It will only be interacted with if the program is compiled
+    ' with DEBUGMODE = 1, however.
+    Set pdDebug = New pdDebugger
+    
     'During development, I find it helpful to profile PhotoDemon's startup process.  Timing functions like this can be commented out
     ' without harming anything.
     Dim perfCheck As pdProfiler
@@ -224,8 +228,6 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     
     'We wait until after the translation and plugin engines are initialized; this allows us to report their information in the debug log
-    Set pdDebug = New pdDebugger
-    
     #If DEBUGMODE = 1 Then
         pdDebug.InitializeDebugger True
     #End If
