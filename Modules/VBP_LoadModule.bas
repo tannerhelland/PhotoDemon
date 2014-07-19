@@ -2058,6 +2058,11 @@ Public Sub LoadMessage(ByVal sMsg As String)
     Dim warnIDE As String
     warnIDE = "(IDE NOT RECOMMENDED - PLEASE COMPILE)"
     
+    'In debug mode, mirror message output to PD's central Debugger
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction sMsg, True
+    #End If
+    
     'Load messages are translatable, but we don't want to translate them if the translation object isn't ready yet
     If (Not (g_Language Is Nothing)) Then
         If g_Language.readyToTranslate Then
