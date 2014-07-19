@@ -117,20 +117,25 @@ Private Sub Class_Initialize()
     'Load the monitors collection
     Refresh
     
-    'Provide some helpful debug info while in the IDE
-    If Not g_IsProgramCompiled Then
-    
-        Dim i As Long
-            
-        For i = 1 To Monitors.Count
-            If Monitors(i).isPrimary Then
-                Debug.Print "Found primary monitor: " & Monitors(i).getMonitorSizeAsString & " " & Monitors(i).getMonitorResolutionAsString & " " & Monitors(i).getBestMonitorName & " (powered by " & Monitors(i).Description & ")"
-            Else
-                Debug.Print "Found secondary monitor: " & Monitors(i).getMonitorSizeAsString & " " & Monitors(i).getMonitorResolutionAsString & " " & Monitors(i).getBestMonitorName & " (powered by " & Monitors(i).Description & ")"
-        End If
-        Next i
+    'If this is a non-production release, note our discovered monitors in the debug log; this can be a big help when tracking
+    ' down strange issues.
+    #If DEBUGMODE = 1 Then
+                
+        Dim i As Long, prefixText As String
         
-    End If
+        For i = 1 To Monitors.Count
+            
+            If Monitors(i).isPrimary Then
+                prefixText = "Found primary monitor: "
+            Else
+                prefixText = "Found secondary monitor: "
+            End If
+            
+            pdDebug.LogAction prefixText & Monitors(i).getMonitorSizeAsString & " " & Monitors(i).getMonitorResolutionAsString & " " & Monitors(i).getBestMonitorName & " (powered by " & Monitors(i).Description & ")"
+            
+        Next i
+              
+    #End If
                     
 End Sub
 
