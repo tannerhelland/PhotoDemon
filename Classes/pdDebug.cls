@@ -155,8 +155,8 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
     'If messages were logged prior to this class being formally initialized, dump them now
     If (numBackupMessages > 0) And (writeLogDataToFile) Then
     
-        Me.LogAction "(The following " & numBackupMessages & " actions were logged prior to initialization; "
-        Me.LogAction " they are presented here with their original timestamps.)"
+        Me.LogAction "(The following " & numBackupMessages & " actions were logged prior to initialization.)"
+        Me.LogAction "(They are presented here with their original timestamps.)"
         
         m_FileHandle = FreeFile
         Open m_logPath For Append As #m_FileHandle

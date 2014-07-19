@@ -1353,7 +1353,12 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     'If the message request is for a novel string (e.g. one that differs from the previous message request), display it.
     ' Otherwise, exit now.
     If StrComp(m_PrevMessage, tmpDupeCheckString, vbBinaryCompare) <> 0 Then
-    
+        
+        'In debug mode, mirror the message output to PD's central Debugger
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction tmpDupeCheckString, True
+        #End If
+        
         'Cache the contents of the untranslated message, so we can check for duplicates on the next message request
         m_PrevMessage = tmpDupeCheckString
                 
@@ -1386,12 +1391,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         
         'Update the global "previous message" string, so external functions can access it.
         g_LastPostedMessage = newString
-        
-        'In debug modes, mirror the message output to PD's central Debugger
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction newString, True
-        #End If
-        
+                
         'If we're logging program messages, open up a log file and dump the message there
         If g_LogProgramMessages Then
             Dim fileNum As Integer
