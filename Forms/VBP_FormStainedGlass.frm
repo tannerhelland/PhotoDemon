@@ -430,7 +430,9 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     ReDim aLookup(0 To numVoronoiPoints) As Long
     ReDim numPixels(0 To numVoronoiPoints) As Long
     ReDim vLookup(initX To finalX, initY To finalY) As Long
-    ReDim vLookup2(initX To finalX, initY To finalY) As Long
+    If shadeQuality > SHADE_F1 Then
+        ReDim vLookup2(initX To finalX, initY To finalY) As Long
+    End If
     
     'Color values must be individually processed to account for shading, so we need to declare them
     Dim r As Long, g As Long, b As Long, a As Long
@@ -449,7 +451,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         
         'Store the nearest and second-nearest point indices in our master lookup table
         vLookup(x, y) = nearestPoint
-        vLookup2(x, y) = secondNearestPoint
+        If shadeQuality > SHADE_F1 Then vLookup2(x, y) = secondNearestPoint
         
         'If the user has elected to recolor each cell using the average color for the cell, we need to track
         ' color values.  This is no different from a histogram approach, except in this case, each histogram
@@ -531,7 +533,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     Erase numPixels
     
     'Shading requires a number of specialized variables
-    Dim shadeAdjustment As Double, shadeThreshold As Double, edgeAdjustment As Double, maxDistance As Double
+    Dim shadeAdjustment As Single, shadeThreshold As Single, edgeAdjustment As Single, maxDistance As Single
             
     'Loop through the image, changing colors to match our calculated Voronoi values
     For x = initX To finalX
@@ -542,7 +544,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         ' (NOTE: this step could be rewritten to simply re-request a distance calculation from the Voronoi class,
         '        but that would slow the function considerably.)
         nearestPoint = vLookup(x, y)
-        secondNearestPoint = vLookup2(x, y)
+        If shadeQuality > SHADE_F1 Then secondNearestPoint = vLookup2(x, y)
         
         'Retrieve the RGB values from the relevant Voronoi cell bin
         r = rLookup(nearestPoint)
