@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Custom Debug helper class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 17/July/14
-'Last updated: 17/July/14
-'Last update: initial build
+'Last updated: 20/July/14
+'Last update: continuing work on initial build
 '
 'As PhotoDemon has grown more complex, debugging has become correspondingly difficult.  Debugging on my local PC is fine
 ' thanks to the IDE, but a lot of behaviors are different in the compiled .exe, and user PCs are another problem entirely.
@@ -46,10 +46,11 @@ Public Enum PD_DEBUG_MESSAGES
     PDM_USER_MESSAGE = 1
     PDM_MEM_REPORT = 2
     PDM_HDD_REPORT = 3
+    PDM_PROCESSOR = 4
 End Enum
 
 #If False Then
-    Const PDM_NORMAL = 0, PDM_USER_MESSAGE = 1, PDM_MEM_REPORT = 2, PDM_HDD_REPORT = 3
+    Const PDM_NORMAL = 0, PDM_USER_MESSAGE = 1, PDM_MEM_REPORT = 2, PDM_HDD_REPORT = 3, PDM_PROCESSOR = 4
 #End If
 
 'Has this instance been initialized?  This will be set to true if the InitializeDebugger function has executed successfully.
@@ -288,7 +289,10 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
             prefixString = "*RAM*"
         
         Case PDM_HDD_REPORT
-            prefixString = "#HDD#"
+            prefixString = "^HDD^"
+            
+        Case PDM_PROCESSOR
+            prefixString = "#PRC#"
     
     End Select
     
@@ -311,7 +315,7 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         If deltaMem > 0 Then deltaMemString = "+" & deltaMemString
         
         'Ignore the supplied action string, and create our own
-        actionString = "CURRENT: " & curMemUsageString & ", DELTA: " & deltaMemString & "  (session max: " & maxMemUsageString & ")"
+        actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString
         
         'Update the module-level last mem check value
         m_lastMemCheck = curMemUsage

@@ -96,6 +96,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     If (Not showDialog) Then
         If (createUndo = UNDO_EVERYTHING) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_LAYER) Then Screen.MousePointer = vbHourglass
     End If
+    
+    #If DEBUGMODE = 1 Then
+        If showDialog Then
+            pdDebug.LogAction "Show """ & processID & """ dialog", PDM_PROCESSOR
+        Else
+            pdDebug.LogAction """" & processID & """: " & processParameters, PDM_PROCESSOR
+        End If
+    #End If
         
     'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data from the
     ' LastEffectsCall object; this simple approach lets us repeat the last action effortlessly!
