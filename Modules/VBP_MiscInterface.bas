@@ -1356,7 +1356,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         
         'In debug mode, mirror the message output to PD's central Debugger
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction tmpDupeCheckString, True
+            pdDebug.LogAction tmpDupeCheckString, PDM_USER_MESSAGE
         #End If
         
         'Cache the contents of the untranslated message, so we can check for duplicates on the next message request

@@ -39,6 +39,19 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Multiple message types can be logged by the class.  While these don't have to be used, they make it much easier to
+' quickly scan the final text output.
+Public Enum PD_DEBUG_MESSAGES
+    PDM_NORMAL = 0
+    PDM_USER_MESSAGE = 1
+    PDM_MEM_REPORT = 2
+    PDM_HDD_REPORT = 3
+End Enum
+
+#If False Then
+    Const PDM_NORMAL = 0, PDM_USER_MESSAGE = 1, PDM_MEM_REPORT = 2, PDM_HDD_REPORT = 3
+#End If
+
 'Has this instance been initialized?  This will be set to true if the InitializeDebugger function has executed successfully.
 Private m_debuggerActive As Boolean
 
@@ -170,6 +183,7 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         
         Me.LogAction "(End of pre-initialization data)"
         
+        'We don't need the backup messages any more, so we are free to release them into the ether
         Erase backupMessages
         numBackupMessages = 0
         
@@ -240,25 +254,41 @@ End Function
 'Replace Debug.Print with this LogAction sub.  Basically it will mirror the output to the Immediate window, and add
 ' a new log line to the relevant debug file in the program's /Data folder.
 ' Input: debug string, and a BOOL indicating whether the message comes from PD's central user-visible "Message()" function
-Public Sub LogAction(ByVal actionString As String, Optional ByVal isUserVisibleMessage As Boolean = False)
+Public Sub LogAction(ByVal actionString As String, Optional ByVal debugMsgType As PD_DEBUG_MESSAGES = PDM_NORMAL)
 
     'Generate a timestamp for this request
     Dim curTime As String
     curTime = Format$(Now, "ttttt", vbUseSystemDayOfWeek, vbUseSystem)
 
     'Modify the string to reflect whether it's a DEBUG message or user-visible MESSAGE() message
-    If isUserVisibleMessage Then
-        actionString = "(M) " & curTime & " | " & actionString
-    Else
-        actionString = "-D- " & curTime & " | " & actionString
-    End If
+    Dim prefixString As String
+    
+    Select Case debugMsgType
+    
+        Case PDM_NORMAL
+            prefixString = "-DBG-"
+            
+        Case PDM_USER_MESSAGE
+            prefixString = "(USM)"
+        
+        Case PDM_MEM_REPORT
+            prefixString = "*RAM*"
+        
+        Case PDM_HDD_REPORT
+            prefixString = "#HDD#"
+    
+    End Select
+    
+    'Add a timestamp
+    actionString = prefixString & " " & curTime & " | " & actionString
 
     'Mirror output to the Immediate window
     Debug.Print actionString
     
+    'If file logging is active, also mirror output to this session's log file
     If m_debuggerActive Then
         
-        'If file logging is active, also mirror output to this session's log file
+        
         If m_logDatatoFile Then
         
             m_FileHandle = FreeFile
