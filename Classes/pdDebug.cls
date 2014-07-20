@@ -73,12 +73,19 @@ Private m_logPath As String
 ' the case of a debugger, we need the file kept as up-to-date as possible in case of crashes).
 Private m_FileHandle As Integer
 
+'Number of unique events logged this session.
+Private m_NumLoggedEvents As Long
+
 'For technical reasons (how's that for nondescript), the public instance of this class cannot be formally initialized
 ' until fairly late into PD's load process.  However, there are technical details that would be nice to know prior to
 ' that point.  To work around this, I allow the class to log messages prior to being formally initialized.  When it
 ' *is* finally initialized, it will dump all the cached messages to the log file, with their original timestamps.
-Dim backupMessages() As String
-Dim numBackupMessages As Long
+Private backupMessages() As String
+Private numBackupMessages As Long
+
+'When the user requests a RAM update, we report the delta between the current update and the previous update.
+' This is very helpful for catching memory leaks.
+Private m_lastMemCheck As Long, m_lastMemCheckEventNum As Long
 
 'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
 ' this session's data, among other things, so don't attempt to use the class until this has been called!
@@ -164,6 +171,9 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
     
     'Log an initial event, to note that debug mode was successfully initiated
     Me.LogAction "Debugger initialized successfully"
+    
+    'Perform an initial memory check; this gives us a nice baseline measurement
+    Me.LogAction "", PDM_MEM_REPORT
     
     'If messages were logged prior to this class being formally initialized, dump them now
     If (numBackupMessages > 0) And (writeLogDataToFile) Then
@@ -254,7 +264,10 @@ End Function
 'Replace Debug.Print with this LogAction sub.  Basically it will mirror the output to the Immediate window, and add
 ' a new log line to the relevant debug file in the program's /Data folder.
 ' Input: debug string, and a BOOL indicating whether the message comes from PD's central user-visible "Message()" function
-Public Sub LogAction(ByVal actionString As String, Optional ByVal debugMsgType As PD_DEBUG_MESSAGES = PDM_NORMAL)
+Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DEBUG_MESSAGES = PDM_NORMAL)
+
+    'Increase the event count
+    m_NumLoggedEvents = m_NumLoggedEvents + 1
 
     'Generate a timestamp for this request
     Dim curTime As String
@@ -279,15 +292,42 @@ Public Sub LogAction(ByVal actionString As String, Optional ByVal debugMsgType A
     
     End Select
     
+    'For special message types, populate their contents now
+    If debugMsgType = PDM_MEM_REPORT Then
+    
+        m_lastMemCheckEventNum = m_NumLoggedEvents
+    
+        'The caller wants a RAM update.  Generate one now.
+        Dim curMemUsage As Long, maxMemUsage As Long, deltaMem As Long
+        curMemUsage = OS_Interactions.GetPhotoDemonMemoryUsage(False)
+        maxMemUsage = OS_Interactions.GetPhotoDemonMemoryUsage(True)
+        deltaMem = curMemUsage - m_lastMemCheck
+        
+        'Format the strings into something more readable
+        Dim curMemUsageString As String, maxMemUsageString As String, deltaMemString As String
+        curMemUsageString = Format(CStr(curMemUsage), "###,###,###,###") & " K"
+        maxMemUsageString = Format(CStr(maxMemUsage), "###,###,###,###") & " K"
+        deltaMemString = Format(CStr(deltaMem), "###,###,###,###") & " K"
+        If deltaMem > 0 Then deltaMemString = "+" & deltaMemString
+        
+        'Ignore the supplied action string, and create our own
+        actionString = "CURRENT: " & curMemUsageString & ", DELTA: " & deltaMemString & "  (session max: " & maxMemUsageString & ")"
+        
+        'Update the module-level last mem check value
+        m_lastMemCheck = curMemUsage
+    
+    ElseIf debugMsgType = PDM_HDD_REPORT Then
+    
+    End If
+    
     'Add a timestamp
     actionString = prefixString & " " & curTime & " | " & actionString
-
+    
     'Mirror output to the Immediate window
     Debug.Print actionString
     
     'If file logging is active, also mirror output to this session's log file
     If m_debuggerActive Then
-        
         
         If m_logDatatoFile Then
         
@@ -311,6 +351,9 @@ Public Sub LogAction(ByVal actionString As String, Optional ByVal debugMsgType A
         Debug.Print "You can't use the pdDebugger class's .LogAction function without first initializing the class via InitializeDebugger!"
         
     End If
+    
+    'If we've gone 20 events without a RAM check, provide one now
+    If m_NumLoggedEvents > (m_lastMemCheckEventNum + 20) Then Me.LogAction "", PDM_MEM_REPORT
 
 End Sub
 
@@ -321,6 +364,9 @@ Private Sub Class_Initialize()
     
     ReDim backupMessages(0 To 15) As String
     numBackupMessages = 0
+    
+    m_NumLoggedEvents = 0
+    m_lastMemCheck = 0
 
 End Sub
 
