@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Performance Profiler
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/June/14
-'Last updated: 19/June/14
-'Last update: initial build
+'Last updated: 21/July/14
+'Last update: add support for timing databases, so we can average performance over multiple runs
 '
 'As PhotoDemon has grown more complex, I've had to be more careful about overall program performance.  Unfortunately,
 ' performance is a tough thing to track using default VB code, hence the existence of this class.
@@ -27,6 +27,13 @@ Attribute VB_Exposed = False
 '
 'Many thanks to Karl Petersen's "Measuring Optimizations for Classic VB" article (http://vb.mvps.org/articles/vsm20100518.pdf)
 ' and accompanying "StopWatch" class (http://vb.mvps.org/samples/StopWatch/), which served as my inspiration for this project.
+'
+'Because this class is meant to be as simple to use as possible *from within PD* (because it's often added for a single
+' debugging session, then removed once a problematic area is found), I've added a number of PD-specific bits to it, like
+' automatically using the program's known Debug folder.  These PD-specific instances should be easy to strip out, but as with
+' any class that has a "pd" prefix, I haven't gone out of my way to make everything in here project-agnostic.
+'
+'NB: Use at your own risk!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -76,6 +83,11 @@ Private m_CurrentEventIndex As Long
 ' This count can then be removed from the final report total.
 Private m_TimeSpentProfiling As Long
 
+'Name of the report.  To simplify the saving process, this will automatically be used as the report's name, saving the user from having
+' to specify a report title.
+Private m_ReportName As String
+
+
 Private Sub Class_Initialize()
 
     'Reset all timing variables
@@ -89,7 +101,10 @@ Private Sub Class_Initialize()
 End Sub
 
 'Call this function to START profile recording
-Public Sub startProfiling(Optional ByVal reportName As String = "Generic report")
+Public Sub startProfiling(Optional ByVal reportName As String = "Generic report", Optional ByVal trackMultipleRuns As Boolean = False)
+
+    'Cache the report name
+    m_ReportName = reportName
 
     'Note that profiling has begun
     m_TimingActive = True
@@ -173,7 +188,7 @@ Public Sub stopProfiling()
 End Sub
 
 'Generate a report on this profile instance.  Optional parameters may be added in the future to make the data easier to use.
-Public Sub generateProfileReport(Optional ByVal dstTextFile As String = "")
+Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
 
     'For convenience, assemble the report into one giant string.  We can decide where to stick the data later.
     Dim reportString As String
@@ -213,16 +228,24 @@ Public Sub generateProfileReport(Optional ByVal dstTextFile As String = "")
     
     reportString = reportString & vbCrLf & "-- End of timing report --" & vbCrLf
     
-    'For now, dump the profile to the debug window.
-    Debug.Print reportString
-    
     'If an output path was specified, write the timing report out to file now
-    If Len(dstTextFile) > 0 Then
+    If writeToFile Then
+    
+        Dim dstTextFullPath As String, dstFileName As String
+        dstFileName = "pdProfileLog_" & m_ReportName & ".log"
+        
+        'Make sure the report name can be used as a valid filename
+        File_And_Path_Handling.makeValidWindowsFilename dstFileName
+        If InStr(1, dstFileName, " ") > 0 Then dstFileName = Replace(dstFileName, " ", "_")
+        
+        'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
+        ' in debug mode, we know that folder exists.
+        dstTextFullPath = g_UserPreferences.getDebugPath & dstFileName
     
         'If the file already exists, remove it.  (I have also added a DoEvents here after noticing random errors in this
         ' sub - it's important to wait for the file to be deleted, so that the write attempt below does not fail.)
-        If FileExist(dstTextFile) Then
-            Kill dstTextFile
+        If FileExist(dstTextFullPath) Then
+            Kill dstTextFullPath
             DoEvents
         End If
     
@@ -230,10 +253,13 @@ Public Sub generateProfileReport(Optional ByVal dstTextFile As String = "")
         Dim fileNum As Integer
         fileNum = FreeFile
         
-        Open dstTextFile For Output As #fileNum
+        Open dstTextFullPath For Output As #fileNum
             Print #fileNum, reportString
         Close #fileNum
         
+    'If not writing the data out to file, dump it to the debug window instead
+    Else
+        Debug.Print reportString
     End If
 
 End Sub
