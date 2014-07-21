@@ -130,18 +130,18 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         Open m_logPath For Append As #m_FileHandle
             Print #m_FileHandle, "**********************************************"
             Print #m_FileHandle, ""
-            Print #m_FileHandle, "-- PHOTODEMON DEBUG LOG #" & m_debuggerID & " --"
+            Print #m_FileHandle, "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --"
             Print #m_FileHandle, ""
             Print #m_FileHandle, "Date: " & Date
             Print #m_FileHandle, "Time: " & Time
             Print #m_FileHandle, "Session ID: " & g_SessionID
-            Print #m_FileHandle, "Program compiled: " & CStr(g_IsProgramCompiled)
-            Print #m_FileHandle, "Log is original: " & CStr(Not overwroteOldLog)
+            Print #m_FileHandle, "Compiled: " & CStr(g_IsProgramCompiled)
+            Print #m_FileHandle, "First run: " & CStr(g_IsFirstRun)
             Print #m_FileHandle, ""
             
             Print #m_FileHandle, "-- SYSTEM INFORMATION --"
             Print #m_FileHandle, ""
-            Print #m_FileHandle, "OS Version: " & OS_Interactions.getOSVersionAsString
+            Print #m_FileHandle, "OS: " & OS_Interactions.getOSVersionAsString
             Print #m_FileHandle, "Processor cores (logical): " & OS_Interactions.getNumLogicalCores
             Print #m_FileHandle, "Processor features: " & OS_Interactions.getProcessorFeatures
             Print #m_FileHandle, "System RAM: " & OS_Interactions.getTotalSystemRAM
@@ -265,7 +265,7 @@ End Function
 'Replace Debug.Print with this LogAction sub.  Basically it will mirror the output to the Immediate window, and add
 ' a new log line to the relevant debug file in the program's /Data folder.
 ' Input: debug string, and a BOOL indicating whether the message comes from PD's central user-visible "Message()" function
-Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DEBUG_MESSAGES = PDM_NORMAL)
+Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DEBUG_MESSAGES = PDM_NORMAL, Optional ByVal suspendMemoryAutoUpdate As Boolean = False)
 
     'Increase the event count
     m_NumLoggedEvents = m_NumLoggedEvents + 1
@@ -347,17 +347,19 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         'As described at the top of this class, I like to cache certain relevant messages before the main loader is able to
         ' formally initialize this class.  When that happens, we cache the messages in a temporary array; when the class is
         ' formally initialized, we'll dump that array out to file.
-        backupMessages(numBackupMessages) = actionString
+        backupMessages(numBackupMessages) = "(" & CStr(numBackupMessages + 1) & ") " & actionString
         numBackupMessages = numBackupMessages + 1
         
         If numBackupMessages > UBound(backupMessages) Then ReDim Preserve backupMessages(0 To numBackupMessages * 2 - 1) As String
         
-        Debug.Print "You can't use the pdDebugger class's .LogAction function without first initializing the class via InitializeDebugger!"
-        
     End If
     
-    'If we've gone 20 events without a RAM check, provide one now
-    If m_NumLoggedEvents > (m_lastMemCheckEventNum + 20) Then Me.LogAction "", PDM_MEM_REPORT
+    'For messages that are sent en masse (e.g. when loading a new image), the caller can choose to postpone automatic memory updates,
+    ' as it will likely raise its own when relevant.
+    If suspendMemoryAutoUpdate Or (debugMsgType = PDM_MEM_REPORT) Then m_lastMemCheckEventNum = m_lastMemCheckEventNum + 1
+    
+    'If we've gone 25 events without a RAM check, provide one now
+    If m_NumLoggedEvents > (m_lastMemCheckEventNum + 25) Then Me.LogAction "", PDM_MEM_REPORT
 
 End Sub
 
@@ -377,9 +379,13 @@ End Sub
 Private Sub Class_Terminate()
 
     'If logging is active, post a final message
-    m_FileHandle = FreeFile
-    Open m_logPath For Append As #m_FileHandle
-        Print #m_FileHandle, "-- END SESSION REPORT --"
-    Close #m_FileHandle
+    If m_debuggerActive Then
+    
+        m_FileHandle = FreeFile
+        Open m_logPath For Append As #m_FileHandle
+            Print #m_FileHandle, "-- END SESSION REPORT --"
+        Close #m_FileHandle
+    
+    End If
     
 End Sub

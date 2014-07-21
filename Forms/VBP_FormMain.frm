@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -2408,6 +2408,12 @@ Private Sub Form_Load()
     
     'Because people may be using this code in the IDE, warn them about the consequences of doing so
     If (Not g_IsProgramCompiled) And (g_UserPreferences.GetPref_Boolean("Core", "Display IDE Warning", True)) Then displayIDEWarning
+    
+    'In debug mode, note that we are about to turn control over to the user
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
+        pdDebug.LogAction "", PDM_MEM_REPORT
+    #End If
     
     'Finally, return focus to the main form
     FormMain.SetFocus

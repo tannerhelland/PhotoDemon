@@ -17,7 +17,7 @@ Attribute VB_Name = "Loading"
 Option Explicit
 
 'Use these to ensure that the splash shows for a certain amount of time
-Dim m_LoadTime As Double, m_StartTime As Double
+Private m_LoadTime As Double, m_StartTime As Double
 
 'PHOTODEMON STARTS HERE (after Sub Main, that is).
 
@@ -408,7 +408,6 @@ Public Sub LoadTheProgram()
             
     'Load and draw all menu icons
     loadMenuIcons
-    'resetMenuIcons
     
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
     syncInterfaceToCurrentImage
@@ -442,6 +441,13 @@ Public Sub LoadTheProgram()
     'If this is the first time the user has run PhotoDemon, resize the window a bit to make the default position nice.
     ' (If this is *not* the first time, the window manager will automatically restore the window's last-known position and state.)
     If g_IsFirstRun Then g_WindowManager.setFirstRunMainWindowPosition
+    
+    'In debug mode, make a baseline memory reading here, before the main form is displayed.
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "LoadTheProgram() function complete.  Baseline memory reading:"
+        pdDebug.LogAction "", PDM_MEM_REPORT
+        pdDebug.LogAction "Proceeding to load main window..."
+    #End If
     
     'Display the main form
     FormMain.Show
@@ -528,7 +534,14 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     ' and forwarding it to the main form's ShellPipe control as it proceeds.  By using DoEvents throughout this function, we yield control
     ' to that ShellPipe control, allowing it to periodically clear stdout so ExifTool can continue pushing metadata through.  That said,
     ' a LOT of precautions are taken to make sure DoEvents doesn't cause reentry and other issues, so don't try to mimic this behavior
-    ' unless you understand all the repercussions!
+    ' in your own software unless you understand the many repercussions!
+    
+    'If debug mode is active, image loading is a place where a lot of things can go wrong - bad files, corrupt formats, heavy RAM usage,
+    ' incompatible color formats, and about a bazillion other things.  Make a special note in the debug log, to help narrow down issues.
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Preparing to load one or more images.  Baseline memory reading:"
+        pdDebug.LogAction "", PDM_MEM_REPORT
+    #End If
     
     '*************************************************************************************************************************************
     ' Prepare all variables related to image loading
@@ -562,6 +575,10 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     
     Dim brokenFiles As String
     brokenFiles = ""
+    
+    'Some behavior varies based on the image decoding engine used.  PD uses a fairly complex cascading system for image decoders;
+    ' if one fails, we continue trying alternates until either the load succeeds, or all known decoders have been exhausted.
+    Dim decoderUsed As PD_IMAGE_DECODER_ENGINE
             
     
     '*************************************************************************************************************************************
@@ -616,7 +633,10 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     
     For thisImage = 0 To UBound(sFile)
     
-    
+        'If debug mode is active, post some helpful debugging information
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Image load requested for """ & getFilename(sFile(thisImage)) & """"
+        #End If
     
         '*************************************************************************************************************************************
         ' Reset all variables used on a per-image level
@@ -729,21 +749,29 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 targetImage.originalFileFormat = FIF_PDI
                 targetImage.currentFileFormat = FIF_PDI
                 mustCountColors = False
+                
+                decoderUsed = PDIDE_INTERNAL
             
             'Straight TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable for loading these, as
             ' it handles 32bpp images well, but if we must, we can resort to VB's internal .LoadPicture command.
             Case "TMP"
             
-                If g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB)
+                If g_ImageFormats.GDIPlusEnabled Then
+                    loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB)
+                    If loadSuccessful Then decoderUsed = PDIDE_GDIPLUS
+                End If
                 
-                If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then loadSuccessful = LoadVBImage(sFile(thisImage), targetDIB)
+                If (Not g_ImageFormats.GDIPlusEnabled) Or (Not loadSuccessful) Then
+                    loadSuccessful = LoadVBImage(sFile(thisImage), targetDIB)
+                    If loadSuccessful Then decoderUsed = PDIDE_VBLOADPICTURE
+                End If
                 
                 'Lie and say that the original file format of this image was JPEG.  We do this because tmp images are typically images
                 ' captured via non-traditional means (screenshot's, scans), and when the user tries to save the file, they should not
                 ' be prompted to save it as a BMP.
                 targetImage.originalFileFormat = FIF_JPEG
                 mustCountColors = True
-            
+                            
             'All other formats follow a set pattern: try to load them via FreeImage (if available), then GDI+, then finally
             ' VB's internal LoadPicture function.
             Case Else
@@ -777,6 +805,8 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                     If loadSuccessful Then
                     
                         loadedByOtherMeans = False
+                        
+                        decoderUsed = PDIDE_FREEIMAGE
                         
                         'Mirror the determined file format from the DIB to the parent pdImage object
                         targetImage.originalFileFormat = targetDIB.getOriginalFormat
@@ -813,6 +843,8 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                         'Also, mirror the discovered resolution, if any, from the source DIB
                         targetImage.setDPI targetDIB.getDPI, targetDIB.getDPI
                         
+                        decoderUsed = PDIDE_GDIPLUS
+                        
                     End If
                         
                 End If
@@ -825,8 +857,11 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 
                     'If VB managed to load the image successfully, note that we have to deteremine color depth manually
                     If loadSuccessful Then
+                    
+                        decoderUsed = PDIDE_VBLOADPICTURE
                         loadedByOtherMeans = True
                         mustCountColors = True
+                        
                     End If
                 
                 End If
@@ -867,15 +902,17 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         DoEvents
         
+        'If debug mode is active, post some helpful debugging information
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Debug note: image load appeared to be successful.  Summary forthcoming."
+        #End If
+        
         
         '*************************************************************************************************************************************
         ' If the loaded image was in PDI format (PhotoDemon's internal format), skip a number of additional processing steps.
         '*************************************************************************************************************************************
         
-        '100 is the magic number for PDI files.  I don't generally like using magic numbers in place of enums, but as our
-        ' file format enum list is declared in the external FreeImage module - which is occasionally overwritten by official
-        ' FreeImage updates - I can't easily add my own enums to theirs.  So this will do, for now...
-        If targetImage.originalFileFormat <> 100 Then
+        If targetImage.originalFileFormat <> FIF_PDI Then
             
             
             '*************************************************************************************************************************************
@@ -1001,6 +1038,41 @@ PDI_Load_Continuation:
         'Mark the original file size and file format of the image
         If FileExist(sFile(thisImage)) Then targetImage.originalFileSize = FileLen(sFile(thisImage))
         targetImage.currentFileFormat = targetImage.originalFileFormat
+        
+        'If Debug Mode is active, supply a basic image summary
+        #If DEBUGMODE = 1 Then
+        
+            pdDebug.LogAction "~ Summary of image """ & getFilename(sFile(thisImage)) & """ follows ~", , True
+            pdDebug.LogAction vbTab & "Image ID: " & targetImage.imageID, , True
+            
+            Select Case decoderUsed
+                
+                Case PDIDE_INTERNAL
+                    pdDebug.LogAction vbTab & "Load engine: Internal PhotoDemon decoder", , True
+                
+                Case PDIDE_FREEIMAGE
+                    pdDebug.LogAction vbTab & "Load engine: FreeImage plugin", , True
+                
+                Case PDIDE_GDIPLUS
+                    pdDebug.LogAction vbTab & "Load engine: GDI+", , True
+                
+                Case PDIDE_VBLOADPICTURE
+                    pdDebug.LogAction vbTab & "Load engine: VB's LoadPicture() function", , True
+                
+            End Select
+            
+            pdDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.getInputFormatDescription(g_ImageFormats.getIndexOfInputFIF(targetImage.originalFileFormat)), , True
+            pdDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
+            pdDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.originalFileSize), "###,###,###,###") & " Bytes", , True
+            pdDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.estimateRAMUsage), "###,###,###,###") & " Bytes", , True
+            pdDebug.LogAction vbTab & "Original color depth: " & targetImage.originalColorDepth, , True
+            pdDebug.LogAction vbTab & "Grayscale: " & CStr(g_IsImageGray), , True
+            pdDebug.LogAction vbTab & "ICC profile embedded: " & targetDIB.ICCProfile.hasICCData, , True
+            pdDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages), , True
+            pdDebug.LogAction vbTab & "Number of layers: " & targetImage.getNumOfLayers, , True
+            pdDebug.LogAction "~ End of image summary ~", , True
+            
+        #End If
         
         If isThisPrimaryImage Then Message "Determining image title..."
         
@@ -1263,6 +1335,15 @@ PDI_Load_Continuation:
         
         If isThisPrimaryImage Then Message "Image loaded successfully."
         
+        'In debug mode, note the new memory baseline, post-load
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "New memory report after loading image """ & getFilename(sFile(thisImage)) & """:"
+            pdDebug.LogAction "", PDM_MEM_REPORT
+            
+            'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
+            ' This provides a nice baseline for making sure PD's memory usage isn't out of whack for a given image.
+            pdDebug.LogAction "(FYI, expected delta was approximately " & Format(CStr(targetImage.estimateRAMUsage \ 1000), "###,###,###,###") & " K)"
+        #End If
         
         
     '*************************************************************************************************************************************
