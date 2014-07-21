@@ -1198,7 +1198,7 @@ Public Function estimateRAMUsage() As Long
 
     estimateRAMUsage = 0
 
-    Dim i As Long, tmpLayerMemory As Long
+    Dim i As Long
     
     For i = 0 To numOfLayers - 1
         
