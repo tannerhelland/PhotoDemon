@@ -1142,16 +1142,18 @@ Public Function getFloatState(ByVal winType As pdWindowType) As Boolean
 End Function
 
 'Set floating/docked state of toolbars or image windows
-Public Sub setFloatState(ByVal winType As pdWindowType, ByVal isFloating As Boolean)
+Public Sub setFloatState(ByVal winType As pdWindowType, ByVal isFloating As Boolean, Optional ByVal overrideWindowStyleUpdate As Boolean = False)
 
     Dim i As Long
     
     'Before doing anything else, reset all z-order data
-    For i = 0 To numOfPDWindows - 1
-        If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then
-            SetWindowPos pdWindows(i).hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOACTIVATE
-        End If
-    Next i
+    If (Not overrideWindowStyleUpdate) Then
+        For i = 0 To numOfPDWindows - 1
+            If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then
+                SetWindowPos pdWindows(i).hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOACTIVATE
+            End If
+        Next i
+    End If
     
     Select Case winType
     
@@ -1164,7 +1166,7 @@ Public Sub setFloatState(ByVal winType As pdWindowType, ByVal isFloating As Bool
     End Select
     
     'Whenever float status is changed, all windows need to be redrawn (as their layering and/or position may have changed)
-    If (numOfPDWindows > 0) Then
+    If (numOfPDWindows > 0) And (Not overrideWindowStyleUpdate) Then
         For i = 0 To numOfPDWindows - 1
             
             'Request a window style update and/or redraw

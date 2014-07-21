@@ -312,7 +312,7 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Initializing window manager..."
     Set g_WindowManager = New pdWindowManager
-    
+        
     'Register the main form
     g_WindowManager.registerParentForm FormMain
     
@@ -321,9 +321,9 @@ Public Sub LoadTheProgram()
     Load toolbar_File
     Load toolbar_ImageTabs
     Load toolbar_Tools
-        
+    
     'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
-    toggleWindowFloating TOOLBAR_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False), True
+    toggleWindowFloating TOOLBAR_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False), True, True
     
     'Retrieve visibility and mark those menus as well
     FormMain.MnuWindow(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
@@ -331,10 +331,10 @@ Public Sub LoadTheProgram()
     FormMain.MnuWindow(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
     
     'Retrieve two additional settings for the image tabstrip menu: when to display the image tabstrip...
-    toggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True
-        
+    toggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True, True
+    
     '...and the alignment of the tabstrip
-    toggleImageTabstripAlignment g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Alignment", vbAlignTop)
+    toggleImageTabstripAlignment g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Alignment", vbAlignTop), True, True
     
     
     
@@ -450,19 +450,8 @@ Public Sub LoadTheProgram()
     
     'While in debug mode, copy a timing report of program startup to the debug folder
     #If DEBUGMODE = 1 Then
-    
         perfCheck.stopProfiling
-        
-        'If compiled, write the file out to the /Data subdirectory
-        If g_IsProgramCompiled Then
-            perfCheck.generateProfileReport g_UserPreferences.getDebugPath & "PD_Startup_Performance.txt"
-        
-        'If inside the IDE, just dump the profile report to the Debug window
-        Else
-            perfCheck.generateProfileReport
-        
-        End If
-        
+        perfCheck.generateProfileReport g_UserPreferences.getDebugPath & "PD_Startup_Performance.txt"
     #End If
     
     'Display the splash screen for at least a second or two
@@ -2380,93 +2369,6 @@ Public Sub LoadPlugins()
     
     'Make sure the plugin path exists
     If Not DirectoryExist(g_PluginPath) Then MkDir g_PluginPath
-    
-    'Old versions of PhotoDemon kept plugins in a different directory. Check the old location,
-    ' and if plugin-related files are found, copy them to the new directory
-    On Error Resume Next
-    Dim tmpg_PluginPath As String
-    tmpg_PluginPath = g_UserPreferences.getDataPath & "Plugins\"
-    
-    If DirectoryExist(tmpg_PluginPath) Then
-        LoadMessage "Moving plugins to updated folder location..."
-        
-        Dim pluginName As String
-        pluginName = "EZTW32.dll"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "EZTWAIN_README.TXT"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "FreeImage.dll"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "license-fi.txt"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "license-freeimage.txt"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "license-gplv2.txt"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "license-gplv3.txt"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "zlibwapi.dll"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "pngnq-s9.exe"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "PNGNQ-S9-LICENSE"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "PNGNQ-S9-LICENSE.txt"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        pluginName = "PNGNQ-S9-LICENCE.txt"
-        If FileExist(tmpg_PluginPath & pluginName) Then
-            FileCopy tmpg_PluginPath & pluginName, g_PluginPath & pluginName
-            Kill tmpg_PluginPath & pluginName
-        End If
-        
-        'After all files have been removed, kill the old Plugin directory
-        RmDir tmpg_PluginPath
-        
-    End If
         
     'Check for image scanning
     'First, make sure we have our dll file

@@ -824,7 +824,7 @@ Public Function getKeyboardDelay() As Double
     getKeyboardDelay = (keyDelayIndex + 1) * 0.25
 End Function
 
-Public Sub toggleImageTabstripAlignment(ByVal newAlignment As AlignConstants)
+Public Sub toggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Optional ByVal suppressInterfaceSync As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
     
     'Reset the menu checkmarks
     Dim curMenuIndex As Long
@@ -855,22 +855,26 @@ Public Sub toggleImageTabstripAlignment(ByVal newAlignment As AlignConstants)
     Next i
     
     'Write the preference out to file.
-    g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Alignment", CLng(newAlignment)
+    If Not suppressPrefUpdate Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Alignment", CLng(newAlignment)
     
     'Notify the window manager of the change
     g_WindowManager.setImageTabstripAlignment newAlignment
     
-    '...and force the tabstrip to redraw itself (which it may not if the tabstrip's size hasn't changed, e.g. if Left and Right layout is toggled)
-    toolbar_ImageTabs.forceRedraw
+    If Not suppressInterfaceSync Then
     
-    'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
-    FormMain.refreshAllCanvases
+        '...and force the tabstrip to redraw itself (which it may not if the tabstrip's size hasn't changed, e.g. if Left and Right layout is toggled)
+        toolbar_ImageTabs.forceRedraw
+    
+        'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
+        FormMain.refreshAllCanvases
+        
+    End If
     
 End Sub
 
 'The image tabstrip can set to appear under a variety of circumstances.  Use this sub to change the current setting; it will
 ' automatically handle syncing with the preferences file.
-Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVal suppressInterfaceSync As Boolean = False)
+Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVal suppressInterfaceSync As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
 
     'Start by synchronizing menu checkmarks to the selected option
     Dim i As Long
@@ -883,14 +887,18 @@ Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
     Next i
 
     'Write the matching preference out to file
-    g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
+    If Not suppressPrefUpdate Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Visibility", newSetting
     
-    'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
-    FormMain.refreshAllCanvases
+    If Not suppressInterfaceSync Then
     
-    'Synchronize the interface to match; note that this will handle showing/hiding the tabstrip based on the number of
-    ' currently open images.
-    If Not suppressInterfaceSync Then syncInterfaceToCurrentImage
+        'Refresh the current image viewport (which may be positioned differently due to the tabstrip moving)
+        FormMain.refreshAllCanvases
+    
+        'Synchronize the interface to match; note that this will handle showing/hiding the tabstrip based on the number of
+        ' currently open images.
+        syncInterfaceToCurrentImage
+        
+    End If
     
     'If images are loaded, we may need to redraw their viewports because the available client area may have changed.
     If (g_NumOfImagesLoaded > 0) Then
@@ -901,7 +909,7 @@ End Sub
 
 'Both toolbars and image windows can be floated or docked.  Because some behind-the-scenes maintenance has to be applied whenever
 ' this setting is changed, all float toggle operations should wrap this singular function.
-Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal floatStatus As Boolean, Optional ByVal suspendMenuRefresh As Boolean = False)
+Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal floatStatus As Boolean, Optional ByVal suspendMenuRefresh As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
 
     'Make a note of the currently active image
     Dim backupCurrentImage As Long
@@ -913,11 +921,11 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
     
         Case TOOLBAR_WINDOW
             FormMain.MnuWindow(5).Checked = floatStatus
-            g_UserPreferences.SetPref_Boolean "Core", "Floating Toolbars", floatStatus
-            g_WindowManager.setFloatState TOOLBAR_WINDOW, floatStatus
+            If Not suppressPrefUpdate Then g_UserPreferences.SetPref_Boolean "Core", "Floating Toolbars", floatStatus
+            g_WindowManager.setFloatState TOOLBAR_WINDOW, floatStatus, suspendMenuRefresh
             
             'If image windows are docked, we need to redraw all their windows, because the available client area will have changed.
-            FormMain.refreshAllCanvases
+            If Not suspendMenuRefresh Then FormMain.refreshAllCanvases
             
     End Select
     

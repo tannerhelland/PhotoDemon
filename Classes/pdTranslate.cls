@@ -288,6 +288,7 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
 
     'Redraw all text on the main form using the new language
     If FormMain.Visible Then
+    
         FormMain.requestMakeFormPretty useDoEvents
         DrawAccelerators
         applyAllMenuIcons True
@@ -345,30 +346,32 @@ End Function
 Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional ByVal langOffset As Long = 0, Optional ByVal langTypeForThisFolder As String = "") As Long
 
     Dim nLanguages As Long
-    nLanguages = 0
+    nLanguages = langOffset
+    
+    'An XML class will be used to parse the various language files
+    Dim tmpXMLEngine As pdXML
     
     'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
     Dim chkFile As String
     chkFile = Dir(srcFolder & "*.xml", vbNormal)
         
-    Do While (chkFile <> "")
+    Do While (Len(chkFile) > 0)
         
         'Use PD's XML engine to load the file
-        Dim tmpXMLEngine As pdXML
         Set tmpXMLEngine = New pdXML
         If tmpXMLEngine.loadXMLFile(srcFolder & chkFile) Then
         
             'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
             If tmpXMLEngine.isPDDataType("Translation") And tmpXMLEngine.validateLoadedXMLData("langid", "langname", "phrase") Then
-        
+                
                 'If this is a valid language file, get the language information (if available).
-                fillLanguageInfo tmpXMLEngine, availableLanguages(nLanguages + langOffset)
-                availableLanguages(nLanguages + langOffset).FileName = srcFolder & chkFile
-                availableLanguages(nLanguages + langOffset).langType = langTypeForThisFolder
+                fillLanguageInfo tmpXMLEngine, availableLanguages(nLanguages)
+                availableLanguages(nLanguages).FileName = srcFolder & chkFile
+                availableLanguages(nLanguages).langType = langTypeForThisFolder
                 nLanguages = nLanguages + 1
                 
                 'If, for some ungodly reason, the user has more than 100 languages available, dynamically resize the array to fit.
-                If nLanguages + langOffset > UBound(availableLanguages) Then ReDim Preserve availableLanguages(0 To (nLanguages + langOffset) * 2) As pdLanguageFile
+                If nLanguages > UBound(availableLanguages) Then ReDim Preserve availableLanguages(0 To (nLanguages + 1) * 2) As pdLanguageFile
             
             End If
             
@@ -379,7 +382,7 @@ Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
     
     Loop
     
-    tallyLanguageFilesInFolder = nLanguages
+    tallyLanguageFilesInFolder = nLanguages - langOffset
 
 End Function
 
