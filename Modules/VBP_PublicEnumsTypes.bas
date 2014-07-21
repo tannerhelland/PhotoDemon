@@ -246,3 +246,15 @@ Public Type undoEntry
     thumbnailSmall As pdDIB         'A small thumbnail associated with the current action.  In the future, this will be used by the Undo History window.
     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
 End Type
+
+'PhotoDemon supports multiple image encoders and decoders.
+Public Enum PD_IMAGE_DECODER_ENGINE
+    PDIDE_INTERNAL = 0
+    PDIDE_FREEIMAGE = 1
+    PDIDE_GDIPLUS = 2
+    PDIDE_VBLOADPICTURE = 3
+End Enum
+
+#If False Then
+    Private Const PDIDE_INTERNAL = 0, PDIDE_FREEIMAGE = 1, PDIDE_GDIPLUS = 2, PDIDE_VBLOADPICTURE = 3
+#End If
