@@ -1192,3 +1192,22 @@ Public Function getNumOfHiddenLayers() As Long
     getNumOfHiddenLayers = hidLayerCount
 
 End Function
+
+'Estimate the RAM usage for this image, based on the number of layers and the size of each layer
+Public Function estimateRAMUsage() As Long
+
+    estimateRAMUsage = 0
+
+    Dim i As Long, tmpLayerMemory As Long
+    
+    For i = 0 To numOfLayers - 1
+        
+        'Layers provide their own RAM estimation, based on their current cache state, layer DIB, active styles, and more
+        estimateRAMUsage = estimateRAMUsage + imgLayers(i).estimateRAMUsage
+        
+    Next i
+    
+    'Assume a 10% overhead for the pdImage as a whole, to cover things like metadata, loose ICC profiles, class instances, and more
+    estimateRAMUsage = estimateRAMUsage * 1.1
+
+End Function
