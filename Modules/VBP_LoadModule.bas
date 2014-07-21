@@ -451,7 +451,7 @@ Public Sub LoadTheProgram()
     'While in debug mode, copy a timing report of program startup to the debug folder
     #If DEBUGMODE = 1 Then
         perfCheck.stopProfiling
-        perfCheck.generateProfileReport g_UserPreferences.getDebugPath & "PD_Startup_Performance.txt"
+        perfCheck.generateProfileReport True
     #End If
     
     'Display the splash screen for at least a second or two
