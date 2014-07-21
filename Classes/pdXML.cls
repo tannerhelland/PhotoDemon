@@ -445,7 +445,7 @@ End Function
 Public Function validateLoadedXMLData(ParamArray expectedTags() As Variant) As Boolean
 
     'Start by looking for the <pdData> tags that surround all PhotoDemon-specific XML files
-    If (InStr(1, xmlContents, ROOT_TAG, vbBinaryCompare) = 0) Or (InStr(1, xmlContents, ROOT_TAG_CLOSE, vbBinaryCompare) = 0) Then
+    If (InStr(1, xmlContents, ROOT_TAG, vbBinaryCompare) = 0) Or (InStrRev(xmlContents, ROOT_TAG_CLOSE, -1, vbBinaryCompare) = 0) Then
         validateLoadedXMLData = False
         Exit Function
     End If
@@ -533,11 +533,16 @@ Private Function getFileAsString(ByVal fName As String) As String
         
         Dim fileNum As Integer
         fileNum = FreeFile
-    
+        
         Open fName For Binary As #fileNum
             tmpFileContents = Space$(LOF(fileNum))
             Get #fileNum, , tmpFileContents
         Close #fileNum
+        
+        'Once Unicode support is added, investigate alternate means of file loading, perhaps like the code below??
+        'Open fName For Input As #fileNum
+        '    tmpFileContents = StrConv(InputB(LOF(fileNum), fileNum), vbUnicode)
+        'Close #fileNum
     
         'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to our own XML processing)
         If InStr(1, tmpFileContents, vbTab) <> 0 Then tmpFileContents = Replace(tmpFileContents, vbTab, "")
