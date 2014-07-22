@@ -745,7 +745,7 @@ Public Function getLocationOfTagPlusAttribute(ByVal tagName As String, ByVal tag
         attributeLocation = InStr(searchLocation, xmlContents, tagAttribute, vbTextCompare)
         
         'From the attribute location, we know the value has to appear immediately following tagAttribute=", so look for it there
-        If StrComp(tagAttributeValue, Mid$(xmlContents, attributeLocation + Len(attributeLocation) + 3, Len(tagAttributeValue))) = 0 Then
+        If StrComp(tagAttributeValue, Mid$(xmlContents, attributeLocation + Len(tagAttribute) + 2, Len(tagAttributeValue))) = 0 Then
             
             'A match was found!  Return this tag location and exit.
             getLocationOfTagPlusAttribute = attributeLocation + 5
