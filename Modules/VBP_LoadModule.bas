@@ -3,8 +3,9 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 19/May/14
-'Last update: final work on custom Undo/Redo file loading
+'Last updated: 22/July/14
+'Last update: continue improving robustness of PDI file loading (specifically, if an image load attempt fails, check for the combination
+'              of a missing zLib plugin and a file with compressed data)
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -1655,6 +1656,14 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     Exit Function
     
 LoadPDIFail:
+
+    'Before falling back to a generic error message, check for a couple known problem states.
+    
+    'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
+    If pdiReader.getPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
+        pdMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", getFilename(PDIPath)
+        Exit Function
+    End If
 
     Select Case Err.Number
     
