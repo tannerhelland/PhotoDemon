@@ -117,7 +117,7 @@ SaveMacroAgain:
         Next i
         
         'Write out the number of valid processes in the macro
-        xmlEngine.writeTag "processCount", Str(numOfValidProcesses)
+        xmlEngine.writeTag "processCount", CStr(numOfValidProcesses)
         xmlEngine.writeBlankLine
         
         'Now, write out each macro entry in the current process list
@@ -245,19 +245,25 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
                 
                     'Start by finding the location of the tag we want
                     Dim tagPosition As Long
-                    tagPosition = xmlEngine.getLocationOfTagPlusAttribute("processEntry", "index", Str(i))
+                    tagPosition = xmlEngine.getLocationOfTagPlusAttribute("processEntry", "index", i)
                     
-                    'Use that tag position to retrieve the processor parameters we need.
-                    With Processes(i - 1)
-                        .Id = xmlEngine.getUniqueTag_String("ID", , tagPosition)
-                        .Parameters = xmlEngine.getUniqueTag_String("Parameters", , tagPosition)
-                        .MakeUndo = xmlEngine.getUniqueTag_Long("MakeUndo", , tagPosition)
-                        .Tool = xmlEngine.getUniqueTag_Long("Tool", , tagPosition)
+                    If tagPosition > 0 Then
+                    
+                        'Use that tag position to retrieve the processor parameters we need.
+                        With Processes(i - 1)
+                            .Id = xmlEngine.getUniqueTag_String("ID", , tagPosition)
+                            .Parameters = xmlEngine.getUniqueTag_String("Parameters", , tagPosition)
+                            .MakeUndo = xmlEngine.getUniqueTag_Long("MakeUndo", , tagPosition)
+                            .Tool = xmlEngine.getUniqueTag_Long("Tool", , tagPosition)
+                            
+                            'These two attributes can be assigned automatically, as we know what their values must be.
+                            .Dialog = False
+                            .Recorded = True
+                        End With
                         
-                        'These two attributes can be assigned automatically, as we know what their values must be.
-                        .Dialog = False
-                        .Recorded = True
-                    End With
+                    Else
+                        Debug.Print "Expected macro entry could not be found!"
+                    End If
                 
                 Next i
             
