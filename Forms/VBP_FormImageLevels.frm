@@ -1455,7 +1455,11 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     
     For i = 0 To 3
     
-        pStep = 255 / (levelValues(i, 2) - levelValues(i, 0))
+        If (levelValues(i, 2) - levelValues(i, 0)) <> 0 Then
+            pStep = 255 / (levelValues(i, 2) - levelValues(i, 0))
+        Else
+            pStep = 1
+        End If
         
         For x = 0 To 255
             If x < levelValues(i, 0) Then
