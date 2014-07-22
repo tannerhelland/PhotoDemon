@@ -15,39 +15,40 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" Interface (e.g. Zip-like archive handler)
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 16/July/14
-'Last update: fix calculation of compressed buffer size if zLib is in use
-'Dependencies: clsBasicBuffer by dilettante (used to read/write byte array buffers more easily)
+'Last updated: 22/July/14
+'Last update: start implementing relevant flags for various chunks
+'Dependencies: clsBasicBuffer class by dilettante (used to read/write byte array buffers more easily)
 '
 'This class provides an interface for creating and reading "pdPackage" files.  pdPackages are zip-like archive files
 ' that contain one or more "nodes" (e.g. pieces of data), compressed or uncompressed, in a VB-friendly structure.
 '
 'Though I have created pdPackages specifically for use with PhotoDemon, this class should be easily usable by others
-' with only minor modifications.  Note that an explicit path to a STDCALL (sometimes called WAPI) variant of zlib.dll
+' with only minor modifications.  Note that an explicit path to an STDCALL (sometimes called WAPI) variant of zlib.dll
 ' is required, with the expected filename of "zlibwapi.dll".  If your STDCALL copy is called "zLib.dll", you must
-' rewrite the few zLib-specific API declarations at the top of the file to match.
+' rewrite the few zLib-specific API declarations at the top of the class to match.
 '
 'While pdPackages have many similarities to ZIP files, THEY ARE NOT ACTUAL ZIP FILES, and this class cannot read or
 ' write actual ZIP files.  pdPackages are, by design, much simpler than ZIP files, and their structure and layout
-' is much more friendly for VB coders.
+' plays much more nicely with VB's inherent limitations.
 '
-'A few key pdPackage features include:
+'Key pdPackage features include:
 '
-' 1) Data agnosticism, e.g. everything is treated as byte arrays.
+' 1) Data agnosticism, e.g. everything is treated as byte arrays, so store whatever data you'd like.
 ' 2) Front-loaded header.  ZIP files place the header at the tail of the archive, but pdPackages place the header
 '     at the head.  This is not ideal for files that must be repeatedly edited, but it allows for much faster archive
-'     reading and writing, especially when accessing only a single file.
+'     reading and writing, especially when accessing only a single file (as we do in PhotoDemon).
 ' 3) Fixed-width directory entries.  This allows the entire archive directory to be read in a single operation,
 '     rather than manually parsing variable-width directory entries until all have been located.
-' 4) Support for zLib-style compression on a per-node basis.
+' 4) Support for zLib compression on a per-node basis.
 ' 5) Support for checksum (Adler32) validation of each individual node.
-' 6) Support for two data entries per node, typically a header byte array and an actual data byte array.  These two structs
+' 6) Support for two data entries per node, typically a header chunk and an actual data chunk.  These two structs
 '     don't need to be used (one or the other or neither is just fine), but I find it very helpful to be store two pieces of
-'     data per node (typically so I can read key data from a node without extracting its full contents).
-' 7) Per-node compression options, meaning you can extract a single file without having to decompress the entire
-'     archive, and you can customize compression for each node in the package.
+'     data per node (typically so I can read key header data from a node without extracting the full data contents, which
+'     in the case of image data, tend to be enormous).
+' 7) Per-node compression approach, meaning you can extract a single file without having to decompress the entire archive,
+'     and you can customize compression for each node in the package (e.g. not everything has to be compressed).
 '
-'Here are a few things to note if you are using this class in your own projects:
+'Here are a few things to note if you want to use this class in your own projects:
 '
 ' 1) At present, pdPackage files are not easily editable.  Once one is created, it cannot easily have nodes added or erased.
 '     There's nothing in the spec that prevents this, but I just haven't written edit functions because I have no reason to
@@ -55,21 +56,21 @@ Attribute VB_Exposed = False
 '
 ' 2) As noted above, zLib is required for compression.  The spec has been written so that you can easily add your own
 '     compression (or encryption) functions if you want, and of course you don't have to compress nodes if you don't want to.
+'     That said, if you want to use the class without zLib, but you intend to work with PDI files coming from software that
+'     *does support compression*, make use of the getPackageFlag() function and the accompanying PDP_FLAG_ZLIB_REQUIRED flag
+'     to detect files that your version will not be able to process.
 '
 ' 3) Up to 2GB of data is theoretically supported, but you won't be able to reach that amount from within VB.  For
 '     performance reasons, this pdPackager class creates the full archive in RAM before writing it to file.  This makes it
-'     very fast, but ill-suited to extraordinarily large archive sizes.
+'     very fast, but ill-suited to extraordinarily large archive sizes.  (This is by design; sorry!)
 '
 ' 4) When reading pdPackage files, the full file contents will be cached in memory.  Do not reload the pdPackage file unless
 '     you absolutely have to!  Once it is cached, you can access individual nodes without reloading the entire file.
 '
 ' 5) This class has clsBasicBuffer as a dependency.  Thank you to dilettante for this minimal buffer class, which greatly
-'     simplifies the process of reading/writing byte streams.
-'
-'Input on the format and this class interface are always welcome, as are code fixes/changes/improvements.
-'
-'TODO: add a node function (or modify the existing one) so that a raw data pointer can be supplied.  This would allow us
-'      to add multi-dimensional arrays without needing to condense them to 1D in advance - very helpful for image data!
+'     simplifies the process of reading/writing byte streams.  Note that I have modified the required clsBasicBuffer class
+'     to operate directly on pointers (as its much faster when working with large data chunks), so you cannot drop in
+'     dilettante's original class and expect it to work.  You *must* use the modified version that comes with PhotoDemon.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -101,6 +102,32 @@ Private Type PDP_HEADER
     Reserved As Long                        'Reserved for future use; no relevance at present.
 End Type
 
+'The number of flags PD supports is relatively thin at present.  This is by design, as I don't want to use them for trivial shit.
+' Note that in an effort to keep flags as simple as possible, they are referred to by bit ordinal position [0, 31] rather than raw hex value.
+' Also note that at present, the same flags are used for both directory, data, and individual node structs.
+
+'Flags can be stored in the directory and data chunks, as well as individual nodes.  When checking flags (e.g. after a load operation),
+' the caller can specify which flag location they want checked.
+Public Enum PDP_FLAG_LOCATION
+    PDP_LOCATION_ANY = -1
+    PDP_LOCATION_DIRECTORY = 0
+    PDP_LOCATION_DATA = 1
+    PDP_LOCATION_INDIVIDUALNODE = 2
+End Enum
+
+#If False Then
+    Const PDP_LOCATION_ANY = -1, PDP_LOCATION_DIRECTORY = 0, PDP_LOCATION_DATA = 1, PDP_LOCATION_INDIVIDUALNODE = 2
+#End If
+
+' The list of currently supported flags is as follows:
+Public Enum PDP_FLAGS
+    PDP_FLAG_ZLIB_REQUIRED = 0    'There are one or more compressed entries in this chunk, so zLib will be required to read it
+End Enum
+
+#If False Then
+    Private Const PDP_FLAG_ZLIB_REQUIRED = 0
+#End If
+
 'Immediately following the PDP_HEADER is the directory chunk, which is comprised of NodeCount individual PDP_NODE structs.
 ' These structs are small and flexible, and *they have a fixed size*, meaning they can be read into a fixed-width array
 ' in a single pass.
@@ -108,7 +135,7 @@ Private Type PDP_NODE
 
     NodeName As String * 32                 '32 double-byte characters are allotted for each node name
     NodeID As Long                          'Alternatively, calling functions can specify an optional 4-byte numerical ID.  Nodes can be read by 32-char name or 4-byte ID.
-    OptionalNodeType As Long                'Calling functions can also assign each node a TYPE if they want; this value has no meaning to this pdPackager class.
+    OptionalNodeType As Long                'Calling functions can also assign each node a TYPE if they want; this value has no meaning to the pdPackager class.
     NodeFlags(0 To 3) As Long               '16 bytes of node-specific flags are allowed.  At present, these are unused.
     
     'One of the unique features of pdPackages is that each node is allotted two entries in the data chunk.  These entries don't have
@@ -156,10 +183,11 @@ Private m_NumOfNodes As Long
 ' assembling a 1D byte array from discrete individual chunks.
 Private m_DataBuffer As clsBasicBuffer
 
+
 'pdPackage operations are roughly divided into two groups:
 '
 ' - GET operations, for retrieving data from existing pdPackage files.  GET operations include:
-'        readPackageFromFile, getNodeInfo, getNodeDataByID/Index/Name
+'        readPackageFromFile, getNodeInfo, getNodeDataByID/Index/Name, getPackageFlag
 '
 ' - SET operations, for creating new pdPackage files.  SET operations include:
 '        prepareNewPackage, addNode, addNodeData, writePackageToFile
@@ -288,6 +316,17 @@ Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         Debug.Print "Node index out of range - try again with a valid node index!"
         addNodeDataFromPointer = False
         Exit Function
+    End If
+    
+    'If compression is being used, update the "zLib required" flag for both the file as a whole, and this node
+    If compressData Then
+    
+        'Overall data chunk flag
+        setBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
+        
+        'This node's flag
+        setBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
+        
     End If
     
     'Update the pre-compression values for this data chunk.
@@ -783,6 +822,98 @@ Public Function init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveIni
     
     'This function will return TRUE if it considers zLib to be available, and FALSE if it does not.
     init_ZLib = m_ZLibAvailable
+
+End Function
+
+'Set an arbitrary 1-bit position [0-31] in a Long-type value to either 1 or 0.
+' Inputs:
+'  1) position of the flag, which must be in the range [0, 31]
+'  2) value of the flag, TRUE for 1, FALSE for 0
+'  3) The Long-type value where you want the flag placed
+Private Sub setBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, ByRef copyOfDstLong As Long)
+
+    If (flagPosition >= 0) And (flagPosition <= 31) Then
+    
+        'Create a bitmask, using flagPosition to determine bit offset
+        Dim longMask As Long
+        If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
+        
+        'Write a 1 flag
+        If flagValue Then
+        
+            'Blend the flag with the source Long using OR, which will force the target bit to 1 while preserving the rest of the Long's contents
+            copyOfDstLong = copyOfDstLong Or longMask
+        
+        'Write  a 0 flag
+        Else
+        
+            'Blend the INVERSE flag with the source Long, which will force the target bit to 0 while preserving the rest of the Long's contents
+            copyOfDstLong = copyOfDstLong And Not longMask
+        
+        End If
+        
+    Else
+        Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
+    End If
+
+End Sub
+
+'Retrieve an arbitrary 1-bit position [0-31] in a Long-type value.
+' Inputs:
+'  1) position of the flag, which must be in the range [0, 31]
+'  2) The Long from which you want the bit retrieved
+Private Function getBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
+
+    If (flagPosition >= 0) And (flagPosition <= 31) Then
+    
+        'Create a bitmask, using flagPosition to determine bit offset
+        Dim longMask As Long
+        If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
+        
+        getBitFlag = ((srcLong And longMask) <> 0)
+        
+    Else
+        Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
+    End If
+
+End Function
+
+'Once a package has been loaded from file, you can use this function to check various flags in the file
+Public Function getPackageFlag(ByVal flagToCheck As PDP_FLAGS, Optional ByVal checkLocation As PDP_FLAG_LOCATION = PDP_LOCATION_ANY, Optional ByVal nodeIndex As Long = 0) As Boolean
+
+    'Check the relevant flag location
+    Select Case checkLocation
+    
+        'Any location
+        Case PDP_LOCATION_ANY
+        
+            'Check directory and data flags first
+            getPackageFlag = getBitFlag(flagToCheck, m_FileHeader.DirectoryFlags(0)) Or getBitFlag(flagToCheck, m_FileHeader.DataFlags(0))
+            
+            'If the flag is still false, scan individual nodes, looking for a hit
+            If Not getPackageFlag Then
+            
+                Dim i As Long
+                For i = 0 To m_NumOfNodes - 1
+                    getPackageFlag = getPackageFlag Or getBitFlag(flagToCheck, m_NodeDirectory(i).NodeFlags(0))
+                    If getPackageFlag Then Exit For
+                Next i
+            
+            End If
+        
+        'Directory chunk flags
+        Case PDP_LOCATION_DIRECTORY
+            getPackageFlag = getBitFlag(flagToCheck, m_FileHeader.DirectoryFlags(0))
+        
+        'Data chunk flags
+        Case PDP_LOCATION_DATA
+            getPackageFlag = getBitFlag(flagToCheck, m_FileHeader.DataFlags(0))
+        
+        'Specific node flags; if used, we'd better hope the user supplied the right node index!
+        Case PDP_LOCATION_INDIVIDUALNODE
+            getPackageFlag = getBitFlag(flagToCheck, m_NodeDirectory(nodeIndex).NodeFlags(0))
+    
+    End Select
 
 End Function
 
