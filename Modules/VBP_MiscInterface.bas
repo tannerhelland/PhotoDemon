@@ -1362,9 +1362,20 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     ' Otherwise, exit now.
     If StrComp(m_PrevMessage, tmpDupeCheckString, vbBinaryCompare) <> 0 Then
         
-        'In debug mode, mirror the message output to PD's central Debugger
+        'In debug mode, mirror the message output to PD's central Debugger.  Note that this behavior can be overridden by
+        ' supplying the string "DONOTLOG" as the final entry in the ParamArray.
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction tmpDupeCheckString, PDM_USER_MESSAGE
+            If IsMissing(ExtraText) Then
+                pdDebug.LogAction tmpDupeCheckString, PDM_USER_MESSAGE
+            Else
+            
+                'Check the last param passed.  If it's the string "DONOTLOG", do not log this entry.  (PD sometimes uses this
+                ' to avoid logging useless data, like layer hover events or download updates.)
+                If StrComp(CStr(ExtraText(UBound(ExtraText))), "DONOTLOG", vbTextCompare) <> 0 Then
+                    pdDebug.LogAction tmpDupeCheckString, PDM_USER_MESSAGE
+                End If
+            
+            End If
         #End If
         
         'Cache the contents of the untranslated message, so we can check for duplicates on the next message request

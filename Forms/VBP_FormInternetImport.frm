@@ -284,10 +284,16 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
             
             If downloadSize <> 0 Then
                 SetProgBarVal totalBytesRead
-                Message "Downloading file (%1 of %2 bytes received)...", totalBytesRead, downloadSize
+                
+                'Display a download update in the message area, but do not log it in the debugger (as there may be
+                ' many such notifications, and we don't want to inflate the log unnecessarily)
+                #If DEBUGMODE = 1 Then
+                    Message "Downloading file (%1 of %2 bytes received)...", totalBytesRead, downloadSize, "DONOTLOG"
+                #Else
+                    Message "Downloading file (%1 of %2 bytes received)...", totalBytesRead, downloadSize
+                #End If
+                
             End If
-            
-            'DoEvents
             
         'Carry on
         Loop
