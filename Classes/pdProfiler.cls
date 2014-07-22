@@ -16,7 +16,8 @@ Attribute VB_Exposed = False
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/June/14
 'Last updated: 21/July/14
-'Last update: add support for timing databases, so we can average performance over multiple runs
+'Last update: add support for timing databases, so we can track performance (and associated metrics, like stddevs)
+'              across multiple sessions
 '
 'As PhotoDemon has grown more complex, I've had to be more careful about overall program performance.  Unfortunately,
 ' performance is a tough thing to track using default VB code, hence the existence of this class.
@@ -42,6 +43,19 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+
+'The profiler supports sorting by several different criteria.  In addition to single-run timing values, we can also sort data
+' by historical mean, standard deviation, and CV (to see which times are most variable).
+Private Enum PD_PROFILE_SORT_CRITERIA
+    PDPSORT_SESSION_TIME = 0
+    PDPSORT_MEAN = 1
+    PDPSORT_STDDEV = 2
+    PDPSORT_CV = 3
+End Enum
+
+#If False Then
+    Private Const PDPSORT_SESSION_TIME = 0, PDPSORT_MEAN = 1, PDPSORT_STDDEV = 2, PDPSORT_CV = 3
+#End If
 
 'TIMECAPS is used to retrieve the best available resolution (wPeriodMin) for the current system timer.
 Private Type TIMECAPS
@@ -70,6 +84,10 @@ Private Type PD_TIMER_EVENT
     StartTick As Long
     EndTick As Long
     ElapsedTime As Long
+    HistoricalMean As Double        'NOTE: this value is only used if database support is active
+    HistoricalStdDev As Double      'NOTE: this value is only used if database support is active
+    CoefficientVariation As Double  'NOTE: this value is only used if database support is active
+    NumHistoricalEntries As Long    'NOTE: this value is only used if database support is active
 End Type
 
 Private Const NUM_OF_TIMER_EVENTS As Long = 64
@@ -87,6 +105,10 @@ Private m_TimeSpentProfiling As Long
 ' to specify a report title.
 Private m_ReportName As String
 
+'This class now supports the use of custom "databases", which is a fancy way of saying that alongside a human-readable report,
+' it can also save its raw data to a small XML file.  If invoked again, it will load data from its previous run, then average
+' it all together as a single running total - very helpful for timing data with large variances.
+Private m_UseDatabase As Boolean
 
 Private Sub Class_Initialize()
 
@@ -100,8 +122,14 @@ Private Sub Class_Initialize()
             
 End Sub
 
-'Call this function to START profile recording
-Public Sub startProfiling(Optional ByVal reportName As String = "Generic report", Optional ByVal trackMultipleRuns As Boolean = False)
+'Call this function to START profile recording.
+' Inputs:
+' 1) reportName - String that defines the purpose of the report.  Note that it will also be used as the filename of the report.
+' 2) useDatabase - Store timing data between runs, and report means, std devs, and CVs in addition to per-session values.
+Public Sub startProfiling(Optional ByVal reportName As String = "Generic report", Optional ByVal useDatabase As Boolean = False)
+
+    'Note the use of a database.  (We won't actually do anything with this value until the log session ends, FYI.)
+    m_UseDatabase = useDatabase
 
     'Cache the report name
     m_ReportName = reportName
@@ -189,8 +217,8 @@ End Sub
 
 'Generate a report on this profile instance.  Optional parameters may be added in the future to make the data easier to use.
 Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
-
-    'For convenience, assemble the report into one giant string.  We can decide where to stick the data later.
+    
+    'For convenience, assemble the report into one giant string.  We will decide where to stick the data later.
     Dim reportString As String
     reportString = ""
     
@@ -207,45 +235,56 @@ Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
     reportString = reportString & "Number of events tracked: " & m_CurrentEventIndex & vbCrLf
     reportString = reportString & "Total time taken: " & FormatNumber(totalTime / 1000, , vbTrue, vbFalse, vbUseDefault) & " seconds" & vbCrLf & vbCrLf
     
-    'Next, report each event individually, in original order
-    reportString = reportString & "Timing for individual events, in original order:" & vbCrLf & vbCrLf
+    'Next, report each event individually, but sorted from longest to shortest
+    reportString = reportString & "Timing for THIS SESSION, with events sorted from longest to shortest:" & vbCrLf & vbCrLf
+    
+    sortProfileEntries PDPSORT_SESSION_TIME
     
     Dim i As Long
     For i = 0 To m_CurrentEventIndex - 1
-        reportString = reportString & vbTab & CStr(m_Events(i).Index) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).ElapsedTime, 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
-    Next i
-    
-    reportString = reportString & vbCrLf
-    
-    'Next, report each event individually, but sorted from longest to shortest
-    reportString = reportString & "Timing for individual events, sorted from longest to shortest:" & vbCrLf & vbCrLf
-    
-    sortProfileEntries
-    
-    For i = 0 To m_CurrentEventIndex - 1
         reportString = reportString & vbTab & CStr(i) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).ElapsedTime, 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
     Next i
+    
+    'If the user has enabled database support, and a database file exists, update our recorded times with any
+    ' saved values from previous runs.
+    If m_UseDatabase And FileExist(getDatabaseFilename) Then
+    
+        'Retrieve values from file
+        retrieveDatabase
+    
+        'Display results by their historical mean time taken
+        reportString = reportString & vbCrLf & "Mean time across ALL RECORDED SESSIONS, with events sorted from longest to shortest:" & vbCrLf & vbCrLf
+        
+        sortProfileEntries PDPSORT_MEAN
+        
+        For i = 0 To m_CurrentEventIndex - 1
+            reportString = reportString & vbTab & CStr(i) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).HistoricalMean, 0, vbTrue, vbFalse, vbFalse) & " ± " & FormatNumber(Sqr(Abs(m_Events(i).HistoricalStdDev / (m_Events(i).NumHistoricalEntries - 1))), 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
+        Next i
+        
+        'Display results by their coefficient of deviation, which is a dimensionless number defined as StdDev / Mean;
+        ' This tells us which timing values are most variable.
+        reportString = reportString & vbCrLf & "Coefficient of variation across ALL RECORDED SESSIONS, with events sorted from highest to lowest magnitude:" & vbCrLf & vbCrLf
+        
+        sortProfileEntries PDPSORT_CV
+        
+        For i = 0 To m_CurrentEventIndex - 1
+            reportString = reportString & vbTab & CStr(i) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).CoefficientVariation, 4, vbTrue, vbFalse, vbFalse) & vbCrLf
+        Next i
+        
+    End If
     
     reportString = reportString & vbCrLf & "-- End of timing report --" & vbCrLf
     
     'If an output path was specified, write the timing report out to file now
     If writeToFile Then
     
-        Dim dstTextFullPath As String, dstFileName As String
-        dstFileName = "pdProfileLog_" & m_ReportName & ".log"
-        
-        'Make sure the report name can be used as a valid filename
-        File_And_Path_Handling.makeValidWindowsFilename dstFileName
-        If InStr(1, dstFileName, " ") > 0 Then dstFileName = Replace(dstFileName, " ", "_")
-        
-        'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
-        ' in debug mode, we know that folder exists.
-        dstTextFullPath = g_UserPreferences.getDebugPath & dstFileName
+        Dim logFile As String
+        logFile = getReportFilename()
     
         'If the file already exists, remove it.  (I have also added a DoEvents here after noticing random errors in this
         ' sub - it's important to wait for the file to be deleted, so that the write attempt below does not fail.)
-        If FileExist(dstTextFullPath) Then
-            Kill dstTextFullPath
+        If FileExist(logFile) Then
+            Kill logFile
             DoEvents
         End If
     
@@ -253,19 +292,181 @@ Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
         Dim fileNum As Integer
         fileNum = FreeFile
         
-        Open dstTextFullPath For Output As #fileNum
+        Open logFile For Output As #fileNum
             Print #fileNum, reportString
         Close #fileNum
+        
+        'If the user wants us to use a persistent database for timing data, write out the current session's data now.
+        If m_UseDatabase Then writeUpdatedDatabase
         
     'If not writing the data out to file, dump it to the debug window instead
     Else
         Debug.Print reportString
     End If
+    
+End Sub
+
+'After a timing session completes, use this function to write a new database out to file.
+Private Sub retrieveDatabase()
+
+    'As always, we'll use an XML engine to retrieve the database from file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Load the XML file into memory
+    xmlEngine.loadXMLFile getDatabaseFilename()
+    
+    'Check for a few necessary tags, just to make sure this is actually a PhotoDemon XML file
+    If xmlEngine.isPDDataType("Timing Database") And xmlEngine.validateLoadedXMLData("reportName") Then
+    
+        Dim oldMean As Double, oldStdDev As Double
+    
+        'Next, loop through all entries in the current timing database.  For each one, try to find a match
+        ' in the XML database.
+        Dim i As Long, tagPosition As Long
+        For i = 0 To m_CurrentEventIndex - 1
+            
+            'See if the XML engine can locate an entry for this event
+            tagPosition = xmlEngine.getLocationOfTagPlusAttribute("profileEvent", "name", Replace(m_Events(i).Name, " ", "_"))
+            
+            'If an entry was found, retrieve it
+            If tagPosition > 0 Then
+            
+                m_Events(i).NumHistoricalEntries = xmlEngine.getUniqueTag_Long("numRecordedEntries", m_Events(i).NumHistoricalEntries, tagPosition)
+                oldMean = xmlEngine.getUniqueTag_Double("eventMean", m_Events(i).HistoricalMean, tagPosition)
+                oldStdDev = xmlEngine.getUniqueTag_Double("eventStdDev", m_Events(i).HistoricalStdDev, tagPosition)
+                
+                'We now need to factor the current timing results into the historical average.  We do this using a very cool
+                ' optimization from a 1962 paper by BP Welford (see http://www.johndcook.com/standard_deviation.html).
+                ' What makes his optimization so great is not only that it allows us to accurately compute a running standard
+                ' deviation without knowing all past entries, but that it allows us to do it *more accurately* when considering
+                ' the rounding errors introduced by silicon-based floating-point arithmetic.  Sweet!
+                m_Events(i).NumHistoricalEntries = m_Events(i).NumHistoricalEntries + 1
+                m_Events(i).HistoricalMean = oldMean + (m_Events(i).ElapsedTime - oldMean) / m_Events(i).NumHistoricalEntries
+                m_Events(i).HistoricalStdDev = (oldStdDev + (m_Events(i).ElapsedTime - oldMean) * (m_Events(i).ElapsedTime - m_Events(i).HistoricalMean))
+                
+                'Calculate a coefficient of variation for the new values
+                If m_Events(i).HistoricalMean > 0 Then
+                    m_Events(i).CoefficientVariation = Sqr(Abs(m_Events(i).HistoricalStdDev)) / m_Events(i).HistoricalMean
+                Else
+                    m_Events(i).CoefficientVariation = 0
+                End If
+                                
+                'Update complete!  Doesn't get much easier than this...
+                
+            'The entry was not found.  Populate it with default values.
+            Else
+            
+                m_Events(i).NumHistoricalEntries = 1
+                m_Events(i).HistoricalMean = m_Events(i).ElapsedTime
+                m_Events(i).HistoricalStdDev = 0
+            
+            End If
+            
+        Next i
+    
+    End If
+    
+End Sub
+
+'After a timing session completes, use this function to write a new database out to file.
+Private Sub writeUpdatedDatabase()
+
+    'As always, we'll use an XML engine to write the database to file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    xmlEngine.prepareNewXML "Timing Database"
+    
+    'Write out the name of the report, so we can check it when the database is loaded in the future
+    xmlEngine.writeTag "reportName", m_ReportName
+    
+    'Not technically necessary, but mark how many events we've recorded
+    xmlEngine.writeTag "eventsTracked", m_CurrentEventIndex
+    
+    xmlEngine.writeBlankLine
+    xmlEngine.writeComment "This file is a performance report automatically generated by a non-production PhotoDemon build."
+    xmlEngine.writeComment "You can delete this file without consequence; it only exists to help PD's developers track down bugs."
+    xmlEngine.writeBlankLine
+    
+    'Write each timed event to file
+    Dim i As Long
+    For i = 0 To m_CurrentEventIndex - 1
+    
+        'Write a header for each entry
+        xmlEngine.writeTagWithAttribute "profileEvent", "name", Replace(m_Events(i).Name, " ", "_"), "", True
+        
+        'Before writing anything, if this is the first time writing the database, update each entry's historical values
+        ' to match the current entry.
+        If m_Events(i).NumHistoricalEntries = 0 Then
+            m_Events(i).NumHistoricalEntries = 1
+            m_Events(i).HistoricalMean = m_Events(i).ElapsedTime
+            m_Events(i).HistoricalStdDev = 0
+        End If
+        
+        'Dump all relevant data from the type
+        With xmlEngine
+            .writeTag "numRecordedEntries", m_Events(i).NumHistoricalEntries
+            .writeTag "eventMean", m_Events(i).HistoricalMean
+            .writeTag "eventStdDev", m_Events(i).HistoricalStdDev
+        End With
+        
+        'Close this entry
+        xmlEngine.closeTag "profileEvent"
+        xmlEngine.writeBlankLine
+            
+    Next i
+    
+    'Write the file
+    xmlEngine.writeXMLToFile getDatabaseFilename()
 
 End Sub
 
+'Once a report's name has been set, use the following two functions to retrieve the report's log filename and database filename,
+' both of which adhere to strict patterns, which is how we can track them between runs!
+Private Function getReportFilename()
+
+    'Generate a default filename, using the report title
+    Dim dstFilename As String
+    dstFilename = "pdProfileLog_" & m_ReportName
+    
+    'IDE and compiled .exe are tracked separately
+    If Not g_IsProgramCompiled Then dstFilename = dstFilename & "_IDE"
+    
+    dstFilename = dstFilename & ".log"
+    
+    'Make sure the report name can be used as a valid filename
+    File_And_Path_Handling.makeValidWindowsFilename dstFilename
+    If InStr(1, dstFilename, " ") > 0 Then dstFilename = Replace(dstFilename, " ", "_")
+    
+    'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
+    ' in debug mode, we know that folder exists.
+    getReportFilename = g_UserPreferences.getDebugPath & dstFilename
+
+End Function
+
+Private Function getDatabaseFilename()
+
+    'Generate a default filename, using the report title
+    Dim dstFilename As String
+    dstFilename = "pdProfileLog_" & m_ReportName
+    
+    'IDE and compiled .exe are tracked separately
+    If Not g_IsProgramCompiled Then dstFilename = dstFilename & "_IDE"
+    
+    dstFilename = dstFilename & ".xml"
+    
+    'Make sure the report name can be used as a valid filename
+    File_And_Path_Handling.makeValidWindowsFilename dstFilename
+    If InStr(1, dstFilename, " ") > 0 Then dstFilename = Replace(dstFilename, " ", "_")
+    
+    'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
+    ' in debug mode, we know that folder exists.
+    getDatabaseFilename = g_UserPreferences.getDebugPath & dstFilename
+
+End Function
+
 'Sort the profile entries from longest to shortest time taken
-Private Sub sortProfileEntries()
+Private Sub sortProfileEntries(Optional ByVal sortCriteria As PD_PROFILE_SORT_CRITERIA = PDPSORT_SESSION_TIME)
 
     Dim i As Long, j As Long
     
@@ -273,8 +474,22 @@ Private Sub sortProfileEntries()
     For i = 0 To m_CurrentEventIndex - 1
         For j = 0 To m_CurrentEventIndex - 1
             
-            'Compare two profiled events, and if one took longer than the other, swap them
-            If m_Events(i).ElapsedTime > m_Events(j).ElapsedTime Then swapEventData m_Events(i), m_Events(j)
+            'Compare two profiled events using the supplied criteria; if one entry exceeds the other, swap 'em
+            Select Case sortCriteria
+                
+                Case PDPSORT_SESSION_TIME
+                    If m_Events(i).ElapsedTime > m_Events(j).ElapsedTime Then swapEventData m_Events(i), m_Events(j)
+                
+                Case PDPSORT_MEAN
+                    If m_Events(i).HistoricalMean > m_Events(j).HistoricalMean Then swapEventData m_Events(i), m_Events(j)
+                
+                Case PDPSORT_STDDEV
+                    If m_Events(i).HistoricalStdDev > m_Events(j).HistoricalStdDev Then swapEventData m_Events(i), m_Events(j)
+                    
+                Case PDPSORT_CV
+                    If m_Events(i).CoefficientVariation > m_Events(j).CoefficientVariation Then swapEventData m_Events(i), m_Events(j)
+                
+            End Select
             
         Next j
     Next i
