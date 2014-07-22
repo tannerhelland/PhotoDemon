@@ -46,7 +46,7 @@ Public Sub LoadTheProgram()
     Set perfCheck = New pdProfiler
     
     #If DEBUGMODE = 1 Then
-        perfCheck.startProfiling "PhotoDemon Startup"
+        perfCheck.startProfiling "PhotoDemon Startup", True
     #End If
     
     '*************************************************************************************************************************************
@@ -256,7 +256,7 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Load import/export libraries"
+        perfCheck.markEvent "Load import and export libraries"
     #End If
     
     LoadMessage "Loading import/export libraries..."
