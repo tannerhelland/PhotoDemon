@@ -20,21 +20,26 @@ Attribute VB_Exposed = False
 '              across multiple sessions
 '
 'As PhotoDemon has grown more complex, I've had to be more careful about overall program performance.  Unfortunately,
-' performance is a tough thing to track using default VB code, hence the existence of this class.
+' performance is a tough thing to track using default VB code, which is why it became necessary to write a custom
+' profiler better tailored to the kind of complex performance analysis PD needs.
 '
 'pdProfile aims to make profiling complex functions simpler, by allowing the user to break a profiling session into
 ' discrete "events", each of which gets its own timing report.  When profiling terminates, this class will automatically
-' sort each discrete event by time taken, giving me an easy way to know where I can focus my optimization efforts.
+' sort each discrete event by time taken, giving me an easy way to know where I can focus my optimization efforts.  As of
+' July '14, the class also supports measuring performance across multiple sessions, via use of the "useDatabase" parameter
+' in the initial startProfiling function.  If set to TRUE, this class will automatically write an XML database of its timing
+' findings, and on subsequent runs, the latest data will be added to the running total.  This allows for tracking historic
+' mean timings, standard variation, and coefficient of variation (e.g. how much does timing deviate) for all individual
+' events within a single report.
 '
 'Many thanks to Karl Petersen's "Measuring Optimizations for Classic VB" article (http://vb.mvps.org/articles/vsm20100518.pdf)
 ' and accompanying "StopWatch" class (http://vb.mvps.org/samples/StopWatch/), which served as my inspiration for this project.
 '
 'Because this class is meant to be as simple to use as possible *from within PD* (because it's often added for a single
 ' debugging session, then removed once a problematic area is found), I've added a number of PD-specific bits to it, like
-' automatically using the program's known Debug folder.  These PD-specific instances should be easy to strip out, but as with
-' any class that has a "pd" prefix, I haven't gone out of my way to make everything in here project-agnostic.
-'
-'NB: Use at your own risk!
+' automatically using the program's known Debug folder for file output, and automatically generating filenames from report
+' titles.  These PD-specific instances should be easy to strip out, but as with any class containing a "pd" prefix, I haven't
+' gone out of my way to make everything in here project-agnostic.  NB: Use at your own risk!
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -226,14 +231,15 @@ Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
     reportString = reportString & vbCrLf & "-- pdProfile report for " & Chr(34) & m_Events(0).Name & Chr(34) & " --" & vbCrLf
     
     'Note the data as well
-    reportString = reportString & "(Report generated at " & Format$(Now, "h:mm:ss AM/PM") & " on " & Format$(Now, "d-mmmm-yy") & ")" & vbCrLf & vbCrLf
+    reportString = reportString & "(Report updated at " & Format$(Now, "h:mm:ss AM/PM") & " on " & Format$(Now, "d-mmmm-yy") & ")" & vbCrLf & vbCrLf
     
     'Note the number of events tracked and total time
     Dim totalTime As Long
     totalTime = (m_Events(m_CurrentEventIndex - 1).EndTick - m_Events(0).StartTick) - m_TimeSpentProfiling
     
     reportString = reportString & "Number of events tracked: " & m_CurrentEventIndex & vbCrLf
-    reportString = reportString & "Total time taken: " & FormatNumber(totalTime / 1000, , vbTrue, vbFalse, vbUseDefault) & " seconds" & vbCrLf & vbCrLf
+    reportString = reportString & "Total time taken (this session): " & FormatNumber(totalTime / 1000, , vbTrue, vbFalse, vbUseDefault) & " seconds" & vbCrLf
+    reportString = reportString & "Program compiled: " & g_IsProgramCompiled & vbCrLf & vbCrLf
     
     'Next, report each event individually, but sorted from longest to shortest
     reportString = reportString & "Timing for THIS SESSION, with events sorted from longest to shortest:" & vbCrLf & vbCrLf
@@ -242,7 +248,7 @@ Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
     
     Dim i As Long
     For i = 0 To m_CurrentEventIndex - 1
-        reportString = reportString & vbTab & CStr(i) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).ElapsedTime, 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
+        reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).ElapsedTime, 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
     Next i
     
     'If the user has enabled database support, and a database file exists, update our recorded times with any
@@ -258,7 +264,7 @@ Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
         sortProfileEntries PDPSORT_MEAN
         
         For i = 0 To m_CurrentEventIndex - 1
-            reportString = reportString & vbTab & CStr(i) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).HistoricalMean, 0, vbTrue, vbFalse, vbFalse) & " ± " & FormatNumber(Sqr(Abs(m_Events(i).HistoricalStdDev / (m_Events(i).NumHistoricalEntries - 1))), 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
+            reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).HistoricalMean, 0, vbTrue, vbFalse, vbFalse) & " ± " & FormatNumber(Sqr(Abs(m_Events(i).HistoricalStdDev / (m_Events(i).NumHistoricalEntries - 1))), 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
         Next i
         
         'Display results by their coefficient of deviation, which is a dimensionless number defined as StdDev / Mean;
@@ -268,7 +274,7 @@ Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
         sortProfileEntries PDPSORT_CV
         
         For i = 0 To m_CurrentEventIndex - 1
-            reportString = reportString & vbTab & CStr(i) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).CoefficientVariation, 4, vbTrue, vbFalse, vbFalse) & vbCrLf
+            reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).CoefficientVariation, 4, vbTrue, vbFalse, vbFalse) & vbCrLf
         Next i
         
     End If
