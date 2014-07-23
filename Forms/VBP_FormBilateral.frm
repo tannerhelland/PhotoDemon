@@ -159,6 +159,26 @@ Begin VB.Form FormBilateral
       SigDigits       =   2
       Value           =   2
    End
+   Begin PhotoDemon.smartCheckBox chkSeparable 
+      Height          =   480
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   4680
+      Width           =   3750
+      _ExtentX        =   6615
+      _ExtentY        =   847
+      Caption         =   "use estimation to improve performance"
+      Value           =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.Label Label2 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
@@ -270,20 +290,27 @@ Attribute VB_Exposed = False
 'Bilateral Smoothing Form
 'Copyright ©2014 by Audioglider
 'Created: 19/June/14
-'Last updated: 27/June/14
-'Last update: initial round of low-hanging optimizations and improvements
+'Last updated: 23/July/14
+'Last update: add a quasi-separable implementation that's about 20x faster than the naive one, at a minimal cost
+'              to quality (in the Y-dimension; x should be roughly identical to the naive result).
 '
-'This filter performs "selective" gaussian smoothing of areas of same color
-' (domains) which removes noise and contrast artifacts while perserving
-' sharp edges.
+'This filter performs selective gaussian smoothing of continuous areas of same color (domains), which removes noise
+' and contrast artifacts while perserving sharp edges.
 '
-'The two major parameters "spatial factor" and "color factor" define the
-' results of the filter. By changing them you can achieve either only noise
-' reduction with little change to the image or achieve a silky effect
-' to the entire image.
+'The two major parameters "spatial factor" and "color factor" define the primary results of the filter. By modifying
+' these parameters, users can achieve anything from light noise reduction with little change to the overall image,
+' to a silky smooth cartoon-like effect across wide swaths of the image.
 '
 'More details on the algorithm can be found at:
 ' http://www.cs.duke.edu/~tomasi/papers/tomasi/tomasiIccv98.pdf
+'
+'In July '14, a quasi-separable variant of the function was added.  I call it "quasi-separable" because we use some
+' modifications to compensate for bilateral smoothing not actually being mathematically separable.  (The spatial
+' domain parameter is, but the color one is not.)  This provides a huge performance boost at a slight quality
+' trade-off, so I've left the original implementation available via toggle.
+'
+'For details on the separable approach, see:
+' http://homepage.tudelft.nl/e3q6n/publications/2005/ICME2005_TPLV.pdf
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -295,8 +322,8 @@ Option Explicit
 Private Const maxKernelSize As Long = 256
 Private Const colorsCount As Long = 256
 
-Dim spatialFunc() As Double
-Dim colorFunc() As Double
+Private spatialFunc() As Double
+Private colorFunc() As Double
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -325,6 +352,20 @@ Private Sub initColorFunc(ByVal colorFactor As Double, ByVal colorPower As Doubl
         For k = 0 To colorsCount - 1
             colorFunc(i, k) = Exp(-0.5 * ((Abs(i - k) / colorFactor) ^ colorPower))
         Next k
+    Next i
+    
+End Sub
+
+'Exact same function as initColorFunc, above, but in one dimension only.  We use this to implement a quasi-separable
+' bilateral smoothing variant (see BilateralSmoothingSeparable(), below).
+Private Sub initSpatialFuncSep(ByVal kernelSize As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double)
+    
+    Dim i As Long
+    
+    ReDim spatialFunc(-kernelSize To kernelSize) As Double
+    
+    For i = -kernelSize To kernelSize
+        spatialFunc(i) = Exp(-0.5 * (Abs(i) / spatialFactor) ^ spatialPower)
     Next i
     
 End Sub
@@ -509,8 +550,311 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     
 End Sub
 
+'Approximately the same function as BilateralSmoothing, above, but using a separable implementation to hugely boost performance.
+' There is a quality trade-off, as the spatial parameter is separable but the color one is not, but we use some tricks to
+' mitigate this.  All told, the separable function roughly adheres to the expected PxQ / (P+Q) performance boost, and my own
+' testing shows a 10 megapixel photo at radius 25 to take just 5% of the time that a naive convolution does
+' (naive: 302 seconds, separable: 14 seconds).
+Public Sub BilateralSmoothingSeparable(ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+    
+    'As a convenience to the user, we display spatial and color factors with a [0, 100].  The color factor can
+    ' actually be bumped a bit, to [0, 255], so apply that now.
+    colorFactor = colorFactor * 2.55
+    
+    'Spatial factor is left on a [0, 100] scale as a convenience to the user, but any value larger than about 10
+    ' tends to produce meaningless results.  As such, shrink the input by a factor of 10.
+    spatialFactor = spatialFactor / 10
+    If spatialFactor < 1# Then spatialFactor = 1#
+    
+    'Spatial power is currently hidden from the user.  As such, default it to value 2.
+    spatialPower = 2#
+    
+    If Not toPreview Then Message "Applying bilateral smoothing..."
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickValDst As Long, QuickValSrc As Long, QuickYSrc As Long, qvDepth As Long
+    qvDepth = curDIBValues.BytesPerPixel
+    
+    'If this is a preview, we need to adjust the kernal
+    If toPreview Then
+        kernelRadius = kernelRadius * curDIBValues.previewModifier
+    Else
+        SetProgBarMax finalX * 2
+    End If
+    
+    'The kernel must be at least 1 in either direction; otherwise, we'll get range errors
+    If kernelRadius < 1 Then kernelRadius = 1
+    
+    'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent already-processed pixels from affecting the results of later pixels.)
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    
+    'To simplify the edge-handling required by this function, we're actually going to resize the source DIB with
+    ' clamped pixel edges.  This removes the need for any edge handling whatsoever.
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    padDIBClampedPixels kernelRadius, kernelRadius, workingDIB, srcDIB
+    
+    prepSafeArray srcSA, srcDIB
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
+    'As part of our separable implementation, we'll be producing an intermediate copy of the filter in either direction
+    Dim midDIB As pdDIB
+    Set midDIB = New pdDIB
+    midDIB.createFromExistingDIB srcDIB
+    
+    Dim midImageData() As Byte
+    Dim midSA As SAFEARRAY2D
+    prepSafeArray midSA, midDIB
+    CopyMemory ByVal VarPtrArray(midImageData()), VarPtr(midSA), 4
+        
+    'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+        
+    'Color variables
+    Dim srcR As Long, srcG As Long, srcB As Long
+    Dim newR As Long, newG As Long, newB As Long
+    Dim srcR0 As Long, srcG0 As Long, srcB0 As Long
+    
+    Dim sCoefR As Double, sCoefG As Double, sCoefB As Double
+    Dim sMembR As Double, sMembG As Double, sMembB As Double
+    Dim coefR As Double, coefG As Double, coefB As Double
+    Dim xOffset As Long, yOffset As Long, xMax As Long, yMax As Long, xMin As Long, yMin As Long
+    Dim spacialFuncCache As Double
+    Dim srcPixelX As Long, srcPixelY As Long
+    Dim i As Long, k As Long
+    
+    'For performance improvements, color and spatial functions are precalculated prior to starting filter.
+    initSpatialFuncSep kernelRadius, spatialFactor, spatialPower
+    initColorFunc colorFactor, colorPower
+    
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickValSrc = (x + kernelRadius) * qvDepth
+    For y = initY To finalY
+    
+        sCoefR = 0
+        sCoefG = 0
+        sCoefB = 0
+        sMembR = 0
+        sMembG = 0
+        sMembB = 0
+        
+        QuickYSrc = y + kernelRadius
+        
+        srcR0 = srcImageData(QuickValSrc + 2, QuickYSrc)
+        srcG0 = srcImageData(QuickValSrc + 1, QuickYSrc)
+        srcB0 = srcImageData(QuickValSrc, QuickYSrc)
+        
+        'Cache y-loop boundaries so that they do not have to be re-calculated on the interior loop.  (X boundaries
+        ' don't matter, but since we're doing it, for y, mirror it to x.)
+        xMax = x + kernelRadius
+        xMin = x - kernelRadius
+        
+        For xOffset = xMin To xMax
+                
+            'Cache the source pixel's x and y locations
+            srcPixelX = (xOffset + kernelRadius) * qvDepth
+            
+            srcR = srcImageData(srcPixelX + 2, QuickYSrc)
+            srcG = srcImageData(srcPixelX + 1, QuickYSrc)
+            srcB = srcImageData(srcPixelX, QuickYSrc)
+            
+            spacialFuncCache = spatialFunc(xOffset - x)
+            
+            'As a general rule, when convolving data against a kernel, any kernel value below 3-sigma can effectively
+            ' be ignored (as its contribution to the convolution total is not statistically meaningful). Rather than
+            ' calculating an actual sigma against a standard deviation for this kernel, we can approximate a threshold
+            ' because we know that our source data - RGB colors - will only ever be on a [0, 255] range.  As such,
+            ' let's assume that any spatial value below 1 / 255 (roughly 0.0039) is unlikely to have a meaningful
+            ' impact on the final image; by simply ignoring values below that limit, we can save ourselves additional
+            ' processing time when the incoming spatial parameters are low (as is common for the cartoon-like effect).
+            If spacialFuncCache > 0.0039 Then
+                
+                coefR = spacialFuncCache * colorFunc(srcR, srcR0)
+                coefG = spacialFuncCache * colorFunc(srcG, srcG0)
+                coefB = spacialFuncCache * colorFunc(srcB, srcB0)
+                
+                'We could perform an additional 3-sigma check here to account for meaningless colorFunc values, but
+                ' because we'd have to perform the check for each of R, G, and B, we risk inadvertently increasing
+                ' processing time when the color modifiers are consistently high.  As such, I think it's best to
+                ' limit our check to just the spatial modifier at present.
+                
+                sCoefR = sCoefR + coefR
+                sCoefG = sCoefG + coefG
+                sCoefB = sCoefB + coefB
+                
+                sMembR = sMembR + coefR * srcR
+                sMembG = sMembG + coefG * srcG
+                sMembB = sMembB + coefB * srcB
+                
+            End If
+            
+        Next xOffset
+        
+        newR = sMembR \ sCoefR
+        newG = sMembG \ sCoefG
+        newB = sMembB \ sCoefB
+                
+        'Assign the new values to each color channel
+        midImageData(QuickValSrc + 2, QuickYSrc) = newR
+        midImageData(QuickValSrc + 1, QuickYSrc) = newG
+        midImageData(QuickValSrc, QuickYSrc) = newB
+        
+    Next y
+        If Not toPreview Then
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x
+            End If
+        End If
+    Next x
+    
+    'Our first pass is now complete, and the results have been cached inside midImageData.  To prevent edge distortion,
+    ' we are now going to trim the mid DIB, then re-pad it with its processed edge values.
+    
+    'Release our array
+    CopyMemory ByVal VarPtrArray(midImageData), 0&, 4
+    Erase midImageData
+    
+    'Copy the contents of midDIB to the working DIB
+    BitBlt workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, midDIB.getDIBDC, kernelRadius, kernelRadius, vbSrcCopy
+    
+    'Re-pad working DIB
+    padDIBClampedPixels kernelRadius, kernelRadius, workingDIB, midDIB
+    
+    'Reclaim a pointer to the DIB data
+    prepSafeArray midSA, midDIB
+    CopyMemory ByVal VarPtrArray(midImageData()), VarPtr(midSA), 4
+    
+    'We will now apply a second bilateral pass, in the Y direction, using midImageData as the base.
+    
+    'Loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickValDst = x * qvDepth
+        QuickValSrc = (x + kernelRadius) * qvDepth
+    For y = initY To finalY
+    
+        sCoefR = 0
+        sCoefG = 0
+        sCoefB = 0
+        sMembR = 0
+        sMembG = 0
+        sMembB = 0
+        
+        QuickYSrc = y + kernelRadius
+        
+        'IMPORTANT!  One of the tricks we use in this function is that on this second pass, we use the unmodified
+        ' (well, null-padded but otherwise unmodified) copy of the image as the base of our kernel.  We then
+        ' convolve those original RGB values against the already-convolved RGB values from the first pass, which
+        ' gives us a better approximation of the naive convolution's "true" result.
+        srcR0 = srcImageData(QuickValSrc + 2, QuickYSrc)
+        srcG0 = srcImageData(QuickValSrc + 1, QuickYSrc)
+        srcB0 = srcImageData(QuickValSrc, QuickYSrc)
+        
+        'Cache y-loop boundaries so that they do not have to be re-calculated on the interior loop.  (X boundaries
+        ' don't matter, but since we're doing it, for y, mirror it to x.)
+        yMin = QuickYSrc - kernelRadius
+        yMax = QuickYSrc + kernelRadius
+        
+            For yOffset = yMin To yMax
+                
+                'Cache the kernel pixel's x and y locations
+                srcR = midImageData(QuickValSrc + 2, yOffset)
+                srcG = midImageData(QuickValSrc + 1, yOffset)
+                srcB = midImageData(QuickValSrc, yOffset)
+                
+                spacialFuncCache = spatialFunc(yOffset - QuickYSrc)
+                
+                'As a general rule, when convolving data against a kernel, any kernel value below 3-sigma can effectively
+                ' be ignored (as its contribution to the convolution total is not statistically meaningful). Rather than
+                ' calculating an actual sigma against a standard deviation for this kernel, we can approximate a threshold
+                ' because we know that our source data - RGB colors - will only ever be on a [0, 255] range.  As such,
+                ' let's assume that any spatial value below 1 / 255 (roughly 0.0039) is unlikely to have a meaningful
+                ' impact on the final image; by simply ignoring values below that limit, we can save ourselves additional
+                ' processing time when the incoming spatial parameters are low (as is common for the cartoon-like effect).
+                If spacialFuncCache > 0.0039 Then
+                    
+                    coefR = spacialFuncCache * colorFunc(srcR, srcR0)
+                    coefG = spacialFuncCache * colorFunc(srcG, srcG0)
+                    coefB = spacialFuncCache * colorFunc(srcB, srcB0)
+                    
+                    'We could perform an additional 3-sigma check here to account for meaningless colorFunc values, but
+                    ' because we'd have to perform the check for each of R, G, and B, we risk inadvertently increasing
+                    ' processing time when the color modifiers are consistently high.  As such, I think it's best to
+                    ' limit our check to just the spatial modifier at present.
+                    
+                    sCoefR = sCoefR + coefR
+                    sCoefG = sCoefG + coefG
+                    sCoefB = sCoefB + coefB
+                    
+                    sMembR = sMembR + coefR * srcR
+                    sMembG = sMembG + coefG * srcG
+                    sMembB = sMembB + coefB * srcB
+                    
+                End If
+                        
+            Next yOffset
+        
+        
+        newR = sMembR \ sCoefR
+        newG = sMembG \ sCoefG
+        newB = sMembB \ sCoefB
+                
+        'Assign the new values to each color channel
+        dstImageData(QuickValDst + 2, y) = newR
+        dstImageData(QuickValDst + 1, y) = newG
+        dstImageData(QuickValDst, y) = newB
+        
+    Next y
+        If Not toPreview Then
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal finalX + x
+            End If
+        End If
+    Next x
+    
+    'With our work complete, point all ImageData() arrays away from their DIBs and deallocate them
+    CopyMemory ByVal VarPtrArray(midImageData), 0&, 4
+    Erase midImageData
+    Set midDIB = Nothing
+    
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    Erase srcImageData
+    Set srcDIB = Nothing
+    
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    Erase dstImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+    
+End Sub
+
+Private Sub chkSeparable_Click()
+    updatePreview
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Bilateral smoothing", , buildParams(sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value), UNDO_LAYER
+    Process "Bilateral smoothing", , buildParams(sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, CBool(chkSeparable)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -534,6 +878,10 @@ Private Sub Form_Activate()
     'Display the previewed effect in the neighboring window
     updatePreview
     
+End Sub
+
+Private Sub Form_Load()
+    chkSeparable.ToolTipText = "Noise reduction is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a huge speed boost at the cost of slightly lower quality."
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -561,7 +909,17 @@ Private Sub sltSpatialFactor_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then BilateralSmoothing sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, fxPreview
+
+    If cmdBar.previewsAllowed Then
+    
+        If CBool(chkSeparable) Then
+            BilateralSmoothingSeparable sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, fxPreview
+        Else
+            BilateralSmoothing sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, fxPreview
+        End If
+        
+    End If
+    
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

@@ -50,10 +50,6 @@ Begin VB.Form FormGaussianBlur
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   0.1
-      Max             =   500
-      SigDigits       =   1
-      Value           =   5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -63,6 +59,10 @@ Begin VB.Form FormGaussianBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   0.1
+      Max             =   500
+      SigDigits       =   1
+      Value           =   5
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -214,7 +214,7 @@ Attribute VB_Exposed = False
 'To my knowledge, this tool is the first of its kind in VB6 - a variable radius gaussian blur filter
 ' that utilizes a separable convolution kernel AND allows for sub-pixel radii (at "best" quality, anyway).
 
-'The use of separable kernels makes this much, much faster than a standard Gaussian blur.  The approimate
+'The use of separable kernels makes this much, much faster than a standard Gaussian blur.  The approximate
 ' speed gain for a P x Q kernel is PQ/(P + Q) - so for a radius of 4 (which is an actual kernel of 9x9)
 ' the processing time is 4.5x faster.  For a radius of 100, my technique is 100x faster than a traditional
 ' method.
