@@ -928,6 +928,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         
         'Artistic
+        Case "Colored pencil"
+            If showDialog Then
+                showPDDialog vbModal, FormPencil
+            Else
+                FormPencil.fxColoredPencil cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3)
+            End If
+            
         Case "Comic book"
             MenuComicBook
             
@@ -978,10 +985,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Posterize (dithered)"
             FormPosterize.ReduceImageColors_BitRGB_ErrorDif cParams.GetByte(1), cParams.GetByte(2), cParams.GetByte(3), cParams.GetBool(4)
-            
-        Case "Pencil drawing"
-            FilterPencil
-            
+                    
         Case "Relief"
             If showDialog Then
                 showPDDialog vbModal, FormRelief

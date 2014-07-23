@@ -381,14 +381,14 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Effects (Filters) Menu
     addMenuIcon "ARTISTIC", 7, 0        'Artistic
         '--> Artistic sub-menu
-        addMenuIcon "COMICBOOK", 7, 0, 0      'Comic book
-        addMenuIcon "FIGGLASS", 7, 0, 1       'Figured glass
-        addMenuIcon "FILMNOIR", 7, 0, 2       'Film Noir
-        addMenuIcon "GLASSTILES", 7, 0, 3     'Glass tiles
-        addMenuIcon "KALEIDOSCOPE", 7, 0, 4   'Kaleidoscope
-        addMenuIcon "MODERNART", 7, 0, 5      'Modern Art
-        addMenuIcon "OILPAINTING", 7, 0, 6    'Oil painting
-        addMenuIcon "PENCIL", 7, 0, 7         'Pencil
+        addMenuIcon "PENCIL", 7, 0, 0         'Pencil
+        addMenuIcon "COMICBOOK", 7, 0, 1      'Comic book
+        addMenuIcon "FIGGLASS", 7, 0, 2       'Figured glass
+        addMenuIcon "FILMNOIR", 7, 0, 3       'Film Noir
+        addMenuIcon "GLASSTILES", 7, 0, 4     'Glass tiles
+        addMenuIcon "KALEIDOSCOPE", 7, 0, 5   'Kaleidoscope
+        addMenuIcon "MODERNART", 7, 0, 6      'Modern Art
+        addMenuIcon "OILPAINTING", 7, 0, 7    'Oil painting
         addMenuIcon "POSTERIZE", 7, 0, 8      'Posterize
         addMenuIcon "RELIEF", 7, 0, 9         'Relief
         addMenuIcon "STAINEDGLASS", 7, 0, 10  'Stained glass

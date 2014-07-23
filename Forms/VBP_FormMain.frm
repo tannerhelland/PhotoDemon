@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -901,35 +901,35 @@ Begin VB.Form FormMain
          Caption         =   "Artistic"
          Index           =   0
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Comic book"
+            Caption         =   "Colored pencil..."
             Index           =   0
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Figured glass (dents)..."
+            Caption         =   "Comic book"
             Index           =   1
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Film noir"
+            Caption         =   "Figured glass (dents)..."
             Index           =   2
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Glass tiles..."
+            Caption         =   "Film noir"
             Index           =   3
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Kaleiodoscope..."
+            Caption         =   "Glass tiles..."
             Index           =   4
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Modern art..."
+            Caption         =   "Kaleiodoscope..."
             Index           =   5
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Oil painting..."
+            Caption         =   "Modern art..."
             Index           =   6
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Pencil drawing"
+            Caption         =   "Oil painting..."
             Index           =   7
          End
          Begin VB.Menu MnuArtistic 
@@ -2631,39 +2631,39 @@ End Sub
 Private Sub MnuArtistic_Click(Index As Integer)
 
     Select Case Index
-            
-        'Comic book
+        
+        'Colored pencil
         Case 0
+            Process "Colored pencil", True
+        
+        'Comic book
+        Case 1
             Process "Comic book", , , UNDO_LAYER
             
         'Figured glass
-        Case 1
+        Case 2
             Process "Figured glass", True
             
         'Film noir
-        Case 2
+        Case 3
             Process "Film noir", , , UNDO_LAYER
         
         'Glass tiles
-        Case 3
+        Case 4
             Process "Glass tiles", True
         
         'Kaleidoscope
-        Case 4
+        Case 5
             Process "Kaleidoscope", True
         
         'Modern art
-        Case 5
+        Case 6
             Process "Modern art", True
         
         'Oil painting
-        Case 6
-            Process "Oil painting", True
-            
-        'Pencil drawing
         Case 7
-            Process "Pencil drawing", , , UNDO_LAYER
-                
+            Process "Oil painting", True
+                        
         'Posterize
         Case 8
             Process "Posterize", True
