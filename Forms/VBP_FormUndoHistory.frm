@@ -275,10 +275,18 @@ Private Function getStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional
             newText = ""
             
         Case UNDO_LAYER
-            newText = pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName()
+            If Not (pdImages(g_CurrentImage).getLayerByID(layerID) Is Nothing) Then
+                newText = pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName()
+            Else
+                newText = ""
+            End If
         
         Case UNDO_LAYERHEADER
-            newText = pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName()
+            If Not (pdImages(g_CurrentImage).getLayerByID(layerID) Is Nothing) Then
+                newText = pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName()
+            Else
+                newText = ""
+            End If
         
         Case UNDO_SELECTION
             newText = g_Language.TranslateMessage("selection shape shown")
@@ -440,6 +448,7 @@ Private Sub Form_Load()
         idealPosition = curBlock * fixDPIFloat(BLOCKHEIGHT) - ((picBuffer.ScaleHeight - fixDPIFloat(BLOCKHEIGHT)) / 2)
         
         If idealPosition < vsBuffer.Max Then
+            If idealPosition < 0 Then idealPosition = 0
             vsBuffer.Value = idealPosition
         Else
             vsBuffer.Value = vsBuffer.Max
