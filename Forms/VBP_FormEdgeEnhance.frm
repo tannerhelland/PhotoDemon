@@ -247,10 +247,6 @@ Private Sub chkDirection_Click(Index As Integer)
 
 End Sub
 
-Private Sub chkInvert_Click()
-    updatePreview
-End Sub
-
 'OK button
 Private Sub cmdBar_OKClick()
     Process "Enhance edges", , buildParams(LstEdgeOptions.ListIndex, getDirectionality(), sltStrength.Value), UNDO_LAYER
@@ -482,7 +478,7 @@ Private Function getParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
     
     'Convolution matrix strings are assembled in two or three steps:
     ' 1) Add divisor and offset values
-    ' 2 (optional) ) Check directionality and adjust behavior accordingly
+    ' 2 (optional) Check directionality and adjust behavior accordingly
     ' 3) Build actual convolution matrix
     Select Case edgeDetectionType
     
