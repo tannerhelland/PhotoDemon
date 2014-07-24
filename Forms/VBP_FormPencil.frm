@@ -379,8 +379,8 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         Set tmpLayerBottom = Nothing
         
         'Some modes requires post-production gamma correction.  Build a lookup table now.
-        Dim gammaCorrect() As Byte
-        ReDim gammaCorrect(0 To 255) As Byte
+        Dim gammaTable() As Byte
+        ReDim gammaTable(0 To 255) As Byte
         
         If (pencilStyle = 2) Or (pencilStyle = 3) Then
         
@@ -394,7 +394,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
                 If tmpVal > 255 Then tmpVal = 255
                 If tmpVal < 0 Then tmpVal = 0
         
-                gammaCorrect(x) = tmpVal
+                gammaTable(x) = tmpVal
             Next x
         
         End If
@@ -438,12 +438,12 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
                     If b > 255 Then b = 255
                 
                 Case 2
-                    r = gammaCorrect(r)
-                    g = gammaCorrect(g)
-                    b = gammaCorrect(b)
+                    r = gammaTable(r)
+                    g = gammaTable(g)
+                    b = gammaTable(b)
                     
                 Case 3
-                    r = gammaCorrect(grayLookUp(r + g + b))
+                    r = gammaTable(grayLookUp(r + g + b))
                     g = r
                     b = r
                 
