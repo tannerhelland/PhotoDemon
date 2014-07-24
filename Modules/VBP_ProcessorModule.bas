@@ -738,7 +738,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormGamma
             Else
-                FormGamma.GammaCorrect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
+                FormGamma.gammaCorrect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
         
         Case "Levels"
@@ -936,7 +936,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
             
         Case "Comic book"
-            MenuComicBook
+            If showDialog Then
+                showPDDialog vbModal, FormComicBook
+            Else
+                FormComicBook.fxComicBook cParams.GetLong(1), cParams.GetLong(2)
+            End If
             
         Case "Figured glass"
             If showDialog Then
