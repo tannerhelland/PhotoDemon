@@ -201,7 +201,7 @@ Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidt
     'Back-up the current text alignment, then change it to horizontally aligned
     Dim backupAlignment As AlignmentConstants
     backupAlignment = curTextAlignment
-    updateAlignment vbCenter
+    setTextAlignment vbCenter
     
     'Render the text
     If textIsMultiline Then
@@ -222,7 +222,7 @@ Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidt
     End If
     
     'Restore the original text alignment
-    updateAlignment backupAlignment
+    setTextAlignment backupAlignment
 
 End Sub
 
@@ -282,11 +282,11 @@ End Sub
 
 'If we want to detach this font from its current DC, use this call
 Public Sub releaseFromDC()
-    SelectObject curDC, oldFont
+    If curDC > 0 Then SelectObject curDC, oldFont
 End Sub
 
 'Create the font object on-demand
-Public Sub createFontObject()
+Public Function createFontObject() As Boolean
 
     'If a font has already been created, delete it now
     If curFont > 0 Then
@@ -295,8 +295,10 @@ Public Sub createFontObject()
     End If
     
     curFont = CreateFontIndirect(currentLogFont)
+    
+    If curFont = 0 Then createFontObject = False Else createFontObject = True
 
-End Sub
+End Function
 
 Public Sub setFontBold(ByVal newBold As Boolean)
     If newBold Then
@@ -307,7 +309,12 @@ Public Sub setFontBold(ByVal newBold As Boolean)
 End Sub
 
 Public Sub setFontColor(ByVal newColor As Long)
+    
     fontColor = newColor
+    
+    'If we are currently selected into a DC, update the color immediately; otherwise, the color will be applied upon selection
+    If curDC > 0 Then SetTextColor curDC, fontColor
+    
 End Sub
 
 Public Sub setFontFace(ByVal newFace As String)
@@ -335,18 +342,7 @@ Public Sub setFontUnderline(ByVal newUnderline As Boolean)
 End Sub
 
 Public Sub setTextAlignment(ByVal newAlignment As AlignmentConstants)
-    Select Case newAlignment
-        Case vbLeftJustify
-            curTextAlignment = TA_LEFT
-        Case vbCenter
-            curTextAlignment = TA_CENTER
-        Case vbRightJustify
-            curTextAlignment = TA_RIGHT
-    End Select
-End Sub
-
-'If this class has already been attached to a DC, this function can be used to immediately update the alignment
-Public Sub updateAlignment(ByVal newAlignment As AlignmentConstants)
+    
     Select Case newAlignment
         Case vbLeftJustify
             curTextAlignment = TA_LEFT
@@ -356,14 +352,10 @@ Public Sub updateAlignment(ByVal newAlignment As AlignmentConstants)
             curTextAlignment = TA_RIGHT
     End Select
     
-    SetTextAlign curDC, curTextAlignment
+    'If the class has been selected into a DC, update the DC's alignment immediately; otherwise, this property will be applied
+    ' when the font is selected.
+    If curDC > 0 Then SetTextAlign curDC, curTextAlignment
     
-End Sub
-
-'If this class has already been attached to a DC, this function can be used to immediately update the color
-Public Sub updateColor(ByVal newColor As Long)
-    fontColor = newColor
-    SetTextColor curDC, fontColor
 End Sub
 
 'Return the width (and below, height) of a string, in pixels.  This action REQUIRES that a DC be currently set for this
@@ -436,7 +428,7 @@ Private Sub Class_Terminate()
 
     'If a font was created, delete it now
     If curFont > 0 Then
-        SelectObject curDC, oldFont
+        If curDC > 0 Then SelectObject curDC, oldFont
         DeleteObject curFont
     End If
     
