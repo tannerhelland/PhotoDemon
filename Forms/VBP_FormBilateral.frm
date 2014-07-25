@@ -709,10 +709,10 @@ Public Sub BilateralSmoothingSeparable(ByVal kernelRadius As Long, ByVal spatial
             
         Next xOffset
         
-        newR = sMembR \ sCoefR
-        newG = sMembG \ sCoefG
-        newB = sMembB \ sCoefB
-                
+        If sCoefR <> 0 Then newR = sMembR / sCoefR
+        If sCoefG <> 0 Then newG = sMembG / sCoefG
+        If sCoefB <> 0 Then newB = sMembB / sCoefB
+                        
         'Assign the new values to each color channel
         midImageData(QuickValSrc + 2, QuickYSrc) = newR
         midImageData(QuickValSrc + 1, QuickYSrc) = newG
@@ -813,11 +813,10 @@ Public Sub BilateralSmoothingSeparable(ByVal kernelRadius As Long, ByVal spatial
                         
             Next yOffset
         
+        If sCoefR <> 0 Then newR = sMembR / sCoefR
+        If sCoefG <> 0 Then newG = sMembG / sCoefG
+        If sCoefB <> 0 Then newB = sMembB / sCoefB
         
-        newR = sMembR \ sCoefR
-        newG = sMembG \ sCoefG
-        newB = sMembB \ sCoefB
-                
         'Assign the new values to each color channel
         dstImageData(QuickValDst + 2, y) = newR
         dstImageData(QuickValDst + 1, y) = newG
