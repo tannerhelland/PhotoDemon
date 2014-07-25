@@ -235,7 +235,13 @@ Public Function AddTool(ByRef ctrl As Object, Optional ByVal strText As String) 
             If TypeOf ctrl Is Form Then
                 .hWnd = ctrl.hWnd
             Else
-                .hWnd = ctrl.Container.hWnd
+            
+                If TypeOf ctrl Is smartOptionButton Then
+                    .hWnd = ctrl.containerHwnd
+                Else
+                    .hWnd = ctrl.Container.hWnd
+                End If
+                
             End If
             .uId = ctrl.hWnd
             
