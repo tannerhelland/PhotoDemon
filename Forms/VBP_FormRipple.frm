@@ -74,13 +74,13 @@ Begin VB.Form FormRipple
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   9
       Top             =   5400
       Width           =   1005
-      _ExtentX        =   1773
+      _ExtentX        =   1984
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -95,13 +95,13 @@ Begin VB.Form FormRipple
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
       Left            =   7920
       TabIndex        =   10
       Top             =   5400
-      Width           =   975
-      _ExtentX        =   1720
+      Width           =   1095
+      _ExtentX        =   1931
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
