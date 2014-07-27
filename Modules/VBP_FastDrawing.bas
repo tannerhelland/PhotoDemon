@@ -86,9 +86,6 @@ End Type
 'Calling functions can use this variable to access all FilterInfo for the current workingDIB copy.
 Public curDIBValues As FilterInfo
 
-'We may need a temporary copy of the selection mask for rendering purposes; if so, it will be stored here
-Private tmpSelectionMask As pdDIB
-
 'This function can be used to populate a valid SAFEARRAY2D structure against any DIB
 Public Sub prepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
     
@@ -134,8 +131,6 @@ Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
     
         srcWidth = previewTarget.getPreviewWidth
         srcHeight = previewTarget.getPreviewHeight
-        
-        Dim curAspectRatio As Double
         
         If srcDIB.getDIBWidth < srcWidth Then
             srcWidth = srcDIB.getDIBWidth
@@ -317,8 +312,6 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         
             srcWidth = previewTarget.getPreviewWidth
             srcHeight = previewTarget.getPreviewHeight
-            
-            Dim curAspectRatio As Double
             
             'If the preview area is larger than the image itself, just retrieve the full image.
             If pdImages(g_CurrentImage).selectionActive Then

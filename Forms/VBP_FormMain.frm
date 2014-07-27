@@ -2628,38 +2628,41 @@ Private Sub MnuAdjustments_Click(Index As Integer)
 
     Select Case Index
     
-        'Auto (top-level)
+        'Auto correct (top-level)
         Case 0
             
-        '<separator>
+        'Auto enhance (top-level)
         Case 1
+        
+        '<separator>
+        Case 2
             
         'Black and white
-        Case 2
+        Case 3
             Process "Black and white", True
         
         'Brightness and contrast
-        Case 3
+        Case 4
             Process "Brightness and contrast", True
         
         'Color balance
-        Case 4
+        Case 5
             Process "Color balance", True
         
         'Curves
-        Case 5
+        Case 6
             Process "Curves", True
         
         'Levels
-        Case 6
+        Case 7
             Process "Levels", True
         
         'Vibrance
-        Case 7
+        Case 8
             Process "Vibrance", True
         
         'White balance
-        Case 8
+        Case 9
             Process "White balance", True
     
     End Select
@@ -3929,8 +3932,6 @@ End Sub
 
 'All "Window" menu items are handled here
 Private Sub MnuWindow_Click(Index As Integer)
-
-    Dim i As Long
     
     Dim prevActiveWindow As Long
     prevActiveWindow = g_CurrentImage

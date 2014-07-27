@@ -341,7 +341,6 @@ Private Sub redrawSaturationSlider()
 
     'Update the Saturation background dynamically, to match the hue background!
     Dim r As Long, g As Long, b As Long
-    Dim h As Double, s As Double, l As Double
     
     tHSLToRGB (sltHue.Value + 180) / 60, 0, 0.5, r, g, b
     sltSaturation.GradientColorLeft = RGB(r, g, b)

@@ -70,9 +70,6 @@ Begin VB.Form FormEmbossEngrave
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   -10
-      SigDigits       =   2
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -82,6 +79,9 @@ Begin VB.Form FormEmbossEngrave
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -10
+      SigDigits       =   2
+      Value           =   1
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
@@ -91,9 +91,6 @@ Begin VB.Form FormEmbossEngrave
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   -180
-      Max             =   180
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -103,6 +100,9 @@ Begin VB.Form FormEmbossEngrave
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -180
+      Max             =   180
+      SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltDepth 
       Height          =   495
@@ -112,9 +112,6 @@ Begin VB.Form FormEmbossEngrave
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   0.1
-      SigDigits       =   2
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -124,6 +121,9 @@ Begin VB.Form FormEmbossEngrave
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   0.1
+      SigDigits       =   2
+      Value           =   1
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -346,8 +346,8 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
     cosTheta = Cos(eAngle)
     sinTheta = Sin(eAngle)
     
-    'X and Y values, remapped around a center point of (0, 0)
-    Dim nX As Double, nY As Double
+    'New X value, remapped around a center point of (0, 0)
+    Dim nX As Double
     
     'Source X and Y values, which are used to solve for the hue of a given point
     Dim srcX As Double, srcY As Double

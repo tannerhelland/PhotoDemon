@@ -680,8 +680,9 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltSize.Value = 50
+    sltSize.Value = 20
     sltTurbulence.Value = 0.5
+    sltShadeQuality.Value = 5
 End Sub
 
 Private Sub Form_Activate()

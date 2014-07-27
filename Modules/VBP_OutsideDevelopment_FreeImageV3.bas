@@ -2990,8 +2990,7 @@ End Function
 Public Function FreeImage_LoadFromMemoryEx_Tanner(ByVal DataPtr As Long, ByVal SizeInBytes As Long, Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, Optional ByRef fileFormat As FREE_IMAGE_FORMAT = FIF_UNKNOWN) As Long
 
     Dim hStream As Long
-    Dim lDataPtr As Long
-
+    
     'FreeImage_LoadFromMemoryEx routinely fails without explanation, and I'm hoping to find out why!
 
    ' get both pointer and size in bytes of the memory block provided

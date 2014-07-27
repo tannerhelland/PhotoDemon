@@ -659,11 +659,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
     pdiWriter.prepareNewPackage srcPDImage.getNumOfLayers + 1, PD_IMAGE_IDENTIFIER
-    
-    'We will use a temporary array for two main purposes: storing the byte equivalent of various XML strings returned by
-    ' PhotoDemon objects, and for storing temporary copies of byte arrays of binary DIB data.
-    Dim tmpData() As Byte
-    
+        
     'The first node we'll add is the pdImage header, in XML format.
     Dim nodeIndex As Long
     nodeIndex = pdiWriter.addNode("pdImage Header", -1, 0)
@@ -679,7 +675,6 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     ' 1) First, obtain the layer header in XML format and write it out
     ' 2) Second, obtain the current layer DIB (raw data only, no header!) and write it out
     Dim layerXMLHeader As String
-    Dim layerDIBCopy() As Byte
     Dim layerDIBPointer As Long, layerDIBLength As Long
     
     Dim i As Long
@@ -745,11 +740,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
     pdiWriter.prepareNewPackage 1, PD_LAYER_IDENTIFIER
-    
-    'We will use a temporary array for two main purposes: storing the byte equivalent of various XML strings returned by
-    ' PhotoDemon objects, and for storing temporary copies of byte arrays of binary DIB data.
-    Dim tmpData() As Byte
-    
+        
     'The first (and only) node we'll add is the specific pdLayer header and DIB data.
     ' To help us reconstruct the node later, we also note the current layer's ID (stored as the node ID)
     '  and the current layer's index (stored as the node type).

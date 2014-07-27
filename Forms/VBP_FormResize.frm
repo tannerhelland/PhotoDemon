@@ -244,7 +244,6 @@ End Type
 
 Dim resampleTypes() As resampleAlgorithm
 Dim numResamples() As Long
-Dim lastSelectedResample As Long
 
 Private Enum ResampleNameType
     rsFriendly = 0
@@ -269,8 +268,6 @@ End Property
 'Whenever the user toggles technical and friendly resample options, this sub is called.  It will translate between
 ' friendly and technical choices, as well as displaying the proper combo box.
 Private Sub switchResampleOption()
-
-    Dim i As Long
 
     'Technical names
     If CBool(chkNames) Then

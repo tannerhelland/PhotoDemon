@@ -915,8 +915,6 @@ Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal flo
     Dim backupCurrentImage As Long
     backupCurrentImage = g_CurrentImage
     
-    Dim i As Long
-
     Select Case whichWindowType
     
         Case TOOLBAR_WINDOW

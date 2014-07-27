@@ -545,7 +545,6 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
-    Dim progBarCheck As Long, progBarOffsetX As Long
     If flipAllLayers Then
         SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers - 1
     Else
@@ -694,7 +693,6 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
-    Dim progBarCheck As Long, progBarOffsetX As Long
     If flipAllLayers Then
         SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers - 1
     Else

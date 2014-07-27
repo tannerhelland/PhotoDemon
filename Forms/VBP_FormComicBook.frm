@@ -89,7 +89,7 @@ Begin VB.Form FormComicBook
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Max             =   20
+      Max             =   50
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -247,21 +247,16 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     'The bottom DIB (inkDIBh) now contains the composite image.  Release the vertical copy.
     Set inkDIBv = Nothing
     
+    'Convert the ink DIB to grayscale
+    GrayscaleDIB inkDIBh, True
+    
     'We now need to obtain the underlying color-smudged version of the source image
     If Not toPreview Then Message "Animating image (stage %1 of %2)...", 3, 3
     
     If colorSmudge > 0 Then
-    
-        Dim colorSmudgeDIB As pdDIB
-        Set colorSmudgeDIB = New pdDIB
-        colorSmudgeDIB.createFromExistingDIB workingDIB
         
-        'Use PD's median function to handle the smudging.  (In the future, it might be nice to use a more elegant function,
-        ' but this serves as a reasonably good baseline, with predictable performance.)
-        CreateMedianDIB colorSmudge, 60, colorSmudgeDIB, workingDIB, toPreview, workingDIB.getDIBWidth * 3, workingDIB.getDIBWidth * 2
-        
-        'Free our color smudge copy
-        Set colorSmudgeDIB = Nothing
+        'Use PD's excellent bilateral smoothing function to handle color smudging.
+        createBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, workingDIB.getDIBWidth * 4, workingDIB.getDIBWidth * 2
         
     End If
     
@@ -273,19 +268,19 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     Set tmpLayerBottom = New pdLayer
     
     tmpLayerTop.CreateNewImageLayer inkDIBh
-    tmpLayerBottom.CreateNewImageLayer workingDIB
-    
     Set inkDIBh = Nothing
+    
+    tmpLayerBottom.CreateNewImageLayer workingDIB
     workingDIB.eraseDIB
     
     tmpLayerTop.setLayerBlendMode BL_MULTIPLY
     tmpLayerTop.setLayerOpacity inkOpacity
     
     cComposite.mergeLayers tmpLayerTop, tmpLayerBottom, True
+    Set tmpLayerTop = Nothing
     
     'Refresh the workingDIB instance, then exit!
     workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
-    Set tmpLayerTop = Nothing
     Set tmpLayerBottom = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
