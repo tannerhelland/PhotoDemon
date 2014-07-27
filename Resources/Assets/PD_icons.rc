@@ -126,8 +126,14 @@ EXPRTSELMASK CUSTOM  MOVEABLE        LOADONCALL      mask.png
 
 //Adjustments menu
 
-AUTOADJUST   CUSTOM  MOVEABLE        LOADONCALL      light_bulb.png
-//--> Auto sub-menu
+AUTOCORRECT  CUSTOM  MOVEABLE        LOADONCALL      light_bulb.png
+//--> Auto correct sub-menu
+
+//
+AUTOENHANCE  CUSTOM  MOVEABLE        LOADONCALL      image_cast.png
+//--> Auto-enhance sub-menu
+
+//
 
 CHANNELMIX   CUSTOM  MOVEABLE        LOADONCALL      block.png
 //--> Channels sub-menu
