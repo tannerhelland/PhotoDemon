@@ -2289,13 +2289,13 @@ Public Sub LoadAccelerators()
         'Adjustments Menu
         
         'Adjustments top shortcut menu
-        .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Black and white", FormMain.MnuAdjustments(2), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuAdjustments(3), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyC, vbCtrlMask Or vbAltMask, "Color balance", FormMain.MnuAdjustments(4), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyM, vbCtrlMask, "Curves", FormMain.MnuAdjustments(5), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyL, vbCtrlMask, "Levels", FormMain.MnuAdjustments(6), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", FormMain.MnuAdjustments(7), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyW, vbCtrlMask, "White balance", FormMain.MnuAdjustments(8), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyU, vbCtrlMask Or vbShiftMask, "Black and white", FormMain.MnuAdjustments(3), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyB, vbCtrlMask Or vbShiftMask, "Brightness and contrast", FormMain.MnuAdjustments(4), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyC, vbCtrlMask Or vbAltMask, "Color balance", FormMain.MnuAdjustments(5), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyM, vbCtrlMask, "Curves", FormMain.MnuAdjustments(6), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyL, vbCtrlMask, "Levels", FormMain.MnuAdjustments(7), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyAdd, vbCtrlMask Or vbAltMask, "Vibrance", FormMain.MnuAdjustments(8), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyW, vbCtrlMask, "White balance", FormMain.MnuAdjustments(9), True, True, True, UNDO_NOTHING
         
             'Color adjustments
             .AddAccelerator vbKeyH, vbCtrlMask, "Hue and saturation", FormMain.MnuColor(3), True, True, True, UNDO_NOTHING
