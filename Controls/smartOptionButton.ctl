@@ -94,7 +94,7 @@ Private Type TEXTMETRIC
     tmCharSet As Byte
 End Type
 
-'API technique for drawing a focus rectangle; USED ONLY FOR DEBUGGING AT PLEASANT (see the Paint method for etails)
+'API technique for drawing a focus rectangle; USED ONLY FOR DEBUGGING AT PRESENT (see the Paint method for details)
 Private Type RECT
     Left As Long
     Top As Long
