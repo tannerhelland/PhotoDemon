@@ -511,7 +511,7 @@ Private m_Arrows(0 To 2) As pdDIB
 ' extra offsets relative to the arrow DIBs themselves; this is because we render two copies of the black and white
 ' arrows to the screen, one each for input and output levels.
 Private m_ArrowOffsets(0 To 4) As Long
-Private m_ArrowWidth As Long, m_ArrowHalfWidth As Long, m_ArrowHeight As Long
+Private m_ArrowWidth As Long, m_ArrowHalfWidth As Long
 Private m_DstArrowBoxWidth As Long, m_DstArrowBoxOffset As Long
 
 'Current channel ([0, 3] where 0 = red, 1 = green, 2 = blue, 3 = luminance)
@@ -554,7 +554,7 @@ Private Sub cmdAutoLevels_Click()
     Set cParams = New pdParamString
     cParams.setParamString pString
     
-    Dim i As Long, j As Long
+    Dim i As Long
     For i = 0 To 19
         m_LevelValues(i \ 5, i Mod 5) = cParams.GetDouble(i + 1)
     Next i
@@ -835,7 +835,7 @@ Private Sub cmdBar_ReadCustomPresetData()
         Set cParams = New pdParamString
         cParams.setParamString tmpString
         
-        Dim i As Long, j As Long
+        Dim i As Long
         For i = 0 To 19
             m_LevelValues(i \ 5, i Mod 5) = cParams.GetDouble(i + 1)
         Next i
@@ -1418,7 +1418,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     
     Dim levelValues(0 To 3, 0 To 4) As Double
     
-    Dim i As Long, j As Long
+    Dim i As Long
     For i = 0 To 19
         levelValues(i \ 5, i Mod 5) = cParams.GetDouble(i + 1)
     Next i

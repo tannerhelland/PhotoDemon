@@ -133,8 +133,8 @@ Begin VB.Form FormGrayscale
          TabIndex        =   8
          Top             =   0
          Width           =   705
-         _ExtentX        =   1244
-         _ExtentY        =   635
+         _ExtentX        =   1455
+         _ExtentY        =   529
          Caption         =   "red"
          Value           =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -154,8 +154,8 @@ Begin VB.Form FormGrayscale
          TabIndex        =   9
          Top             =   0
          Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   635
+         _ExtentX        =   1879
+         _ExtentY        =   529
          Caption         =   "green"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -174,8 +174,8 @@ Begin VB.Form FormGrayscale
          TabIndex        =   10
          Top             =   0
          Width           =   780
-         _ExtentX        =   1376
-         _ExtentY        =   635
+         _ExtentX        =   1588
+         _ExtentY        =   529
          Caption         =   "blue"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -208,8 +208,8 @@ Begin VB.Form FormGrayscale
          TabIndex        =   6
          Top             =   0
          Width           =   1275
-         _ExtentX        =   2249
-         _ExtentY        =   635
+         _ExtentX        =   2461
+         _ExtentY        =   529
          Caption         =   "minimum"
          Value           =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -229,8 +229,8 @@ Begin VB.Form FormGrayscale
          TabIndex        =   7
          Top             =   0
          Width           =   1365
-         _ExtentX        =   2408
-         _ExtentY        =   635
+         _ExtentX        =   2619
+         _ExtentY        =   529
          Caption         =   "maximum"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -651,7 +651,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
     End If
     
     'Color variables
-    Dim r As Long, g As Long, b As Long, grayVal As Long
+    Dim g As Long, grayVal As Long
     
     'This conversion factor is the value we need to turn grayscale values in the [0,255] range into a specific subset of values
     Dim conversionFactor As Double
@@ -666,7 +666,6 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         LookUp(x) = grayVal
     Next x
     
-    Dim xModQuick As Long
     Dim DitherTable() As Byte
     Dim xLeft As Long, xRight As Long, yDown As Long
     Dim errorVal As Double
@@ -907,12 +906,10 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
             
             'Get the source pixel color values.  Because we know the image we're handed is already going to be grayscale,
             ' we can shortcut this calculation by only grabbing the red channel.
-            r = ImageData(QuickVal + 2, y)
-            'g = ImageData(QuickVal + 1, y)
-            'b = ImageData(QuickVal, y)
+            g = ImageData(QuickVal + 2, y)
             
             'Convert those to a luminance value and add the value of the error at this location
-            l = r + dErrors(x, y)
+            l = g + dErrors(x, y)
             
             'Convert that to a lookup-table-safe luminance (e.g. 0-255)
             If l < 0 Then
