@@ -1076,6 +1076,22 @@ Public Sub MenuFilmNoir()
 
 End Sub
 
+'Correct image contrast by stretching the luminance histogram across the full spectrum
+Public Sub AutoContrastCorrect(Optional ByVal percentIgnore As Double = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+
+    If Not toPreview Then Message "Adjusting image contrast..."
+    
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    
+    ContrastCorrectDIB percentIgnore, workingDIB, toPreview
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
+    finalizeImageData toPreview, dstPic
+    
+End Sub
+
 'Subroutine for counting the number of unique colors in an image
 Public Sub MenuCountColors()
     

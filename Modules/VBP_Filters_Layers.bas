@@ -699,6 +699,164 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     
 End Function
 
+'Contrast-correct a given DIB.  This function is similar to white-balance, except that it operates *only on luminance*, meaning individual
+' color channel ratios are not changed - just luminance.  It's helpful for auto-spreading luminance across the full spectrum range, without
+' changing color balance at all.
+' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = srcDIB.getDIBColorDepth \ 8
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
+    End If
+    
+    'Color values
+    Dim r As Long, g As Long, b As Long, grayVal As Long
+    
+    'Maximum and minimum values, which will be detected by our initial histogram run
+    Dim lMax As Byte, lMin As Byte
+    lMax = 0
+    lMin = 255
+    
+    'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
+    percentIgnore = percentIgnore / 100
+    
+    'Prepare a histogram array
+    Dim lCount(0 To 255) As Long
+    For x = 0 To 255
+        lCount(x) = 0
+    Next x
+    
+    'Build the image histogram
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+    
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
+        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+        If grayVal > 255 Then grayVal = 255
+        
+        'Increment the histogram at this position
+        lCount(grayVal) = lCount(grayVal) + 1
+        
+    Next y
+    Next x
+    
+     'With the histogram complete, we can now figure out how to stretch the RGB channels. We do this by calculating a min/max
+    ' ratio where the top and bottom 0.05% (or user-specified value) of pixels are ignored.
+    Dim foundYet As Boolean
+    foundYet = False
+    
+    Dim NumOfPixels As Long
+    NumOfPixels = (finalX + 1) * (finalY + 1)
+    
+    Dim wbThreshold As Long
+    wbThreshold = NumOfPixels * percentIgnore
+    
+    grayVal = 0
+    
+    Dim lTally As Long
+    lTally = 0
+    
+    'Find minimum and maximum luminance values in the current image
+    Do
+        If lCount(grayVal) + lTally < wbThreshold Then
+            grayVal = grayVal + 1
+            lTally = lTally + lCount(grayVal)
+        Else
+            lMin = grayVal
+            foundYet = True
+        End If
+    Loop While foundYet = False
+        
+    foundYet = False
+    
+    grayVal = 255
+    lTally = 0
+    
+    Do
+        If lCount(grayVal) + lTally < wbThreshold Then
+            grayVal = grayVal - 1
+            lTally = lTally + lCount(grayVal)
+        Else
+            lMax = grayVal
+            foundYet = True
+        End If
+    Loop While foundYet = False
+    
+    'Calculate the difference between max and min
+    Dim lDif As Long
+    lDif = CLng(lMax) - CLng(lMin)
+    
+    'Build a final set of look-up tables that contain the results of the requisite luminance transformation
+    Dim lFinal(0 To 255) As Byte
+    
+    For x = 0 To 255
+        If lDif <> 0 Then grayVal = 255 * ((x - lMin) / lDif) Else grayVal = x
+        
+        If grayVal > 255 Then grayVal = 255
+        If grayVal < 0 Then grayVal = 0
+        
+        lFinal(x) = grayVal
+        
+    Next x
+    
+    'Now we can loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+            
+        'Adjust white balance in a single pass (thanks to the magic of look-up tables)
+        ImageData(QuickVal + 2, y) = lFinal(ImageData(QuickVal + 2, y))
+        ImageData(QuickVal + 1, y) = lFinal(ImageData(QuickVal + 1, y))
+        ImageData(QuickVal, y) = lFinal(ImageData(QuickVal, y))
+        
+    Next y
+        If Not suppressMessages Then
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
+        End If
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    If cancelCurrentAction Then ContrastCorrectDIB = 0 Else ContrastCorrectDIB = 1
+    
+End Function
+
 'Given two DIBs, fill one with an artistically contoured (edge detect) version of the other.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 Public Function CreateContourDIB(ByVal blackBackground As Boolean, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
