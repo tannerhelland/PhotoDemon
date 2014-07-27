@@ -348,252 +348,6 @@ Begin VB.Form FormPreferences
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   6480
-      Index           =   4
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   432
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   11
-      Top             =   240
-      Width           =   8295
-      Begin VB.ComboBox cmbPerfThumbnail 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         ItemData        =   "VBP_FormPreferences.frx":9690
-         Left            =   180
-         List            =   "VBP_FormPreferences.frx":9692
-         Style           =   2  'Dropdown List
-         TabIndex        =   123
-         Top             =   2250
-         Width           =   7920
-      End
-      Begin VB.ComboBox cmbPerfViewport 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         ItemData        =   "VBP_FormPreferences.frx":9694
-         Left            =   180
-         List            =   "VBP_FormPreferences.frx":9696
-         Style           =   2  'Dropdown List
-         TabIndex        =   121
-         Top             =   810
-         Width           =   7920
-      End
-      Begin PhotoDemon.sliderTextCombo sltUndoCompression 
-         Height          =   495
-         Left            =   240
-         TabIndex        =   130
-         Top             =   3720
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Max             =   9
-         SliderTrackStyle=   1
-         NotchPosition   =   2
-      End
-      Begin VB.Label lblPNGCompression 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "no compression (fastest)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   -1  'True
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   195
-         Index           =   3
-         Left            =   360
-         TabIndex        =   129
-         Top             =   4200
-         Width           =   1785
-      End
-      Begin VB.Label lblPNGCompression 
-         Alignment       =   1  'Right Justify
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "maximum compression (slowest)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   -1  'True
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   195
-         Index           =   2
-         Left            =   4980
-         TabIndex        =   128
-         Top             =   4200
-         Width           =   2295
-      End
-      Begin VB.Label lblPerformanceSub 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "undo/redo data will be compressed at the following level:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   2
-         Left            =   240
-         TabIndex        =   127
-         Top             =   3360
-         Width           =   4935
-      End
-      Begin VB.Label lblPerformanceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "undo/redo data compression"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         TabIndex        =   126
-         Top             =   2880
-         Width           =   3045
-      End
-      Begin VB.Label lblPerformanceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "thumbnails"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   0
-         TabIndex        =   125
-         Top             =   1440
-         Width           =   1170
-      End
-      Begin VB.Label lblPerformanceSub 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "when generating image and layer thumbnail images:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   1
-         Left            =   180
-         TabIndex        =   124
-         Top             =   1875
-         Width           =   4530
-      End
-      Begin VB.Label lblPerformanceSub 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "when rendering the image canvas:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   0
-         Left            =   180
-         TabIndex        =   122
-         Top             =   435
-         Width           =   2985
-      End
-      Begin VB.Label lblPerformanceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "viewport rendering"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   0
-         TabIndex        =   12
-         Top             =   0
-         Width           =   2010
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6480
       Index           =   7
       Left            =   3000
       MousePointer    =   1  'Arrow
@@ -623,7 +377,7 @@ Begin VB.Form FormPreferences
          EndProperty
          BackColor       =   0
          Caption         =   ""
-         PictureNormal   =   "VBP_FormPreferences.frx":9698
+         PictureNormal   =   "VBP_FormPreferences.frx":9690
          PictureEffectOnOver=   0
          PictureEffectOnDown=   0
          CaptionEffects  =   0
@@ -1327,8 +1081,8 @@ Begin VB.Form FormPreferences
          TabIndex        =   111
          Top             =   840
          Width           =   2760
-         _ExtentX        =   4868
-         _ExtentY        =   582
+         _ExtentX        =   5080
+         _ExtentY        =   476
          Caption         =   "use the system color profile"
          Value           =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -1421,8 +1175,8 @@ Begin VB.Form FormPreferences
          TabIndex        =   112
          Top             =   1200
          Width           =   3660
-         _ExtentX        =   6456
-         _ExtentY        =   582
+         _ExtentX        =   6668
+         _ExtentY        =   476
          Caption         =   "use one or more custom color profiles"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -2625,6 +2379,252 @@ Begin VB.Form FormPreferences
          TabIndex        =   31
          Top             =   4155
          Width           =   4845
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6480
+      Index           =   4
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   432
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   11
+      Top             =   240
+      Width           =   8295
+      Begin VB.ComboBox cmbPerfThumbnail 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         ItemData        =   "VBP_FormPreferences.frx":A3E2
+         Left            =   180
+         List            =   "VBP_FormPreferences.frx":A3E4
+         Style           =   2  'Dropdown List
+         TabIndex        =   123
+         Top             =   2250
+         Width           =   7920
+      End
+      Begin VB.ComboBox cmbPerfViewport 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         ItemData        =   "VBP_FormPreferences.frx":A3E6
+         Left            =   180
+         List            =   "VBP_FormPreferences.frx":A3E8
+         Style           =   2  'Dropdown List
+         TabIndex        =   121
+         Top             =   810
+         Width           =   7920
+      End
+      Begin PhotoDemon.sliderTextCombo sltUndoCompression 
+         Height          =   495
+         Left            =   240
+         TabIndex        =   130
+         Top             =   3720
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   9
+         SliderTrackStyle=   1
+         NotchPosition   =   2
+      End
+      Begin VB.Label lblPNGCompression 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "no compression (fastest)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   195
+         Index           =   3
+         Left            =   360
+         TabIndex        =   129
+         Top             =   4200
+         Width           =   1785
+      End
+      Begin VB.Label lblPNGCompression 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "maximum compression (slowest)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   -1  'True
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   195
+         Index           =   2
+         Left            =   4980
+         TabIndex        =   128
+         Top             =   4200
+         Width           =   2295
+      End
+      Begin VB.Label lblPerformanceSub 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "undo/redo data will be compressed at the following level:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   2
+         Left            =   240
+         TabIndex        =   127
+         Top             =   3360
+         Width           =   4935
+      End
+      Begin VB.Label lblPerformanceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "undo/redo data compression"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         TabIndex        =   126
+         Top             =   2880
+         Width           =   3045
+      End
+      Begin VB.Label lblPerformanceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "thumbnails"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   0
+         TabIndex        =   125
+         Top             =   1440
+         Width           =   1170
+      End
+      Begin VB.Label lblPerformanceSub 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "when generating image and layer thumbnail images:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   1
+         Left            =   180
+         TabIndex        =   124
+         Top             =   1875
+         Width           =   4530
+      End
+      Begin VB.Label lblPerformanceSub 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "when rendering the image canvas:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   0
+         Left            =   180
+         TabIndex        =   122
+         Top             =   435
+         Width           =   2985
+      End
+      Begin VB.Label lblPerformanceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "viewport rendering"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   0
+         TabIndex        =   12
+         Top             =   0
+         Width           =   2010
       End
    End
    Begin VB.Line lneVertical 
