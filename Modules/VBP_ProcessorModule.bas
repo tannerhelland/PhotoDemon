@@ -714,8 +714,20 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'ADJUSTMENT FUNCTIONS
         ' Any action that is used to fix or correct problems with an image, including basic color space transformations (e.g. grayscale/sepia)
         
-        'Auto functions
-        Case "Auto levels"
+        'Auto correct functions
+        Case "Auto correct color"
+            FormWhiteBalance.AutoWhiteBalance
+            Unload FormWhiteBalance
+        
+        Case "Auto correct contrast"
+            Filters_Miscellaneous.AutoContrastCorrect
+        
+        Case "Auto correct lighting"
+            FormLevels.MapImageLevels FormLevels.getIdealLevelParamString(pdImages(g_CurrentImage).getActiveDIB)
+            Unload FormLevels
+        
+        'Auto enhance functions
+        Case "Auto correct lighting"
             FormLevels.MapImageLevels FormLevels.getIdealLevelParamString(pdImages(g_CurrentImage).getActiveDIB)
             Unload FormLevels
         
@@ -738,7 +750,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormGamma
             Else
-                FormGamma.gammaCorrect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
+                FormGamma.GammaCorrect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
         
         Case "Levels"
