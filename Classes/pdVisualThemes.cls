@@ -36,7 +36,7 @@ Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hW
 'I have no idea what colors will actually be used in the final theme format; these are just placeholders for now,
 ' to enable centralized coloration of a few UCs.  The end goal is to provide the smallest possible subset of colors
 ' necessary to render PD's various UI elements.
-Private Const numThemeColors As Long = 8
+Private Const numThemeColors As Long = 14
 Private Const numThemeColorVariants As Long = 5
 
 Public Enum PD_THEME_COLOR
