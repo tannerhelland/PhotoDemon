@@ -864,4 +864,44 @@ Private Function fMin3(rR As Double, rG As Double, rB As Double) As Double
    End If
 End Function
 
+'Given a hex color representation, return a matching RGB Long.  Note that this function DOES NOT validate the incoming string;
+' as an internal function, it's assumed you won't be sending gibberish!
+Public Function getRGBLongFromHex(ByVal srcHex As String) As Long
+    
+    'To make things simpler, remove variability from the source string
+    If InStr(1, srcHex, "#") > 0 Then srcHex = Replace(srcHex, "#", "")
+    srcHex = LCase(srcHex)
+    
+    'Make sure the length is 1, 3, or 6.  Each case is handled specially.
+    Select Case Len(srcHex)
+    
+        'One character is treated as a shade of gray; extend it to six characters.
+        Case 1
+            srcHex = String$(6, srcHex)
+        
+        'Three characters is standard shorthand hex; expand each character as a pair
+        Case 3
+            srcHex = Left$(srcHex, 1) & Left$(srcHex, 1) & Mid$(srcHex, 2, 1) & Mid$(srcHex, 2, 1) & Right$(srcHex, 1) & Right$(srcHex, 1)
+        
+        'Six characters is already valid, so no need to screw with it further.
+        Case 6
+        
+        'We can't handle this character string!
+        Case Else
+            Debug.Print "WARNING! Invalid hex passed to getRGBLongFromHex: " & srcHex
+            Exit Function
+    
+    End Select
+    
+    'In the future, it might be helpful to know the individual RGB components, so let's parse them out individually.
+    Dim r As Long, g As Long, b As Long
+    
+    'Parse the string to calculate actual numeric values; we can use VB's Val() function for this.
+    r = Val("&H" & Left$(srcHex, 2))
+    g = Val("&H" & Mid$(srcHex, 3, 2))
+    b = Val("&H" & Right$(srcHex, 2))
+    
+    'Return the RGB Long
+    getRGBLongFromHex = RGB(r, g, b)
 
+End Function
