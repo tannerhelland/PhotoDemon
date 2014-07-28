@@ -1641,18 +1641,15 @@ Private Sub MnuAutoEnhance_Click(Index As Integer)
     
         'Color
         Case 0
-            pdMsgBox "Still under construction - sorry!", vbInformation Or vbOKOnly Or vbApplicationModal, "Tool not available yet"
-            'Process "Auto enhance color", , , UNDO_LAYER
+            Process "Auto enhance color", , , UNDO_LAYER
         
         'Contrast
         Case 1
-            pdMsgBox "Still under construction - sorry!", vbInformation Or vbOKOnly Or vbApplicationModal, "Tool not available yet"
-            'Process "Auto enhance contrast", , , UNDO_LAYER
+            Process "Auto enhance contrast", , , UNDO_LAYER
         
         'Lighting
         Case 2
-            pdMsgBox "Still under construction - sorry!", vbInformation Or vbOKOnly Or vbApplicationModal, "Tool not available yet"
-            'Process "Auto enhance lighting", , , UNDO_LAYER
+            Process "Auto enhance lighting", , , UNDO_LAYER
         
     End Select
     
