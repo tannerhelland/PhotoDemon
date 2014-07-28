@@ -25,9 +25,9 @@ Private Type winMsg
     ptY As Long
 End Type
 
-Private Declare Function TranslateMessage Lib "user32" (lpMsg As winMsg) As Long
-Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (lpMsg As winMsg) As Long
-Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function TranslateMessage Lib "user32" (ByRef lpMsg As winMsg) As Long
+Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (ByRef lpMsg As winMsg) As Long
+Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 
 'This object is used to render a system progress bar onto a given picture box
 Private curProgBar As cProgressBarOfficial

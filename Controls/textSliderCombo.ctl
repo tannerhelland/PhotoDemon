@@ -1109,26 +1109,6 @@ Private Function getFormattedStringValue(ByVal srcValue As Double) As String
     
 End Function
 
-'Populate the text box with a given integer value.
-Private Sub copyValToTextBox(ByVal srcValue As Double)
-
-    'Remember the current cursor position
-    Dim cursorPos As Long
-    cursorPos = txtPrimary.SelStart
-
-    'Overwrite the current text box value with the new value
-    txtPrimary = getFormattedStringValue(srcValue / (10 ^ significantDigits))
-    txtPrimary.Refresh
-    
-    'Restore the cursor to its original position
-    If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
-    txtPrimary.SelStart = cursorPos
-    
-    'Hide the error box - we know it's not needed, as the value has been set via scroll bar
-    If shpError.Visible Then shpError.Visible = False
-
-End Sub
-
 'Check a passed value against a min and max value to see if it is valid.  Additionally, make sure the value is
 ' numeric, and allow the user to display a warning message if necessary.
 Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = False) As Boolean
