@@ -727,9 +727,15 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Unload FormLevels
         
         'Auto enhance functions
-        Case "Auto correct lighting"
-            FormLevels.MapImageLevels FormLevels.getIdealLevelParamString(pdImages(g_CurrentImage).getActiveDIB)
-            Unload FormLevels
+        Case "Auto enhance color"
+            Filters_Color_Effects.fxAutoEnhanceColors
+        
+        Case "Auto enhance contrast"
+            Filters_Color_Effects.fxAutoEnhanceContrast
+        
+        Case "Auto enhance lighting"
+            Filters_Color_Effects.fxAutoEnhanceLighting
+            
         
         'Luminance adjustment functions
         Case "Brightness and contrast"
