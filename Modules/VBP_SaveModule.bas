@@ -1792,7 +1792,7 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     Set cParams = New pdParamString
     If Len(jp2Params) > 0 Then cParams.setParamString jp2Params
     Dim JP2Quality As Long
-    If cParams.doesParamExist(1) Then JP2Quality = cParams.GetLong(1) Else JP2Quality = 16
+    If cParams.doesParamExist(1) Then JP2Quality = cParams.GetLong(1) Else JP2Quality = 1
     
     Dim sFileType As String
     sFileType = "JPEG-2000"
