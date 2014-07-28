@@ -825,45 +825,6 @@ Private Function fMin(x As Double, y As Double) As Double
     If x > y Then fMin = y Else fMin = x
 End Function
 
-'Return the maximum of two floating-point values
-Private Function fMax(x As Double, y As Double) As Double
-    If x < y Then fMax = y Else fMax = x
-End Function
-
-'Return the maximum of three floating point values
-Private Function fMax3(rR As Double, rG As Double, rB As Double) As Double
-   If (rR > rG) Then
-      If (rR > rB) Then
-         fMax3 = rR
-      Else
-         fMax3 = rB
-      End If
-   Else
-      If (rB > rG) Then
-         fMax3 = rB
-      Else
-         fMax3 = rG
-      End If
-   End If
-End Function
-
-'Return the minimum of three floating point values
-Private Function fMin3(rR As Double, rG As Double, rB As Double) As Double
-   If (rR < rG) Then
-      If (rR < rB) Then
-         fMin3 = rR
-      Else
-         fMin3 = rB
-      End If
-   Else
-      If (rB < rG) Then
-         fMin3 = rB
-      Else
-         fMin3 = rG
-      End If
-   End If
-End Function
-
 'Given a hex color representation, return a matching RGB Long.  Note that this function DOES NOT validate the incoming string;
 ' as an internal function, it's assumed you won't be sending gibberish!
 Public Function getRGBLongFromHex(ByVal srcHex As String) As Long

@@ -26,10 +26,11 @@ Private Type winMsg
     ptX As Long
     ptY As Long
 End Type
+
 'Private Declare Function TranslateMessage Lib "user32" (lpMsg As winMsg) As Long
 'Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (lpMsg As winMsg) As Long
 Private Declare Function GetInputState Lib "user32" () As Long
-Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Private Const WM_KEYFIRST As Long = &H100
 Private Const WM_KEYLAST As Long = &H108
 Private Const PM_REMOVE As Long = &H1
@@ -71,7 +72,11 @@ Public Function userPressedESC(Optional ByVal displayConfirmationPrompt As Boole
         ' message that matches the specified filter is retrieved.")  We could technically parse all keypress messages and look
         ' for just ESC, but this would slow the function without providing any clear benefit.
         PeekMessage tmpMsg, 0, WM_KEYFIRST, WM_KEYLAST, PM_REMOVE
+        
+        'ESC keypress found!
         If tmpMsg.wParam = vbKeyEscape Then
+            
+            'If the calling function requested a confirmation prompt, display it now; otherwise exit immediately.
             If displayConfirmationPrompt Then
                 Dim msgReturn As VbMsgBoxResult
                 msgReturn = pdMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", LastProcess.Id)
@@ -79,9 +84,11 @@ Public Function userPressedESC(Optional ByVal displayConfirmationPrompt As Boole
             Else
                 cancelCurrentAction = True
             End If
+            
         Else
             cancelCurrentAction = False
         End If
+        
     Else
         cancelCurrentAction = False
     End If
