@@ -2430,6 +2430,10 @@ Public Sub LoadPlugins()
             ' individual function load it.
             g_FreeImageHandle = LoadLibrary(g_PluginPath & "FreeImage.dll")
             
+            'Also new to v6.4 is better support for FreeImage errors.  A callback function is now used to track and report
+            ' any internal FreeImage errors.
+            Outside_FreeImageV3.FreeImage_InitErrorHandler
+            
         End If
         
     Else

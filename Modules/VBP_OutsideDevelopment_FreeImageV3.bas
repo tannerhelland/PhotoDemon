@@ -2278,42 +2278,6 @@ Public Function FreeImage_IsAvailable(Optional ByRef Version As String) As Boole
 
 End Function
 
-
-
-'--------------------------------------------------------------------------------
-' Error handling functions
-'--------------------------------------------------------------------------------
-
-Public Sub FreeImage_InitErrorHandler()
-
-   ' Call this function once for using the FreeImage 3 error handling callback.
-   ' The 'FreeImage_ErrorHandler' function is called on each FreeImage 3 error.
-
-   Call FreeImage_SetOutputMessage(AddressOf FreeImage_ErrorHandler)
-
-End Sub
-
-Private Sub FreeImage_ErrorHandler(ByVal Format As FREE_IMAGE_FORMAT, ByVal Message As Long)
-
-Dim strErrorMessage As String
-Dim strImageFormat As String
-
-   ' This function is called whenever the FreeImage 3 libraray throws an error.
-   ' Currently this function gets the error message and the format name of the
-   ' involved image type as VB string printing each to the VB Debug console. Feel
-   ' free to modify this function to call an error handling routine of your on.
-
-   strErrorMessage = pGetStringFromPointerA(Message)
-   strImageFormat = FreeImage_GetFormatFromFIF(Format)
-   
-   Debug.Print "[FreeImage] Error: " & strErrorMessage
-   Debug.Print "            Image: " & strImageFormat
-   Debug.Print "            Code:  " & Format
-
-End Sub
-
-
-
 '--------------------------------------------------------------------------------
 ' String returning functions wrappers
 '--------------------------------------------------------------------------------
@@ -3055,6 +3019,7 @@ Dim lSizeInBytes As Long
       hStream = FreeImage_OpenMemory()
       If (hStream) Then
          FreeImage_SaveToMemoryEx = FreeImage_SaveToMemory(Format, BITMAP, hStream, Flags)
+         
          If (FreeImage_SaveToMemoryEx) Then
             If (FreeImage_AcquireMemoryInt(hStream, lpData, lSizeInBytes)) Then
                On Error Resume Next
@@ -3069,7 +3034,14 @@ Dim lSizeInBytes As Long
             Else
                FreeImage_SaveToMemoryEx = False
             End If
+         
+         Else
+         
+            
+         
          End If
+         
+         
          Call FreeImage_CloseMemory(hStream)
       Else
          FreeImage_SaveToMemoryEx = False
@@ -5035,6 +5007,7 @@ Dim strExtension As String
                                  "of " & colorDepth & " bpp.")
                
                ElseIf (FreeImage_GetBPP(BITMAP) <> colorDepth) Then
+               
                   BITMAP = FreeImage_ConvertColorDepth(BITMAP, colorDepth, (UnloadSource Or bIsNewDIB))
                   bIsNewDIB = True
                
@@ -6330,3 +6303,35 @@ Dim lDataPtr As Long
    End If
 
 End Function
+
+'--------------------------------------------------------------------------------
+' Error handling functions
+'--------------------------------------------------------------------------------
+
+Public Sub FreeImage_InitErrorHandler()
+
+   ' Call this function once for using the FreeImage 3 error handling callback.
+   ' The 'FreeImage_ErrorHandler' function is called on each FreeImage 3 error.
+
+   Call FreeImage_SetOutputMessage(AddressOf FreeImage_ErrorHandler)
+
+End Sub
+
+Private Sub FreeImage_ErrorHandler(ByVal Format As FREE_IMAGE_FORMAT, ByVal Message As Long)
+
+    Dim strErrorMessage As String
+    Dim strImageFormat As String
+
+   ' This function is called whenever the FreeImage 3 libraray throws an error.
+   ' Currently this function gets the error message and the format name of the
+   ' involved image type as VB string and prints both to the VB Debug console. Feel
+   ' free to modify this function to call an error handling routine of your own.
+
+   strErrorMessage = pGetStringFromPointerA(Message)
+   strImageFormat = FreeImage_GetFormatFromFIF(Format)
+   
+   pdDebug.LogAction "FreeImage returned the following internal error:", PDM_EXTERNAL_LIB
+   pdDebug.LogAction vbTab & strErrorMessage, PDM_EXTERNAL_LIB
+   pdDebug.LogAction vbTab & "Image format in question was: " & strImageFormat, PDM_EXTERNAL_LIB
+   
+End Sub
