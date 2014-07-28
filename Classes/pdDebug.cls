@@ -47,10 +47,11 @@ Public Enum PD_DEBUG_MESSAGES
     PDM_MEM_REPORT = 2
     PDM_HDD_REPORT = 3
     PDM_PROCESSOR = 4
+    PDM_EXTERNAL_LIB = 5
 End Enum
 
 #If False Then
-    Const PDM_NORMAL = 0, PDM_USER_MESSAGE = 1, PDM_MEM_REPORT = 2, PDM_HDD_REPORT = 3, PDM_PROCESSOR = 4
+    Const PDM_NORMAL = 0, PDM_USER_MESSAGE = 1, PDM_MEM_REPORT = 2, PDM_HDD_REPORT = 3, PDM_PROCESSOR = 4, PDM_EXTERNAL_LIB = 5
 #End If
 
 'Has this instance been initialized?  This will be set to true if the InitializeDebugger function has executed successfully.
@@ -293,6 +294,9 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
             
         Case PDM_PROCESSOR
             prefixString = "#PRC#"
+            
+        Case PDM_EXTERNAL_LIB
+            prefixString = "!EXT!"
     
     End Select
     
