@@ -318,8 +318,8 @@ Private Sub UserControl_Paint()
     captionWidth = curFont.getWidthOfString(m_Caption)
     captionHeight = curFont.getHeightOfString(m_Caption)
     
-    'Retrieve the descent of the current font.\
-    Dim fontDescent As Long, fontCapHeight As Long, fontMetrics As TEXTMETRIC
+    'Retrieve the descent of the current font.
+    Dim fontDescent As Long, fontMetrics As TEXTMETRIC
     GetTextMetrics m_BackBuffer.getDIBDC, fontMetrics
     fontDescent = fontMetrics.tmDescent
     

@@ -375,7 +375,6 @@ Private numOfExtraWindows As Long
 ' To prevent this size from being synched as the "last-known window size", we track minimize mode, and disregard all location and
 ' size syncing while it is active.
 Private insideMinimizeMode As Boolean
-Private m_MainFormRectBeforeMinimize As winRect, m_MainFormStateBeforeMinimize As Long
 
 'Retrieve the current tabstrip alignment
 Public Function getImageTabstripAlignment() As AlignConstants
@@ -1924,7 +1923,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '*************************************************************************************************
     
     Dim curWinRect As winRect
-    Dim curWinPoint As POINTAPI
     
     Dim userSizeTooSmall As Boolean
     Dim resizeHandle As winResizeEdge
@@ -2058,8 +2056,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     'The user param is not >= 64, meaning it references the primary window (FormMain).  Move all child windows to match the
     ' parent form's new position.
     Else
-    
-        Dim childRect As winRect
         
         'Check parent window messages
         Select Case uMsg

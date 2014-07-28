@@ -180,7 +180,6 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 ' we must track mouse position and offsets.
 Private m_InitX As Long, m_InitY As Long
 Private m_OffsetX As Long, m_OffsetY As Long
-Private m_PrevOffsetX As Long, m_PrevOffsetY As Long
 
 'Is the image large enough that the user is allowed to scroll?
 Private m_HScrollAllowed As Boolean, m_VScrollAllowed As Boolean

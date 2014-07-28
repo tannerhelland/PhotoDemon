@@ -91,7 +91,7 @@ Public Sub setEnergyImage(ByRef srcDIB As pdDIB)
     prepSafeArray energySA, m_EnergyImage
     CopyMemory ByVal VarPtrArray(energyData()), VarPtr(energySA), 4
     
-    Dim x As Long, y As Long, quickVal As Long
+    Dim x As Long, y As Long, QuickVal As Long
     Dim r As Long, g As Long, b As Long
     
     Dim grayLookUp(0 To 765) As Byte
@@ -101,12 +101,12 @@ Public Sub setEnergyImage(ByRef srcDIB As pdDIB)
     Next x
     
     For x = 0 To srcDIB.getDIBWidth - 1
-        quickVal = x * 3
+        QuickVal = x * 3
     For y = 0 To srcDIB.getDIBHeight - 1
-        r = energyData(quickVal + 2, y)
-        g = energyData(quickVal + 1, y)
-        b = energyData(quickVal, y)
-        energyData(quickVal, y) = grayLookUp(r + g + b)
+        r = energyData(QuickVal + 2, y)
+        g = energyData(QuickVal + 1, y)
+        b = energyData(QuickVal, y)
+        energyData(QuickVal, y) = grayLookUp(r + g + b)
     Next y
     Next x
     
@@ -225,7 +225,7 @@ End Sub
 Private Function shrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long)
 
     'Start by finding the smallest energy value in the final column of the seam map
-    Dim x As Long, y As Long
+    Dim x As Long
     
     Dim xCheck As Long
     Dim LeftUp As Long, leftMiddle As Long, leftDown As Long
@@ -413,7 +413,7 @@ End Sub
 Private Function shrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
 
     'Start by finding the smallest energy value in the final row of the seam map
-    Dim x As Long, y As Long
+    Dim y As Long
     
     Dim yCheck As Long
     Dim topLeft As Long, topMiddle As Long, topRight As Long

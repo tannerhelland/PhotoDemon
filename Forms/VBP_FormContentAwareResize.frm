@@ -123,10 +123,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Used for maintaining ratios when the check box is clicked
-Private wRatio As Double, hRatio As Double
-Dim allowedToUpdateWidth As Boolean, allowedToUpdateHeight As Boolean
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 

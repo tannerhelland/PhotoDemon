@@ -2432,7 +2432,9 @@ Public Sub LoadPlugins()
             
             'Also new to v6.4 is better support for FreeImage errors.  A callback function is now used to track and report
             ' any internal FreeImage errors.
-            Outside_FreeImageV3.FreeImage_InitErrorHandler
+            #If DEBUGMODE = 1 Then
+                Outside_FreeImageV3.FreeImage_InitErrorHandler
+            #End If
             
         End If
         

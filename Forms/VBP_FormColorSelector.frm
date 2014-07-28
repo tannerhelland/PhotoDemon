@@ -857,7 +857,7 @@ Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByV
 Private Declare Function SetCapture Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseCapture Lib "user32" () As Long
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
-Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
+Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dx As Long, ByVal dy As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -1259,7 +1259,6 @@ Private Sub syncInterfaceToCurrentColor()
     Dim x As Long, y As Long, QuickX As Long
     
     Dim tmpR As Long, tmpG As Long, tmpB As Long
-    Dim tmpSat As Double, tmpLum As Double
     
     Dim loopWidth As Long, loopHeight As Long
     loopWidth = primaryBox.getDIBWidth - 1

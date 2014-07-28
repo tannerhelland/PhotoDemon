@@ -345,8 +345,6 @@ End Sub
 '
 'Note that this function will return TRUE if input tracking was initiated successfully.
 Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackStandardMouseEvents As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False) As Boolean
-
-    Dim i As Long
         
     'Add the hWnd to our tracking array.  Note that the hWnd in position 0 is treated as the base.
     If targetHWnd <> 0 Then

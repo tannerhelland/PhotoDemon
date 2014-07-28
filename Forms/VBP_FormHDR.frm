@@ -290,7 +290,7 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
     Dim lbX As Long, lbY As Long, ubX As Long, ubY As Long
     Dim obuX As Boolean, obuY As Boolean, oblY As Boolean
     Dim i As Long, j As Long
-    Dim cutoffTotal As Long
+    
     Dim r As Long, g As Long, b As Long
     Dim newR As Long, newG As Long, newB As Long
     Dim histFactor As Double
@@ -582,7 +582,7 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
         
     Next y
         atBottom = Not atBottom
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x

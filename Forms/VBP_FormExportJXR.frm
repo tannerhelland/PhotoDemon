@@ -207,7 +207,6 @@ Dim m_ToolTip As clsToolTip
 'When rendering the preview, we don't want to always re-request a copy of the main image.  Instead, we
 ' store one in this DIB (at the size of the preview) and simply re-use it when we need to render a preview.
 Private origImageCopy As pdDIB
-Private previewWidth As Long, previewHeight As Long
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -333,6 +332,10 @@ Public Sub showDialog()
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
+    'Retrieve a composited version of the target image
+    Set origImageCopy = New pdDIB
+    imageBeingExported.getCompositedImage origImageCopy, True
+    
     'Update the preview
     updatePreview
     
@@ -346,14 +349,9 @@ Private Sub updatePreview()
 
     If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
         
-        'Retrieve a composited version of the target image
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        imageBeingExported.getCompositedImage tmpDIB, True
-        
         'Start by retrieving the relevant portion of the image, according to the preview window
         Dim tmpSafeArray As SAFEARRAY2D
-        previewNonStandardImage tmpSafeArray, tmpDIB, fxPreview
+        previewNonStandardImage tmpSafeArray, origImageCopy, fxPreview
         
         'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
         ' obtain a compressed version of the image data.

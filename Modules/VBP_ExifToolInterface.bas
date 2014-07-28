@@ -731,9 +731,8 @@ Public Sub killStrandedExifToolInstances()
     Const TH32CS_SNAPPROCESS As Long = 2&
     Const PROCESS_ALL_ACCESS = 0
     Dim uProcess As PROCESSENTRY32
-    Dim rProcessFound As Long, hSnapshot As Long, exitCode As Long, myProcess As Long
+    Dim rProcessFound As Long, hSnapshot As Long, myProcess As Long
     Dim szExename As String
-    Dim AppKill As Boolean
     Dim i As Long
     
     On Local Error GoTo CouldntKillExiftoolInstances
@@ -758,9 +757,13 @@ Public Sub killStrandedExifToolInstances()
             
             'Attempt to kill it
             If KillProcess(uProcess.th32ProcessID, 0) Then
-                Debug.Print "(Old ExifTool instance " & uProcess.th32ProcessID & " terminated successfully.)"
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "(Old ExifTool instance " & uProcess.th32ProcessID & " terminated successfully.)"
+                #End If
             Else
-                Debug.Print "(Old ExifTool instance " & uProcess.th32ProcessID & " was not terminated; sorry!)"
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "(Old ExifTool instance " & uProcess.th32ProcessID & " was not terminated; sorry!)"
+                #End If
             End If
              
         End If
@@ -772,14 +775,17 @@ Public Sub killStrandedExifToolInstances()
     
     'Release our generic process snapshot, then exit
     CloseHandle hSnapshot
-    
-    Debug.Print "All old ExifTool instances were auto-terminated successfully."
+    #If DEBUGMODE = 1 Then
+        Debug.Print "All old ExifTool instances were auto-terminated successfully."
+    #End If
     
     Exit Sub
     
 CouldntKillExiftoolInstances:
     
-    Debug.Print "Old ExifTool instances could not be auto-terminated.  Sorry!"
+    #If DEBUGMODE = 1 Then
+        Debug.Print "Old ExifTool instances could not be auto-terminated.  Sorry!"
+    #End If
     
 End Sub
  

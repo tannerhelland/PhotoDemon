@@ -74,18 +74,26 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   4
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   7
-         font            =   "VBP_ToolbarLayers.frx":0000
-         backcolor       =   -2147483643
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_ToolbarLayers.frx":0028
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
-         colorscheme     =   3
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483643
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":0000
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -94,18 +102,26 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   5
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   7
-         font            =   "VBP_ToolbarLayers.frx":0D7A
-         backcolor       =   -2147483643
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
-         colorscheme     =   3
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483643
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":0D52
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -114,18 +130,26 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   7
-         font            =   "VBP_ToolbarLayers.frx":1AF4
-         backcolor       =   -2147483643
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
-         colorscheme     =   3
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483643
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":1AA4
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
@@ -134,18 +158,26 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   11
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   7
-         font            =   "VBP_ToolbarLayers.frx":286E
-         backcolor       =   -2147483643
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "VBP_ToolbarLayers.frx":2896
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
-         colorscheme     =   3
+         _ExtentX        =   953
+         _ExtentY        =   847
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483643
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarLayers.frx":27F6
+         DisabledPictureMode=   1
+         CaptionEffects  =   0
+         TooltipTitle    =   "Open"
+         ColorScheme     =   3
       End
    End
    Begin VB.PictureBox picLayers 
@@ -189,13 +221,21 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   120
       Width           =   2760
-      _extentx        =   4868
-      _extenty        =   873
-      font            =   "VBP_ToolbarLayers.frx":35E8
-      max             =   100
-      value           =   100
-      notchposition   =   2
-      notchvaluecustom=   100
+      _ExtentX        =   4868
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Max             =   100
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin VB.Label lblLayerSettings 
       Alignment       =   1  'Right Justify
@@ -1254,8 +1294,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         
         Dim linePadding As Long
         linePadding = fixDPI(2)
-    
-        Dim mHeight As Single
+        
         Dim tmpRect As RECT
         Dim hBrush As Long
         

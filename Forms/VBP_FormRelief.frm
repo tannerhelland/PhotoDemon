@@ -299,8 +299,8 @@ Public Sub ApplyReliefEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
     cosTheta = Cos(eAngle)
     sinTheta = Sin(eAngle)
     
-    'X and Y values, remapped around a center point of (0, 0)
-    Dim nX As Double, nY As Double
+    'X value, remapped around a center point of (0, 0)
+    Dim nX As Double
     
     'Source X and Y values, which are used to solve for the hue of a given point
     Dim srcX As Double, srcY As Double

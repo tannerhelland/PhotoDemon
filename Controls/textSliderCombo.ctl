@@ -798,7 +798,6 @@ Private Sub redrawSlider()
     getSliderCoordinates relevantSliderPosX, relevantSliderPosY
     
     'Additional draw variables utilized by multiple render styles
-    Dim notchSize As Single
     Dim customX As Single, customY As Single
     Dim relevantMin As Single
     
@@ -895,7 +894,7 @@ Private Sub drawNotchToDIB(ByRef dstDIB As pdDIB, ByVal trackColor As Long)
     'First, see if a notch needs to be drawn.  If the notch mode is "none", exit now.
     If curNotchPosition = DoNotDisplayNotch Then Exit Sub
     
-    Dim renderNotchValue As Double, renderNotchPosition As Double
+    Dim renderNotchValue As Double
     
     'For controls where the notch would be drawn at the "minimum value" position, I prefer to keep a clean visual style and
     ' not draw a redundant notch (as the filled slider conveys the exact same message).  For such controls, notch display

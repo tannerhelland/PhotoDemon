@@ -309,12 +309,9 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
         ySin(y) = (y - midY) * sinTheta
         yCos(y) = (y - midY) * cosTheta
     Next y
-    
-    'X and Y values, remapped around a center point of (0, 0)
-    Dim nX As Double, nY As Double
-    
-    'Source X and Y values, which are used to solve for the hue of a given point
-    Dim srcX As Double, srcY As Double
+        
+    'Source X value, which is used to solve for the hue of a given point
+    Dim srcX As Double
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
