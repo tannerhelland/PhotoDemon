@@ -376,7 +376,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Because this is a two-pass filter, we have to manually change the progress bar maximum to 2 * width

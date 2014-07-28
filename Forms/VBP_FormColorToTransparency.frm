@@ -60,8 +60,6 @@ Begin VB.Form FormTransparency_FromColor
       Width           =   5565
       _ExtentX        =   9816
       _ExtentY        =   873
-      Max             =   199
-      Value           =   15
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -71,6 +69,8 @@ Begin VB.Form FormTransparency_FromColor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   199
+      Value           =   15
    End
    Begin PhotoDemon.sliderTextCombo sltBlend 
       Height          =   495
@@ -80,8 +80,6 @@ Begin VB.Form FormTransparency_FromColor
       Width           =   5565
       _ExtentX        =   9816
       _ExtentY        =   873
-      Max             =   200
-      Value           =   15
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -91,6 +89,8 @@ Begin VB.Form FormTransparency_FromColor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   200
+      Value           =   15
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   615
@@ -196,10 +196,6 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'Multiple controls on this form interact with each other; while they are interacting, disallow previews, then do a
-' single preview after all controls have been set
-Dim allowPreviews As Boolean
 
 'OK button
 Private Sub cmdBar_OKClick()

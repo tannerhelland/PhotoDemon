@@ -75,7 +75,6 @@ Begin VB.Form FormTint
       GradientColorLeft=   15102446
       GradientColorRight=   8253041
       GradientColorMiddle=   16777215
-      GradientMiddleValue=   0
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -163,7 +162,6 @@ Public Sub adjustTint(ByVal tintAdjustment As Long, Optional ByVal toPreview As 
     'Color and grayscale variables
     Dim r As Long, g As Long, b As Long
     Dim h As Double, s As Double, v As Double, origV As Double
-    Dim grayVal As Byte
     
     'Build a look-up table of tint values.  (Tint only affects the green channel)
     Dim gLookUp() As Long

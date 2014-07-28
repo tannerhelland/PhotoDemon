@@ -291,7 +291,6 @@ Public Function loadStandardICCProfile(ByVal profileID As Long) As Long
     GetStandardColorSpaceProfile vbNullString, profileID, dstProfileHeader.pProfileData, dstProfileHeader.cbDataSize
         
     'With a fully populated header, it is finally time to open an internal Windows version of the data!
-    Dim dstProfile As Long
     loadStandardICCProfile = OpenColorProfile(dstProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
     
     'It is highly unlikely (maybe even impossible?) for the system to return an invalid standard profile, but just to be

@@ -618,7 +618,6 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
     'Metadata only needs to be written out if it exists (obviously)
     If hasXMLMetadata Then
         
-        Dim etReturn As Boolean
         Dim newXMLString As String, tmpXMLPath As String
         Dim fileNum As Integer
         

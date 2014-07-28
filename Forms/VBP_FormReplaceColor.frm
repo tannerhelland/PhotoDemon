@@ -60,8 +60,6 @@ Begin VB.Form FormReplaceColor
       Width           =   5565
       _ExtentX        =   9816
       _ExtentY        =   873
-      Max             =   199
-      Value           =   15
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -71,6 +69,8 @@ Begin VB.Form FormReplaceColor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   199
+      Value           =   15
    End
    Begin PhotoDemon.sliderTextCombo sltBlend 
       Height          =   495
@@ -80,8 +80,6 @@ Begin VB.Form FormReplaceColor
       Width           =   5565
       _ExtentX        =   9816
       _ExtentY        =   873
-      Max             =   200
-      Value           =   15
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -91,6 +89,8 @@ Begin VB.Form FormReplaceColor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   200
+      Value           =   15
    End
    Begin PhotoDemon.colorSelector colorOld 
       Height          =   615
@@ -223,10 +223,6 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'Multiple controls on this form interact with each other; while they are interacting, disallow previews, then do a
-' single preview after all controls have been set
-Dim allowPreviews As Boolean
-
 'OK button
 Private Sub cmdBar_OKClick()
     Process "Replace color", , buildParams(colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value), UNDO_LAYER
@@ -241,10 +237,6 @@ Private Sub cmdBar_ResetClick()
     colorNew.Color = RGB(0, 192, 0)
     sltErase.Value = 15
     sltBlend.Value = 15
-End Sub
-
-Private Sub colorPicker_ColorChanged()
-    updatePreview
 End Sub
 
 Private Sub colorNew_ColorChanged()
@@ -332,7 +324,6 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
     difThreshold = blendThreshold - eraseThreshold
     
     Dim cDistance As Double
-    Dim newAlpha As Long
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX

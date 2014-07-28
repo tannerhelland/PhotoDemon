@@ -61,9 +61,6 @@ Begin VB.Form FormStraighten
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -15
-      Max             =   15
-      SigDigits       =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -73,6 +70,9 @@ Begin VB.Form FormStraighten
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -15
+      Max             =   15
+      SigDigits       =   2
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
@@ -284,7 +284,6 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             
             'Iterate through each layer, rotating as we go
             Dim tmpLayerRef As pdLayer
-            Dim origOffsetX As Long, origOffsetY As Long
             
             'If we are rotating the entire image, we must handle all layers in turn.  Otherwise, we can handle just
             ' the active layer.
@@ -511,10 +510,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-Private Sub OptRotate_Click(Index As Integer)
-    updatePreview
 End Sub
 
 'Redraw the on-screen preview of the rotated image

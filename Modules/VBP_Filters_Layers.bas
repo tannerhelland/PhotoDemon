@@ -1729,7 +1729,7 @@ Public Function CreatePolarCoordDIB(ByVal conversionMethod As Long, ByVal polarR
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -1962,7 +1962,7 @@ Public Function CreateXSwappedPolarCoordDIB(ByVal conversionMethod As Long, ByVa
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -2194,7 +2194,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    Dim QuickVal As Long, QuickValInner As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -2517,7 +2517,7 @@ Public Function CreateRotatedDIB(ByVal rotateAngle As Double, ByVal edgeHandling
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -2814,7 +2814,7 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     Dim coefR As Double, coefG As Double, coefB As Double
     Dim xOffset As Long, yOffset As Long, xMax As Long, yMax As Long, xMin As Long, yMin As Long
     Dim spacialFuncCache As Double
-    Dim srcPixelX As Long, srcPixelY As Long
+    Dim srcPixelX As Long
     Dim i As Long, k As Long
     
     'For performance improvements, color and spatial functions are precalculated prior to starting filter.

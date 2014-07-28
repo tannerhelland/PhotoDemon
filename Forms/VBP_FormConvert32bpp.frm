@@ -49,8 +49,8 @@ Begin VB.Form FormTransparency_Basic
       TabIndex        =   3
       Top             =   1920
       Width           =   1695
-      _ExtentX        =   2990
-      _ExtentY        =   661
+      _ExtentX        =   3201
+      _ExtentY        =   556
       Caption         =   "fully opaque"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -78,8 +78,8 @@ Begin VB.Form FormTransparency_Basic
       TabIndex        =   4
       Top             =   2400
       Width           =   2115
-      _ExtentX        =   3731
-      _ExtentY        =   661
+      _ExtentX        =   3942
+      _ExtentY        =   556
       Caption         =   "fully transparent"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -98,8 +98,8 @@ Begin VB.Form FormTransparency_Basic
       TabIndex        =   5
       Top             =   2880
       Width           =   2595
-      _ExtentX        =   4577
-      _ExtentY        =   661
+      _ExtentX        =   4789
+      _ExtentY        =   556
       Caption         =   "partially transparent:"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -119,9 +119,6 @@ Begin VB.Form FormTransparency_Basic
       Width           =   5205
       _ExtentX        =   9181
       _ExtentY        =   873
-      Min             =   1
-      Max             =   254
-      Value           =   127
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -131,6 +128,9 @@ Begin VB.Form FormTransparency_Basic
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   254
+      Value           =   127
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -181,10 +181,6 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'Multiple controls on this form interact with each other; while they are interacting, disallow previews, then do a
-' single preview after all controls have been set
-Dim allowPreviews As Boolean
-
 'OK button
 Private Sub cmdBar_OKClick()
     Process "Add alpha channel", , buildParams(getRelevantAlpha()), UNDO_LAYER
@@ -223,7 +219,6 @@ Public Sub simpleConvert32bpp(Optional ByVal convertConstant As Long = 255, Opti
     If Not toPreview Then Message "Adding new alpha channel to image..."
     
     'Call prepImageData, which will prepare a temporary copy of the image
-    Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     prepImageData tmpSA, toPreview, dstPic
     

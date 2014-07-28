@@ -430,7 +430,6 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     Dim xOffset As Long, yOffset As Long, xMax As Long, yMax As Long, xMin As Long, yMin As Long
     Dim spacialFuncCache As Double
     Dim srcPixelX As Long, srcPixelY As Long
-    Dim i As Long, k As Long
     
     'For performance improvements, color and spatial functions are precalculated prior to starting filter.
     initSpatialFunc kernelRadius, spatialFactor, spatialPower

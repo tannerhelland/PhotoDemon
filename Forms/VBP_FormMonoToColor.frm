@@ -59,9 +59,6 @@ Begin VB.Form FormMonoToColor
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   1
-      Max             =   8
-      Value           =   3
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -71,6 +68,9 @@ Begin VB.Form FormMonoToColor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   8
+      Value           =   3
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -169,8 +169,6 @@ Option Explicit
 'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
 ' original image dimensions in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
-
-Dim allowPreview As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip

@@ -398,7 +398,6 @@ Public Function getShadingValue(ByVal srcX As Long, ByVal srcY As Long, Optional
     
     'Retrieve the (x, y) coordinates of the nearest Voronoi point.  Note that if caller already cached this value in a previous
     ' step, they can supply it as the nearestPointIndex parameter - that makes this function much faster!
-    Dim srcPoint As POINTAPI
     
     'Note that in the special case of shading using only the F2 value (the 2nd-closest point), we can completely
     ' avoid calculating the distance to the nearest point!
