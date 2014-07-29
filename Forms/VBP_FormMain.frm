@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -311,40 +311,44 @@ Begin VB.Form FormMain
          Index           =   2
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Content-aware resize..."
          Index           =   3
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Canvas size..."
+         Caption         =   "-"
          Index           =   4
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Fit canvas to active layer"
+         Caption         =   "Canvas size..."
          Index           =   5
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Fit canvas around all layers"
+         Caption         =   "Fit canvas to active layer"
          Index           =   6
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Fit canvas around all layers"
          Index           =   7
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Crop to selection"
+         Caption         =   "-"
          Index           =   8
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Trim empty borders"
+         Caption         =   "Crop to selection"
          Index           =   9
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Trim empty borders"
          Index           =   10
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Rotate"
+         Caption         =   "-"
          Index           =   11
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Rotate"
+         Index           =   12
          Begin VB.Menu MnuRotate 
             Caption         =   "Straighten"
             Index           =   0
@@ -372,31 +376,31 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuImage 
          Caption         =   "Flip horizontal"
-         Index           =   12
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "Flip vertical"
          Index           =   13
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Flip vertical"
          Index           =   14
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Indexed color..."
+         Caption         =   "-"
          Index           =   15
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Tile..."
+         Caption         =   "Indexed color..."
          Index           =   16
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "-"
+         Caption         =   "Tile..."
          Index           =   17
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Metadata"
+         Caption         =   "-"
          Index           =   18
+      End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Metadata"
+         Index           =   19
          Begin VB.Menu MnuMetadata 
             Caption         =   "Browse image metadata..."
             Index           =   0
@@ -1875,7 +1879,7 @@ Private Sub MnuLayerSize_Click(Index As Integer)
         
         'Content-aware resize
         Case 3
-            Process "Content-aware resize", True
+            Process "Content-aware layer resize", True
     
     End Select
 
@@ -3239,45 +3243,49 @@ Private Sub MnuImage_Click(Index As Integer)
         'Resize
         Case 2
             Process "Resize image", True
+            
+        'Content-aware resize
+        Case 3
+            Process "Content-aware image resize", True
         
         '<separator>
-        Case 3
+        Case 4
         
         'Canvas resize
-        Case 4
+        Case 5
             Process "Canvas size", True
             
         'Fit canvas to active layer
-        Case 5
+        Case 6
             Process "Fit canvas to layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGEHEADER
         
         'Fit canvas around all layers
-        Case 6
+        Case 7
             Process "Fit canvas to all layers", False, , UNDO_IMAGEHEADER
             
         '<separator>
-        Case 7
+        Case 8
             
         'Crop to selection
-        Case 8
+        Case 9
             Process "Crop", , , UNDO_IMAGE
         
         'Trim empty borders
-        Case 9
+        Case 10
             Process "Trim empty borders", , , UNDO_IMAGEHEADER
         
         '<separator>
-        Case 10
-        
-        'Top-level Rotate
         Case 11
         
-        'Flip horizontal (mirror)
+        'Top-level Rotate
         Case 12
+        
+        'Flip horizontal (mirror)
+        Case 13
             Process "Flip image horizontally", , , UNDO_IMAGE
         
         'Flip vertical
-        Case 13
+        Case 14
             Process "Flip image vertically", , , UNDO_IMAGE
         
         'NOTE: isometric view was removed in 6.4.  I may include it at a later date if there is demand.
@@ -3286,21 +3294,21 @@ Private Sub MnuImage_Click(Index As Integer)
         '    Process "Isometric conversion"
             
         '<separator>
-        Case 14
+        Case 15
         
         'Indexed color
-        Case 15
+        Case 16
             Process "Reduce colors", True
         
         'Tile
-        Case 16
+        Case 17
             Process "Tile", True
             
         '<separator>
-        Case 17
+        Case 18
         
         'Metadata top-level
-        Case 18
+        Case 19
     
     End Select
 

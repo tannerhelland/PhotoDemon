@@ -405,6 +405,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96), PD_AT_WHOLEIMAGE
             End If
+            
+        Case "Content-aware image resize"
+            If showDialog Then
+                showContentAwareResizeDialog PD_AT_WHOLEIMAGE
+            Else
+                FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96), PD_AT_WHOLEIMAGE
+            End If
         
         'Canvas size operations
         Case "Canvas size"
@@ -575,11 +582,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96), PD_AT_SINGLELAYER
             End If
         
-        Case "Content-aware resize"
+        Case "Content-aware layer resize"
             If showDialog Then
-                showPDDialog vbModal, FormResizeContentAware
+                showContentAwareResizeDialog PD_AT_SINGLELAYER
             Else
-                FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96)
+                FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96), PD_AT_SINGLELAYER
             End If
         
         'Change layer alpha

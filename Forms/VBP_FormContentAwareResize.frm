@@ -3,7 +3,7 @@ Begin VB.Form FormResizeContentAware
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Content-aware resize"
-   ClientHeight    =   4275
+   ClientHeight    =   4965
    ClientLeft      =   45
    ClientTop       =   225
    ClientWidth     =   9705
@@ -19,7 +19,7 @@ Begin VB.Form FormResizeContentAware
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   285
+   ScaleHeight     =   331
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   647
    ShowInTaskbar   =   0   'False
@@ -28,7 +28,7 @@ Begin VB.Form FormResizeContentAware
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   3525
+      Top             =   4215
       Width           =   9705
       _ExtentX        =   17119
       _ExtentY        =   1323
@@ -60,6 +60,30 @@ Begin VB.Form FormResizeContentAware
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin VB.Label lblFlatten 
+      Alignment       =   2  'Center
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "Note: this operation will flatten the image before resizing it."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   645
+      Left            =   240
+      TabIndex        =   3
+      Top             =   3480
+      Visible         =   0   'False
+      Width           =   9330
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblSize 
       Appearance      =   0  'Flat
@@ -123,8 +147,16 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
+' and can be externally accessed by the ResizeTarget property.
+Private m_ResizeTarget As PD_ACTION_TARGET
+
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+Public Property Let ResizeTarget(newTarget As PD_ACTION_TARGET)
+    m_ResizeTarget = newTarget
+End Property
 
 Private Sub cmdBar_ExtraValidations()
     If Not ucResize.IsValid(True) Then cmdBar.validationFailed
@@ -132,7 +164,17 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Content-aware resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI), UNDO_LAYER
+
+    Select Case m_ResizeTarget
+    
+        Case PD_AT_WHOLEIMAGE
+            Process "Content-aware image resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
+        
+        Case PD_AT_SINGLELAYER
+            Process "Content-aware layer resize", , buildParams(ucResize.imgWidth, ucResize.imgHeight, ucResize.unitOfMeasurement, ucResize.imgDPIAsPPI, m_ResizeTarget), UNDO_LAYER
+    
+    End Select
+
 End Sub
 
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
@@ -140,25 +182,93 @@ End Sub
 Private Sub cmdBar_RandomizeClick()
     
     ucResize.lockAspectRatio = False
-    ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth)
-    ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight)
+    
+    Select Case m_ResizeTarget
+    
+        Case PD_AT_WHOLEIMAGE
+            ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
+            ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
+        
+        Case PD_AT_SINGLELAYER
+            ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth)
+            ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight)
+    
+    End Select
     
 End Sub
 
 Private Sub cmdBar_ResetClick()
 
-    'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.unitOfMeasurement = MU_PIXELS
-    ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+    
+    'Automatically set the width and height text boxes to match the relevant image or layer's current dimensions
+    Select Case m_ResizeTarget
+    
+        Case PD_AT_WHOLEIMAGE
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+        
+        Case PD_AT_SINGLELAYER
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+    
+    End Select
+
     ucResize.lockAspectRatio = True
     
+End Sub
+
+Private Sub Form_Activate()
+
+    'Set the dialog caption to match the current resize operation (resize image or resize single layer)
+    Select Case m_ResizeTarget
+        
+        Case PD_AT_WHOLEIMAGE
+            Me.Caption = g_Language.TranslateMessage("Content-aware image resize")
+        
+        Case PD_AT_SINGLELAYER
+            Me.Caption = g_Language.TranslateMessage("Content-aware layer resize")
+        
+    End Select
+
+    'Automatically set the width and height text boxes to match the image's current dimensions
+    ucResize.unitOfMeasurement = MU_PIXELS
+    
+    Select Case m_ResizeTarget
+        
+        Case PD_AT_WHOLEIMAGE
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            
+        Case PD_AT_SINGLELAYER
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+        
+    End Select
+    
+    ucResize.lockAspectRatio = True
+
 End Sub
 
 'LOAD dialog
 Private Sub Form_Load()
     
-    'Automatically set the width and height text boxes to match the image's current dimensions
-    ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+    'Automatically set the width and height text boxes to match the image's current dimensions.  (Note that we must
+    ' do this again in the Activate step, as the last-used settings will automatically override these values.  However,
+    ' if we do not also provide these values here, the resize control may attempt to set parameters while having
+    ' a width/height/resolution of 0, which will cause divide-by-zero errors.)
+    Select Case m_ResizeTarget
+    
+        Case PD_AT_WHOLEIMAGE
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
+            
+        Case PD_AT_SINGLELAYER
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+        
+    End Select
+    
+    'If the current image has more than one layer, warn the user that this action will flatten the image.
+    If pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+        lblFlatten.Visible = True
+    Else
+        lblFlatten.Visible = False
+    End If
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
@@ -171,10 +281,22 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Small wrapper for the seam carve function
-Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long)
+Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal unitOfMeasurement As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long, Optional ByVal thingToResize As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE)
 
-    'TODO: make this function work with layers.  It may be best to restrict the function to layers, and warn of
-    '       flattening if used at the Image level.
+    'If the entire image is being resized, some extra preparation is required
+    If (thingToResize = PD_AT_WHOLEIMAGE) Then
+        
+        'If a selection is active, remove it now
+        If pdImages(g_CurrentImage).selectionActive Then
+            pdImages(g_CurrentImage).selectionActive = False
+            pdImages(g_CurrentImage).mainSelection.lockRelease
+        End If
+                   
+        'Flatten the image
+        Message "Flattening image..."
+        Layer_Handler.flattenImage
+        
+    End If
 
     'Create a temporary DIB, which will be passed to the master SeamCarveDIB function
     Dim tmpDIB As pdDIB
@@ -188,17 +310,37 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight)
     
     'Pass the temporary DIB to the master seam carve function
-    SeamCarveDIB tmpDIB, iWidth, iHeight
+    If SeamCarveDIB(tmpDIB, iWidth, iHeight) Then
     
-    'Copy the newly resized DIB back into its parent image
-    pdImages(g_CurrentImage).getActiveLayer.layerDIB.createFromExistingDIB tmpDIB
-    Set tmpDIB = Nothing
+        'Copy the newly resized DIB back into its parent image
+        pdImages(g_CurrentImage).getActiveLayer.layerDIB.createFromExistingDIB tmpDIB
+        Set tmpDIB = Nothing
+        
+        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+        pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
+        
+        'We are finished with the temporary DIB, so release it
+        Set tmpDIB = Nothing
     
-    'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-    pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
+        'Update the main image's size and DPI values as necessary
+        If thingToResize = PD_AT_WHOLEIMAGE Then
+            pdImages(g_CurrentImage).updateSize False, iWidth, iHeight
+            pdImages(g_CurrentImage).setDPI iDPI, iDPI
+            DisplaySize pdImages(g_CurrentImage)
+        End If
+        
+        'Fit the new image on-screen and redraw its viewport
+        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Content-aware resize"
+        
+    Else
     
-    'Fit the new image on-screen and redraw its viewport
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Content-aware resize"
+        pdImages(g_CurrentImage).undoManager.restoreUndoData
+                
+        'Also, redraw the current child form icon and the image tab-bar
+        createCustomFormIcon pdImages(g_CurrentImage)
+        toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
+    
+    End If
     
     Message "Finished."
 
@@ -238,6 +380,11 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     releaseProgressBar
     
     'Check for user cancellation; if none occurred, copy the seam-carved image into place
-    If Not cancelCurrentAction Then srcDIB.createFromExistingDIB seamCarver.getCarvedImage()
+    If Not cancelCurrentAction Then
+        srcDIB.createFromExistingDIB seamCarver.getCarvedImage()
+        SeamCarveDIB = True
+    Else
+        SeamCarveDIB = False
+    End If
     
 End Function
