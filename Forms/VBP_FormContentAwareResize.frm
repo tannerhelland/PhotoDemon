@@ -93,8 +93,8 @@ Attribute VB_Exposed = False
 'Content-Aware Resize (e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 06/January/14
-'Last updated: 29/April/14
-'Last update: reworked content-aware scaling to operate on layers
+'Last updated: 29/July/14
+'Last update: fixed some 32bpp issues, added serpentine scanning for ideal treatment of images on uniform backgrounds
 '
 'Content-aware scaling is a very exciting addition to PhotoDemon 6.2.  (As a comparison, PhotoShop didn't gain this
 ' feature until CS4, so it's pretty cutting-edge stuff!)
