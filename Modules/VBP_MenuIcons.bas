@@ -225,29 +225,30 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Image Menu
     addMenuIcon "DUPLICATE", 3, 0      'Duplicate
     addMenuIcon "RESIZE", 3, 2         'Resize
-    addMenuIcon "CANVASSIZE", 3, 4     'Canvas resize
-    'addMenuIcon "CANVASSIZE", 3, 5     'Fit canvas to active layer
-    'addMenuIcon "CANVASSIZE", 3, 6     'Fit canvas around all layers
-    addMenuIcon "CROPSEL", 3, 8        'Crop to Selection
-    addMenuIcon "AUTOCROP", 3, 9      'Trim
-    addMenuIcon "ROTATECW", 3, 11     'Rotate top-level
+    addMenuIcon "SMRTRESIZE", 3, 3     'Content-aware resize
+    addMenuIcon "CANVASSIZE", 3, 5     'Canvas resize
+    'addMenuIcon "CANVASSIZE", 3, 6     'Fit canvas to active layer
+    'addMenuIcon "CANVASSIZE", 3, 7     'Fit canvas around all layers
+    addMenuIcon "CROPSEL", 3, 9        'Crop to Selection
+    addMenuIcon "AUTOCROP", 3, 10     'Trim
+    addMenuIcon "ROTATECW", 3, 12     'Rotate top-level
         '--> Rotate sub-menu
-        addMenuIcon "STRAIGHTEN", 3, 11, 0  'Straighten
-        addMenuIcon "ROTATECW", 3, 11, 2    'Rotate Clockwise
-        addMenuIcon "ROTATECCW", 3, 11, 3   'Rotate Counter-clockwise
-        addMenuIcon "ROTATE180", 3, 11, 4   'Rotate 180
-        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 11, 5  'Rotate Arbitrary
-    addMenuIcon "MIRROR", 3, 12        'Mirror
-    addMenuIcon "FLIP", 3, 13          'Flip
+        addMenuIcon "STRAIGHTEN", 3, 12, 0  'Straighten
+        addMenuIcon "ROTATECW", 3, 12, 2    'Rotate Clockwise
+        addMenuIcon "ROTATECCW", 3, 12, 3   'Rotate Counter-clockwise
+        addMenuIcon "ROTATE180", 3, 12, 4   'Rotate 180
+        If g_ImageFormats.FreeImageEnabled Then addMenuIcon "ROTATEANY", 3, 12, 5  'Rotate Arbitrary
+    addMenuIcon "MIRROR", 3, 13        'Mirror
+    addMenuIcon "FLIP", 3, 14          'Flip
     'addMenuIcon "ISOMETRIC", 3, 12     'Isometric      'NOTE: isometric was removed in v6.4.
-    addMenuIcon "REDUCECOLORS", 3, 15  'Indexed color (Reduce Colors)
-    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(15).Enabled = True Else FormMain.MnuImage(15).Enabled = False
-    addMenuIcon "TILE", 3, 16          'Tile
-    addMenuIcon "METADATA", 3, 18      'Metadata (top-level)
+    addMenuIcon "REDUCECOLORS", 3, 16  'Indexed color (Reduce Colors)
+    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(16).Enabled = True Else FormMain.MnuImage(16).Enabled = False
+    addMenuIcon "TILE", 3, 17          'Tile
+    addMenuIcon "METADATA", 3, 19      'Metadata (top-level)
         '--> Metadata sub-menu
-        addMenuIcon "BROWSEMD", 3, 18, 0     'Browse metadata
-        addMenuIcon "COUNTCOLORS", 3, 18, 2  'Count Colors
-        addMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
+        addMenuIcon "BROWSEMD", 3, 19, 0     'Browse metadata
+        addMenuIcon "COUNTCOLORS", 3, 19, 2  'Count Colors
+        addMenuIcon "MAPPHOTO", 3, 19, 3     'Map photo location
     
     'Layer menu
     addMenuIcon "ADDLAYER", 4, 0        'Add layer (top-level)

@@ -172,7 +172,7 @@ Public Function displayIDEWarning() As VbMsgBoxResult
 End Function
 
 'If an unclean shutdown + old Autosave data is found, offer to restore it for the user.
-Public Function displayAutosaveWarning(ByRef dstArray() As autosaveXML) As VbMsgBoxResult
+Public Function displayAutosaveWarning(ByRef dstArray() As AutosaveXML) As VbMsgBoxResult
 
     Load dialog_AutosaveWarning
     dialog_AutosaveWarning.showDialog
@@ -188,7 +188,7 @@ Public Function displayAutosaveWarning(ByRef dstArray() As autosaveXML) As VbMsg
 
 End Function
 
-'A thin wrapper to showPDDialog, customized for resizing.
+'A thin wrapper to showPDDialog, customized for generic resizing.
 Public Sub showResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
 
     'Notify the resize dialog of the intended target
@@ -196,6 +196,17 @@ Public Sub showResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
 
     'Display the resize dialog
     showPDDialog vbModal, FormResize
+
+End Sub
+
+'A thin wrapper to showPDDialog, customized for content-aware resizing.
+Public Sub showContentAwareResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
+
+    'Notify the resize dialog of the intended target
+    FormResizeContentAware.ResizeTarget = ResizeTarget
+
+    'Display the resize dialog
+    showPDDialog vbModal, FormResizeContentAware
 
 End Sub
 
