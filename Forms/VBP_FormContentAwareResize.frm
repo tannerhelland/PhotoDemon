@@ -355,6 +355,8 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     Dim energyDIB As pdDIB
     Set energyDIB = New pdDIB
     energyDIB.createFromExistingDIB srcDIB
+    
+    GrayscaleDIB energyDIB, True
     CreateContourDIB True, srcDIB, energyDIB, True
     
     'Create a seam carver class, which will handle the technical details of the carve
