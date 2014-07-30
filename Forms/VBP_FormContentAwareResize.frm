@@ -242,7 +242,7 @@ Private Sub Form_Activate()
         
     End Select
     
-    ucResize.lockAspectRatio = True
+    ucResize.lockAspectRatio = False
 
 End Sub
 
@@ -319,9 +319,6 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
         pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
         
-        'We are finished with the temporary DIB, so release it
-        Set tmpDIB = Nothing
-    
         'Update the main image's size and DPI values as necessary
         If thingToResize = PD_AT_WHOLEIMAGE Then
             pdImages(g_CurrentImage).updateSize False, iWidth, iHeight
