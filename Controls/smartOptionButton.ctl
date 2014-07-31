@@ -360,7 +360,8 @@ End Sub
 ' for the actual painting function.
 Private Sub UserControl_Paint()
     
-    
+    'Provide minimal painting within the designer
+    If Not g_UserModeFix Then PaintUC
     
 End Sub
 
@@ -476,6 +477,96 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     
 End Sub
 
+Private Sub PaintUC()
+
+    'Start by erasing the back buffer
+    GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, RGB(255, 255, 255), 255
+    
+    'Colors used throughout this paint function are determined primarily control enablement
+    ' TODO: tie this into PD's central themer, instead of using custom values for this control!
+    Dim optButtonColorBorder, optButtonColorFill As Long
+    If Me.Enabled Then
+        optButtonColorBorder = RGB(126, 140, 146)
+        optButtonColorFill = RGB(50, 150, 220)
+    Else
+        optButtonColorBorder = RGB(177, 186, 194)
+        optButtonColorFill = RGB(177, 186, 194)
+    End If
+    
+    'If a focus rect is required (because focus was set via keyboard, not mouse), render it now.
+    If m_FocusRectActive And m_MouseInsideUC Then m_FocusRectActive = False
+    
+    If m_FocusRectActive And Me.Enabled Then
+        GDI_Plus.GDIPlusDrawRoundRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 3, optButtonColorFill, True, False
+    End If
+    
+    'Next, determine the precise size of our caption, including all internal metrics.  (We need those so we can properly
+    ' align the radio button with the baseline of the font and the caps (not ascender!) height.
+    Dim captionWidth As Long, captionHeight As Long
+    captionWidth = curFont.getWidthOfString(m_Caption)
+    captionHeight = curFont.getHeightOfString(m_Caption)
+    
+    'Retrieve the descent of the current font.
+    Dim fontDescent As Long, fontMetrics As TEXTMETRIC
+    GetTextMetrics m_BackBuffer.getDIBDC, fontMetrics
+    fontDescent = fontMetrics.tmDescent
+    
+    'From the precise font metrics, determine a radio button offset X and Y, and a radio button size.  Note that 1px is manually
+    ' added as part of maintaining a 1px border around the user control as a whole.
+    Dim offsetX As Long, offsetY As Long, optCircleSize As Long
+    offsetX = 1 + fixDPI(2)
+    offsetY = fontMetrics.tmInternalLeading + 1
+    optCircleSize = captionHeight - fontDescent
+    optCircleSize = optCircleSize - fontMetrics.tmInternalLeading
+    optCircleSize = optCircleSize + 1
+    
+    'Because GDI+ is finicky with antialiasing on odd-number circle sizes, force the circle size to the nearest even number
+    If optCircleSize Mod 2 = 1 Then
+        optCircleSize = optCircleSize + 1
+        offsetY = offsetY - 1
+    End If
+    
+    'Draw a border circle regardless of option button value
+    GDI_Plus.GDIPlusDrawCircleToDC m_BackBuffer.getDIBDC, offsetX + optCircleSize \ 2, offsetY + optCircleSize \ 2, optCircleSize \ 2, optButtonColorBorder, 255, 1.5, True
+    
+    'If the option button is TRUE, draw a smaller, filled circle inside the border
+    If m_Value Then
+        GDI_Plus.GDIPlusDrawEllipseToDC m_BackBuffer.getDIBDC, offsetX + 3, offsetY + 3, optCircleSize - 6, optCircleSize - 6, optButtonColorFill, True
+    End If
+    
+    'Set the text color according to the mouse position, e.g. highlight the text if the mouse is over it
+    If m_MouseInsideUC Then
+        curFont.setFontColor optButtonColorFill
+    Else
+        curFont.setFontColor origForecolor
+    End If
+    
+    'Render the text
+    curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_Caption
+    
+    'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
+    If Not g_UserModeFix Then
+        
+        Dim tmpRect As RECT
+        With tmpRect
+            .Left = 0
+            .Top = 0
+            .Right = m_BackBuffer.getDIBWidth
+            .Bottom = m_BackBuffer.getDIBHeight
+        End With
+        
+        DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
+
+    End If
+    
+    'Flip the buffer to the user control
+    BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    
+    'Validate the rect to prevent further WM_PAINT messages
+    ValidateRect Me.hWnd, ByVal 0&
+    
+End Sub
+
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
                       ByRef bHandled As Boolean, _
@@ -505,76 +596,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 
     If uMsg = WM_PAINT Then
         
-        'Start by erasing the back buffer
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, RGB(255, 255, 255), 255
-        
-        'Colors used throughout this paint function are determined primarily control enablement
-        ' TODO: tie this into PD's central themer, instead of using custom values for this control!
-        Dim optButtonColorBorder, optButtonColorFill As Long
-        If Me.Enabled Then
-            optButtonColorBorder = RGB(126, 140, 146)
-            optButtonColorFill = RGB(50, 150, 220)
-        Else
-            optButtonColorBorder = RGB(177, 186, 194)
-            optButtonColorFill = RGB(177, 186, 194)
-        End If
-        
-        'If a focus rect is required (because focus was set via keyboard, not mouse), render it now.
-        If m_FocusRectActive And m_MouseInsideUC Then m_FocusRectActive = False
-        
-        If m_FocusRectActive And Me.Enabled Then
-            GDI_Plus.GDIPlusDrawRoundRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 3, optButtonColorFill, True, False
-        End If
-        
-        'Next, determine the precise size of our caption, including all internal metrics.  (We need those so we can properly
-        ' align the radio button with the baseline of the font and the caps (not ascender!) height.
-        Dim captionWidth As Long, captionHeight As Long
-        captionWidth = curFont.getWidthOfString(m_Caption)
-        captionHeight = curFont.getHeightOfString(m_Caption)
-        
-        'Retrieve the descent of the current font.
-        Dim fontDescent As Long, fontMetrics As TEXTMETRIC
-        GetTextMetrics m_BackBuffer.getDIBDC, fontMetrics
-        fontDescent = fontMetrics.tmDescent
-        
-        'From the precise font metrics, determine a radio button offset X and Y, and a radio button size.  Note that 1px is manually
-        ' added as part of maintaining a 1px border around the user control as a whole.
-        Dim offsetX As Long, offsetY As Long, optCircleSize As Long
-        offsetX = 1 + fixDPI(2)
-        offsetY = fontMetrics.tmInternalLeading + 1
-        optCircleSize = captionHeight - fontDescent
-        optCircleSize = optCircleSize - fontMetrics.tmInternalLeading
-        optCircleSize = optCircleSize + 1
-        
-        'Because GDI+ is finicky with antialiasing on odd-number circle sizes, force the circle size to the nearest even number
-        If optCircleSize Mod 2 = 1 Then
-            optCircleSize = optCircleSize + 1
-            offsetY = offsetY - 1
-        End If
-        
-        'Draw a border circle regardless of option button value
-        GDI_Plus.GDIPlusDrawCircleToDC m_BackBuffer.getDIBDC, offsetX + optCircleSize \ 2, offsetY + optCircleSize \ 2, optCircleSize \ 2, optButtonColorBorder, 255, 1.5, True
-        
-        'If the option button is TRUE, draw a smaller, filled circle inside the border
-        If m_Value Then
-            GDI_Plus.GDIPlusDrawEllipseToDC m_BackBuffer.getDIBDC, offsetX + 3, offsetY + 3, optCircleSize - 6, optCircleSize - 6, optButtonColorFill, True
-        End If
-        
-        'Set the text color according to the mouse position, e.g. highlight the text if the mouse is over it
-        If m_MouseInsideUC Then
-            curFont.setFontColor optButtonColorFill
-        Else
-            curFont.setFontColor origForecolor
-        End If
-        
-        'Render the text
-        curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_Caption
-        
-        'Flip the buffer to the user control
-        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-        
-        'Validate the rect to prevent further WM_PAINT messages
-        ValidateRect Me.hWnd, ByVal 0&
+        PaintUC
         
         'Mark the message as handled and exit
         bHandled = True
