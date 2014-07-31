@@ -309,7 +309,7 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR, Optional B
             Case PDTC_ACCENT_INTERACTIVE
             
                 If (colorTypeVariant = PDTCV_NORMAL) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3296dc")
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3270dc")        '#3296dc??
                     
                 ElseIf (colorTypeVariant = PDTCV_HIGHLIGHT) Then
                     'getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3296dc")

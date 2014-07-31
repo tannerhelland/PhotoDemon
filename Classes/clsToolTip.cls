@@ -238,6 +238,8 @@ Public Function AddTool(ByRef ctrl As Object, Optional ByVal strText As String) 
             
                 If TypeOf ctrl Is smartOptionButton Then
                     .hWnd = ctrl.containerHwnd
+                ElseIf TypeOf ctrl Is smartCheckBox Then
+                    .hWnd = ctrl.containerHwnd
                 Else
                     .hWnd = ctrl.Container.hWnd
                 End If
