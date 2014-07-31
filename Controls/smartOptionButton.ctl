@@ -33,8 +33,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Radio Button control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 25/July/14
-'Last update: total overhaul to convert control to owner-drawn, prepare for Unicode support
+'Last updated: 30/July/14
+'Last update: rework and optimize render code
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -50,12 +50,6 @@ Attribute VB_Exposed = False
 ' 3) A hand cursor is automatically applied, and clicks on both the button and label are registered properly.
 ' 4) (coming soon) Coloration is automatically handled by PD's internal theming engine.
 '
-'A few things still on my TODO list for this control:
-'
-' 1) Hover animations
-' 2) Some sort of "got focus" behavior for accessibility
-' 3) Handling activation-by-keyboard properly
-'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -65,6 +59,10 @@ Option Explicit
 
 'This function really only needs one event raised - Click
 Public Event Click()
+
+'Subclassing is used to better optimize the control's painting; this also requires manual validation of the control rect.
+Private Const WM_PAINT = &HF
+Private Declare Function ValidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As Any) As Long
 
 'Retrieve the width and height of a string
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
@@ -108,9 +106,12 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect A
 ' via a pdFont object.
 Private curFont As pdFont
 
-'Mouse input handler (STILL TODO: keyboard handling for spacebar toggling of the control)
+'Mouse input handler
 Private WithEvents cMouseEvents As pdInput
 Attribute cMouseEvents.VB_VarHelpID = -1
+
+'Subclasser for handling window messages
+Private cSubclass As cSelfSubHookCallback
 
 'An StdFont object is used to make IDE font choices persistent; note that we also need it to raise events,
 ' so we can track when it changes.
@@ -129,6 +130,12 @@ Private m_Value As Boolean
 
 'Persistent back buffer, which we manage internally
 Private m_BackBuffer As pdDIB
+
+'If the mouse is currently INSIDE the control, this will be set to TRUE
+Private m_MouseInsideUC As Boolean
+
+'When the option button receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
+Private m_FocusRectActive As Boolean
 
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
@@ -180,6 +187,24 @@ Public Property Set Font(mNewFont As StdFont)
     updateControlSize
     
 End Property
+
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    If (Not m_MouseInsideUC) Or m_FocusRectActive Then
+        m_MouseInsideUC = True
+        Refresh
+    End If
+    
+End Sub
+
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    If m_MouseInsideUC Then
+        m_MouseInsideUC = False
+        Refresh
+    End If
+    
+End Sub
 
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
@@ -253,15 +278,14 @@ Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
     
 End Property
 
-'TODO: find a good way to convey focus (glow animation, perhaps?)
-Private Sub UserControl_EnterFocus()
-    'If Not g_IsProgramCompiled Then lblCaption.Font.Underline = True
-    'If g_IsProgramCompiled And (Value = False) Then updateFocusRect True
-End Sub
+Private Sub UserControl_GotFocus()
 
-Private Sub UserControl_ExitFocus()
-    'If Not g_IsProgramCompiled Then lblCaption.Font.Underline = False
-    'If drewFocusRect Then updateFocusRect False
+    'If the mouse is *not* over the user control, assume focus was set via keyboard
+    If Not m_MouseInsideUC Then
+        m_FocusRectActive = True
+        Refresh
+    End If
+
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -272,14 +296,22 @@ Private Sub UserControl_Initialize()
     
     'When not in design mode, initialize a tracker for mouse events
     If g_UserModeFix Then
+    
         Set cMouseEvents = New pdInput
         cMouseEvents.addInputTracker Me.hWnd, True, True, , True
         cMouseEvents.setSystemCursor IDC_HAND
-        cMouseEvents.requestKeyTracking Me.hWnd
-        cMouseEvents.setKeyTrackers Me.hWnd, True
+        'cMouseEvents.requestKeyTracking Me.hWnd
+        'cMouseEvents.setKeyTrackers Me.hWnd, True
+        
+        Set cSubclass = New cSelfSubHookCallback
+        cSubclass.ssc_Subclass Me.hWnd, , , Me
+        cSubclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_PAINT
+        
     End If
     
     origForecolor = ForeColor
+    m_MouseInsideUC = False
+    m_FocusRectActive = False
     
     'Prepare a font object for use
     Set mFont = New StdFont
@@ -300,78 +332,35 @@ Private Sub UserControl_InitProperties()
     
 End Sub
 
+Private Sub UserControl_KeyPress(KeyAscii As Integer)
+
+    If (KeyAscii = vbKeySpace) And (Not Me.Value) Then
+        Me.Value = True
+    End If
+
+End Sub
+
+Private Sub UserControl_LostFocus()
+
+    'If the mouse is *not* over the user control, assume focus was set via keyboard
+    If (Not m_MouseInsideUC) And m_FocusRectActive Then
+        m_FocusRectActive = False
+        Refresh
+    End If
+
+End Sub
+
 'For responsiveness, MouseDown is used instead of Click
 Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     If Me.Enabled And (Not Me.Value) Then Value = True
 End Sub
 
-'Note: all drawing is done to a buffer DIB, which is flipped to the screen as the final rendering step
-' STILL TODO: properly lock and invalidate window contents, to better prevent flickering
+'Note: all drawing is done to a buffer DIB, which is flipped to the screen as the final rendering step.
+' Because I don't trust VB to forward all messages correctly, WM_PAINT is manually subclassed.  See the end of this module
+' for the actual painting function.
 Private Sub UserControl_Paint()
     
-    'Start by erasing our current back buffer
-    GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, RGB(255, 255, 255), 255
     
-    'Next, determine the precise size of our caption, including all internal metrics.  (We need those so we can properly
-    ' align the radio button with the baseline of the font and the caps (not ascender!) height.
-    Dim captionWidth As Long, captionHeight As Long
-    captionWidth = curFont.getWidthOfString(m_Caption)
-    captionHeight = curFont.getHeightOfString(m_Caption)
-    
-    'Retrieve the descent of the current font.
-    Dim fontDescent As Long, fontMetrics As TEXTMETRIC
-    GetTextMetrics m_BackBuffer.getDIBDC, fontMetrics
-    fontDescent = fontMetrics.tmDescent
-    
-    'From the precise font metrics, determine a radio button offset X and Y, and a radio button size.  Note that 1px is manually
-    ' added as part of maintaining a 1px border around the user control as a whole.
-    Dim offsetX As Long, offsetY As Long, optCircleSize As Long
-    offsetX = 1 + fixDPI(2)
-    offsetY = fontMetrics.tmInternalLeading
-    optCircleSize = captionHeight - fontDescent
-    optCircleSize = optCircleSize - fontMetrics.tmInternalLeading
-    optCircleSize = optCircleSize + 1
-    
-    'Because GDI+ is finicky with antialiasing on odd-number circle sizes, force the circle size to the nearest even number
-    If optCircleSize Mod 2 = 1 Then
-        optCircleSize = optCircleSize + 1
-        offsetY = offsetY - 1
-    End If
-    
-    'Color is determined by control enablement
-    ' TODO: tie this into PD's central themer, instead of using custom values for this control!
-    Dim optButtonColorBorder, optButtonColorFill As Long
-    If Me.Enabled Then
-        optButtonColorBorder = RGB(126, 140, 146)
-        optButtonColorFill = RGB(50, 150, 220)
-    Else
-        optButtonColorBorder = RGB(177, 186, 194)
-        optButtonColorFill = RGB(177, 186, 194)
-    End If
-    
-    'Draw a border circle regardless of option button value
-    GDI_Plus.GDIPlusDrawCircleToDC m_BackBuffer.getDIBDC, offsetX + optCircleSize \ 2, offsetY + optCircleSize \ 2, optCircleSize \ 2, optButtonColorBorder, 255, 1.5, True
-    
-    'If the option button is TRUE, draw a smaller, filled circle inside the border
-    If m_Value Then
-        GDI_Plus.GDIPlusDrawEllipseToDC m_BackBuffer.getDIBDC, offsetX + 3, offsetY + 3, optCircleSize - 6, optCircleSize - 6, optButtonColorFill, True
-    End If
-
-    'Render the text
-    curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_Caption
-    
-    'DEBUG ONLY: draw a focus rect to indicate the size of the user control
-    'Dim tmpRect As RECT
-    'With tmpRect
-    '    .Left = 0
-    '    .Top = 0
-    '    .Right = m_BackBuffer.getDIBWidth
-    '    .Bottom = m_BackBuffer.getDIBHeight
-    'End With
-    'DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
-    
-    'Flip the buffer to the user control
-    BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 
@@ -420,7 +409,7 @@ Private Sub updateControlSize()
 
     Dim fontX As Long, fontY As Long
     fontX = fixDPI(32)
-    fontY = 0
+    fontY = 1
     
     'Calculate a precise size for the requested caption.
     Dim captionWidth As Long, captionHeight As Long, txtSize As POINTAPI
@@ -437,7 +426,7 @@ Private Sub updateControlSize()
     
     'The control's size is pretty simple: an x-offset (for the selection circle), plus the size of the caption itself,
     ' and a one-pixel border around the edges.
-    UserControl.Height = (fontY + captionHeight + 2) * TwipsPerPixelYFix
+    UserControl.Height = (fontY * 2 + captionHeight + 2) * TwipsPerPixelYFix
     UserControl.Width = (fontX + captionWidth + 2) * TwipsPerPixelXFix
     
     'Remove our font object from the buffer DC, because we are about to recreate it
@@ -486,3 +475,120 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     End With
     
 End Sub
+
+'All events subclassed by this window are processed here.
+Private Sub myWndProc(ByVal bBefore As Boolean, _
+                      ByRef bHandled As Boolean, _
+                      ByRef lReturn As Long, _
+                      ByVal lng_hWnd As Long, _
+                      ByVal uMsg As Long, _
+                      ByVal wParam As Long, _
+                      ByVal lParam As Long, _
+                      ByRef lParamUser As Long)
+'*************************************************************************************************
+'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
+'*              you will know unless the callback for the uMsg value is specified as
+'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
+'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
+'*              message being passed to the original WndProc and (if set to do so) the after
+'*              original WndProc callback.
+'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
+'*              and/or, in an after the original WndProc callback, act on the return value as set
+'*              by the original WndProc.
+'* lng_hWnd   - Window handle.
+'* uMsg       - Message value.
+'* wParam     - Message related data.
+'* lParam     - Message related data.
+'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
+'*************************************************************************************************
+
+
+    If uMsg = WM_PAINT Then
+        
+        'Start by erasing the back buffer
+        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, RGB(255, 255, 255), 255
+        
+        'Colors used throughout this paint function are determined primarily control enablement
+        ' TODO: tie this into PD's central themer, instead of using custom values for this control!
+        Dim optButtonColorBorder, optButtonColorFill As Long
+        If Me.Enabled Then
+            optButtonColorBorder = RGB(126, 140, 146)
+            optButtonColorFill = RGB(50, 150, 220)
+        Else
+            optButtonColorBorder = RGB(177, 186, 194)
+            optButtonColorFill = RGB(177, 186, 194)
+        End If
+        
+        'If a focus rect is required (because focus was set via keyboard, not mouse), render it now.
+        If m_FocusRectActive And m_MouseInsideUC Then m_FocusRectActive = False
+        
+        If m_FocusRectActive And Me.Enabled Then
+            GDI_Plus.GDIPlusDrawRoundRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 3, optButtonColorFill, True, False
+        End If
+        
+        'Next, determine the precise size of our caption, including all internal metrics.  (We need those so we can properly
+        ' align the radio button with the baseline of the font and the caps (not ascender!) height.
+        Dim captionWidth As Long, captionHeight As Long
+        captionWidth = curFont.getWidthOfString(m_Caption)
+        captionHeight = curFont.getHeightOfString(m_Caption)
+        
+        'Retrieve the descent of the current font.
+        Dim fontDescent As Long, fontMetrics As TEXTMETRIC
+        GetTextMetrics m_BackBuffer.getDIBDC, fontMetrics
+        fontDescent = fontMetrics.tmDescent
+        
+        'From the precise font metrics, determine a radio button offset X and Y, and a radio button size.  Note that 1px is manually
+        ' added as part of maintaining a 1px border around the user control as a whole.
+        Dim offsetX As Long, offsetY As Long, optCircleSize As Long
+        offsetX = 1 + fixDPI(2)
+        offsetY = fontMetrics.tmInternalLeading + 1
+        optCircleSize = captionHeight - fontDescent
+        optCircleSize = optCircleSize - fontMetrics.tmInternalLeading
+        optCircleSize = optCircleSize + 1
+        
+        'Because GDI+ is finicky with antialiasing on odd-number circle sizes, force the circle size to the nearest even number
+        If optCircleSize Mod 2 = 1 Then
+            optCircleSize = optCircleSize + 1
+            offsetY = offsetY - 1
+        End If
+        
+        'Draw a border circle regardless of option button value
+        GDI_Plus.GDIPlusDrawCircleToDC m_BackBuffer.getDIBDC, offsetX + optCircleSize \ 2, offsetY + optCircleSize \ 2, optCircleSize \ 2, optButtonColorBorder, 255, 1.5, True
+        
+        'If the option button is TRUE, draw a smaller, filled circle inside the border
+        If m_Value Then
+            GDI_Plus.GDIPlusDrawEllipseToDC m_BackBuffer.getDIBDC, offsetX + 3, offsetY + 3, optCircleSize - 6, optCircleSize - 6, optButtonColorFill, True
+        End If
+        
+        'Set the text color according to the mouse position, e.g. highlight the text if the mouse is over it
+        If m_MouseInsideUC Then
+            curFont.setFontColor optButtonColorFill
+        Else
+            curFont.setFontColor origForecolor
+        End If
+        
+        'Render the text
+        curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_Caption
+        
+        'Flip the buffer to the user control
+        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+        
+        'Validate the rect to prevent further WM_PAINT messages
+        ValidateRect Me.hWnd, ByVal 0&
+        
+        'Mark the message as handled and exit
+        bHandled = True
+        lReturn = 0
+        
+    End If
+
+
+
+' *************************************************************
+' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
+' -------------------------------------------------------------
+' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
+'   add this warning banner to the last routine in your class
+' *************************************************************
+End Sub
+
