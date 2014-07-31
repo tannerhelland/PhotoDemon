@@ -135,8 +135,8 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 
-Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
-Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 
@@ -282,15 +282,15 @@ End Sub
 
 'If we want to detach this font from its current DC, use this call
 Public Sub releaseFromDC()
-    If curDC > 0 Then SelectObject curDC, oldFont
+    If curDC <> 0 Then SelectObject curDC, oldFont
 End Sub
 
 'Create the font object on-demand
 Public Function createFontObject() As Boolean
 
     'If a font has already been created, delete it now
-    If curFont > 0 Then
-        If curDC > 0 Then SelectObject curDC, oldFont
+    If curFont <> 0 Then
+        If curDC <> 0 Then SelectObject curDC, oldFont
         DeleteObject curFont
     End If
     
@@ -313,7 +313,7 @@ Public Sub setFontColor(ByVal newColor As Long)
     fontColor = newColor
     
     'If we are currently selected into a DC, update the color immediately; otherwise, the color will be applied upon selection
-    If curDC > 0 Then SetTextColor curDC, fontColor
+    If curDC <> 0 Then SetTextColor curDC, fontColor
     
 End Sub
 
@@ -354,7 +354,7 @@ Public Sub setTextAlignment(ByVal newAlignment As AlignmentConstants)
     
     'If the class has been selected into a DC, update the DC's alignment immediately; otherwise, this property will be applied
     ' when the font is selected.
-    If curDC > 0 Then SetTextAlign curDC, curTextAlignment
+    If curDC <> 0 Then SetTextAlign curDC, curTextAlignment
     
 End Sub
 
@@ -363,13 +363,13 @@ End Sub
 Public Function getWidthOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-    getWidthOfString = txtSize.x
+    getWidthOfString = txtSize.X
 End Function
 
 Public Function getHeightOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-    getHeightOfString = txtSize.y
+    getHeightOfString = txtSize.Y
 End Function
 
 'With the current font settings, find the height of a word-wrapped string.  This action REQUIRES that a DC be currently
@@ -427,8 +427,8 @@ End Sub
 Private Sub Class_Terminate()
 
     'If a font was created, delete it now
-    If curFont > 0 Then
-        If curDC > 0 Then SelectObject curDC, oldFont
+    If curFont <> 0 Then
+        If curDC <> 0 Then SelectObject curDC, oldFont
         DeleteObject curFont
     End If
     
