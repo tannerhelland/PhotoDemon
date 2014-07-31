@@ -51,7 +51,7 @@ Begin VB.Form FormRechannel
       Top             =   480
       Width           =   735
       _ExtentX        =   1508
-      _ExtentY        =   556
+      _ExtentY        =   609
       Caption         =   "red"
       Value           =   -1  'True
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -81,7 +81,7 @@ Begin VB.Form FormRechannel
       Top             =   840
       Width           =   990
       _ExtentX        =   1958
-      _ExtentY        =   556
+      _ExtentY        =   609
       Caption         =   "green"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -101,7 +101,7 @@ Begin VB.Form FormRechannel
       Top             =   1200
       Width           =   840
       _ExtentX        =   1693
-      _ExtentY        =   556
+      _ExtentY        =   609
       Caption         =   "blue"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -121,7 +121,7 @@ Begin VB.Form FormRechannel
       Top             =   2160
       Width           =   870
       _ExtentX        =   1746
-      _ExtentY        =   556
+      _ExtentY        =   609
       Caption         =   "cyan"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -141,7 +141,7 @@ Begin VB.Form FormRechannel
       Top             =   2520
       Width           =   1305
       _ExtentX        =   2514
-      _ExtentY        =   556
+      _ExtentY        =   609
       Caption         =   "magenta"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -161,7 +161,7 @@ Begin VB.Form FormRechannel
       Top             =   2880
       Width           =   1065
       _ExtentX        =   2090
-      _ExtentY        =   556
+      _ExtentY        =   609
       Caption         =   "yellow"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -181,7 +181,7 @@ Begin VB.Form FormRechannel
       Top             =   3840
       Width           =   870
       _ExtentX        =   1746
-      _ExtentY        =   556
+      _ExtentY        =   609
       Caption         =   "cyan"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -201,7 +201,7 @@ Begin VB.Form FormRechannel
       Top             =   4200
       Width           =   1305
       _ExtentX        =   2514
-      _ExtentY        =   556
+      _ExtentY        =   609
       Caption         =   "magenta"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -221,7 +221,7 @@ Begin VB.Form FormRechannel
       Top             =   4560
       Width           =   1065
       _ExtentX        =   2090
-      _ExtentY        =   556
+      _ExtentY        =   609
       Caption         =   "yellow"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -241,7 +241,7 @@ Begin VB.Form FormRechannel
       Top             =   4920
       Width           =   1545
       _ExtentX        =   2937
-      _ExtentY        =   556
+      _ExtentY        =   609
       Caption         =   "key (black)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

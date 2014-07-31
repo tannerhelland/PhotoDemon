@@ -287,6 +287,111 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR, Optional B
         ' Green for "valid input": #00c0000 | RGB(0, 192, 0)
         ' Red for "bad input": #c000000 | RGB(192, 0, 0)
         ' Hyperlink blue: #3170c0 | RGB(49, 112, 192)
+        
+        'FOR REFERENCE: this is a list of theme colors being used *in the present build*:
+        
+        ' Radio button UC:
+            ' PDTC_BACKGROUND_DEFAULT (background)
+            
+            ' PDTC_ACCENT_NONINTERACTIVE, PDTCV_NORMAL (radio border, enabled)
+            ' PDTC_ACCENT_INTERACTIVE, PDTCV_NORMAL (radio fill, enabled)
+            ' PDTC_ACCENT_INTERACTIVE, PDTCV_DISABLED (radio fill + border, disabled)
+            
+            ' PDTC_TEXT_DEFAULT, PDTCV_HIGHLIGHT (text, mouse_over)
+            ' PDTC_TEXT_DEFAULT, PDTCV_NORMAL (text, not mouse_over)
+            ' PDTC_TEXT_DEFAULT, PDTCV_DISABLED (text, disabled)
+        
+        Select Case colorType
+        
+            'Accent colors
+            Case PDTC_ACCENT_DEFAULT
+                
+            Case PDTC_ACCENT_INTERACTIVE
+            
+                If (colorTypeVariant = PDTCV_NORMAL) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3296dc")
+                    
+                ElseIf (colorTypeVariant = PDTCV_HIGHLIGHT) Then
+                    'getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3296dc")
+                    
+                ElseIf (colorTypeVariant = PDTCV_SHADOW) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3296dc")
+                    
+                ElseIf (colorTypeVariant = PDTCV_INVERT) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+                
+                ElseIf (colorTypeVariant = PDTCV_DISABLED) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
+                
+                End If
+            
+            Case PDTC_ACCENT_INVALID
+            
+            Case PDTC_ACCENT_NONINTERACTIVE
+            
+                If (colorTypeVariant = PDTCV_NORMAL) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#7e8c92")
+                    
+                ElseIf (colorTypeVariant = PDTCV_HIGHLIGHT) Or (colorTypeVariant = PDTCV_SHADOW) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#7e8c92")
+                    
+                ElseIf (colorTypeVariant = PDTCV_INVERT) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+                
+                ElseIf (colorTypeVariant = PDTCV_DISABLED) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
+                
+                End If
+            
+            Case PDTC_ACCENT_OK
+            
+            'Background colors
+            Case PDTC_BACKGROUND_CANVAS
+            
+            Case PDTC_BACKGROUND_COMMANDBAR
+            
+            Case PDTC_BACKGROUND_DEFAULT
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+            
+            Case PDTC_BACKGROUND_DIALOG
+            
+            'Text colors
+            Case PDTC_TEXT_DEFAULT
+                
+                If (colorTypeVariant = PDTCV_NORMAL) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#404040")
+                    
+                ElseIf (colorTypeVariant = PDTCV_HIGHLIGHT) Or (colorTypeVariant = PDTCV_SHADOW) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3170c0")
+                
+                ElseIf (colorTypeVariant = PDTCV_INVERT) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+                
+                ElseIf (colorTypeVariant = PDTCV_DISABLED) Then
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
+                
+                End If
+            
+            Case PDTC_TEXT_HYPERLINK
+            
+            Case PDTC_TEXT_INTERACTIVE
+            
+'                If (colorTypeVariant = PDTCV_NORMAL) Or (colorTypeVariant = PDTCV_HIGHLIGHT) Or (colorTypeVariant = PDTCV_SHADOW) Then
+'                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3170c0")
+'
+'                ElseIf (colorTypeVariant = PDTCV_INVERT) Then
+'                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#FFFFFF")
+'
+'                ElseIf (colorTypeVariant = PDTCV_DISABLED) Then
+'                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#808080")
+'
+'                End If
+            
+            Case PDTC_TEXT_LABEL
+            
+            Case PDTC_TEXT_TITLE
+        
+        End Select
     
     'DARK THEME DEFAULTS
     ElseIf curThemeContrast = THEME_DARK Then
