@@ -48,7 +48,8 @@ Attribute VB_Exposed = False
 ' 1) The control is autosized based on the current font and caption.
 ' 2) High DPI settings are handled automatically, so do not attempt to handle this manually.
 ' 3) A hand cursor is automatically applied, and clicks on both the button and label are registered properly.
-' 4) (coming soon) Coloration is automatically handled by PD's internal theming engine.
+' 4) Coloration is automatically handled by PD's internal theming engine.
+' 5) When the control receives focus via keyboard, a special focus rect is drawn.  Focus via mouse is conveyed via text glow.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -118,10 +119,6 @@ Private cSubclass As cSelfSubHookCallback
 Private WithEvents mFont As StdFont
 Attribute mFont.VB_VarHelpID = -1
 
-'When we disable the control, we need to retain a copy of the original forecolor.
-' (STILL TODO: tie this into PD's internal theming engine, rather than handling it separately for each control!)
-Private curForeColor As Long, origForecolor As Long
-
 'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages)
 Private m_Caption As String
 
@@ -171,10 +168,9 @@ Public Property Set Font(mNewFont As StdFont)
         .Size = mNewFont.Size
     End With
     
-    'Mirror all setting to our internal curFont object, then recreate it
+    'Mirror all settings to our internal curFont object, then recreate it
     If Not curFont Is Nothing Then
         curFont.setFontBold mFont.Bold
-        curFont.setFontColor origForecolor
         curFont.setFontFace mFont.Name
         curFont.setFontItalic mFont.Italic
         curFont.setFontSize mFont.Size
@@ -260,24 +256,6 @@ Public Property Let Caption(ByVal newCaption As String)
     
 End Property
 
-'Forecolor is used to control the color of only the label; nothing else is affected by it.
-' TODO: tie this into PD's central theming engine, ideally a "getThemeColors" function that the makeFormPretty function can use
-'       to notify of theme changes, etc.
-Public Property Get ForeColor() As OLE_COLOR
-    ForeColor = origForecolor
-End Property
-
-Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
-    
-    origForecolor = newColor
-    PropertyChanged "ForeColor"
-    
-    'Redraw the control to match
-    curFont.setFontColor newColor
-    Refresh
-    
-End Property
-
 Private Sub UserControl_GotFocus()
 
     'If the mouse is *not* over the user control, assume focus was set via keyboard
@@ -307,9 +285,11 @@ Private Sub UserControl_Initialize()
         cSubclass.ssc_Subclass Me.hWnd, , , Me
         cSubclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_PAINT
         
+    'In design mode, initialize a base theming class, so our paint function doesn't fail
+    Else
+        Set g_Themer = New pdVisualThemes
     End If
     
-    origForecolor = ForeColor
     m_MouseInsideUC = False
     m_FocusRectActive = False
     
@@ -323,7 +303,6 @@ End Sub
 Private Sub UserControl_InitProperties()
     
     Caption = "caption"
-    ForeColor = &H404040
     
     Set mFont = UserControl.Font
     mFont_FontChanged ("")
@@ -370,7 +349,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Caption = .ReadProperty("Caption", "")
         Set Font = .ReadProperty("Font", Ambient.Font)
-        ForeColor = .ReadProperty("ForeColor", &H404040)
         Value = .ReadProperty("Value", False)
     End With
 
@@ -472,25 +450,28 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Caption", Caption, "caption"
         .WriteProperty "Value", Value, False
         .WriteProperty "Font", mFont, "Tahoma"
-        .WriteProperty "ForeColor", ForeColor, &H404040
     End With
     
 End Sub
 
 Private Sub PaintUC()
-
+    
     'Start by erasing the back buffer
-    GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, RGB(255, 255, 255), 255
+    If g_UserModeFix Then
+        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+    Else
+        m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+    End If
     
     'Colors used throughout this paint function are determined primarily control enablement
     ' TODO: tie this into PD's central themer, instead of using custom values for this control!
     Dim optButtonColorBorder, optButtonColorFill As Long
     If Me.Enabled Then
-        optButtonColorBorder = RGB(126, 140, 146)
-        optButtonColorFill = RGB(50, 150, 220)
+        optButtonColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_NONINTERACTIVE, PDTCV_NORMAL)
+        optButtonColorFill = g_Themer.getThemeColor(PDTC_ACCENT_INTERACTIVE, PDTCV_NORMAL)
     Else
-        optButtonColorBorder = RGB(177, 186, 194)
-        optButtonColorFill = RGB(177, 186, 194)
+        optButtonColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_INTERACTIVE, PDTCV_DISABLED)
+        optButtonColorFill = g_Themer.getThemeColor(PDTC_ACCENT_INTERACTIVE, PDTCV_DISABLED)
     End If
     
     'If a focus rect is required (because focus was set via keyboard, not mouse), render it now.
@@ -535,10 +516,16 @@ Private Sub PaintUC()
     End If
     
     'Set the text color according to the mouse position, e.g. highlight the text if the mouse is over it
-    If m_MouseInsideUC Then
-        curFont.setFontColor optButtonColorFill
+    If Me.Enabled Then
+    
+        If m_MouseInsideUC Then
+            curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT, PDTCV_HIGHLIGHT)
+        Else
+            curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT, PDTCV_NORMAL)
+        End If
+        
     Else
-        curFont.setFontColor origForecolor
+        curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT, PDTCV_DISABLED)
     End If
     
     'Render the text
