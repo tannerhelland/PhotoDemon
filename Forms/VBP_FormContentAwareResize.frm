@@ -292,9 +292,9 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
             pdImages(g_CurrentImage).mainSelection.lockRelease
         End If
                    
-        'Flatten the image
-        Message "Flattening image..."
-        Layer_Handler.flattenImage
+        'Flatten the image; note that we route this through the central processor, so that a proper Undo/Redo entry
+        ' is created.  (This is especially important if the user presses ESC to cancel the seam-carving step.)
+        Process "Flatten image", , , UNDO_IMAGE
         
     End If
 
