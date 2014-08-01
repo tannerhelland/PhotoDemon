@@ -1408,17 +1408,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         
         'Update the global "previous message" string, so external functions can access it.
         g_LastPostedMessage = newString
-                
-        'If we're logging program messages, open up a log file and dump the message there
-        If g_LogProgramMessages Then
-            Dim fileNum As Integer
-            fileNum = FreeFile
-            Open g_UserPreferences.getDataPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
-                Print #fileNum, mString
-                If mString = "Finished." Then Print #fileNum, vbCrLf
-            Close #fileNum
-        End If
-    
+        
     End If
     
 End Sub
