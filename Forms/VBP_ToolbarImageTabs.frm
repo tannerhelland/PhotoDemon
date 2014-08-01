@@ -233,7 +233,7 @@ Public Sub notifyUpdatedImage(ByVal pdImagesIndex As Long)
                 pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (fixDPI(thumbBorder) * 2)
             End If
             
-            updateShadowDIB i
+            If g_InterfacePerformance <> PD_PERF_FASTEST Then updateShadowDIB i
             Exit For
         End If
     Next i
@@ -257,7 +257,7 @@ Public Sub registerNewImage(ByVal pdImagesIndex As Long)
     
     'Create a matching shadow DIB
     Set imgThumbnails(numOfThumbnails).thumbShadow = New pdDIB
-    updateShadowDIB numOfThumbnails
+    If g_InterfacePerformance <> PD_PERF_FASTEST Then updateShadowDIB numOfThumbnails
     
     'Make a note of this thumbnail's index in the main pdImages array
     imgThumbnails(numOfThumbnails).indexInPDImages = pdImagesIndex
@@ -721,7 +721,7 @@ Private Sub Form_Resize()
         For i = 0 To numOfThumbnails - 1
             imgThumbnails(i).thumbDIB.eraseDIB
             pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
-            updateShadowDIB i
+            If g_InterfacePerformance <> PD_PERF_FASTEST Then updateShadowDIB i
         Next i
     
     End If
@@ -734,7 +734,7 @@ Private Sub Form_Resize()
         For i = 0 To numOfThumbnails - 1
             imgThumbnails(i).thumbDIB.eraseDIB
             pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (fixDPI(thumbBorder) * 2)
-            updateShadowDIB i
+            If g_InterfacePerformance <> PD_PERF_FASTEST Then updateShadowDIB i
         Next i
     
     End If
@@ -898,7 +898,7 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         End If
     
         'Render the matching thumbnail shadow and thumbnail into this block
-        imgThumbnails(thumbIndex).thumbShadow.alphaBlendToDC bufferDIB.getDIBDC, 192, offsetX, offsetY + fixDPI(1)
+        If g_InterfacePerformance <> PD_PERF_FASTEST Then imgThumbnails(thumbIndex).thumbShadow.alphaBlendToDC bufferDIB.getDIBDC, 192, offsetX, offsetY + fixDPI(1)
         imgThumbnails(thumbIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + fixDPI(thumbBorder), offsetY + fixDPI(thumbBorder)
         
         'If the parent image has unsaved changes, also render a notification icon

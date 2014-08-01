@@ -69,9 +69,6 @@ Public g_FreeImageHandle As Long
 'How to draw the background of image forms; -1 is checkerboard, any other value is treated as an RGB long
 Public g_CanvasBackground As Long
 
-'Whether or not to render a drop shadow onto the canvas around the image
-Public g_CanvasDropShadow As Boolean
-
 'g_canvasShadow contains a pdShadow object that helps us render a drop shadow around the image, if the user requests it
 Public g_CanvasShadow As pdShadow
 
@@ -231,11 +228,12 @@ Public g_LastPostedMessage As String
 ' then appends to things like Undo/Redo files.  This allows for multiple side-by-side program instances without collisions.
 Public g_SessionID As String
 
-'As of v6.4, PhotoDemon supports some user preferences for performance tweaking.  Because performance settings tend to affect
-' performance-sensitive parts of the program, such preferences are cached to global variables (rather than constantly pulled
-' on-demand from file, which is unacceptably slow for performance-sensitive pipelines).
+'As of v6.4, PhotoDemon supports a number of performance-related preferences.  Because performance settings (obviously)
+' affect performance-sensitive parts of the program, these preferences are cached to global variables (rather than
+' constantly pulled on-demand from file, which is unacceptably slow for performance-sensitive pipelines).
 Public g_ViewportPerformance As PD_PERFORMANCE_SETTING
 Public g_ThumbnailPerformance As PD_PERFORMANCE_SETTING
+Public g_InterfacePerformance As PD_PERFORMANCE_SETTING
 
 'As of v6.4, PhotoDemon allows the user to specify compression settings for Undo/Redo data.  By default, Undo/Redo data is
 ' uncompressed, which takes up a lot of (cheap) disk space but provides excellent performance.  The user can modify this

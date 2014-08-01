@@ -79,8 +79,8 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     
     End If
         
-    'If the user has requested a drop shadow drawn onto the canvas, handle that next
-    If g_CanvasDropShadow Then
+    'If the user has allowed interface decorations, handle that next
+    If g_InterfacePerformance <> PD_PERF_FASTEST Then
     
         'We'll handle this in two steps; first, render the horizontal shadows
         If Not dstCanvas.getScrollVisibility(PD_VERTICAL) Then
