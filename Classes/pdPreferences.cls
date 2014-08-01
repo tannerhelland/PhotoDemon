@@ -259,9 +259,6 @@ Public Sub loadUserSettings()
     
     'Get the canvas background color
     g_CanvasBackground = GetPref_Long("Interface", "CanvasBackground", RGB(201, 211, 226))
-    
-    'Get the canvas drop shadow preference
-    g_CanvasDropShadow = GetPref_Boolean("Interface", "CanvasDropShadow", False)
         
     'Check if the user wants us to prompt them about closing unsaved images
     g_ConfirmClosingUnsaved = GetPref_Boolean("Saving", "ConfirmClosingUnsaved", True)
@@ -283,6 +280,7 @@ Public Sub loadUserSettings()
     ' every time they're needed.)
     g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
     g_ThumbnailPerformance = g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
+    g_InterfacePerformance = g_UserPreferences.GetPref_Long("Performance", "InterfaceDecorationPerformance", PD_PERF_BALANCED)
     g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 0)
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
@@ -429,6 +427,7 @@ Private Sub createNewPreferencesFile()
     xmlEngine.writeTag "Performance", "", True
         xmlEngine.writeTag "ViewportRenderPerformance", "1"
         xmlEngine.writeTag "ThumbnailPerformance", "1"
+        xmlEngine.writeTag "InterfaceDecorationPerformance", "1"
         xmlEngine.writeTag "UndoCompression", "0"
     xmlEngine.closeTag "Performance"
     xmlEngine.writeBlankLine
