@@ -245,26 +245,6 @@ Public Sub loadUserSettings()
     'If no preferences file exists, build a default one
     If Not FileExist(PreferencesPath) Then createNewPreferencesFile
             
-    'Get the LogProgramMessages preference first, because it will start being used right away
-    g_LogProgramMessages = GetPref_Boolean("Advanced", "LogProgramMessages", False)
-    
-    'If the user wants us to log program messages, open the log file and write out the current date and time
-    If g_LogProgramMessages Then
-        
-        Dim fileNum As Integer
-        fileNum = FreeFile
-    
-        Open DataPath & PROGRAMNAME & "_DebugMessages.log" For Append As #fileNum
-            Print #fileNum, vbCrLf
-            Print #fileNum, vbCrLf
-            Print #fileNum, "**********************************************"
-            Print #fileNum, "Date: " & Date
-            Print #fileNum, "Time: " & Time
-            Print #fileNum, "Session ID: " & g_SessionID
-        Close #fileNum
-        
-    End If
-            
     'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
     ' the system temp path.)
     TempPath = GetPref_String("Paths", "TempFiles", "")
@@ -357,7 +337,8 @@ Private Sub createNewPreferencesFile()
     
     'Write out the "advanced" block of preferences:
     xmlEngine.writeTag "Advanced", "", True
-        xmlEngine.writeTag "LogProgramMessages", "False"
+        'As of 6.4, there are no longer any Advanced preferences that need to be stored here.  There may be in the future,
+        ' so I've left the creation code for this section of the preferences file.
     xmlEngine.closeTag "Advanced"
     xmlEngine.writeBlankLine
     

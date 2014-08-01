@@ -78,9 +78,6 @@ Public g_CanvasShadow As pdShadow
 'Does the user want us to prompt them when they try to close unsaved images?
 Public g_ConfirmClosingUnsaved As Boolean
 
-'Whether or not to log program messages in a separate file - this is useful for debugging
-Public g_LogProgramMessages As Boolean
-
 'Whether or not we are running in the IDE or compiled
 Public g_IsProgramCompiled As Boolean
 
