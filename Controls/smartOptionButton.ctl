@@ -454,6 +454,18 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     
 End Sub
 
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub updateAgainstCurrentTheme()
+    
+    Me.Font.Name = g_InterfaceFont
+    curFont.setFontFace g_InterfaceFont
+    curFont.createFontObject
+    
+    'Redraw the control to match
+    updateControlSize
+    
+End Sub
+
 Private Sub PaintUC()
     
     'Start by erasing the back buffer
