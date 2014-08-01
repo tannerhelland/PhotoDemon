@@ -460,7 +460,8 @@ Private Sub PaintUC()
     If g_UserModeFix Then
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
     Else
-        m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
+        curFont.attachToDC m_BackBuffer.getDIBDC
     End If
     
     'Colors used throughout this paint function are determined primarily control enablement
@@ -526,6 +527,10 @@ Private Sub PaintUC()
         
     Else
         curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT, PDTCV_DISABLED)
+    End If
+    
+    If Not g_UserModeFix Then
+        curFont.setFontColor 0
     End If
     
     'Render the text
