@@ -210,7 +210,11 @@ Private Const WS_EX_TOPMOST As Long = &H8&
 Public Function AddTool(ByRef ctrl As Object, Optional ByVal strText As String) As Boolean
 
     Dim ti As TOOLINFO
-
+    
+    'The IDE may throw random hissy fits about the Container.hWnd workaround property below.  To avoid this,
+    ' simply ignore errors in this function.
+    On Error Resume Next
+    
     'MODIFICATION
     'if a control has no hWnd to use for tooltip
     If Not fIsWindow(ctrl) Then

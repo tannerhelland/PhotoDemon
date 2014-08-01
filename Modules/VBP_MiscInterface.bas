@@ -1111,8 +1111,12 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
             eControl.FontName = g_InterfaceFont
         End If
         
-        If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is commandBar) Or (TypeOf eControl Is smartResize)) Then
+        If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is commandBar) Or (TypeOf eControl Is smartResize)) Then
             eControl.Font.Name = g_InterfaceFont
+        End If
+        
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
+            eControl.updateAgainstCurrentTheme
         End If
                         
         'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
@@ -1400,7 +1404,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         
         End If
         
-        'While macros are active, append a "Recording" message to help orient ht euser
+        'While macros are active, append a "Recording" message to help orient the user
         If MacroStatus = MacroSTART Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
         
         'Post the message to the screen
