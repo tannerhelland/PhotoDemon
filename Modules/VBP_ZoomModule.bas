@@ -573,7 +573,6 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
     newVHeight = canvasHeight
     
     'Prepare the relevant back buffer
-    If (Not srcImage.backBuffer Is Nothing) Then srcImage.backBuffer.eraseDIB
     srcImage.backBuffer.createBlank newVWidth, newVHeight, 24, g_CanvasBackground
     
     srcImage.imgViewport.targetLeft = viewportLeft

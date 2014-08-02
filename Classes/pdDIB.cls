@@ -18,23 +18,11 @@ Attribute VB_Exposed = False
 'Last updated: 14/April/14
 'Last update: greatly improved the .renderToPictureBox function for 32bpp images; GDI+ is now used for high-quality resampling.
 '
-'This marvelous class is PhotoDemon's replacement for picture boxes (which it used to store images in previous versions).
-' pdDIB is a powerful DIB class responsible for managing all image data in memory. Some of the benefits provided by
-' this approach include:
-'
-'- Ability to load large images without problems
-'- Alpha channels
-'- High bit depths
-'- Much faster than picture boxes
-'- Allows for the eventual implementation of layers and adjustment layers
-'
-'These are serious benefits.
+'This class is the core of PhotoDemon.  Any image interactions are handled through this lightweight Windows DIB wrapper, and as you
+' might expect, a number of other capabilities are built into the class.
 '
 'Note that anything you can do with an hDC property you can do with this class - simply use the getDIBDC function to
 ' return the DIB's hDC, then do with it what you please. All functions are heavily commented and should be self-explanatory.
-'
-'Note also that this class is treated as a subset of pdImage(). Right now each pdImage object only contains one layer
-' (the image itself), but in the future a pdImage object could theoretically store many layers.
 '
 'SPECIAL THANKS
 'In building this class, I utilized a number of other DIB classes for reference and testing. Special thanks to:
@@ -964,14 +952,12 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     eraseDIB
     
     'PhotoDemon only supports 24 and 32 BPP at present
-    If colorDepth <> 32 And colorDepth <> 24 Then
-        colorDepth = 24
-    End If
+    If (colorDepth <> 32) And (colorDepth <> 24) Then colorDepth = 24
         
     'The back color may or may not be a system color, so translate it just in case
-    BackColor = TranslateColor(BackColor)
+    If (BackColor <> vbWhite) Then BackColor = TranslateColor(BackColor)
         
-    'Remember this color depth, width, and height
+    'Remember the requested color depth, width, and height
     dibColorDepth = colorDepth
     dibWidth = iWidth
     dibHeight = iHeight
@@ -1017,12 +1003,12 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
             If (colorDepth = 24) Then
                 
                 Dim dibRect As RECT
-                    SetRect dibRect, 0, 0, iWidth, iHeight
-                
-                    Dim hBrush As Long
-                    hBrush = CreateSolidBrush(BackColor)
-                    FillRect dibDC, dibRect, hBrush
-                    DeleteObject hBrush
+                SetRect dibRect, 0, 0, iWidth, iHeight
+            
+                Dim hBrush As Long
+                hBrush = CreateSolidBrush(BackColor)
+                FillRect dibDC, dibRect, hBrush
+                DeleteObject hBrush
                 
             Else
             
@@ -1031,23 +1017,6 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
                 
             End If
             
-                
-                
-                'If colorDepth = 24 Then
-                '    Dim dibRect As RECT
-                '    SetRect dibRect, 0, 0, iWidth, iHeight
-                '
-                '    Dim hBrush As Long
-                '    hBrush = CreateSolidBrush(BackColor)
-                '    FillRect dibDC, dibRect, hBrush
-                '    DeleteObject hBrush
-                'End If
-                
-            'If the DIB is 32bpp, apply any transparency now
-            'Else
-                '(NOT IMPLEMENTED YET; may add in the future if it proves useful)
-            'End If
-        
         'If DIB creation failed, clear out the work we've done so far
         Else
             eraseDIB

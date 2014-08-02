@@ -182,15 +182,17 @@ Public Sub FitOnScreen()
     
 End Sub
 
-'Previously, we could unload images by just unloading their containing form.  This is no longer possible, so we must
-' unload images using dedicated custom functions.  Note that this function simply wraps the QueryUnload and Unload
-' functions, below.
+'Previously, we could unload images by just unloading their containing form.  As image canvases are all custom-drawn now, this shortcut
+' is no longer possible , so we must unload images using our own functions.
+' (Note that this function simply wraps the imitation QueryUnload and Unload functions, below.)
+'
 'This function returns TRUE if the image was unloaded, FALSE if it was canceled.
 Public Function fullPDImageUnload(ByVal imageID As Long) As Boolean
 
     Dim toCancel As Integer
     Dim tmpUnloadMode As Integer
     
+    'Perform a query unload on the image.  This will raise required warnings (e.g. unsaved changes) per the user's preferences.
     QueryUnloadPDImage toCancel, tmpUnloadMode, imageID
     
     If CBool(toCancel) Then
@@ -222,7 +224,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
 
     Debug.Print "(Image #" & imageID & " received a Query_Unload trigger)"
     
-    'Failsafe to make sure the image was properly initialized
+    'Failsafe to make sure the image was properly initialized; if it was not, ignore this request entirely.
     If pdImages(imageID) Is Nothing Then Exit Function
     
     'If the user wants to be prompted about unsaved images, do it now
@@ -240,12 +242,14 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 ' NOTE: we only need to do this if the entire program is being shut down or if the user has selected "close all";
                 ' otherwise, this close action only affects the current image, so we shouldn't present a "repeat for all images" option
                 If g_ProgramShuttingDown Or g_ClosingAllImages Then
+                    
                     Dim i As Long
                     For i = 1 To g_NumOfImagesLoaded
                         If pdImages(i).IsActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).getSaveState(pdSE_AnySave)) Then
                             g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
                         End If
                     Next i
+                    
                 End If
             
                 'Before displaying the "do you want to save this image?" dialog, bring the image in question to the foreground.
