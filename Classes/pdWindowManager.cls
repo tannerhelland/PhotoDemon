@@ -1624,6 +1624,16 @@ Public Sub requestActivation(ByVal hWndToActivate As Long)
     SetWindowPos hWndToActivate, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW Or SWP_NOOWNERZORDER
 End Sub
 
+'External objects can call this function to activate system-level double-buffering for a given hWnd.
+Public Sub activateDoubleBuffering(ByVal srcHwnd As Long)
+    
+    Dim newWinStyle As Long
+    
+    newWinStyle = GetWindowLong(srcHwnd, GWL_EXSTYLE)
+    SetWindowLong srcHwnd, GWL_EXSTYLE, newWinStyle Or WS_EX_COMPOSITED
+    
+End Sub
+
 Private Sub Class_Initialize()
 
     'Reset all tracking variables
