@@ -59,7 +59,7 @@ Option Explicit
 Public Event Click()
 
 'Subclassing is used to better optimize the control's painting; this also requires manual validation of the control rect.
-Private Const WM_PAINT = &HF
+Private Const WM_PAINT As Long = &HF
 Private Declare Function ValidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As Any) As Long
 
 'Retrieve the width and height of a string
