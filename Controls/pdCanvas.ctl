@@ -785,7 +785,7 @@ Private Sub cmdZoomOut_Click()
 End Sub
 
 'At present, the only App Commands the canvas will handle are forward/back, which link to Undo/Redo
-Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     If isCanvasInteractionAllowed() Then
     
@@ -992,7 +992,7 @@ Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kRetu
     
 End Sub
 
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
         
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
@@ -1010,10 +1010,10 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     Dim imgX As Double, imgY As Double
     
     'Display the image coordinates under the mouse pointer
-    displayImageCoordinates X, Y, pdImages(g_CurrentImage), Me, imgX, imgY
+    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, X, Y, imgX, imgY
+    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
     
     'Check mouse button use
     If Button = vbLeftButton Then
@@ -1022,8 +1022,8 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         hasMouseMoved = 0
             
         'Remember this location
-        m_initMouseX = X
-        m_initMouseY = Y
+        m_initMouseX = x
+        m_initMouseY = y
         
         'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
         ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
@@ -1118,7 +1118,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 'When the mouse enters the canvas, any floating toolbars must be automatically dimmed.
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
         
     m_IsMouseOverCanvas = True
         
@@ -1135,7 +1135,7 @@ End Sub
 
 'When the mouse leaves the window, if no buttons are down, clear the coordinate display.
 ' (We must check for button states because the user is allowed to do things like drag selection nodes outside the image.)
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     m_IsMouseOverCanvas = False
         
@@ -1143,7 +1143,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
 
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
@@ -1154,10 +1154,10 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     Dim imgX As Double, imgY As Double
     
     'Display the image coordinates under the mouse pointer
-    displayImageCoordinates X, Y, pdImages(g_CurrentImage), Me, imgX, imgY
+    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, X, Y, imgX, imgY
+    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
     
     'Check the left mouse button
     If lMouseDown Then
@@ -1166,12 +1166,12 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
             'Drag-to-pan canvas
             Case NAV_DRAG
-                panImageCanvas m_initMouseX, m_initMouseY, X, Y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                panImageCanvas m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
             'Move stuff around
             Case NAV_MOVE
                 Message "Shift key: preserve layer aspect ratio"
-                transformCurrentLayer m_initMouseX, m_initMouseY, X, Y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
         
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
@@ -1248,17 +1248,17 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
     
     'Display the image coordinates under the mouse pointer
     Dim imgX As Double, imgY As Double
-    displayImageCoordinates X, Y, pdImages(g_CurrentImage), Me, imgX, imgY
+    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, X, Y, imgX, imgY
+    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
     
     'Check mouse buttons
     If Button = vbLeftButton Then
@@ -1275,7 +1275,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
             
                 'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation,
                 ' among other things.
-                If (hasMouseMoved > 0) Then transformCurrentLayer m_initMouseX, m_initMouseY, X, Y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                If (hasMouseMoved > 0) Then transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask), True
                 
                 'Reset the generic tool mouse tracking function
                 Tool_Support.terminateGenericToolTracking
@@ -1288,7 +1288,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
-                    If ((X = m_initMouseX) And (Y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
+                    If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
                         Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
                     Else
                     
@@ -1347,7 +1347,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
 
 End Sub
 
-Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
+Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
@@ -1392,7 +1392,7 @@ End Sub
 
 'Vertical mousewheel scrolling.  Note that Shift+Wheel and Ctrl+Wheel modifiers do NOT raise this event; pdInput automatically
 ' reroutes them to MouseWheelHorizontal and MouseWheelZoom, respectively.
-Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
+Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
@@ -1444,14 +1444,14 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
 End Sub
 
 'The pdInput class now provides a dedicated zoom event for us - how nice!
-Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal zoomAmount As Double)
+Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
 
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
     
     'Before doing anything else, cache the current mouse coordinates (in both Canvas and Image coordinate spaces)
     Dim imgX As Double, imgY As Double
-    convertCanvasCoordsToImageCoords Me, pdImages(g_CurrentImage), X, Y, imgX, imgY, True
+    convertCanvasCoordsToImageCoords Me, pdImages(g_CurrentImage), x, y, imgX, imgY, True
     
     'Suspend automatic viewport redraws until we are done with our calculations
     g_AllowViewportRendering = False
@@ -1472,12 +1472,12 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
     
     'Request a manual redraw from PrepareViewport, while supplying our x/y coordinates so that it can preserve mouse position
     ' relative to the underlying image.
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "mousewheel zoom", X, Y, imgX, imgY
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "mousewheel zoom", x, y, imgX, imgY
 
 End Sub
 
 '(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there)
-Private Sub picCanvas_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picCanvas_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1489,7 +1489,7 @@ Private Sub picCanvas_OLEDragDrop(Data As DataObject, Effect As Long, Button As 
 End Sub
 
 '(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub picCanvas_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub picCanvas_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -1748,7 +1748,10 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         
         'Start with the "image size" button
         cmdImgSize.Left = lineStatusBar(0).x1 + fixDPI(4)
-        If Not cmdImgSize.Visible Then cmdImgSize.Visible = True
+        If (Not cmdImgSize.Visible) Then
+            cmdImgSize.Visible = True
+            cmdImgSize.forceButtonRedraw
+        End If
         'sbIconSize.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconSize.getDIBWidth), fixDPI(sbIconSize.getDIBHeight)
         
         'After the "image size" icon comes the actual image size label.  Its position is determined by the image resize button width,
@@ -1807,7 +1810,7 @@ End Function
 ' is added, make sure to visit this sub and make any necessary cursor changes!
 '
 'A lot of extra values are passed to this function.  Individual tools can use those at their leisure to customize their cursor requests.
-Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal X As Single, ByVal Y As Single, ByVal imgX As Double, ByVal imgY As Double)
+Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double)
 
     'Obviously, cursor setting is handled separately for each tool.
     Select Case g_CurrentTool
@@ -1815,7 +1818,7 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         Case NAV_DRAG
         
             'When click-dragging the image to scroll around it, the cursor depends on being over the image
-            If isMouseOverImage(X, Y, pdImages(g_CurrentImage)) Then
+            If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
                 
                 If Button <> 0 Then
                     cMouseEvents.setPNGCursor "HANDCLOSED", 0, 0
