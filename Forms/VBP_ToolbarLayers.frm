@@ -25,6 +25,24 @@ Begin VB.Form toolbar_Layers
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
+   Begin VB.TextBox txtLayerName 
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   285
+      Left            =   120
+      TabIndex        =   11
+      TabStop         =   0   'False
+      Top             =   6360
+      Visible         =   0   'False
+      Width           =   3015
+   End
    Begin VB.ComboBox cboBlendMode 
       Appearance      =   0  'Flat
       BeginProperty Font 
@@ -40,7 +58,7 @@ Begin VB.Form toolbar_Layers
       Height          =   330
       Left            =   960
       Style           =   2  'Dropdown List
-      TabIndex        =   10
+      TabIndex        =   1
       Top             =   675
       Width           =   2655
    End
@@ -49,7 +67,7 @@ Begin VB.Form toolbar_Layers
       LargeChange     =   32
       Left            =   3360
       Max             =   100
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   1320
       Width           =   285
    End
@@ -64,14 +82,15 @@ Begin VB.Form toolbar_Layers
       ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   249
-      TabIndex        =   3
+      TabIndex        =   9
+      TabStop         =   0   'False
       Top             =   6750
       Width           =   3735
       Begin PhotoDemon.jcbutton cmdLayerAction 
          Height          =   480
          Index           =   2
          Left            =   1920
-         TabIndex        =   4
+         TabIndex        =   6
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -99,7 +118,7 @@ Begin VB.Form toolbar_Layers
          Height          =   480
          Index           =   3
          Left            =   2640
-         TabIndex        =   5
+         TabIndex        =   7
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -127,7 +146,7 @@ Begin VB.Form toolbar_Layers
          Height          =   480
          Index           =   1
          Left            =   1200
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -155,7 +174,7 @@ Begin VB.Form toolbar_Layers
          Height          =   480
          Index           =   0
          Left            =   480
-         TabIndex        =   11
+         TabIndex        =   4
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -193,32 +212,14 @@ Begin VB.Form toolbar_Layers
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   215
       TabIndex        =   2
-      TabStop         =   0   'False
       Top             =   1320
       Width           =   3255
-      Begin VB.TextBox txtLayerName 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   285
-         Left            =   120
-         TabIndex        =   8
-         Top             =   120
-         Visible         =   0   'False
-         Width           =   3015
-      End
    End
    Begin PhotoDemon.sliderTextCombo sltLayerOpacity 
       CausesValidation=   0   'False
       Height          =   495
       Left            =   960
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   120
       Width           =   2760
       _ExtentX        =   4868
@@ -257,7 +258,7 @@ Begin VB.Form toolbar_Layers
       Height          =   240
       Index           =   0
       Left            =   375
-      TabIndex        =   9
+      TabIndex        =   10
       Top             =   720
       Width           =   540
    End
@@ -289,7 +290,7 @@ Begin VB.Form toolbar_Layers
       Height          =   240
       Index           =   1
       Left            =   240
-      TabIndex        =   0
+      TabIndex        =   8
       Top             =   210
       Width           =   675
    End
@@ -594,7 +595,7 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
     If isPointInRect(x, y, m_NameRect) And (Button = pdLeftButton) Then
     
         'Move the text layer box into position
-        txtLayerName.Move m_NameRect.Left, m_NameRect.Top, m_NameRect.Right - m_NameRect.Left, m_NameRect.Bottom - m_NameRect.Top
+        txtLayerName.Move picLayers.Left + m_NameRect.Left, picLayers.Top + m_NameRect.Top, m_NameRect.Right - m_NameRect.Left, m_NameRect.Bottom - m_NameRect.Top
         txtLayerName.Visible = True
         
         'Disable hotkeys until editing is finished
@@ -614,7 +615,7 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
 End Sub
 
 'Arrow keys have been pressed (or number pad arrow keys)
-Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, ByRef markEventHandled As Boolean)
     
     'Ignore user interaction while in drag/drop mode
     If m_InOLEDragDropMode Then Exit Sub
@@ -650,7 +651,7 @@ End Sub
 
 'An edit key (http://en.wikipedia.org/wiki/Template:Keyboard_keys) has been pressed.  Note that PD strives to provide the same hotkeys for
 ' both this layer toolbox and the Move/Resize tool, so mirror any changes here to the pdCanvas user control as well!
-Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean)
+Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean, ByRef markEventHandled As Boolean)
 
     'Ignore user interaction while in drag/drop mode
     If m_InOLEDragDropMode Then Exit Sub
@@ -685,15 +686,28 @@ Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kRetu
                 curLayerIndex = curLayerIndex - 1
             End If
             
-            If curLayerIndex < 0 Then curLayerIndex = pdImages(g_CurrentImage).getNumOfLayers - 1
-            If curLayerIndex > pdImages(g_CurrentImage).getNumOfLayers - 1 Then curLayerIndex = 0
+            'I'm currently working on letting the user tab through the layer list, then tab *out of the control* upon reaching
+            ' the last layer.  But this requires some changes to the pdCanvas control (it's complicated), so this doesn't work just yet.
+            If (curLayerIndex >= 0) And (curLayerIndex < pdImages(g_CurrentImage).getNumOfLayers) Then
+                
+                'Debug.Print "HANDLING KEY!"
+                
+                'Activate the new layer
+                pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
+                
+                'Redraw the viewport and interface to match
+                RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                syncInterfaceToCurrentImage
+                
+                'All that interface stuff may have messed up focus; retain it on the layer box
+                picLayers.SetFocus
             
-            'Activate the new layer
-            pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
-            
-            'Redraw the viewport and interface to match
-            RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-            syncInterfaceToCurrentImage
+            Else
+                
+                markEventHandled = False
+                'Debug.Print "event not handled!"
+                
+            End If
             
         End If
         
@@ -704,6 +718,10 @@ Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kRetu
             syncInterfaceToCurrentImage
         End If
     
+    End If
+    
+    If kEnter Then
+        'Debug.Print "layer noticed enter"
     End If
 
 End Sub
@@ -962,12 +980,12 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
 End Sub
 
 'Forward any key events from the form to the layer box handler
-Private Sub cMouseEventsForm_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
-    Call cMouseEvents_KeyDownArrows(Shift, upArrow, rightArrow, downArrow, leftArrow)
+Private Sub cMouseEventsForm_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, ByRef markEventHandled As Boolean)
+    Call cMouseEvents_KeyDownArrows(Shift, upArrow, rightArrow, downArrow, leftArrow, markEventHandled)
 End Sub
 
-Private Sub cMouseEventsForm_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean)
-    Call cMouseEvents_KeyDownEdits(Shift, kReturn, kEnter, kSpaceBar, kBackspace, kInsert, kDelete, kTab, kEscape)
+Private Sub cMouseEventsForm_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean, ByRef markEventHandled As Boolean)
+    Call cMouseEvents_KeyDownEdits(Shift, kReturn, kEnter, kSpaceBar, kBackspace, kInsert, kDelete, kTab, kEscape, markEventHandled)
 End Sub
 
 'Forward mousewheel events to the layer box handler
@@ -1494,6 +1512,14 @@ Private Function getLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional B
     End If
     
 End Function
+
+Private Sub picLayers_GotFocus()
+    'Debug.Print "Layer box received focus"
+End Sub
+
+Private Sub picLayers_LostFocus()
+    'Debug.Print "Layer box lost focus"
+End Sub
 
 Private Sub picLayers_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
