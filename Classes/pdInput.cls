@@ -84,8 +84,8 @@ Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As Shi
 Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
 'The following events are raised only if specifically requested via the dedicated requestKeyTracking and setKeyTrackers functions
-Event KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
-Event KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean)
+Event KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, ByRef markEventHandled As Boolean)
+Event KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean, ByRef markEventHandled As Boolean)
 
 'This class tracks all kinds of window messages.  Most objects won't need this level of tracking, but they're there
 ' if needed.
@@ -730,10 +730,15 @@ Private Function reportArrowKeyUpdate(ByVal indexOfHwnd As Long, ByVal modifierK
         
     End If
     
+    'For some keys, the caller may want to let the system provide default handling.  They can do this by forcibly setting this handled
+    ' value to FALSE.  (It's passed to the event ByRef.)
+    Dim bHandled As Boolean
+    bHandled = True
+    
     'Raise a corresponding arrow key event
     If upArrow Or rightArrow Or downArrow Or leftArrow Then
-        RaiseEvent KeyDownArrows(modifierKeys, upArrow, rightArrow, downArrow, leftArrow)
-        reportArrowKeyUpdate = True
+        RaiseEvent KeyDownArrows(modifierKeys, upArrow, rightArrow, downArrow, leftArrow, bHandled)
+        reportArrowKeyUpdate = bHandled
     Else
         reportArrowKeyUpdate = False
     End If
@@ -766,10 +771,15 @@ Private Function reportEditKeyUpdate(ByVal indexOfHwnd As Long, ByVal modifierKe
     If keyReturn And isExtendedKey Then keyReturn = False
     If keyEnter And (Not isExtendedKey) Then keyEnter = False
     
+    'For some keys, the caller may want to let the system provide default handling.  They can do this by forcibly setting this handled
+    ' value to FALSE.  (It's passed to the event ByRef.)
+    Dim bHandled As Boolean
+    bHandled = True
+    
     'With all key states correctly tracked, raise a corresponding edit key event
     If keyReturn Or keyEnter Or keySpaceBar Or keyBackspace Or keyTab Or keyInsert Or keyDelete Or keyEscape Then
-        RaiseEvent KeyDownEdits(modifierKeys, keyReturn, keyEnter, keySpaceBar, keyBackspace, keyInsert, keyDelete, keyTab, keyEscape)
-        reportEditKeyUpdate = True
+        RaiseEvent KeyDownEdits(modifierKeys, keyReturn, keyEnter, keySpaceBar, keyBackspace, keyInsert, keyDelete, keyTab, keyEscape, bHandled)
+        reportEditKeyUpdate = bHandled
     Else
         reportEditKeyUpdate = False
     End If
@@ -853,10 +863,10 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         End If
         
         'If bHandled Then Debug.Print "pdInput is handling keypress: " & bHandled & ", " & nCode
-        
+                
         'Per MSDN, return the value of CallNextHookEx
         If (Not bHandled) Then
-            lReturn = CallNextHookEx(0, nCode, wParam, lParam)
+            lReturn = CallNextHookEx(0, nCode, wParam, ByVal lParam)
         Else
             lReturn = 1
         End If

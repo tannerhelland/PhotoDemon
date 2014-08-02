@@ -373,7 +373,7 @@ Public Property Set Font(mNewFont As StdFont)
 End Property
 
 'Arrow keys can be used to "nudge" the control value in single-unit increments.
-Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean)
+Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, ByRef markEventHandled As Boolean)
     If upArrow Or rightArrow Then Value = Value + getIncrementAmount
     If leftArrow Or downArrow Then Value = Value - getIncrementAmount
 End Sub
