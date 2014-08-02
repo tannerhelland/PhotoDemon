@@ -569,6 +569,8 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
     Dim newVWidth As Long, newVHeight As Long
     If hScrollEnabled Then newVWidth = viewportWidth Else newVWidth = canvasWidth
     If vScrollEnabled Then newVHeight = viewportHeight Else newVHeight = canvasHeight
+    newVWidth = canvasWidth
+    newVHeight = canvasHeight
     
     'Prepare the relevant back buffer
     If (Not srcImage.backBuffer Is Nothing) Then srcImage.backBuffer.eraseDIB
