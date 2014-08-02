@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.UserControl pdCanvas 
    Appearance      =   0  'Flat
    AutoRedraw      =   -1  'True
-   BackColor       =   &H80000003&
+   BackColor       =   &H80000010&
    ClientHeight    =   7695
    ClientLeft      =   0
    ClientTop       =   0
@@ -22,6 +22,24 @@ Begin VB.UserControl pdCanvas
    ScaleHeight     =   513
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
+   Begin VB.PictureBox picCanvas 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000003&
+      BorderStyle     =   0  'None
+      ClipControls    =   0   'False
+      FillColor       =   &H00FFFFFF&
+      ForeColor       =   &H8000000D&
+      Height          =   4935
+      Left            =   360
+      OLEDropMode     =   1  'Manual
+      ScaleHeight     =   329
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   305
+      TabIndex        =   0
+      Top             =   600
+      Width           =   4575
+   End
    Begin VB.PictureBox picProgressBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
@@ -32,7 +50,7 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   886
-      TabIndex        =   6
+      TabIndex        =   7
       Top             =   7095
       Visible         =   0   'False
       Width           =   13290
@@ -46,7 +64,7 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   361
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   17
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   480
       Visible         =   0   'False
       Width           =   255
@@ -60,7 +78,7 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   361
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   5880
       Visible         =   0   'False
       Width           =   5415
@@ -77,7 +95,7 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   886
-      TabIndex        =   0
+      TabIndex        =   1
       TabStop         =   0   'False
       Top             =   7350
       Width           =   13290
@@ -88,14 +106,14 @@ Begin VB.UserControl pdCanvas
          Left            =   3480
          List            =   "pdCanvas.ctx":0002
          Style           =   2  'Dropdown List
-         TabIndex        =   10
+         TabIndex        =   11
          Top             =   15
          Width           =   600
       End
       Begin PhotoDemon.jcbutton cmdZoomIn 
          Height          =   345
          Left            =   1830
-         TabIndex        =   8
+         TabIndex        =   9
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -127,14 +145,14 @@ Begin VB.UserControl pdCanvas
          Left            =   840
          List            =   "pdCanvas.ctx":0858
          Style           =   2  'Dropdown List
-         TabIndex        =   7
+         TabIndex        =   8
          Top             =   15
          Width           =   960
       End
       Begin PhotoDemon.jcbutton cmdZoomOut 
          Height          =   345
          Left            =   390
-         TabIndex        =   9
+         TabIndex        =   10
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -162,7 +180,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.jcbutton cmdZoomFit 
          Height          =   345
          Left            =   0
-         TabIndex        =   11
+         TabIndex        =   12
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -190,7 +208,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.jcbutton cmdImgSize 
          Height          =   345
          Left            =   2640
-         TabIndex        =   12
+         TabIndex        =   13
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -241,7 +259,7 @@ Begin VB.UserControl pdCanvas
          ForeColor       =   &H00404040&
          Height          =   210
          Left            =   3120
-         TabIndex        =   3
+         TabIndex        =   4
          Top             =   60
          Width           =   345
       End
@@ -270,7 +288,7 @@ Begin VB.UserControl pdCanvas
          ForeColor       =   &H00404040&
          Height          =   210
          Left            =   4950
-         TabIndex        =   2
+         TabIndex        =   3
          Top             =   60
          Width           =   525
       End
@@ -300,7 +318,7 @@ Begin VB.UserControl pdCanvas
          ForeColor       =   &H00404040&
          Height          =   300
          Left            =   9810
-         TabIndex        =   1
+         TabIndex        =   2
          Top             =   60
          Width           =   3255
       End
@@ -415,12 +433,12 @@ Public Sub setRedrawSuspension(ByVal newRedrawValue As Boolean)
 End Sub
 
 Public Property Get BackColor() As Long
-    BackColor = UserControl.BackColor
+    BackColor = picCanvas.BackColor
 End Property
 
 Public Property Let BackColor(newBackColor As Long)
-    UserControl.BackColor = newBackColor
-    UserControl.Refresh
+    picCanvas.BackColor = newBackColor
+    picCanvas.Refresh
 End Property
 
 Public Sub clearCanvas()
@@ -433,8 +451,8 @@ Public Sub clearCanvas()
     'Otherwise, simply clear the user control
     Else
     
-        UserControl.Picture = LoadPicture("")
-        UserControl.Refresh
+        picCanvas.Picture = LoadPicture("")
+        picCanvas.Refresh
     
     End If
     
@@ -458,6 +476,9 @@ Public Sub setScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibil
     Else
         picScrollV.Visible = newVisibility
     End If
+    
+    'When scroll bar visibility is changed, we must move the main canvas picture box to match
+    alignCanvasPictureBox
     
 End Sub
 
@@ -670,8 +691,8 @@ Public Sub displayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
 End Sub
 
 Public Sub requestBufferSync()
-    UserControl.Picture = UserControl.Image
-    UserControl.Refresh
+    picCanvas.Picture = picCanvas.Image
+    picCanvas.Refresh
 End Sub
 
 Public Function getCanvasWidth() As Long
@@ -695,7 +716,7 @@ Public Property Get hWnd()
 End Property
 
 Public Property Get hDC()
-    hDC = UserControl.hDC
+    hDC = picCanvas.hDC
 End Property
 
 Public Sub enableZoomIn(ByVal isEnabled As Boolean)
@@ -764,7 +785,7 @@ Private Sub cmdZoomOut_Click()
 End Sub
 
 'At present, the only App Commands the canvas will handle are forward/back, which link to Undo/Redo
-Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     
     If isCanvasInteractionAllowed() Then
     
@@ -971,15 +992,15 @@ Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kRetu
     
 End Sub
 
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
         
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
     
     'Because VB does not allow an user control to receive focus if it contains controls that can receive focus, the arrow buttons
     ' can behave unpredictably (for example, if the zoom box has focus, and the user clicks on the canvas, the canvas will not
-    ' receive focus and arrow key presses will continue to
-    cmdZoomFit.SetFocus
+    ' receive focus and arrow key presses will continue to interact with the zoom box instead of the viewport)
+    'cmdZoomFit.SetFocus
     
     'Note that the user has attempted to interact with the canvas.
     m_UserInteractedWithCanvas = True
@@ -989,10 +1010,10 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     Dim imgX As Double, imgY As Double
     
     'Display the image coordinates under the mouse pointer
-    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    displayImageCoordinates X, Y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+    setCanvasCursor pMouseUp, Button, X, Y, imgX, imgY
     
     'Check mouse button use
     If Button = vbLeftButton Then
@@ -1001,8 +1022,8 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         hasMouseMoved = 0
             
         'Remember this location
-        m_initMouseX = x
-        m_initMouseY = y
+        m_initMouseX = X
+        m_initMouseY = Y
         
         'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
         ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
@@ -1097,7 +1118,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 'When the mouse enters the canvas, any floating toolbars must be automatically dimmed.
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
         
     m_IsMouseOverCanvas = True
         
@@ -1114,7 +1135,7 @@ End Sub
 
 'When the mouse leaves the window, if no buttons are down, clear the coordinate display.
 ' (We must check for button states because the user is allowed to do things like drag selection nodes outside the image.)
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     
     m_IsMouseOverCanvas = False
         
@@ -1122,7 +1143,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
 
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
 
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
@@ -1133,10 +1154,10 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     Dim imgX As Double, imgY As Double
     
     'Display the image coordinates under the mouse pointer
-    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    displayImageCoordinates X, Y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+    setCanvasCursor pMouseUp, Button, X, Y, imgX, imgY
     
     'Check the left mouse button
     If lMouseDown Then
@@ -1145,12 +1166,12 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
             'Drag-to-pan canvas
             Case NAV_DRAG
-                panImageCanvas m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                panImageCanvas m_initMouseX, m_initMouseY, X, Y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
             'Move stuff around
             Case NAV_MOVE
                 Message "Shift key: preserve layer aspect ratio"
-                transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                transformCurrentLayer m_initMouseX, m_initMouseY, X, Y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
         
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
@@ -1227,17 +1248,17 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
     
     'Display the image coordinates under the mouse pointer
     Dim imgX As Double, imgY As Double
-    displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
+    displayImageCoordinates X, Y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+    setCanvasCursor pMouseUp, Button, X, Y, imgX, imgY
     
     'Check mouse buttons
     If Button = vbLeftButton Then
@@ -1254,7 +1275,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
             
                 'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation,
                 ' among other things.
-                If (hasMouseMoved > 0) Then transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                If (hasMouseMoved > 0) Then transformCurrentLayer m_initMouseX, m_initMouseY, X, Y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask), True
                 
                 'Reset the generic tool mouse tracking function
                 Tool_Support.terminateGenericToolTracking
@@ -1267,7 +1288,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
-                    If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
+                    If ((X = m_initMouseX) And (Y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
                         Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
                     Else
                     
@@ -1326,7 +1347,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
 
 End Sub
 
-Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
     
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
@@ -1371,7 +1392,7 @@ End Sub
 
 'Vertical mousewheel scrolling.  Note that Shift+Wheel and Ctrl+Wheel modifiers do NOT raise this event; pdInput automatically
 ' reroutes them to MouseWheelHorizontal and MouseWheelZoom, respectively.
-Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
     
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
@@ -1423,14 +1444,14 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
 End Sub
 
 'The pdInput class now provides a dedicated zoom event for us - how nice!
-Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal zoomAmount As Double)
 
     'Make sure interactions with this canvas are allowed
     If Not isCanvasInteractionAllowed() Then Exit Sub
     
     'Before doing anything else, cache the current mouse coordinates (in both Canvas and Image coordinate spaces)
     Dim imgX As Double, imgY As Double
-    convertCanvasCoordsToImageCoords Me, pdImages(g_CurrentImage), x, y, imgX, imgY, True
+    convertCanvasCoordsToImageCoords Me, pdImages(g_CurrentImage), X, Y, imgX, imgY, True
     
     'Suspend automatic viewport redraws until we are done with our calculations
     g_AllowViewportRendering = False
@@ -1451,8 +1472,37 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
     
     'Request a manual redraw from PrepareViewport, while supplying our x/y coordinates so that it can preserve mouse position
     ' relative to the underlying image.
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "mousewheel zoom", x, y, imgX, imgY
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "mousewheel zoom", X, Y, imgX, imgY
 
+End Sub
+
+'(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there)
+Private Sub picCanvas_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+
+    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
+    If Not g_AllowDragAndDrop Then Exit Sub
+    
+    'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
+    ' to load the OLE source.
+    Clipboard_Handler.loadImageFromDragDrop Data, Effect, True
+    
+End Sub
+
+'(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
+Private Sub picCanvas_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+
+    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
+    If Not g_AllowDragAndDrop Then Exit Sub
+
+    'Check to make sure the type of OLE object is files
+    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Or Data.GetFormat(vbCFBitmap) Then
+        'Inform the source that the files will be treated as "copied"
+        Effect = vbDropEffectCopy And Effect
+    Else
+        'If it's not files or text, don't allow a drop
+        Effect = vbDropEffectNone
+    End If
+    
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -1461,9 +1511,9 @@ Private Sub UserControl_Initialize()
         
         'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
         Set cMouseEvents = New pdInput
-        cMouseEvents.addInputTracker UserControl.hWnd, True, True, True, True
-        cMouseEvents.requestKeyTracking UserControl.hWnd
-        cMouseEvents.setKeyTrackers UserControl.hWnd, True, True, True
+        cMouseEvents.addInputTracker picCanvas.hWnd, True, True, True, True
+        cMouseEvents.requestKeyTracking picCanvas.hWnd
+        cMouseEvents.setKeyTrackers picCanvas.hWnd, True, True, True
         
         'This user control contains a lot of child controls whose key events we want to intercept (as they aren't designed to have
         ' focus on their own).  Submit these controls to the tracker, so it knows to mass any key events into the UC's master
@@ -1491,6 +1541,9 @@ Private Sub UserControl_Initialize()
         
         HScroll.initializeScrollBarWindow picScrollH.hWnd, True, 0, 10, 0, 1, 1
         VScroll.initializeScrollBarWindow picScrollV.hWnd, False, 0, 10, 0, 1, 1
+        
+        'Align the main picture box
+        alignCanvasPictureBox
         
     End If
     
@@ -1524,35 +1577,6 @@ Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
     
 End Sub
 
-'(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there)
-Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
-
-    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If Not g_AllowDragAndDrop Then Exit Sub
-    
-    'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
-    ' to load the OLE source.
-    Clipboard_Handler.loadImageFromDragDrop Data, Effect, True
-    
-End Sub
-
-'(This code is copied from FormMain's OLEDragOver event - please mirror any changes there)
-Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
-
-    'Make sure the form is available (e.g. a modal form hasn't stolen focus)
-    If Not g_AllowDragAndDrop Then Exit Sub
-
-    'Check to make sure the type of OLE object is files
-    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Or Data.GetFormat(vbCFBitmap) Then
-        'Inform the source that the files will be treated as "copied"
-        Effect = vbDropEffectCopy And Effect
-    Else
-        'If it's not files or text, don't allow a drop
-        Effect = vbDropEffectNone
-    End If
-    
-End Sub
-
 Private Sub HScroll_Scroll()
     If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
 End Sub
@@ -1563,7 +1587,26 @@ Private Sub UserControl_Resize()
     cmbZoom.Top = (picStatusBar.ScaleHeight - cmbZoom.Height) \ 2
     cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
 
+    'Align the canvas picture box to fill the available area
+    alignCanvasPictureBox
+    
     fixChromeLayout
+    
+End Sub
+
+Public Sub alignCanvasPictureBox()
+    
+    Dim hOffsetRight As Long, vOffsetBottom As Long
+    
+    'Calculate vertical offsets
+    If picScrollH.Visible Then vOffsetBottom = picScrollH.Height Else vOffsetBottom = 0
+    vOffsetBottom = vOffsetBottom + picStatusBar.Height
+    
+    'Calculate horizontal offsets
+    If picScrollV.Visible Then hOffsetRight = picScrollV.Width Else hOffsetRight = 0
+    
+    'Move the canvas picture box into position
+    MoveWindow picCanvas.hWnd, 0, 0, UserControl.ScaleWidth - hOffsetRight, UserControl.ScaleHeight - vOffsetBottom, 1
     
 End Sub
 
@@ -1647,7 +1690,7 @@ Public Sub fixChromeLayout()
             Set tmpDIB = New pdDIB
             
             'If a histogram has already been drawn, render the "please wait" text over the top of it.  Otherwise, render it to a blank white image.
-            tmpDIB.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, g_CanvasBackground
+            tmpDIB.createBlank picCanvas.ScaleWidth, picCanvas.ScaleHeight, 24, g_CanvasBackground
             
             Dim notifyFont As pdFont
             Set notifyFont = New pdFont
@@ -1678,7 +1721,7 @@ Public Sub fixChromeLayout()
             'Just above the text instructions, add a generic image icon
             iconLoadAnImage.alphaBlendToDC tmpDIB.getDIBDC, 192, (tmpDIB.getDIBWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - fixDPI(20)
             
-            BitBlt Me.hDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+            BitBlt picCanvas.hDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
             requestBufferSync
             Set tmpDIB = Nothing
             
@@ -1764,7 +1807,7 @@ End Function
 ' is added, make sure to visit this sub and make any necessary cursor changes!
 '
 'A lot of extra values are passed to this function.  Individual tools can use those at their leisure to customize their cursor requests.
-Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double)
+Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal X As Single, ByVal Y As Single, ByVal imgX As Double, ByVal imgY As Double)
 
     'Obviously, cursor setting is handled separately for each tool.
     Select Case g_CurrentTool
@@ -1772,7 +1815,7 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         Case NAV_DRAG
         
             'When click-dragging the image to scroll around it, the cursor depends on being over the image
-            If isMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
+            If isMouseOverImage(X, Y, pdImages(g_CurrentImage)) Then
                 
                 If Button <> 0 Then
                     cMouseEvents.setPNGCursor "HANDCLOSED", 0, 0
