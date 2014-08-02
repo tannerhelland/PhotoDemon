@@ -197,7 +197,145 @@ Begin VB.Form toolbar_Tools
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
-      ClipControls    =   0   'False
+      ForeColor       =   &H80000008&
+      Height          =   1575
+      Index           =   1
+      Left            =   15
+      ScaleHeight     =   105
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   950
+      TabIndex        =   25
+      Top             =   1020
+      Visible         =   0   'False
+      Width           =   14250
+      Begin PhotoDemon.smartCheckBox chkLayerBorder 
+         Height          =   480
+         Left            =   6480
+         TabIndex        =   27
+         Top             =   360
+         Width           =   2025
+         _ExtentX        =   3810
+         _ExtentY        =   529
+         Caption         =   "show layer borders"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkLayerNodes 
+         Height          =   480
+         Left            =   6480
+         TabIndex        =   28
+         Top             =   780
+         Width           =   2775
+         _ExtentX        =   5133
+         _ExtentY        =   529
+         Caption         =   "show layer transform nodes"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
+         Height          =   480
+         Left            =   120
+         TabIndex        =   30
+         Top             =   360
+         Width           =   4080
+         _ExtentX        =   7435
+         _ExtentY        =   529
+         Caption         =   "automatically activate layer beneath mouse"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
+         Height          =   480
+         Left            =   120
+         TabIndex        =   31
+         Top             =   780
+         Width           =   4920
+         _ExtentX        =   8916
+         _ExtentY        =   529
+         Caption         =   "ignore transparent pixels when auto-activating layers"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblOptions 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "interaction options:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   1
+         Left            =   120
+         TabIndex        =   29
+         Top             =   60
+         Width           =   1650
+      End
+      Begin VB.Label lblOptions 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "display options:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   0
+         Left            =   6480
+         TabIndex        =   26
+         Top             =   60
+         Width           =   1335
+      End
+   End
+   Begin VB.PictureBox picTools 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   1575
       Index           =   0
@@ -593,7 +731,6 @@ Begin VB.Form toolbar_Tools
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
-      ClipControls    =   0   'False
       ForeColor       =   &H80000008&
       Height          =   1575
       Index           =   2
@@ -944,150 +1081,6 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   35
          Top             =   195
          Width           =   855
-      End
-   End
-   Begin VB.PictureBox picTools 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ClipControls    =   0   'False
-      ForeColor       =   &H80000008&
-      Height          =   1575
-      Index           =   1
-      Left            =   15
-      ScaleHeight     =   105
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   950
-      TabIndex        =   25
-      Top             =   1020
-      Visible         =   0   'False
-      Width           =   14250
-      Begin PhotoDemon.smartCheckBox chkLayerBorder 
-         Height          =   480
-         Left            =   6480
-         TabIndex        =   27
-         Top             =   360
-         Width           =   2025
-         _ExtentX        =   3572
-         _ExtentY        =   847
-         Caption         =   "show layer borders"
-         Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkLayerNodes 
-         Height          =   480
-         Left            =   6480
-         TabIndex        =   28
-         Top             =   780
-         Width           =   2775
-         _ExtentX        =   4895
-         _ExtentY        =   847
-         Caption         =   "show layer transform nodes"
-         Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
-         Height          =   480
-         Left            =   120
-         TabIndex        =   30
-         Top             =   360
-         Width           =   4080
-         _ExtentX        =   7197
-         _ExtentY        =   847
-         Caption         =   "automatically activate layer beneath mouse"
-         Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
-         Height          =   480
-         Left            =   120
-         TabIndex        =   31
-         Top             =   780
-         Width           =   4920
-         _ExtentX        =   8678
-         _ExtentY        =   847
-         Caption         =   "ignore transparent pixels when auto-activating layers"
-         Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblOptions 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "interaction options:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   1
-         Left            =   120
-         TabIndex        =   29
-         Top             =   60
-         Width           =   1650
-      End
-      Begin VB.Label lblOptions 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "display options:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   0
-         Left            =   6480
-         TabIndex        =   26
-         Top             =   60
-         Width           =   1335
       End
    End
    Begin VB.Label lblCategory 
