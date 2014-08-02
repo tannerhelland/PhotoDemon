@@ -18,13 +18,17 @@ Attribute VB_Exposed = False
 'Last updated: 11/June/14
 'Last update: start migrating public variables into the imgStorage scripting dictionary
 '
-'The pdImage class is used to store information on each image loaded by the user.  One copy of this
-' class exists for each loaded image.  These copies are stored in the pdImages() array, which is declared
-' in the MDIWindow module.
+'The pdImage class is used to store information on each image loaded by the user.  As such, one instance of this class
+' exists for each loaded image.  These instances are stored in the public pdImages() array.
 '
-'The purpose of this class is to store a bunch of variables related to a given image - things like size, zoom,
-' name, file path, format containing form, Undo/Redo tracking - as well as an array of pdLayer objects, which
-' comprise the actual image data.
+'This class doesn't do a lot of its own processing.  At present, it's mainly just a container for key image properties,
+' e.g. size, name, file path, format, Undo/Redo tracking - as well as the all-important array of pdLayer objects that
+' comprise the image's actual bitmap data.
+'
+'Generally speaking, this class should not be used separate from its parent pdImages() array.  If you need access to
+' a temporary image, use pdDIB, or if layer interactions are required, a single pdLayer instance (and its corresponding
+' layerDIB).  This class is quite heavy as it must track things like metadata, undo/redo handling, and other items,
+' so avoid using it for any temporary image operations.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -110,7 +114,7 @@ Option Explicit
     Public selectionActive As Boolean
     
     'Metadata handler/storage class.  This class is automatically filled with an image file's metadata at load-time.
-    ' NOTE: EXIFTOOL IS REQUIRED FOR METADATA HANDLING.
+    ' NOTE: THE EXIFTOOL PLUGIN IS REQUIRED FOR METADATA HANDLING.
     Public imgMetadata As pdMetadata
     
     'All Undo/Redo actions are handled through this publicly available Undo/Redo handler class
@@ -125,16 +129,16 @@ Option Explicit
     'Current layer.  Layers in PD are zero-based, with the 0 layer being created by default when a pdImage is created.
     ' To ensure proper behavior for things like caching viewports, this value is not publicly accessible - you must access
     ' it via the relevant get/set functions.
-    Private curLayer As Long
+    Private m_curLayer As Long
     
     'Total number of layers EVER created for this image.  This is used to assign canonical layer IDs to individual layers.
     ' It has no relation to layer position or order, and will be constant for the life of both the layer itself, and this
     ' pdImage object (including persistence when saving to/from file).
-    Private numOfLayersEverCreated As Long
+    Private m_numOfLayersEverCreated As Long
     
-    'Number of ACTIVE layers in the current image.  This is equal to or less than numOfLayers, above.  Note that it is not
+    'Number of ACTIVE layers in the current image.  This is equal to or less than m_numOfLayers, above.  Note that it is not
     ' zero-based; e.g. right after an image file is loaded, this will be set to 1.
-    Private numOfLayers As Long
+    Private m_numOfLayers As Long
     
     'Image compositor.  Previously, all compositing was done internally, but as compositing has grown more complex, I have decided
     ' to move all compositing work to an external class (to keep pdImage from getting too bloated).
@@ -153,39 +157,39 @@ Option Explicit
 Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As Long
 
     'Start by seeing if the image has zero layers.  If it does, we can ignore layerPosition entirely.
-    If numOfLayersEverCreated = 0 Then
+    If m_numOfLayersEverCreated = 0 Then
     
         'Make sure the current layer pointer is correct
-        curLayer = 0
+        m_curLayer = 0
         
     'The layer has images.  Extra work is involved
     Else
 
         'If no layer has been specified, insert the new layer above the requested layer
-        If layerPosition = -1 Then curLayer = curLayer + 1 Else curLayer = layerPosition + 1
+        If layerPosition = -1 Then m_curLayer = m_curLayer + 1 Else m_curLayer = layerPosition + 1
         
         'Resize the layers array by one, and shift all existing layers upward.
-        ReDim Preserve imgLayers(0 To numOfLayers + 1) As pdLayer
+        ReDim Preserve imgLayers(0 To m_numOfLayers + 1) As pdLayer
         
         Dim i As Long
-        For i = UBound(imgLayers) To curLayer Step -1
+        For i = UBound(imgLayers) To m_curLayer Step -1
             Set imgLayers(i) = imgLayers(i - 1)
         Next i
         
     End If
     
     'Initialize the new layer.  (This should already have been done at creation time, but it doesn't hurt to make sure.)
-    Set imgLayers(curLayer) = New pdLayer
+    Set imgLayers(m_curLayer) = New pdLayer
     
     'Assign the layer a canonical ID value.
-    imgLayers(curLayer).assignLayerID numOfLayersEverCreated
+    imgLayers(m_curLayer).assignLayerID m_numOfLayersEverCreated
     
     'Increment our internal layer counts
-    numOfLayersEverCreated = numOfLayersEverCreated + 1
-    numOfLayers = numOfLayers + 1
+    m_numOfLayersEverCreated = m_numOfLayersEverCreated + 1
+    m_numOfLayers = m_numOfLayers + 1
     
     'Return the new layer's ID value (which is the number of layers ever created for this image)
-    createBlankLayer = numOfLayersEverCreated - 1
+    createBlankLayer = m_numOfLayersEverCreated - 1
 
 End Function
 
@@ -198,8 +202,8 @@ Public Function getCompositeImageColorDepth() As Long
     getCompositeImageColorDepth = 32
     
     'Single-layer images are much easier to deal with!
-    'If numOfLayers = 0 Then
-    '    getCompositeImageColorDepth = imgLayers(curLayer).layerDIB.getDIBColorDepth
+    'If m_numOfLayers = 0 Then
+    '    getCompositeImageColorDepth = imgLayers(m_curLayer).layerDIB.getDIBColorDepth
     'Else
         'Use magic to determine the ideal color depth of the composited image??
     'End If
@@ -228,37 +232,37 @@ End Sub
 
 'Get the currently active layer index
 Public Function getActiveLayerIndex() As Long
-    getActiveLayerIndex = curLayer
+    getActiveLayerIndex = m_curLayer
 End Function
 
 'Get the currently active layer canonical ID
 Public Function getActiveLayerID() As Long
-    If curLayer > UBound(imgLayers) Then
+    If m_curLayer > UBound(imgLayers) Then
         getActiveLayerID = imgLayers(0).getLayerID
     Else
-        getActiveLayerID = imgLayers(curLayer).getLayerID
+        getActiveLayerID = imgLayers(m_curLayer).getLayerID
     End If
 End Function
 
 'Get the number of layers in this image.  (Note: this function might return zero, so handle that condition correctly
 ' in calling functions!)
 Public Function getNumOfLayers() As Long
-    getNumOfLayers = numOfLayers
+    getNumOfLayers = m_numOfLayers
 End Function
 
 'Retrieve a reference to the currently active layer's DIB.  This is effectively a shortcut function when we
 ' need quick access to the current layer's DIB.
 Public Function getActiveDIB() As pdDIB
-    Set getActiveDIB = imgLayers(curLayer).layerDIB
+    Set getActiveDIB = imgLayers(m_curLayer).layerDIB
 End Function
 
 'Retrieve the currently active layer
 Public Function getActiveLayer() As pdLayer
-    If numOfLayers > 0 Then
+    If m_numOfLayers > 0 Then
         
         'Failsafe check for a valid current layer
-        If curLayer > UBound(imgLayers) Then curLayer = 0
-        Set getActiveLayer = imgLayers(curLayer)
+        If m_curLayer > UBound(imgLayers) Then m_curLayer = 0
+        Set getActiveLayer = imgLayers(m_curLayer)
         
     Else
         Set getActiveLayer = Nothing
@@ -271,7 +275,7 @@ Public Sub setActiveLayerByID(ByVal newActiveLayerID As Long)
     Dim i As Long
     For i = 0 To UBound(imgLayers)
         If imgLayers(i).getLayerID = newActiveLayerID Then
-            curLayer = i
+            m_curLayer = i
             Exit For
         End If
     Next i
@@ -284,9 +288,9 @@ Public Sub setActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
 
     'Validate the incoming layer index
     If newActiveLayerIndex < 0 Then newActiveLayerIndex = 0
-    If newActiveLayerIndex > numOfLayers - 1 Then newActiveLayerIndex = numOfLayers - 1
+    If newActiveLayerIndex > m_numOfLayers - 1 Then newActiveLayerIndex = m_numOfLayers - 1
     
-    curLayer = newActiveLayerIndex
+    m_curLayer = newActiveLayerIndex
     
 End Sub
 
@@ -311,7 +315,7 @@ End Function
 Public Function getLayerByIndex(ByVal layerIndex As Long) As pdLayer
     
     'As a failsafe, validate the incoming layer index
-    If layerIndex > numOfLayers - 1 Then layerIndex = numOfLayers - 1
+    If layerIndex > m_numOfLayers - 1 Then layerIndex = m_numOfLayers - 1
     If layerIndex < 0 Then layerIndex = 0
     
     'Return the requested layer
@@ -341,7 +345,7 @@ Public Sub moveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Bo
 
     'Before doing anything else, make sure the requested move is a valid one
     If moveLayerUp Then
-        If srcLayerIndex = numOfLayers - 1 Then Exit Sub
+        If srcLayerIndex = m_numOfLayers - 1 Then Exit Sub
     Else
         If srcLayerIndex = 0 Then Exit Sub
     End If
@@ -373,7 +377,7 @@ Public Function moveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dst
         Exit Function
     End If
         
-    If (srcLayerIndex < 0) Or (srcLayerIndex > numOfLayers - 1) Then
+    If (srcLayerIndex < 0) Or (srcLayerIndex > m_numOfLayers - 1) Then
         moveLayerToArbitraryIndex = False
         Exit Function
     End If
@@ -381,7 +385,7 @@ Public Function moveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dst
     'Validate the destination layer differently; if it lies out-of-bounds, automatically correct it to the nearest
     ' relevant position.
     If dstLayerIndex < 0 Then dstLayerIndex = 0
-    If dstLayerIndex > numOfLayers - 1 Then dstLayerIndex = numOfLayers - 1
+    If dstLayerIndex > m_numOfLayers - 1 Then dstLayerIndex = m_numOfLayers - 1
     
     'We now know several things:
     ' 1) srcLayerIndex and dstLayerIndex are not the same
@@ -436,20 +440,20 @@ End Sub
 Public Sub deleteLayerByIndex(ByVal srcLayerIndex As Long)
 
     'Validate the layer index
-    If srcLayerIndex < 0 Or srcLayerIndex >= numOfLayers Then Exit Sub
+    If srcLayerIndex < 0 Or srcLayerIndex >= m_numOfLayers Then Exit Sub
     
     'If this is the last remaining layer, exit
-    If numOfLayers = 1 Then Exit Sub
+    If m_numOfLayers = 1 Then Exit Sub
     
     'Shift all layer references above this one downward
     Dim i As Long
-    For i = srcLayerIndex To numOfLayers - 2
+    For i = srcLayerIndex To m_numOfLayers - 2
         Set imgLayers(i) = imgLayers(i + 1)
     Next i
     
     'Shrink the layers array
-    numOfLayers = numOfLayers - 1
-    ReDim Preserve imgLayers(0 To numOfLayers - 1) As pdLayer
+    m_numOfLayers = m_numOfLayers - 1
+    ReDim Preserve imgLayers(0 To m_numOfLayers - 1) As pdLayer
 
 End Sub
 
@@ -493,9 +497,9 @@ Public Function writeExternalData(ByRef dstFilename As String, Optional ByVal fi
     xmlEngine.writeTag "OriginalFileFormat", originalFileFormat
     xmlEngine.writeTag "CurrentFileFormat", currentFileFormat
     xmlEngine.writeTag "OriginalColorDepth", originalColorDepth
-    xmlEngine.writeTag "numOfLayersEverCreated", numOfLayersEverCreated
-    xmlEngine.writeTag "numOfLayers", numOfLayers
-    xmlEngine.writeTag "curLayer", curLayer
+    xmlEngine.writeTag "numOfLayersEverCreated", m_numOfLayersEverCreated
+    xmlEngine.writeTag "numOfLayers", m_numOfLayers
+    xmlEngine.writeTag "curLayer", m_curLayer
     
     'Next comes conditional data, which may not exist in the scripting dictionary.  If it's available, we'll write it out.
     If imgStorage.Exists("pngBackgroundColor") Then xmlEngine.writeTag "pngBackgroundColor", imgStorage.Item("pngBackgroundColor")
@@ -586,9 +590,9 @@ Public Function readExternalData(ByRef srcFilename As String, Optional ByVal fil
         End If
         
         'Finally, retrieve layer values from the file
-        numOfLayersEverCreated = xmlEngine.getUniqueTag_Long("numOfLayersEverCreated")
-        numOfLayers = xmlEngine.getUniqueTag_Long("numOfLayers")
-        curLayer = xmlEngine.getUniqueTag_Long("curLayer")
+        m_numOfLayersEverCreated = xmlEngine.getUniqueTag_Long("numOfLayersEverCreated")
+        m_numOfLayers = xmlEngine.getUniqueTag_Long("numOfLayers")
+        m_curLayer = xmlEngine.getUniqueTag_Long("curLayer")
         
         'If this is a standard, destructive load, prepare our image layer array to receive the upcoming layer data.
         ' (Otherwise, leave it as it is, because the calling function will simply reorder it for us.)
@@ -596,10 +600,10 @@ Public Function readExternalData(ByRef srcFilename As String, Optional ByVal fil
         
             'Now that all data has been read, we can initialize our layers array.  (The calling function will presumably proceed to
             ' fill each layer with usable data, because we can't do that here!)
-            ReDim imgLayers(0 To numOfLayers - 1) As pdLayer
+            ReDim imgLayers(0 To m_numOfLayers - 1) As pdLayer
             
             Dim i As Long
-            For i = 0 To numOfLayers - 1
+            For i = 0 To m_numOfLayers - 1
                 Set imgLayers(i) = New pdLayer
             Next i
             
@@ -885,12 +889,12 @@ Private Sub Class_Initialize()
     Set imgLayers(0) = New pdLayer
     
     'The current layer marker always starts at zero (which is considered the background layer).  To check for the case of
-    ' no active layers, do not use curLayer, use
-    curLayer = 0
+    ' no active layers, do not use m_curLayer, use m_numOfLayers.
+    m_curLayer = 0
     
     'By default, list this image as having zero layers
-    numOfLayers = 0
-    numOfLayersEverCreated = 0
+    m_numOfLayers = 0
+    m_numOfLayersEverCreated = 0
     
     'Initialize this image's compositor
     Set imgCompositor = New pdCompositor
@@ -930,7 +934,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     If useMergedImage Then
         getCompositedImage srcDIB, True
     Else
-        retrieveNullPaddedLayer srcDIB, curLayer
+        retrieveNullPaddedLayer srcDIB, m_curLayer
     End If
     
     'Selections can be one of several types.  Right now, we don't give special handling to simple rectangular selections - all selections
@@ -1044,7 +1048,7 @@ End Function
 Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boolean
 
     'If this image does not contain an active selection, exit now.
-    If (Not IsActive) Or (Not selectionActive) Or (targetLayerIndex < 0) Or (targetLayerIndex >= numOfLayers) Then
+    If (Not IsActive) Or (Not selectionActive) Or (targetLayerIndex < 0) Or (targetLayerIndex >= m_numOfLayers) Then
         eraseProcessedSelection = False
         Exit Function
     End If
@@ -1172,7 +1176,7 @@ Public Function getNumOfVisibleLayers() As Long
     Dim i As Long, visLayerCount As Long
     visLayerCount = 0
     
-    For i = 0 To numOfLayers - 1
+    For i = 0 To m_numOfLayers - 1
         If imgLayers(i).getLayerVisibility Then visLayerCount = visLayerCount + 1
     Next i
     
@@ -1185,7 +1189,7 @@ Public Function getNumOfHiddenLayers() As Long
     Dim i As Long, hidLayerCount As Long
     hidLayerCount = 0
     
-    For i = 0 To numOfLayers - 1
+    For i = 0 To m_numOfLayers - 1
         If Not imgLayers(i).getLayerVisibility Then hidLayerCount = hidLayerCount + 1
     Next i
     
@@ -1200,7 +1204,7 @@ Public Function estimateRAMUsage() As Long
 
     Dim i As Long
     
-    For i = 0 To numOfLayers - 1
+    For i = 0 To m_numOfLayers - 1
         
         'Layers provide their own RAM estimation, based on their current cache state, layer DIB, active styles, and more
         estimateRAMUsage = estimateRAMUsage + imgLayers(i).estimateRAMUsage

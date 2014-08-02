@@ -342,12 +342,20 @@ End Sub
 Public Sub requestNewMask()
 
     If (Not containingPDImage Is Nothing) Then
+        
         updateInternalCoords
+        
+        'Transformable selections are rendered using polygon geometry; as such, redrawing them requires invoking
+        ' whatever polygon code we used previously.
         If isTransformable Then
             createSelectionMask
+            
+        'Non-transformable selections are simply bitmaps.  We will pad them to match the new image size, but other
+        ' than that, we do not change their existing composition.
         Else
         
         End If
+        
     End If
 
 End Sub
@@ -1486,7 +1494,7 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
             dstBottom = dstBottom + 1
         
         'Highlight style (Paint.NET)
-        Case 1 To 2
+        Case 1, 2
         
             'Start by acquiring a pointer to the target DIB's pixel bits
             prepDIBSafeArray dstDIB, tmpSA
@@ -1570,42 +1578,6 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
             
             dstRight = dstRight + 1
             dstBottom = dstBottom + 1
-            
-        'NOTE: focus rectangle is not used at present, so this technique may or may not work.  I simply keep it around for reference's sake.
-        'Focus rectangle ("Simple" style)
-        Case Else
-        
-            'Store the destination DC to a local variable
-            Dim dstDC As Long
-            dstDC = dstDIB.getDIBDC
-            
-            'Since we'll be using the API to draw our selection area, we need to initialize several brushes
-            Dim hPen As Long, hOldPen As Long
-            
-            hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
-            hOldPen = SelectObject(dstDC, hPen)
-            
-            'Get a transparent brush
-            Dim hBrush As Long, hOldBrush As Long
-            hBrush = GetStockObject(NULL_BRUSH)
-            hOldBrush = SelectObject(dstDC, hBrush)
-            
-            'Change the rasterOp to XOR (this will invert the line)
-            SetROP2 dstDC, vbSrcInvert
-                        
-            'Draw the rectangle
-            Rectangle dstDC, dstLeft, dstTop, dstRight, dstBottom
-            
-            'Restore the normal COPY rOp
-            SetROP2 dstDC, vbSrcCopy
-            
-            'Remove the brush from the DC
-            SelectObject dstDC, hOldBrush
-            DeleteObject hBrush
-            
-            'Remove the pen from the DC
-            SelectObject dstDC, hOldPen
-            DeleteObject hPen
                     
     End Select
         

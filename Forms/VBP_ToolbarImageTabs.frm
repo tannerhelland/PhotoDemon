@@ -421,6 +421,9 @@ End Sub
 
 Private Sub Form_Load()
 
+    'Initialize the back buffer
+    Set bufferDIB = New pdDIB
+
     'Reset the thumbnail array
     numOfThumbnails = 0
     ReDim imgThumbnails(0 To numOfThumbnails) As thumbEntry
@@ -771,7 +774,6 @@ End Sub
 Private Sub redrawToolbar(Optional ByVal fitCurrentThumbOnScreen As Boolean = False)
 
     'Recreate the toolbar buffer
-    Set bufferDIB = New pdDIB
     bufferDIB.createBlank m_BufferWidth, m_BufferHeight, 24, ConvertSystemColor(vb3DShadow)
     
     'Horizontal/vertical layout changes the constraining dimension (e.g. the dimension used to detect if the number
