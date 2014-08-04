@@ -90,7 +90,7 @@ Private Type TEXTMETRIC
     tmCharSet As Byte
 End Type
 
-'API technique for drawing a focus rectangle; USED ONLY FOR DEBUGGING AT PRESENT (see the Paint method for details)
+'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
 Private Type RECT
     Left As Long
     Top As Long
@@ -405,7 +405,6 @@ Private Sub updateControlSize()
     'The control's size is pretty simple: an x-offset (for the selection circle), plus the size of the caption itself,
     ' and a one-pixel border around the edges.
     UserControl.Height = (fontY * 2 + captionHeight + 2) * TwipsPerPixelYFix
-    UserControl.Width = (fontX + captionWidth + 2) * TwipsPerPixelXFix
     
     'Remove our font object from the buffer DC, because we are about to recreate it
     curFont.releaseFromDC
@@ -454,14 +453,13 @@ Private Sub PaintUC()
     End If
     
     'Colors used throughout this paint function are determined primarily control enablement
-    ' TODO: tie this into PD's central themer, instead of using custom values for this control!
     Dim chkBoxColorBorder, chkBoxColorFill As Long
     If Me.Enabled Then
-        chkBoxColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_NONINTERACTIVE, PDTCV_NORMAL)
-        chkBoxColorFill = g_Themer.getThemeColor(PDTC_ACCENT_INTERACTIVE, PDTCV_NORMAL)
+        chkBoxColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+        chkBoxColorFill = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
     Else
-        chkBoxColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_INTERACTIVE, PDTCV_DISABLED)
-        chkBoxColorFill = g_Themer.getThemeColor(PDTC_ACCENT_INTERACTIVE, PDTCV_DISABLED)
+        chkBoxColorBorder = g_Themer.getThemeColor(PDTC_DISABLED)
+        chkBoxColorFill = g_Themer.getThemeColor(PDTC_DISABLED)
     End If
     
     'If a focus rect is required (because focus was set via keyboard, not mouse), render it now.
@@ -510,13 +508,13 @@ Private Sub PaintUC()
     If Me.Enabled Then
     
         If m_MouseInsideUC Then
-            curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT, PDTCV_HIGHLIGHT)
+            curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_HYPERLINK)
         Else
-            curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT, PDTCV_NORMAL)
+            curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
         End If
         
     Else
-        curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT, PDTCV_DISABLED)
+        curFont.setFontColor g_Themer.getThemeColor(PDTC_DISABLED)
     End If
     
     'Failsafe check for designer mode
