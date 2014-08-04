@@ -37,43 +37,44 @@ Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hW
 ' to enable centralized coloration of a few UCs.  The end goal is to provide the smallest possible subset of colors
 ' necessary to render PD's various UI elements.
 Private Const numThemeColors As Long = 14
-Private Const numThemeColorVariants As Long = 5
 
 Public Enum PD_THEME_COLOR
-    PDTC_ACCENT_DEFAULT = 0
-    PDTC_ACCENT_INTERACTIVE = 1
-    PDTC_ACCENT_INVALID = 2
-    PDTC_ACCENT_NONINTERACTIVE = 3
-    PDTC_ACCENT_OK = 4
     
-    PDTC_BACKGROUND_CANVAS = 5
-    PDTC_BACKGROUND_COMMANDBAR = 6
-    PDTC_BACKGROUND_DEFAULT = 7
-    PDTC_BACKGROUND_DIALOG = 8
+    'Accent color variations
+    PDTC_ACCENT_DEFAULT
+    PDTC_ACCENT_HIGHLIGHT
+    PDTC_ACCENT_SHADOW
     
-    PDTC_TEXT_DEFAULT = 9
-    PDTC_TEXT_HYPERLINK = 10
-    PDTC_TEXT_INTERACTIVE = 11
-    PDTC_TEXT_LABEL = 12
-    PDTC_TEXT_TITLE = 13
+    'Non-interactive variations (used to render control outlines, etc)
+    PDTC_GRAY_DEFAULT
+    PDTC_GRAY_HIGHLIGHT
+    PDTC_GRAY_SHADOW
+    
+    'Background variations
+    PDTC_BACKGROUND_DEFAULT
+    PDTC_BACKGROUND_CANVAS
+    PDTC_BACKGROUND_COMMANDBAR
+    
+    'Text variations
+    PDTC_TEXT_DEFAULT
+    PDTC_TEXT_HYPERLINK
+    PDTC_TEXT_TITLE
+    PDTC_TEXT_INVERT
+    
+    'Misc requirements
+    PDTC_DISABLED
+    PDTC_OK_GREEN
+    PDTC_CANCEL_RED
+    PDTC_FOCUS_RECT
+    
 End Enum
 
 #If False Then
-    Private Const PDTC_ACCENT_DEFAULT = 0, PDTC_ACCENT_INTERACTIVE = 1, PDTC_ACCENT_INVALID = 2, PDTC_ACCENT_NONINTERACTIVE = 3, PDTC_ACCENT_OK = 4
-    Private Const PDTC_BACKGROUND_CANVAS = 5, PDTC_BACKGROUND_COMMANDBAR = 6, PDTC_BACKGROUND_DEFAULT = 7
-    Private Const PDTC_TEXT_DEFAULT = 9, PDTC_TEXT_HYPERLINK = 10, PDTC_TEXT_INTERACTIVE = 11, PDTC_TEXT_LABEL = 12, PDTC_TEXT_TITLE = 13
-#End If
-
-Public Enum PD_THEME_COLOR_VARIANT
-    PDTCV_NORMAL = 0
-    PDTCV_HIGHLIGHT = 1
-    PDTCV_INVERT = 2
-    PDTCV_SHADOW = 3
-    PDTCV_DISABLED = 4
-End Enum
-
-#If False Then
-    Private Const PDTCV_NORMAL = 0, PDTCV_HIGHLIGHT = 1, PDTCV_INVERT = 2, PDTCV_SHADOW = 3, PDTCV_DISABLED = 4
+    Private Const PDTC_ACCENT_DEFAULT = 0, PDTC_ACCENT_HIGHLIGHT = 0, PDTC_ACCENT_SHADOW = 0
+    Private Const PDTC_GRAY_DEFAULT = 0, PDTC_GRAY_HIGHLIGHT = 0, PDTC_GRAY_SHADOW = 0
+    Private Const PDTC_BACKGROUND_DEFAULT = 0, PDTC_BACKGROUND_CANVAS = 0, PDTC_BACKGROUND_COMMANDBAR = 0
+    Private Const PDTC_TEXT_DEFAULT = 0, PDTC_TEXT_HYPERLINK = 0, PDTC_TEXT_TITLE = 0, PDTC_TEXT_INVERT = 0
+    Private Const PDTC_DISABLED = 0, PDTC_OK_GREEN = 0, PDTC_CANCEL_RED = 0, PDTC_FOCUS_RECT = 0
 #End If
 
 'As a broad advisement, themes are classified as:
@@ -103,110 +104,20 @@ Private cSubclass As cSelfSubHookCallback
 
 'Despite an identical name, this function does *not* use the Win32 API to retrieve a color from the system theme.
 ' Instead, it retrieves a color from PD's current theme color cache.
-Friend Function getThemeColor(ByVal colorType As PD_THEME_COLOR, Optional ByVal colorTypeVariant As PD_THEME_COLOR_VARIANT = PDTCV_NORMAL) As Long
+Friend Function getThemeColor(ByVal colorType As PD_THEME_COLOR) As Long
     
-    'Back up the original color type and variant, as we may make use of it if the requested color does not exist,
-    ' and we have to retrieve a match from PD's default theme color set.
-    Dim origColorType As PD_THEME_COLOR, origColorTypeVariant As PD_THEME_COLOR_VARIANT
-    origColorType = colorType
-    origColorTypeVariant = colorTypeVariant
+    'Returning a theme color is fairly trivial.  Start by seeing if the requested color is available.
+    getThemeColor = curThemeColors(colorType)
     
-    'Returning a theme color is fairly trivial.  Start by seeing if the requested variant is available.
-    getThemeColor = curThemeColors(colorType, colorTypeVariant)
+    'If the retrieved value is -1, that means that the current theme does not contain a value for this color.
+    ' Return PD's default value for this color.
+    If getThemeColor = -1 Then
     
-    Dim valueDoesNotExist As Boolean
-    valueDoesNotExist = False
-    
-    'If the retrieved value is -1, that means that the current theme does not supply a value for this type/variant combination.
-    ' (This isn't a bad thing; in fact, themes are not expected to provide variants for certain color types.)
-    If getThemeColor = -1 Then valueDoesNotExist = True
-    
-    'Because we use a cascading replacement system for color variations, we may need to cascade through several steps
-    ' in order to find a valid replacement color.  As such, we use a loop instead of an If/Then structure.
-    Do While valueDoesNotExist
-    
-        'If this is a default color type, we've got a problem.  Those values are supposed to always exist in a theme!
-        ' As a last resort, replace the color with PD's default color, at the originally requested variant.
-        If ((colorType = PDTC_ACCENT_DEFAULT) Or (colorType = PDTC_BACKGROUND_DEFAULT) Or (colorType = PDTC_TEXT_DEFAULT)) Then
+        'Default to the relevant PD default theme value.
+        getThemeColor = getDefaultPDColor(colorType)
         
-            'Start by replacing the color type with the original color type.  (It may have changed during a cascading search.)
-            colorType = origColorType
-            colorTypeVariant = origColorTypeVariant
-            
-            'HIGHLIGHT and SHADOW variants are not crucial for most tasks.  Try to replace them with the NORMAL variant.
-            If (colorTypeVariant = PDTCV_HIGHLIGHT) Or (colorTypeVariant = PDTCV_SHADOW) Then
-                getThemeColor = curThemeColors(colorType, PDTCV_NORMAL)
-                If getThemeColor >= 0 Then Exit Function
-            End If
-            
-            'If we made it all the way here, a color of the NORMAL, INVERT, or DISABLED types has been requested, but it
-            ' could not be located.  Default to the relevant PD default theme value.
-            getThemeColor = getDefaultPDColor(colorType, colorTypeVariant)
-            Exit Function
-            
-        'For non-normal variations, try to replace the request with the same variant of a related type.
-        ' Generally speaking, we try the following formula:
-        ' 1) If it's an obscure color type, try replacing it with a more common type, but same variant.
-        ' 2) If it's a common type, but a weird variant, try replacing it with a more normal variant of that type.
-        Else
-            
-            Select Case colorType
-            
-                'ACCENT variants
-                
-                'Interactive accents (generally blue) can be replaced by the default accent color
-                Case PDTC_ACCENT_INTERACTIVE
-                    colorType = PDTC_ACCENT_DEFAULT
-                    
-                '"INVALID" accents (generally red) can be replaced by the non-interactive accent color
-                Case PDTC_ACCENT_INVALID
-                    colorType = PDTC_ACCENT_NONINTERACTIVE
-                    
-                '"NONINTERACTIVE" accents (generally a more subdued version of the interactive accent) can be
-                ' replaced by the interactive variant, as necessary.
-                Case PDTC_ACCENT_NONINTERACTIVE
-                    colorType = PDTC_ACCENT_INTERACTIVE
-                    
-                '"OK" accents (generally green) can be replaced by the interactive accent color
-                Case PDTC_ACCENT_OK
-                    colorType = PDTC_ACCENT_INTERACTIVE
-                    
-                'BACKGROUND variants
-                
-                'Various background types will all revert to the default background color if they can't be found
-                Case PDTC_BACKGROUND_CANVAS, PDTC_BACKGROUND_COMMANDBAR, PDTC_BACKGROUND_DIALOG
-                    colorType = PDTC_BACKGROUND_DEFAULT
-                    
-                'TEXT variants
-                
-                '"LABELS" revert to the default color type
-                Case PDTC_TEXT_LABEL
-                    colorType = PDTC_TEXT_DEFAULT
-                    
-                '"HYPERLINKS" revert to the default interactive color
-                Case PDTC_TEXT_HYPERLINK
-                    colorType = PDTC_TEXT_INTERACTIVE
-                    
-                '"INTERACTIVES" revert to the default color type
-                Case PDTC_TEXT_INTERACTIVE
-                    colorType = PDTC_TEXT_DEFAULT
-                    
-                '"TITLES" revert to the default "LABEL" color
-                Case PDTC_TEXT_TITLE
-                    colorType = PDTC_TEXT_LABEL
-                    
-            End Select
-            
-            'Retrieve the substitute color type
-            getThemeColor = curThemeColors(colorType, colorTypeVariant)
-            
-        End If
+    End If
         
-        'If the retrieved color still does not exist, we'll need to cascade further
-        If getThemeColor >= 0 Then valueDoesNotExist = False Else valueDoesNotExist = True
-    
-    Loop
-    
 End Function
 
 'When a container object needs to render contained controls transparently, register it using this function
@@ -229,7 +140,7 @@ End Sub
 Private Sub Class_Initialize()
 
     'Prepare our color cache
-    ReDim curThemeColors(0 To numThemeColors - 1, 0 To numThemeColorVariants - 1) As Long
+    ReDim curThemeColors(0 To numThemeColors - 1) As Long
     
     'Reset the color cache.  This is important, because 0 is a valid color, so we can't use it to indicate a
     ' missing theme entry.  Instead, we use -1 to represent a missing entry.  The color retrieval function
@@ -245,11 +156,9 @@ End Sub
 'Reset the theme color cache to all -1 values.
 Private Sub resetThemeCache()
 
-    Dim i As Long, j As Long
+    Dim i As Long
     For i = 0 To numThemeColors - 1
-    For j = 0 To numThemeColorVariants - 1
-        curThemeColors(i, j) = -1
-    Next j
+        curThemeColors(i) = -1
     Next i
 
 End Sub
@@ -261,18 +170,16 @@ Private Sub loadDefaultPDTheme()
     curThemeContrast = THEME_LIGHT
     
     'Loop through the curThemeColors array, filling each entry with the PD default
-    Dim i As Long, j As Long
+    Dim i As Long
     For i = 0 To numThemeColors - 1
-    For j = 0 To numThemeColorVariants - 1
-        curThemeColors(i, j) = getDefaultPDColor(i, j)
-    Next j
+        curThemeColors(i) = getDefaultPDColor(i)
     Next i
 
 End Sub
 
 'Retrieve a default PD theme color.  These values are hard-coded, and will be superceded by any values supplied
 ' by a user-selected theme.
-Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR, Optional ByVal colorTypeVariant As PD_THEME_COLOR_VARIANT = PDTCV_NORMAL) As Long
+Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
 
     'LIGHT THEME DEFAULTS
     If curThemeContrast = THEME_LIGHT Then
@@ -303,93 +210,56 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR, Optional B
         
         Select Case colorType
         
-            'Accent colors
+            'Accent color variations
+            
+            'Accent lines, etc
             Case PDTC_ACCENT_DEFAULT
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("3296dc")
+            
+            'Slider track, large contiguous blocks of color
+            Case PDTC_ACCENT_HIGHLIGHT
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3cafe6")
                 
-            Case PDTC_ACCENT_INTERACTIVE
+            'Small or heavily aliased items (e.g. check box check, radio button dot)
+            Case PDTC_ACCENT_SHADOW
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3270dc")
             
-                If (colorTypeVariant = PDTCV_NORMAL) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3270dc")        '#3296dc??
-                    
-                ElseIf (colorTypeVariant = PDTCV_HIGHLIGHT) Then
-                    'getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3296dc")
-                    
-                ElseIf (colorTypeVariant = PDTCV_SHADOW) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3296dc")
-                    
-                ElseIf (colorTypeVariant = PDTCV_INVERT) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+            
+            'Non-interactive variations (used to render control outlines, etc)
+            Case PDTC_GRAY_DEFAULT
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#7e8c92")
                 
-                ElseIf (colorTypeVariant = PDTCV_DISABLED) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
-                
-                End If
+            Case PDTC_GRAY_HIGHLIGHT
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
             
-            Case PDTC_ACCENT_INVALID
+            Case PDTC_GRAY_SHADOW
             
-            Case PDTC_ACCENT_NONINTERACTIVE
-            
-                If (colorTypeVariant = PDTCV_NORMAL) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#7e8c92")
-                    
-                ElseIf (colorTypeVariant = PDTCV_HIGHLIGHT) Or (colorTypeVariant = PDTCV_SHADOW) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#7e8c92")
-                    
-                ElseIf (colorTypeVariant = PDTCV_INVERT) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
-                
-                ElseIf (colorTypeVariant = PDTCV_DISABLED) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
-                
-                End If
-            
-            Case PDTC_ACCENT_OK
-            
-            'Background colors
-            Case PDTC_BACKGROUND_CANVAS
-            
-            Case PDTC_BACKGROUND_COMMANDBAR
-            
+            'Background variations
             Case PDTC_BACKGROUND_DEFAULT
                 getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+                
+            Case PDTC_BACKGROUND_CANVAS
+            Case PDTC_BACKGROUND_COMMANDBAR
             
-            Case PDTC_BACKGROUND_DIALOG
-            
-            'Text colors
+            'Text variations
             Case PDTC_TEXT_DEFAULT
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#404040")
                 
-                If (colorTypeVariant = PDTCV_NORMAL) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#404040")
-                    
-                ElseIf (colorTypeVariant = PDTCV_HIGHLIGHT) Or (colorTypeVariant = PDTCV_SHADOW) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3170c0")
-                
-                ElseIf (colorTypeVariant = PDTCV_INVERT) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
-                
-                ElseIf (colorTypeVariant = PDTCV_DISABLED) Then
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
-                
-                End If
-            
             Case PDTC_TEXT_HYPERLINK
-            
-            Case PDTC_TEXT_INTERACTIVE
-            
-'                If (colorTypeVariant = PDTCV_NORMAL) Or (colorTypeVariant = PDTCV_HIGHLIGHT) Or (colorTypeVariant = PDTCV_SHADOW) Then
-'                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3170c0")
-'
-'                ElseIf (colorTypeVariant = PDTCV_INVERT) Then
-'                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#FFFFFF")
-'
-'                ElseIf (colorTypeVariant = PDTCV_DISABLED) Then
-'                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#808080")
-'
-'                End If
-            
-            Case PDTC_TEXT_LABEL
-            
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3170c0")
+                
             Case PDTC_TEXT_TITLE
+            
+            Case PDTC_TEXT_INVERT
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+            
+            'Misc colors
+            Case PDTC_DISABLED
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
+            
+            Case PDTC_OK_GREEN
+            Case PDTC_CANCEL_RED
+            Case PDTC_FOCUS_RECT
         
         End Select
     
