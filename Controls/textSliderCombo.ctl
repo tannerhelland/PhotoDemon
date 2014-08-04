@@ -111,6 +111,16 @@ Option Explicit
 ' - Change (which triggers when either the scrollbar or text box is modified in any way)
 Public Event Change()
 
+'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
+Private Type RECT
+    Left As Long
+    Top As Long
+    Right As Long
+    Bottom As Long
+End Type
+
+Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
+
 'This control supports font setting for the text box
 Private WithEvents mFont As StdFont
 Attribute mFont.VB_VarHelpID = -1
@@ -599,6 +609,10 @@ Private Sub UserControl_Initialize()
         cMouseEvents.setSystemCursor IDC_HAND
         cMouseEvents.requestKeyTracking picScroll.hWnd
         cMouseEvents.setKeyTrackers picScroll.hWnd, True
+    
+    'In design mode, initialize a base theming class, so our paint functions don't fail
+    Else
+        Set g_Themer = New pdVisualThemes
     End If
     
     'Update the control-level track and slider diameters to reflect current screen DPI
@@ -789,9 +803,9 @@ Private Sub redrawSlider()
     'Set colors first.  In the future, these will be handled via a theming engine (so PD can support light-on-dark or dark-on-light
     ' themes, etc), but for now, set them manually.
     Dim trackColor As Long, sliderBackgroundColor As Long, sliderEdgeColor As Long
-    trackColor = RGB(177, 186, 194)
-    sliderBackgroundColor = RGB(255, 255, 255)
-    sliderEdgeColor = RGB(60, 175, 230)
+    trackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)       'RGB(177, 186, 194)
+    sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)         'RGB(255, 255, 255)
+    sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)     'RGB(60, 175, 230)
     
     'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
     Dim relevantSliderPosX As Single, relevantSliderPosY As Single
@@ -869,16 +883,37 @@ Private Sub redrawSlider()
         GDI_Plus.GDIPlusDrawCircleToDC tmpDIB.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
         
     End If
-    
+        
     'Composite the slider buffer against the specified background color.  In the future, the background color will be set by PD's theming engine,
     ' but for now it is hard-coded against the standard "window background" color.
     Dim backDIB As pdDIB
     Set backDIB = New pdDIB
-    backDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, ConvertSystemColor(vbWindowBackground)
+    backDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
     tmpDIB.alphaBlendToDC backDIB.getDIBDC, 255
-    
+        
     'Flip the fully composited scroller image onto the owner picture box
     BitBlt picScroll.hDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, backDIB.getDIBDC, 0, 0, vbSrcCopy
+    
+    'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
+    If Not g_UserModeFix Then
+        
+        UserControl.Picture = LoadPicture("")
+        
+        Dim tmpRect As RECT
+        With tmpRect
+            .Left = 0
+            .Top = 0
+            .Right = UserControl.ScaleWidth
+            .Bottom = UserControl.ScaleHeight
+        End With
+        
+        DrawFocusRect UserControl.hDC, tmpRect
+        
+        UserControl.Picture = UserControl.Image
+        UserControl.Refresh
+
+    End If
+    
     picScroll.Picture = picScroll.Image
     picScroll.Refresh
     
