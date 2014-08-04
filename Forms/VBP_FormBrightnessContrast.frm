@@ -43,13 +43,13 @@ Begin VB.Form FormBrightnessContrast
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkSample 
-      Height          =   480
+      Height          =   300
       Left            =   6120
       TabIndex        =   3
       Top             =   3600
-      Width           =   5445
+      Width           =   5685
       _ExtentX        =   9604
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "sample image for true contrast (slower but more accurate)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -78,9 +78,6 @@ Begin VB.Form FormBrightnessContrast
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -255
-      Max             =   255
-      Value           =   -10
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -90,6 +87,9 @@ Begin VB.Form FormBrightnessContrast
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -255
+      Max             =   255
+      Value           =   -10
    End
    Begin PhotoDemon.sliderTextCombo sltContrast 
       Height          =   495
@@ -99,9 +99,6 @@ Begin VB.Form FormBrightnessContrast
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      Value           =   10
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -111,6 +108,9 @@ Begin VB.Form FormBrightnessContrast
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      Value           =   10
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True

@@ -87,7 +87,7 @@ Begin VB.Form FormNewLayer
       Left            =   480
       TabIndex        =   4
       Top             =   1560
-      Width           =   1380
+      Width           =   8820
       _ExtentX        =   2434
       _ExtentY        =   582
       Caption         =   "transparent"
@@ -109,7 +109,7 @@ Begin VB.Form FormNewLayer
       Left            =   480
       TabIndex        =   5
       Top             =   1920
-      Width           =   825
+      Width           =   8820
       _ExtentX        =   1455
       _ExtentY        =   582
       Caption         =   "black"
@@ -130,7 +130,7 @@ Begin VB.Form FormNewLayer
       Left            =   480
       TabIndex        =   6
       Top             =   2280
-      Width           =   855
+      Width           =   8820
       _ExtentX        =   1508
       _ExtentY        =   582
       Caption         =   "white"
@@ -151,7 +151,7 @@ Begin VB.Form FormNewLayer
       Left            =   480
       TabIndex        =   7
       Top             =   2640
-      Width           =   1560
+      Width           =   8820
       _ExtentX        =   2752
       _ExtentY        =   582
       Caption         =   "custom color:"
@@ -176,15 +176,14 @@ Begin VB.Form FormNewLayer
       curColor        =   16749332
    End
    Begin PhotoDemon.smartCheckBox chkAutoSelectLayer 
-      Height          =   480
+      Height          =   300
       Left            =   480
       TabIndex        =   11
       Top             =   4680
-      Width           =   3435
+      Width           =   8820
       _ExtentX        =   6059
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "make the new layer the active layer"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75

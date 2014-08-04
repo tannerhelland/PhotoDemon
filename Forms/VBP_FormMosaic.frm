@@ -44,13 +44,13 @@ Begin VB.Form FormPixelate
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkUnison 
-      Height          =   480
+      Height          =   300
       Left            =   6120
       TabIndex        =   4
       Top             =   3600
-      Width           =   2880
+      Width           =   5760
       _ExtentX        =   5080
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "keep both dimensions in sync"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -79,9 +79,6 @@ Begin VB.Form FormPixelate
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   1
-      Max             =   64
-      Value           =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -91,6 +88,9 @@ Begin VB.Form FormPixelate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   64
+      Value           =   2
    End
    Begin PhotoDemon.sliderTextCombo sltHeight 
       Height          =   495
@@ -100,9 +100,6 @@ Begin VB.Form FormPixelate
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   1
-      Max             =   64
-      Value           =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -112,6 +109,9 @@ Begin VB.Form FormPixelate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   64
+      Value           =   2
    End
    Begin VB.Label lblWidth 
       AutoSize        =   -1  'True

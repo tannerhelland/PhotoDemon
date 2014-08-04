@@ -43,15 +43,14 @@ Begin VB.Form FormContour
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkBlackBackground 
-      Height          =   570
+      Height          =   345
       Left            =   6120
       TabIndex        =   4
       Top             =   3120
-      Width           =   2670
+      Width           =   5655
       _ExtentX        =   4710
-      _ExtentY        =   1005
+      _ExtentY        =   609
       Caption         =   "use black background"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   12
@@ -72,15 +71,14 @@ Begin VB.Form FormContour
       _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkSmoothing 
-      Height          =   570
+      Height          =   345
       Left            =   6120
       TabIndex        =   5
       Top             =   3720
-      Width           =   3030
+      Width           =   5655
       _ExtentX        =   5345
-      _ExtentY        =   1005
+      _ExtentY        =   609
       Caption         =   "apply contour smoothing"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   12
@@ -99,9 +97,6 @@ Begin VB.Form FormContour
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   30
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -111,6 +106,9 @@ Begin VB.Form FormContour
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   30
+      Value           =   1
    End
    Begin VB.Label lblThickness 
       AutoSize        =   -1  'True

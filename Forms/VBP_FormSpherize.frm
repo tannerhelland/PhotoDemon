@@ -73,13 +73,13 @@ Begin VB.Form FormSpherize
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   7
       Top             =   4200
-      Width           =   1005
-      _ExtentX        =   1773
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -94,13 +94,13 @@ Begin VB.Form FormSpherize
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   9000
       TabIndex        =   8
       Top             =   4200
-      Width           =   975
-      _ExtentX        =   1720
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -121,9 +121,6 @@ Begin VB.Form FormSpherize
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -180
-      Max             =   180
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -133,6 +130,9 @@ Begin VB.Form FormSpherize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -180
+      Max             =   180
+      SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltOffsetY 
       Height          =   495
@@ -142,9 +142,6 @@ Begin VB.Form FormSpherize
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -154,6 +151,9 @@ Begin VB.Form FormSpherize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltOffsetX 
       Height          =   495
@@ -163,9 +163,6 @@ Begin VB.Form FormSpherize
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -175,17 +172,19 @@ Begin VB.Form FormSpherize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      SigDigits       =   1
    End
    Begin PhotoDemon.smartCheckBox chkRays 
-      Height          =   540
+      Height          =   300
       Left            =   6120
       TabIndex        =   13
       Top             =   5040
-      Width           =   3705
-      _ExtentX        =   5980
-      _ExtentY        =   847
+      Width           =   5565
+      _ExtentX        =   9816
+      _ExtentY        =   529
       Caption         =   "fill exterior with matching light rays"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75

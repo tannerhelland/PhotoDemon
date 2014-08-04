@@ -52,15 +52,14 @@ Begin VB.Form FormPosterize
       _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkDither 
-      Height          =   540
+      Height          =   330
       Left            =   6120
       TabIndex        =   2
-      Top             =   3960
-      Width           =   1770
+      Top             =   4080
+      Width           =   5655
       _ExtentX        =   3122
-      _ExtentY        =   953
+      _ExtentY        =   582
       Caption         =   "apply dithering"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -72,15 +71,14 @@ Begin VB.Form FormPosterize
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkSmartColors 
-      Height          =   540
+      Height          =   330
       Left            =   6120
       TabIndex        =   3
       Top             =   4560
-      Width           =   2415
+      Width           =   5655
       _ExtentX        =   4260
-      _ExtentY        =   953
+      _ExtentY        =   582
       Caption         =   "match existing colors"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25

@@ -55,12 +55,12 @@ Begin VB.Form FormKaleidoscope
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   7
       Top             =   5205
-      Width           =   1005
+      Width           =   2700
       _ExtentX        =   1773
       _ExtentY        =   635
       Caption         =   "quality"
@@ -76,12 +76,12 @@ Begin VB.Form FormKaleidoscope
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   8880
       TabIndex        =   8
       Top             =   5205
-      Width           =   975
+      Width           =   2700
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "speed"

@@ -160,15 +160,14 @@ Begin VB.Form FormBilateral
       Value           =   2
    End
    Begin PhotoDemon.smartCheckBox chkSeparable 
-      Height          =   480
+      Height          =   300
       Left            =   6000
       TabIndex        =   12
       Top             =   4680
-      Width           =   3750
+      Width           =   5775
       _ExtentX        =   6615
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "use estimation to improve performance"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75

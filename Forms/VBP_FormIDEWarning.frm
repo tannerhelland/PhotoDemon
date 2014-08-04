@@ -26,13 +26,13 @@ Begin VB.Form dialog_IDEWarning
    ScaleWidth      =   603
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.smartCheckBox chkRepeat 
-      Height          =   480
-      Left            =   3120
+      Height          =   300
+      Left            =   1140
       TabIndex        =   5
       Top             =   5520
-      Width           =   3210
-      _ExtentX        =   5662
-      _ExtentY        =   847
+      Width           =   6675
+      _ExtentX        =   11774
+      _ExtentY        =   529
       Caption         =   "Do not display this warning again"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

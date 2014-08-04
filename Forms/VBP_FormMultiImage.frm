@@ -5,10 +5,10 @@ Begin VB.Form dialog_MultiImage
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Multiple Images Found"
-   ClientHeight    =   3766
-   ClientLeft      =   42
+   ClientHeight    =   3765
+   ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   5551
+   ClientWidth     =   5550
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,9 +21,9 @@ Begin VB.Form dialog_MultiImage
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   538
+   ScaleHeight     =   251
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   793
+   ScaleWidth      =   370
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdAnswer 
       Caption         =   "Load only the first page"
@@ -62,13 +62,13 @@ Begin VB.Form dialog_MultiImage
       Width           =   5100
    End
    Begin PhotoDemon.smartCheckBox chkRepeat 
-      Height          =   480
+      Height          =   300
       Left            =   240
       TabIndex        =   1
       Top             =   3120
-      Width           =   4110
-      _ExtentX        =   7382
-      _ExtentY        =   820
+      Width           =   5055
+      _ExtentX        =   8916
+      _ExtentY        =   529
       Caption         =   "always apply this action to multi-image files"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

@@ -50,7 +50,6 @@ Begin VB.Form FormDiffuse
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   873
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -60,15 +59,16 @@ Begin VB.Form FormDiffuse
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Value           =   1
    End
    Begin PhotoDemon.smartCheckBox chkWrap 
-      Height          =   480
+      Height          =   300
       Left            =   6120
       TabIndex        =   4
       Top             =   3600
-      Width           =   1890
+      Width           =   5460
       _ExtentX        =   3334
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "wrap edge values"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -97,7 +97,6 @@ Begin VB.Form FormDiffuse
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   873
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -107,6 +106,7 @@ Begin VB.Form FormDiffuse
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Value           =   1
    End
    Begin VB.Label Label2 
       AutoSize        =   -1  'True

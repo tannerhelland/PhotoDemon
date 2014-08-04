@@ -79,9 +79,6 @@ Begin VB.Form FormPanAndZoom
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   -64
-      Max             =   64
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -91,6 +88,9 @@ Begin VB.Form FormPanAndZoom
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -64
+      Max             =   64
+      SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltVertical 
       Height          =   495
@@ -100,9 +100,6 @@ Begin VB.Form FormPanAndZoom
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   -64
-      Max             =   64
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -112,6 +109,9 @@ Begin VB.Form FormPanAndZoom
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -64
+      Max             =   64
+      SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltZoom 
       Height          =   495
@@ -121,8 +121,6 @@ Begin VB.Form FormPanAndZoom
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   -10
-      SigDigits       =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -132,14 +130,16 @@ Begin VB.Form FormPanAndZoom
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -10
+      SigDigits       =   2
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   9
       Top             =   4800
-      Width           =   1005
+      Width           =   5685
       _ExtentX        =   1773
       _ExtentY        =   635
       Caption         =   "quality"
@@ -155,12 +155,12 @@ Begin VB.Form FormPanAndZoom
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   6120
       TabIndex        =   10
-      Top             =   4800
-      Width           =   975
+      Top             =   5160
+      Width           =   5685
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "speed"

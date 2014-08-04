@@ -72,8 +72,8 @@ Begin VB.Form FormVignette
       Left            =   6120
       TabIndex        =   7
       Top             =   5340
-      Width           =   1500
-      _ExtentX        =   2646
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   635
       Caption         =   "fit to image"
       Value           =   -1  'True
@@ -104,8 +104,8 @@ Begin VB.Form FormVignette
       Left            =   8880
       TabIndex        =   8
       Top             =   5340
-      Width           =   1050
-      _ExtentX        =   1852
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   635
       Caption         =   "circular"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 

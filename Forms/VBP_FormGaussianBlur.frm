@@ -79,7 +79,7 @@ Begin VB.Form FormGaussianBlur
       Left            =   6120
       TabIndex        =   6
       Top             =   3120
-      Width           =   870
+      Width           =   5655
       _ExtentX        =   1535
       _ExtentY        =   635
       Caption         =   "good"
@@ -100,7 +100,7 @@ Begin VB.Form FormGaussianBlur
       Left            =   6120
       TabIndex        =   7
       Top             =   3540
-      Width           =   975
+      Width           =   5655
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "better"
@@ -120,7 +120,7 @@ Begin VB.Form FormGaussianBlur
       Left            =   6120
       TabIndex        =   8
       Top             =   3960
-      Width           =   810
+      Width           =   5655
       _ExtentX        =   1429
       _ExtentY        =   635
       Caption         =   "best"

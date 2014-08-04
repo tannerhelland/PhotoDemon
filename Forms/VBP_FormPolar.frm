@@ -25,13 +25,13 @@ Begin VB.Form FormPolar
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.smartCheckBox chkSwapXY 
-      Height          =   480
+      Height          =   300
       Left            =   6120
       TabIndex        =   11
       Top             =   1590
-      Width           =   2550
+      Width           =   5655
       _ExtentX        =   4498
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "swap x and y coordinates"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -98,7 +98,7 @@ Begin VB.Form FormPolar
       Style           =   2  'Dropdown List
       TabIndex        =   5
       Top             =   1200
-      Width           =   4860
+      Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -111,12 +111,12 @@ Begin VB.Form FormPolar
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   8
       Top             =   4560
-      Width           =   1005
+      Width           =   5700
       _ExtentX        =   1773
       _ExtentY        =   635
       Caption         =   "quality"
@@ -132,12 +132,12 @@ Begin VB.Form FormPolar
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   6120
       TabIndex        =   9
-      Top             =   4560
-      Width           =   975
+      Top             =   4920
+      Width           =   5700
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "speed"

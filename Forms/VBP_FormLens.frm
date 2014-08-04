@@ -55,12 +55,12 @@ Begin VB.Form FormLens
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   5
       Top             =   4485
-      Width           =   1005
+      Width           =   5685
       _ExtentX        =   1773
       _ExtentY        =   635
       Caption         =   "quality"
@@ -76,12 +76,12 @@ Begin VB.Form FormLens
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   6120
       TabIndex        =   6
-      Top             =   4485
-      Width           =   975
+      Top             =   4920
+      Width           =   5685
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "speed"

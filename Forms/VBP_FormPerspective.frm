@@ -105,12 +105,12 @@ Begin VB.Form FormPerspective
       _ExtentY        =   9922
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   240
       TabIndex        =   5
       Top             =   8280
-      Width           =   1005
+      Width           =   2700
       _ExtentX        =   1773
       _ExtentY        =   635
       Caption         =   "quality"
@@ -126,12 +126,12 @@ Begin VB.Form FormPerspective
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   2040
+      Left            =   3000
       TabIndex        =   6
       Top             =   8280
-      Width           =   975
+      Width           =   2700
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "speed"

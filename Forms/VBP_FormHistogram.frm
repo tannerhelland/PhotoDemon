@@ -26,13 +26,13 @@ Begin VB.Form FormHistogram
    ScaleWidth      =   706
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.smartCheckBox chkLog 
-      Height          =   480
+      Height          =   300
       Left            =   7320
       TabIndex        =   24
       Top             =   6000
-      Width           =   2280
+      Width           =   3000
       _ExtentX        =   4022
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "use logarithmic values"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -45,15 +45,14 @@ Begin VB.Form FormHistogram
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkSmooth 
-      Height          =   480
+      Height          =   300
       Left            =   7320
       TabIndex        =   23
       Top             =   5040
-      Width           =   1815
+      Width           =   3000
       _ExtentX        =   3201
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "use smooth lines"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -65,16 +64,15 @@ Begin VB.Form FormHistogram
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
-      Height          =   480
+      Height          =   300
       Index           =   0
       Left            =   4680
       TabIndex        =   19
       Top             =   5040
-      Width           =   660
+      Width           =   2100
       _ExtentX        =   1164
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "red"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -142,16 +140,15 @@ Begin VB.Form FormHistogram
       Width           =   10335
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
-      Height          =   480
+      Height          =   300
       Index           =   1
       Left            =   4680
       TabIndex        =   20
       Top             =   5520
-      Width           =   870
+      Width           =   2100
       _ExtentX        =   1535
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "green"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -163,16 +160,15 @@ Begin VB.Form FormHistogram
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
-      Height          =   480
+      Height          =   300
       Index           =   2
       Left            =   4680
       TabIndex        =   21
       Top             =   6000
-      Width           =   735
+      Width           =   2100
       _ExtentX        =   1296
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "blue"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -184,16 +180,15 @@ Begin VB.Form FormHistogram
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
-      Height          =   480
+      Height          =   300
       Index           =   3
       Left            =   4680
       TabIndex        =   22
       Top             =   6480
-      Width           =   1245
+      Width           =   2100
       _ExtentX        =   2196
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "luminance"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -205,15 +200,14 @@ Begin VB.Form FormHistogram
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkFillCurve 
-      Height          =   480
+      Height          =   300
       Left            =   7320
       TabIndex        =   25
       Top             =   5520
-      Width           =   2100
+      Width           =   3000
       _ExtentX        =   3704
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "fill histogram curves"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -891,7 +885,7 @@ Private Sub Form_Resize()
     picH.Width = Me.ScaleWidth - picH.Left - fixDPI(8)
     picGradient.Width = Me.ScaleWidth - picGradient.Left - fixDPI(8)
     lblBackground.Width = Abs(lblBackground.Left) + Me.ScaleWidth
-    cmdOK.Left = Me.ScaleWidth - cmdOK.Width - fixDPI(8)
+    CmdOK.Left = Me.ScaleWidth - CmdOK.Width - fixDPI(8)
     
     'Now draw a little gradient below the histogram window, to help orient the user
     DrawHistogramGradient picGradient, RGB(0, 0, 0), RGB(255, 255, 255)
@@ -1175,7 +1169,7 @@ Public Sub StretchHistogram()
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -1195,13 +1189,13 @@ Public Sub StretchHistogram()
         
     'Loop through each pixel in the image, checking max/min values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         If r < rMin Then rMin = r
         If r > rMax Then rMax = r
@@ -1214,34 +1208,34 @@ Public Sub StretchHistogram()
     Next x
     
     Message "Stretching histogram..."
-    Dim rdif As Long, Gdif As Long, Bdif As Long
+    Dim rDif As Long, gDif As Long, bDif As Long
     
-    rdif = rMax - rMin
-    Gdif = gMax - gMin
-    Bdif = bMax - bMin
+    rDif = rMax - rMin
+    gDif = gMax - gMin
+    bDif = bMax - bMin
     
     'Lookup tables make the stretching go faster
-    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    Dim rLookup(0 To 255) As Byte, gLookUp(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
     For x = 0 To 255
-        If rdif <> 0 Then
-            r = 255 * ((x - rMin) / rdif)
+        If rDif <> 0 Then
+            r = 255 * ((x - rMin) / rDif)
             If r < 0 Then r = 0
             If r > 255 Then r = 255
             rLookup(x) = r
         Else
             rLookup(x) = x
         End If
-        If Gdif <> 0 Then
-            g = 255 * ((x - gMin) / Gdif)
+        If gDif <> 0 Then
+            g = 255 * ((x - gMin) / gDif)
             If g < 0 Then g = 0
             If g > 255 Then g = 255
-            gLookup(x) = g
+            gLookUp(x) = g
         Else
-            gLookup(x) = x
+            gLookUp(x) = x
         End If
-        If Bdif <> 0 Then
-            b = 255 * ((x - bMin) / Bdif)
+        If bDif <> 0 Then
+            b = 255 * ((x - bMin) / bDif)
             If b < 0 Then b = 0
             If b > 255 Then b = 255
             bLookup(x) = b
@@ -1252,17 +1246,17 @@ Public Sub StretchHistogram()
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
-        b = ImageData(quickVal, y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
                 
-        ImageData(quickVal + 2, y) = rLookup(r)
-        ImageData(quickVal + 1, y) = gLookup(g)
-        ImageData(quickVal, y) = bLookup(b)
+        ImageData(QuickVal + 2, y) = rLookup(r)
+        ImageData(QuickVal + 1, y) = gLookUp(g)
+        ImageData(QuickVal, y) = bLookup(b)
         
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x

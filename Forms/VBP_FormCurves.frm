@@ -31,17 +31,9 @@ Begin VB.Form FormCurves
       TabIndex        =   0
       Top             =   7455
       Width           =   13095
-      _ExtentX        =   23098
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   23098
+      _extenty        =   1323
+      font            =   "VBP_FormCurves.frx":0000
    End
    Begin VB.ComboBox cboHistogram 
       Appearance      =   0  'Flat
@@ -83,48 +75,32 @@ Begin VB.Form FormCurves
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkGrid 
-      Height          =   480
+      Height          =   300
       Left            =   6240
       TabIndex        =   6
       Top             =   6480
-      Width           =   1350
-      _ExtentX        =   2381
-      _ExtentY        =   847
-      Caption         =   "display grid"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      Width           =   6615
+      _extentx        =   2381
+      _extenty        =   847
+      caption         =   "display grid"
+      font            =   "VBP_FormCurves.frx":0028
+      value           =   1
    End
    Begin PhotoDemon.smartCheckBox chkDiagonal 
-      Height          =   480
+      Height          =   300
       Left            =   6240
       TabIndex        =   7
       Top             =   6960
-      Width           =   3465
-      _ExtentX        =   6112
-      _ExtentY        =   847
-      Caption         =   "display original curve (diagonal line)"
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      Width           =   6615
+      _extentx        =   6112
+      _extenty        =   847
+      caption         =   "display original curve (diagonal line)"
+      font            =   "VBP_FormCurves.frx":0050
+      value           =   1
    End
    Begin PhotoDemon.jcbutton cmdChannel 
       Height          =   600
@@ -133,28 +109,20 @@ Begin VB.Form FormCurves
       TabIndex        =   8
       Top             =   120
       Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "RGB"
-      ForeColor       =   3158064
-      Mode            =   1
-      Value           =   -1  'True
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormCurves.frx":0000
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      _extentx        =   2910
+      _extenty        =   1058
+      buttonstyle     =   7
+      font            =   "VBP_FormCurves.frx":0078
+      backcolor       =   -2147483643
+      caption         =   "RGB"
+      value           =   -1
+      handpointer     =   -1
+      picturenormal   =   "VBP_FormCurves.frx":00A0
+      pictureeffectondown=   0
+      captioneffects  =   0
+      mode            =   1
+      forecolor       =   3158064
+      colorscheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdChannel 
       Height          =   600
@@ -163,27 +131,19 @@ Begin VB.Form FormCurves
       TabIndex        =   9
       Top             =   120
       Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "red"
-      ForeColor       =   3158064
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormCurves.frx":0D52
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      _extentx        =   2910
+      _extenty        =   1058
+      buttonstyle     =   7
+      font            =   "VBP_FormCurves.frx":0DF2
+      backcolor       =   -2147483643
+      caption         =   "red"
+      handpointer     =   -1
+      picturenormal   =   "VBP_FormCurves.frx":0E1A
+      pictureeffectondown=   0
+      captioneffects  =   0
+      mode            =   1
+      forecolor       =   3158064
+      colorscheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdChannel 
       Height          =   600
@@ -192,27 +152,19 @@ Begin VB.Form FormCurves
       TabIndex        =   10
       Top             =   120
       Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "green"
-      ForeColor       =   3158064
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormCurves.frx":1AA4
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      _extentx        =   2910
+      _extenty        =   1058
+      buttonstyle     =   7
+      font            =   "VBP_FormCurves.frx":1B6C
+      backcolor       =   -2147483643
+      caption         =   "green"
+      handpointer     =   -1
+      picturenormal   =   "VBP_FormCurves.frx":1B94
+      pictureeffectondown=   0
+      captioneffects  =   0
+      mode            =   1
+      forecolor       =   3158064
+      colorscheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdChannel 
       Height          =   600
@@ -221,27 +173,19 @@ Begin VB.Form FormCurves
       TabIndex        =   11
       Top             =   120
       Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "blue"
-      ForeColor       =   3158064
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormCurves.frx":27F6
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      _extentx        =   2910
+      _extenty        =   1058
+      buttonstyle     =   7
+      font            =   "VBP_FormCurves.frx":28E6
+      backcolor       =   -2147483643
+      caption         =   "blue"
+      handpointer     =   -1
+      picturenormal   =   "VBP_FormCurves.frx":290E
+      pictureeffectondown=   0
+      captioneffects  =   0
+      mode            =   1
+      forecolor       =   3158064
+      colorscheme     =   3
    End
    Begin VB.Label lblTitle 
       Alignment       =   1  'Right Justify

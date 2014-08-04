@@ -89,12 +89,12 @@ Begin VB.Form FormMiscDistorts
       _ExtentY        =   9922
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   6
       Top             =   4920
-      Width           =   1005
+      Width           =   5685
       _ExtentX        =   1773
       _ExtentY        =   635
       Caption         =   "quality"
@@ -110,12 +110,12 @@ Begin VB.Form FormMiscDistorts
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   6120
       TabIndex        =   7
-      Top             =   4920
-      Width           =   975
+      Top             =   5280
+      Width           =   5655
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "speed"

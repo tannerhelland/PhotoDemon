@@ -199,6 +199,364 @@ Begin VB.Form toolbar_Tools
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   1575
+      Index           =   2
+      Left            =   0
+      ScaleHeight     =   105
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   950
+      TabIndex        =   34
+      Top             =   1020
+      Visible         =   0   'False
+      Width           =   14250
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   0
+         Left            =   1380
+         TabIndex        =   36
+         Top             =   90
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   -2
+         Max             =   2
+         SigDigits       =   2
+         SliderTrackStyle=   2
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   1
+         Left            =   1380
+         TabIndex        =   37
+         Top             =   705
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   2
+         Left            =   5640
+         TabIndex        =   39
+         Top             =   90
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   3
+         Left            =   5640
+         TabIndex        =   41
+         Top             =   705
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.jcbutton cmdQuickFix 
+         Height          =   570
+         Index           =   0
+         Left            =   13080
+         TabIndex        =   43
+         Top             =   75
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483643
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarTools.frx":4A2C
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ColorScheme     =   3
+      End
+      Begin PhotoDemon.jcbutton cmdQuickFix 
+         Height          =   570
+         Index           =   1
+         Left            =   13080
+         TabIndex        =   44
+         Top             =   705
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+         ButtonStyle     =   13
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483643
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "VBP_ToolbarTools.frx":577E
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ColorScheme     =   3
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   4
+         Left            =   9960
+         TabIndex        =   45
+         Top             =   90
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   -100
+         Max             =   100
+         SliderTrackStyle=   3
+         GradientColorLeft=   16752699
+         GradientColorRight=   2990335
+         GradientColorMiddle=   16777215
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   5
+         Left            =   9960
+         TabIndex        =   46
+         Top             =   705
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   -100
+         Max             =   100
+         SliderTrackStyle=   3
+         GradientColorLeft=   15102446
+         GradientColorRight=   8253041
+         GradientColorMiddle=   16777215
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "temperature:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   7
+         Left            =   8775
+         TabIndex        =   48
+         Top             =   195
+         Width           =   1140
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "tint:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   6
+         Left            =   9570
+         TabIndex        =   47
+         Top             =   810
+         Width           =   345
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "vibrance:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   5
+         Left            =   4800
+         TabIndex        =   42
+         Top             =   810
+         Width           =   795
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "clarity:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   4
+         Left            =   5010
+         TabIndex        =   40
+         Top             =   195
+         Width           =   585
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "contrast:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   3
+         Left            =   570
+         TabIndex        =   38
+         Top             =   810
+         Width           =   765
+      End
+      Begin VB.Label lblOptions 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "exposure:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   2
+         Left            =   480
+         TabIndex        =   35
+         Top             =   195
+         Width           =   855
+      End
+   End
+   Begin VB.PictureBox picTools 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ClipControls    =   0   'False
+      ForeColor       =   &H80000008&
+      Height          =   1575
       Index           =   1
       Left            =   15
       ScaleHeight     =   105
@@ -209,12 +567,12 @@ Begin VB.Form toolbar_Tools
       Visible         =   0   'False
       Width           =   14250
       Begin PhotoDemon.smartCheckBox chkLayerBorder 
-         Height          =   480
+         Height          =   300
          Left            =   6480
          TabIndex        =   27
          Top             =   360
-         Width           =   2025
-         _ExtentX        =   3810
+         Width           =   5775
+         _ExtentX        =   10186
          _ExtentY        =   529
          Caption         =   "show layer borders"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -228,12 +586,12 @@ Begin VB.Form toolbar_Tools
          EndProperty
       End
       Begin PhotoDemon.smartCheckBox chkLayerNodes 
-         Height          =   480
+         Height          =   300
          Left            =   6480
          TabIndex        =   28
          Top             =   780
-         Width           =   2775
-         _ExtentX        =   5133
+         Width           =   5775
+         _ExtentX        =   10186
          _ExtentY        =   529
          Caption         =   "show layer transform nodes"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -247,12 +605,12 @@ Begin VB.Form toolbar_Tools
          EndProperty
       End
       Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
-         Height          =   480
+         Height          =   300
          Left            =   120
          TabIndex        =   30
          Top             =   360
-         Width           =   4080
-         _ExtentX        =   7435
+         Width           =   6240
+         _ExtentX        =   11007
          _ExtentY        =   529
          Caption         =   "automatically activate layer beneath mouse"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -266,12 +624,12 @@ Begin VB.Form toolbar_Tools
          EndProperty
       End
       Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
-         Height          =   480
+         Height          =   300
          Left            =   120
          TabIndex        =   31
          Top             =   780
-         Width           =   4920
-         _ExtentX        =   8916
+         Width           =   6240
+         _ExtentX        =   11007
          _ExtentY        =   529
          Caption         =   "ignore transparent pixels when auto-activating layers"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -361,9 +719,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":4A2C
+         ItemData        =   "VBP_ToolbarTools.frx":64D0
          Left            =   120
-         List            =   "VBP_ToolbarTools.frx":4A2E
+         List            =   "VBP_ToolbarTools.frx":64D2
          Style           =   2  'Dropdown List
          TabIndex        =   20
          TabStop         =   0   'False
@@ -384,9 +742,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":4A30
+         ItemData        =   "VBP_ToolbarTools.frx":64D4
          Left            =   8340
-         List            =   "VBP_ToolbarTools.frx":4A32
+         List            =   "VBP_ToolbarTools.frx":64D6
          Style           =   2  'Dropdown List
          TabIndex        =   2
          TabStop         =   0   'False
@@ -408,9 +766,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":4A34
+         ItemData        =   "VBP_ToolbarTools.frx":64D8
          Left            =   5640
-         List            =   "VBP_ToolbarTools.frx":4A36
+         List            =   "VBP_ToolbarTools.frx":64DA
          Style           =   2  'Dropdown List
          TabIndex        =   1
          TabStop         =   0   'False
@@ -724,363 +1082,6 @@ Begin VB.Form toolbar_Tools
          TabIndex        =   11
          Top             =   60
          Width           =   885
-      End
-   End
-   Begin VB.PictureBox picTools 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1575
-      Index           =   2
-      Left            =   0
-      ScaleHeight     =   105
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   950
-      TabIndex        =   34
-      Top             =   1020
-      Visible         =   0   'False
-      Width           =   14250
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   0
-         Left            =   1380
-         TabIndex        =   36
-         Top             =   90
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Min             =   -2
-         Max             =   2
-         SigDigits       =   2
-         SliderTrackStyle=   2
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   1
-         Left            =   1380
-         TabIndex        =   37
-         Top             =   705
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Min             =   -100
-         Max             =   100
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   2
-         Left            =   5640
-         TabIndex        =   39
-         Top             =   90
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Min             =   -100
-         Max             =   100
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   3
-         Left            =   5640
-         TabIndex        =   41
-         Top             =   705
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Min             =   -100
-         Max             =   100
-      End
-      Begin PhotoDemon.jcbutton cmdQuickFix 
-         Height          =   570
-         Index           =   0
-         Left            =   13080
-         TabIndex        =   43
-         Top             =   75
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483643
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarTools.frx":4A38
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ColorScheme     =   3
-      End
-      Begin PhotoDemon.jcbutton cmdQuickFix 
-         Height          =   570
-         Index           =   1
-         Left            =   13080
-         TabIndex        =   44
-         Top             =   705
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483643
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarTools.frx":578A
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ColorScheme     =   3
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   4
-         Left            =   9960
-         TabIndex        =   45
-         Top             =   90
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Min             =   -100
-         Max             =   100
-         SliderTrackStyle=   3
-         GradientColorLeft=   16752699
-         GradientColorRight=   2990335
-         GradientColorMiddle=   16777215
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   5
-         Left            =   9960
-         TabIndex        =   46
-         Top             =   705
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Min             =   -100
-         Max             =   100
-         SliderTrackStyle=   3
-         GradientColorLeft=   15102446
-         GradientColorRight=   8253041
-         GradientColorMiddle=   16777215
-      End
-      Begin VB.Label lblOptions 
-         Alignment       =   1  'Right Justify
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "temperature:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   7
-         Left            =   8775
-         TabIndex        =   48
-         Top             =   195
-         Width           =   1140
-      End
-      Begin VB.Label lblOptions 
-         Alignment       =   1  'Right Justify
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "tint:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   6
-         Left            =   9570
-         TabIndex        =   47
-         Top             =   810
-         Width           =   345
-      End
-      Begin VB.Label lblOptions 
-         Alignment       =   1  'Right Justify
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "vibrance:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   5
-         Left            =   4800
-         TabIndex        =   42
-         Top             =   810
-         Width           =   795
-      End
-      Begin VB.Label lblOptions 
-         Alignment       =   1  'Right Justify
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "clarity:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   4
-         Left            =   5010
-         TabIndex        =   40
-         Top             =   195
-         Width           =   585
-      End
-      Begin VB.Label lblOptions 
-         Alignment       =   1  'Right Justify
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "contrast:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   3
-         Left            =   570
-         TabIndex        =   38
-         Top             =   810
-         Width           =   765
-      End
-      Begin VB.Label lblOptions 
-         Alignment       =   1  'Right Justify
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "exposure:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   2
-         Left            =   480
-         TabIndex        =   35
-         Top             =   195
-         Width           =   855
       End
    End
    Begin VB.Label lblCategory 

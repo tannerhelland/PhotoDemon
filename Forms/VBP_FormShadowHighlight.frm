@@ -53,13 +53,13 @@ Begin VB.Form FormShadowHighlight
       ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
-      Height          =   480
+      Height          =   300
       Left            =   6120
       TabIndex        =   5
       Top             =   3240
-      Width           =   3690
-      _ExtentX        =   6509
-      _ExtentY        =   847
+      Width           =   5730
+      _ExtentX        =   10107
+      _ExtentY        =   529
       Caption         =   "use the median midtone for this image"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -79,9 +79,6 @@ Begin VB.Form FormShadowHighlight
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   30
-      SigDigits       =   2
-      Value           =   0.05
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -91,6 +88,9 @@ Begin VB.Form FormShadowHighlight
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   30
+      SigDigits       =   2
+      Value           =   0.05
    End
    Begin PhotoDemon.sliderTextCombo sltHighlight 
       Height          =   495
@@ -100,9 +100,6 @@ Begin VB.Form FormShadowHighlight
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   30
-      SigDigits       =   2
-      Value           =   0.05
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -112,6 +109,9 @@ Begin VB.Form FormShadowHighlight
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   30
+      SigDigits       =   2
+      Value           =   0.05
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
@@ -322,7 +322,7 @@ Private Sub CalculateOptimalMidtone()
     Dim r As Long, g As Long, b As Long
             
     'Histogram tables
-    Dim rLookup(0 To 255) As Long, gLookup(0 To 255) As Long, bLookup(0 To 255) As Long
+    Dim rLookup(0 To 255) As Long, gLookUp(0 To 255) As Long, bLookup(0 To 255) As Long
     Dim NumOfPixels As Long
                 
     'Loop through each pixel in the image, tallying values as we go
@@ -336,7 +336,7 @@ Private Sub CalculateOptimalMidtone()
         b = ImageData(QuickVal, y)
                 
         rLookup(r) = rLookup(r) + 1
-        gLookup(g) = gLookup(g) + 1
+        gLookUp(g) = gLookUp(g) + 1
         bLookup(b) = bLookup(b) + 1
         
         'Increment the pixel count
@@ -368,7 +368,7 @@ Private Sub CalculateOptimalMidtone()
     x = 0
     
     Do
-        gCount = gCount + gLookup(x)
+        gCount = gCount + gLookUp(x)
         x = x + 1
     Loop While gCount < NumOfPixels
     

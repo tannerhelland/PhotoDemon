@@ -31,9 +31,6 @@ Begin VB.Form FormBoxBlur
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   500
-      Value           =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -43,6 +40,9 @@ Begin VB.Form FormBoxBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   500
+      Value           =   2
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -54,15 +54,14 @@ Begin VB.Form FormBoxBlur
       _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkUnison 
-      Height          =   480
+      Height          =   300
       Left            =   6120
       TabIndex        =   5
       Top             =   3840
-      Width           =   2880
+      Width           =   5640
       _ExtentX        =   5080
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "keep both dimensions in sync"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -81,9 +80,6 @@ Begin VB.Form FormBoxBlur
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   500
-      Value           =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -93,6 +89,9 @@ Begin VB.Form FormBoxBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   500
+      Value           =   2
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom

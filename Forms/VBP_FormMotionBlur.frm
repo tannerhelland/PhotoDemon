@@ -72,12 +72,12 @@ Begin VB.Form FormMotionBlur
       SigDigits       =   1
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   5
       Top             =   3990
-      Width           =   1005
+      Width           =   5685
       _ExtentX        =   1773
       _ExtentY        =   635
       Caption         =   "quality"
@@ -93,12 +93,12 @@ Begin VB.Form FormMotionBlur
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   6120
       TabIndex        =   6
-      Top             =   3990
-      Width           =   975
+      Top             =   4440
+      Width           =   5685
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "speed"
@@ -113,15 +113,14 @@ Begin VB.Form FormMotionBlur
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkSymmetry 
-      Height          =   480
+      Height          =   300
       Left            =   6120
       TabIndex        =   8
       Top             =   3000
-      Width           =   1935
+      Width           =   5655
       _ExtentX        =   3413
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "blur symmetrically"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75

@@ -122,19 +122,19 @@ Begin VB.Form FormGrayscale
       Left            =   6120
       ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   329
+      ScaleWidth      =   369
       TabIndex        =   4
       Top             =   2040
-      Width           =   4935
+      Width           =   5535
       Begin PhotoDemon.smartOptionButton optChannel 
          Height          =   360
          Index           =   0
          Left            =   120
          TabIndex        =   8
          Top             =   0
-         Width           =   705
+         Width           =   1500
          _ExtentX        =   1455
-         _ExtentY        =   529
+         _ExtentY        =   635
          Caption         =   "red"
          Value           =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -150,12 +150,12 @@ Begin VB.Form FormGrayscale
       Begin PhotoDemon.smartOptionButton optChannel 
          Height          =   360
          Index           =   1
-         Left            =   1560
+         Left            =   1680
          TabIndex        =   9
          Top             =   0
-         Width           =   945
+         Width           =   1500
          _ExtentX        =   1879
-         _ExtentY        =   529
+         _ExtentY        =   635
          Caption         =   "green"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -173,9 +173,9 @@ Begin VB.Form FormGrayscale
          Left            =   3240
          TabIndex        =   10
          Top             =   0
-         Width           =   780
+         Width           =   1500
          _ExtentX        =   1588
-         _ExtentY        =   529
+         _ExtentY        =   635
          Caption         =   "blue"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -197,19 +197,19 @@ Begin VB.Form FormGrayscale
       Left            =   6120
       ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   329
+      ScaleWidth      =   377
       TabIndex        =   3
       Top             =   2040
-      Width           =   4935
+      Width           =   5655
       Begin PhotoDemon.smartOptionButton optDecompose 
          Height          =   360
          Index           =   0
          Left            =   120
          TabIndex        =   6
          Top             =   0
-         Width           =   1275
+         Width           =   2250
          _ExtentX        =   2461
-         _ExtentY        =   529
+         _ExtentY        =   635
          Caption         =   "minimum"
          Value           =   -1  'True
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -225,12 +225,12 @@ Begin VB.Form FormGrayscale
       Begin PhotoDemon.smartOptionButton optDecompose 
          Height          =   360
          Index           =   1
-         Left            =   2160
+         Left            =   2400
          TabIndex        =   7
          Top             =   0
-         Width           =   1365
+         Width           =   2250
          _ExtentX        =   2619
-         _ExtentY        =   529
+         _ExtentY        =   635
          Caption         =   "maximum"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"

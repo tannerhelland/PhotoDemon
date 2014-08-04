@@ -35,7 +35,7 @@ Begin VB.Form FormFiguredGlass
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   10.5
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -65,12 +65,12 @@ Begin VB.Form FormFiguredGlass
       Value           =   10
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   7
       Top             =   4200
-      Width           =   1005
+      Width           =   5700
       _ExtentX        =   1773
       _ExtentY        =   635
       Caption         =   "quality"
@@ -115,12 +115,12 @@ Begin VB.Form FormFiguredGlass
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   6120
       TabIndex        =   8
-      Top             =   4200
-      Width           =   975
+      Top             =   4680
+      Width           =   5700
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "speed"
