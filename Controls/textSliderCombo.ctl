@@ -73,8 +73,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / Slider custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 21/June/14
-'Last update: dump the scroll bar; implement my own owner-drawn slider
+'Last updated: 04/August/14
+'Last update: tie UC coloring into PD's central theme engine
 '
 'Software like PhotoDemon requires a lot of UI elements.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -388,38 +388,38 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upAr
     If leftArrow Or downArrow Then Value = Value - getIncrementAmount
 End Sub
 
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     
-    If ((Button And pdLeftButton) <> 0) And isMouseOverSlider(x, y) Then
+    If ((Button And pdLeftButton) <> 0) And isMouseOverSlider(X, Y) Then
     
         m_MouseDown = True
         
         'Retrieve the current slider x/y values, and store the mouse position relative to those values
         Dim sliderX As Single, sliderY As Single
         getSliderCoordinates sliderX, sliderY
-        m_InitX = x - sliderX
-        m_InitY = y - sliderY
+        m_InitX = X - sliderX
+        m_InitY = Y - sliderY
     
     End If
     
 End Sub
 
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     cMouseEvents.setSystemCursor IDC_ARROW
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
 
     'If the mouse is down, adjust the current control value accordingly.
     If m_MouseDown Then
                 
         'Calculate a new control value relative to the current mouse position
-        Value = (controlMax - controlMin) * (((x + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
+        Value = (controlMax - controlMin) * (((X + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
             
     'If the LMB is not down, modify the cursor according to its position relative to the slider
     Else
     
-        If isMouseOverSlider(x, y) Then
+        If isMouseOverSlider(X, Y) Then
             cMouseEvents.setSystemCursor IDC_HAND
         Else
             cMouseEvents.setSystemCursor IDC_ARROW
@@ -429,13 +429,13 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
 
 End Sub
 
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     If ((Button And pdLeftButton) <> 0) And m_MouseDown Then
         
         'Perform a final mouse move update at the reported x/y position.  If intensive processing occurred while the slider was being
         ' interacted with, this will ensure that the mouse location at its exact point of release is used.
-        Value = (controlMax - controlMin) * (((x + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
+        Value = (controlMax - controlMin) * (((X + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
         
         m_MouseDown = False
         
@@ -536,7 +536,10 @@ Public Property Let Min(ByVal newValue As Double)
     
     'If the current control value is less than the new minimum, update it to match (and raise a corresponding _Change event)
     If controlVal < controlMin Then Value = controlMin
-        
+    
+    'Redraw the control
+    redrawSlider
+    
     PropertyChanged "Min"
     
 End Property
@@ -555,6 +558,9 @@ Public Property Let Max(ByVal newValue As Double)
     
     'If the current control value is greater than the new max, update it to match (and raise a corresponding _Change event)
     If controlVal > controlMax Then Value = controlMax
+    
+    'Redraw the control
+    redrawSlider
     
     PropertyChanged "Max"
     
@@ -998,7 +1004,7 @@ Private Sub redrawInternalGradientDIB()
     Dim trackRadius As Single
     trackRadius = (m_trackDiameter) \ 2
     
-    Dim x As Long
+    Dim X As Long
     Dim relativeMiddlePosition As Single, tmpY As Single
     
     'Draw the gradient differently depending on the type of gradient
@@ -1032,20 +1038,20 @@ Private Sub redrawInternalGradientDIB()
             
             Dim tmpR As Double, tmpG As Double, tmpB As Double
             
-            For x = 0 To m_GradientDIB.getDIBWidth - 1
+            For X = 0 To m_GradientDIB.getDIBWidth - 1
                 
-                If x < trackRadius Then
+                If X < trackRadius Then
                     fHSVtoRGB 0, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
-                ElseIf x > (m_GradientDIB.getDIBWidth - trackRadius) Then
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, X, 0, X, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                ElseIf X > (m_GradientDIB.getDIBWidth - trackRadius) Then
                     fHSVtoRGB 1, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, X, 0, X, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
                 Else
-                    fHSVtoRGB (x - trackRadius) / hueSpread, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                    fHSVtoRGB (X - trackRadius) / hueSpread, 1, 1, tmpR, tmpG, tmpB
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, X, 0, X, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
                 End If
                 
-            Next x
+            Next X
             
     End Select
     
@@ -1056,13 +1062,13 @@ Private Sub redrawInternalGradientDIB()
     ' handle this step during the DIB creation phase.
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then
     
-        For x = 0 To trackRadius
-            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, gradColorLeft, 255, 1, False, LineCapFlat
-        Next x
+        For X = 0 To trackRadius
+            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, X, 0, X, m_GradientDIB.getDIBHeight, gradColorLeft, 255, 1, False, LineCapFlat
+        Next X
         
-        For x = m_GradientDIB.getDIBWidth - trackRadius To m_GradientDIB.getDIBWidth
-            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, gradColorRight, 255, 1, False, LineCapFlat
-        Next x
+        For X = m_GradientDIB.getDIBWidth - trackRadius To m_GradientDIB.getDIBWidth
+            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, X, 0, X, m_GradientDIB.getDIBHeight, gradColorRight, 255, 1, False, LineCapFlat
+        Next X
         
     End If
     

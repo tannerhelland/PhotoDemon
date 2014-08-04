@@ -23,9 +23,6 @@ Option Explicit
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
-'Calculating rect interactions
-Private Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
-
 'Used to measure the expected length of a string
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
 
@@ -1457,17 +1454,6 @@ Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontCont
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
     getPixelHeightOfString = txtSize.y
-End Function
-
-'See if a point lies inside a rect
-Public Function isPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECT) As Boolean
-
-    If PtInRect(srcRect, ptX, ptY) = 0 Then
-        isPointInRect = False
-    Else
-        isPointInRect = True
-    End If
-
 End Function
 
 'Use whenever you want the user to not be allowed to interact with the primary PD window.  Make sure that call "enableUserInput", below,

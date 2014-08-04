@@ -25,13 +25,13 @@ Begin VB.Form FormPolar
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.smartCheckBox chkSwapXY 
-      Height          =   300
+      Height          =   330
       Left            =   6120
       TabIndex        =   11
       Top             =   1590
-      Width           =   5655
-      _ExtentX        =   4498
-      _ExtentY        =   529
+      Width           =   5670
+      _ExtentX        =   10001
+      _ExtentY        =   582
       Caption         =   "swap x and y coordinates"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -116,8 +116,8 @@ Begin VB.Form FormPolar
       Left            =   6120
       TabIndex        =   8
       Top             =   4560
-      Width           =   5700
-      _ExtentX        =   1773
+      Width           =   5685
+      _ExtentX        =   10028
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -137,8 +137,8 @@ Begin VB.Form FormPolar
       Left            =   6120
       TabIndex        =   9
       Top             =   4920
-      Width           =   5700
-      _ExtentX        =   1720
+      Width           =   5685
+      _ExtentX        =   10028
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 

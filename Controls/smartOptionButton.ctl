@@ -94,13 +94,6 @@ Private Type TEXTMETRIC
 End Type
 
 'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
-Private Type RECT
-    Left As Long
-    Top As Long
-    Right As Long
-    Bottom As Long
-End Type
-
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
 
 'Previously, we used VB's internal label control to render the text caption.  This is now handled dynamically,
@@ -133,6 +126,9 @@ Private m_MouseInsideUC As Boolean
 
 'When the option button receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
 Private m_FocusRectActive As Boolean
+
+'Whenever the control is repainted, the clickable rect will be updated to reflect the relevant portion of the control's interior
+Private clickableRect As RECT
 
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
@@ -184,15 +180,20 @@ Public Property Set Font(mNewFont As StdFont)
     
 End Property
 
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
-    If (Not m_MouseInsideUC) Or m_FocusRectActive Then
-        m_MouseInsideUC = True
-        Refresh
-    End If
-    
+Private Sub mFont_FontChanged(ByVal PropertyName As String)
+    Set UserControl.Font = mFont
 End Sub
 
+'To improve responsiveness, MouseDown is used instead of Click
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    If Me.Enabled And isMouseOverClickArea(x, y) Then
+        If CBool(Me.Value) Then Me.Value = vbUnchecked Else Me.Value = vbChecked
+    End If
+
+End Sub
+
+'When the mouse leaves the UC, we must repaint the caption (as it's no longer hovered)
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     If m_MouseInsideUC Then
@@ -200,11 +201,49 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
         Refresh
     End If
     
+    'Reset the cursor
+    cMouseEvents.setSystemCursor IDC_ARROW
+    
 End Sub
 
-Private Sub mFont_FontChanged(ByVal PropertyName As String)
-    Set UserControl.Font = mFont
+'When the mouse enters the clickable portion of the UC, we must repaint the caption (to reflect its hovered state)
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    'If the mouse is over the relevant portion of the user control, display the cursor as clickable
+    If isMouseOverClickArea(x, y) Then
+        
+        cMouseEvents.setSystemCursor IDC_HAND
+        
+        'Repaint the control as necessary
+        If Not m_MouseInsideUC Then
+            m_MouseInsideUC = True
+            Refresh
+        End If
+    
+    Else
+    
+        cMouseEvents.setSystemCursor IDC_ARROW
+        
+        'Repaint the control as necessary
+        If m_MouseInsideUC Then
+            m_MouseInsideUC = False
+            Refresh
+        End If
+        
+    End If
+
 End Sub
+
+'See if the mouse is over the clickable portion of the control
+Private Function isMouseOverClickArea(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
+    
+    If Math_Functions.isPointInRect(mouseX, mouseY, clickableRect) Then
+        isMouseOverClickArea = True
+    Else
+        isMouseOverClickArea = False
+    End If
+
+End Function
 
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
@@ -278,8 +317,6 @@ Private Sub UserControl_Initialize()
         Set cMouseEvents = New pdInput
         cMouseEvents.addInputTracker Me.hWnd, True, True, , True
         cMouseEvents.setSystemCursor IDC_HAND
-        'cMouseEvents.requestKeyTracking Me.hWnd
-        'cMouseEvents.setKeyTrackers Me.hWnd, True
         
         Set cSubclass = New cSelfSubHookCallback
         cSubclass.ssc_Subclass Me.hWnd, , , Me
@@ -296,7 +333,10 @@ Private Sub UserControl_Initialize()
     'Prepare a font object for use
     Set mFont = New StdFont
     Set UserControl.Font = mFont
-                
+    
+    'Update the control size parameters at least once
+    updateControlSize
+    
 End Sub
 
 'Set default properties
@@ -321,17 +361,12 @@ End Sub
 
 Private Sub UserControl_LostFocus()
 
-    'If the mouse is *not* over the user control, assume focus was set via keyboard
+    'If a focus rect has been drawn, remove it now
     If (Not m_MouseInsideUC) And m_FocusRectActive Then
         m_FocusRectActive = False
         Refresh
     End If
 
-End Sub
-
-'For responsiveness, MouseDown is used instead of Click
-Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    If Me.Enabled And (Not Me.Value) Then Value = True
 End Sub
 
 'Note: all drawing is done to a buffer DIB, which is flipped to the screen as the final rendering step.
@@ -386,20 +421,18 @@ End Sub
 ' we must recalculate some internal rendering metrics.
 Private Sub updateControlSize()
 
-    Dim fontX As Long, fontY As Long
-    fontX = fixDPI(32)
+    'By adjusting this fontY parameter, we can control the auto-height of a created check box
+    Dim fontY As Long
     fontY = 1
     
     'Calculate a precise size for the requested caption.
     Dim captionWidth As Long, captionHeight As Long, txtSize As POINTAPI
     If Not m_BackBuffer Is Nothing Then
         GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_Caption), Len(m_Caption), txtSize
-        captionWidth = txtSize.x
         captionHeight = txtSize.y
     
     'Failsafe if a Resize event is fired before we've initialized our back buffer DC
     Else
-        captionWidth = fixDPI(32)
         captionHeight = fixDPI(32)
     End If
     
@@ -485,14 +518,7 @@ Private Sub PaintUC()
         optButtonColorBorder = g_Themer.getThemeColor(PDTC_DISABLED)
         optButtonColorFill = g_Themer.getThemeColor(PDTC_DISABLED)
     End If
-    
-    'If a focus rect is required (because focus was set via keyboard, not mouse), render it now.
-    If m_FocusRectActive And m_MouseInsideUC Then m_FocusRectActive = False
-    
-    If m_FocusRectActive And Me.Enabled Then
-        GDI_Plus.GDIPlusDrawRoundRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 3, optButtonColorFill, True, False
-    End If
-    
+        
     'Next, determine the precise size of our caption, including all internal metrics.  (We need those so we can properly
     ' align the radio button with the baseline of the font and the caps (not ascender!) height.
     Dim captionWidth As Long, captionHeight As Long
@@ -540,12 +566,28 @@ Private Sub PaintUC()
         curFont.setFontColor g_Themer.getThemeColor(PDTC_DISABLED)
     End If
     
+    'Failsafe check for designer mode
     If Not g_UserModeFix Then
-        curFont.setFontColor 0
+        curFont.setFontColor RGB(0, 0, 0)
     End If
     
     'Render the text
     curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_Caption
+    
+    'Update the clickable rect using the measurements from the final render
+    With clickableRect
+        .Left = 0
+        .Top = 0
+        .Right = offsetX * 2 + optCircleSize + fixDPI(6) + curFont.getWidthOfString(m_Caption) + fixDPI(6)
+        .Bottom = m_BackBuffer.getDIBHeight
+    End With
+    
+    'If a focus rect is required (because focus was set via keyboard, not mouse), render it now.
+    If m_FocusRectActive And m_MouseInsideUC Then m_FocusRectActive = False
+    
+    If m_FocusRectActive And Me.Enabled Then
+        GDI_Plus.GDIPlusDrawRoundRect m_BackBuffer, 0, 0, clickableRect.Right, m_BackBuffer.getDIBHeight, 3, optButtonColorFill, True, False
+    End If
     
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
     If Not g_UserModeFix Then

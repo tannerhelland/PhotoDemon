@@ -79,8 +79,8 @@ Begin VB.Form FormPinch
       Left            =   6120
       TabIndex        =   8
       Top             =   5280
-      Width           =   2700
-      _ExtentX        =   1773
+      Width           =   2685
+      _ExtentX        =   4736
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -100,8 +100,8 @@ Begin VB.Form FormPinch
       Left            =   8880
       TabIndex        =   9
       Top             =   5280
-      Width           =   2700
-      _ExtentX        =   1720
+      Width           =   2685
+      _ExtentX        =   4736
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -430,7 +430,7 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -487,21 +487,21 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     sRadius2 = sRadius * sRadius
               
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
-        nX = x - midX
-        nY = y - midY
+        nX = X - midX
+        nY = Y - midY
         
         'Calculate distance automatically
         sDistance = (nX * nX) + (nY * nY)
                 
         'Calculate remapped x and y values
         If (sDistance > sRadius2) Then
-            srcX = x
-            srcY = y
+            srcX = X
+            srcY = Y
         Else
         
             'Calculate distance as a ratio of the effect radius
@@ -529,16 +529,16 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
         End If
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
                 
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

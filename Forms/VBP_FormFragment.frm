@@ -143,8 +143,8 @@ Begin VB.Form FormFragment
       Left            =   6120
       TabIndex        =   9
       Top             =   4920
-      Width           =   5700
-      _ExtentX        =   1773
+      Width           =   5685
+      _ExtentX        =   10028
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -164,8 +164,8 @@ Begin VB.Form FormFragment
       Left            =   6120
       TabIndex        =   10
       Top             =   5280
-      Width           =   5700
-      _ExtentX        =   1720
+      Width           =   5685
+      _ExtentX        =   10028
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -342,7 +342,7 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -406,22 +406,22 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     Dim xOffset As Double, yOffset As Double
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Grab the current pixel values
-        newR = srcImageData(QuickVal + 2, y)
-        newG = srcImageData(QuickVal + 1, y)
-        newB = srcImageData(QuickVal, y)
-        If qvDepth = 4 Then newA = srcImageData(QuickVal + 3, y)
+        newR = srcImageData(QuickVal + 2, Y)
+        newG = srcImageData(QuickVal + 1, Y)
+        newB = srcImageData(QuickVal, Y)
+        If qvDepth = 4 Then newA = srcImageData(QuickVal + 3, Y)
         
         'Iterate through each fragment in turn, adding together their values as we go
         For n = 0 To numPoints
         
             'Calculate an offset for this fragment.
-            xOffset = x - xOffsetLookup(n)
-            yOffset = y - yOffsetLookup(n)
+            xOffset = X - xOffsetLookup(n)
+            yOffset = Y - yOffsetLookup(n)
                         
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             fSupport.getColorsFromSource r, g, b, a, xOffset, yOffset, srcImageData
@@ -439,24 +439,24 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
         newG = newG \ numPointsCalc
         newB = newB \ numPointsCalc
                 
-        dstImageData(QuickVal + 2, y) = newR
-        dstImageData(QuickVal + 1, y) = newG
-        dstImageData(QuickVal, y) = newB
+        dstImageData(QuickVal + 2, Y) = newR
+        dstImageData(QuickVal + 1, Y) = newG
+        dstImageData(QuickVal, Y) = newB
         
         'If the image has an alpha channel, repeat the calculation there too
         If qvDepth = 4 Then
             newA = newA \ numPointsCalc
-            dstImageData(QuickVal + 3, y) = newA
+            dstImageData(QuickVal + 3, Y) = newA
         End If
         
-    Next y
+    Next Y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

@@ -79,8 +79,8 @@ Begin VB.Form FormPoke
       Left            =   6120
       TabIndex        =   6
       Top             =   4560
-      Width           =   5700
-      _ExtentX        =   1773
+      Width           =   5685
+      _ExtentX        =   10028
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -100,8 +100,8 @@ Begin VB.Form FormPoke
       Left            =   6120
       TabIndex        =   7
       Top             =   4920
-      Width           =   5700
-      _ExtentX        =   1720
+      Width           =   5685
+      _ExtentX        =   10028
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -347,7 +347,7 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -396,25 +396,25 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     Dim xLookup() As Single, yLookup() As Single
     ReDim xLookup(initX To finalX) As Single, yLookup(initY To finalY) As Single
     
-    For x = initX To finalX
-        xLookup(x) = (2 * x) / tWidth - centerX
-    Next x
+    For X = initX To finalX
+        xLookup(X) = (2 * X) / tWidth - centerX
+    Next X
     
-    For y = initY To finalY
-        yLookup(y) = (2 * y) / tHeight - centerY
-    Next y
+    For Y = initY To finalY
+        yLookup(Y) = (2 * Y) / tHeight - centerY
+    Next Y
     
     'To avoid divide-by-zero errors, fix the input value to a non-zero value as necessary
     If pokeStrength = 0 Then pokeStrength = 0.00000001
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
         'UPDATE 10 Jan 2014 - center the poke around whatever coordinates the user wants!
-        nX = xLookup(x)
-        nY = yLookup(y)
+        nX = xLookup(X)
+        nY = yLookup(Y)
         
         'Next, map them to polar coordinates and apply the stretch
         r = Sqr(nX * nX + nY * nY)
@@ -429,16 +429,16 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
         srcY = (tHeight * (nY + centerY)) / 2
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
                 
-    Next y
+    Next Y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

@@ -127,8 +127,8 @@ Begin VB.Form FormColorBalance
       Left            =   6240
       TabIndex        =   12
       Top             =   480
-      Width           =   5535
-      _ExtentX        =   2170
+      Width           =   5550
+      _ExtentX        =   9790
       _ExtentY        =   635
       Caption         =   "shadows"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -147,8 +147,8 @@ Begin VB.Form FormColorBalance
       Left            =   6240
       TabIndex        =   13
       Top             =   840
-      Width           =   5535
-      _ExtentX        =   2249
+      Width           =   5550
+      _ExtentX        =   9790
       _ExtentY        =   635
       Caption         =   "midtones"
       Value           =   -1  'True
@@ -168,8 +168,8 @@ Begin VB.Form FormColorBalance
       Left            =   6240
       TabIndex        =   14
       Top             =   1200
-      Width           =   5535
-      _ExtentX        =   2223
+      Width           =   5550
+      _ExtentX        =   9790
       _ExtentY        =   635
       Caption         =   "highlights"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -183,13 +183,13 @@ Begin VB.Form FormColorBalance
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkLuminance 
-      Height          =   300
+      Height          =   330
       Left            =   6240
       TabIndex        =   15
       Top             =   5160
-      Width           =   5535
-      _ExtentX        =   3625
-      _ExtentY        =   529
+      Width           =   5550
+      _ExtentX        =   9790
+      _ExtentY        =   582
       Caption         =   "preserve luminance"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -434,7 +434,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -466,48 +466,48 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     
     Dim dl As Double, dm As Double
     
-    For x = 0 To 255
+    For X = 0 To 255
         
-        dl = 1.075 - 1 / (x / 16 + 1)
+        dl = 1.075 - 1 / (X / 16 + 1)
         
-        dm = (x - 127) / 127
+        dm = (X - 127) / 127
         dm = 0.667 * (1 - dm * dm)
         
-        shadowsAdd(x) = dl
-        shadowsSub(255 - x) = dl
-        highlightsAdd(255 - x) = dl
-        highlightsSub(x) = dl
-        midtonesAdd(x) = dm
-        midtonesSub(x) = dm
+        shadowsAdd(X) = dl
+        shadowsSub(255 - X) = dl
+        highlightsAdd(255 - X) = dl
+        highlightsSub(X) = dl
+        midtonesAdd(X) = dm
+        midtonesSub(X) = dm
         
-    Next x
+    Next X
     
     'Set up transfer arrays
     Dim rTransfer(0 To 2, 0 To 255) As Double, gTransfer(0 To 2, 0 To 255) As Double, bTransfer(0 To 2, 0 To 255) As Double
     
     'Add lighening/darkening modifiers to the transfer arrays
-    For x = 0 To 255
+    For X = 0 To 255
         
-        If rRgn(TONE_SHADOWS) > 0 Then rTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else rTransfer(TONE_SHADOWS, x) = shadowsSub(x)
-        If rRgn(TONE_MIDTONES) > 0 Then rTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else rTransfer(TONE_SHADOWS, x) = midtonesAdd(x)
-        If rRgn(TONE_HIGHLIGHTS) > 0 Then rTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else rTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
+        If rRgn(TONE_SHADOWS) > 0 Then rTransfer(TONE_SHADOWS, X) = shadowsAdd(X) Else rTransfer(TONE_SHADOWS, X) = shadowsSub(X)
+        If rRgn(TONE_MIDTONES) > 0 Then rTransfer(TONE_MIDTONES, X) = midtonesAdd(X) Else rTransfer(TONE_SHADOWS, X) = midtonesAdd(X)
+        If rRgn(TONE_HIGHLIGHTS) > 0 Then rTransfer(TONE_HIGHLIGHTS, X) = highlightsAdd(X) Else rTransfer(TONE_HIGHLIGHTS, X) = highlightsSub(X)
     
-        If gRgn(TONE_SHADOWS) > 0 Then gTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else gTransfer(TONE_SHADOWS, x) = shadowsSub(x)
-        If gRgn(TONE_MIDTONES) > 0 Then gTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else gTransfer(TONE_SHADOWS, x) = midtonesAdd(x)
-        If gRgn(TONE_HIGHLIGHTS) > 0 Then gTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else gTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
+        If gRgn(TONE_SHADOWS) > 0 Then gTransfer(TONE_SHADOWS, X) = shadowsAdd(X) Else gTransfer(TONE_SHADOWS, X) = shadowsSub(X)
+        If gRgn(TONE_MIDTONES) > 0 Then gTransfer(TONE_MIDTONES, X) = midtonesAdd(X) Else gTransfer(TONE_SHADOWS, X) = midtonesAdd(X)
+        If gRgn(TONE_HIGHLIGHTS) > 0 Then gTransfer(TONE_HIGHLIGHTS, X) = highlightsAdd(X) Else gTransfer(TONE_HIGHLIGHTS, X) = highlightsSub(X)
     
-        If bRgn(TONE_SHADOWS) > 0 Then bTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else bTransfer(TONE_SHADOWS, x) = shadowsSub(x)
-        If bRgn(TONE_MIDTONES) > 0 Then bTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else bTransfer(TONE_SHADOWS, x) = midtonesAdd(x)
-        If bRgn(TONE_HIGHLIGHTS) > 0 Then bTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else bTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
+        If bRgn(TONE_SHADOWS) > 0 Then bTransfer(TONE_SHADOWS, X) = shadowsAdd(X) Else bTransfer(TONE_SHADOWS, X) = shadowsSub(X)
+        If bRgn(TONE_MIDTONES) > 0 Then bTransfer(TONE_MIDTONES, X) = midtonesAdd(X) Else bTransfer(TONE_SHADOWS, X) = midtonesAdd(X)
+        If bRgn(TONE_HIGHLIGHTS) > 0 Then bTransfer(TONE_HIGHLIGHTS, X) = highlightsAdd(X) Else bTransfer(TONE_HIGHLIGHTS, X) = highlightsSub(X)
     
-    Next x
+    Next X
     
     'Populate the lookup tables
-    For x = 0 To 255
+    For X = 0 To 255
         
-        r = x
-        g = x
-        b = x
+        r = X
+        g = X
+        b = X
         
         'Apply the modifiers
         r = Clamp0255(r + (rRgn(TONE_SHADOWS) * rTransfer(TONE_SHADOWS, r)))
@@ -522,23 +522,23 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         b = Clamp0255(b + (bRgn(TONE_MIDTONES) * bTransfer(TONE_MIDTONES, b)))
         b = Clamp0255(b + (bRgn(TONE_HIGHLIGHTS) * bTransfer(TONE_HIGHLIGHTS, b)))
         
-        rLookup(x) = r
-        gLookUp(x) = g
-        bLookup(x) = b
+        rLookup(X) = r
+        gLookUp(X) = g
+        bLookup(X) = b
     
-    Next x
+    Next X
     
     Dim origLuminance As Double
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         'Get the original luminance
         origLuminance = getLuminance(r, g, b) / 255
@@ -561,18 +561,18 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         End If
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal + 2, Y) = r
+        ImageData(QuickVal + 1, Y) = g
+        ImageData(QuickVal, Y) = b
         
-    Next y
+    Next Y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
