@@ -127,7 +127,7 @@ Begin VB.Form FormColorBalance
       Left            =   6240
       TabIndex        =   12
       Top             =   480
-      Width           =   1230
+      Width           =   5535
       _ExtentX        =   2170
       _ExtentY        =   635
       Caption         =   "shadows"
@@ -147,7 +147,7 @@ Begin VB.Form FormColorBalance
       Left            =   6240
       TabIndex        =   13
       Top             =   840
-      Width           =   1275
+      Width           =   5535
       _ExtentX        =   2249
       _ExtentY        =   635
       Caption         =   "midtones"
@@ -168,7 +168,7 @@ Begin VB.Form FormColorBalance
       Left            =   6240
       TabIndex        =   14
       Top             =   1200
-      Width           =   1260
+      Width           =   5535
       _ExtentX        =   2223
       _ExtentY        =   635
       Caption         =   "highlights"
@@ -183,15 +183,14 @@ Begin VB.Form FormColorBalance
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkLuminance 
-      Height          =   480
+      Height          =   300
       Left            =   6240
       TabIndex        =   15
       Top             =   5160
-      Width           =   2055
+      Width           =   5535
       _ExtentX        =   3625
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "preserve luminance"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75

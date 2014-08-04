@@ -48,9 +48,9 @@ Begin VB.Form FormTransparency_Basic
       Left            =   6240
       TabIndex        =   3
       Top             =   1920
-      Width           =   1695
-      _ExtentX        =   3201
-      _ExtentY        =   556
+      Width           =   5325
+      _ExtentX        =   9393
+      _ExtentY        =   661
       Caption         =   "fully opaque"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -77,9 +77,9 @@ Begin VB.Form FormTransparency_Basic
       Left            =   6240
       TabIndex        =   4
       Top             =   2400
-      Width           =   2115
-      _ExtentX        =   3942
-      _ExtentY        =   556
+      Width           =   5325
+      _ExtentX        =   9393
+      _ExtentY        =   661
       Caption         =   "fully transparent"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -97,9 +97,9 @@ Begin VB.Form FormTransparency_Basic
       Left            =   6240
       TabIndex        =   5
       Top             =   2880
-      Width           =   2595
-      _ExtentX        =   4789
-      _ExtentY        =   556
+      Width           =   5325
+      _ExtentX        =   9393
+      _ExtentY        =   661
       Caption         =   "partially transparent:"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

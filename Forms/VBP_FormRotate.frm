@@ -49,8 +49,8 @@ Begin VB.Form FormRotate
       Left            =   6120
       TabIndex        =   4
       Top             =   3330
-      Width           =   3390
-      _ExtentX        =   5980
+      Width           =   5715
+      _ExtentX        =   10081
       _ExtentY        =   635
       Caption         =   "adjust size to fit rotated image"
       Value           =   -1  'True
@@ -80,8 +80,8 @@ Begin VB.Form FormRotate
       Left            =   6120
       TabIndex        =   5
       Top             =   3720
-      Width           =   3315
-      _ExtentX        =   5847
+      Width           =   5715
+      _ExtentX        =   10081
       _ExtentY        =   635
       Caption         =   "keep image at its present size"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -102,9 +102,6 @@ Begin VB.Form FormRotate
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -360
-      Max             =   360
-      SigDigits       =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -114,6 +111,9 @@ Begin VB.Form FormRotate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -360
+      Max             =   360
+      SigDigits       =   2
    End
    Begin VB.Label lblRotatedCanvas 
       Appearance      =   0  'Flat

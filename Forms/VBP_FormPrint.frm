@@ -25,15 +25,14 @@ Begin VB.Form FormPrint
    ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.smartCheckBox chkCenter 
-      Height          =   480
+      Height          =   300
       Left            =   4080
       TabIndex        =   23
       Top             =   3480
-      Width           =   1665
-      _ExtentX        =   2937
-      _ExtentY        =   847
+      Width           =   4425
+      _ExtentX        =   7805
+      _ExtentY        =   529
       Caption         =   "center on page"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -261,15 +260,14 @@ Begin VB.Form FormPrint
       End
    End
    Begin PhotoDemon.smartCheckBox chkFit 
-      Height          =   480
+      Height          =   300
       Left            =   4080
       TabIndex        =   24
       Top             =   3960
-      Width           =   1290
-      _ExtentX        =   2275
-      _ExtentY        =   847
+      Width           =   4410
+      _ExtentX        =   7779
+      _ExtentY        =   529
       Caption         =   "fit on page"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75

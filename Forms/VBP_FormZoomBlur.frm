@@ -60,8 +60,6 @@ Begin VB.Form FormZoomBlur
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   -200
-      Max             =   200
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -71,6 +69,8 @@ Begin VB.Form FormZoomBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -200
+      Max             =   200
    End
    Begin PhotoDemon.smartOptionButton OptStyle 
       Height          =   360
@@ -78,8 +78,8 @@ Begin VB.Form FormZoomBlur
       Left            =   6120
       TabIndex        =   5
       Top             =   2160
-      Width           =   1140
-      _ExtentX        =   2011
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "modern"
       Value           =   -1  'True
@@ -99,8 +99,8 @@ Begin VB.Form FormZoomBlur
       Left            =   6120
       TabIndex        =   6
       Top             =   2520
-      Width           =   1305
-      _ExtentX        =   2302
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "traditional"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 

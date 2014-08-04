@@ -50,8 +50,8 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
       Height          =   495
@@ -59,22 +59,14 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   5
       Top             =   1260
       Width           =   6015
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Min             =   -200
-      Max             =   200
-      SliderTrackStyle=   3
-      GradientColorMiddle=   255
-      GradientMiddleValue=   0
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormChannelMixer.frx":0004
+      min             =   -200
+      max             =   200
+      slidertrackstyle=   3
+      gradientcolormiddle=   255
+      gradientmiddlevalue=   0
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
@@ -82,22 +74,14 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   6
       Top             =   2160
       Width           =   6015
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Min             =   -200
-      Max             =   200
-      SliderTrackStyle=   3
-      GradientColorMiddle=   65280
-      GradientMiddleValue=   0
+      _extentx        =   10398
+      _extenty        =   873
+      font            =   "VBP_FormChannelMixer.frx":002C
+      min             =   -200
+      max             =   200
+      slidertrackstyle=   3
+      gradientcolormiddle=   65280
+      gradientmiddlevalue=   0
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
@@ -105,41 +89,25 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   7
       Top             =   3060
       Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Min             =   -200
-      Max             =   200
-      SliderTrackStyle=   3
-      GradientColorMiddle=   16711680
-      GradientMiddleValue=   0
+      _extentx        =   10610
+      _extenty        =   873
+      font            =   "VBP_FormChannelMixer.frx":0054
+      min             =   -200
+      max             =   200
+      slidertrackstyle=   3
+      gradientcolormiddle=   16711680
+      gradientmiddlevalue=   0
    End
    Begin PhotoDemon.smartCheckBox chkMonochrome 
-      Height          =   570
+      Height          =   300
       Left            =   6120
       TabIndex        =   8
       Top             =   5040
-      Width           =   1785
-      _ExtentX        =   3149
-      _ExtentY        =   1005
-      Caption         =   "monochrome"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      Width           =   5775
+      _extentx        =   3149
+      _extenty        =   1005
+      caption         =   "monochrome"
+      font            =   "VBP_FormChannelMixer.frx":007C
    End
    Begin PhotoDemon.sliderTextCombo sltConstant 
       Height          =   495
@@ -147,39 +115,23 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   9
       Top             =   3960
       Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Min             =   -255
-      Max             =   255
-      SliderTrackStyle=   2
+      _extentx        =   10610
+      _extenty        =   873
+      font            =   "VBP_FormChannelMixer.frx":00A4
+      min             =   -255
+      max             =   255
+      slidertrackstyle=   2
    End
    Begin PhotoDemon.smartCheckBox chkLuminance 
-      Height          =   570
-      Left            =   8640
+      Height          =   300
+      Left            =   6120
       TabIndex        =   11
-      Top             =   5040
-      Width           =   2430
-      _ExtentX        =   4286
-      _ExtentY        =   1005
-      Caption         =   "preserve luminance"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      Top             =   5400
+      Width           =   5775
+      _extentx        =   4286
+      _extenty        =   1005
+      caption         =   "preserve luminance"
+      font            =   "VBP_FormChannelMixer.frx":00CC
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -188,17 +140,9 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   0
       Top             =   5790
       Width           =   12090
-      _ExtentX        =   21325
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   21325
+      _extenty        =   1323
+      font            =   "VBP_FormChannelMixer.frx":00F4
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True

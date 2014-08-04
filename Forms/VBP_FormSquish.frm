@@ -73,13 +73,13 @@ Begin VB.Form FormSquish
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   6
       Top             =   4440
-      Width           =   1005
-      _ExtentX        =   1773
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -94,13 +94,13 @@ Begin VB.Form FormSquish
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   6120
       TabIndex        =   7
-      Top             =   4440
-      Width           =   975
-      _ExtentX        =   1720
+      Top             =   4800
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -121,9 +121,6 @@ Begin VB.Form FormSquish
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -133,6 +130,9 @@ Begin VB.Form FormSquish
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltRatioY 
       Height          =   495
@@ -142,9 +142,6 @@ Begin VB.Form FormSquish
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      SigDigits       =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -154,6 +151,9 @@ Begin VB.Form FormSquish
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   -100
+      Max             =   100
+      SigDigits       =   1
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat

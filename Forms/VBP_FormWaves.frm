@@ -73,13 +73,13 @@ Begin VB.Form FormWaves
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   9
       Top             =   4920
-      Width           =   1005
-      _ExtentX        =   1773
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -94,13 +94,13 @@ Begin VB.Form FormWaves
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   6120
       TabIndex        =   10
-      Top             =   4920
-      Width           =   975
-      _ExtentX        =   1720
+      Top             =   5280
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -121,9 +121,6 @@ Begin VB.Form FormWaves
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   50
-      Value           =   30
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -133,6 +130,9 @@ Begin VB.Form FormWaves
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   50
+      Value           =   30
    End
    Begin PhotoDemon.sliderTextCombo sltWavelengthY 
       Height          =   495
@@ -142,9 +142,6 @@ Begin VB.Form FormWaves
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   50
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -154,6 +151,9 @@ Begin VB.Form FormWaves
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   50
+      Value           =   1
    End
    Begin PhotoDemon.sliderTextCombo sltAmplitudeX 
       Height          =   495
@@ -163,8 +163,6 @@ Begin VB.Form FormWaves
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   200
-      Value           =   20
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -174,6 +172,8 @@ Begin VB.Form FormWaves
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   200
+      Value           =   20
    End
    Begin PhotoDemon.sliderTextCombo sltAmplitudeY 
       Height          =   495
@@ -183,7 +183,6 @@ Begin VB.Form FormWaves
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   200
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -193,6 +192,7 @@ Begin VB.Form FormWaves
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   200
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True

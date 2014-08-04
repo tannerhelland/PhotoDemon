@@ -116,13 +116,13 @@ Begin VB.Form FormResize
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkNames 
-      Height          =   480
+      Height          =   300
       Left            =   840
       TabIndex        =   3
       Top             =   4440
-      Width           =   2265
-      _ExtentX        =   3995
-      _ExtentY        =   847
+      Width           =   7905
+      _ExtentX        =   13944
+      _ExtentY        =   529
       Caption         =   "show technical names"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

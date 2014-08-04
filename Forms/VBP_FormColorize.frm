@@ -43,15 +43,14 @@ Begin VB.Form FormColorize
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkSaturation 
-      Height          =   480
+      Height          =   300
       Left            =   6240
       TabIndex        =   3
       Top             =   2760
-      Width           =   2745
+      Width           =   5745
       _ExtentX        =   4842
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "preserve existing saturation"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -76,7 +75,7 @@ Begin VB.Form FormColorize
       Left            =   6120
       TabIndex        =   4
       Top             =   2040
-      Width           =   5895
+      Width           =   6015
       _ExtentX        =   10398
       _ExtentY        =   873
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 

@@ -46,11 +46,11 @@ Begin VB.Form FormTwins
    Begin PhotoDemon.smartOptionButton optTwins 
       Height          =   375
       Index           =   0
-      Left            =   6960
+      Left            =   6120
       TabIndex        =   3
       Top             =   2640
-      Width           =   1440
-      _ExtentX        =   2540
+      Width           =   3240
+      _ExtentX        =   5715
       _ExtentY        =   661
       Caption         =   "horizontal"
       Value           =   -1  'True
@@ -77,11 +77,11 @@ Begin VB.Form FormTwins
    Begin PhotoDemon.smartOptionButton optTwins 
       Height          =   375
       Index           =   1
-      Left            =   6960
+      Left            =   6120
       TabIndex        =   4
       Top             =   3090
-      Width           =   1140
-      _ExtentX        =   2011
+      Width           =   3240
+      _ExtentX        =   5715
       _ExtentY        =   661
       Caption         =   "vertical"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -109,7 +109,7 @@ Begin VB.Form FormTwins
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   6720
+      Left            =   6000
       TabIndex        =   2
       Top             =   2160
       Width           =   1755

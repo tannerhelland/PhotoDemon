@@ -47,13 +47,13 @@ Begin VB.Form FormMonochrome
       NotchValueCustom=   127
    End
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
-      Height          =   480
+      Height          =   300
       Left            =   6120
       TabIndex        =   6
       Top             =   1860
-      Width           =   5610
+      Width           =   5850
       _ExtentX        =   9895
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "have PhotoDemon estimate the ideal threshold for this image"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

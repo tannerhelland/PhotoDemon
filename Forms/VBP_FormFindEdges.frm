@@ -44,13 +44,13 @@ Begin VB.Form FormFindEdges
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkInvert 
-      Height          =   480
+      Height          =   300
       Left            =   6240
       TabIndex        =   4
       Top             =   5040
-      Width           =   2220
+      Width           =   5580
       _ExtentX        =   3916
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "use black background"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -89,16 +89,15 @@ Begin VB.Form FormFindEdges
       _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkDirection 
-      Height          =   540
+      Height          =   330
       Index           =   0
       Left            =   6240
       TabIndex        =   7
       Top             =   3360
-      Width           =   1290
+      Width           =   5610
       _ExtentX        =   2275
-      _ExtentY        =   953
+      _ExtentY        =   582
       Caption         =   "horizontal"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -110,16 +109,15 @@ Begin VB.Form FormFindEdges
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkDirection 
-      Height          =   540
+      Height          =   330
       Index           =   1
       Left            =   6240
       TabIndex        =   8
       Top             =   3840
-      Width           =   1050
+      Width           =   5610
       _ExtentX        =   1852
-      _ExtentY        =   953
+      _ExtentY        =   582
       Caption         =   "vertical"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25

@@ -123,8 +123,8 @@ Begin VB.Form FormPrintNew
          Left            =   480
          TabIndex        =   16
          Top             =   2520
-         Width           =   2505
-         _ExtentX        =   4419
+         Width           =   9105
+         _ExtentX        =   16060
          _ExtentY        =   661
          Caption         =   "one image per page"
          Value           =   -1  'True
@@ -221,8 +221,8 @@ Begin VB.Form FormPrintNew
          Left            =   480
          TabIndex        =   17
          Top             =   3000
-         Width           =   3075
-         _ExtentX        =   5424
+         Width           =   9075
+         _ExtentX        =   16007
          _ExtentY        =   661
          Caption         =   "multiple images per page"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -241,8 +241,8 @@ Begin VB.Form FormPrintNew
          Left            =   480
          TabIndex        =   18
          Top             =   3480
-         Width           =   6120
-         _ExtentX        =   10795
+         Width           =   9120
+         _ExtentX        =   16087
          _ExtentY        =   661
          Caption         =   "one image spread across multiple pages (poster print)"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 

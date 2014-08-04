@@ -60,10 +60,6 @@ Begin VB.Form FormRadialBlur
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   1
-      Max             =   360
-      SigDigits       =   1
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -73,15 +69,19 @@ Begin VB.Form FormRadialBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   360
+      SigDigits       =   1
+      Value           =   1
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   5
       Top             =   3750
-      Width           =   1005
-      _ExtentX        =   1773
+      Width           =   5685
+      _ExtentX        =   10028
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -96,13 +96,13 @@ Begin VB.Form FormRadialBlur
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   6120
       TabIndex        =   6
-      Top             =   3750
-      Width           =   975
-      _ExtentX        =   1720
+      Top             =   4200
+      Width           =   5685
+      _ExtentX        =   10028
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -116,15 +116,14 @@ Begin VB.Form FormRadialBlur
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkSymmetry 
-      Height          =   480
+      Height          =   300
       Left            =   6120
       TabIndex        =   8
       Top             =   2760
-      Width           =   1935
-      _ExtentX        =   3413
-      _ExtentY        =   847
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   529
       Caption         =   "blur symmetrically"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75

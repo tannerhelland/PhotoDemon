@@ -25,13 +25,13 @@ Begin VB.Form dialog_ExportColorDepth
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
-      Height          =   345
+      Height          =   375
       Index           =   0
       Left            =   600
       TabIndex        =   4
       Top             =   960
-      Width           =   2670
-      _ExtentX        =   4710
+      Width           =   5655
+      _ExtentX        =   9975
       _ExtentY        =   661
       Caption         =   "1 bpp (monochrome)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -82,13 +82,13 @@ Begin VB.Form dialog_ExportColorDepth
    End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
-      Height          =   345
+      Height          =   375
       Index           =   1
       Left            =   600
       TabIndex        =   5
       Top             =   1440
-      Width           =   3150
-      _ExtentX        =   5556
+      Width           =   5655
+      _ExtentX        =   9975
       _ExtentY        =   661
       Caption         =   "4 bpp (16 shades of gray)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -103,13 +103,13 @@ Begin VB.Form dialog_ExportColorDepth
    End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
-      Height          =   345
+      Height          =   375
       Index           =   2
       Left            =   600
       TabIndex        =   6
       Top             =   1920
-      Width           =   4125
-      _ExtentX        =   7276
+      Width           =   5655
+      _ExtentX        =   9975
       _ExtentY        =   661
       Caption         =   "8 bpp (256 colors or full grayscale)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -124,13 +124,13 @@ Begin VB.Form dialog_ExportColorDepth
    End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
-      Height          =   345
+      Height          =   375
       Index           =   3
       Left            =   600
       TabIndex        =   7
       Top             =   2400
-      Width           =   3165
-      _ExtentX        =   5583
+      Width           =   5655
+      _ExtentX        =   9975
       _ExtentY        =   661
       Caption         =   "24 bpp (16 million colors)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -145,13 +145,13 @@ Begin VB.Form dialog_ExportColorDepth
    End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
-      Height          =   345
+      Height          =   375
       Index           =   4
       Left            =   600
       TabIndex        =   8
       Top             =   2880
-      Width           =   5250
-      _ExtentX        =   9260
+      Width           =   5655
+      _ExtentX        =   9975
       _ExtentY        =   661
       Caption         =   "32 bpp (16 million colors + full transparency)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 

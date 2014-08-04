@@ -48,8 +48,8 @@ Begin VB.Form FormSurfaceBlur
       Left            =   6120
       TabIndex        =   6
       Top             =   1800
-      Width           =   1740
-      _ExtentX        =   3069
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "smooth areas"
       Value           =   -1  'True
@@ -78,8 +78,8 @@ Begin VB.Form FormSurfaceBlur
       Left            =   6120
       TabIndex        =   7
       Top             =   2160
-      Width           =   975
-      _ExtentX        =   1720
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "edges"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -100,10 +100,6 @@ Begin VB.Form FormSurfaceBlur
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   0.1
-      Max             =   200
-      SigDigits       =   1
-      Value           =   5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -113,6 +109,10 @@ Begin VB.Form FormSurfaceBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   0.1
+      Max             =   200
+      SigDigits       =   1
+      Value           =   5
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
@@ -122,8 +122,6 @@ Begin VB.Form FormSurfaceBlur
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
-      Max             =   255
-      Value           =   50
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -133,6 +131,8 @@ Begin VB.Form FormSurfaceBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Max             =   255
+      Value           =   50
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat

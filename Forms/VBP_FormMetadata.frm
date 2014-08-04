@@ -25,15 +25,14 @@ Begin VB.Form FormMetadata
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.smartCheckBox chkFriendlyNames 
-      Height          =   540
+      Height          =   330
       Left            =   3240
       TabIndex        =   6
       Top             =   5760
-      Width           =   2355
+      Width           =   4035
       _ExtentX        =   4154
-      _ExtentY        =   953
+      _ExtentY        =   582
       Caption         =   "use readable names"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -105,15 +104,14 @@ Begin VB.Form FormMetadata
       Width           =   1365
    End
    Begin PhotoDemon.smartCheckBox chkFriendlyValues 
-      Height          =   540
+      Height          =   330
       Left            =   7320
       TabIndex        =   7
       Top             =   5760
-      Width           =   2310
+      Width           =   4575
       _ExtentX        =   4075
-      _ExtentY        =   953
+      _ExtentY        =   582
       Caption         =   "use readable values"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25

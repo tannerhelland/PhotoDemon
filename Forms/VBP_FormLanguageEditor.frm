@@ -114,15 +114,14 @@ Begin VB.Form FormLanguageEditor
          Width           =   6615
       End
       Begin PhotoDemon.smartCheckBox chkGoogleTranslate 
-         Height          =   480
+         Height          =   300
          Left            =   5040
          TabIndex        =   16
          Top             =   5520
-         Width           =   6015
+         Width           =   6615
          _ExtentX        =   10610
-         _ExtentY        =   847
+         _ExtentY        =   529
          Caption         =   "automatically estimate missing translations (via Google Translate)"
-         Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -208,15 +207,14 @@ Begin VB.Form FormLanguageEditor
          Width           =   4500
       End
       Begin PhotoDemon.smartCheckBox chkShortcut 
-         Height          =   480
+         Height          =   300
          Left            =   5040
          TabIndex        =   17
          Top             =   6000
-         Width           =   5520
+         Width           =   6600
          _ExtentX        =   9737
-         _ExtentY        =   847
+         _ExtentY        =   529
          Caption         =   "ENTER key automatically saves and proceeds to next phrase"
-         Value           =   1
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   9.75
@@ -358,7 +356,7 @@ Begin VB.Form FormLanguageEditor
          Left            =   120
          TabIndex        =   3
          Top             =   120
-         Width           =   4380
+         Width           =   11340
          _ExtentX        =   7726
          _ExtentY        =   661
          Caption         =   "start a new language file from scratch"
@@ -379,7 +377,7 @@ Begin VB.Form FormLanguageEditor
          Left            =   120
          TabIndex        =   4
          Top             =   600
-         Width           =   3510
+         Width           =   11340
          _ExtentX        =   6191
          _ExtentY        =   661
          Caption         =   "edit an existing language file:"

@@ -5,7 +5,7 @@ Begin VB.Form dialog_UnsavedChanges
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Unsaved Changes"
-   ClientHeight    =   4590
+   ClientHeight    =   4500
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9360
@@ -21,7 +21,7 @@ Begin VB.Form dialog_UnsavedChanges
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   306
+   ScaleHeight     =   300
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   624
    ShowInTaskbar   =   0   'False
@@ -53,13 +53,13 @@ Begin VB.Form dialog_UnsavedChanges
       Width           =   5100
    End
    Begin PhotoDemon.smartCheckBox chkRepeat 
-      Height          =   480
+      Height          =   300
       Left            =   3960
       TabIndex        =   2
       Top             =   4005
-      Width           =   4875
-      _ExtentX        =   8599
-      _ExtentY        =   847
+      Width           =   5115
+      _ExtentX        =   9022
+      _ExtentY        =   529
       Caption         =   "Repeat this action for all unsaved images (X in total)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

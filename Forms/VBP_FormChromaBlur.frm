@@ -59,10 +59,6 @@ Begin VB.Form FormChromaBlur
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Min             =   0.1
-      Max             =   200
-      SigDigits       =   1
-      Value           =   5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -72,6 +68,10 @@ Begin VB.Form FormChromaBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   0.1
+      Max             =   200
+      SigDigits       =   1
+      Value           =   5
    End
    Begin PhotoDemon.smartOptionButton OptQuality 
       Height          =   360
@@ -79,7 +79,7 @@ Begin VB.Form FormChromaBlur
       Left            =   6120
       TabIndex        =   5
       Top             =   3150
-      Width           =   870
+      Width           =   5655
       _ExtentX        =   1535
       _ExtentY        =   635
       Caption         =   "good"
@@ -100,7 +100,7 @@ Begin VB.Form FormChromaBlur
       Left            =   6120
       TabIndex        =   6
       Top             =   3570
-      Width           =   975
+      Width           =   5655
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "better"
@@ -120,7 +120,7 @@ Begin VB.Form FormChromaBlur
       Left            =   6120
       TabIndex        =   7
       Top             =   3990
-      Width           =   810
+      Width           =   5655
       _ExtentX        =   1429
       _ExtentY        =   635
       Caption         =   "best"

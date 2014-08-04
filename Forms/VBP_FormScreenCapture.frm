@@ -76,13 +76,13 @@ Begin VB.Form FormScreenCapture
       Width           =   6855
    End
    Begin PhotoDemon.smartCheckBox chkMinimize 
-      Height          =   480
+      Height          =   300
       Left            =   840
       TabIndex        =   4
-      Top             =   960
-      Width           =   3675
-      _ExtentX        =   6482
-      _ExtentY        =   847
+      Top             =   1050
+      Width           =   5115
+      _ExtentX        =   9022
+      _ExtentY        =   529
       Caption         =   "minimize PhotoDemon prior to capture"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -117,8 +117,8 @@ Begin VB.Form FormScreenCapture
       Left            =   480
       TabIndex        =   1
       Top             =   600
-      Width           =   1890
-      _ExtentX        =   3334
+      Width           =   5370
+      _ExtentX        =   9472
       _ExtentY        =   661
       Caption         =   "entire desktop"
       Value           =   -1  'True
@@ -138,8 +138,8 @@ Begin VB.Form FormScreenCapture
       Left            =   480
       TabIndex        =   2
       Top             =   1680
-      Width           =   4650
-      _ExtentX        =   8202
+      Width           =   5370
+      _ExtentX        =   9472
       _ExtentY        =   661
       Caption         =   "specific program (listed by window title)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -159,9 +159,8 @@ Begin VB.Form FormScreenCapture
       Top             =   5640
       Width           =   2745
       _ExtentX        =   4842
-      _ExtentY        =   847
+      _ExtentY        =   529
       Caption         =   "include window decorations"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75

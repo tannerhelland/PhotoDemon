@@ -43,13 +43,13 @@ Begin VB.Form FormEqualize
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkRed 
-      Height          =   570
+      Height          =   345
       Left            =   6240
       TabIndex        =   3
       Top             =   2040
-      Width           =   720
+      Width           =   3720
       _ExtentX        =   1270
-      _ExtentY        =   1005
+      _ExtentY        =   609
       Caption         =   "red"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -71,13 +71,13 @@ Begin VB.Form FormEqualize
       _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkGreen 
-      Height          =   570
+      Height          =   345
       Left            =   6240
       TabIndex        =   4
       Top             =   2520
-      Width           =   975
+      Width           =   3720
       _ExtentX        =   1720
-      _ExtentY        =   1005
+      _ExtentY        =   609
       Caption         =   "green"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -90,13 +90,13 @@ Begin VB.Form FormEqualize
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkBlue 
-      Height          =   570
+      Height          =   345
       Left            =   6240
       TabIndex        =   5
       Top             =   3000
-      Width           =   825
+      Width           =   3720
       _ExtentX        =   1455
-      _ExtentY        =   1005
+      _ExtentY        =   609
       Caption         =   "blue"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -109,13 +109,13 @@ Begin VB.Form FormEqualize
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkLuminance 
-      Height          =   570
+      Height          =   345
       Left            =   6240
       TabIndex        =   6
       Top             =   3480
-      Width           =   1455
+      Width           =   3720
       _ExtentX        =   2566
-      _ExtentY        =   1005
+      _ExtentY        =   609
       Caption         =   "luminance"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

@@ -80,9 +80,6 @@ Begin VB.Form FormFragment
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      Max             =   200
-      SigDigits       =   1
-      Value           =   8
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -93,6 +90,9 @@ Begin VB.Form FormFragment
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   0
+      Max             =   200
+      SigDigits       =   1
+      Value           =   8
    End
    Begin PhotoDemon.sliderTextCombo sltFragments 
       Height          =   495
@@ -102,9 +102,6 @@ Begin VB.Form FormFragment
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   1
-      Max             =   25
-      Value           =   4
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -115,6 +112,9 @@ Begin VB.Form FormFragment
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   0
+      Min             =   1
+      Max             =   25
+      Value           =   4
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
@@ -124,8 +124,6 @@ Begin VB.Form FormFragment
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      Max             =   360
-      SigDigits       =   2
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -136,14 +134,16 @@ Begin VB.Form FormFragment
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   0
+      Max             =   360
+      SigDigits       =   2
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   9
       Top             =   4920
-      Width           =   1005
+      Width           =   5700
       _ExtentX        =   1773
       _ExtentY        =   635
       Caption         =   "quality"
@@ -159,12 +159,12 @@ Begin VB.Form FormFragment
       EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   330
+      Height          =   360
       Index           =   1
-      Left            =   7920
+      Left            =   6120
       TabIndex        =   10
-      Top             =   4920
-      Width           =   975
+      Top             =   5280
+      Width           =   5700
       _ExtentX        =   1720
       _ExtentY        =   635
       Caption         =   "speed"

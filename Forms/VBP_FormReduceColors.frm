@@ -48,9 +48,9 @@ Begin VB.Form FormReduceColors
       Left            =   6120
       TabIndex        =   4
       Top             =   2040
-      Width           =   1515
-      _ExtentX        =   2884
-      _ExtentY        =   556
+      Width           =   6000
+      _ExtentX        =   10583
+      _ExtentY        =   661
       Caption         =   "Xiaolin Wu"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -77,9 +77,9 @@ Begin VB.Form FormReduceColors
       Left            =   6120
       TabIndex        =   5
       Top             =   2520
-      Width           =   3120
-      _ExtentX        =   5715
-      _ExtentY        =   556
+      Width           =   6000
+      _ExtentX        =   10583
+      _ExtentY        =   661
       Caption         =   "NeuQuant neural network"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

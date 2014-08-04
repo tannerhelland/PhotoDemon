@@ -70,16 +70,15 @@ Begin VB.Form FormEdgeEnhance
       _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkDirection 
-      Height          =   540
+      Height          =   330
       Index           =   0
       Left            =   6240
       TabIndex        =   6
       Top             =   3360
-      Width           =   1290
+      Width           =   5610
       _ExtentX        =   2275
-      _ExtentY        =   953
+      _ExtentY        =   582
       Caption         =   "horizontal"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -91,16 +90,15 @@ Begin VB.Form FormEdgeEnhance
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkDirection 
-      Height          =   540
+      Height          =   330
       Index           =   1
       Left            =   6240
       TabIndex        =   7
       Top             =   3840
-      Width           =   1050
+      Width           =   5610
       _ExtentX        =   1852
-      _ExtentY        =   953
+      _ExtentY        =   582
       Caption         =   "vertical"
-      Value           =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
