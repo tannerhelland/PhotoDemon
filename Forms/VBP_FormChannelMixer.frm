@@ -50,8 +50,8 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   4
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
       Height          =   495
@@ -59,14 +59,21 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   5
       Top             =   1260
       Width           =   6015
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormChannelMixer.frx":0004
-      min             =   -200
-      max             =   200
-      slidertrackstyle=   3
-      gradientcolormiddle=   255
-      gradientmiddlevalue=   0
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   -200
+      Max             =   200
+      SliderTrackStyle=   3
+      GradientColorMiddle=   255
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   495
@@ -74,14 +81,21 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   6
       Top             =   2160
       Width           =   6015
-      _extentx        =   10398
-      _extenty        =   873
-      font            =   "VBP_FormChannelMixer.frx":002C
-      min             =   -200
-      max             =   200
-      slidertrackstyle=   3
-      gradientcolormiddle=   65280
-      gradientmiddlevalue=   0
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   -200
+      Max             =   200
+      SliderTrackStyle=   3
+      GradientColorMiddle=   65280
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   495
@@ -89,25 +103,40 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   7
       Top             =   3060
       Width           =   6015
-      _extentx        =   10610
-      _extenty        =   873
-      font            =   "VBP_FormChannelMixer.frx":0054
-      min             =   -200
-      max             =   200
-      slidertrackstyle=   3
-      gradientcolormiddle=   16711680
-      gradientmiddlevalue=   0
+      _ExtentX        =   10610
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   -200
+      Max             =   200
+      SliderTrackStyle=   3
+      GradientColorMiddle=   16711680
    End
    Begin PhotoDemon.smartCheckBox chkMonochrome 
-      Height          =   300
+      Height          =   375
       Left            =   6120
       TabIndex        =   8
       Top             =   5040
-      Width           =   5775
-      _extentx        =   3149
-      _extenty        =   1005
-      caption         =   "monochrome"
-      font            =   "VBP_FormChannelMixer.frx":007C
+      Width           =   5760
+      _ExtentX        =   10160
+      _ExtentY        =   661
+      Caption         =   "monochrome"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltConstant 
       Height          =   495
@@ -115,23 +144,39 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   9
       Top             =   3960
       Width           =   6015
-      _extentx        =   10610
-      _extenty        =   873
-      font            =   "VBP_FormChannelMixer.frx":00A4
-      min             =   -255
-      max             =   255
-      slidertrackstyle=   2
+      _ExtentX        =   10610
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   -255
+      Max             =   255
+      SliderTrackStyle=   2
    End
    Begin PhotoDemon.smartCheckBox chkLuminance 
-      Height          =   300
+      Height          =   375
       Left            =   6120
       TabIndex        =   11
       Top             =   5400
-      Width           =   5775
-      _extentx        =   4286
-      _extenty        =   1005
-      caption         =   "preserve luminance"
-      font            =   "VBP_FormChannelMixer.frx":00CC
+      Width           =   5760
+      _ExtentX        =   10160
+      _ExtentY        =   661
+      Caption         =   "preserve luminance"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -140,9 +185,17 @@ Begin VB.Form FormChannelMixer
       TabIndex        =   0
       Top             =   5790
       Width           =   12090
-      _extentx        =   21325
-      _extenty        =   1323
-      font            =   "VBP_FormChannelMixer.frx":00F4
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -402,18 +455,18 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     cParams.setParamString channelMixerParams
     
     Dim channelModifiers(0 To 3, 0 To 3) As Double
-    Dim x As Long, y As Long
-    For x = 0 To 3
-        For y = 0 To 3
+    Dim X As Long, Y As Long
+    For X = 0 To 3
+        For Y = 0 To 3
             'The "constant" modifier is added to the final channel value as a whole number, but the other values are
             ' used as multiplication factors - so divide them by 100.
-            If y = 3 Then
-                channelModifiers(x, y) = cParams.GetLong((x * 4) + y + 1)
+            If Y = 3 Then
+                channelModifiers(X, Y) = cParams.GetLong((X * 4) + Y + 1)
             Else
-                channelModifiers(x, y) = CDblCustom(cParams.GetLong((x * 4) + y + 1)) / 100
+                channelModifiers(X, Y) = CDblCustom(cParams.GetLong((X * 4) + Y + 1)) / 100
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
     Dim isMonochrome As Boolean
     isMonochrome = cParams.GetBool(17)
@@ -452,13 +505,13 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     Dim originalLuminance As Double
         
     'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
         
         'Create a new value for each color based on the input parameters
         If isMonochrome Then
@@ -469,9 +522,9 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
             
             'Note: luminance preservation serves no purpose when monochrome is selected, so I do not process it here
             
-            ImageData(QuickVal + 2, y) = newGray
-            ImageData(QuickVal + 1, y) = newGray
-            ImageData(QuickVal, y) = newGray
+            ImageData(QuickVal + 2, Y) = newGray
+            ImageData(QuickVal + 1, Y) = newGray
+            ImageData(QuickVal, Y) = newGray
             
         Else
         
@@ -497,20 +550,20 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
                 tHSLToRGB h, s, originalLuminance, newR, newG, newB
             End If
             
-            ImageData(QuickVal + 2, y) = newR
-            ImageData(QuickVal + 1, y) = newG
-            ImageData(QuickVal, y) = newB
+            ImageData(QuickVal + 2, Y) = newR
+            ImageData(QuickVal + 1, Y) = newG
+            ImageData(QuickVal, Y) = newB
             
         End If
                 
-    Next y
+    Next Y
         If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -538,16 +591,16 @@ End Sub
 Private Sub cmdBar_RandomizeClick()
     
     'We actually want to randomize the entire stored value array, including channels that are not current visible
-    Dim x As Long, y As Long
-    For x = 0 To 3
-        For y = 0 To 3
-            If x < 3 Then
-                curSliderValues(x, y) = -200 + Int(Rnd * 401)
+    Dim X As Long, Y As Long
+    For X = 0 To 3
+        For Y = 0 To 3
+            If X < 3 Then
+                curSliderValues(X, Y) = -200 + Int(Rnd * 401)
             Else
-                curSliderValues(x, y) = -255 + Int(Rnd * 511)
+                curSliderValues(X, Y) = -255 + Int(Rnd * 511)
             End If
-        Next y
-    Next x
+        Next Y
+    Next X
     
     updateStoredValues
     
@@ -565,12 +618,12 @@ Private Sub cmdBar_ReadCustomPresetData()
     Set cParams = New pdParamString
     cParams.setParamString tmpParamString
     
-    Dim x As Long, y As Long
-    For x = 0 To 3
-        For y = 0 To 3
-            curSliderValues(x, y) = cParams.GetLong((x * 4) + y + 1)
-        Next y
-    Next x
+    Dim X As Long, Y As Long
+    For X = 0 To 3
+        For Y = 0 To 3
+            curSliderValues(X, Y) = cParams.GetLong((X * 4) + Y + 1)
+        Next Y
+    Next X
     
     'Sync the on-screen controls with whatever slider values are relevant
     forbidUpdate = True
@@ -652,9 +705,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    
-    'To account for translation width possibilities, align the monochrome and luminance check boxes manually
-    chkLuminance.Left = chkMonochrome.Left + chkMonochrome.Width + 24
     
     'Display the previewed effect in the neighboring window
     updatePreview

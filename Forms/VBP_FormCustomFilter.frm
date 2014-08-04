@@ -65,13 +65,13 @@ Begin VB.Form FormCustomFilter
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkNormalize 
-      Height          =   300
+      Height          =   330
       Left            =   6000
       TabIndex        =   26
       Top             =   3480
-      Width           =   6450
-      _ExtentX        =   6932
-      _ExtentY        =   529
+      Width           =   6435
+      _ExtentX        =   11351
+      _ExtentY        =   582
       Caption         =   "automatically normalize divisor and offset"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

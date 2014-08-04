@@ -53,13 +53,13 @@ Begin VB.Form FormShadowHighlight
       ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
-      Height          =   300
+      Height          =   330
       Left            =   6120
       TabIndex        =   5
       Top             =   3240
-      Width           =   5730
-      _ExtentX        =   10107
-      _ExtentY        =   529
+      Width           =   5700
+      _ExtentX        =   10054
+      _ExtentY        =   582
       Caption         =   "use the median midtone for this image"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -307,7 +307,7 @@ Private Sub CalculateOptimalMidtone()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
                 
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -326,14 +326,14 @@ Private Sub CalculateOptimalMidtone()
     Dim NumOfPixels As Long
                 
     'Loop through each pixel in the image, tallying values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
             
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(QuickVal + 2, Y)
+        g = ImageData(QuickVal + 1, Y)
+        b = ImageData(QuickVal, Y)
                 
         rLookup(r) = rLookup(r) + 1
         gLookUp(g) = gLookUp(g) + 1
@@ -342,8 +342,8 @@ Private Sub CalculateOptimalMidtone()
         'Increment the pixel count
         NumOfPixels = NumOfPixels + 1
         
-    Next y
-    Next x
+    Next Y
+    Next X
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -355,33 +355,33 @@ Private Sub CalculateOptimalMidtone()
     NumOfPixels = NumOfPixels \ 2
                        
     Dim rCount As Long, gCount As Long, bCount As Long
-    x = 0
+    X = 0
                     
     'Find the median value for each color channel
     Do
-        rCount = rCount + rLookup(x)
-        x = x + 1
+        rCount = rCount + rLookup(X)
+        X = X + 1
     Loop While rCount < NumOfPixels
     
-    rCount = x - 1
+    rCount = X - 1
     
-    x = 0
+    X = 0
     
     Do
-        gCount = gCount + gLookUp(x)
-        x = x + 1
+        gCount = gCount + gLookUp(X)
+        X = X + 1
     Loop While gCount < NumOfPixels
     
-    gCount = x - 1
+    gCount = X - 1
     
-    x = 0
+    X = 0
     
     Do
-        bCount = bCount + bLookup(x)
-        x = x + 1
+        bCount = bCount + bLookup(X)
+        X = X + 1
     Loop While bCount < NumOfPixels
     
-    bCount = x - 1
+    bCount = X - 1
     
     colorPicker.Color = RGB(255 - rCount, 255 - gCount, 255 - bCount)
         

@@ -79,8 +79,8 @@ Begin VB.Form FormRipple
       Left            =   6120
       TabIndex        =   9
       Top             =   5400
-      Width           =   2700
-      _ExtentX        =   4763
+      Width           =   2715
+      _ExtentX        =   4789
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -100,8 +100,8 @@ Begin VB.Form FormRipple
       Left            =   9000
       TabIndex        =   10
       Top             =   5400
-      Width           =   2700
-      _ExtentX        =   4763
+      Width           =   2715
+      _ExtentX        =   4789
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -475,7 +475,7 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -530,21 +530,21 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
     sRadius2 = sRadius * sRadius
                             
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
-        nX = x - midX
-        nY = y - midY
+        nX = X - midX
+        nY = Y - midY
         
         'Calculate distance automatically
         sDistance = (nX * nX) + (nY * nY)
                 
         'Calculate remapped x and y values
         If sDistance > sRadius2 Then
-            srcX = x
-            srcY = y
+            srcX = X
+            srcY = Y
         Else
         
             sDistance = Sqr(sDistance)
@@ -558,22 +558,22 @@ Public Sub RippleImage(ByVal rippleWavelength As Double, ByVal rippleAmplitude A
             'Factor the wavelength back in
             If (sDistance <> 0) Then theta = theta * (rippleWavelength / sDistance)
             
-            srcX = x + (nX * theta)
-            srcY = y + (nY * theta)
+            srcX = X + (nX * theta)
+            srcY = Y + (nY * theta)
             
         End If
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
                 
-    Next y
+    Next Y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

@@ -60,8 +60,8 @@ Begin VB.Form FormLens
       Left            =   6120
       TabIndex        =   5
       Top             =   4485
-      Width           =   5685
-      _ExtentX        =   1773
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -81,8 +81,8 @@ Begin VB.Form FormLens
       Left            =   6120
       TabIndex        =   6
       Top             =   4920
-      Width           =   5685
-      _ExtentX        =   1720
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -343,7 +343,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -401,20 +401,20 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     sRadiusMult = sRadiusW * sRadiusH
               
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
-        nX = x - midX
-        nY = y - midY
+        nX = X - midX
+        nY = Y - midY
         nX2 = nX * nX
         nY2 = nY * nY
                 
         'If the values are going to be out-of-bounds, simply maintain the current x and y values
         If nY2 >= (sRadiusH2 - ((sRadiusH2 * nX2) / sRadiusW2)) Then
-            srcX = x
-            srcY = y
+            srcX = X
+            srcY = Y
         
         'Otherwise, reverse-map x and y back onto the original image using a reversed lens refraction calculation
         Else
@@ -428,28 +428,28 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
             firstAngle = PI_HALF - xAngle
             secondAngle = Asin(Sin(firstAngle) * refractiveIndex)
             secondAngle = PI_HALF - xAngle - secondAngle
-            srcX = x - Tan(secondAngle) * theta
+            srcX = X - Tan(secondAngle) * theta
             
             'Now do the same thing for y
             yAngle = Acos(nY / Sqr(nY2 + theta2))
             firstAngle = PI_HALF - yAngle
             secondAngle = Asin(Sin(firstAngle) * refractiveIndex)
             secondAngle = PI_HALF - yAngle - secondAngle
-            srcY = y - Tan(secondAngle) * theta
+            srcY = Y - Tan(secondAngle) * theta
             
         End If
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
                 
-    Next y
+    Next Y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

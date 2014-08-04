@@ -124,145 +124,6 @@ Begin VB.Form dialog_ExportJPEG
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4695
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
-      TabIndex        =   14
-      Top             =   1080
-      Width           =   7215
-      Begin VB.ComboBox cmbMetadata 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   360
-         Style           =   2  'Dropdown List
-         TabIndex        =   19
-         Top             =   1020
-         Width           =   6735
-      End
-      Begin PhotoDemon.smartCheckBox chkThumbnail 
-         Height          =   330
-         Left            =   360
-         TabIndex        =   15
-         Top             =   3240
-         Width           =   6690
-         _ExtentX        =   11800
-         _ExtentY        =   582
-         Caption         =   "embed thumbnail image"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblViewMetadata 
-         Alignment       =   1  'Right Justify
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "click here to review the image's metadata"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H8000000D&
-         Height          =   240
-         Left            =   3435
-         MouseIcon       =   "VBP_FormExportJPEG.frx":24A4
-         MousePointer    =   99  'Custom
-         TabIndex        =   20
-         Top             =   135
-         Width           =   3585
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "other metadata options:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         TabIndex        =   18
-         Top             =   2880
-         Width           =   2550
-      End
-      Begin VB.Label lblCurMetadata 
-         BackStyle       =   0  'Transparent
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   1080
-         Left            =   360
-         TabIndex        =   17
-         Top             =   1560
-         UseMnemonic     =   0   'False
-         Width           =   6615
-         WordWrap        =   -1  'True
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "general metadata setting for this image:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   16
-         Top             =   600
-         Width           =   4245
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
       Index           =   0
       Left            =   5880
       ScaleHeight     =   313
@@ -412,7 +273,7 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   1665
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   529
+         _ExtentY        =   582
          Caption         =   "use perceptive color matching (slower, more accurate)"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -465,6 +326,145 @@ Begin VB.Form dialog_ExportJPEG
          TabIndex        =   13
          Top             =   2310
          Width           =   2745
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   481
+      TabIndex        =   14
+      Top             =   1080
+      Width           =   7215
+      Begin VB.ComboBox cmbMetadata 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   360
+         Style           =   2  'Dropdown List
+         TabIndex        =   19
+         Top             =   1020
+         Width           =   6735
+      End
+      Begin PhotoDemon.smartCheckBox chkThumbnail 
+         Height          =   330
+         Left            =   360
+         TabIndex        =   15
+         Top             =   3240
+         Width           =   6690
+         _ExtentX        =   11800
+         _ExtentY        =   582
+         Caption         =   "embed thumbnail image"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblViewMetadata 
+         Alignment       =   1  'Right Justify
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "click here to review the image's metadata"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H8000000D&
+         Height          =   240
+         Left            =   3435
+         MouseIcon       =   "VBP_FormExportJPEG.frx":24A4
+         MousePointer    =   99  'Custom
+         TabIndex        =   20
+         Top             =   135
+         Width           =   3585
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "other metadata options:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   120
+         TabIndex        =   18
+         Top             =   2880
+         Width           =   2550
+      End
+      Begin VB.Label lblCurMetadata 
+         BackStyle       =   0  'Transparent
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   1080
+         Left            =   360
+         TabIndex        =   17
+         Top             =   1560
+         UseMnemonic     =   0   'False
+         Width           =   6615
+         WordWrap        =   -1  'True
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "general metadata setting for this image:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         TabIndex        =   16
+         Top             =   600
+         Width           =   4245
       End
    End
 End

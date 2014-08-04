@@ -228,11 +228,11 @@ Begin VB.Form FormRotateDistort
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   1125
+      Height          =   885
       Index           =   1
       Left            =   6000
       TabIndex        =   9
-      Top             =   4560
+      Top             =   4800
       Width           =   5925
       WordWrap        =   -1  'True
    End

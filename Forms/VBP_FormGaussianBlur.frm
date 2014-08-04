@@ -79,8 +79,8 @@ Begin VB.Form FormGaussianBlur
       Left            =   6120
       TabIndex        =   6
       Top             =   3120
-      Width           =   5655
-      _ExtentX        =   1535
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "good"
       Value           =   -1  'True
@@ -100,8 +100,8 @@ Begin VB.Form FormGaussianBlur
       Left            =   6120
       TabIndex        =   7
       Top             =   3540
-      Width           =   5655
-      _ExtentX        =   1720
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "better"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -120,8 +120,8 @@ Begin VB.Form FormGaussianBlur
       Left            =   6120
       TabIndex        =   8
       Top             =   3960
-      Width           =   5655
-      _ExtentX        =   1429
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "best"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 

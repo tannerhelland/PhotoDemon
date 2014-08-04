@@ -79,8 +79,8 @@ Begin VB.Form FormChromaBlur
       Left            =   6120
       TabIndex        =   5
       Top             =   3150
-      Width           =   5655
-      _ExtentX        =   1535
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "good"
       Value           =   -1  'True
@@ -100,8 +100,8 @@ Begin VB.Form FormChromaBlur
       Left            =   6120
       TabIndex        =   6
       Top             =   3570
-      Width           =   5655
-      _ExtentX        =   1720
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "better"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -120,8 +120,8 @@ Begin VB.Form FormChromaBlur
       Left            =   6120
       TabIndex        =   7
       Top             =   3990
-      Width           =   5655
-      _ExtentX        =   1429
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "best"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -252,7 +252,7 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
     gaussDIB.createFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -327,22 +327,22 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
         Dim origLuminance As Double
         
         'The final step of the chroma blur function is to merge blurred color data with original luminance data
-        For x = initX To finalX
-            QuickVal = x * qvDepth
-        For y = initY To finalY
+        For X = initX To finalX
+            QuickVal = X * qvDepth
+        For Y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = srcImageData(QuickVal + 2, y)
-            g = srcImageData(QuickVal + 1, y)
-            b = srcImageData(QuickVal, y)
+            r = srcImageData(QuickVal + 2, Y)
+            g = srcImageData(QuickVal + 1, Y)
+            b = srcImageData(QuickVal, Y)
             
             'Determine original HSL values
             tRGBToHSL r, g, b, h, s, origLuminance
             
             'Now, retrieve the gaussian pixels
-            r = GaussImageData(QuickVal + 2, y)
-            g = GaussImageData(QuickVal + 1, y)
-            b = GaussImageData(QuickVal, y)
+            r = GaussImageData(QuickVal + 2, Y)
+            g = GaussImageData(QuickVal + 1, Y)
+            b = GaussImageData(QuickVal, Y)
             
             'Determine HSL for the blurred data
             tRGBToHSL r, g, b, h, s, l
@@ -351,19 +351,19 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
             tHSLToRGB h, s, origLuminance, r, g, b
             
             'Apply the new RGB colors to the image
-            dstImageData(QuickVal + 2, y) = r
-            dstImageData(QuickVal + 1, y) = g
-            dstImageData(QuickVal, y) = b
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = srcImageData(QuickVal + 3, y)
+            dstImageData(QuickVal + 2, Y) = r
+            dstImageData(QuickVal + 1, Y) = g
+            dstImageData(QuickVal, Y) = b
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, Y) = srcImageData(QuickVal + 3, Y)
             
-        Next y
+        Next Y
             If Not toPreview Then
-                If (x And progBarCheck) = 0 Then
+                If (X And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal x + calcProgBarOffset
+                    SetProgBarVal X + calcProgBarOffset
                 End If
             End If
-        Next x
+        Next X
             
         'With our work complete, release all arrays
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4

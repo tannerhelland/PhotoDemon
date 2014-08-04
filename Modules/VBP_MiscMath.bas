@@ -7,7 +7,7 @@ Attribute VB_Name = "Math_Functions"
 'Last update: fixed convertToFraction() function to work with non-English locales
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
-' until June 2013.  This module is now used to store all the random bits of specialized math required by the program.
+' until June '13.  This module is now used to store all the random bits of specialized math required by the program.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -15,6 +15,19 @@ Attribute VB_Name = "Math_Functions"
 '***************************************************************************
 
 Option Explicit
+
+Private Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
+
+'See if a point lies inside a rect
+Public Function isPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECT) As Boolean
+
+    If PtInRect(srcRect, ptX, ptY) = 0 Then
+        isPointInRect = False
+    Else
+        isPointInRect = True
+    End If
+
+End Function
 
 'Given an arbitrary output range and input range, convert a value from the input range to the output range
 ' Thank you to expert coder audioglider for contributing this function.

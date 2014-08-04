@@ -94,8 +94,8 @@ Begin VB.Form FormMiscDistorts
       Left            =   6120
       TabIndex        =   6
       Top             =   4920
-      Width           =   5685
-      _ExtentX        =   1773
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -115,8 +115,8 @@ Begin VB.Form FormMiscDistorts
       Left            =   6120
       TabIndex        =   7
       Top             =   5280
-      Width           =   5655
-      _ExtentX        =   1720
+      Width           =   5700
+      _ExtentX        =   10054
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -251,7 +251,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -301,22 +301,22 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     
     'Basically, we want to remap coordinates around a center point of (0, 0), and normalize them to (-1, 1).
     ' This makes distort strength uniform regardless of image size.
-    For x = initX To finalX
-        xCoords(x) = (2 * x) / tWidth - 1
-    Next x
+    For X = initX To finalX
+        xCoords(X) = (2 * X) / tWidth - 1
+    Next X
     
-    For y = initY To finalY
-        yCoords(y) = (2 * y) / tHeight - 1
-    Next y
+    For Y = initY To finalY
+        yCoords(Y) = (2 * Y) / tHeight - 1
+    Next Y
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
                             
         'Pull coordinates from the lookup table
-        nX = xCoords(x)
-        nY = yCoords(y)
+        nX = xCoords(X)
+        nY = yCoords(Y)
         
         'Next, map them to polar coordinates
         r = Sqr(nX * nX + nY * nY)
@@ -384,16 +384,16 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
         srcY = (tHeight * (nY + 1)) / 2
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
                 
-    Next y
+    Next Y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

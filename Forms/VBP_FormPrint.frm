@@ -25,13 +25,13 @@ Begin VB.Form FormPrint
    ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.smartCheckBox chkCenter 
-      Height          =   300
+      Height          =   330
       Left            =   4080
       TabIndex        =   23
       Top             =   3480
-      Width           =   4425
-      _ExtentX        =   7805
-      _ExtentY        =   529
+      Width           =   4440
+      _ExtentX        =   7832
+      _ExtentY        =   582
       Caption         =   "center on page"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -260,13 +260,13 @@ Begin VB.Form FormPrint
       End
    End
    Begin PhotoDemon.smartCheckBox chkFit 
-      Height          =   300
+      Height          =   330
       Left            =   4080
       TabIndex        =   24
       Top             =   3960
-      Width           =   4410
-      _ExtentX        =   7779
-      _ExtentY        =   529
+      Width           =   4440
+      _ExtentX        =   7832
+      _ExtentY        =   582
       Caption         =   "fit on page"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -598,12 +598,12 @@ Private Sub Form_Load()
         lblWarning.Visible = True
     End If
     
-    Dim x As Long
+    Dim X As Long
     
     'Load a list of printers into the combo box
-    For x = 0 To Printers.Count - 1
-        cbPrinters.AddItem Printers(x).DeviceName
-    Next x
+    For X = 0 To Printers.Count - 1
+        cbPrinters.AddItem Printers(X).DeviceName
+    Next X
 
     'Pre-select the current printer
     cbPrinters = Printer.DeviceName

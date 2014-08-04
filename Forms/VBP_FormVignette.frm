@@ -393,7 +393,7 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -460,13 +460,13 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
     Dim blendVal As Double
         
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
-        nX = x - midX
-        nY = y - midY
+        nX = X - midX
+        nY = Y - midY
         nX2 = nX * nX
         nY2 = nY * nY
                 
@@ -478,9 +478,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
             
             If nY2 > sRadiusMax Then
                 
-                dstImageData(QuickVal + 2, y) = BlendColors(newR, dstImageData(QuickVal + 2, y), vTransparency)
-                dstImageData(QuickVal + 1, y) = BlendColors(newG, dstImageData(QuickVal + 1, y), vTransparency)
-                dstImageData(QuickVal, y) = BlendColors(newB, dstImageData(QuickVal, y), vTransparency)
+                dstImageData(QuickVal + 2, Y) = BlendColors(newR, dstImageData(QuickVal + 2, Y), vTransparency)
+                dstImageData(QuickVal + 1, Y) = BlendColors(newG, dstImageData(QuickVal + 1, Y), vTransparency)
+                dstImageData(QuickVal, Y) = BlendColors(newB, dstImageData(QuickVal, Y), vTransparency)
                 
             'Otherwise, check for feathering
             Else
@@ -490,9 +490,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
                     blendVal = (nY2 - sRadiusMin) / vFeathering2
                     blendVal = blendVal * (1 - vTransparency)
                     
-                    dstImageData(QuickVal + 2, y) = BlendColors(dstImageData(QuickVal + 2, y), newR, blendVal)
-                    dstImageData(QuickVal + 1, y) = BlendColors(dstImageData(QuickVal + 1, y), newG, blendVal)
-                    dstImageData(QuickVal, y) = BlendColors(dstImageData(QuickVal, y), newB, blendVal)
+                    dstImageData(QuickVal + 2, Y) = BlendColors(dstImageData(QuickVal + 2, Y), newR, blendVal)
+                    dstImageData(QuickVal + 1, Y) = BlendColors(dstImageData(QuickVal + 1, Y), newG, blendVal)
+                    dstImageData(QuickVal, Y) = BlendColors(dstImageData(QuickVal, Y), newB, blendVal)
                 End If
                     
             End If
@@ -502,9 +502,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
         
             'If the values are going to be out-of-bounds, force them to black
             If (nX2 + nY2) > sRadiusCircular Then
-                dstImageData(QuickVal + 2, y) = BlendColors(newR, dstImageData(QuickVal + 2, y), vTransparency)
-                dstImageData(QuickVal + 1, y) = BlendColors(newG, dstImageData(QuickVal + 1, y), vTransparency)
-                dstImageData(QuickVal, y) = BlendColors(newB, dstImageData(QuickVal, y), vTransparency)
+                dstImageData(QuickVal + 2, Y) = BlendColors(newR, dstImageData(QuickVal + 2, Y), vTransparency)
+                dstImageData(QuickVal + 1, Y) = BlendColors(newG, dstImageData(QuickVal + 1, Y), vTransparency)
+                dstImageData(QuickVal, Y) = BlendColors(newB, dstImageData(QuickVal, Y), vTransparency)
                 
             'Otherwise, check for feathering
             Else
@@ -513,23 +513,23 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
                     blendVal = (nX2 + nY2 - sRadiusMin) / vFeathering2
                     blendVal = blendVal * (1 - vTransparency)
                     
-                    dstImageData(QuickVal + 2, y) = BlendColors(dstImageData(QuickVal + 2, y), newR, blendVal)
-                    dstImageData(QuickVal + 1, y) = BlendColors(dstImageData(QuickVal + 1, y), newG, blendVal)
-                    dstImageData(QuickVal, y) = BlendColors(dstImageData(QuickVal, y), newB, blendVal)
+                    dstImageData(QuickVal + 2, Y) = BlendColors(dstImageData(QuickVal + 2, Y), newR, blendVal)
+                    dstImageData(QuickVal + 1, Y) = BlendColors(dstImageData(QuickVal + 1, Y), newG, blendVal)
+                    dstImageData(QuickVal, Y) = BlendColors(dstImageData(QuickVal, Y), newB, blendVal)
                 End If
                 
             End If
                 
         End If
                         
-    Next y
+    Next Y
         If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4

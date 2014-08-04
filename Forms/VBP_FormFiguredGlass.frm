@@ -70,8 +70,8 @@ Begin VB.Form FormFiguredGlass
       Left            =   6120
       TabIndex        =   7
       Top             =   4200
-      Width           =   5700
-      _ExtentX        =   1773
+      Width           =   5715
+      _ExtentX        =   10081
       _ExtentY        =   635
       Caption         =   "quality"
       Value           =   -1  'True
@@ -120,8 +120,8 @@ Begin VB.Form FormFiguredGlass
       Left            =   6120
       TabIndex        =   8
       Top             =   4680
-      Width           =   5700
-      _ExtentX        =   1720
+      Width           =   5715
+      _ExtentX        =   10081
       _ExtentY        =   635
       Caption         =   "speed"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -311,7 +311,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -359,14 +359,14 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     Dim perlinCacheSin As Double, perlinCacheCos As Double, pNoiseCache As Double
     
     'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    For X = initX To finalX
+        QuickVal = X * qvDepth
+    For Y = initY To finalY
         
         'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
         ' user's turbulence value.
         If fxScale > 0 Then
-            pNoiseCache = PI_DOUBLE * cPerlin.Noise2D(x / fxScale, y / fxScale) * fxTurbulence
+            pNoiseCache = PI_DOUBLE * cPerlin.Noise2D(X / fxScale, Y / fxScale) * fxTurbulence
             perlinCacheSin = Sin(pNoiseCache) * fxScale
             perlinCacheCos = Cos(pNoiseCache) * fxScale * fxTurbulence
         Else
@@ -377,20 +377,20 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
         'Use the sine of the displacement to calculate a unique source pixel position.  (Sine improves the roundness
         ' of the conversion, but technically it would work fine without an additional modifier due to the way
         ' Perlin noise is generated.)
-        srcX = x + perlinCacheSin
-        srcY = y + perlinCacheCos
+        srcX = X + perlinCacheSin
+        srcY = Y + perlinCacheCos
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
                 
-    Next y
+    Next Y
         If (Not toPreview) Then
-            If (x And progBarCheck) = 0 Then
+            If (X And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal x
+                SetProgBarVal X
             End If
         End If
-    Next x
+    Next X
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

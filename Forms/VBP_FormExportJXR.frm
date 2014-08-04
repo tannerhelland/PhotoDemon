@@ -92,13 +92,13 @@ Begin VB.Form dialog_ExportJXR
       _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkProgressive 
-      Height          =   330
+      Height          =   360
       Left            =   6240
       TabIndex        =   7
       Top             =   3840
-      Width           =   5595
-      _ExtentX        =   9869
-      _ExtentY        =   582
+      Width           =   5625
+      _ExtentX        =   9922
+      _ExtentY        =   635
       Caption         =   "use progressive encoding"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

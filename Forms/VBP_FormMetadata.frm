@@ -25,13 +25,13 @@ Begin VB.Form FormMetadata
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.smartCheckBox chkFriendlyNames 
-      Height          =   330
+      Height          =   360
       Left            =   3240
       TabIndex        =   6
       Top             =   5760
-      Width           =   4035
-      _ExtentX        =   4154
-      _ExtentY        =   582
+      Width           =   4050
+      _ExtentX        =   7144
+      _ExtentY        =   635
       Caption         =   "use readable names"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -104,13 +104,13 @@ Begin VB.Form FormMetadata
       Width           =   1365
    End
    Begin PhotoDemon.smartCheckBox chkFriendlyValues 
-      Height          =   330
+      Height          =   360
       Left            =   7320
       TabIndex        =   7
       Top             =   5760
-      Width           =   4575
-      _ExtentX        =   4075
-      _ExtentY        =   582
+      Width           =   4050
+      _ExtentX        =   7144
+      _ExtentY        =   635
       Caption         =   "use readable values"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -208,7 +208,7 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
-Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
 
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If vsMetadata.Visible Then
@@ -343,7 +343,7 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     
     'When the mouse enters the form area, set focus to the vertical scroll bar, so we can automatically mousewheel it (instead of the
     ' left listbox)
@@ -463,7 +463,7 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
 End Sub
 
 'To solve the problem of "two mouse-scrollable lists on one dialog), we track the mouse's location and handle scroll events accordingly.
-Private Sub lstMetadata_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lstMetadata_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     mouseOverMetadataCategoryBox = True
 End Sub
 
