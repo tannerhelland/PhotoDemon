@@ -549,7 +549,7 @@ Public Sub LoadImagesFromCommandLine()
 End Sub
 
 'Loading an image begins here.  This routine examines a given file's extension and re-routes control based on that.
-Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetDIB As pdDIB, Optional ByVal pageNumber As Long = 0)
+Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMRU As Boolean = True, Optional ByVal imgFormTitle As String = "", Optional ByVal imgName As String = "", Optional ByVal isThisPrimaryImage As Boolean = True, Optional ByRef targetImage As pdImage, Optional ByRef targetDIB As pdDIB, Optional ByVal pageNumber As Long = 0, Optional ByVal fillDIBWithCompositePDI As Boolean = False)
     
     'NOTE ABOUT DOEVENTS:
     ' Normally, PD avoids DoEvents for all the obvious reasons.  You'll notice that this function, however, uses DoEvents liberally.  Why?
@@ -1047,6 +1047,13 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             DoEvents
         
+        
+        'If the image is in PDI format, the following ELSE branch will be triggered
+        Else
+        
+            'If the caller wants a copy of the image (perhaps for previewing purposes), they can mark "fillDIBWithCompositePDI" as TRUE.
+            If fillDIBWithCompositePDI Then targetImage.getCompositedImage targetDIB
+            
         End If
                 
         '*************************************************************************************************************************************
