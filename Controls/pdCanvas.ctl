@@ -116,26 +116,34 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":0004
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "pdCanvas.ctx":002C
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   7
-         tooltip         =   "Zoom in"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":0004
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Zoom in"
+         ColorScheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":087E
+         ItemData        =   "pdCanvas.ctx":0856
          Left            =   840
-         List            =   "pdCanvas.ctx":0880
+         List            =   "pdCanvas.ctx":0858
          Style           =   2  'Dropdown List
          TabIndex        =   8
          Top             =   15
@@ -147,19 +155,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   10
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":0882
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "pdCanvas.ctx":08AA
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   0
-         tooltip         =   "Zoom out"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":085A
+         PictureAlign    =   0
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Zoom out"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdZoomFit 
          Height          =   345
@@ -167,19 +183,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   12
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":10FC
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "pdCanvas.ctx":1124
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   7
-         tooltip         =   "Fit image on screen"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":10AC
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Fit image on screen"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdImgSize 
          Height          =   345
@@ -187,19 +211,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   13
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":1976
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1
-         picturenormal   =   "pdCanvas.ctx":199E
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   7
-         tooltip         =   "Resize image"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":18FE
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Resize image"
+         ColorScheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -1679,15 +1711,19 @@ Public Sub fixChromeLayout()
             notifyFont.createFontObject
             notifyFont.attachToDC tmpDIB.getDIBDC
             
-            Dim modifiedHeight As Long
-            modifiedHeight = tmpDIB.getDIBHeight + (iconLoadAnImage.getDIBHeight / 2) + fixDPI(24)
+            If Not (iconLoadAnImage Is Nothing) Then
             
-            Dim loadImageMessage As String
-            loadImageMessage = g_Language.TranslateMessage("Drag an image onto this space to begin editing." & vbCrLf & vbCrLf & "You can also use the Open Image button on the left," & vbCrLf & "or the File > Open and File > Import menus.")
-            notifyFont.drawCenteredText loadImageMessage, tmpDIB.getDIBWidth, modifiedHeight
-            
-            'Just above the text instructions, add a generic image icon
-            iconLoadAnImage.alphaBlendToDC tmpDIB.getDIBDC, 192, (tmpDIB.getDIBWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - fixDPI(20)
+                Dim modifiedHeight As Long
+                modifiedHeight = tmpDIB.getDIBHeight + (iconLoadAnImage.getDIBHeight / 2) + fixDPI(24)
+                
+                Dim loadImageMessage As String
+                loadImageMessage = g_Language.TranslateMessage("Drag an image onto this space to begin editing." & vbCrLf & vbCrLf & "You can also use the Open Image button on the left," & vbCrLf & "or the File > Open and File > Import menus.")
+                notifyFont.drawCenteredText loadImageMessage, tmpDIB.getDIBWidth, modifiedHeight
+                
+                'Just above the text instructions, add a generic image icon
+                iconLoadAnImage.alphaBlendToDC tmpDIB.getDIBDC, 192, (tmpDIB.getDIBWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - fixDPI(20)
+                
+            End If
             
             BitBlt picCanvas.hDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
             requestBufferSync
