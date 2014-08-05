@@ -402,7 +402,7 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -435,10 +435,10 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     initColorFunc colorFactor, colorPower
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickValDst = X * qvDepth
-        QuickValSrc = (X + kernelRadius) * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickValDst = x * qvDepth
+        QuickValSrc = (x + kernelRadius) * qvDepth
+    For y = initY To finalY
     
         sCoefR = 0
         sCoefG = 0
@@ -447,7 +447,7 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
         sMembG = 0
         sMembB = 0
         
-        QuickYSrc = Y + kernelRadius
+        QuickYSrc = y + kernelRadius
         
         srcR0 = srcImageData(QuickValSrc + 2, QuickYSrc)
         srcG0 = srcImageData(QuickValSrc + 1, QuickYSrc)
@@ -455,10 +455,10 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
         
         'Cache y-loop boundaries so that they do not have to be re-calculated on the interior loop.  (X boundaries
         ' don't matter, but since we're doing it, for y, mirror it to x.)
-        xMax = X + kernelRadius
-        yMax = Y + kernelRadius
-        xMin = X - kernelRadius
-        yMin = Y - kernelRadius
+        xMax = x + kernelRadius
+        yMax = y + kernelRadius
+        xMin = x - kernelRadius
+        yMin = y - kernelRadius
         
         For xOffset = xMin To xMax
             For yOffset = yMin To yMax
@@ -471,7 +471,7 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
                 srcG = srcImageData(srcPixelX + 1, srcPixelY)
                 srcB = srcImageData(srcPixelX, srcPixelY)
                 
-                spacialFuncCache = spatialFunc(xOffset - X, yOffset - Y)
+                spacialFuncCache = spatialFunc(xOffset - x, yOffset - y)
                 
                 'As a general rule, when convolving data against a kernel, any kernel value below 3-sigma can effectively
                 ' be ignored (as its contribution to the convolution total is not statistically meaningful). Rather than
@@ -509,18 +509,18 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
         newB = sMembB / sCoefB
                 
         'Assign the new values to each color channel
-        dstImageData(QuickValDst + 2, Y) = newR
-        dstImageData(QuickValDst + 1, Y) = newG
-        dstImageData(QuickValDst, Y) = newB
+        dstImageData(QuickValDst + 2, y) = newR
+        dstImageData(QuickValDst + 1, y) = newG
+        dstImageData(QuickValDst, y) = newB
         
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
