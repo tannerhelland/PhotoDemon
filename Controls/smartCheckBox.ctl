@@ -109,8 +109,11 @@ Private cSubclass As cSelfSubHookCallback
 Private WithEvents mFont As StdFont
 Attribute mFont.VB_VarHelpID = -1
 
-'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages)
+'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_Caption
+' is the ENGLISH CAPTION ONLY.  A translated caption, if one exists, will be stored in m_TranslatedCaption, after PD's
+' central themer invokes the translateCaption function.
 Private m_Caption As String
+Private m_TranslatedCaption As String
 
 'Current control value
 Private m_Value As CheckBoxConstants
@@ -183,16 +186,16 @@ Private Sub mFont_FontChanged(ByVal PropertyName As String)
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
-    If Me.Enabled And isMouseOverClickArea(X, Y) Then
+    If Me.Enabled And isMouseOverClickArea(x, y) Then
         If CBool(Me.Value) Then Me.Value = vbUnchecked Else Me.Value = vbChecked
     End If
 
 End Sub
 
 'When the mouse leaves the UC, we must repaint the caption (as it's no longer hovered)
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     If m_MouseInsideUC Then
         m_MouseInsideUC = False
@@ -205,10 +208,10 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 'When the mouse enters the clickable portion of the UC, we must repaint the caption (to reflect its hovered state)
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
-    If isMouseOverClickArea(X, Y) Then
+    If isMouseOverClickArea(x, y) Then
         
         cMouseEvents.setSystemCursor IDC_HAND
         
@@ -424,9 +427,11 @@ Private Sub updateControlSize()
     
     'Calculate a precise size for the requested caption.
     Dim captionHeight As Long, txtSize As POINTAPI
+    
     If Not m_BackBuffer Is Nothing Then
+    
         GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_Caption), Len(m_Caption), txtSize
-        captionHeight = txtSize.Y
+        captionHeight = txtSize.y
     
     'Failsafe if a Resize event is fired before we've initialized our back buffer DC
     Else
@@ -473,6 +478,64 @@ Public Sub updateAgainstCurrentTheme()
     
 End Sub
 
+'External functions must call this if a caption translation is required.
+Public Sub translateCaption()
+    
+    Dim newCaption As String
+    
+    'Translations are active.  Retrieve a translated caption, and make sure it fits within the control.
+    If g_Language.translationActive Then
+    
+        'Only proceed if our caption requires translation (e.g. it's non-null and non-numeric)
+        If (Len(Trim(m_Caption)) > 0) And (Not IsNumeric(m_Caption)) Then
+    
+            'Retrieve the translated text
+            newCaption = g_Language.TranslateMessage(m_Caption)
+            
+            'Check the size of the translated text, using the current font settings
+            Dim fullControlWidth As Long
+            fullControlWidth = getCheckboxPlusCaptionWidth(newCaption)
+            
+            Dim curFontSize As Single
+            curFontSize = mFont.Size
+            
+            'If the size of the caption is wider than the control itself, repeatedly shrink the font size until we
+            ' find a size that fits the entire caption.
+            Do While (fullControlWidth > UserControl.ScaleWidth - fixDPI(2)) And (curFontSize >= 8)
+                
+                'Shrink the font size
+                curFontSize = curFontSize - 0.25
+                curFont.setFontSize curFontSize
+                
+                 'Recreate the font object
+                curFont.releaseFromDC
+                curFont.createFontObject
+                curFont.attachToDC m_BackBuffer.getDIBDC
+                
+                'Calculate a new width
+                fullControlWidth = getCheckboxPlusCaptionWidth(newCaption)
+            
+            Loop
+            
+        Else
+            newCaption = ""
+        End If
+    
+    'If translations are not active, skip this step entirely
+    Else
+        newCaption = ""
+    End If
+    
+    'Redraw the control if the caption has changed
+    If StrComp(newCaption, m_TranslatedCaption, vbBinaryCompare) <> 0 Then
+        
+        m_TranslatedCaption = newCaption
+        PaintUC
+        
+    End If
+    
+End Sub
+
 Private Sub PaintUC()
     
     'Start by erasing the back buffer
@@ -494,7 +557,7 @@ Private Sub PaintUC()
     End If
     
     'Next, determine the precise size of our caption, including all internal metrics.  (We need those so we can properly
-    ' align the radio button with the baseline of the font and the caps (not ascender!) height.
+    ' align the check box with the baseline of the font and the caps (not ascender!) height.
     Dim captionWidth As Long, captionHeight As Long
     captionWidth = curFont.getWidthOfString(m_Caption)
     captionHeight = curFont.getHeightOfString(m_Caption)
@@ -504,7 +567,7 @@ Private Sub PaintUC()
     GetTextMetrics m_BackBuffer.getDIBDC, fontMetrics
     fontDescent = fontMetrics.tmDescent
     
-    'From the precise font metrics, determine a radio button offset X and Y, and a radio button size.  Note that 1px is manually
+    'From the precise font metrics, determine a check box offset X and Y, and a check box size.  Note that 1px is manually
     ' added as part of maintaining a 1px border around the user control as a whole.
     Dim offsetX As Long, offsetY As Long, chkBoxSize As Long
     offsetX = 1 + fixDPI(2)
@@ -513,7 +576,7 @@ Private Sub PaintUC()
     chkBoxSize = chkBoxSize - fontMetrics.tmInternalLeading
     chkBoxSize = chkBoxSize + 1
     
-    'Because GDI+ is finicky with antialiasing on odd-number circle sizes, force the circle size to the nearest even number
+    'Because GDI+ is finicky with antialiasing on odd-numbered sizes, force the size to the nearest even number
     If chkBoxSize Mod 2 = 1 Then
         chkBoxSize = chkBoxSize + 1
         offsetY = offsetY - 1
@@ -547,13 +610,21 @@ Private Sub PaintUC()
     End If
     
     'Render the text
-    curFont.fastRenderText offsetX * 2 + chkBoxSize + fixDPI(6), 1, m_Caption
+    If Len(m_TranslatedCaption) > 0 Then
+        curFont.fastRenderText offsetX * 2 + chkBoxSize + fixDPI(6), 1, m_TranslatedCaption
+    Else
+        curFont.fastRenderText offsetX * 2 + chkBoxSize + fixDPI(6), 1, m_Caption
+    End If
     
     'Update the clickable rect using the measurements from the final render
     With clickableRect
         .Left = 0
         .Top = 0
-        .Right = offsetX * 2 + chkBoxSize + fixDPI(6) + curFont.getWidthOfString(m_Caption) + fixDPI(6)
+        If Len(m_TranslatedCaption) > 0 Then
+            .Right = offsetX * 2 + chkBoxSize + fixDPI(6) + curFont.getWidthOfString(m_TranslatedCaption) + fixDPI(6)
+        Else
+            .Right = offsetX * 2 + chkBoxSize + fixDPI(6) + curFont.getWidthOfString(m_Caption) + fixDPI(6)
+        End If
         .Bottom = m_BackBuffer.getDIBHeight
     End With
     
@@ -579,13 +650,49 @@ Private Sub PaintUC()
 
     End If
     
-    'Flip the buffer to the user control
+    'Flip the buffer to the screen
     BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     
     'Validate the rect to prevent further WM_PAINT messages
     ValidateRect Me.hWnd, ByVal 0&
     
 End Sub
+
+'Estimate the size and offset of the checkbox and caption chunk of the control.  The function allows you to pass an arbitrary caption,
+' which it uses to determine auto-shrinking of font size for lengthy translated captions.
+Private Function getCheckboxPlusCaptionWidth(Optional ByVal relevantCaption As String = "") As Long
+
+    If Len(relevantCaption) = 0 Then relevantCaption = m_Caption
+
+    'Start by retrieving caption width and height.  (Checkbox size is proportional to these values.)
+    Dim captionWidth As Long, captionHeight As Long
+    captionWidth = curFont.getWidthOfString(relevantCaption)
+    captionHeight = curFont.getHeightOfString(relevantCaption)
+    
+    'Retrieve exact size metrics of the caption, as rendered in the current font
+    Dim fontDescent As Long, fontMetrics As TEXTMETRIC
+    GetTextMetrics m_BackBuffer.getDIBDC, fontMetrics
+    fontDescent = fontMetrics.tmDescent
+    
+    'Using the font metrics, determine a check box offset and size.  Note that 1px is manually added as part of maintaining a
+    ' 1px border around the user control as a whole (which is used for a focus rect).
+    Dim offsetX As Long, offsetY As Long, chkBoxSize As Long
+    offsetX = 1 + fixDPI(2)
+    offsetY = fontMetrics.tmInternalLeading + 1
+    chkBoxSize = captionHeight - fontDescent
+    chkBoxSize = chkBoxSize - fontMetrics.tmInternalLeading
+    chkBoxSize = chkBoxSize + 1
+    
+    'Because GDI+ is finicky with antialiasing on odd-numbered sizes, force the size to the nearest even number
+    If chkBoxSize Mod 2 = 1 Then
+        chkBoxSize = chkBoxSize + 1
+        offsetY = offsetY - 1
+    End If
+    
+    'Return the determined check box size, plus a 6px extender to separate it from the caption.
+    getCheckboxPlusCaptionWidth = offsetX * 2 + chkBoxSize + fixDPI(6) + captionWidth
+
+End Function
 
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
