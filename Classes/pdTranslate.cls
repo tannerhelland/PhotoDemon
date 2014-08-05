@@ -827,20 +827,28 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         'The goal is to apply translations to any object with a non-blank, non-numeric caption property
         
         'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
+        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Then
             
             'TESTING ONLY
             'If srcForm.Name <> "FormMain" Then MsgBox eControl.Caption
             
-            If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then translateObjectCaption eControl
-            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
+            If (Len(Trim(eControl.Caption)) > 0) And (Not IsNumeric(eControl.Caption)) Then translateObjectCaption eControl
+            If (Len(Trim(eControl.ToolTipText)) > 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
                         
             'jcbutton controls have multiple tooltip entries, including a tooltip title
             If (TypeOf eControl Is jcbutton) Then
-                If (Trim(eControl.TooltipTitle) <> "") Then eControl.TooltipTitle = TranslateMessage(eControl.TooltipTitle)
-                If (Trim(eControl.ToolTip) <> "") Then eControl.ToolTip = TranslateMessage(eControl.ToolTip)
+                If (Len(Trim(eControl.TooltipTitle)) > 0) Then eControl.TooltipTitle = TranslateMessage(eControl.TooltipTitle)
+                If (Len(Trim(eControl.ToolTip)) > 0) Then eControl.ToolTip = TranslateMessage(eControl.ToolTip)
             End If
             
+        End If
+        
+        'PD's internal radio button and check box controls handle translations internally
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
+        
+            eControl.translateCaption
+            If (Len(Trim(eControl.ToolTipText)) > 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
+        
         End If
         
         'Picture boxes and text boxes can have tooltips.  Translate those too.
@@ -883,6 +891,7 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         
         'Labels receive a bit of extra attention.  Because translations can be longer than their original English text, a translated
         ' label may extend beyond the edge of its container.  If this happens, attempt to shrink the label's font size until it fits.
+        ' (In the future, PD will have a custom label UC that handles this automatically.)
         If (TypeOf eControl Is Label) Then
             If (eControl.Left + eControl.Width > eControl.Container.ScaleWidth) And eControl.AutoSize Then
             
@@ -894,22 +903,6 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
                     eControl.FontSize = curFontSize
                     eControl.Refresh
             
-                Loop
-            
-            End If
-        End If
-        
-        'PhotoDemon's "smart" option and check box buttons receive the same autosize treatment
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
-            If (eControl.Left + eControl.Width > eControl.Container.ScaleWidth) Then
-            
-                'Try shrinking the font size until an acceptable width is found
-                curFontSize = eControl.Font.Size
-                Do While ((eControl.Left + eControl.Width) > eControl.Container.ScaleWidth) And (curFontSize >= 8)
-                
-                    curFontSize = curFontSize - 1
-                    eControl.Font.Size = curFontSize
-                
                 Loop
             
             End If

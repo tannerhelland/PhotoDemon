@@ -112,8 +112,11 @@ Private cSubclass As cSelfSubHookCallback
 Private WithEvents mFont As StdFont
 Attribute mFont.VB_VarHelpID = -1
 
-'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages)
+'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_Caption
+' is the ENGLISH CAPTION ONLY.  A translated caption, if one exists, will be stored in m_TranslatedCaption, after PD's
+' central themer invokes the translateCaption function.
 Private m_Caption As String
+Private m_TranslatedCaption As String
 
 'Current control value
 Private m_Value As Boolean
@@ -427,7 +430,9 @@ Private Sub updateControlSize()
     
     'Calculate a precise size for the requested caption.
     Dim captionWidth As Long, captionHeight As Long, txtSize As POINTAPI
+    
     If Not m_BackBuffer Is Nothing Then
+        
         GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_Caption), Len(m_Caption), txtSize
         captionHeight = txtSize.y
     
@@ -495,6 +500,64 @@ Public Sub updateAgainstCurrentTheme()
     
     'Redraw the control to match
     updateControlSize
+    
+End Sub
+
+'External functions must call this if a caption translation is required.
+Public Sub translateCaption()
+    
+    Dim newCaption As String
+    
+    'Translations are active.  Retrieve a translated caption, and make sure it fits within the control.
+    If g_Language.translationActive Then
+    
+        'Only proceed if our caption requires translation (e.g. it's non-null and non-numeric)
+        If (Len(Trim(m_Caption)) > 0) And (Not IsNumeric(m_Caption)) Then
+    
+            'Retrieve the translated text
+            newCaption = g_Language.TranslateMessage(m_Caption)
+            
+            'Check the size of the translated text, using the current font settings
+            Dim fullControlWidth As Long
+            fullControlWidth = getRadioButtonPlusCaptionWidth(newCaption)
+            
+            Dim curFontSize As Single
+            curFontSize = mFont.Size
+            
+            'If the size of the caption is wider than the control itself, repeatedly shrink the font size until we
+            ' find a size that fits the entire caption.
+            Do While (fullControlWidth > UserControl.ScaleWidth - fixDPI(2)) And (curFontSize >= 8)
+                
+                'Shrink the font size
+                curFontSize = curFontSize - 0.25
+                curFont.setFontSize curFontSize
+                
+                'Recreate the font object
+                curFont.releaseFromDC
+                curFont.createFontObject
+                curFont.attachToDC m_BackBuffer.getDIBDC
+                
+                'Calculate a new width
+                fullControlWidth = getRadioButtonPlusCaptionWidth(newCaption)
+            
+            Loop
+            
+        Else
+            newCaption = ""
+        End If
+    
+    'If translations are not active, skip this step entirely
+    Else
+        newCaption = ""
+    End If
+    
+    'Redraw the control if the caption has changed
+    If StrComp(newCaption, m_TranslatedCaption, vbBinaryCompare) <> 0 Then
+        
+        m_TranslatedCaption = newCaption
+        PaintUC
+        
+    End If
     
 End Sub
 
@@ -572,13 +635,21 @@ Private Sub PaintUC()
     End If
     
     'Render the text
-    curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_Caption
+    If Len(m_TranslatedCaption) > 0 Then
+        curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_TranslatedCaption
+    Else
+        curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_Caption
+    End If
     
     'Update the clickable rect using the measurements from the final render
     With clickableRect
         .Left = 0
         .Top = 0
-        .Right = offsetX * 2 + optCircleSize + fixDPI(6) + curFont.getWidthOfString(m_Caption) + fixDPI(6)
+        If Len(m_TranslatedCaption) > 0 Then
+            .Right = offsetX * 2 + optCircleSize + fixDPI(6) + curFont.getWidthOfString(m_TranslatedCaption) + fixDPI(6)
+        Else
+            .Right = offsetX * 2 + optCircleSize + fixDPI(6) + curFont.getWidthOfString(m_Caption) + fixDPI(6)
+        End If
         .Bottom = m_BackBuffer.getDIBHeight
     End With
     
@@ -611,6 +682,42 @@ Private Sub PaintUC()
     ValidateRect Me.hWnd, ByVal 0&
     
 End Sub
+
+'Estimate the size and offset of the radio button and caption chunk of the control.  The function allows you to pass an
+' arbitrary caption, which it uses to determine auto-shrinking of font size for lengthy translated captions.
+Private Function getRadioButtonPlusCaptionWidth(Optional ByVal relevantCaption As String = "") As Long
+
+    If Len(relevantCaption) = 0 Then relevantCaption = m_Caption
+
+    'Start by retrieving caption width and height.  (Checkbox size is proportional to these values.)
+    Dim captionWidth As Long, captionHeight As Long
+    captionWidth = curFont.getWidthOfString(relevantCaption)
+    captionHeight = curFont.getHeightOfString(relevantCaption)
+    
+    'Retrieve exact size metrics of the caption, as rendered in the current font
+    Dim fontDescent As Long, fontMetrics As TEXTMETRIC
+    GetTextMetrics m_BackBuffer.getDIBDC, fontMetrics
+    fontDescent = fontMetrics.tmDescent
+    
+    'Using the font metrics, determine a check box offset and size.  Note that 1px is manually added as part of maintaining a
+    ' 1px border around the user control as a whole (which is used for a focus rect).
+    Dim offsetX As Long, offsetY As Long, optCircleSize As Long
+    offsetX = 1 + fixDPI(2)
+    offsetY = fontMetrics.tmInternalLeading + 1
+    optCircleSize = captionHeight - fontDescent
+    optCircleSize = optCircleSize - fontMetrics.tmInternalLeading
+    optCircleSize = optCircleSize + 1
+    
+    'Because GDI+ is finicky with antialiasing on odd-number circle sizes, force the circle size to the nearest even number
+    If optCircleSize Mod 2 = 1 Then
+        optCircleSize = optCircleSize + 1
+        offsetY = offsetY - 1
+    End If
+    
+    'Return the determined check box size, plus a 6px extender to separate it from the caption.
+    getRadioButtonPlusCaptionWidth = offsetX * 2 + optCircleSize + fixDPI(6) + captionWidth
+
+End Function
 
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
