@@ -428,7 +428,9 @@ End Function
 'Apply a CMYK transform between a 32bpp CMYK DIB and a 24bpp sRGB DIB.
 Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKDIB As pdDIB, ByRef dstRGBDIB As pdDIB, Optional ByVal customSourceIntent As Long = -1) As Boolean
 
-    Message "Using embedded ICC profile to convert image from CMYK to sRGB color space..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Using embedded ICC profile to convert image from CMYK to sRGB color space..."
+    #End If
     
     'Use the Color_Management module to convert the raw ICC profile into an internal Windows profile handle.  Note that
     ' this function will also validate the profile for us.
@@ -459,8 +461,9 @@ Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
                 
                 'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
                 ' the API with direct access to our DIB bits.
-                
-                Message "CMYK to sRGB transform data created successfully.  Applying transform..."
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "CMYK to sRGB transform data created successfully.  Applying transform..."
+                #End If
                 
                 'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
                 ' color depth.
@@ -469,8 +472,13 @@ Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
                 
                 'If the transform was successful, pat ourselves on the back.
                 If transformCheck Then
-                    Message "CMYK to sRGB transformation successful."
+                    
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "CMYK to sRGB transformation successful."
+                    #End If
+                    
                     applyCMYKTransform = True
+                    
                 Else
                     Message "sRGB transform could not be applied.  Image remains in CMYK format."
                 End If

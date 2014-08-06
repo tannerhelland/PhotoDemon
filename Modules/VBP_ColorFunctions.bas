@@ -138,7 +138,9 @@ End Function
 ' as at that point the program will automatically treat the image as 24 or 32bpp (contingent on presence of an alpha channel).
 Public Function getQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID As Long = -1) As Long
     
-    Message "Verifying image color count..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Verifying image color count..."
+    #End If
     
     'Mark the image ID to the global tracking variable
     g_LastImageScanned = imageID

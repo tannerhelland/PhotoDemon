@@ -109,7 +109,9 @@ Public Function applyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
         Exit Function
     End If
     
-    Message "Using embedded ICC profile to convert image to sRGB space for editing..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Using embedded ICC profile to convert image to sRGB space for editing..."
+    #End If
     
     'Use the Color_Management module to convert the raw ICC profile into an internal Windows profile handle.  Note that
     ' this function will also validate the profile for us.
@@ -148,7 +150,11 @@ Public Function applyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
                 
                 'If the transform was successful, pat ourselves on the back.
                 If transformCheck Then
-                    Message "ICC profile transformation successful.  Image is now sRGB."
+                
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "ICC profile transformation successful.  Image is now sRGB."
+                    #End If
+                    
                     iccProfileHasBeenApplied = True
                     applyICCtoSelf = True
                 Else
@@ -184,7 +190,9 @@ End Function
 ' Plugin_FreeImage_Expanded module for details).
 Public Function loadICCFromFreeImage(ByVal fi_Bitmap As Long) As Boolean
 
-    Message "Image contains ICC profile.  Copying profile now..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Image contains ICC profile.  Copying profile now..."
+    #End If
     
     'Check to make sure the supplied FreeImage bitmap actually has ICC data
     If FreeImage_GetICCProfileSize(fi_Bitmap) > 0 Then
@@ -199,21 +207,30 @@ Public Function loadICCFromFreeImage(ByVal fi_Bitmap As Long) As Boolean
         CopyMemory ByVal VarPtr(iccData(0)), ByVal fiProfileHeader.Data, fiProfileHeader.Size
         
         'The complete ICC profile will now be inside the iccData array.
-        Message "ICC profile copied successfully."
-        Debug.Print "ICC profile size (in bytes): " & Str(UBound(iccData) + 1)
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ICC profile copied successfully."
+        #End If
+            
         iccDataPresent = True
         loadICCFromFreeImage = True
         
     Else
-        Message "ICC profile could not be copied (unknown error)."
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ICC profile could not be copied (unknown error)."
+        #End If
+        
         loadICCFromFreeImage = False
+        
     End If
     
 End Function
 
 Public Function loadICCFromGDIPlus(ByVal profileSize As Long, ByVal ptrToProfile As Long) As Boolean
 
-    Message "Image contains ICC profile.  Copying profile now..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Image contains ICC profile.  Copying profile now..."
+    #End If
     
     'Use the SIZE parameter to prepare a VB array to receive the profile data
     ReDim iccData(0 To profileSize - 1) As Byte
@@ -222,8 +239,10 @@ Public Function loadICCFromGDIPlus(ByVal profileSize As Long, ByVal ptrToProfile
     CopyMemory ByVal VarPtr(iccData(0)), ByVal ptrToProfile, profileSize
         
     'The complete ICC profile will now be inside the iccData array.
-    Message "ICC profile copied successfully."
-    Debug.Print "ICC profile size (in bytes): " & Str(UBound(iccData) + 1)
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "ICC profile copied successfully."
+    #End If
+    
     iccDataPresent = True
     loadICCFromGDIPlus = True
 

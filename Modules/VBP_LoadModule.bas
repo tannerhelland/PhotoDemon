@@ -3,9 +3,8 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 22/July/14
-'Last update: continue improving robustness of PDI file loading (specifically, if an image load attempt fails, check for the combination
-'              of a missing zLib plugin and a file with compressed data)
+'Last updated: 06/August/14
+'Last update: greatly improve robustness against any asynchronous metadata issues that may arise
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -702,6 +701,12 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         If isThisPrimaryImage Then
             
+            If UBound(sFile) > 0 Then
+                Message "Loading image %1 of %2...", thisImage + 1, UBound(sFile) + 1
+            Else
+                Message "Loading image..."
+            End If
+            
             CreateNewPDImage
             
             'If this is a primary image, we will automatically set the targetImage and targetDIB parameters.  If this is NOT a primary image,
@@ -730,24 +735,28 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         'Note that metadata extraction is handled asynchronously (e.g. in parallel to the core image loading process), which is
         ' why we launch it so early in the load process.  If the image load fails, we simply ignore any received metadata.
         ' ExifTool is extremely robust, so any errors it experiences during processing will not affect PD.
-        Set targetImage.imgMetadata = New pdMetadata
-        
         If g_ExifToolEnabled And isThisPrimaryImage Then
-            Message "Starting separate metadata extraction thread..."
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Starting separate metadata extraction thread..."
+            #End If
+            
             startMetadataProcessing sFile(thisImage), targetImage.originalFileFormat, targetImage.imageID
         End If
-        
+
         'By default, set this image to use the program's default metadata setting (settable from Tools -> Options).
         ' The user may override this setting later, but by default we always start with the user's program-wide setting.
         targetImage.imgMetadata.setMetadataExportPreference g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1)
-        
+
         
             
         '*************************************************************************************************************************************
         ' Call the most appropriate load function for this image's format (FreeImage, GDI+, or VB's LoadPicture)
         '*************************************************************************************************************************************
             
-        If isThisPrimaryImage Then Message "Determining filetype..."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Determining filetype..."
+        #End If
         
         'Initially, set the filetype of the target image to "unknown".  If the load is successful, this value will
         ' be changed to something >= 0. (Note: if FreeImage is used to load the file, this value will be set by the
@@ -912,15 +921,10 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             'Deactivate the (now useless) pdImage object, and forcibly unload whatever resources it has claimed
             targetImage.deactivateImage
-            fullPDImageUnload targetImage.imageID
-            
-            'Update the interface to reflect the images currently loaded
-            syncInterfaceToCurrentImage
+            fullPDImageUnload targetImage.imageID, False
             
             GoTo PreloadMoreImages
-            
-        Else
-            If isThisPrimaryImage Then Message "Image data loaded successfully."
+
         End If
         
         DoEvents
@@ -978,8 +982,9 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             ' If the incoming image is 24bpp, convert it to 32bpp.  PD assumes an available alpha channel for all layers.
             '*************************************************************************************************************************************
             
+            'TODO: investigate faster ways to convert to 32bpp
             If targetDIB.getDIBColorDepth = 24 Then targetDIB.convertTo32bpp
-                    
+            
             
             '*************************************************************************************************************************************
             ' If the image contained an embedded ICC profile, apply it now (before counting colors, etc).
@@ -1038,9 +1043,13 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetDIB)
                 
                 If g_IsImageGray Then
-                    Message "Color count successful (%1 BPP, grayscale)", targetImage.originalColorDepth
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Color count successful (%1 BPP, grayscale)", targetImage.originalColorDepth
+                    #End If
                 Else
-                    Message "Color count successful (%1 BPP, color)", targetImage.originalColorDepth
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Color count successful (%1 BPP, color)", targetImage.originalColorDepth
+                    #End If
                 End If
                             
             End If
@@ -1104,7 +1113,9 @@ PDI_Load_Continuation:
             
         #End If
         
-        If isThisPrimaryImage Then Message "Determining image title..."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Determining image title..."
+        #End If
         
         'If a different image name has been specified, we can assume the calling routine is NOT loading a file
         ' from disk (e.g. it's a scan, or Internet download, or screen capture, etc.).  Therefore, set the
@@ -1172,7 +1183,9 @@ PDI_Load_Continuation:
         ' If this is a primary image, update all relevant interface elements (image size display, 24/32bpp options, custom form icon, etc)
         '*************************************************************************************************************************************
         
-        Message "Finalizing image details..."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Finalizing image details..."
+        #End If
         
         'If this is a primary image, it needs to be rendered to the screen
         If isThisPrimaryImage Then
@@ -1180,26 +1193,12 @@ PDI_Load_Continuation:
             'Create an icon-sized version of this image, which we will use as form's taskbar icon
             If MacroStatus <> MacroBATCH Then createCustomFormIcon targetImage
             
-            'Synchronize all other interface elements to match the newly loaded image
-            syncInterfaceToCurrentImage
-            
-            DoEvents
-        
-        
-        
-        '*************************************************************************************************************************************
-        ' If this is a primary image, do a few additional preparations, then render the image to the screen
-        '*************************************************************************************************************************************
-            
-            
             'Register this image with the image tab bar
             toolbar_ImageTabs.registerNewImage g_CurrentImage
             
             'Just to be safe, update the color management profile of the current monitor
             checkParentMonitor True
             
-            Message "Resizing image to fit screen..."
-    
             'If the user wants us to resize the image to fit on-screen, do that now
             If g_AutozoomLargeImages = 0 Then FitImageToViewport True
             
@@ -1284,9 +1283,6 @@ PDI_Load_Continuation:
                         targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, imgName & layerNameAddon
                     End If
                     
-                    'Refresh the screen so the user knows the page loaded correctly
-                    syncInterfaceToCurrentImage
-                    
                     'Redraw the main viewport
                     PrepareViewport targetImage, FormMain.mainCanvas(0)
                 
@@ -1308,34 +1304,35 @@ PDI_Load_Continuation:
         '*************************************************************************************************************************************
         
         'Ask the metadata handler if it has finished parsing the image
-        If g_ExifToolEnabled And isThisPrimaryImage And (targetImage.originalFileFormat <> 100) Then
-        
+        If g_ExifToolEnabled And isThisPrimaryImage And (targetImage.originalFileFormat <> FIF_PDI) Then
+
             'Wait for metadata parsing to finish...
             If isMetadataFinished Then
+
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Metadata retrieved successfully."
+                #End If
                 
-                Message "Metadata retrieved successfully."
                 targetImage.imgMetadata.loadAllMetadata retrieveMetadataString, targetImage.imageID
-                
+
             Else
-            
-                Message "Metadata parsing hasn't finished; switching to asynchronous wait mode..."
-                FormMain.tmrMetadata.Enabled = True
                 
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Metadata parsing hasn't finished; switching to asynchronous wait mode..."
+                #End If
+                
+                If Not FormMain.tmrMetadata.Enabled Then FormMain.tmrMetadata.Enabled = True
+
             End If
-            
-            'Next, retrieve any specific metadata-related entries that may be useful to further processing
-            
-            'First is resolution
+
+            'Next, retrieve any specific metadata-related entries that may be useful to further processing, like image resolution
             Dim xResolution As Double, yResolution As Double
             If targetImage.imgMetadata.getResolution(xResolution, yResolution) Then
                 targetImage.setDPI xResolution, yResolution
             End If
-            
-            'I hate doing this, but we need to resync the interface to match any metadata discoveries
-            syncInterfaceToCurrentImage
-            
-        End If
         
+
+        End If
         
         
         '*************************************************************************************************************************************
@@ -1348,8 +1345,13 @@ PDI_Load_Continuation:
         '
         '(Note that all Undo behavior is disabled during batch processing, to improve performance, so we can skip this step.)
         If isThisPrimaryImage And (MacroStatus <> MacroBATCH) Then
-            Message "Creating initial auto-save entry (this may take a moment)..."
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Creating initial auto-save entry (this may take a moment)..."
+            #End If
+            
             targetImage.undoManager.createUndoData "Original image", "", UNDO_EVERYTHING
+            
         End If
         
         'Also, set an initial image checkpoint, in case the user decides to immediately start applying non-destructive
@@ -1363,10 +1365,9 @@ PDI_Load_Continuation:
         
         targetImage.loadedSuccessfully = True
         
-        If isThisPrimaryImage Then Message "Image loaded successfully."
-        
         'In debug mode, note the new memory baseline, post-load
         #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "targetImage.loadedSuccessfully set to TRUE"
             pdDebug.LogAction "New memory report after loading image """ & getFilename(sFile(thisImage)) & """:"
             pdDebug.LogAction "", PDM_MEM_REPORT
             
@@ -1392,7 +1393,8 @@ PreloadMoreImages:
     
     FormMain.Enabled = True
     
-    
+    'Synchronize all interface elements to match the newly loaded image(s)
+    syncInterfaceToCurrentImage
     
     
     '*************************************************************************************************************************************
@@ -1403,7 +1405,11 @@ PreloadMoreImages:
     If pageNumber <= 0 Then Screen.MousePointer = vbNormal
     
     'If multiple images were loaded and everything went well, display a success message
-    If multipleFilesLoading And (Len(missingFiles) = 0) And (Len(brokenFiles) = 0) And isThisPrimaryImage Then Message "All images loaded successfully."
+    If multipleFilesLoading Then
+        If (Len(missingFiles) = 0) And (Len(brokenFiles) = 0) And isThisPrimaryImage Then Message "All images loaded successfully."
+    Else
+        If isThisPrimaryImage And targetImage.loadedSuccessfully Then Message "Image loaded successfully."
+    End If
         
     'Finally, if we were loading multiple images and something went wrong (missing files, broken files), let the user know about them.
     If multipleFilesLoading And (Len(missingFiles) > 0) Then
