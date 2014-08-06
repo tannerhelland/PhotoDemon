@@ -187,7 +187,7 @@ End Sub
 ' (Note that this function simply wraps the imitation QueryUnload and Unload functions, below.)
 '
 'This function returns TRUE if the image was unloaded, FALSE if it was canceled.
-Public Function fullPDImageUnload(ByVal imageID As Long) As Boolean
+Public Function fullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawScreen As Boolean = True) As Boolean
 
     Dim toCancel As Integer
     Dim tmpUnloadMode As Integer
@@ -200,17 +200,21 @@ Public Function fullPDImageUnload(ByVal imageID As Long) As Boolean
         Exit Function
     End If
     
-    UnloadPDImage toCancel, imageID
+    UnloadPDImage toCancel, imageID, redrawScreen
     
     If CBool(toCancel) Then
         fullPDImageUnload = False
     Else
         
         'Redraw the screen
-        If g_OpenImageCount > 0 Then
-            PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "another image closed"
-        Else
-            FormMain.mainCanvas(0).clearCanvas
+        If redrawScreen Then
+        
+            If g_OpenImageCount > 0 Then
+                PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "another image closed"
+            Else
+                FormMain.mainCanvas(0).clearCanvas
+            End If
+            
         End If
         
         fullPDImageUnload = True
@@ -313,12 +317,12 @@ End Function
 
 'Previously, we could unload images by just unloading their containing form.  This is no longer possible, so we must
 ' unload images using this special function.
-Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long)
+Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long, Optional ByVal resyncInterface As Boolean = True)
 
     'Failsafe to make sure the image was properly initialized
     If pdImages(imageID) Is Nothing Then Exit Function
     
-    If pdImages(imageID).loadedSuccessfully Then Message "Closing image..."
+    If pdImages(imageID).loadedSuccessfully And resyncInterface Then Message "Closing image..."
     
     'Decrease the open image count
     g_OpenImageCount = g_OpenImageCount - 1
@@ -371,13 +375,9 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long)
         
     End If
     
-    'If this was the last unloaded image, we need to disable a number of menus and other items.
-    'If g_OpenImageCount = 0 Then g_WindowManager.allImageWindowsUnloaded
-    
     'Sync the interface to match the settings of whichever image is active (or disable a bunch of items if no images are active)
-    syncInterfaceToCurrentImage
-    
-    Message "Finished."
+    If resyncInterface Then syncInterfaceToCurrentImage
+    If resyncInterface Then Message "Finished."
     
 End Function
 

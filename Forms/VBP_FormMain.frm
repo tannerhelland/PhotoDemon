@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   960
@@ -1492,7 +1492,7 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Double
 
 'Horizontal mousewheel; note that the pdInput class automatically converts Shift+Wheel to horizontal wheel for us
-Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
+Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
     Dim newX As Long, newY As Long
     
@@ -1502,14 +1502,14 @@ Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConst
         If g_MouseOverImageTabstrip Then
             
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.convertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, X, Y, newX, newY
+            Drawing.convertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
             toolbar_ImageTabs.cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
         
         'Assume mouse is over the canvas
         Else
         
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, X, Y, newX, newY
+            Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
             FormMain.mainCanvas(0).cMouseEvents_MouseWheelHorizontal Button, Shift, newX, newY, scrollAmount
             
         End If
@@ -1520,7 +1520,7 @@ End Sub
 
 'Vertical mousewheel; note that the pdInput class automatically converts Shift+Wheel and Ctrl+Wheel actions to dedicated events,
 ' so this function will only return plain MouseWheel events (or Alt+MouseWheel, I suppose)
-Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
+Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 
     Dim newX As Long, newY As Long
 
@@ -1530,14 +1530,14 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
         If g_MouseOverImageTabstrip Then
             
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.convertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, X, Y, newX, newY
+            Drawing.convertCoordsBetweenHwnds Me.hWnd, toolbar_ImageTabs.hWnd, x, y, newX, newY
             toolbar_ImageTabs.cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
         
         'Assume mouse is over the main canvas
         Else
             
             'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-            Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, X, Y, newX, newY
+            Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
             FormMain.mainCanvas(0).cMouseEvents_MouseWheelVertical Button, Shift, newX, newY, scrollAmount
             
         End If
@@ -1547,7 +1547,7 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
 End Sub
 
 'Ctrl+Wheel actions are detected by pdInput and sent to this dedicated class
-Private Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal zoomAmount As Double)
+Private Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
 
     'The only child window that supports mousewheel zoom is the main canvas, so redirect any zoom events there.
     If g_OpenImageCount > 0 Then
@@ -1555,7 +1555,7 @@ Private Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, 
         Dim newX As Long, newY As Long
     
         'Convert the x/y coordinates we received into the child window's coordinate space, then relay the mousewheel message
-        Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, X, Y, newX, newY
+        Drawing.convertCoordsBetweenHwnds Me.hWnd, FormMain.mainCanvas(0).hWnd, x, y, newX, newY
         FormMain.mainCanvas(0).cMouseEvents_MouseWheelZoom Button, Shift, newX, newY, zoomAmount
     
     End If
@@ -2150,7 +2150,9 @@ Private Sub tmrMetadata_Timer()
             startPosition = InStrRev(mdString, "<?xml", terminalPosition, vbBinaryCompare)
             
             'Using the start and final markers, extract the relevant metadata and forward it to the relevant pdImage object
-            pdImages(curImageID).imgMetadata.loadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
+            If startPosition > 0 Then
+                pdImages(curImageID).imgMetadata.loadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
+            End If
             
             'Find the next chunk of image metadata, if any
             terminalPosition = InStr(terminalPosition + 6, mdString, "{ready", vbBinaryCompare)
@@ -2459,7 +2461,7 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files and URLs onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
@@ -2470,7 +2472,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
