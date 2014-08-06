@@ -33,28 +33,20 @@ Begin VB.UserControl smartResize
       TabIndex        =   10
       Top             =   180
       Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1111
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      Value           =   -1  'True
-      HandPointer     =   -1  'True
-      PictureNormal   =   "smartResize.ctx":0312
-      PictureDown     =   "smartResize.ctx":1764
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      _extentx        =   1111
+      _extenty        =   1111
+      buttonstyle     =   7
+      font            =   "smartResize.ctx":0312
+      backcolor       =   -2147483643
+      caption         =   ""
+      value           =   -1  'True
+      handpointer     =   -1  'True
+      picturenormal   =   "smartResize.ctx":033A
+      picturedown     =   "smartResize.ctx":178C
+      pictureeffectondown=   0
+      captioneffects  =   0
+      mode            =   1
+      colorscheme     =   3
    End
    Begin VB.ComboBox cmbHeightUnit 
       Height          =   360
@@ -78,20 +70,12 @@ Begin VB.UserControl smartResize
       TabIndex        =   0
       Top             =   0
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   767
-      Min             =   1
-      Max             =   32767
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   2117
+      _extenty        =   767
+      font            =   "smartResize.ctx":2BDE
+      min             =   1
+      max             =   32767
+      value           =   1
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   435
@@ -99,20 +83,12 @@ Begin VB.UserControl smartResize
       TabIndex        =   1
       Top             =   600
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   767
-      Min             =   1
-      Max             =   32767
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   2117
+      _extenty        =   767
+      font            =   "smartResize.ctx":2C06
+      min             =   1
+      max             =   32767
+      value           =   1
    End
    Begin PhotoDemon.textUpDown tudResolution 
       Height          =   435
@@ -120,20 +96,12 @@ Begin VB.UserControl smartResize
       TabIndex        =   12
       Top             =   1200
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   767
-      Min             =   1
-      Max             =   32767
-      Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   2117
+      _extenty        =   767
+      font            =   "smartResize.ctx":2C2E
+      min             =   1
+      max             =   32767
+      value           =   1
    End
    Begin VB.Label lblResolution 
       Alignment       =   1  'Right Justify
@@ -358,6 +326,10 @@ Private previousUnitOfMeasurement As MeasurementUnit
 ' However, because this does not offer percent and measurement values, we track it separately.
 Private previousUnitOfResolution As ResolutionUnit
 
+'"Unknown size mode" is used in the batch conversion dialog, as we don't know the size of images in advance
+' (so if the user selects PERCENT resizing, we can't give them exact dimensions).
+Private m_UnknownSizeMode As Boolean
+
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
@@ -392,6 +364,17 @@ Public Property Set Font(mNewFont As StdFont)
         .Size = mNewFont.Size
     End With
     PropertyChanged "Font"
+End Property
+
+'For batch conversions, we can't display an exact size when using PERCENT mode (as the exact size will vary according
+' to the original image dimensions).  Use this mode to enable/disable that feature.
+Public Property Get UnknownSizeMode() As Boolean
+    UnknownSizeMode = m_UnknownSizeMode
+End Property
+
+Public Property Let UnknownSizeMode(newMode As Boolean)
+    m_UnknownSizeMode = newMode
+    PropertyChanged "UnknownSizeMode"
 End Property
 
 'User has changed the Resolution (PPI) measurement drop-down
@@ -779,6 +762,8 @@ Private Sub UserControl_InitProperties()
     mFont.Name = "Tahoma"
     mFont.Size = 10
     mFont_FontChanged ("")
+    
+    UnknownSizeMode = False
 
 End Sub
 
@@ -786,6 +771,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         Set Font = .ReadProperty("Font", Ambient.Font)
+        UnknownSizeMode = .ReadProperty("UnknownSizeMode", False)
     End With
     
 End Sub
@@ -961,10 +947,20 @@ Private Sub updateAspectRatio()
             Denominator = Denominator * 2
         End If
         
-        lblAspectRatio(1).Caption = " " & Numerator & ":" & Denominator & "  (" & Format$(imgWidthPixels / imgHeightPixels, "######0.0#####") & ")"
+        'In "unknown size mode", we can't display exact dimensions for PERCENT mode, so don't even try.
+        If m_UnknownSizeMode And (cmbWidthUnit.ListIndex = MU_PERCENT) Then
         
-        'While we're here, also update the dimensions caption
-        lblDimensions(1).Caption = " " & Int(imgWidthPixels) & " px   X   " & Int(imgHeightPixels) & " px"
+            lblAspectRatio(1).Caption = " " & g_Language.TranslateMessage("exact aspect ratio will vary by image")
+            lblDimensions(1).Caption = " " & g_Language.TranslateMessage("exact size will vary by image")
+        
+        Else
+        
+            lblAspectRatio(1).Caption = " " & Numerator & ":" & Denominator & "  (" & Format$(imgWidthPixels / imgHeightPixels, "######0.0#####") & ")"
+            
+            'While we're here, also update the dimensions caption
+            lblDimensions(1).Caption = " " & Int(imgWidthPixels) & " px   X   " & Int(imgHeightPixels) & " px"
+            
+        End If
     
     Else
         lblAspectRatio(1).Caption = ""
@@ -978,6 +974,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     'Store all associated properties
     With PropBag
         .WriteProperty "Font", mFont, "Tahoma"
+        .WriteProperty "UnknownSizeMode", m_UnknownSizeMode, False
     End With
 
 End Sub
