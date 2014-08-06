@@ -965,11 +965,11 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
     Next i
     
     'With all Undo data successfully written, close the XML data and write it out to file.
-    xmlEngine.writeXMLToFile dstFilename
+    xmlEngine.writeXMLToFile dstFilename, False
     
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
     ' will use this as an image preview if something goes horribly wrong.
-    If undoNum > 0 Then Saving.QuickSaveDIBAsPNG generateUndoHeaderFilename & ".asp", undoStack(undoNum - 1).thumbnailLarge
+    If (undoNum > 0) And (Not (undoStack(undoNum - 1).thumbnailLarge Is Nothing)) Then Saving.QuickSaveDIBAsPNG generateUndoHeaderFilename & ".asp", undoStack(undoNum - 1).thumbnailLarge
     
 End Sub
 
