@@ -56,10 +56,7 @@ Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
     
     'Track how many windows we currently have open
     g_OpenImageCount = g_OpenImageCount + 1
-    
-    'Run a separate subroutine to enable/disable menus (important primarily if this is the first image to be loaded)
-    syncInterfaceToCurrentImage
-    
+        
     'Re-enable automatic viewport updates
     g_AllowViewportRendering = True
     
@@ -336,7 +333,7 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long, Optional
     'If g_OpenImageCount = 0 Then Unload FormHistogram
     
     'Remove this image from the thumbnail toolbar
-    toolbar_ImageTabs.RemoveImage imageID
+    toolbar_ImageTabs.RemoveImage imageID, resyncInterface
     
     'Before exiting, restore focus to the next child window in line.  (But only if this image was the active window!)
     If g_CurrentImage = CLng(imageID) Then
@@ -354,7 +351,7 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long, Optional
             
                 If (Not pdImages(i) Is Nothing) Then
                     If pdImages(i).IsActive Then
-                        activatePDImage i, "previous image unloaded"
+                        activatePDImage i, "previous image unloaded", resyncInterface
                         Exit Do
                     End If
                 End If
@@ -376,14 +373,16 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long, Optional
     End If
     
     'Sync the interface to match the settings of whichever image is active (or disable a bunch of items if no images are active)
-    If resyncInterface Then syncInterfaceToCurrentImage
-    If resyncInterface Then Message "Finished."
+    If resyncInterface Then
+        syncInterfaceToCurrentImage
+        Message "Finished."
+    End If
     
 End Function
 
 'Previously, images could be activated by clicking on their window.  Now that all images are rendered to a single
 ' user control on the main form, we must activate them manually.
-Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = "")
+Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = "", Optional ByVal refreshScreen As Boolean = True)
 
     'If this form is already the active image, don't waste time re-activating it
     If g_CurrentImage <> imageID Then
@@ -403,19 +402,24 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         checkParentMonitor True
         
         'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
-        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Form received focus"
+        If Not pdImages(g_CurrentImage) Is Nothing Then
         
-        'Reflow any image-window-specific chrome (status bar, rulers, etc)
-        FormMain.mainCanvas(0).fixChromeLayout
-    
-        'Use the window manager to bring the window to the foreground
-        'g_WindowManager.notifyChildReceivedFocus Me
+            If refreshScreen Then
+            
+                PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Form received focus"
         
-        'Notify the thumbnail bar that a new image has been selected
-        toolbar_ImageTabs.notifyNewActiveImage imageID
-        
-        'Synchronize various interface elements to match values stored in this image.
-        syncInterfaceToCurrentImage
+                'Reflow any image-window-specific chrome (status bar, rulers, etc)
+                FormMain.mainCanvas(0).fixChromeLayout
+            
+                'Notify the thumbnail bar that a new image has been selected
+                toolbar_ImageTabs.notifyNewActiveImage imageID
+            
+                'Synchronize various interface elements to match values stored in this image.
+                syncInterfaceToCurrentImage
+            
+            End If
+            
+        End If
         
         'As we have not invoked PD's central processor, we need to manually add an image checkpoint now.  This allows the processor
         ' to capture any non-destructive edits that occur before the next processor request.

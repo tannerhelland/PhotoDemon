@@ -47,7 +47,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' Determine image format
     '****************************************************************************
     
-    If showMessages Then Message "Analyzing filetype..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Analyzing filetype..."
+    #End If
     
     'While we could manually test our extension against the FreeImage database, it is capable of doing so itself.
     'First, check the file header to see if it matches a known head type
@@ -61,7 +63,10 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     'By this point, if the file still doesn't show up in FreeImage's database, abandon the import attempt.
     If Not FreeImage_FIFSupportsReading(fileFIF) Then
     
-        If showMessages Then Message "Filetype not supported by FreeImage.  Import abandoned."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Filetype not supported by FreeImage.  Import abandoned."
+        #End If
+        
         LoadFreeImageV4 = False
         Exit Function
         
@@ -75,7 +80,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' Based on the detected format, prepare any necessary load flags
     '****************************************************************************
     
-    If showMessages Then Message "Preparing import flags..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Preparing import flags..."
+    #End If
     
     'Certain filetypes offer import options.  Check the FreeImage type to see if we want to enable any optional flags.
     Dim fi_ImportFlags As FREE_IMAGE_LOAD_OPTIONS
@@ -176,20 +183,37 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     Dim fi_hDIB As Long
     
     If (pageToLoad <= 0) Then
-        If showMessages Then Message "Importing image from file..."
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Importing image from file..."
+        #End If
+        
         fi_hDIB = FreeImage_Load(fileFIF, srcFilename, fi_ImportFlags)
+        
     Else
+        
+        #If DEBUGMODE = 1 Then
+            
+            If fileFIF = FIF_GIF Then
+                pdDebug.LogAction "Importing frame # " & pageToLoad + 1 & " from animated GIF file..."
+            ElseIf fileFIF = FIF_ICO Then
+                pdDebug.LogAction "Importing icon # " & pageToLoad + 1 & " from ICO file...", pageToLoad + 1
+            Else
+                pdDebug.LogAction "Importing page # " & pageToLoad + 1 & " from multipage TIFF file...", pageToLoad + 1
+            End If
+            
+        #End If
+        
         If fileFIF = FIF_GIF Then
-            If showMessages Then Message "Importing frame # %1 from animated GIF file...", pageToLoad + 1
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_GIF, srcFilename, , , , FILO_GIF_PLAYBACK)
         ElseIf fileFIF = FIF_ICO Then
-            If showMessages Then Message "Importing icon # %1 from ICO file...", pageToLoad + 1
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , 0)
         Else
-            If showMessages Then Message "Importing page # %1 from multipage TIFF file...", pageToLoad + 1
             fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_TIFF, srcFilename, , , , 0)
         End If
+        
         fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)
+        
     End If
     
     'Icon files may use a simple mask for their alpha channel; in this case, re-load the icon with the FILO_ICO_MAKEALPHA flag
@@ -223,7 +247,10 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     'If an empty handle is returned, abandon the import attempt.
     If fi_hDIB = 0 Then
     
-        If showMessages Then Message "Import via FreeImage failed (blank handle)."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Import via FreeImage failed (blank handle)."
+        #End If
+        
         LoadFreeImageV4 = False
         Exit Function
         
@@ -285,7 +312,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     'Before we continue the import, we need to make sure the pixel data is in a format appropriate for PhotoDemon.
     
-    If showMessages Then Message "Analyzing color depth..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Analyzing color depth..."
+    #End If
     
     'First thing we want to check is the color depth.  PhotoDemon is designed around 16 million color images.  This could
     ' change in the future, but for now, force high-bit-depth images to a more appropriate 24 or 32bpp.
@@ -298,7 +327,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     Dim fi_DataType As FREE_IMAGE_TYPE
     fi_DataType = FreeImage_GetImageType(fi_hDIB)
     
-    Debug.Print "Image bit-depth of " & fi_BPP & " and data type " & fi_DataType & " detected."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Image bit-depth of " & fi_BPP & " and data type " & fi_DataType & " detected."
+    #End If
     
     'If a high bit-depth image is incoming, we need to use a temporary DIB to hold the image's alpha data (which will
     ' be erased by the tone-mapping algorithm we'll use).  This is that object
@@ -321,7 +352,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     'First, check source images without an alpha channel.  Convert these using the superior tone mapping method.
     If (fi_BPP = 48) Or (fi_BPP = 96) Then
     
-        If showMessages Then Message "High bit-depth RGB image identified.  Checking for non-standard alpha encoding..."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "High bit-depth RGB image identified.  Checking for non-standard alpha encoding..."
+        #End If
         
         'While images with these bit-depths may not have an alpha channel, they can have binary transparency - check for that now.
         ' (Note: as of FreeImage 3.15.3 binary bit-depths are not detected correctly.  That said, they may someday be supported -
@@ -333,7 +366,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         ' Check that preference before tone-mapping the image.
         If g_UserPreferences.GetPref_Boolean("Loading", "HDR Tone Mapping", True) Then
             
-            If showMessages Then If showMessages Then Message "Tone mapping HDR image to preserve tonal range..."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Tone mapping HDR image to preserve tonal range..."
+            #End If
             
             new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
             
@@ -349,13 +384,18 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
             fi_hDIB = new_hDIB
             
-            If showMessages Then Message "Tone mapping complete."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Tone mapping complete."
+            #End If
         
         Else
                 
             If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
             
-                If showMessages Then Message "Alpha found, but further tone-mapping ignored at user's request."
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Alpha found, but further tone-mapping ignored at user's request."
+                #End If
+                
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
                 
                 If pageToLoad <= 0 Then
@@ -372,7 +412,10 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
             Else
             
-                If showMessages Then Message "No alpha found.  Further tone-mapping ignored at user's request."
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "No alpha found.  Further tone-mapping ignored at user's request."
+                #End If
+                
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, False)
                 
                 If pageToLoad <= 0 Then
@@ -401,7 +444,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         'Again, check for the user's preference on tone-mapping
         If g_UserPreferences.GetPref_Boolean("Loading", "HDR Tone Mapping", True) Then
         
-            If showMessages Then Message "High bit-depth RGBA image identified.  Tone mapping HDR image to preserve tonal range..."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "High bit-depth RGBA image identified.  Tone mapping HDR image to preserve tonal range..."
+            #End If
         
             'Now, convert the RGB data using the superior tone-mapping method.
             new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
@@ -418,11 +463,16 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
             fi_hDIB = new_hDIB
             
-            If showMessages Then Message "Tone mapping complete."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Tone mapping complete."
+            #End If
             
         Else
         
-            If showMessages Then Message "High bit-depth RGBA image identified.  Tone-mapping ignored at user's request."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "High bit-depth RGBA image identified.  Tone-mapping ignored at user's request."
+            #End If
+            
             new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
             
             If pageToLoad <= 0 Then
@@ -463,7 +513,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         'If it is such a grayscale image, it requires a unique conversion operation
         If fi_imageType = FIT_UINT16 Then
             
-            If showMessages Then Message "Tone-mapping high-bit-depth grayscale image to 24bpp..."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Tone-mapping high-bit-depth grayscale image to 24bpp..."
+            #End If
             
             'First, convert it to a high-bit depth RGB image
             fi_hDIB = FreeImage_ConvertToRGB16(fi_hDIB)
@@ -552,7 +604,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     If isCMYK Then
     
-        If showMessages Then Message "CMYK image detected.  Preparing transform into RGB space..."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "CMYK image detected.  Preparing transform into RGB space..."
+        #End If
         
         'Copy the CMYK data into a 32bpp DIB.  (Note that we could pass the FreeImage DIB copy directly into the function, but the resulting
         ' image would be top-down instead of bottom-up.  It's easier to just use our own PD-specific DIB object.)
@@ -569,7 +623,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         'Apply the transformation using the dedicated CMYK transform handler
         If applyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
         
-            Message "Copying newly transformed sRGB data..."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Copying newly transformed sRGB data..."
+            #End If
         
             'The transform was successful.  Copy the new sRGB data back into the FreeImage object, so the load process can continue.
             FreeImage_Unload fi_hDIB
@@ -580,7 +636,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         'Something went horribly wrong.  Re-load the image and use FreeImage to apply the CMYK -> RGB transform.
         Else
         
-            Message "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
+            #End If
         
             FreeImage_Unload fi_hDIB
             fi_hDIB = FreeImage_Load(fileFIF, srcFilename, FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE)
@@ -607,7 +665,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     'We are now finally ready to load the image.
     
-    If showMessages Then Message "Requesting memory for image transfer..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Requesting memory for image transfer..."
+    #End If
     
     'Get width and height from the file, and create a new DIB to match
     Dim fi_Width As Long, fi_Height As Long
@@ -628,7 +688,10 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     'Make sure the blank DIB creation worked
     If Not creationSuccess Then
-        If showMessages Then Message "Import via FreeImage failed (couldn't create DIB)."
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Import via FreeImage failed (couldn't create DIB)."
+        #End If
         
         If (pageToLoad <= 0) Or (Not needToCloseMulti) Then
             If fi_hDIB <> 0 Then FreeImage_UnloadEx fi_hDIB
@@ -645,7 +708,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' Copy the data from the FreeImage object to the target pdDIB object
     '****************************************************************************
     
-    If showMessages Then Message "Memory secured.  Finalizing image load..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Memory secured.  Finalizing image load..."
+    #End If
         
     'Copy the bits from the FreeImage DIB to our DIB
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
@@ -664,7 +729,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         FreeImage_CloseMultiBitmap fi_multi_hDIB
     End If
     
-    If showMessages Then Message "Image load successful.  FreeImage released."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Image load successful.  FreeImage released."
+    #End If
     
     
     '****************************************************************************
@@ -675,14 +742,18 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' whose alpha data was lost during the tone-mapping phase.
     If tmpAlphaRequired Then
     
-        If showMessages Then Message "Restoring alpha data..."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Restoring alpha data..."
+        #End If
         
         dstDIB.copyAlphaFromExistingDIB tmpAlphaDIB
         dstDIB.fixPremultipliedAlpha True
         tmpAlphaDIB.eraseDIB
         Set tmpAlphaDIB = Nothing
         
-        If showMessages Then Message "Alpha data restored successfully."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Alpha data restored successfully."
+        #End If
         
     End If
     
