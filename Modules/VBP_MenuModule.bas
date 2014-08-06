@@ -369,8 +369,10 @@ Public Sub MenuCloseAll()
     Dim i As Long
     For i = 0 To g_NumOfImagesLoaded
     
+        Message "Unloading image %1 of %2", i + 1, g_NumOfImagesLoaded + 1
+    
         If Not (pdImages(i) Is Nothing) Then
-            If pdImages(i).IsActive Then fullPDImageUnload i
+            If pdImages(i).IsActive Then fullPDImageUnload i, False
         End If
         
         'If the user presses "cancel" at some point in the unload chain, obey their request immediately
@@ -378,6 +380,9 @@ Public Sub MenuCloseAll()
         If Not g_ClosingAllImages Then Exit For
         
     Next i
+    
+    'Redraw the screen to match the new program state
+    syncInterfaceToCurrentImage
 
     'Reset the "closing all images" flags
     g_ClosingAllImages = False
