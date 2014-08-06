@@ -265,7 +265,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     'Due to recent changes to the way PD handles asynchronous metadata parsing, the returned string will contain text similar to
     ' {ready123}, where 123 is the ID number of this image.  Because we don't actually want to store that text, use the supplied
     ' parentImageID to find and remove the text in question.
-    If InStrRev(mdString, "{ready", , vbBinaryCompare) Then mdString = Replace$(mdString, "{ready" & parentImageID & "}", "")
+    If InStrRev(mdString, "{ready", , vbBinaryCompare) <> 0 Then mdString = Replace$(mdString, "{ready" & parentImageID & "}", "")
     
     'We now have a (potentially very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of
     ' that string.  We need this backup when it comes time to write the metadata back out to file.
@@ -603,7 +603,6 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     ' stuff like that).  Otherwise, if at least one piece of valid metadata was found, return SUCCESS.
     If maxMetadataCount = 0 Then
         loadAllMetadata = False
-        Exit Function
     Else
         loadAllMetadata = True
     End If
@@ -754,5 +753,5 @@ End Function
 
 Private Sub Class_Initialize()
     maxMetadataCount = 0
-    ReDim cachedMetadata(0) As Byte
+    ReDim iMetadata(0) As mdItem
 End Sub

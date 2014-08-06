@@ -740,15 +740,6 @@ End Function
 'When this DIB is no longer being used, we can deactivate it to save on resources.
 Public Sub deactivateImage()
     
-    'Erase the main DIB.  (Note: in old versions, this was causing potential errors by functions that tried to directly
-    ' access the DIB; as of June '14, I think it's no longer problematic to immediately erase the stored DIB, but some
-    ' testing should be done to ensure there are no problems.)
-    
-    'If Not (mainDIB Is Nothing) Then
-    '    mainDIB.eraseDIB
-    '    Set mainDIB = Nothing
-    'End If
-    
     'Erase the back buffer
     If Not (backBuffer Is Nothing) Then
         backBuffer.eraseDIB

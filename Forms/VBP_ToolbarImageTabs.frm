@@ -133,6 +133,8 @@ Public Sub notifyNewActiveImage(ByVal newPDImageIndex As Long)
         If imgThumbnails(i).indexInPDImages = newPDImageIndex Then
             curThumb = i
             Exit For
+        Else
+            curThumb = 0
         End If
     Next i
     
@@ -227,10 +229,14 @@ Public Sub notifyUpdatedImage(ByVal pdImagesIndex As Long)
     For i = 0 To numOfThumbnails
         If imgThumbnails(i).indexInPDImages = pdImagesIndex Then
             
-            If verticalLayout Then
-                pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
-            Else
-                pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (fixDPI(thumbBorder) * 2)
+            If Not (pdImages(pdImagesIndex) Is Nothing) Then
+            
+                If verticalLayout Then
+                    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
+                Else
+                    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (fixDPI(thumbBorder) * 2)
+                End If
+                
             End If
             
             If g_InterfacePerformance <> PD_PERF_FASTEST Then updateShadowDIB i
@@ -275,7 +281,7 @@ Public Sub registerNewImage(ByVal pdImagesIndex As Long)
 End Sub
 
 'Whenever an image is unloaded, it needs to be de-registered with the toolbar
-Public Sub RemoveImage(ByVal pdImagesIndex As Long)
+Public Sub RemoveImage(ByVal pdImagesIndex As Long, Optional ByVal refreshToolbar As Boolean = True)
 
     'Find the matching thumbnail in our collection
     Dim i As Long, thumbIndex As Long
@@ -287,22 +293,34 @@ Public Sub RemoveImage(ByVal pdImagesIndex As Long)
     Next i
     
     'thumbIndex is now equal to the matching thumbnail.  Remove that entry, then shift all thumbnails after that point down.
-    If Not (imgThumbnails(thumbIndex).thumbDIB Is Nothing) Then
-        imgThumbnails(thumbIndex).thumbDIB.eraseDIB
-        Set imgThumbnails(thumbIndex).thumbDIB = Nothing
-        imgThumbnails(thumbIndex).thumbShadow.eraseDIB
-        Set imgThumbnails(thumbIndex).thumbShadow = Nothing
+    If thumbIndex <= UBound(imgThumbnails) Then
+    
+        If Not (imgThumbnails(thumbIndex).thumbDIB Is Nothing) Then
+            imgThumbnails(thumbIndex).thumbDIB.eraseDIB
+            Set imgThumbnails(thumbIndex).thumbDIB = Nothing
+        End If
+        
+        If Not (imgThumbnails(thumbIndex).thumbShadow Is Nothing) Then
+            imgThumbnails(thumbIndex).thumbShadow.eraseDIB
+            Set imgThumbnails(thumbIndex).thumbShadow = Nothing
+        End If
+        
+        For i = thumbIndex To numOfThumbnails - 1
+            Set imgThumbnails(i).thumbDIB = imgThumbnails(i + 1).thumbDIB
+            Set imgThumbnails(i).thumbShadow = imgThumbnails(i + 1).thumbShadow
+            imgThumbnails(i).indexInPDImages = imgThumbnails(i + 1).indexInPDImages
+        Next i
+        
     End If
-    
-    For i = thumbIndex To numOfThumbnails - 1
-        Set imgThumbnails(i).thumbDIB = imgThumbnails(i + 1).thumbDIB
-        Set imgThumbnails(i).thumbShadow = imgThumbnails(i + 1).thumbShadow
-        imgThumbnails(i).indexInPDImages = imgThumbnails(i + 1).indexInPDImages
-    Next i
-    
+        
     'Decrease the array size to erase the unneeded trailing entry
     numOfThumbnails = numOfThumbnails - 1
-    If numOfThumbnails < 0 Then numOfThumbnails = 0
+    
+    If numOfThumbnails < 0 Then
+        numOfThumbnails = 0
+        curThumb = 0
+    End If
+    
     ReDim Preserve imgThumbnails(0 To numOfThumbnails) As thumbEntry
     
     'Because inactive images can be unloaded via the Win 7 taskbar, it is possible for our curThumb tracker to get out of sync.
@@ -311,11 +329,13 @@ Public Sub RemoveImage(ByVal pdImagesIndex As Long)
         If imgThumbnails(i).indexInPDImages = g_CurrentImage Then
             curThumb = i
             Exit For
+        Else
+            curThumb = 0
         End If
     Next i
     
     'Redraw the toolbar to reflect these changes
-    redrawToolbar
+    If refreshToolbar Then redrawToolbar
 
 End Sub
 
@@ -776,81 +796,85 @@ Private Sub redrawToolbar(Optional ByVal fitCurrentThumbOnScreen As Boolean = Fa
     'Recreate the toolbar buffer
     bufferDIB.createBlank m_BufferWidth, m_BufferHeight, 24, ConvertSystemColor(vb3DShadow)
     
-    'Horizontal/vertical layout changes the constraining dimension (e.g. the dimension used to detect if the number
-    ' of image tabs currently visible is long enough that it needs to be scrollable).
-    Dim constrainingDimension As Long, constrainingMax As Long
-    If verticalLayout Then
-        constrainingDimension = thumbHeight
-        constrainingMax = m_BufferHeight
-    Else
-        constrainingDimension = thumbWidth
-        constrainingMax = m_BufferWidth
-    End If
-    
-    'Determine if the scrollbar needs to be accounted for or not
-    Dim maxThumbSize As Long
-    maxThumbSize = constrainingDimension * numOfThumbnails - 1
-    
-    If maxThumbSize < constrainingMax Then
-        hsThumbnails.Value = 0
-        m_ListScrollable = False
-    Else
-        m_ListScrollable = True
-        hsThumbnails.Max = maxThumbSize - constrainingMax
+    If numOfThumbnails > 0 Then
         
-        'Dynamically set the scrollbar's LargeChange value relevant to thumbnail size
-        Dim lChange As Long
-        
-        lChange = (maxThumbSize - constrainingMax) \ 16
-        
-        If lChange < 1 Then lChange = 1
-        If lChange > thumbWidth \ 4 Then lChange = thumbWidth \ 4
-        
-        hsThumbnails.LargeChange = lChange
-        
-        'If requested, fit the currently active thumbnail on-screen
-        If fitCurrentThumbOnScreen Then fitThumbnailOnscreen curThumb
-        
-    End If
-    
-    'Determine a scrollbar offset as necessary
-    Dim scrollOffset As Long
-    scrollOffset = hsThumbnails.Value
-    
-    'Render each thumbnail block
-    Dim i As Long
-    For i = 0 To numOfThumbnails - 1
+        'Horizontal/vertical layout changes the constraining dimension (e.g. the dimension used to detect if the number
+        ' of image tabs currently visible is long enough that it needs to be scrollable).
+        Dim constrainingDimension As Long, constrainingMax As Long
         If verticalLayout Then
-            If g_WindowManager.getImageTabstripAlignment = vbAlignLeft Then
-                renderThumbTab i, 0, (i * thumbHeight) - scrollOffset
-            Else
-                renderThumbTab i, 2, (i * thumbHeight) - scrollOffset
-            End If
+            constrainingDimension = thumbHeight
+            constrainingMax = m_BufferHeight
         Else
-            If g_WindowManager.getImageTabstripAlignment = vbAlignTop Then
-                renderThumbTab i, (i * thumbWidth) - scrollOffset, 0
-            Else
-                renderThumbTab i, (i * thumbWidth) - scrollOffset, 2
-            End If
+            constrainingDimension = thumbWidth
+            constrainingMax = m_BufferWidth
         End If
-    Next i
-    
-    'Eventually we'll do something nicer, but for now, draw a line across the edge of the tabstrip nearest the image.
-    Select Case g_WindowManager.getImageTabstripAlignment
-    
-        Case vbAlignLeft
-            GDIPlusDrawLineToDC bufferDIB.getDIBDC, m_BufferWidth - 1, 0, m_BufferWidth - 1, m_BufferHeight, ConvertSystemColor(vb3DLight), 255, 2, False
         
-        Case vbAlignTop
-            GDIPlusDrawLineToDC bufferDIB.getDIBDC, 0, m_BufferHeight - 1, m_BufferWidth, m_BufferHeight - 1, ConvertSystemColor(vb3DLight), 255, 2, False
+        'Determine if the scrollbar needs to be accounted for or not
+        Dim maxThumbSize As Long
+        maxThumbSize = constrainingDimension * numOfThumbnails - 1
         
-        Case vbAlignRight
-            GDIPlusDrawLineToDC bufferDIB.getDIBDC, 1, 0, 1, m_BufferHeight, ConvertSystemColor(vb3DLight), 255, 2, False
+        If maxThumbSize < constrainingMax Then
+            hsThumbnails.Value = 0
+            m_ListScrollable = False
+        Else
+            m_ListScrollable = True
+            hsThumbnails.Max = maxThumbSize - constrainingMax
+            
+            'Dynamically set the scrollbar's LargeChange value relevant to thumbnail size
+            Dim lChange As Long
+            
+            lChange = (maxThumbSize - constrainingMax) \ 16
+            
+            If lChange < 1 Then lChange = 1
+            If lChange > thumbWidth \ 4 Then lChange = thumbWidth \ 4
+            
+            hsThumbnails.LargeChange = lChange
+            
+            'If requested, fit the currently active thumbnail on-screen
+            If fitCurrentThumbOnScreen Then fitThumbnailOnscreen curThumb
+            
+        End If
         
-        Case vbAlignBottom
-            GDIPlusDrawLineToDC bufferDIB.getDIBDC, 0, 1, m_BufferWidth, 1, ConvertSystemColor(vb3DLight), 255, 2, False
-    
-    End Select
+        'Determine a scrollbar offset as necessary
+        Dim scrollOffset As Long
+        scrollOffset = hsThumbnails.Value
+        
+        'Render each thumbnail block
+        Dim i As Long
+        For i = 0 To numOfThumbnails - 1
+            If verticalLayout Then
+                If g_WindowManager.getImageTabstripAlignment = vbAlignLeft Then
+                    renderThumbTab i, 0, (i * thumbHeight) - scrollOffset
+                Else
+                    renderThumbTab i, 2, (i * thumbHeight) - scrollOffset
+                End If
+            Else
+                If g_WindowManager.getImageTabstripAlignment = vbAlignTop Then
+                    renderThumbTab i, (i * thumbWidth) - scrollOffset, 0
+                Else
+                    renderThumbTab i, (i * thumbWidth) - scrollOffset, 2
+                End If
+            End If
+        Next i
+        
+        'Eventually we'll do something nicer, but for now, draw a line across the edge of the tabstrip nearest the image.
+        Select Case g_WindowManager.getImageTabstripAlignment
+        
+            Case vbAlignLeft
+                GDIPlusDrawLineToDC bufferDIB.getDIBDC, m_BufferWidth - 1, 0, m_BufferWidth - 1, m_BufferHeight, ConvertSystemColor(vb3DLight), 255, 2, False
+            
+            Case vbAlignTop
+                GDIPlusDrawLineToDC bufferDIB.getDIBDC, 0, m_BufferHeight - 1, m_BufferWidth, m_BufferHeight - 1, ConvertSystemColor(vb3DLight), 255, 2, False
+            
+            Case vbAlignRight
+                GDIPlusDrawLineToDC bufferDIB.getDIBDC, 1, 0, 1, m_BufferHeight, ConvertSystemColor(vb3DLight), 255, 2, False
+            
+            Case vbAlignBottom
+                GDIPlusDrawLineToDC bufferDIB.getDIBDC, 0, 1, m_BufferWidth, 1, ConvertSystemColor(vb3DLight), 255, 2, False
+        
+        End Select
+        
+    End If
     
     'Activate color management for our form
     assignDefaultColorProfileToObject Me.hWnd, Me.hDC

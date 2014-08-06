@@ -116,34 +116,26 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":0004
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom in"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":0004
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "pdCanvas.ctx":002C
+         picturealign    =   7
+         pictureeffectondown=   0
+         captioneffects  =   0
+         tooltip         =   "Zoom in"
+         colorscheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":0856
+         ItemData        =   "pdCanvas.ctx":087E
          Left            =   840
-         List            =   "pdCanvas.ctx":0858
+         List            =   "pdCanvas.ctx":0880
          Style           =   2  'Dropdown List
          TabIndex        =   8
          Top             =   15
@@ -155,27 +147,19 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   10
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":085A
-         PictureAlign    =   0
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom out"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":0882
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "pdCanvas.ctx":08AA
+         picturealign    =   0
+         pictureeffectondown=   0
+         captioneffects  =   0
+         tooltip         =   "Zoom out"
+         colorscheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdZoomFit 
          Height          =   345
@@ -183,27 +167,19 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   12
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":10AC
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Fit image on screen"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":10FC
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "pdCanvas.ctx":1124
+         picturealign    =   7
+         pictureeffectondown=   0
+         captioneffects  =   0
+         tooltip         =   "Fit image on screen"
+         colorscheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdImgSize 
          Height          =   345
@@ -211,27 +187,19 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   13
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":18FE
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Resize image"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":1976
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "pdCanvas.ctx":199E
+         picturealign    =   7
+         pictureeffectondown=   0
+         captioneffects  =   0
+         tooltip         =   "Resize image"
+         colorscheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -628,33 +596,37 @@ Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
         
     'When size IS displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
     Else
-    
-        Dim iWidth As Double, iHeight As Double
-        Dim sizeString As String
         
-        'Convert the image size (in pixels) to whatever unit the user has currently selected from the drop-down
-        Select Case cmbSizeUnit.ListIndex
+        If Not srcImage Is Nothing Then
+        
+            Dim iWidth As Double, iHeight As Double
+            Dim sizeString As String
             
-            'Pixels
-            Case 0
-                sizeString = srcImage.Width & " x " & srcImage.Height
+            'Convert the image size (in pixels) to whatever unit the user has currently selected from the drop-down
+            Select Case cmbSizeUnit.ListIndex
                 
-            'Inches
-            Case 1
-                iWidth = convertPixelToOtherUnit(MU_INCHES, srcImage.Width, srcImage.getDPI(), srcImage.Width)
-                iHeight = convertPixelToOtherUnit(MU_INCHES, srcImage.Height, srcImage.getDPI(), srcImage.Height)
-                sizeString = Format(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
+                'Pixels
+                Case 0
+                    sizeString = srcImage.Width & " x " & srcImage.Height
+                    
+                'Inches
+                Case 1
+                    iWidth = convertPixelToOtherUnit(MU_INCHES, srcImage.Width, srcImage.getDPI(), srcImage.Width)
+                    iHeight = convertPixelToOtherUnit(MU_INCHES, srcImage.Height, srcImage.getDPI(), srcImage.Height)
+                    sizeString = Format(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
+                
+                'CM
+                Case 2
+                    iWidth = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Width, srcImage.getDPI(), srcImage.Width)
+                    iHeight = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Height, srcImage.getDPI(), srcImage.Height)
+                    sizeString = Format(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
+                
+            End Select
             
-            'CM
-            Case 2
-                iWidth = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Width, srcImage.getDPI(), srcImage.Width)
-                iHeight = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Height, srcImage.getDPI(), srcImage.Height)
-                sizeString = Format(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
+            lblImgSize.Caption = sizeString
+            drawStatusBarIcons True
             
-        End Select
-        
-        lblImgSize.Caption = sizeString
-        drawStatusBarIcons True
+        End If
         
     End If
     
@@ -1681,15 +1653,13 @@ Public Sub fixChromeLayout()
     
     'If the canvas is currently disabled (e.g. no image is loaded), let the user know that they can drag/drop files onto
     ' this space to begin editing
-    If Not cmbZoom.Enabled Then
+    If (g_OpenImageCount = 0) And g_UserModeFix Then
     
         'Ignore redraws if the program is being closed; this improves program termination performance
         If (Not g_ProgramShuttingDown) Then
     
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
-            
-            'If a histogram has already been drawn, render the "please wait" text over the top of it.  Otherwise, render it to a blank white image.
             tmpDIB.createBlank picCanvas.ScaleWidth, picCanvas.ScaleHeight, 24, g_CanvasBackground
             
             Dim notifyFont As pdFont
@@ -1697,8 +1667,14 @@ Public Sub fixChromeLayout()
             notifyFont.setFontFace g_InterfaceFont
             
             'Set the font size dynamically.  en-US gets a larger size; other languages, whose text may be longer, use a smaller one.
-            If g_Language.translationActive Then
-                notifyFont.setFontSize 13
+            If Not (g_Language Is Nothing) Then
+            
+                If g_Language.translationActive Then
+                    notifyFont.setFontSize 13
+                Else
+                    notifyFont.setFontSize 14
+                End If
+                
             Else
                 notifyFont.setFontSize 14
             End If
