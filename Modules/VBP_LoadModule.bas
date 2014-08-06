@@ -1464,6 +1464,9 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
             loadSuccessful = LoadPhotoDemonImage(imagePath, targetDIB, tmpPDImage)
             
+            'Retrieve a copy of the fully composited image
+            tmpPDImage.getCompositedImage targetDIB
+            
         'TMP files are internal files (BMP format) used by PhotoDemon.  GDI+ is preferable for loading these, as it handles
         ' 32bpp images as well, but if we must, we can use VB's internal .LoadPicture command.
         Case "TMP"
