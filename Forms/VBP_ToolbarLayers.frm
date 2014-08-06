@@ -413,15 +413,19 @@ Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     'Sync opacity, blend mode, and other controls to the currently active layer
     m_DisableRedraws = True
     If (g_OpenImageCount > 0) Then
-        If (Not pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then
+        
+        If Not (pdImages(g_CurrentImage) Is Nothing) Then
+            If Not (pdImages(g_CurrentImage).getActiveLayer Is Nothing) Then
             
-            'Synchronize the opacity scroll bar to the active layer
-            sltLayerOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOpacity
+                'Synchronize the opacity scroll bar to the active layer
+                sltLayerOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOpacity
+                
+                'Synchronize the blend mode to the active layer
+                cboBlendMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerBlendMode
             
-            'Synchronize the blend mode to the active layer
-            cboBlendMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerBlendMode
-            
+            End If
         End If
+        
     End If
     
     m_DisableRedraws = False
@@ -1222,10 +1226,14 @@ Private Sub cacheLayerThumbnails()
                 For i = 0 To numOfThumbnails - 1
                     
                     'Retrieve a thumbnail and ID for this layer
-                    layerThumbnails(i).canonicalLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
+                    If Not pdImages(g_CurrentImage).getLayerByIndex(i) Is Nothing Then
                     
-                    Set layerThumbnails(i).thumbDIB = New pdDIB
-                    pdImages(g_CurrentImage).getLayerByIndex(i).requestThumbnail layerThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
+                        layerThumbnails(i).canonicalLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
+                        
+                        Set layerThumbnails(i).thumbDIB = New pdDIB
+                        pdImages(g_CurrentImage).getLayerByIndex(i).requestThumbnail layerThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
+                        
+                    End If
                     
                 Next i
             
@@ -1321,132 +1329,136 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         Dim tmpLayerRef As pdLayer
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(blockIndex)
         
-        'If this layer is the active layer, draw the background with the system's current selection color
-        If tmpLayerRef.getLayerID = pdImages(g_CurrentImage).getActiveLayerID Then
+        If Not tmpLayerRef Is Nothing Then
         
-            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
-            hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-            FillRect bufferDIB.getDIBDC, tmpRect, hBrush
-            DeleteObject hBrush
+            'If this layer is the active layer, draw the background with the system's current selection color
+            If tmpLayerRef.getLayerID = pdImages(g_CurrentImage).getActiveLayerID Then
             
-            'Also, color the fonts with the matching highlighted text color (otherwise they won't be readable)
-            layerNameFont.setFontColor ConvertSystemColor(vbHighlightText)
-        
-        'This layer is not the active layer
-        Else
-        
-            'Render the layer name in a standard, non-highlighted font
-            layerNameFont.setFontColor layerNameColor
-        
-            'If the current layer is mouse-hovered (but not active), render its border with a highlight
-            If (blockIndex = curLayerHover) Then
                 SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
                 hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-                FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
+                FillRect bufferDIB.getDIBDC, tmpRect, hBrush
                 DeleteObject hBrush
-            End If
+                
+                'Also, color the fonts with the matching highlighted text color (otherwise they won't be readable)
+                layerNameFont.setFontColor ConvertSystemColor(vbHighlightText)
             
-        End If
-        
-        'Object offsets are stored in these values as various elements are drawn to the screen.
-        Dim xObjOffset As Long, yObjOffset As Long
-        
-        'Render the layer thumbnail.  If the layer is not currently visible, render it at 30% opacity.
-        xObjOffset = offsetX + fixDPI(thumbBorder)
-        yObjOffset = offsetY + fixDPI(thumbBorder)
-        If Not (layerThumbnails(blockIndex).thumbDIB Is Nothing) Then
-        
-            If tmpLayerRef.getLayerVisibility Then
-                layerThumbnails(blockIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+            'This layer is not the active layer
             Else
-                layerThumbnails(blockIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 76, xObjOffset, yObjOffset
-                
-                'Also, render a "closed eye" icon in the corner.
-                ' NOTE: I'm not sold on this being a good idea.  The icon seems to be clickable, but it isn't!
-                'img_EyeClosed.alphaBlendToDC bufferDIB.getDIBDC, 210, xObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBWidth) - fixDPI(5), yObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBHeight) - fixDPI(6)
+            
+                'Render the layer name in a standard, non-highlighted font
+                layerNameFont.setFontColor layerNameColor
+            
+                'If the current layer is mouse-hovered (but not active), render its border with a highlight
+                If (blockIndex = curLayerHover) Then
+                    SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
+                    hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
+                    FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
+                    DeleteObject hBrush
+                End If
                 
             End If
             
-        End If
-        
-        'Render the layer name
-        Dim drawString As String
-        drawString = tmpLayerRef.getLayerName
-        
-        'If this layer is invisible, mark it as such.
-        ' NOTE: not sold on this behavior, but I'm leaving it for a bit to see how it affects workflow.
-        If Not tmpLayerRef.getLayerVisibility Then drawString = g_Language.TranslateMessage("(hidden)") & " " & drawString
-        
-        layerNameFont.attachToDC bufferDIB.getDIBDC
-        
-        Dim xTextOffset As Long, yTextOffset As Long, xTextWidth As Long, yTextHeight As Long
-        xTextOffset = offsetX + thumbWidth + fixDPI(thumbBorder) * 2
-        yTextOffset = offsetY + fixDPI(4)
-        xTextWidth = m_BufferWidth - xTextOffset - fixDPI(4)
-        yTextHeight = layerNameFont.getHeightOfString(drawString)
-        layerNameFont.fastRenderTextWithClipping xTextOffset, yTextOffset, xTextWidth, yTextHeight, drawString
-        
-        'Store the resulting text area in the text rect; if the user clicks this, they can modify the layer name
-        If (blockIndex = curLayerHover) Then
-        
-            With m_NameRect
-                .Left = xTextOffset - 2
-                .Top = yTextOffset - 2
-                .Right = xTextOffset + xTextWidth + 2
-                .Bottom = yTextOffset + yTextHeight + 2
-            End With
+            'Object offsets are stored in these values as various elements are drawn to the screen.
+            Dim xObjOffset As Long, yObjOffset As Long
             
-        End If
-        
-        'A few objects still need to be rendered below the current layer.  They all have the same y-offset, so calculate it in advance.
-        yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + 6
-        
-        'If this layer is currently hovered, draw some extra controls beneath the layer name.  This keeps the
-        ' layer box from getting too cluttered, because we only draw relevant controls for the hovered layer.
-        ' (Note that this approach is not touch-friendly; I'm aware, and will revisit as necessary if users
-        '  request a touch-centric UI.)
-        If (blockIndex = curLayerHover) Then
-        
-            'Start with an x-offset at the far right of the panel
-            xObjOffset = m_BufferWidth - img_EyeClosed.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
-        
-            'Draw the visibility toggle.  Note that an icon for the opposite visibility state is drawn, to show
-            ' the user what will happen if they click the icon.
-            If tmpLayerRef.getLayerVisibility Then
-                img_EyeClosed.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
-            Else
-                img_EyeOpen.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+            'Render the layer thumbnail.  If the layer is not currently visible, render it at 30% opacity.
+            xObjOffset = offsetX + fixDPI(thumbBorder)
+            yObjOffset = offsetY + fixDPI(thumbBorder)
+            If Not (layerThumbnails(blockIndex).thumbDIB Is Nothing) Then
+            
+                If tmpLayerRef.getLayerVisibility Then
+                    layerThumbnails(blockIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                Else
+                    layerThumbnails(blockIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 76, xObjOffset, yObjOffset
+                    
+                    'Also, render a "closed eye" icon in the corner.
+                    ' NOTE: I'm not sold on this being a good idea.  The icon seems to be clickable, but it isn't!
+                    'img_EyeClosed.alphaBlendToDC bufferDIB.getDIBDC, 210, xObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBWidth) - fixDPI(5), yObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBHeight) - fixDPI(6)
+                    
+                End If
+                
             End If
             
-            'Store the visibility toggle's rect (so that mouse events can more easily calculate hit events)
-            fillRectWithDIBCoords m_VisibilityRect, img_EyeOpen, xObjOffset, yObjOffset
+            'Render the layer name
+            Dim drawString As String
+            drawString = tmpLayerRef.getLayerName
             
-            'Next, provide a "duplicate layer" shortcut
-            xObjOffset = xObjOffset - img_EyeOpen.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
-            img_Duplicate.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
-            fillRectWithDIBCoords m_DuplicateRect, img_Duplicate, xObjOffset, yObjOffset
+            'If this layer is invisible, mark it as such.
+            ' NOTE: not sold on this behavior, but I'm leaving it for a bit to see how it affects workflow.
+            If Not tmpLayerRef.getLayerVisibility Then drawString = g_Language.TranslateMessage("(hidden)") & " " & drawString
             
-            'Next, give the user dedicated merge down/up buttons.  These are only available if the layer is visible.
-            If tmpLayerRef.getLayerVisibility Then
+            layerNameFont.attachToDC bufferDIB.getDIBDC
             
-                'Merge down comes first...
-                xObjOffset = xObjOffset - img_Duplicate.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+            Dim xTextOffset As Long, yTextOffset As Long, xTextWidth As Long, yTextHeight As Long
+            xTextOffset = offsetX + thumbWidth + fixDPI(thumbBorder) * 2
+            yTextOffset = offsetY + fixDPI(4)
+            xTextWidth = m_BufferWidth - xTextOffset - fixDPI(4)
+            yTextHeight = layerNameFont.getHeightOfString(drawString)
+            layerNameFont.fastRenderTextWithClipping xTextOffset, yTextOffset, xTextWidth, yTextHeight, drawString
+            
+            'Store the resulting text area in the text rect; if the user clicks this, they can modify the layer name
+            If (blockIndex = curLayerHover) Then
+            
+                With m_NameRect
+                    .Left = xTextOffset - 2
+                    .Top = yTextOffset - 2
+                    .Right = xTextOffset + xTextWidth + 2
+                    .Bottom = yTextOffset + yTextHeight + 2
+                End With
                 
-                If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, True) >= 0 Then
-                    img_MergeDown.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+            End If
+            
+            'A few objects still need to be rendered below the current layer.  They all have the same y-offset, so calculate it in advance.
+            yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + 6
+            
+            'If this layer is currently hovered, draw some extra controls beneath the layer name.  This keeps the
+            ' layer box from getting too cluttered, because we only draw relevant controls for the hovered layer.
+            ' (Note that this approach is not touch-friendly; I'm aware, and will revisit as necessary if users
+            '  request a touch-centric UI.)
+            If (blockIndex = curLayerHover) Then
+            
+                'Start with an x-offset at the far right of the panel
+                xObjOffset = m_BufferWidth - img_EyeClosed.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+            
+                'Draw the visibility toggle.  Note that an icon for the opposite visibility state is drawn, to show
+                ' the user what will happen if they click the icon.
+                If tmpLayerRef.getLayerVisibility Then
+                    img_EyeClosed.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
                 Else
-                    img_MergeDownDisabled.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                    img_EyeOpen.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
                 End If
-                fillRectWithDIBCoords m_MergeDownRect, img_MergeDown, xObjOffset, yObjOffset
                 
-                '...then Merge up
-                xObjOffset = xObjOffset - img_MergeDown.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
-                If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, False) >= 0 Then
-                    img_MergeUp.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
-                Else
-                    img_MergeUpDisabled.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                'Store the visibility toggle's rect (so that mouse events can more easily calculate hit events)
+                fillRectWithDIBCoords m_VisibilityRect, img_EyeOpen, xObjOffset, yObjOffset
+                
+                'Next, provide a "duplicate layer" shortcut
+                xObjOffset = xObjOffset - img_EyeOpen.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+                img_Duplicate.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                fillRectWithDIBCoords m_DuplicateRect, img_Duplicate, xObjOffset, yObjOffset
+                
+                'Next, give the user dedicated merge down/up buttons.  These are only available if the layer is visible.
+                If tmpLayerRef.getLayerVisibility Then
+                
+                    'Merge down comes first...
+                    xObjOffset = xObjOffset - img_Duplicate.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+                    
+                    If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, True) >= 0 Then
+                        img_MergeDown.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                    Else
+                        img_MergeDownDisabled.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                    End If
+                    fillRectWithDIBCoords m_MergeDownRect, img_MergeDown, xObjOffset, yObjOffset
+                    
+                    '...then Merge up
+                    xObjOffset = xObjOffset - img_MergeDown.getDIBWidth - fixDPI(DIST_BETWEEN_HOVER_BUTTONS)
+                    If Layer_Handler.isLayerAllowedToMergeAdjacent(blockIndex, False) >= 0 Then
+                        img_MergeUp.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                    Else
+                        img_MergeUpDisabled.alphaBlendToDC bufferDIB.getDIBDC, 255, xObjOffset, yObjOffset
+                    End If
+                    fillRectWithDIBCoords m_MergeUpRect, img_MergeUp, xObjOffset, yObjOffset
+                    
                 End If
-                fillRectWithDIBCoords m_MergeUpRect, img_MergeUp, xObjOffset, yObjOffset
                 
             End If
             

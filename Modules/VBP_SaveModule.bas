@@ -467,12 +467,14 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     If updateMRU And g_ExifToolEnabled And (Not suspendMetadataActions) Then
         
         'Only attempt to export metadata if ExifTool was able to successfully cache and parse metadata prior to saving
-        If srcPDImage.imgMetadata.hasXMLMetadata Then
-            updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, srcPDImage)
-        Else
-            Message "No metadata to export.  Continuing save..."
+        If Not (srcPDImage.imgMetadata Is Nothing) Then
+            If srcPDImage.imgMetadata.hasXMLMetadata Then
+                updateMRU = srcPDImage.imgMetadata.writeAllMetadata(dstPath, srcPDImage)
+            Else
+                Message "No metadata to export.  Continuing save..."
+            End If
         End If
-                
+        
     End If
     
     'UpdateMRU should only be true if the save was successful
@@ -701,10 +703,12 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     Next i
     
     'Next, if the "write metadata" flag has been set, and the image has metadata, add a metadata entry to the file.
-    If (Not writeHeaderOnlyFile) And writeMetadata And srcPDImage.imgMetadata.hasXMLMetadata Then
+    If (Not writeHeaderOnlyFile) And writeMetadata And Not (srcPDImage.imgMetadata Is Nothing) Then
     
-        nodeIndex = pdiWriter.addNode("pdMetadata_Raw", -1, 2)
-        pdiWriter.addNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.getOriginalXMLMetadataString, compressHeaders, , embedChecksums
+        If srcPDImage.imgMetadata.hasXMLMetadata Then
+            nodeIndex = pdiWriter.addNode("pdMetadata_Raw", -1, 2)
+            pdiWriter.addNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.getOriginalXMLMetadataString, compressHeaders, , embedChecksums
+        End If
     
     End If
     

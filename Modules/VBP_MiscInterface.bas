@@ -95,7 +95,7 @@ Private m_PrevMessage As String
 ' Simply call this function whenever an action has done something that will potentially affect the interface, and this function will iterate
 ' through all potential image/interface interactions, dis/enabling buttons and menus as necessary.
 Public Sub syncInterfaceToCurrentImage()
-
+    
     Dim i As Long
     
     'Interface dis/enabling falls into two rough categories: stuff that changes based on the current image (e.g. Undo), and stuff that changes
@@ -155,7 +155,7 @@ Public Sub syncInterfaceToCurrentImage()
         If g_NumOfImagesLoaded > 1 Then
         
             'Loop through all pdImage objects and make sure they've been deactivated
-            For i = 0 To g_NumOfImagesLoaded
+            For i = 0 To UBound(pdImages)
                 If (Not pdImages(i) Is Nothing) Then
                     pdImages(i).deactivateImage
                     Set pdImages(i) = Nothing
@@ -170,240 +170,250 @@ Public Sub syncInterfaceToCurrentImage()
         End If
         
         'Erase any remaining viewport buffer
-        eraseViewportBuffers
+        'eraseViewportBuffers
     
     'If one or more images are loaded, our job is trickier.  Some controls (such as Copy to Clipboard) are enabled no matter what,
     ' while others (Undo and Redo) are only enabled if the current image requires it.
     Else
-    
-        'Start by enabling actions that are always available if one or more images are loaded.
-        metaToggle tSaveAs, True
-        metaToggle tClose, True
-        metaToggle tCopy, True
         
-        metaToggle tView, True
-        metaToggle tZoom, True
-        metaToggle tImageOps, True
-        metaToggle tMacro, True
+        If Not pdImages(g_CurrentImage) Is Nothing Then
         
-        'Paste as new layer is always available if one (or more) images are loaded
-        If Not FormMain.MnuEdit(9).Enabled Then FormMain.MnuEdit(9).Enabled = True
-        
-        'Display this image's path in the title bar.
-        FormMain.Caption = getWindowCaption(pdImages(g_CurrentImage))
-        
-        'Draw icons onto the main viewport's status bar
-        FormMain.mainCanvas(0).drawStatusBarIcons True
-        
-        'Next, attempt to enable controls whose state depends on the current image - e.g. "Save", which is only enabled if
-        ' the image has not already been saved in its current state.
-        
-        'Note that all of these functions rely on the g_CurrentImage value to function.
-        
-        'Save is a bit funny, because if the image HAS been saved to file, we DISABLE the save button.
-        metaToggle tSave, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
-        
-        'Undo, Redo, Repeat and Fade are all closely related
-        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
-        
-            metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState, True
-            metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState, True
+            'Start by enabling actions that are always available if one or more images are loaded.
+            metaToggle tSaveAs, True
+            metaToggle tClose, True
+            metaToggle tCopy, True
             
-            'Undo history is enabled if either Undo or Redo is active
-            If pdImages(g_CurrentImage).undoManager.getUndoState Or pdImages(g_CurrentImage).undoManager.getRedoState Then
-                FormMain.MnuEdit(2).Enabled = True
+            metaToggle tView, True
+            metaToggle tZoom, True
+            metaToggle tImageOps, True
+            metaToggle tMacro, True
+            
+            'Paste as new layer is always available if one (or more) images are loaded
+            If Not FormMain.MnuEdit(9).Enabled Then FormMain.MnuEdit(9).Enabled = True
+            
+            'Display this image's path in the title bar.
+            FormMain.Caption = getWindowCaption(pdImages(g_CurrentImage))
+            
+            'Draw icons onto the main viewport's status bar
+            FormMain.mainCanvas(0).drawStatusBarIcons True
+            
+            'Next, attempt to enable controls whose state depends on the current image - e.g. "Save", which is only enabled if
+            ' the image has not already been saved in its current state.
+            
+            'Note that all of these functions rely on the g_CurrentImage value to function.
+            
+            'Save is a bit funny, because if the image HAS been saved to file, we DISABLE the save button.
+            metaToggle tSave, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
+            
+            'Undo, Redo, Repeat and Fade are all closely related
+            If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
+            
+                metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState, True
+                metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState, True
+                
+                'Undo history is enabled if either Undo or Redo is active
+                If pdImages(g_CurrentImage).undoManager.getUndoState Or pdImages(g_CurrentImage).undoManager.getRedoState Then
+                    FormMain.MnuEdit(2).Enabled = True
+                Else
+                    FormMain.MnuEdit(2).Enabled = False
+                End If
+                
+                '"Edit > Repeat..." and "Edit > Fade..." are also handled by the current image's undo manager (as it
+                ' maintains the list of changes applied to the image, and links to copies of previous image state DIBs).
+                Dim tmpDIB As pdDIB, tmpLayerIndex As Long, tmpActionName As String
+                
+                'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
+                ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
+                If pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
+                    FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
+                    FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
+                    
+                    FormMain.MnuEdit(4).Enabled = True
+                    FormMain.MnuEdit(5).Enabled = True
+                Else
+                    FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
+                    FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
+                    
+                    FormMain.MnuEdit(4).Enabled = False
+                    FormMain.MnuEdit(5).Enabled = False
+                End If
+                
+                'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
+                resetMenuIcons
+            
+            End If
+            
+            
+            'Determine whether metadata is present, and dis/enable metadata menu items accordingly
+            If Not pdImages(g_CurrentImage).imgMetadata Is Nothing Then
+                metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
+                metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
             Else
-                FormMain.MnuEdit(2).Enabled = False
+                metaToggle tMetadata, False
+                metaToggle tGPSMetadata, False
             End If
             
-            '"Edit > Repeat..." and "Edit > Fade..." are also handled by the current image's undo manager (as it
-            ' maintains the list of changes applied to the image, and links to copies of previous image state DIBs).
-            Dim tmpDIB As pdDIB, tmpLayerIndex As Long, tmpActionName As String
+            'Display the size of this image in the status bar
+            If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage)
             
-            'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
-            ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
-            If pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
-                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
-                FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
+            'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
+            If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
                 
-                FormMain.MnuEdit(4).Enabled = True
-                FormMain.MnuEdit(5).Enabled = True
+                'If images are docked, they do not have their own taskbar entries.  Change the main program icon to match this image.
+                setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, FormMain.hWnd
+                setNewAppIcon pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
+                
             Else
-                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
-                FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
-                
-                FormMain.MnuEdit(4).Enabled = False
-                FormMain.MnuEdit(5).Enabled = False
+                setNewTaskbarIcon origIcon32, FormMain.hWnd
             End If
             
-            'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
-            resetMenuIcons
-        
-        End If
-        
-        
-        'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-        metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
-        metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
-        
-        'Display the size of this image in the status bar
-        If pdImages(g_CurrentImage).Width <> 0 Then DisplaySize pdImages(g_CurrentImage)
-        
-        'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
-        If pdImages(g_CurrentImage).curFormIcon32 <> 0 Then
+            'Check the image's color depth, and check/uncheck the matching Image Mode setting
+            'If Not (pdImages(g_CurrentImage).getActiveLayer() Is Nothing) Then
+            '    If pdImages(g_CurrentImage).getCompositeImageColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
+            'End If
             
-            'If images are docked, they do not have their own taskbar entries.  Change the main program icon to match this image.
-            setNewTaskbarIcon pdImages(g_CurrentImage).curFormIcon32, FormMain.hWnd
-            setNewAppIcon pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
-            
-        Else
-            setNewTaskbarIcon origIcon32, FormMain.hWnd
-        End If
-        
-        'Check the image's color depth, and check/uncheck the matching Image Mode setting
-        'If Not (pdImages(g_CurrentImage).getActiveLayer() Is Nothing) Then
-        '    If pdImages(g_CurrentImage).getCompositeImageColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
-        'End If
-        
-        'Restore the zoom value for this particular image (again, only if the form has been initialized)
-        If pdImages(g_CurrentImage).Width <> 0 Then
-            g_AllowViewportRendering = False
-            FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
-            g_AllowViewportRendering = True
-        End If
-        
-        'If a selection is active on this image, update the text boxes to match
-        If pdImages(g_CurrentImage).selectionActive Then
-            metaToggle tSelection, True
-            metaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
-            syncTextToCurrentSelection g_CurrentImage
-        Else
-            metaToggle tSelection, False
-            metaToggle tSelectionTransform, False
-        End If
-                
-        'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
-        ' are visible, and other criteria.
-        If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
-        
-            'If non-destructive FX are active on the current layer, update the non-destructive tools to match
-            If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
-                metaToggle tNonDestructiveFX, True
+            'Restore the zoom value for this particular image (again, only if the form has been initialized)
+            If pdImages(g_CurrentImage).Width <> 0 Then
+                g_AllowViewportRendering = False
+                FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
+                g_AllowViewportRendering = True
             End If
-        
-            'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
-            If pdImages(g_CurrentImage).getNumOfLayers = 1 Then
             
-                'Delete
+            'If a selection is active on this image, update the text boxes to match
+            If pdImages(g_CurrentImage).selectionActive Then
+                metaToggle tSelection, True
+                metaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
+                syncTextToCurrentSelection g_CurrentImage
+            Else
+                metaToggle tSelection, False
+                metaToggle tSelectionTransform, False
+            End If
+                    
+            'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
+            ' are visible, and other criteria.
+            If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
+            
+                'If non-destructive FX are active on the current layer, update the non-destructive tools to match
+                If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
+                    metaToggle tNonDestructiveFX, True
+                End If
+            
+                'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
+                If pdImages(g_CurrentImage).getNumOfLayers = 1 Then
+                
+                    'Delete
+                    FormMain.MnuLayer(1).Enabled = False
+                
+                    'Merge up/down
+                    FormMain.MnuLayer(3).Enabled = False
+                    FormMain.MnuLayer(4).Enabled = False
+                    
+                    'Layer order
+                    FormMain.MnuLayer(5).Enabled = False
+                    
+                    'Flatten
+                    FormMain.MnuLayer(12).Enabled = False
+                    
+                    'Merge visible
+                    FormMain.MnuLayer(13).Enabled = False
+                    
+                'This image contains multiple layers.  Enable many menu items (if they aren't already).
+                Else
+                
+                    'Delete
+                    If Not FormMain.MnuLayer(1).Enabled Then FormMain.MnuLayer(1).Enabled = True
+                    
+                    'Delete hidden layers is only available if one or more layers are hidden, but not ALL layers are hidden.
+                    If (pdImages(g_CurrentImage).getNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).getNumOfHiddenLayers < pdImages(g_CurrentImage).getNumOfLayers) Then
+                        FormMain.MnuLayerDelete(1).Enabled = True
+                    Else
+                        FormMain.MnuLayerDelete(1).Enabled = False
+                    End If
+                
+                    'Merge up/down are not available for layers at the top and bottom of the image
+                    If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, False) <> -1 Then
+                        FormMain.MnuLayer(3).Enabled = True
+                    Else
+                        FormMain.MnuLayer(3).Enabled = False
+                    End If
+                    
+                    If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, True) <> -1 Then
+                        FormMain.MnuLayer(4).Enabled = True
+                    Else
+                        FormMain.MnuLayer(4).Enabled = False
+                    End If
+                    
+                    'Order is always available if more than one layer exists in the image
+                    If Not FormMain.MnuLayer(5).Enabled Then FormMain.MnuLayer(5).Enabled = True
+                    
+                    'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
+                    ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
+                    ' so we can mirror the same enabled state for both options.
+                    If pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1 Then
+                        FormMain.MnuLayerOrder(0).Enabled = True
+                    Else
+                        FormMain.MnuLayerOrder(0).Enabled = False
+                    End If
+                    
+                    If pdImages(g_CurrentImage).getActiveLayerIndex > 0 Then
+                        FormMain.MnuLayerOrder(1).Enabled = True
+                    Else
+                        FormMain.MnuLayerOrder(1).Enabled = False
+                    End If
+                    
+                    'Mirror "raise to top" and "lower to bottom" against the state of "raise layer" and "lower layer"
+                    FormMain.MnuLayerOrder(3).Enabled = FormMain.MnuLayerOrder(0).Enabled
+                    FormMain.MnuLayerOrder(4).Enabled = FormMain.MnuLayerOrder(1).Enabled
+                                    
+                    'Adding transparency to a layer is always permitted, but removing it is invalid if an image is already 24bpp.
+                    ' Note that at present, this may have unintended consequences - use with caution!
+                    If Not pdImages(g_CurrentImage).getActiveDIB Is Nothing Then
+                        If pdImages(g_CurrentImage).getActiveDIB.getDIBColorDepth = 24 Then
+                            FormMain.MnuLayerTransparency(3).Enabled = False
+                        Else
+                            If Not FormMain.MnuLayerTransparency(3).Enabled Then FormMain.MnuLayerTransparency(3).Enabled = True
+                        End If
+                    End If
+                    
+                    'Flatten is only available if one or more layers are visible
+                    If pdImages(g_CurrentImage).getNumOfVisibleLayers > 0 Then
+                        If Not FormMain.MnuLayer(12).Enabled Then FormMain.MnuLayer(12).Enabled = True
+                    Else
+                        FormMain.MnuLayer(12).Enabled = False
+                    End If
+                    
+                    'Merge visible is only available if two or more layers are visible
+                    If pdImages(g_CurrentImage).getNumOfVisibleLayers > 1 Then
+                        If Not FormMain.MnuLayer(13).Enabled Then FormMain.MnuLayer(13).Enabled = True
+                    Else
+                        FormMain.MnuLayer(13).Enabled = False
+                    End If
+                    
+                End If
+                
+                'If at least one layer is available, enable a number of layer options
+                If Not FormMain.MnuLayer(7).Enabled Then FormMain.MnuLayer(7).Enabled = True
+                If Not FormMain.MnuLayer(8).Enabled Then FormMain.MnuLayer(8).Enabled = True
+                If Not FormMain.MnuLayer(10).Enabled Then FormMain.MnuLayer(10).Enabled = True
+            
+            Else
+            
+                'Most layer menus are disabled if an image does not contain layers.  PD isn't setup to allow 0-layer images,
+                ' so this is primarily included as a fail-safe.
                 FormMain.MnuLayer(1).Enabled = False
-            
-                'Merge up/down
                 FormMain.MnuLayer(3).Enabled = False
                 FormMain.MnuLayer(4).Enabled = False
-                
-                'Layer order
                 FormMain.MnuLayer(5).Enabled = False
-                
-                'Flatten
+                FormMain.MnuLayer(7).Enabled = False
+                FormMain.MnuLayer(8).Enabled = False
+                FormMain.MnuLayer(10).Enabled = False
                 FormMain.MnuLayer(12).Enabled = False
-                
-                'Merge visible
                 FormMain.MnuLayer(13).Enabled = False
-                
-            'This image contains multiple layers.  Enable many menu items (if they aren't already).
-            Else
+                metaToggle tNonDestructiveFX, False
             
-                'Delete
-                If Not FormMain.MnuLayer(1).Enabled Then FormMain.MnuLayer(1).Enabled = True
-                
-                'Delete hidden layers is only available if one or more layers are hidden, but not ALL layers are hidden.
-                If (pdImages(g_CurrentImage).getNumOfHiddenLayers > 0) And (pdImages(g_CurrentImage).getNumOfHiddenLayers < pdImages(g_CurrentImage).getNumOfLayers) Then
-                    FormMain.MnuLayerDelete(1).Enabled = True
-                Else
-                    FormMain.MnuLayerDelete(1).Enabled = False
-                End If
-            
-                'Merge up/down are not available for layers at the top and bottom of the image
-                If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, False) <> -1 Then
-                    FormMain.MnuLayer(3).Enabled = True
-                Else
-                    FormMain.MnuLayer(3).Enabled = False
-                End If
-                
-                If isLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).getActiveLayerIndex, True) <> -1 Then
-                    FormMain.MnuLayer(4).Enabled = True
-                Else
-                    FormMain.MnuLayer(4).Enabled = False
-                End If
-                
-                'Order is always available if more than one layer exists in the image
-                If Not FormMain.MnuLayer(5).Enabled Then FormMain.MnuLayer(5).Enabled = True
-                
-                'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
-                ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
-                ' so we can mirror the same enabled state for both options.
-                If pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1 Then
-                    FormMain.MnuLayerOrder(0).Enabled = True
-                Else
-                    FormMain.MnuLayerOrder(0).Enabled = False
-                End If
-                
-                If pdImages(g_CurrentImage).getActiveLayerIndex > 0 Then
-                    FormMain.MnuLayerOrder(1).Enabled = True
-                Else
-                    FormMain.MnuLayerOrder(1).Enabled = False
-                End If
-                
-                'Mirror "raise to top" and "lower to bottom" against the state of "raise layer" and "lower layer"
-                FormMain.MnuLayerOrder(3).Enabled = FormMain.MnuLayerOrder(0).Enabled
-                FormMain.MnuLayerOrder(4).Enabled = FormMain.MnuLayerOrder(1).Enabled
-                                
-                'Adding transparency to a layer is always permitted, but removing it is invalid if an image is already 24bpp.
-                ' Note that at present, this may have unintended consequences - use with caution!
-                If pdImages(g_CurrentImage).getActiveDIB.getDIBColorDepth = 24 Then
-                    FormMain.MnuLayerTransparency(3).Enabled = False
-                Else
-                    If Not FormMain.MnuLayerTransparency(3).Enabled Then FormMain.MnuLayerTransparency(3).Enabled = True
-                End If
-                
-                'Flatten is only available if one or more layers are visible
-                If pdImages(g_CurrentImage).getNumOfVisibleLayers > 0 Then
-                    If Not FormMain.MnuLayer(12).Enabled Then FormMain.MnuLayer(12).Enabled = True
-                Else
-                    FormMain.MnuLayer(12).Enabled = False
-                End If
-                
-                'Merge visible is only available if two or more layers are visible
-                If pdImages(g_CurrentImage).getNumOfVisibleLayers > 1 Then
-                    If Not FormMain.MnuLayer(13).Enabled Then FormMain.MnuLayer(13).Enabled = True
-                Else
-                    FormMain.MnuLayer(13).Enabled = False
-                End If
-                
             End If
-            
-            'If at least one layer is available, enable a number of layer options
-            If Not FormMain.MnuLayer(7).Enabled Then FormMain.MnuLayer(7).Enabled = True
-            If Not FormMain.MnuLayer(8).Enabled Then FormMain.MnuLayer(8).Enabled = True
-            If Not FormMain.MnuLayer(10).Enabled Then FormMain.MnuLayer(10).Enabled = True
-        
-        Else
-        
-            'Most layer menus are disabled if an image does not contain layers.  PD isn't setup to allow 0-layer images,
-            ' so this is primarily included as a fail-safe.
-            FormMain.MnuLayer(1).Enabled = False
-            FormMain.MnuLayer(3).Enabled = False
-            FormMain.MnuLayer(4).Enabled = False
-            FormMain.MnuLayer(5).Enabled = False
-            FormMain.MnuLayer(7).Enabled = False
-            FormMain.MnuLayer(8).Enabled = False
-            FormMain.MnuLayer(10).Enabled = False
-            FormMain.MnuLayer(12).Enabled = False
-            FormMain.MnuLayer(13).Enabled = False
-            metaToggle tNonDestructiveFX, False
-        
+                    
         End If
-        
         
         'Finally, if the histogram window is open, redraw it.  (This isn't needed at present, but could be useful in the future)
         'If FormHistogram.Visible And pdImages(g_CurrentImage).loadedSuccessfully Then

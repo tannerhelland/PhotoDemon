@@ -667,6 +667,11 @@ End Sub
 'This function will return FALSE if no layer-specific changes have been made, and thus no Fade action would be relevant.
 Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLayerID As Long, Optional ByRef nameOfProcessorAction As String, Optional ByVal checkStateOnly As Boolean = True) As Boolean
     
+    If undoNum = 0 Then
+        fillDIBWithLastUndoCopy = 0
+        Exit Function
+    End If
+    
     'First things first: start searching the Undo/Redo stack for a layer-specific edit.  We don't care what edit, just that it's
     ' layer-specific.
     Dim actionFound As Boolean

@@ -382,8 +382,9 @@ Public Sub MenuCloseAll()
     Next i
     
     'Redraw the screen to match the new program state
+    toolbar_ImageTabs.forceRedraw
     syncInterfaceToCurrentImage
-
+    
     'Reset the "closing all images" flags
     g_ClosingAllImages = False
     g_DealWithAllUnsavedImages = False

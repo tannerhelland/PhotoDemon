@@ -2106,16 +2106,19 @@ Private Sub tmrCountdown_Timer()
 
 End Sub
 
-'Thsi metadata timer is a final failsafe for images with huge metadata collections that take a long time to parse.  If an image has successfully
+'This metadata timer is a final failsafe for images with huge metadata collections that take a long time to parse.  If an image has successfully
 ' loaded but its metadata parsing is still in-progress, PD's load function will activate this timer.  The timer will wait (asynchronously) for
 ' metadata parsing to finish, and when it does, it will copy the metadata into the active pdImage object, then disable itself.
-'
-'NOTE!  This function may cause trouble when a bunch of images are loaded at once.  I am not sure what to do in that situation, as how can we
-'        know which metadata messages are for which images?  A better solution for this is on my to-do list; we may be able to pass ExifTool
-'        some kind of ID, which it would report over stdOut, and we could then match against our pdImage collection... but that's a big project.
 Private Sub tmrMetadata_Timer()
 
+    'I don't like resorting to this hackneyed solution, but ExifTool can sometimes be unpredictable, especially if the user loads a bajillion
+    ' images simultaneously.  Rather than bring down the whole program, I'd prefer to simply ignore metadata for the problematic image.
+    On Error Resume Next
+
     If isMetadataFinished Then
+    
+        'Start by disabling this timer, lest it fire again while we're in the middle of parsing stuff
+        tmrMetadata.Enabled = False
     
         'Cache the current message (if any)
         Dim prevMessage As String
@@ -2124,7 +2127,7 @@ Private Sub tmrMetadata_Timer()
         Message "Asynchronous metadata check complete!  Updating metadata collection..."
         
         'Retrieve the completed metadata string
-        Dim mdString As String
+        Dim mdString As String, tmpString As String
         mdString = retrieveMetadataString()
         
         Dim curImageID As Long
@@ -2139,23 +2142,63 @@ Private Sub tmrMetadata_Timer()
         startPosition = 1
         terminalPosition = InStr(1, mdString, "{ready", vbBinaryCompare)
         
-        Do While terminalPosition > 0
+        Do While terminalPosition <> 0
         
             'terminalPosition now contains the position of ExifTool's "{ready123}" tag, where 123 is the ID of the image whose metadata
             ' is contained prior to that point.  Start by figuring out what that ID number actually is.
-            curImageID = CLng(Mid$(mdString, terminalPosition + 6, InStr(terminalPosition + 6, mdString, "}", vbBinaryCompare) - (terminalPosition + 6)))
+            Dim lenFailsafe As Long
             
-            'Now we know where the metadata for this image *ends*, but we still need to find where it *starts*.  All metadata XML entries start with
-            ' a standard XML header.  Search backwards from the {ready123} message until such a header is found.
-            startPosition = InStrRev(mdString, "<?xml", terminalPosition, vbBinaryCompare)
-            
-            'Using the start and final markers, extract the relevant metadata and forward it to the relevant pdImage object
-            If startPosition > 0 Then
-                pdImages(curImageID).imgMetadata.loadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
+            If terminalPosition + 6 < Len(mdString) Then
+                lenFailsafe = InStr(terminalPosition + 6, mdString, "}", vbBinaryCompare) - (terminalPosition + 6)
+            Else
+                lenFailsafe = 0
             End If
             
-            'Find the next chunk of image metadata, if any
-            terminalPosition = InStr(terminalPosition + 6, mdString, "{ready", vbBinaryCompare)
+            If lenFailsafe <> 0 Then
+                
+                'Attempt to retrieve the relevant image ID for this section of metadata
+                If (terminalPosition + 6 + lenFailsafe) < Len(mdString) Then
+                
+                    tmpString = Mid$(mdString, terminalPosition + 6, lenFailsafe)
+                    
+                    If IsNumeric(tmpString) Then
+                        curImageID = CLng(tmpString)
+                    Else
+                        MsgBox tmpString
+                    End If
+                    
+                    'Now we know where the metadata for this image *ends*, but we still need to find where it *starts*.  All metadata XML entries start with
+                    ' a standard XML header.  Search backwards from the {ready123} message until such a header is found.
+                    startPosition = InStrRev(mdString, "<?xml", terminalPosition, vbBinaryCompare)
+                    
+                    'Using the start and final markers, extract the relevant metadata and forward it to the relevant pdImage object
+                    If (startPosition > 0) And ((terminalPosition - startPosition) > 0) Then
+                        
+                        'Make sure we calculated our curImageID value correctly
+                        If curImageID < UBound(pdImages) Then
+                            If Not pdImages(curImageID) Is Nothing Then
+                            
+                                'Create the imgMetadata object as necessary, and load the selected metadata into it!
+                                If pdImages(curImageID).imgMetadata Is Nothing Then Set pdImages(curImageID).imgMetadata = New pdMetadata
+                                pdImages(curImageID).imgMetadata.loadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
+                                
+                            End If
+                        End If
+                        
+                        'Find the next chunk of image metadata, if any
+                        terminalPosition = InStr(terminalPosition + 6, mdString, "{ready", vbBinaryCompare)
+                        
+                    Else
+                        terminalPosition = 0
+                    End If
+                                        
+                Else
+                    terminalPosition = 0
+                End If
+                
+            Else
+                terminalPosition = 0
+            End If
         
         Loop
         
@@ -2163,9 +2206,8 @@ Private Sub tmrMetadata_Timer()
         ' because their presence affects the enabling of certain metadata-related menu entries.)
         syncInterfaceToCurrentImage
         
-        'Restore the original on-screen message and terminate this timer
+        'Restore the original on-screen message and exit
         Message prevMessage
-        tmrMetadata.Enabled = False
         
     End If
 
@@ -3418,23 +3460,27 @@ Private Sub MnuMetadata_Click(Index As Integer)
         'Browse metadata
         Case 0
         
-            'Before doing anything else, see if we've already loaded metadata.  If we haven't, do so now.
-            If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
-                'pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).locationOnDisk, pdImages(g_CurrentImage).originalFileFormat
+            If Not pdImages(g_CurrentImage).imgMetadata Is Nothing Then
+            
+                'Before doing anything else, see if we've already loaded metadata.  If we haven't, do so now.
+                If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
+                    
+                    'Update the interface to reflect any changes to the metadata menu (for example, if we found GPS data
+                    ' during the metadata load process)
+                    syncInterfaceToCurrentImage
+                    
+                End If
                 
-                'Update the interface to reflect any changes to the metadata menu (for example, if we found GPS data
-                ' during the metadata load process)
-                syncInterfaceToCurrentImage
+                'If the image STILL doesn't have metadata, warn the user and exit.
+                If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
+                    Message "No metadata available."
+                    pdMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
+                    Exit Sub
+                End If
+                
+                showPDDialog vbModal, FormMetadata
+                
             End If
-            
-            'If the image STILL doesn't have metadata, warn the user and exit.
-            If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
-                Message "No metadata available."
-                pdMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
-                Exit Sub
-            End If
-            
-            showPDDialog vbModal, FormMetadata
         
         'Separator
         Case 1
