@@ -11,21 +11,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within PhotoDemon.
-
-'This class was originally written by vbforums.com user dilettante.
+'Note: this file has been heavily modified for use within PhotoDemon.
 
 'You may download the original version of this code from the following link (good as of April '14):
 ' http://www.vbforums.com/showthread.php?710155-VB6-BasicBuffer-Binary-Stream-Class
 
-'To the best of my knowledge, this code has been released into the public domain.
+'This class was originally written by vbforums.com user dilettante.  To the best of my knowledge, the code has
+' been released into the public domain.
 
-'Many thanks to dilettante for this excellent minimal byte buffer interface, which PhotoDemon uses to simplify the process of
-' reading/writing various internal file formats (including PDI files).
+'Many thanks to dilettante for this excellent minimal byte buffer interface, which PhotoDemon uses to simplify
+' the process of reading/writing various internal file formats (including PDI files).
 
 
 Option Explicit
-'
+Option Base 0
+
+
 'A simple stream-style buffer class.
 '
 'This is a kind of binary stream, similar to an ADO Steam object
@@ -187,76 +188,22 @@ Public Function CurrentBytes() As Byte()
     'BasicBuffer for more data as a sort of "ExtractCurrentBytes"
     'operation because it keeps the Buffer array intact for reuse.
     
-    mPosition = mSize - 1
+    mPosition = mSize
     If UBound(Buffer) > mPosition Then ShrinkBuf
+    
     CurrentBytes = Buffer
-End Function
-
-Public Sub DeleteBytes(Optional ByVal Length As Long = -1)
-    'Delete requested number of bytes (or less if less in buffer) or
-    'all bytes starting at Position.  "All bytes", Length = -1 (or < 0)
-    'is the same as calling SetEOS().
     
-    If mOpen Then
-        DeleteBytesFrom mPosition, Length
-    Else
-        Err.Raise &H8004C300, TypeName(Me), "Not open"
-    End If
-End Sub
-
-Public Function ExtractBytes(Optional ByVal Length As Long = -1) As Byte()
-    'Combine ReadBytes() and DeleteBytes() of same range of bytes.
-    '
-    'Not highly efficient, but some applications need to grab
-    'things off the front as much as adding them to the end
-    'without having the Buffer array grow too large.
-    Dim CurrPos As Long
-    
-    If mOpen Then
-        CurrPos = mPosition
-        ExtractBytes = ReadBytes(Length)
-        mPosition = CurrPos
-        DeleteBytesFrom CurrPos, Length
-    Else
-        Err.Raise &H8004C300, TypeName(Me), "Not open"
-    End If
-End Function
-
-Public Function ExtractInteger() As Integer
-    'Combine ReadInteger() and DeleteBytes() of same range of bytes.
-    Dim CurrPos As Long
-    
-    If mOpen Then
-        CurrPos = mPosition
-        ExtractInteger = ReadInteger()
-        mPosition = CurrPos
-        DeleteBytesFrom CurrPos, Len(ExtractInteger)
-    Else
-        Err.Raise &H8004C300, TypeName(Me), "Not open"
-    End If
-End Function
-
-Public Function ExtractLong() As Long
-    'Combine ReadLong() and DeleteBytes() of same range of bytes.
-    Dim CurrPos As Long
-    
-    If mOpen Then
-        CurrPos = mPosition
-        ExtractLong = ReadLong()
-        mPosition = CurrPos
-        DeleteBytesFrom CurrPos, Len(ExtractLong)
-    Else
-        Err.Raise &H8004C300, TypeName(Me), "Not open"
-    End If
 End Function
 
 Public Sub OpenBuf()
+
     If mOpen Then
         Err.Raise &H8004C302, TypeName(Me), "Already open"
     Else
         mOpen = True
-        ReDim Buffer(mChunkSize - 1)
+        ReDim Buffer(0 To mChunkSize - 1) As Byte
     End If
+    
 End Sub
 
 Public Function ReadBytes(Optional ByVal Length As Long = -1) As Byte()
@@ -297,36 +244,6 @@ Public Function ReadBytes(Optional ByVal Length As Long = -1) As Byte()
     ReadBytes = Bytes
 End Function
 
-Public Function ReadInteger() As Integer
-    'Return next 2 bytes as an Integer.
-    
-    If mOpen Then
-        If HaveAtLeast(2) Then
-            MoveMemory ReadInteger, Buffer(mPosition), 2
-            mPosition = mPosition + 2
-        Else
-            Err.Raise &H8004C304, TypeName(Me), "Need 2 bytes in buffer"
-        End If
-    Else
-        Err.Raise &H8004C300, TypeName(Me), "Not open"
-    End If
-End Function
-
-Public Function ReadLong() As Long
-    'Return next 4 bytes as a Long.
-    
-    If mOpen Then
-        If HaveAtLeast(4) Then
-            MoveMemory ReadLong, Buffer(mPosition), 4
-            mPosition = mPosition + 4
-        Else
-            Err.Raise &H8004C304, TypeName(Me), "Need 4 bytes in buffer"
-        End If
-    Else
-        Err.Raise &H8004C300, TypeName(Me), "Not open"
-    End If
-End Function
-
 Public Function ScanForBytes(ByRef Target() As Byte) As Long
     'Scan forward from Position, looking for Target value which can be
     'one or more bytes.
@@ -343,25 +260,20 @@ Public Function ScanForBytes(ByRef Target() As Byte) As Long
 End Function
 
 Public Sub SetEOS()
-    'Trim the contents of the buffer from Position to current end,
-    'making Size smaller.
+    'Trim the contents of Buffer() from Position to current end, making the Size marker smaller,
+    ' *but not actually resizing the array*.
     
     If mOpen Then
         mSize = mPosition
     Else
         Err.Raise &H8004C300, TypeName(Me), "Not open"
     End If
+    
 End Sub
 
+'Trim Buffer to its smallest possible size (given the current data)
 Public Sub ShrinkBuf()
-    'Trims Buffer back to current size actually in use.
-    '
-    'Rarely needed by itself.  Use only to reclaim "wasted" space
-    'in the Buffer array if it will hang around for a while.
-    '
-    'Also called by CurrentBytes().
-    
-    ReDim Preserve Buffer(mSize - 1)
+    ReDim Preserve Buffer(0 To mSize) As Byte
 End Sub
 
 Public Sub WriteBytes(ByRef Bytes() As Byte, Optional ByVal Length As Long = -1)
@@ -388,34 +300,29 @@ Public Sub WriteBytes(ByRef Bytes() As Byte, Optional ByVal Length As Long = -1)
     'Original code follows...
     
     WriteCount = WriteCountMinus1 + 1
-    NeedAtLeastUBound = mPosition + WriteCountMinus1
+    NeedAtLeastUBound = mPosition + WriteCount
     UBoundOfBuffer = UBound(Buffer)
     
     If NeedAtLeastUBound > UBoundOfBuffer Then
         'Extend Buffer to make room, by at least ChunkSize.
         If WriteCount > mChunkSize Then
-            ReDim Preserve Buffer(NeedAtLeastUBound)
+            ReDim Preserve Buffer(0 To NeedAtLeastUBound) As Byte
         Else
-            ReDim Preserve Buffer(UBoundOfBuffer + mChunkSize)
+            ReDim Preserve Buffer(0 To UBoundOfBuffer + mChunkSize) As Byte
             'UBoundOfBuffer is now invalid, but we won't use it again.
         End If
     End If
     
     MoveMemory Buffer(mPosition), Bytes(LBoundOfBytes), WriteCount
     mPosition = mPosition + WriteCount
-    If mPosition > mSize Then
-        mSize = mPosition
-    End If
+    If mPosition > mSize Then mSize = mPosition
+    
 End Sub
 
 'Added by Tanner: add bytes to the buffer, using only a raw pointer (to the first entry of the array, not the SafeArray
-' struct itself!) and a length, *which must be byte-accurate*!.
+' struct itself!) and a length, *which must be byte-accurate*!
 Public Sub WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLength As Long)
     
-    'Copy provided bytes into Buffer at current Position, extending
-    'Size as required, updating Position to next byte offset.
-    Dim WriteCountMinus1 As Long
-    Dim WriteCount As Long
     Dim NeedAtLeastUBound As Long
     Dim UBoundOfBuffer As Long
     
@@ -423,109 +330,29 @@ Public Sub WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLength As 
     If Not mOpen Then OpenBuf
         
     'Length is supplied by the user; pray they calculated it correctly!
-    WriteCountMinus1 = dataLength - 1
-    
-    'Original code follows...
-    
-    WriteCount = WriteCountMinus1 + 1
-    NeedAtLeastUBound = mPosition + WriteCountMinus1
+    NeedAtLeastUBound = mPosition + dataLength
     UBoundOfBuffer = UBound(Buffer)
     
+    'If the buffer is not large enough to hold the data, resize it by the larger of mChunkSize or the size of the data.
     If NeedAtLeastUBound > UBoundOfBuffer Then
         
-        'Extend Buffer to make room, by at least ChunkSize.
-        If WriteCount > mChunkSize Then
-            ReDim Preserve Buffer(NeedAtLeastUBound)
+        If dataLength > mChunkSize Then
+            ReDim Preserve Buffer(0 To NeedAtLeastUBound) As Byte
         Else
-            ReDim Preserve Buffer(UBoundOfBuffer + mChunkSize)
-            'UBoundOfBuffer is now invalid, but we won't use it again.
+            ReDim Preserve Buffer(0 To UBoundOfBuffer + mChunkSize) As Byte
         End If
         
     End If
     
-    MoveMemory Buffer(mPosition), ByVal dataPointer, WriteCount
-    mPosition = mPosition + WriteCount
-    If mPosition > mSize Then
-        mSize = mPosition
-    End If
+    'Copy the data into place
+    MoveMemory Buffer(mPosition), ByVal dataPointer, dataLength
     
-End Sub
-
-Public Sub WriteInteger(ByVal Value As Integer)
-    'Copy Value into Buffer at current Position, extending
-    'Size as required, updating Position to next byte offset.
-    Dim NeedAtLeastUBound As Long
-    Dim UBoundOfBuffer As Long
+    'Increment the buffer pointer
+    mPosition = mPosition + dataLength
     
-    'If not open, first call here auto-opens.
-    If Not mOpen Then OpenBuf
+    'Note the actual size of the current data set
+    If mPosition > mSize Then mSize = mPosition
     
-    NeedAtLeastUBound = mPosition + 1
-    UBoundOfBuffer = UBound(Buffer)
-    If NeedAtLeastUBound > UBoundOfBuffer Then
-        'Extend Buffer to make room, by at least ChunkSize.
-        If 2 > mChunkSize Then
-            ReDim Preserve Buffer(NeedAtLeastUBound)
-        Else
-            ReDim Preserve Buffer(UBoundOfBuffer + mChunkSize)
-            'UBoundOfBuffer is now invalid, but we won't use it again.
-        End If
-    End If
-    
-    MoveMemory Buffer(mPosition), Value, 2
-    mPosition = mPosition + 2
-    If mPosition > mSize Then
-        mSize = mPosition
-    End If
-End Sub
-
-Public Sub WriteLong(ByVal Value As Long)
-    'Copy Value into Buffer at current Position, extending
-    'Size as required, updating Position to next byte offset.
-    Dim NeedAtLeastUBound As Long
-    Dim UBoundOfBuffer As Long
-    
-    'If not open, first call here auto-opens.
-    If Not mOpen Then OpenBuf
-    
-    NeedAtLeastUBound = mPosition + 3
-    UBoundOfBuffer = UBound(Buffer)
-    If NeedAtLeastUBound > UBoundOfBuffer Then
-        'Extend Buffer to make room, by at least ChunkSize.
-        If 4 > mChunkSize Then
-            ReDim Preserve Buffer(NeedAtLeastUBound)
-        Else
-            ReDim Preserve Buffer(UBoundOfBuffer + mChunkSize)
-            'UBoundOfBuffer is now invalid, but we won't use it again.
-        End If
-    End If
-    
-    MoveMemory Buffer(mPosition), Value, 4
-    mPosition = mPosition + 4
-    If mPosition > mSize Then
-        mSize = mPosition
-    End If
-End Sub
-
-Private Sub DeleteBytesFrom(ByVal Pos As Long, ByVal Length As Long)
-    'Deletes requested number of bytes at requested Pos.
-    '
-    'Called by DeleteBytes() and by ExtractBytes().
-    Dim BytesToMove As Long
-        
-    If Length < 0 Then
-        mSize = Pos
-    ElseIf Length > 0 Then
-        If Pos + Length > mSize Then
-            mSize = Pos
-        Else
-            BytesToMove = mSize - (Pos + Length)
-            If BytesToMove > 0 Then
-                MoveMemory Buffer(Pos), Buffer(Pos + Length), BytesToMove
-            End If
-            mSize = mSize - Length
-        End If
-    End If
 End Sub
 
 Private Sub Class_Initialize()
