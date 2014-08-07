@@ -638,7 +638,7 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
             
             'Copy the image data from the temporary DIB without modification
             BitBlt dibDC, 0, 0, dibWidth, dibHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-                            
+            
             'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
             ' be completely transparent (and we don't want that!)
             Dim iData() As Byte
