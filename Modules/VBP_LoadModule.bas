@@ -561,6 +561,9 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     'If debug mode is active, image loading is a place where a lot of things can go wrong - bad files, corrupt formats, heavy RAM usage,
     ' incompatible color formats, and about a bazillion other things.  Make a special note in the debug log, to help narrow down issues.
     #If DEBUGMODE = 1 Then
+        Dim startTime As Double
+        startTime = Timer
+    
         pdDebug.LogAction "Preparing to load one or more images.  Baseline memory reading:"
         pdDebug.LogAction "", PDM_MEM_REPORT
     #End If
@@ -988,8 +991,19 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             ' If the incoming image is 24bpp, convert it to 32bpp.  PD assumes an available alpha channel for all layers.
             '*************************************************************************************************************************************
             
-            'TODO: investigate faster ways to convert to 32bpp
-            If targetDIB.getDIBColorDepth = 24 Then targetDIB.convertTo32bpp
+            If targetDIB.getDIBColorDepth = 24 Then
+            
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Original image was 24bpp.  Converting to 32bpp now..."
+                #End If
+                
+                If g_GDIPlusAvailable Then
+                    GDI_Plus.GDIPlusConvertDIB24to32 targetDIB
+                Else
+                    targetDIB.convertTo32bpp
+                End If
+                
+            End If
             
             
             '*************************************************************************************************************************************
@@ -1425,6 +1439,11 @@ PreloadMoreImages:
         Message "All images loaded, except for those in invalid formats."
         pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image(s):" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Formats Not Supported", brokenFiles
     End If
+    
+    #If DEBUGMODE = 1 Then
+        'The line below can be uncommented to report image load times.
+        'Message "Image loaded in %1 seconds", Format$((Timer - startTime), "0.000")
+    #End If
         
 End Sub
 
