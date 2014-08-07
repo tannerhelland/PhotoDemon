@@ -3,8 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 09/June/14
-'Last update: new GDIPlusFillDIBRect function
+'Last updated: 07/August/14
+'Last update: new function for rapidly converting 24bpp images to 32bpp
 '
 'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally used as a fallback for image loading
 ' and saving if the FreeImage DLL was not found, but over time it has become more and more integrated into PD.  As of version 6.0, GDI+
@@ -956,6 +956,51 @@ Private Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte
     
 End Function
 
+'Use GDI+ to quickly convert a 24bpp DIB to 32bpp with solid alpha channel
+Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
+    
+    If dstDIB.getDIBColorDepth = 32 Then Exit Sub
+    
+    Dim dstBitmap As Long, srcBitmap As Long
+    
+    'Create a temporary source DIB to hold the intermediate copy of the image
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB dstDIB
+    
+    'We know the source DIB is 24bpp, so use GdipCreateBitmapFromGdiDib to obtain a handle
+    Dim imgHeader As BITMAPINFO
+    With imgHeader.Header
+        .Size = Len(imgHeader.Header)
+        .Planes = 1
+        .BitCount = srcDIB.getDIBColorDepth
+        .Width = srcDIB.getDIBWidth
+        .Height = -srcDIB.getDIBHeight
+    End With
+    
+    GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.getActualDIBBits, srcBitmap
+    
+    'Next, recreate the destination DIB as 32bpp
+    dstDIB.createBlank srcDIB.getDIBWidth, srcDIB.getDIBHeight, 32, , 255
+    
+    'Clone the bitmap area from source to destination, while converting format as necessary
+    Dim gdipReturn As Long
+    gdipReturn = GdipCloneBitmapAreaI(0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, PixelFormat32bppARGB, srcBitmap, dstBitmap)
+    
+    'Create a GDI+ graphics object that points to the destination DIB's DC
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    
+    'Paint the converted image to the destination
+    GdipDrawImage iGraphics, dstBitmap, 0, 0
+    
+    'Release our bitmap copies and GDI+ instances
+    GdipDisposeImage srcBitmap
+    GdipDisposeImage dstBitmap
+    GdipDeleteGraphics iGraphics
+ 
+End Sub
+
 'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any supported image type.
 Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB) As Boolean
 
@@ -1014,12 +1059,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     Dim isCMYK As Boolean
     If (iPixelFormat = PixelFormat32bppCMYK) Then isCMYK = True
     
-    'Create a blank DIB with matching size and alpha channel
-    If hasAlpha Then
-        dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 32
-    Else
-        dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 24
-    End If
+    'Create a blank PD-compatible DIB
+    dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 32
     
     Dim copyBitmapData As BitmapData
     Dim tmpRect As RECTL
