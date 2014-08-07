@@ -102,7 +102,22 @@
 <translation>Abbrechen Bildverarbeitung</translation>
 </phrase>
 
-<!-- VBP_Misc_Uncategorized.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<phrase>
+<original>pre-alpha</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>beta</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_Misc_Uncategorized.bas contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_Misc_Uncategorized.bas-->
 
@@ -249,18 +264,13 @@ If this image was originally located on removable media (DVD, USB drive, etc), p
 </phrase>
 
 <phrase>
-<original>Starting separate metadata extraction thread</original>
-<translation>Ab separaten Metadaten-Extraktion Thread</translation>
+<original>Loading image %1 of %2</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Determining filetype</original>
-<translation>Bestimmen des Dateityps</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage refused to load image.  Dropping back to GDI+ and trying again</original>
-<translation>FreeImage weigerte Bild zu laden. Zurückgang zur GDI+ und es erneut versuchen</translation>
+<original>Loading image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -292,56 +302,6 @@ Please use another program to save this image in a generic format (such as JPEG 
 </phrase>
 
 <phrase>
-<original>Image data loaded successfully.</original>
-<translation>Bilddaten erfolgreich geladen.</translation>
-</phrase>
-
-<phrase>
-<original>Color count successful (%1 BPP, grayscale)</original>
-<translation>Zählen Farben erfolgreich (%1 BPP, Graustufen)</translation>
-</phrase>
-
-<phrase>
-<original>Color count successful (%1 BPP, color)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Determining image title</original>
-<translation>Bestimmung Bildtitel</translation>
-</phrase>
-
-<phrase>
-<original>Finalizing image details</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Resizing image to fit screen</original>
-<translation>Größenveränderung des Bildes auf Bildschirmgröße</translation>
-</phrase>
-
-<phrase>
-<original>Metadata retrieved successfully.</original>
-<translation>Metadaten abgerufen erfolgreich.</translation>
-</phrase>
-
-<phrase>
-<original>Metadata parsing hasn't finished; switching to asynchronous wait mode</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Creating initial auto-save entry (this may take a moment)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Image loaded successfully.</original>
-<translation>Bild erfolgreich hochgeladen.</translation>
-</phrase>
-
-<phrase>
 <original>frame</original>
 <translation>rahmen</translation>
 </phrase>
@@ -359,6 +319,11 @@ Please use another program to save this image in a generic format (such as JPEG 
 <phrase>
 <original>All images loaded successfully.</original>
 <translation>Alle Bilder erfolgreich geladen.</translation>
+</phrase>
+
+<phrase>
+<original>Image loaded successfully.</original>
+<translation>Bild erfolgreich hochgeladen.</translation>
 </phrase>
 
 <phrase>
@@ -413,6 +378,18 @@ Please use another program to save these images in a generic format (such as JPE
 </phrase>
 
 <phrase>
+<original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
+
+To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>zLib plugin missing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>PDI node could not be read; file may be invalid or corrupted.  Load abandoned.</original>
 <translation></translation>
 </phrase>
@@ -430,11 +407,6 @@ Please use another program to save these images in a generic format (such as JPE
 <phrase>
 <original>(IDE NOT RECOMMENDED - PLEASE COMPILE)</original>
 <translation>(IDE NICHT EMPFOHLEN - BITTE COMPILE)</translation>
-</phrase>
-
-<phrase>
-<original>Moving plugins to updated folder location</original>
-<translation>Umzug Plugins nach die aktualisiert Ordner</translation>
 </phrase>
 
 <phrase>
@@ -457,7 +429,7 @@ Please use another program to save these images in a generic format (such as JPE
 <translation>Bild Vervielfältigung abzuschließen.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 84 phrases. 23 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 75 phrases. 23 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -768,7 +740,12 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>Speichern eines Bildes</translation>
 </phrase>
 
-<!-- VBP_MenuModule.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>Unloading image %1 of %2</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_MenuModule.bas contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_MenuModule.bas-->
 
@@ -1759,11 +1736,6 @@ In Version 6.0 wurden unterstützt PhotoDemon Makrodateien überarbeitet, um neue 
 </phrase>
 
 <phrase>
-<original>Fading last effect</original>
-<translation>Blur-Letzterer Effekt</translation>
-</phrase>
-
-<phrase>
 <original>Performing thermographic analysis</original>
 <translation>Durchführen thermografische Analyse</translation>
 </phrase>
@@ -1847,15 +1819,15 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <translation>PhotoDemon Pro Tip</translation>
 </phrase>
 
-<!-- VBP_Filters_Misc.bas contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_Filters_Misc.bas contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Misc.bas-->
 
 <!-- BEGIN text for VBP_FormBlackLight.frm (FormBlackLight) -->
 
 <phrase>
-<original>Black Light Options</original>
-<translation>Black Light Optionen</translation>
+<original>Black light</original>
+<translation>Schwarzlicht</translation>
 </phrase>
 
 <phrase>
@@ -1868,12 +1840,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <translation>Entlasten Bild mit imaginären blacklight</translation>
 </phrase>
 
-<phrase>
-<original>Black light</original>
-<translation>Schwarzlicht</translation>
-</phrase>
-
-<!-- VBP_FormBlackLight.frm contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- VBP_FormBlackLight.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBlackLight.frm-->
 
@@ -1995,8 +1962,18 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
+<original>Undo history</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Repeat &last action</original>
 <translation>&Wiederholen letzte Aktion</translation>
+</phrase>
+
+<phrase>
+<original>Fade</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2072,6 +2049,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Resize</original>
 <translation>Größe andern</translation>
+</phrase>
+
+<phrase>
+<original>Content-aware resize</original>
+<translation>Content-Aware Resize</translation>
 </phrase>
 
 <phrase>
@@ -2275,11 +2257,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Content-aware resize</original>
-<translation>Content-Aware Resize</translation>
-</phrase>
-
-<phrase>
 <original>Transparency</original>
 <translation>Transparenz</translation>
 </phrase>
@@ -2390,6 +2367,26 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
+<original>Auto correct</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation>Farbe</translation>
+</phrase>
+
+<phrase>
+<original>Lighting</original>
+<translation>Beleuchtung</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Black and white</original>
 <translation>Schwarz und weiß</translation>
 </phrase>
@@ -2455,13 +2452,18 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Color</original>
-<translation>Farbe</translation>
+<original>Hue and saturation</original>
+<translation>Farbton / Sättigung</translation>
 </phrase>
 
 <phrase>
-<original>Hue and saturation</original>
-<translation>Farbton / Sättigung</translation>
+<original>Temperature</original>
+<translation>Temperatur</translation>
+</phrase>
+
+<phrase>
+<original>Tint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2515,18 +2517,8 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Lighting</original>
-<translation>Beleuchtung</translation>
-</phrase>
-
-<phrase>
 <original>Shadows and highlights</original>
 <translation>Schatten und Strähnchen</translation>
-</phrase>
-
-<phrase>
-<original>Temperature</original>
-<translation>Temperatur</translation>
 </phrase>
 
 <phrase>
@@ -2555,6 +2547,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
+<original>HDR</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Photo filters</original>
 <translation>Photo Filter</translation>
 </phrase>
@@ -2570,13 +2567,13 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Fade last effect</original>
-<translation>Fade letzte Effekt</translation>
+<original>Artistic</original>
+<translation>Künstlerisch</translation>
 </phrase>
 
 <phrase>
-<original>Artistic</original>
-<translation>Künstlerisch</translation>
+<original>Colored pencil</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2615,11 +2612,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Pencil drawing</original>
-<translation>Bleistiftzeichnung</translation>
-</phrase>
-
-<phrase>
 <original>Posterize</original>
 <translation>Posterisieren</translation>
 </phrase>
@@ -2627,6 +2619,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Relief</original>
 <translation>Beleuchtung</translation>
+</phrase>
+
+<phrase>
+<original>Stained glass</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2790,11 +2787,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Burn</original>
-<translation>Brennen</translation>
-</phrase>
-
-<phrase>
 <original>Fog</original>
 <translation>Nebel</translation>
 </phrase>
@@ -2802,6 +2794,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Freeze</original>
 <translation>Einfrieren</translation>
+</phrase>
+
+<phrase>
+<original>Ignite</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2902,6 +2899,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Dream</original>
 <translation>Traum</translation>
+</phrase>
+
+<phrase>
+<original>New freeze effect</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3100,6 +3102,36 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
+<original>Auto correct color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Auto correct contrast</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Auto correct lighting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance contrast</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance lighting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Merge layer up</original>
 <translation></translation>
 </phrase>
@@ -3181,6 +3213,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Reset layer size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Content-aware layer resize</original>
 <translation></translation>
 </phrase>
 
@@ -3423,6 +3460,11 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>Content-aware image resize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Fit canvas to layer</original>
 <translation></translation>
 </phrase>
@@ -3656,7 +3698,7 @@ Note: einige kleinere Programmtext (wie hover Tooltips) kunnen nicht-Live aktual
 <translation>Entfernen Alphakanal</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 500 phrases. 147 were duplicates of existing phrases, so only 353 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 526 phrases. 158 were duplicates of existing phrases, so only 368 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -3870,17 +3912,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <!-- END text for VBP_FormGrayscale.frm-->
 
-<!-- BEGIN text for VBP_Filters_Edge.bas -->
-
-<phrase>
-<original>pencil sketch</original>
-<translation>bleistiftskizze</translation>
-</phrase>
-
-<!-- VBP_Filters_Edge.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<!-- END text for VBP_Filters_Edge.bas-->
-
 <!-- BEGIN text for VBP_FormFindEdges.frm (FormFindEdges) -->
 
 <phrase>
@@ -3985,11 +4016,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <!-- BEGIN text for VBP_Filters_Natural.bas -->
 
 <phrase>
-<original>Generating artificial fog</original>
-<translation>Erzeugung künstlicher Nebel</translation>
-</phrase>
-
-<phrase>
 <original>Submerging image in artificial water</original>
 <translation>Eintauchen Bild in künstlichen Wasser-</translation>
 </phrase>
@@ -4010,16 +4036,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
-<original>Lighting image on fire</original>
-<translation>Beleuchtung Bild auf Feuer</translation>
-</phrase>
-
-<phrase>
 <original>Pouring smoldering steel onto image</original>
 <translation>Gießen schwelenden Stahl auf Bild</translation>
 </phrase>
 
-<!-- VBP_Filters_Natural.bas contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
+<!-- VBP_Filters_Natural.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Natural.bas-->
 
@@ -4062,8 +4083,8 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
-<original>have PhotoDemon estimate the ideal threshold for this image</original>
-<translation>PhotoDemon zeigt die ideale Schwelle Schätzung für dieses Bild</translation>
+<original>automatically calculate threshold</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4138,8 +4159,8 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
-<original>Tools</original>
-<translation>Werkzeuge</translation>
+<original>Performance</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4198,93 +4219,8 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
-<original>automatically clear the active selection after "Crop to Selection" is used</original>
-<translation>automatisch löschen die aktive Auswahl nach "Auf Auswahl zuschneiden" wird verwendet</translation>
-</phrase>
-
-<phrase>
-<original>selections</original>
-<translation>Auswahl</translation>
-</phrase>
-
-<phrase>
-<original>log all program messages to file</original>
-<translation>log alle Programm-Meldungen in die Datei</translation>
-</phrase>
-
-<phrase>
-<original>Folder used for temporary files</original>
-<translation>Ordner für temporäre Dateien verwendet</translation>
-</phrase>
-
-<phrase>
-<original>Click to open a browse-for-folder dialog</original>
-<translation>Klicken Sie für eine browse -for- Ordner zu öffnen</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>Hardware-Beschleunigung Bericht</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>Speicherauslastung wird hier angezeigt</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>Speicher -Diagnose</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>Speicherort für temporäre Dateien</translation>
-</phrase>
-
-<phrase>
-<original>debugging</original>
-<translation>Fehlerbeseitigung</translation>
-</phrase>
-
-<phrase>
-<original>if core plugins cannot be located, offer to download them</original>
-<translation>Als Core-Plugins nicht gefunden werden kann, bietet zum herunterladen</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for software updates every 10 days</original>
-<translation>automatisch alle 10 Tage überprüfen nach Software-Updates</translation>
-</phrase>
-
-<phrase>
-<original>If this is disabled, you can visit photodemon.org to manually download the latest version of PhotoDemon</original>
-<translation>Wenn diese Option deaktiviert ist, können Sie photodemon.org besuchen manuell laden Sie die neueste Version von PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Disclaimer Laufzeit bestückt)</translation>
-</phrase>
-
-<phrase>
 <original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
 <translation>rendern PhotoDemon Text mit modernen Schriften (nur auf Vista oder neuer)</translation>
-</phrase>
-
-<phrase>
-<original>This setting uses "Segoe UI" as the PhotoDemon interface font. Leaving it unchecked defaults to "Tahoma".</original>
-<translation>Diese Einstellung verwendet "Segoe UI" als PhotoDemon Schnittstelle Schriftart. Verlassen sie deaktiviert standardmäßig auf" Tahoma".</translation>
-</phrase>
-
-<phrase>
-<original>draw drop shadow between image and canvas</original>
-<translation>ziehen Schlagschatten zwischen Bild und Leinwand</translation>
-</phrase>
-
-<phrase>
-<original>This setting helps images stand out from the canvas behind them</original>
-<translation>Diese Einstellung hilft Bilder heben von der Leinwand hinter ihnen</translation>
 </phrase>
 
 <phrase>
@@ -4463,11 +4399,6 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
-<original>Check this if you want to be warned when you try to close an image with unsaved changes</original>
-<translation>Aktivieren Sie diese Option, wenn Sie gewarnt werden, wenn Sie ein Bild mit ungesicherten Änderungen zu schließen versuchen wollen</translation>
-</phrase>
-
-<phrase>
 <original>when saving images that originally contained metadata</original>
 <translation>wenn Speichern von Bildern, die ursprünglich Metadaten enthaltenen</translation>
 </phrase>
@@ -4550,6 +4481,96 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <phrase>
 <original>when an image is first loaded, set its viewport zoom to</original>
 <translation>wenn ein Bild zum ersten Mal geladen wird, setzen Sie die Ansichtsfenster Zoom</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Folder used for temporary files</original>
+<translation>Ordner für temporäre Dateien verwendet</translation>
+</phrase>
+
+<phrase>
+<original>Click to open a browse-for-folder dialog</original>
+<translation>Klicken Sie für eine browse -for- Ordner zu öffnen</translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>Hardware-Beschleunigung Bericht</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>Speicherauslastung wird hier angezeigt</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>Speicher -Diagnose</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>Speicherort für temporäre Dateien</translation>
+</phrase>
+
+<phrase>
+<original>if core plugins cannot be located, offer to download them</original>
+<translation>Als Core-Plugins nicht gefunden werden kann, bietet zum herunterladen</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for software updates every 10 days</original>
+<translation>automatisch alle 10 Tage überprüfen nach Software-Updates</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Disclaimer Laufzeit bestückt)</translation>
 </phrase>
 
 <phrase>
@@ -4886,8 +4907,38 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>When the "Crop to Selection" command is used, the resulting image will always contain a selection the same size as the full image.  There is generally no need to retain this, so PhotoDemon can automatically clear it for you.</original>
-<translation>Wenn die " Bild zuschneiden "-Befehl verwendet wird, wird das resultierende Bild enthält immer eine Auswahl die gleiche Größe wie das gesamte Bild. Es ist in der Regel keine Notwendigkeit, dies zu behalten, so können PhotoDemon automatisch gelöscht es für Sie.</translation>
+<original>maximize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>balance performance and quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximize performance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but increases disk space usage.  Compressing undo data will reduce disk space usage, at some cost to performance.  (Note that undo data is erased when PhotoDemon exits, so this setting only affects disk space usage while PhotoDemon is running.)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4999,11 +5050,6 @@ If Sie wählen, um diese Funktionen zu deaktivieren, kann man immer photodemon.or
 </phrase>
 
 <phrase>
-<original>If this is checked, PhotoDemon will create a human-readable .log file that contains the text of every message displayed on the progress bar.  This will increase processing time, so only check this option if you really need debugging data.</original>
-<translation>Wenn diese aktiviert ist, wird PhotoDemon eine lesbare. Log -Datei, die den Text jeder Nachricht auf dem Fortschrittsbalken angezeigt enthält. Dies wird die Verarbeitung zu erhöhen, so dass nur Sie diese Option, wenn Sie wirklich brauchen, Debugging-Daten.</translation>
-</phrase>
-
-<phrase>
 <original>Copy the report to the system clipboard</original>
 <translation>Kopieren Sie den Bericht in die Zwischenablage</translation>
 </phrase>
@@ -5078,7 +5124,7 @@ If Sie wählen, um diese Funktionen zu deaktivieren, kann man immer photodemon.or
 <translation>WARNUNG: Dieser Ordner ist ungültig (Zugang verboten). Bitte geben Sie eine gültige Ordner. Wenn keine neuen Ordner bereitgestellt wird, wird PhotoDemon verwenden die Standardsprache des Systems temporären Speicherort.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 267 phrases. 75 were duplicates of existing phrases, so only 192 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 281 phrases. 84 were duplicates of existing phrases, so only 197 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -5186,7 +5232,22 @@ If Sie wählen, um diese Funktionen zu deaktivieren, kann man immer photodemon.or
 <translation>Isolieren Minimum Farbkanäle</translation>
 </phrase>
 
-<!-- VBP_Filters_Color_Effects.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<phrase>
+<original>Enhancing colors</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Enhancing contrast</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Enhancing lighting</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_Filters_Color_Effects.bas contains 11 phrases.  All 11 were unique, so 11 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Color_Effects.bas-->
 
@@ -5243,11 +5304,6 @@ If Sie wählen, um diese Funktionen zu deaktivieren, kann man immer photodemon.or
 </phrase>
 
 <phrase>
-<original>Crop complete.  Selection drawing mode changed to make selection visible.</original>
-<translation>Crop abzuschließen. Wählen Zeichnung Modus geändert Auswahl sichtbar.</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>Flip Bild</translation>
 </phrase>
@@ -5292,7 +5348,7 @@ If Sie wählen, um diese Funktionen zu deaktivieren, kann man immer photodemon.or
 <translation></translation>
 </phrase>
 
-<!-- VBP_Filters_Rotate.bas contains 35 phrases. 15 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- VBP_Filters_Rotate.bas contains 33 phrases. 14 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Rotate.bas-->
 
@@ -5669,7 +5725,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>Warten auf Benutzereingaben</translation>
 </phrase>
 
-<!-- VBP_FormInternetImport.frm contains 28 phrases. 4 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- VBP_FormInternetImport.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for VBP_FormInternetImport.frm-->
 
@@ -5711,6 +5767,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>ExifTool 9.69</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>free, open-source image metadata library (camera settings, GPS coordinates, etc)</original>
 <translation>kostenlos, Open-Source-Bibliothek Bild-Metadaten (Kamera-Einstellungen, GPS-Koordinaten, etc.)</translation>
 </phrase>
@@ -5738,6 +5799,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>free, open-source library for importing and exporting a variety of image formats</original>
 <translation>kostenlose Open- Source-Bibliothek für den Import und Export von einer Vielzahl von Bildformaten</translation>
+</phrase>
+
+<phrase>
+<original>FreeImage 3.16.1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5913,7 +5979,7 @@ Zum Ihre Benutzererfahrung zu verbessern, bitte lassen Sie das Programm automati
 <translation>Download-Größe gesamt</translation>
 </phrase>
 
-<!-- VBP_FormPluginDownloader.frm contains 65 phrases. 19 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
+<!-- VBP_FormPluginDownloader.frm contains 67 phrases. 19 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPluginDownloader.frm-->
 
@@ -6179,16 +6245,6 @@ Hinweis: Sie können immer manuell die neueste Version herunterladen, indem Sie p
 </phrase>
 
 <phrase>
-<original>Copying newly transformed sRGB data</original>
-<translation>Kopieren neu verwandelt sRGB-Daten</translation>
-</phrase>
-
-<phrase>
-<original>ICC-based CMYK transformation failed.  Falling back to default CMYK conversion</original>
-<translation>ICC-basiertes CMYK Transformation fehlgeschlagen. Fallende wieder auf die Standard CMYK-Konvertierung</translation>
-</phrase>
-
-<phrase>
 <original>Initializing GDI+</original>
 <translation>Initialisieren GDI +</translation>
 </phrase>
@@ -6213,138 +6269,18 @@ Hinweis: Sie können immer manuell die neueste Version herunterladen, indem Sie p
 <translation>Loslassen aller temporären Dateien Kopien</translation>
 </phrase>
 
-<!-- VBP_GDIPlus.bas contains 11 phrases.  One was a duplicate of an existing phrase, so only 10 new phrases were written to file. -->
+<!-- VBP_GDIPlus.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_GDIPlus.bas-->
 
 <!-- BEGIN text for VBP_FreeImage_Expanded.bas -->
 
 <phrase>
-<original>Analyzing filetype</original>
-<translation>Analyse Dateityp</translation>
-</phrase>
-
-<phrase>
-<original>Filetype not supported by FreeImage.  Import abandoned.</original>
-<translation>Dateityp nicht von FreeImage unterstützt. Import aufgegeben.</translation>
-</phrase>
-
-<phrase>
-<original>Preparing import flags</original>
-<translation>Vorbereiten Import Fahnen</translation>
-</phrase>
-
-<phrase>
-<original>Importing image from file</original>
-<translation>Bild importieren aus Datei</translation>
-</phrase>
-
-<phrase>
-<original>Importing frame # %1 from animated GIF file</original>
-<translation>Importieren frame # %1 von animierten GIF-Datei</translation>
-</phrase>
-
-<phrase>
-<original>Importing icon # %1 from ICO file</original>
-<translation>Importieren icon # %1 aus ICO-Datei</translation>
-</phrase>
-
-<phrase>
-<original>Importing page # %1 from multipage TIFF file</original>
-<translation>Importieren Seite # %1 von mehrseitigen TIFF-Datei</translation>
-</phrase>
-
-<phrase>
-<original>Import via FreeImage failed (blank handle).</original>
-<translation>Import über FreeImage fehlschlägt (blank handle).</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing color depth</original>
-<translation>Analysieren Sie die Farbtiefe</translation>
-</phrase>
-
-<phrase>
-<original>High bit-depth RGB image identified.  Checking for non-standard alpha encoding</original>
-<translation>Hoher Bit-Tiefe RGB Bild identifiziert. Prüfung auf Nicht-Standard-alpha-Codierung</translation>
-</phrase>
-
-<phrase>
-<original>Tone mapping HDR image to preserve tonal range</original>
-<translation>Tone Mapping HDR-Bild Tonumfang erhalten</translation>
-</phrase>
-
-<phrase>
-<original>Tone mapping complete.</original>
-<translation>Tone Mapping Abgang.</translation>
-</phrase>
-
-<phrase>
-<original>Alpha found, but further tone-mapping ignored at user's request.</original>
-<translation>Alpha gefunden, aber weitere Tone Mapping vom Benutzer Anforderung ignoriert.</translation>
-</phrase>
-
-<phrase>
-<original>No alpha found.  Further tone-mapping ignored at user's request.</original>
-<translation>Kein alpha gefunden. Weitere Tone Mapping vom Benutzer Anforderung ignoriert.</translation>
-</phrase>
-
-<phrase>
-<original>High bit-depth RGBA image identified.  Tone mapping HDR image to preserve tonal range</original>
-<translation>Tone Mapping HDR-Bild Tonumfang erhaltenTone Mapping HDR-Bild Tonumfang erhalten</translation>
-</phrase>
-
-<phrase>
-<original>High bit-depth RGBA image identified.  Tone-mapping ignored at user's request.</original>
-<translation>Hoher Bit-Tiefe RGBA Bild identifiziert. Tone Mapping wird vom Benutzer Anforderung ignoriert.</translation>
-</phrase>
-
-<phrase>
-<original>Tone-mapping high-bit-depth grayscale image to 24bpp</original>
-<translation>Tone-Mapping-High-Bit-Tiefe Graustufenbild um 24bpp</translation>
-</phrase>
-
-<phrase>
-<original>CMYK image detected.  Preparing transform into RGB space</original>
-<translation>CMYK-Bild detektiert. Vorbereiten verwandeln in RGB-Raum</translation>
-</phrase>
-
-<phrase>
-<original>Requesting memory for image transfer</original>
-<translation>Zugriffe Speicher für die Bildübertragung</translation>
-</phrase>
-
-<phrase>
-<original>Import via FreeImage failed (couldn't create DIB).</original>
-<translation>Import via FreeImage Failed (Could not DIB).</translation>
-</phrase>
-
-<phrase>
-<original>Memory secured.  Finalizing image load</original>
-<translation>Speicher abgelegt. Abschließen Lade Bild</translation>
-</phrase>
-
-<phrase>
-<original>Image load successful.  FreeImage released.</original>
-<translation>Bild erfolgreich geladen. FreeImage veröffentlicht.</translation>
-</phrase>
-
-<phrase>
-<original>Restoring alpha data</original>
-<translation>Restaurierung von alpha data</translation>
-</phrase>
-
-<phrase>
-<original>Alpha data restored successfully.</original>
-<translation>Alpha Daten erfolgreich wiederhergestellt.</translation>
-</phrase>
-
-<phrase>
 <original>Import via FreeImage failed (Err # %1)</original>
 <translation>Import via FreeImage fehlgeschlagen (Err # %1)</translation>
 </phrase>
 
-<!-- VBP_FreeImage_Expanded.bas contains 28 phrases. 3 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- VBP_FreeImage_Expanded.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for VBP_FreeImage_Expanded.bas-->
 
@@ -6527,7 +6463,22 @@ Please enter a numeric value.</original>
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
+<original>Repeat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Please load or import an image to begin editing.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Repeat: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fade: %1</original>
 <translation></translation>
 </phrase>
 
@@ -6566,7 +6517,122 @@ Please enter a numeric value.</original>
 <translation>ignorieren</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<phrase>
+<original>Normal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Darken</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Multiply</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Color burn</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Linear burn</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lighten</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Screen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Color dodge</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Linear dodge</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Overlay</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Soft light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hard light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Vivid light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Linear light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pin light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hard mix</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Difference</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Exclusion</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Subtract</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Divide</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hue</original>
+<translation>Tint</translation>
+</phrase>
+
+<phrase>
+<original>Saturation</original>
+<translation>Sättigung</translation>
+</phrase>
+
+<phrase>
+<original>Luminosity</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_MiscInterface.bas contains 54 phrases. 20 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -6583,21 +6649,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>saturation</original>
-<translation>Sättigung</translation>
-</phrase>
-
-<phrase>
-<original>hue</original>
-<translation>Tint</translation>
-</phrase>
-
-<phrase>
 <original>Adjusting hue, saturation, and luminance values</original>
 <translation>Einstellen der Farbton, Sättigung und Helligkeit Werte</translation>
 </phrase>
 
-<!-- VBP_FormHSL.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- VBP_FormHSL.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormHSL.frm-->
 
@@ -6934,26 +6990,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>embed thumbnail image</original>
-<translation>Einbetten Thumbnail</translation>
-</phrase>
-
-<phrase>
-<original>click here to review the image's metadata</original>
-<translation>Klicken Sie hier, um die Metadaten des Bildes überprüfen</translation>
-</phrase>
-
-<phrase>
-<original>other metadata options</original>
-<translation>andere Metadaten-Optionen</translation>
-</phrase>
-
-<phrase>
-<original>general metadata setting for this image</original>
-<translation>allgemeine Einstellung Metadaten zu diesem Bild</translation>
-</phrase>
-
-<phrase>
 <original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
 <translation>Subsampling beeinflusst die Art, die JPEG- Encoder komprimiert Bildhelligkeit. 4:2:0 (moderate) ist der Standardwert.</translation>
 </phrase>
@@ -6986,6 +7022,26 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>advanced quality settings</original>
 <translation>erweiterte Qualitätseinstellungen</translation>
+</phrase>
+
+<phrase>
+<original>embed thumbnail image</original>
+<translation>Einbetten Thumbnail</translation>
+</phrase>
+
+<phrase>
+<original>click here to review the image's metadata</original>
+<translation>Klicken Sie hier, um die Metadaten des Bildes überprüfen</translation>
+</phrase>
+
+<phrase>
+<original>other metadata options</original>
+<translation>andere Metadaten-Optionen</translation>
+</phrase>
+
+<phrase>
+<original>general metadata setting for this image</original>
+<translation>allgemeine Einstellung Metadaten zu diesem Bild</translation>
 </phrase>
 
 <phrase>
@@ -7128,7 +7184,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>JPEG-Vorschau erfordern die Freeimage-Plugin.</translation>
 </phrase>
 
-<!-- VBP_FormExportJPEG.frm contains 66 phrases. 26 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- VBP_FormExportJPEG.frm contains 65 phrases. 25 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for VBP_FormExportJPEG.frm-->
 
@@ -7364,7 +7420,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>performance vs image quality (default = 3)</original>
+<original>performance vs image quality</original>
 <translation></translation>
 </phrase>
 
@@ -8258,6 +8314,106 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>Select macro</original>
+<translation>Wählen Sie die Makrofunktion</translation>
+</phrase>
+
+<phrase>
+<original>custom actions from a saved macro file</original>
+<translation>benutzerdefinierte Aktionen aus einer gespeicherten Makro-Datei</translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>Größe von Bildern</translation>
+</phrase>
+
+<phrase>
+<original>do not apply photo editing actions</original>
+<translation>Wenden Sie keine Foto-Bearbeitungs-Aktionen</translation>
+</phrase>
+
+<phrase>
+<original>apply one or more photo editing actions</original>
+<translation>Anwendung einer oder mehrerer Fotobearbeitung Aktionen</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>Belichtung und Beleuchtung zu beheben Probleme</translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>verwenden Sie diese Option, wenn Sie nur wollen, um Bilder oder Änderung Bildformate umzubenennen</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>Größe Bild von</translation>
+</phrase>
+
+<phrase>
+<original>Add selected image(s) to batch list</original>
+<translation>Ausgewählte Bild(er) zum Batch-Liste Fügen</translation>
+</phrase>
+
+<phrase>
+<original>Select none</original>
+<translation>Wählen Sie keine</translation>
+</phrase>
+
+<phrase>
+<original>Add images using "Open Image" dialog</original>
+<translation>Fügen Sie Bilder mit der "Open Image"-Dialog</translation>
+</phrase>
+
+<phrase>
+<original>Load list</original>
+<translation>Liste laden</translation>
+</phrase>
+
+<phrase>
+<original>Save current list</original>
+<translation>Speichern der aktuellen Liste</translation>
+</phrase>
+
+<phrase>
+<original>Remove selected image(s)</original>
+<translation>Entfernen Sie ausgewählte Bild(er)</translation>
+</phrase>
+
+<phrase>
+<original>Remove all images</original>
+<translation>Entfernen Sie alle Bilder</translation>
+</phrase>
+
+<phrase>
+<original>show image previews</original>
+<translation>Bildvorschau zeigen</translation>
+</phrase>
+
+<phrase>
+<original>potential source images</original>
+<translation>tial Quellbilder</translation>
+</phrase>
+
+<phrase>
+<original>batch list</original>
+<translation>batch-Liste</translation>
+</phrase>
+
+<phrase>
+<original>modify batch list</original>
+<translation>ändern Batch-Liste</translation>
+</phrase>
+
+<phrase>
+<original>load / save batch list</original>
+<translation>en / speichern Batch-Liste</translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Batch-Umwandlungsprozess wird hier zur Laufzeit angezeigt)</translation>
 </phrase>
@@ -8333,11 +8489,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>PNG options</original>
-<translation>PNG Optionen</translation>
-</phrase>
-
-<phrase>
 <original>GIF options</original>
 <translation>GIF Optionen</translation>
 </phrase>
@@ -8388,108 +8539,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Select macro</original>
-<translation>Wählen Sie die Makrofunktion</translation>
-</phrase>
-
-<phrase>
-<original>custom actions from a saved macro file</original>
-<translation>benutzerdefinierte Aktionen aus einer gespeicherten Makro-Datei</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>Größe von Bildern</translation>
-</phrase>
-
-<phrase>
-<original>do not apply photo editing actions</original>
-<translation>Wenden Sie keine Foto-Bearbeitungs-Aktionen</translation>
-</phrase>
-
-<phrase>
-<original>apply one or more photo editing actions</original>
-<translation>Anwendung einer oder mehrerer Fotobearbeitung Aktionen</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>Belichtung und Beleuchtung zu beheben Probleme</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>verwenden Sie diese Option, wenn Sie nur wollen, um Bilder oder Änderung Bildformate umzubenennen</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>Größe Bild von</translation>
-</phrase>
-
-<phrase>
-<original>new aspect ratio will be</original>
-<translation>neuen Aspekt wird</translation>
-</phrase>
-
-<phrase>
-<original>Add selected image(s) to batch list</original>
-<translation>Ausgewählte Bild(er) zum Batch-Liste Fügen</translation>
-</phrase>
-
-<phrase>
-<original>Select none</original>
-<translation>Wählen Sie keine</translation>
-</phrase>
-
-<phrase>
-<original>Add images using "Open Image" dialog</original>
-<translation>Fügen Sie Bilder mit der "Open Image"-Dialog</translation>
-</phrase>
-
-<phrase>
-<original>Load list</original>
-<translation>Liste laden</translation>
-</phrase>
-
-<phrase>
-<original>Save current list</original>
-<translation>Speichern der aktuellen Liste</translation>
-</phrase>
-
-<phrase>
-<original>Remove selected image(s)</original>
-<translation>Entfernen Sie ausgewählte Bild(er)</translation>
-</phrase>
-
-<phrase>
-<original>Remove all images</original>
-<translation>Entfernen Sie alle Bilder</translation>
-</phrase>
-
-<phrase>
-<original>show image previews</original>
-<translation>Bildvorschau zeigen</translation>
-</phrase>
-
-<phrase>
-<original>potential source images</original>
-<translation>tial Quellbilder</translation>
-</phrase>
-
-<phrase>
-<original>batch list</original>
-<translation>batch-Liste</translation>
-</phrase>
-
-<phrase>
-<original>modify batch list</original>
-<translation>ändern Batch-Liste</translation>
-</phrase>
-
-<phrase>
-<original>load / save batch list</original>
-<translation>en / speichern Batch-Liste</translation>
+<original>PNG options</original>
+<translation>PNG Optionen</translation>
 </phrase>
 
 <phrase>
@@ -8737,13 +8788,13 @@ Möchten Sie Ihre Batch-Liste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>fit inclusively (fill color at right)</original>
-<translation>einschließlich passen (Füllfarbe rechts)</translation>
+<original>fit inclusively</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>fit exclusively (image may get cropped)</original>
-<translation>passen ausschließlich (Bild geerntet erhalten kann)</translation>
+<original>fit exclusively</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8860,12 +8911,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 <translation>verarbeitet werden, bevor Stornobedingungen. Zuletzt bearbeitete Bild war "%1".</translation>
 </phrase>
 
-<phrase>
-<original>new aspect ratio will be %1:%2</original>
-<translation>neues Seitenverhältnis wird %1 %2 sein</translation>
-</phrase>
-
-<!-- VBP_FormBatchWizard.frm contains 273 phrases. 150 were duplicates of existing phrases, so only 123 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 265 phrases. 144 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -9628,12 +9674,7 @@ In der Standardeinstellung Transparenz wird in der Mitte geteilt werden, oder Si
 
 <!-- BEGIN text for VBP_ColorFunctions.bas -->
 
-<phrase>
-<original>Verifying image color count</original>
-<translation>Überprüfen Bildfarbe Zählung</translation>
-</phrase>
-
-<!-- VBP_ColorFunctions.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- VBP_ColorFunctions.bas contains 0 phrases. -->
 
 <!-- END text for VBP_ColorFunctions.bas-->
 
@@ -10611,8 +10652,8 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <!-- BEGIN text for VBP_ToolbarTools.frm (toolbar_Tools) -->
 
 <phrase>
-<original>tint</original>
-<translation></translation>
+<original>Tools</original>
+<translation>Werkzeuge</translation>
 </phrase>
 
 <phrase>
@@ -10698,6 +10739,11 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <phrase>
 <original>nav</original>
 <translation>nav</translation>
+</phrase>
+
+<phrase>
+<original>selections</original>
+<translation>Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -10835,7 +10881,7 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <translation>Linienbreite</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 75 phrases. 30 were duplicates of existing phrases, so only 45 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 75 phrases. 29 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -10915,12 +10961,7 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <translation>Liste der zuletzt geöffneten Bilder scheint ungültig zu sein. Ein neuer letzten Bilder Liste wurde erstellt.</translation>
 </phrase>
 
-<phrase>
-<original>Saving recent file menu thumbnail</original>
-<translation>Speichern Thumbnails zuletzt geöffneten Dateien im Menü</translation>
-</phrase>
-
-<!-- pdRecentFiles.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdRecentFiles.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdRecentFiles.cls-->
 
@@ -10929,16 +10970,6 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <phrase>
 <original>ICC transform requested, but no data found.  Abandoning attempt.</original>
 <translation>ICC verwandeln angefordert, aber keine Daten gefunden. Der Verzicht auf Versuch.</translation>
-</phrase>
-
-<phrase>
-<original>Using embedded ICC profile to convert image to sRGB space for editing</original>
-<translation>Mit eingebetteten ICC-Profil um Bild um Raum für die Bearbeitung von sRGB konvertieren</translation>
-</phrase>
-
-<phrase>
-<original>ICC profile transformation successful.  Image is now sRGB.</original>
-<translation>ICC-Profil Transformation erfolgreich. Das Bild ist jetzt sRGB.</translation>
 </phrase>
 
 <phrase>
@@ -10961,41 +10992,11 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <translation>Eingebettete ICC-Profil ist ungültig. Farbmanagement ist für dieses Bild deaktiviert.</translation>
 </phrase>
 
-<phrase>
-<original>Image contains ICC profile.  Copying profile now</original>
-<translation>Bild enthält ICC-Profil. Kopieren Profil jetzt</translation>
-</phrase>
-
-<phrase>
-<original>ICC profile copied successfully.</original>
-<translation>ICC-Profil erfolgreich kopiert.</translation>
-</phrase>
-
-<phrase>
-<original>ICC profile could not be copied (unknown error).</original>
-<translation>ICC-Profil konnte nicht kopiert werden (unbekannter Fehler).</translation>
-</phrase>
-
-<!-- pdICCProfile.cls contains 12 phrases. 2 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- pdICCProfile.cls contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for pdICCProfile.cls-->
 
 <!-- BEGIN text for VBP_ColorManagement.bas -->
-
-<phrase>
-<original>Using embedded ICC profile to convert image from CMYK to sRGB color space</original>
-<translation>Mit eingebetteten ICC-Profil für Bild von CMYK nach sRGB-Farbraum zu konvertieren</translation>
-</phrase>
-
-<phrase>
-<original>CMYK to sRGB transform data created successfully.  Applying transform</original>
-<translation>CMYK auf sRGB Transformation von Daten erfolgreich erstellt. Anwendung transformieren</translation>
-</phrase>
-
-<phrase>
-<original>CMYK to sRGB transformation successful.</original>
-<translation>CMYK auf sRGB Transformation erfolgreich.</translation>
-</phrase>
 
 <phrase>
 <original>sRGB transform could not be applied.  Image remains in CMYK format.</original>
@@ -11017,7 +11018,7 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <translation>Eingebettete ICC-Profil ist ungültig. CMYK umwandeln konnte nicht durchgeführt werden.</translation>
 </phrase>
 
-<!-- VBP_ColorManagement.bas contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
+<!-- VBP_ColorManagement.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for VBP_ColorManagement.bas-->
 
@@ -11234,6 +11235,11 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <!-- BEGIN text for VBP_FormContentAwareResize.frm (FormResizeContentAware) -->
 
 <phrase>
+<original>Note: this operation will flatten the image before resizing it.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing content-aware resize engine</original>
 <translation>Initialisieren Content-Aware Resize-Motor</translation>
 </phrase>
@@ -11243,7 +11249,7 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <translation>Anwenden von Content-Aware Resize</translation>
 </phrase>
 
-<!-- VBP_FormContentAwareResize.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormContentAwareResize.frm contains 13 phrases. 10 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormContentAwareResize.frm-->
 
@@ -11398,7 +11404,17 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 <translation>Ändern Sie die Maßeinheit für die Bildauflösung (Pixeldichte) verwendet.</translation>
 </phrase>
 
-<!-- smartResize.ctl contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>exact aspect ratio will vary by image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>exact size will vary by image</original>
+<translation></translation>
+</phrase>
+
+<!-- smartResize.ctl contains 39 phrases. 26 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for smartResize.ctl-->
 
@@ -11435,7 +11451,7 @@ Zu fortsetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org
 </phrase>
 
 <phrase>
-<original>Layer beneath mouse: %1</original>
+<original>Target layer: %1</original>
 <translation></translation>
 </phrase>
 
@@ -11482,7 +11498,7 @@ or the File > Open and File > Import menus.</original>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 30 phrases. 15 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -11676,111 +11692,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Normal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Darken</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Multiply</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Color burn</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Linear burn</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Lighten</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Screen</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Color dodge</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Linear dodge</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Overlay</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Soft light</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Hard light</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Vivid light</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Linear light</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Pin light</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Hard mix</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Difference</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Exclusion</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Subtract</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Divide</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Luminosity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Add a blank layer to the image.</original>
 <translation></translation>
 </phrase>
@@ -11805,7 +11716,7 @@ or the File > Open and File > Import menus.</original>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolbarLayers.frm contains 69 phrases. 30 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- VBP_ToolbarLayers.frm contains 45 phrases. 27 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarLayers.frm-->
 
@@ -11997,12 +11908,22 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>new layer type</original>
+<original>make the new layer the active layer</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>new layer name</original>
+<original>position</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>name</original>
 <translation></translation>
 </phrase>
 
@@ -12011,7 +11932,27 @@ or the File > Open and File > Import menus.</original>
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormNewLayer.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>default (above current layer)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>below current layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>top of layer stack</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bottom of layer stack</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormNewLayer.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for VBP_FormNewLayer.frm-->
 
@@ -12067,6 +12008,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>use estimation to improve performance</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>color preservation</original>
 <translation></translation>
 </phrase>
@@ -12091,7 +12037,7 @@ or the File > Open and File > Import menus.</original>
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormBilateral.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_FormBilateral.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBilateral.frm-->
 
@@ -12128,13 +12074,244 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for VBP_PublicEnumsTypes.bas-->
 
+<!-- BEGIN text for VBP_FormTint.frm (FormTint) -->
+
+<phrase>
+<original>Re-tinting image</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormTint.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormTint.frm-->
+
+<!-- BEGIN text for VBP_FormHDR.frm (FormHDR) -->
+
+<phrase>
+<original>Generating HDR map for image</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormHDR.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormHDR.frm-->
+
+<!-- BEGIN text for VBP_FormBurn.frm (FormIgnite) -->
+
+<phrase>
+<original>Ignite (fire effect)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>flame height</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color intensity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lighting image on fire</original>
+<translation>Beleuchtung Bild auf Feuer</translation>
+</phrase>
+
+<!-- VBP_FormBurn.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for VBP_FormBurn.frm-->
+
+<!-- BEGIN text for VBP_FormFog.frm (FormFog) -->
+
+<phrase>
+<original>Randomize cloud base</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generating artificial fog</original>
+<translation>Erzeugung künstlicher Nebel</translation>
+</phrase>
+
+<!-- VBP_FormFog.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FormFog.frm-->
+
+<!-- BEGIN text for VBP_FormFadeLast.frm (FormFadeLast) -->
+
+<phrase>
+<original>blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fading previous action (%1)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fade complete.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormFadeLast.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for VBP_FormFadeLast.frm-->
+
+<!-- BEGIN text for VBP_FormUndoHistory.frm (FormUndoHistory) -->
+
+<phrase>
+<original>&Restore selected state</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>available image states</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>selection shape shown</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormUndoHistory.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for VBP_FormUndoHistory.frm-->
+
+<!-- BEGIN text for VBP_FormStainedGlass.frm (FormStainedGlass) -->
+
+<phrase>
+<original>shading quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>distance method</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edge thickness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color sampling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cell size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Carving image from stained glass</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fast</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>accurate</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Cartesian (traditional)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Manhattan (walking)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Chebyshev (chessboard)</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormStainedGlass.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+<!-- END text for VBP_FormStainedGlass.frm-->
+
+<!-- BEGIN text for pdVoronoi.cls -->
+
+<!-- pdVoronoi.cls contains 0 phrases. -->
+
+<!-- END text for pdVoronoi.cls-->
+
+<!-- BEGIN text for pdDebug.cls -->
+
+<!-- pdDebug.cls contains 0 phrases. -->
+
+<!-- END text for pdDebug.cls-->
+
+<!-- BEGIN text for VBP_FormPencil.frm (FormPencil) -->
+
+<phrase>
+<original>pressure</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tip radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Sketching image with pencils</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Luminous</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pastel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Graphite</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormPencil.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for VBP_FormPencil.frm-->
+
+<!-- BEGIN text for VBP_FormComicBook.frm (FormComicBook) -->
+
+<phrase>
+<original>color smoothing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ink</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormComicBook.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FormComicBook.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2126</phrasecount>
+<phrasecount>2149</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3710 phrases. -->
-<!-- 1584 are duplicates, so only 2126 unique phrases have been written to file. -->
-<!-- These 2126 phrases contain approximately 12695 total words. -->
+<!-- As of this build, PhotoDemon contains 3800 phrases. -->
+<!-- 1651 are duplicates, so only 2149 unique phrases have been written to file. -->
+<!-- These 2149 phrases contain approximately 12560 total words. -->
 
 </pdData>
 
