@@ -862,7 +862,10 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 ' GDI+ to experience a silent fail, thus bringing down the entire program.
                 If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then
                     
-                    If isThisPrimaryImage Then Message "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
+                    #End If
+                    
                     loadSuccessful = LoadGDIPlusImage(sFile(thisImage), targetDIB)
                     
                     'If GDI+ loaded the image successfully, note that we have to determine color depth manually.  (There may be a way
@@ -884,7 +887,10 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 'If both FreeImage and GDI+ failed, give the image one last try with VB's LoadPicture
                 If (Not loadSuccessful) Then
                     
-                    If isThisPrimaryImage Then Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
+                    #If DEBUGMODE = 1 Then
+                        Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
+                    #End If
+                    
                     loadSuccessful = LoadVBImage(sFile(thisImage), targetDIB)
                 
                     'If VB managed to load the image successfully, note that we have to deteremine color depth manually
@@ -1042,15 +1048,13 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 'If 256 or less colors were found in the image, mark it as 8bpp.  Otherwise, mark it as 24 or 32bpp.
                 targetImage.originalColorDepth = getColorDepthFromColorCount(colorCountCheck, targetDIB)
                 
-                If g_IsImageGray Then
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "Color count successful (%1 BPP, grayscale)", targetImage.originalColorDepth
-                    #End If
-                Else
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "Color count successful (%1 BPP, color)", targetImage.originalColorDepth
-                    #End If
-                End If
+                #If DEBUGMODE = 1 Then
+                    If g_IsImageGray Then
+                        pdDebug.LogAction "Color count successful (" & targetImage.originalColorDepth & " BPP, grayscale)"
+                    Else
+                        pdDebug.LogAction "Color count successful (" & targetImage.originalColorDepth & " BPP, color)"
+                    End If
+                #End If
                             
             End If
             
