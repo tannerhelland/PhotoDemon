@@ -367,6 +367,12 @@ Private Sub cmdMerge_Click()
             findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & "<translation></translation>"
             replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
             m_NewLanguageText = Replace(m_NewLanguageText, findText, replaceText)
+            
+            'As a failsafe, try the same thing without tabs
+            findText = "<original>" & origText & "</original>" & vbCrLf & "<translation></translation>"
+            replaceText = "<original>" & origText & "</original>" & vbCrLf & "<translation>" & translatedText & "</translation>"
+            m_NewLanguageText = Replace(m_NewLanguageText, findText, replaceText)
+            
             phrasesFound = phrasesFound + 1
         Else
             phrasesMissed = phrasesMissed + 1
