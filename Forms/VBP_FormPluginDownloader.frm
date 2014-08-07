@@ -125,7 +125,7 @@ Begin VB.Form FormPluginDownloader
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "ExifTool 9.62"
+         Caption         =   "ExifTool 9.69"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -347,7 +347,7 @@ Begin VB.Form FormPluginDownloader
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "FreeImage 3.16.0"
+         Caption         =   "FreeImage 3.16.1"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
