@@ -25,6 +25,32 @@ Begin VB.Form FormAbout
    ScaleWidth      =   779
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.jcbutton cmdSpeed 
+      Height          =   480
+      Index           =   0
+      Left            =   240
+      TabIndex        =   2
+      Top             =   8280
+      Width           =   480
+      _ExtentX        =   873
+      _ExtentY        =   873
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   0
+      Caption         =   "jcbutton"
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormAbout.frx":0000
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -43,8 +69,8 @@ Begin VB.Form FormAbout
    Begin VB.Timer tmrText 
       Enabled         =   0   'False
       Interval        =   17
-      Left            =   1200
-      Top             =   8400
+      Left            =   2520
+      Top             =   8280
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -63,6 +89,59 @@ Begin VB.Form FormAbout
       TabIndex        =   0
       Top             =   8280
       Width           =   1365
+   End
+   Begin PhotoDemon.jcbutton cmdSpeed 
+      Height          =   480
+      Index           =   1
+      Left            =   720
+      TabIndex        =   3
+      Top             =   8280
+      Width           =   480
+      _ExtentX        =   847
+      _ExtentY        =   847
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   0
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormAbout.frx":0D52
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
+   Begin PhotoDemon.jcbutton cmdSpeed 
+      Height          =   480
+      Index           =   2
+      Left            =   1200
+      TabIndex        =   4
+      Top             =   8280
+      Width           =   480
+      _ExtentX        =   847
+      _ExtentY        =   847
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   0
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_FormAbout.frx":1AA4
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
 End
 Attribute VB_Name = "FormAbout"
@@ -92,6 +171,9 @@ End Type
 
 Private creditList() As pdCredit
 Private numOfCredits As Long
+
+'Number of pixels to scroll the list on each timer tick
+Private m_pxScroll As Long
 
 'The offset is incremented upward; this controls the credit scroll distance
 Private scrollOffset As Double
@@ -172,6 +254,31 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
+Private Sub cmdSpeed_Click(Index As Integer)
+    
+    'Reduce speed
+    If Index = 0 Then
+    
+        m_pxScroll = m_pxScroll - 1
+        If m_pxScroll = 1 Then cmdSpeed(0).Enabled = False
+        If (m_pxScroll < 5) And (Not cmdSpeed(1).Enabled) Then cmdSpeed(1).Enabled = True
+    
+    'Increase speed
+    ElseIf Index = 1 Then
+    
+        m_pxScroll = m_pxScroll + 1
+        If m_pxScroll = 5 Then cmdSpeed(1).Enabled = False
+        If (m_pxScroll > 1) And (Not cmdSpeed(0).Enabled) Then cmdSpeed(0).Enabled = True
+    
+    'Pause
+    ElseIf Index = 2 Then
+    
+        tmrText.Enabled = Not cmdSpeed(2).Value
+    
+    End If
+    
+End Sub
+
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     mouseX = -1
     mouseY = -1
@@ -181,6 +288,12 @@ End Sub
 
 Private Sub Form_Load()
 
+    'By default, the image will scroll by 1 px each timer interval
+    m_pxScroll = 1
+    cmdSpeed(0).Enabled = False
+    cmdSpeed(1).Enabled = True
+    cmdSpeed(2).Value = False
+    
     'Reset the mouse coordinates and currently hovered entry
     mouseX = -1
     mouseY = -1
@@ -242,6 +355,7 @@ Private Sub Form_Load()
     GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/", True
     GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html", True
     GenerateThankyou "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock", True
+    GenerateThankyou "Google Translate", "http://translate.google.com", True
     GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1", True
     GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html", True
     GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1", True
@@ -284,7 +398,7 @@ Private Sub Form_Load()
     GenerateThankyou "FreeImage", "http://freeimage.sourceforge.net/license.html", True
     GenerateThankyou "PNGQuant", "http://pngquant.org/#source", True
     GenerateThankyou "zLib", "http://www.zlib.net/zlib_license.html", True
-    GenerateThankyou "", ""
+    GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon"), "http://photodemon.org", True
     
     'Assign the system hand cursor to all relevant objects
@@ -378,17 +492,27 @@ Private Sub picBuffer_Click()
 End Sub
 
 Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    
     mouseX = x
     mouseY = y
+    
+    If Not tmrText.Enabled Then renderFullCreditList
+    
 End Sub
 
 'Scroll the credit list; nothing fancy here, just a basic credit scroller, using a modified version of the
 ' scrolling code I wrote for the metadata browser.
 Private Sub tmrText_Timer()
     
-    scrollOffset = scrollOffset + fixDPIFloat(1)
+    scrollOffset = scrollOffset + fixDPIFloat(m_pxScroll)
     If scrollOffset > (numOfCredits * BLOCKHEIGHT) Then scrollOffset = 0
     
+    renderFullCreditList
+    
+End Sub
+
+Private Sub renderFullCreditList()
+
     'Erase the back DIB by copying over the logo (onto which we will render the text)
     BitBlt backDIB.getDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, logoDIB.getDIBDC, 0, 0, vbSrcCopy
         
@@ -417,7 +541,7 @@ Private Sub tmrText_Timer()
     BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
     picBuffer.Picture = picBuffer.Image
     picBuffer.Refresh
-    
+
 End Sub
 
 'Render the given metadata index onto the background picture box at the specified offset.  Custom font objects are used for better performance.
