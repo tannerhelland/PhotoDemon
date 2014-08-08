@@ -3,10 +3,9 @@ Attribute VB_Name = "Autosave_Handler"
 'Image Autosave Handler
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 18/January/14
-'Last updated: 21/May/14
-'Last update: finish work on Autosave engine rewrite.  The Autosave engine can now do something absolutely kick-ass:
-'              it can restruct the entire original image state, including the full Undo/Redo stack (allowing the user
-'              to quite literally pick up wherever they left off).
+'Last updated: 08/August/14
+'Last update: forcibly mark Autosaved images as "unsaved".  After recovery, the user should treat all images as unsaved,
+'              regardless of their actual save state, in case the program went down mid-save (or something similarly odd).
 '
 'PhotoDemon's Autosave engine is closely tied to the pdUndo class, so some understanding of that class is necessary
 ' to appreciate how this module operates.
@@ -253,6 +252,8 @@ Public Sub purgeOldAutosaveData()
         Next j
         
         'Finally, kill the Autosave XML file and preview image associated with this entry
+        ' TODO: tie this into a new file management class, which will do things like check access before deleting, etc.
+        On Error Resume Next
         If FileExist(m_XmlEntries(i).xmlPath) Then Kill m_XmlEntries(i).xmlPath
         If FileExist(m_XmlEntries(i).xmlPath & ".asp") Then Kill m_XmlEntries(i).xmlPath & ".asp"
     
@@ -356,8 +357,17 @@ Public Sub loadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
             'The new image has been successfully noted, but we must now overwrite some of the data PD has assigned it with
             ' its original data (such as its "location on disk", which should reflect its original location - not its
             ' temporary file location!)
-            pdImages(g_CurrentImage).locationOnDisk = fullXMLList(i).originalPath
+            pdImages(g_CurrentImage).locationOnDisk = ""
             pdImages(g_CurrentImage).originalFileNameAndExtension = fullXMLList(i).friendlyName
+            
+            'Mark the image as unsaved
+            pdImages(g_CurrentImage).setSaveState False, pdSE_AnySave
+            
+            'Reset all save dialog flags (as they should be re-displayed after autosave recovery)
+            pdImages(g_CurrentImage).imgStorage.Item("hasSeenJPEGPrompt") = False
+            pdImages(g_CurrentImage).imgStorage.Item("hasSeenJP2Prompt") = False
+            pdImages(g_CurrentImage).imgStorage.Item("hasSeenWebPPrompt") = False
+            pdImages(g_CurrentImage).imgStorage.Item("hasSeenJXRPrompt") = False
             
             'It is now time to artificially reconstruct the image's Undo/Redo stack, using the data from the autosave file.
             ' The Undo engine itself handles this step.
