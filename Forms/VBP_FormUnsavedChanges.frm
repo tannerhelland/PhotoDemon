@@ -53,13 +53,13 @@ Begin VB.Form dialog_UnsavedChanges
       Width           =   5100
    End
    Begin PhotoDemon.smartCheckBox chkRepeat 
-      Height          =   300
+      Height          =   330
       Left            =   3960
       TabIndex        =   2
       Top             =   4005
-      Width           =   5115
-      _ExtentX        =   9022
-      _ExtentY        =   529
+      Width           =   5130
+      _ExtentX        =   9049
+      _ExtentY        =   582
       Caption         =   "Repeat this action for all unsaved images (X in total)"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -208,8 +208,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
         Next i
     
         'If the image has been saved before, update the tooltip text on the "Save" button accordingly
-        If pdImages(imageBeingClosed).locationOnDisk <> "" Then
-            'cmdAnswer(0).ToolTipText = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.  If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.")
+        If Len(pdImages(imageBeingClosed).locationOnDisk) > 0 Then
             .ToolText(cmdAnswer(0)) = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.")
         Else
             .ToolText(cmdAnswer(0)) = g_Language.TranslateMessage("Because this image has not been saved before, you will be prompted to provide a file name for it.")
@@ -248,7 +247,12 @@ Public Sub showDialog(ByRef ownerForm As Form)
 
     Me.ScaleMode = vbPixels
     
-    chkRepeat.Left = Me.ScaleWidth - chkRepeat.Width - fixDPI(26)
+    'When translations are active, some lengthy language may push the check box caption completely off-screen.
+    ' To prevent this, give the check box a large buffer space if translations are active.
+    If g_Language.translationActive Then
+        chkRepeat.Left = fixDPI(8)
+        chkRepeat.Width = Me.ScaleWidth - fixDPI(16)
+    End If
 
     'Apply any custom styles to the form
     makeFormPretty Me, m_ToolTip, True
