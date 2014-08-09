@@ -3,9 +3,8 @@ Attribute VB_Name = "Printing"
 'Printer support functions
 'Copyright ©2003-2014 by Tanner Helland
 'Created: 4/April/03
-'Last updated: 12/November/13
-'Last update: added a temporary workaround for Vista+ users by simply routing them through the default
-'              Windows photo printing tool.
+'Last updated: 09/August/14
+'Last update: perform necessary cleanup for printer temp files in Vista+
 '
 'This module includes code based off an article written by Cassandra Roads of Professional Logics Corporation (PLC).
 ' You can download the original, unmodified version of Cassandra's code from this link (good as of 12 Nov 2014):
@@ -103,6 +102,21 @@ Private Const DMPAPER_TABLOID = 3
 Private Const DMPAPER_TABLOID_EXTRA = 52
 Private Const DMPAPER_USER = 256
 
+'If the user has attempted to print during this session, this value will be set to TRUE, and the corresponding temp file
+' will be marked.  When PD closes down, if we can access the file, assume printing is complete and delete it.
+Private m_userPrintedThisSession As Boolean
+Private m_temporaryPrintPath As String
+
+'Call this function at shutdown time to perform any printer-related cleanup
+Public Sub performPrinterCleanup()
+
+    If m_userPrintedThisSession Then
+        On Error Resume Next
+        If FileExist(m_temporaryPrintPath) Then Kill m_temporaryPrintPath
+    End If
+
+End Sub
+
 'This simple function can be used to route printing through the default "Windows Photo Printer" dialog.
 Public Sub printViaWindowsPhotoPrinter()
 
@@ -122,11 +136,15 @@ Public Sub printViaWindowsPhotoPrinter()
     tmpImage.currentFileFormat = FIF_TIFF
     
     Dim tmpFilename As String
-    tmpFilename = g_UserPreferences.getTempPath & "PhotoDemon_print.tif"
+    tmpFilename = g_UserPreferences.GetTempPath & "PhotoDemon_print.tif"
     
     'Write out the TIFF to a temporary file.  Note that we request a color depth of 24bpp by passing the desired color depth
     ' + 16 as a parameter.
     PhotoDemon_SaveImage tmpImage, tmpFilename, , , "0", 24 + 16, True, True
+    
+    'Store the print state, so we can perform clean-up as necessary at shutdown time
+    m_userPrintedThisSession = True
+    m_temporaryPrintPath = tmpFilename
     
     Message "Image successfully sent to Windows Photo Printer."
     
