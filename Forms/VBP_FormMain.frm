@@ -2607,7 +2607,7 @@ Private Sub Form_Unload(Cancel As Integer)
         
     End If
     
-    'Releast FreeImage (if available)
+    'Release FreeImage (if available)
     If Not (g_FreeImageHandle = 0) Then
     
         FreeLibrary g_FreeImageHandle
@@ -2617,6 +2617,9 @@ Private Sub Form_Unload(Cancel As Integer)
         #End If
         
     End If
+    
+    'Perform printer cleanup
+    Printing.performPrinterCleanup
     
     'Stop tracking hotkeys
     ctlAccelerator.Enabled = False

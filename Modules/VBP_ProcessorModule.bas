@@ -276,7 +276,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 'As a temporary workaround, Vista+ users are routed through the default Windows photo printing
                 ' dialog.  XP users get the old PD print dialog.
                 If g_IsVistaOrLater Then
-                    printViaWindowsPhotoPrinter
+                    Printing.printViaWindowsPhotoPrinter
                 Else
                     If Not FormPrint.Visible Then showPDDialog vbModal, FormPrint
                 End If
