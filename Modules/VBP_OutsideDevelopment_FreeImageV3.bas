@@ -6314,6 +6314,9 @@ Public Sub FreeImage_InitErrorHandler()
    ' The 'FreeImage_ErrorHandler' function is called on each FreeImage 3 error.
 
    Call FreeImage_SetOutputMessage(AddressOf FreeImage_ErrorHandler)
+   
+   'Initialize the error message array
+   ReDim g_FreeImageErrorMessages(0) As String
 
 End Sub
 
@@ -6327,11 +6330,37 @@ Private Sub FreeImage_ErrorHandler(ByVal Format As FREE_IMAGE_FORMAT, ByVal Mess
    ' involved image type as VB string and prints both to the VB Debug console. Feel
    ' free to modify this function to call an error handling routine of your own.
 
-   strErrorMessage = pGetStringFromPointerA(Message)
+   strErrorMessage = Trim$(pGetStringFromPointerA(Message))
    strImageFormat = FreeImage_GetFormatFromFIF(Format)
    
-   pdDebug.LogAction "FreeImage returned the following internal error:", PDM_EXTERNAL_LIB
-   pdDebug.LogAction vbTab & strErrorMessage, PDM_EXTERNAL_LIB
-   pdDebug.LogAction vbTab & "Image format in question was: " & strImageFormat, PDM_EXTERNAL_LIB
+    'Save a copy of the FreeImage error in a public string, where other functions can retrieve it
+    If Len(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) > 0 Then
+        
+        'See if this error already exists in the log
+        Dim errorFound As Boolean
+        errorFound = False
+        
+        Dim i As Long
+        For i = 0 To UBound(g_FreeImageErrorMessages)
+            If StrComp(g_FreeImageErrorMessages(i), strErrorMessage, vbTextCompare) = 0 Then
+                errorFound = True
+                Exit For
+            End If
+        Next i
+        
+        'If the error was not found in the log, add it now
+        If Not errorFound Then
+            ReDim Preserve g_FreeImageErrorMessages(0 To UBound(g_FreeImageErrorMessages) + 1) As String
+            g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages)) = Trim$(strErrorMessage)
+        End If
+    Else
+        g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages)) = Trim$(strErrorMessage)
+    End If
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "FreeImage returned the following internal error:", PDM_EXTERNAL_LIB
+        pdDebug.LogAction vbTab & strErrorMessage, PDM_EXTERNAL_LIB
+        pdDebug.LogAction vbTab & "Image format in question was: " & strImageFormat, PDM_EXTERNAL_LIB
+    #End If
    
 End Sub

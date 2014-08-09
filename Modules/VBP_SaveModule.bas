@@ -521,6 +521,36 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         ' (One exception to this is if the user requested us to not update the MRU; in this case, there is no error!)
         If Not suspendMRUUpdating Then
             Message "Save canceled."
+            
+            'If FreeImage failed, report its message back to the user.  Otherwise, display a generic warning.
+            If Len(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) > 0 Then
+                
+                Dim listOfFreeImageErrors As String
+                listOfFreeImageErrors = """"
+                
+                'Condense all recorded errors into a single string
+                If UBound(g_FreeImageErrorMessages) > 0 Then
+                    Dim i As Long
+                    For i = 0 To UBound(g_FreeImageErrorMessages)
+                        listOfFreeImageErrors = listOfFreeImageErrors & g_FreeImageErrorMessages(i)
+                        If i < UBound(g_FreeImageErrorMessages) Then listOfFreeImageErrors = listOfFreeImageErrors & vbCrLf
+                    Next i
+                Else
+                    listOfFreeImageErrors = listOfFreeImageErrors & g_FreeImageErrorMessages(0)
+                End If
+                
+                listOfFreeImageErrors = listOfFreeImageErrors & """"
+                
+                'Display the error message
+                pdMsgBox "An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: " & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.", vbCritical Or vbApplicationModal Or vbOKOnly, "Image save error", listOfFreeImageErrors
+                
+                'Clear the FreeImage error tracking array
+                ReDim g_FreeImageErrorMessage(0) As String
+                
+            Else
+                pdMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbApplicationModal Or vbOKOnly, "Image save error"
+            End If
+            
             PhotoDemon_SaveImage = False
             Exit Function
         End If
