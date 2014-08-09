@@ -3572,10 +3572,15 @@ Private Sub prepareForBatchConversion()
             
             howManyPages = isMultiImage(tmpFilename)
             
+            'TODO: integrate this with future support for exporting multipage files.  At present, to avoid complications,
+            ' PD will only load the first page/frame of a multipage file during conversion.  (This is why the code below
+            ' looks so goofy.)
+            
             'Check the user's preference regarding multipage images.  If they have specifically requested that we load
             ' only the first page of the image, ignore any subsequent pages.
             If howManyPages > 0 Then
-                If g_UserPreferences.GetPref_Long("Loading", "Multipage Image Prompt", 0) = 1 Then howManyPages = 1
+                howManyPages = 1
+            '    If g_UserPreferences.GetPref_Long("Loading", "Multipage Image Prompt", 0) = 1 Then howManyPages = 1
             Else
                 howManyPages = 1
             End If
@@ -3787,7 +3792,7 @@ Private Sub prepareForBatchConversion()
     Screen.MousePointer = vbDefault
     
     'Change the "Cancel" button to "Exit"
-    CmdCancel.Caption = g_Language.TranslateMessage("Exit")
+    cmdCancel.Caption = g_Language.TranslateMessage("Exit")
     
     'Max out the progess bar and display a success message
     sysProgBar.Value = sysProgBar.Max
@@ -3825,7 +3830,7 @@ MacroCanceled:
     batchConvertMessage cancelMsg
     
     'Change the "Cancel" button to "Exit"
-    CmdCancel.Caption = g_Language.TranslateMessage("Exit")
+    cmdCancel.Caption = g_Language.TranslateMessage("Exit")
     
     m_ImageListSaved = True
     

@@ -407,7 +407,6 @@ Private Sub createNewPreferencesFile()
     xmlEngine.writeTag "Loading", "", True
         xmlEngine.writeTag "AutomaticallyLoadMetadata", "False"
         xmlEngine.writeTag "InitialImageZoom", "0"
-        xmlEngine.writeTag "MultipageImagePrompt", "0"
         xmlEngine.writeTag "HDRToneMapping", "True"
         xmlEngine.writeTag "VerifyInitialColorDepth", "True"
     xmlEngine.closeTag "Loading"
