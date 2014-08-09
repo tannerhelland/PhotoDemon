@@ -1279,7 +1279,15 @@ PDI_Load_Continuation:
                 If loadSuccessful Then
                 
                     'Convert 24bpp layers to 32bpp
-                    If targetDIB.getDIBColorDepth = 24 Then targetDIB.convertTo32bpp
+                    If targetDIB.getDIBColorDepth = 24 Then
+                    
+                        If g_GDIPlusAvailable Then
+                            GDI_Plus.GDIPlusConvertDIB24to32 targetDIB
+                        Else
+                            targetDIB.convertTo32bpp
+                        End If
+                    
+                    End If
                     
                     'Determine a name for each layer, contingent on its size and type
                     Dim layerNameAddon As String
@@ -1421,6 +1429,22 @@ PreloadMoreImages:
     
     'Restore the screen cursor if necessary
     If pageNumber <= 0 Then Screen.MousePointer = vbNormal
+    
+    'If multiple pages were loaded, make all but the first frame invisible.
+    If imageHasMultiplePages Then
+    
+        If targetImage.getNumOfLayers > 1 Then
+        
+            For pageTracker = 1 To targetImage.getNumOfLayers - 1
+                targetImage.getLayerByIndex(pageTracker).setLayerVisibility False
+            Next pageTracker
+        
+        End If
+        
+        PrepareViewport targetImage, FormMain.mainCanvas(0), "multiframe image"
+        syncInterfaceToCurrentImage
+    
+    End If
     
     'If multiple images were loaded and everything went well, display a success message
     If multipleFilesLoading Then
