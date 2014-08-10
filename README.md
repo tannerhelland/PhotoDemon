@@ -1,10 +1,10 @@
-# PhotoDemon 6.4 alpha
+# PhotoDemon 6.4 beta
 
-![PhotoDemon Screenshot] (http://photodemon.org/images/PD_6-4.jpg)
+![PhotoDemon Screenshot] (http://photodemon.org/images/PD_6-4-beta.jpg)
 
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 
-It provides a comprehensive selection of photo editing tools in a tiny 7.5 MB download.  It runs on any Windows machine (XP through Win 8.1) and *does not* require installation.  It can easily be run from a portable USB drive or SD card.  English, Dutch, French, German, Italian, Portuguese, and Spanish translations are currently provided.
+It provides a comprehensive selection of photo editing tools in a tiny 7.7 MB download.  It runs on any Windows machine (XP through Win 8.1) and *does not* require installation.  It can easily be run from a portable USB drive or SD card.  English, Dutch, French, German, Italian, Malay, Portuguese, Spanish and Swedish translations are currently provided.
 
 PhotoDemon is completely open-source and available under a permissive BSD license.  Outside contributions from coders, designers, translators, or anyone else are always welcome.
 
@@ -22,7 +22,7 @@ http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip
 PhotoDemon is designed to be run as a standalone program. No installer is provided or required.  It does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Options dialog – it leaves no trace of itself on your hard drive.  Many people choose to run PhotoDemon from a USB drive.  It will run on any Windows machine from XP through Windows 8.1.
 
 ### It integrates macro recording and batch processing
-Complex editing actions can be automated by recording them as macros (similar to Office software).  Once recorded, any combination of actions can be automatically applied to other images. Macros fully integrate with a built-in batch processing tool – simply choose a saved macro and a folder or list of images, and PhotoDemon will apply the macro to every image automagically.
+Complex editing actions can be automated by recording them as macros (similar to Office software).  Once recorded, a macro can be applied to any other image.  Macros fully integrate with a built-in batch processing tool – simply choose a saved macro and a folder or list of images, and PhotoDemon will apply the macro to every image automagically.
 
 ### It emphasizes usability
 Most free, open-source image editors are usability nightmares. PhotoDemon tries not to be. The interface was built by designers, not engineers, and small touches like save/load presets on all tools, automatic last-used settings preservation, unlimited Undo/Redo, "Fade last effect", keyboard accelerators, effect previews, mouse wheel and X-button support, and descriptive menu icons make PhotoDemon easy to use for both novices and professionals.
@@ -33,14 +33,16 @@ Most free, open-source image editors are usability nightmares. PhotoDemon tries 
 * Fully color-managed workflow, including support for embedded ICC profiles.
 * Non-destructive editing for select features, including resizing and key adjustments (exposure, clarity, vibrance, etc).
 * 2D transformations: advanced rescale operators (Sinc, Catmull-Rom, etc), content-aware scaling (seam carving), crop, rotate, shear, zoom, tiling.
-* Pro adjustment tools: levels, curves, white balance, shadow/highlight correction, grayscale, sepia, full-featured histogram, green screen, Wratten filters, and many more.
-* Filters and effects: content-aware blur, unsharp masking, edge detection, noise removal, lens diffraction, vignetting, perspective correction, film grain, lens flare, and many more.
+* Pro adjustment tools: levels, curves, HDR, white balance, split-toning, sepia, full-featured histogram, green screen, Wratten filters, and many more.
+* Filters and effects: perspective correction, edge detection, noise removal, content-aware blur, unsharp masking, lens diffraction, vignetting, film grain, stained glass, and many more.
 * 100+ tools are provided in the current build, plus a custom filter tool that allows you to construct your own convolution filters.
 
 ### What doesn't PhotoDemon do?
 
-* The latest stable release (6.2) does not support layers.  The latest development release (6.4 alpha) provides extensive support for image layers, blend modes, opacity, non-destructive layer resizing, and much more.  The screenshot above provides a good indication of what will be available in 6.4's release.
-* PhotoDemon does not provide any on-canvas painting tools.  Many have been prototyped, but their integration has been postponed pending the current work on layers.
+* The current release (v6.4 beta) does not support text layers.  Text layers are planned for the next release.
+* The current release (v6.4 beta) does not generally support Unicode filenames, folders, or text entry.  Improved Unicode support is planned for the next release.
+* The current release (v6.4 beta) does not provide any on-canvas painting tools.  Many have been prototyped, but their integration was postponed in favor of layer integration.  Now that layers are supported, on-canvas painting is planned for the next release.
+* The current release (v6.4 beta) may not integrate well with high-contrast Windows themes, or non-standard Windows themes.  Improvements to theming are planned for the next release.
 * PhotoDemon (probably) does not run on non-Windows operating systems. Wine (http://www.winehq.org/) finally added full DIB (Device-Independent Bitmap) support in March 2012. Because PhotoDemon relies heavily on DIBs, it may work on OSX, Linux, BSD, Solaris or Maemo systems with Wine v1.4 or later.
 
 ### How can I get involved? 
@@ -60,9 +62,11 @@ If you can't contribute monetarily to the project, here are other ways to help:
 
 ### How is PhotoDemon and its source code licensed?
 
-PhotoDemon is released under a BSD license. You may read more about this license at the following location: http://creativecommons.org/licenses/BSD/. A full copy of this license is included at the bottom of this section.
+PhotoDemon is released under a BSD license.  In a nutshell, this allows you to its source code in any application, commercial or otherwise, provided you supply proper attribution.  Proper attribution includes a notice of copyright and disclaimer of warranty.
 
-Sections of this source code were written by third-parties and may be subject to additional licenses. Documentation within a specific source code file supercedes the BSD license governing this project as a whole.
+A full copy of the BSD license is included below.  You can also learn more about the BSD license at the following location: http://creativecommons.org/licenses/BSD/.
+
+PLEASE NOTE: sections of PhotoDemon's source code were written by third-parties and may be subject to additional copyrights and licenses.  Documentation within a specific source code file supercedes the BSD license governing this project as a whole, so please review file headers prior to using code in your own projects.
 
 Questions regarding licensing should be directed to: http://photodemon.org/about/contact/
 
