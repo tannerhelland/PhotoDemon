@@ -1421,6 +1421,7 @@ PreloadMoreImages:
     
     'Synchronize all interface elements to match the newly loaded image(s)
     syncInterfaceToCurrentImage
+    toolbar_ImageTabs.forceRedraw
     
     
     '*************************************************************************************************************************************
