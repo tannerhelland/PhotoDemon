@@ -251,7 +251,7 @@ End Sub
 
 'Whenever a new image is loaded, it needs to be registered with the toolbar
 Public Sub registerNewImage(ByVal pdImagesIndex As Long)
-    
+
     'Request a thumbnail from the relevant pdImage object, and premultiply it to allow us to blit it more quickly
     Set imgThumbnails(numOfThumbnails).thumbDIB = New pdDIB
     
@@ -285,6 +285,8 @@ Public Sub RemoveImage(ByVal pdImagesIndex As Long, Optional ByVal refreshToolba
 
     'Find the matching thumbnail in our collection
     Dim i As Long, thumbIndex As Long
+    thumbIndex = -1
+    
     For i = 0 To numOfThumbnails
         If imgThumbnails(i).indexInPDImages = pdImagesIndex Then
             thumbIndex = i
@@ -293,7 +295,7 @@ Public Sub RemoveImage(ByVal pdImagesIndex As Long, Optional ByVal refreshToolba
     Next i
     
     'thumbIndex is now equal to the matching thumbnail.  Remove that entry, then shift all thumbnails after that point down.
-    If thumbIndex <= UBound(imgThumbnails) Then
+    If (thumbIndex > -1) And (thumbIndex <= UBound(imgThumbnails)) Then
     
         If Not (imgThumbnails(thumbIndex).thumbDIB Is Nothing) Then
             imgThumbnails(thumbIndex).thumbDIB.eraseDIB
@@ -311,17 +313,17 @@ Public Sub RemoveImage(ByVal pdImagesIndex As Long, Optional ByVal refreshToolba
             imgThumbnails(i).indexInPDImages = imgThumbnails(i + 1).indexInPDImages
         Next i
         
-    End If
+        'Decrease the array size to erase the unneeded trailing entry
+        numOfThumbnails = numOfThumbnails - 1
+    
+        If numOfThumbnails < 0 Then
+            numOfThumbnails = 0
+            curThumb = 0
+        End If
         
-    'Decrease the array size to erase the unneeded trailing entry
-    numOfThumbnails = numOfThumbnails - 1
-    
-    If numOfThumbnails < 0 Then
-        numOfThumbnails = 0
-        curThumb = 0
+        ReDim Preserve imgThumbnails(0 To numOfThumbnails) As thumbEntry
+        
     End If
-    
-    ReDim Preserve imgThumbnails(0 To numOfThumbnails) As thumbEntry
     
     'Because inactive images can be unloaded via the Win 7 taskbar, it is possible for our curThumb tracker to get out of sync.
     ' Update it now.
