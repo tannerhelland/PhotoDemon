@@ -1242,10 +1242,12 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuFilterSepBar2 
          Caption         =   "-"
+         Visible         =   0   'False
       End
       Begin VB.Menu MnuEffectExperimental 
          Caption         =   "Experimental"
          Index           =   4
+         Visible         =   0   'False
          Begin VB.Menu MnuAlien 
             Caption         =   "Alien"
          End
