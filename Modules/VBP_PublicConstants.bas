@@ -21,11 +21,7 @@ End Enum
 ' segments through the program, including the bulk of PD's debugging code.
 '
 ' Obvious corollary: ALWAYS SET DEBUGMODE TO 0 IN PRODUCTION BUILDS!
-Public Const PD_BUILD_QUALITY As Long = PD_ALPHA
-
-'Enable this constant if you want PhotoDemon to use experimental methods (when available).  This is helpful
-' for triggering alternate code paths during debugging, but IT SHOULD NEVER BE ENABLED IN PRODUCTION BUILDS!
-Public Const PD_EXPERIMENTAL_MODE As Boolean = False
+Public Const PD_BUILD_QUALITY As Long = PD_BETA
 
 'Identifier for pdImage data saved to file.  (ASCII characters "PDID", as hex, listed here in little-endian notation.)
 Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450

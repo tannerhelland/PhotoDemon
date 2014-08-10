@@ -331,8 +331,8 @@ ABOUT        CUSTOM  MOVEABLE        LOADONCALL      about_pd.png
 //Special-purpose images
 
 //Program logo, with and without text overlay, and a mask for the About text blitting
-PDLOGO       CUSTOM  MOVEABLE        LOADONCALL      6_4_splash.jpg
-PDLOGONOTEXT CUSTOM  MOVEABLE        LOADONCALL      6_4_no_overlay.jpg
+PDLOGO       CUSTOM  MOVEABLE        LOADONCALL      6_4_beta_splash.jpg
+PDLOGONOTEXT CUSTOM  MOVEABLE        LOADONCALL      6_4_beta_no_overlay.jpg
 PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 
 //Tool toolbox icons
