@@ -1,18 +1,20 @@
 PhotoDemon is copyright © 2014 by Tanner Helland and Contributors.
 
-PhotoDemon is released under a BSD license.  A full copy of the BSD license is provided below.
+PhotoDemon is released under a BSD license.  In a nutshell, this allows you to use its source code in any application, commercial or otherwise, provided you supply proper attribution.  Proper attribution includes a notice of copyright and disclaimer of warranty.
 
-Parts of PhotoDemon's source code were written by third-parties and may be subject to additional licenses. Documentation within a specific source code file supercedes the BSD license governing this project as a whole.
+A full copy of the BSD license is included below.  You can also learn more about the BSD license at the following location: http://creativecommons.org/licenses/BSD/
 
-Questions regarding licensing should be directed to: photodemon.org/about/contact/
+PLEASE NOTE: sections of PhotoDemon's source code were written by third-parties and may be subject to additional copyrights and licenses.  Documentation within a specific source code file supercedes the BSD license governing this project as a whole, so please review file headers prior to using code in your own projects.
 
-Full text of PhotoDemon and PhotoDemon plugin licenses follow.
+Questions regarding licensing should be directed to: http://photodemon.org/about/contact/
+
+Full text of PhotoDemon and PhotoDemon binary plugin licenses follow.
 
 + PhotoDemon license
 + ExifTool plugin license
 + EZTwain plugin license
 + FreeImage plugin license
-+ pngnq-s9 plugin license
++ PNGQuant plugin license
 + zLib plugin license
 
 
@@ -312,173 +314,64 @@ Software distributed under the License is distributed on an “AS IS” basis, WITHO
 
 
 
-** pngnq-s9 license (custom license) ** 
+** PNGQuant license (simplified BSD license) ** 
 
-* ————————————————————————
-* pngnq-s9 Authorship and Copyright
-* ————————–
-—————————————————————————
-Copyright (c) 2011-2012 Adrian Pellas-Rice
+The quantization and dithering code in pngquant is lifted from Jef Poskanzer's
+'ppmquant', part of his wonderful PBMPLUS tool suite.
 
-Copyright (c) 2004-2007 Stuart Coyle
+Greg Roelofs hacked it into a (in his words) "slightly cheesy" 'pamquant' back
+in 1997 (see http://pobox.com/~newt/greg_rgba.html) and finally he ripped out
+the cheesy file-I/O parts and replaced them with nice PNG code in December
+2000. The PNG reading and writing code is a merged and slightly simplified
+version of readpng, readpng2, and writepng from his book "PNG: The Definitive
+Guide."
+In 2014 Greg has relicensed the code under the simplified BSD license.
 
-Copyright (c) 1998-2001 Greg Roelofs. All rights reserved.
+Note that both licenses are basically BSD-like; that is, use the code however
+you like, as long as you acknowledge its origins.
 
-This software is provided “as is,” without warranty of any kind,
-express or implied. In no event shall the author or contributors
-be held liable for any damages arising in any way from the use of
-this software.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Permission is granted to anyone to use this software for any purpose,
-including commercial applications, and to alter it and redistribute
-it freely, subject to the following restrictions:
+pngquant.c:
 
-1. Redistributions of source code must retain the above copyright
-notice, disclaimer, and this list of conditions.
-2. Redistributions in binary form must reproduce the above copyright
-notice, disclaimer, and this list of conditions in the documenta-
-tion and/or other materials provided with the distribution.
-3. All advertising materials mentioning features or use of this
-software must display the following acknowledgment:
+   © 1989, 1991 by Jef Poskanzer.
 
-This product includes software developed by Greg Roelofs
-and contributors for the book, “PNG: The Definitive Guide,”
-published by O’Reilly and Associates.
+   Permission to use, copy, modify, and distribute this software and its
+   documentation for any purpose and without fee is hereby granted, provided
+   that the above copyright notice appear in all copies and that both that
+   copyright notice and this permission notice appear in supporting
+   documentation.  This software is provided "as is" without express or
+   implied warranty.
 
-—————————————————————————-
-*
-* pngnq-s9 is a modification of pngnq. pngnq is based on pngquant and
-* the NeuQuant procedure. pngquant, in turn, was based on ppmquant.
-*
-*
-* ————————————————————————
-* NeuQuant Notice
-* —————–
-*
-* NeuQuant Neural-Net Quantization Algorithm
-*
-* Copyright (c) 1994 Anthony Dekker
-*
-* NEUQUANT Neural-Net quantization algorithm by Anthony Dekker, 1994.
-* See “Kohonen neural networks for optimal colour quantization” in
-* “Network: Computation in Neural Systems” Vol. 5 (1994) pp 351-367.
-* for a discussion of the algorithm.
-* See also http://members.ozemail.com.au/~dekker/NEUQUANT.HTML
-*
-* Any party obtaining a copy of these files from the author, directly or
-* indirectly, is granted, free of charge, a full and unrestricted
-* irrevocable, world-wide, paid up, royalty-free, nonexclusive right and
-* license to deal in this software and documentation files (the
-* “Software”), including without limitation the rights to use, copy,
-* modify, merge, publish, distribute, sublicense, and/or sell copies of
-* the Software, and to permit persons who receive copies from any such
-* party to do so, with the only requirement being that this copyright
-* notice remain intact.
-*
-*
-* ————————————————————————
-* pngquant Notice
-* —————–
-*
-* Copyright (c) 1998-2000 Greg Roelofs. All rights reserved.
-*
-* This software is provided “as is,” without warranty of any kind,
-* express or implied. In no event shall the author or contributors
-* be held liable for any damages arising in any way from the use of
-* this software.
-*
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute
-* it freely, subject to the following restrictions:
-*
-* 1. Redistributions of source code must retain the above copyright
-* notice, disclaimer, and this list of conditions.
-* 2. Redistributions in binary form must reproduce the above copyright
-* notice, disclaimer, and this list of conditions in the documenta-
-* tion and/or other materials provided with the distribution.
-* 3. All advertising materials mentioning features or use of this
-* software must display the following acknowledgment:
-*
-* This product includes software developed by Greg Roelofs
-* and contributors for the book, “PNG: The Definitive Guide,”
-* published by O’Reilly and Associates.
-*
-*
-* ————————————————————————
-* pngnq Notice
-* ————–
-*
-* Based on Greg Roelf’s pngquant which was itself based on Jef
-* Poskanzer’s ppmquant. Uses Anthony Dekker’s Neuquant algorithm
-* extended to handle the alpha channel.
-*
-* Modified to quantize 32bit RGBA images for the pngnq program. Also
-* modified to accept a numebr of colors argument.
-* Copyright (c) Stuart Coyle 2004-2006
-*
-* Rewritten by Kornel Lesinski (2009):
-* Euclidean distance, color matching dependent on alpha channel and with
-* gamma correction. code refreshed for modern compilers/architectures:
-* ANSI C, floats, removed pointer tricks and used arrays and structs.
-*
-* Copyright (C) 1989, 1991 by Jef Poskanzer.
-* Copyright (C) 1997, 2000, 2002 by Greg Roelofs; based on an idea by
-* Stefan Schneider.
-* Copyright (C) 2004-2009 by Stuart Coyle
-* Copyright (C) Kornel Lesinski (2009)
-*
-* Permission to use, copy, modify, and distribute this software and
-* its documentation for any purpose and without fee is hereby granted,
-* provided that the above copyright notice appear in all copies and
-* that both that copyright notice and this permission notice appear in
-* supporting documentation. This software is provided “as is” without
-* express or implied warranty.
-*
-*
-* ————————————————————————
-* pngnq-s9 Notice
-* —————–
-*
-* Further alterations copyright (c) Adrian Pellas-Rice 2011-2012: YUV
-* colour space, unisolate, transparency extenuation, user-supplied
-* palette, per-component sensitivity, exclusion threshold, repel learning
-* phase, remap result caching and SIMD oriented code, etc. Alterations
-* available under the same terms as for pngnq above.
-*
-—————————————————————————-
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Free Getopt
-Copyright (c)2002-2003 Mark K. Kim
-All rights reserved.
+pngquant.c and rwpng.c/h:
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
+   © 1997-2002 by Greg Roelofs; based on an idea by Stefan Schneider.
+   © 2009-2014 by Kornel Lesinski.
 
-* Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
+   All rights reserved.
 
-* Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in
-the documentation and/or other materials provided with the
-distribution.
+   Redistribution and use in source and binary forms, with or without modification,
+   are permitted provided that the following conditions are met:
 
-* Neither the original author of this software nor the names of its
-contributors may be used to endorse or promote products derived
-from this software without specific prior written permission.
+   1. Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-“AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
-AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
-DAMAGE.
+   2. Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+   DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
