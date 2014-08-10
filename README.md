@@ -62,7 +62,7 @@ If you can't contribute monetarily to the project, here are other ways to help:
 
 ### How is PhotoDemon and its source code licensed?
 
-PhotoDemon is released under a BSD license.  In a nutshell, this allows you to its source code in any application, commercial or otherwise, provided you supply proper attribution.  Proper attribution includes a notice of copyright and disclaimer of warranty.
+PhotoDemon is released under a BSD license.  In a nutshell, this allows you to use its source code in any application, commercial or otherwise, provided you supply proper attribution.  Proper attribution includes a notice of copyright and disclaimer of warranty.
 
 A full copy of the BSD license is included below.  You can also learn more about the BSD license at the following location: http://creativecommons.org/licenses/BSD/.
 
