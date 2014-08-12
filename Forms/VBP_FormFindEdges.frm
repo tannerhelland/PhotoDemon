@@ -44,12 +44,12 @@ Begin VB.Form FormFindEdges
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkInvert 
-      Height          =   300
+      Height          =   330
       Left            =   6240
       TabIndex        =   4
       Top             =   5040
-      Width           =   5580
-      _ExtentX        =   3916
+      Width           =   5610
+      _ExtentX        =   9895
       _ExtentY        =   582
       Caption         =   "use black background"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
