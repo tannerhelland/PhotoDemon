@@ -230,12 +230,13 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                     
                     'Parse out the URL between the img src quotes
                     Dim urlStart As Long, urlEnd As Long
-                    urlStart = InStr(InStr(1, htmlString, "<img "), htmlString, "src=", vbTextCompare)
-                    urlStart = InStr(urlStart, htmlString, vbQuoteMark, vbBinaryCompare) + 1
+                    urlStart = InStr(1, htmlString, "<img ", vbTextCompare)
+                    If urlStart > 0 Then urlStart = InStr(urlStart, htmlString, "src=", vbTextCompare)
+                    If urlStart > 0 Then urlStart = InStr(urlStart, htmlString, vbQuoteMark, vbBinaryCompare) + 1
                     
                     'The magic number 6 below is calculated as the length of (src="), + 1 to advance to the
                     ' character immediately following the quotation mark.
-                    urlEnd = InStr(urlStart + 6, htmlString, vbQuoteMark, vbBinaryCompare)
+                    If urlStart > 0 Then urlEnd = InStr(urlStart + 6, htmlString, vbQuoteMark, vbBinaryCompare)
                     
                     'As a failsafe, make sure a valid URL was actually found
                     If (urlStart > 0) And (urlEnd > 0) Then
