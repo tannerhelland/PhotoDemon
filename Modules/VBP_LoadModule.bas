@@ -1451,7 +1451,9 @@ PreloadMoreImages:
     If multipleFilesLoading Then
         If (Len(missingFiles) = 0) And (Len(brokenFiles) = 0) And isThisPrimaryImage Then Message "All images loaded successfully."
     Else
-        If isThisPrimaryImage And targetImage.loadedSuccessfully Then Message "Image loaded successfully."
+        If isThisPrimaryImage And Not (targetImage Is Nothing) Then
+            If targetImage.loadedSuccessfully Then Message "Image loaded successfully."
+        End If
     End If
         
     'Finally, if we were loading multiple images and something went wrong (missing files, broken files), let the user know about them.
