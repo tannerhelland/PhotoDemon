@@ -34,13 +34,17 @@ Option Explicit
 '   5) Optional: a string of relevant save parameters.  If this is not provided, relevant parameters will be loaded from the preferences file.
 Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath As String, Optional ByVal imageID As Long = -1, Optional ByVal loadRelevantForm As Boolean = False, Optional ByVal saveParamString As String = "", Optional ByVal forceColorDepthMethod As Long = -1, Optional ByVal suspendMetadataActions As Boolean = False, Optional ByVal suspendMRUUpdating As Boolean = False) As Boolean
     
-    'Only update the MRU list if 1) no form is shown (because the user may cancel it), 2) a form was shown and the user
-    ' successfully navigated it, and 3) no errors occured during the export process.  By default, this is set to "do not update."
+    'PD will only update the MRU list if the following criteria are met:
+    ' 1) no save dialog with extra options is required OR
+    ' 1a) a dialog is shown and the user successfully navigates it (e.g. didn't cancel it)
+    ' 2) no errors occured during the export process.
+    '
+    'It's not ideal, but this updateMRU is also used to determine some other non-MRU behaviors in this function - see below for details.
     Dim updateMRU As Boolean
     updateMRU = False
     
-    'Start by determining the output format for this image (which was set either by a "Save As" common dialog box,
-    ' or by copying the image's original format - or, if in the midst of a batch process, by the user via the batch wizard).
+    'This function requires the caller to specify a target format in advance.  PD does this by updating the .currentFileFormat property
+    ' of the source pdImage object.  We must know this in advance so we can figure out what dialogs to display, and what encoder to use.
     Dim saveFormat As Long
     saveFormat = srcPDImage.currentFileFormat
     
@@ -49,19 +53,17 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
     ' Determine exported color depth (for non-PDI formats)
     '****************************************************************************************************
 
-    'The user is allowed to set a persistent preference for output color depth.  This setting affects a "color depth"
-    ' parameter that will be sent to the various format-specific save file routines.  The available preferences are:
+    'The user is allowed to set a persistent preference for output color depth.  The available preferences are:
     ' 0) Mimic the file's original color depth (if available; this may not always be possible, e.g. saving a 32bpp PNG as JPEG)
-    ' 1) Count the number of colors used, and save the file based on that (again, if possible)
+    ' 1) Count the number of colors used, and save the file based on that (again, if possible).  This is the PD default.
     ' 2) Prompt the user for their desired export color depth
     '
-    'Note that batch processing allows the user to overwrite their default preference with a specific preference for that
-    ' batch process; if this occurs, the "forceColorDepthMethod" is utilized.
+    'Note that the caller can override the preference check by supplying the "forceColorDepthMethod" parameter.  This is primarily
+    ' used by the batch processor, because the "prompt for color depth" method is not suitable there, even if the user requests it.
     
     Dim outputColorDepth As Long
     
-    '100 is the magic number for saving PDI files (PhotoDemon's internal format).  PDI files do not need color depth checked,
-    ' as the writer handles color depth independently for each layer.
+    'PDI files do not need color depth checked, as the writer auto-detects color depth for each layer regardless of preference.
     If saveFormat = FIF_PDI Then
         outputColorDepth = 32
         
