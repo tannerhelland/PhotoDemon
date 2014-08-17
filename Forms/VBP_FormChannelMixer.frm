@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormChannelMixer 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "Channel Mixer"
+   Caption         =   "Channel mixer"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -455,18 +455,18 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     cParams.setParamString channelMixerParams
     
     Dim channelModifiers(0 To 3, 0 To 3) As Double
-    Dim X As Long, Y As Long
-    For X = 0 To 3
-        For Y = 0 To 3
+    Dim x As Long, y As Long
+    For x = 0 To 3
+        For y = 0 To 3
             'The "constant" modifier is added to the final channel value as a whole number, but the other values are
             ' used as multiplication factors - so divide them by 100.
-            If Y = 3 Then
-                channelModifiers(X, Y) = cParams.GetLong((X * 4) + Y + 1)
+            If y = 3 Then
+                channelModifiers(x, y) = cParams.GetLong((x * 4) + y + 1)
             Else
-                channelModifiers(X, Y) = CDblCustom(cParams.GetLong((X * 4) + Y + 1)) / 100
+                channelModifiers(x, y) = CDblCustom(cParams.GetLong((x * 4) + y + 1)) / 100
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     
     Dim isMonochrome As Boolean
     isMonochrome = cParams.GetBool(17)
@@ -505,13 +505,13 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     Dim originalLuminance As Double
         
     'Apply the filter
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Create a new value for each color based on the input parameters
         If isMonochrome Then
@@ -522,9 +522,9 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
             
             'Note: luminance preservation serves no purpose when monochrome is selected, so I do not process it here
             
-            ImageData(QuickVal + 2, Y) = newGray
-            ImageData(QuickVal + 1, Y) = newGray
-            ImageData(QuickVal, Y) = newGray
+            ImageData(QuickVal + 2, y) = newGray
+            ImageData(QuickVal + 1, y) = newGray
+            ImageData(QuickVal, y) = newGray
             
         Else
         
@@ -550,20 +550,20 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
                 tHSLToRGB h, s, originalLuminance, newR, newG, newB
             End If
             
-            ImageData(QuickVal + 2, Y) = newR
-            ImageData(QuickVal + 1, Y) = newG
-            ImageData(QuickVal, Y) = newB
+            ImageData(QuickVal + 2, y) = newR
+            ImageData(QuickVal + 1, y) = newG
+            ImageData(QuickVal, y) = newB
             
         End If
                 
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -591,16 +591,16 @@ End Sub
 Private Sub cmdBar_RandomizeClick()
     
     'We actually want to randomize the entire stored value array, including channels that are not current visible
-    Dim X As Long, Y As Long
-    For X = 0 To 3
-        For Y = 0 To 3
-            If X < 3 Then
-                curSliderValues(X, Y) = -200 + Int(Rnd * 401)
+    Dim x As Long, y As Long
+    For x = 0 To 3
+        For y = 0 To 3
+            If x < 3 Then
+                curSliderValues(x, y) = -200 + Int(Rnd * 401)
             Else
-                curSliderValues(X, Y) = -255 + Int(Rnd * 511)
+                curSliderValues(x, y) = -255 + Int(Rnd * 511)
             End If
-        Next Y
-    Next X
+        Next y
+    Next x
     
     updateStoredValues
     
@@ -618,12 +618,12 @@ Private Sub cmdBar_ReadCustomPresetData()
     Set cParams = New pdParamString
     cParams.setParamString tmpParamString
     
-    Dim X As Long, Y As Long
-    For X = 0 To 3
-        For Y = 0 To 3
-            curSliderValues(X, Y) = cParams.GetLong((X * 4) + Y + 1)
-        Next Y
-    Next X
+    Dim x As Long, y As Long
+    For x = 0 To 3
+        For y = 0 To 3
+            curSliderValues(x, y) = cParams.GetLong((x * 4) + y + 1)
+        Next y
+    Next x
     
     'Sync the on-screen controls with whatever slider values are relevant
     forbidUpdate = True

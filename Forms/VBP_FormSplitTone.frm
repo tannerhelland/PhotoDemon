@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormSplitTone 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "Split Toning"
+   Caption         =   "Split toning"
    ClientHeight    =   6480
    ClientLeft      =   45
    ClientTop       =   285

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormOilPainting 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Oil Painting"
+   Caption         =   " Oil painting"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -59,9 +59,6 @@ Begin VB.Form FormOilPainting
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   1
-      Max             =   200
-      Value           =   5
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -71,6 +68,9 @@ Begin VB.Form FormOilPainting
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   200
+      Value           =   5
    End
    Begin PhotoDemon.sliderTextCombo sltPercent 
       Height          =   495
@@ -80,9 +80,6 @@ Begin VB.Form FormOilPainting
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      Min             =   1
-      Max             =   50
-      Value           =   15
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -92,6 +89,9 @@ Begin VB.Form FormOilPainting
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   50
+      Value           =   15
    End
    Begin VB.Label lblPercentile 
       AutoSize        =   -1  'True
@@ -553,7 +553,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Oil Painting", , buildParams(sltRadius.Value, sltPercent.Value), UNDO_LAYER
+    Process "Oil painting", , buildParams(sltRadius.Value, sltPercent.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()

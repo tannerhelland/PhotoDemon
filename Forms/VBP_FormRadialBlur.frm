@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormRadialBlur 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Radial Blur"
+   Caption         =   " Radial blur"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -122,7 +122,7 @@ Begin VB.Form FormRadialBlur
       Top             =   2760
       Width           =   5655
       _ExtentX        =   9975
-      _ExtentY        =   529
+      _ExtentY        =   582
       Caption         =   "blur symmetrically"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

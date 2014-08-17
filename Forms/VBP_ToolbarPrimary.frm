@@ -182,7 +182,7 @@ Begin VB.Form toolbar_File
       PictureNormal   =   "VBP_ToolbarPrimary.frx":57AA
       DisabledPictureMode=   1
       CaptionEffects  =   0
-      TooltipTitle    =   "Save As"
+      TooltipTitle    =   "Save as"
    End
    Begin VB.Label lblRecording 
       Alignment       =   2  'Center

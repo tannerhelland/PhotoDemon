@@ -492,10 +492,10 @@ Private Sub Form_Load()
     updatePaperSizeList
     
     'Populate the quality combo box
-    cmbQuality.AddItem "Draft (least ink)", 0
-    cmbQuality.AddItem "Good", 1
-    cmbQuality.AddItem "Better", 2
-    cmbQuality.AddItem "Best (most ink)", 3
+    cmbQuality.AddItem "draft (least ink)", 0
+    cmbQuality.AddItem "good", 1
+    cmbQuality.AddItem "better", 2
+    cmbQuality.AddItem "best (most ink)", 3
     cmbQuality.ListIndex = 3
     
     'Load the print job type sample images from the resource file

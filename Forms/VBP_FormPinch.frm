@@ -3,7 +3,7 @@ Begin VB.Form FormPinch
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Pinch and Whirl"
+   Caption         =   " Pinch and whirl"
    ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
@@ -430,7 +430,7 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -487,21 +487,21 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     sRadius2 = sRadius * sRadius
               
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
-        nX = X - midX
-        nY = Y - midY
+        nX = x - midX
+        nY = y - midY
         
         'Calculate distance automatically
         sDistance = (nX * nX) + (nY * nY)
                 
         'Calculate remapped x and y values
         If (sDistance > sRadius2) Then
-            srcX = X
-            srcY = Y
+            srcX = x
+            srcY = y
         Else
         
             'Calculate distance as a ratio of the effect radius
@@ -529,16 +529,16 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
         End If
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

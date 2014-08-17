@@ -3,7 +3,7 @@ Begin VB.Form FormMetadata
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Browse Image Metadata"
+   Caption         =   " Browse image metadata"
    ClientHeight    =   7140
    ClientLeft      =   45
    ClientTop       =   315
@@ -208,7 +208,7 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
-Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal scrollAmount As Double)
+Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
     If vsMetadata.Visible Then
@@ -343,7 +343,7 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'When the mouse enters the form area, set focus to the vertical scroll bar, so we can automatically mousewheel it (instead of the
     ' left listbox)
@@ -463,7 +463,7 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
 End Sub
 
 'To solve the problem of "two mouse-scrollable lists on one dialog), we track the mouse's location and handle scroll events accordingly.
-Private Sub lstMetadata_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lstMetadata_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     mouseOverMetadataCategoryBox = True
 End Sub
 

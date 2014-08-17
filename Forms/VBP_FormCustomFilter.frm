@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormCustomFilter 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Custom Filter"
+   Caption         =   " Custom filter"
    ClientHeight    =   6540
    ClientLeft      =   150
    ClientTop       =   120

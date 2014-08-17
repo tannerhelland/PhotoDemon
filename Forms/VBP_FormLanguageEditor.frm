@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormLanguageEditor 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Language Editor"
+   Caption         =   " Language editor"
    ClientHeight    =   9000
    ClientLeft      =   45
    ClientTop       =   315

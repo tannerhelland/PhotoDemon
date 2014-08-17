@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormGaussianBlur 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Gaussian Blur"
+   Caption         =   " Gaussian blur"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
