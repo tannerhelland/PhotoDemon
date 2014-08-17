@@ -418,11 +418,11 @@ End Sub
 Private Function getPhraseTagLocation(ByRef srcString As String) As Long
     
     Dim sLocation As Long
-    sLocation = InStr(1, m_OldLanguageText, srcString, vbTextCompare)
+    sLocation = InStr(1, m_OldLanguageText, srcString, vbBinaryCompare)
     
     'If the source string was found, work backward to find the phrase tag location
     If sLocation > 0 Then
-        sLocation = InStrRev(m_OldLanguageText, "<phrase>", sLocation, vbTextCompare)
+        sLocation = InStrRev(m_OldLanguageText, "<phrase>", sLocation, vbBinaryCompare)
         If sLocation > 0 Then
             getPhraseTagLocation = sLocation
         Else
@@ -464,12 +464,12 @@ End Function
 Private Function getTextBetweenTags(ByRef fileText As String, ByRef fTag As String, Optional ByVal searchLocation As Long = 1, Optional ByRef whereTagFound As Long = -1) As String
 
     Dim tagStart As Long, tagEnd As Long
-    tagStart = InStr(searchLocation, fileText, "<" & fTag & ">", vbTextCompare)
+    tagStart = InStr(searchLocation, fileText, "<" & fTag & ">", vbBinaryCompare)
 
     'If the tag was found in the file, we also need to find the closing tag.
     If tagStart > 0 Then
     
-        tagEnd = InStr(tagStart, fileText, "</" & fTag & ">", vbTextCompare)
+        tagEnd = InStr(tagStart, fileText, "</" & fTag & ">", vbBinaryCompare)
         
         'If the closing tag exists, return everything between that and the opening tag
         If tagEnd > tagStart Then
@@ -569,7 +569,7 @@ Private Sub cmdMergeAll_Click()
                 translatedText = getTranslationTagFromCaption(origText)
                 
                 'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
-                If translatedText = "" Then
+                If Len(translatedText) = 0 Then
                     If (InStr(1, origText, vbCrLf) > 0) Then
                         translatedText = getTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
                     End If
@@ -579,7 +579,7 @@ Private Sub cmdMergeAll_Click()
                 translatedText = Replace(translatedText, vbTab, "", , , vbBinaryCompare)
                                 
                 'If a translation was found, insert it into the new file
-                If translatedText <> "" Then
+                If Len(translatedText) > 0 Then
                     'findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation></translation>"
                     'replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
                     findText = "<original>" & origText & "</original>" & vbCrLf & "<translation></translation>"
@@ -977,7 +977,7 @@ Private Function addPhrase(ByRef phraseText As String) As Boolean
     'Before writing the phrase out, check to see if it already exists
     If CBool(chkRemoveDuplicates) Then
                 
-        If InStr(1, outputText, "<original>" & phraseText & "</original>", vbTextCompare) > 0 Then
+        If InStr(1, outputText, "<original>" & phraseText & "</original>", vbBinaryCompare) > 0 Then
             addPhrase = False
         Else
             If phraseText <> "" Then
@@ -1617,14 +1617,14 @@ Private Sub Form_Load()
     addBlacklist "1:4 (25%)"
     addBlacklist "1:8 (12.5%)"
     addBlacklist "1:16 (6.25%)"
-    addBlacklist "pngquant 2.1.1"
+    addBlacklist "PNGQuant 2.1.1"
     addBlacklist "zLib 1.2.8"
     addBlacklist "EZTwain 1.18"
     addBlacklist "FreeImage 3.16.0"
     addBlacklist "ExifTool 9.62"
     addBlacklist "X.X"
     addBlacklist "XX.XX.XX"
-    addBlacklist "pngquant"
+    addBlacklist "PNGQuant"
     addBlacklist "zLib"
     addBlacklist "EZTwain"
     addBlacklist "FreeImage"
@@ -1633,6 +1633,7 @@ Private Sub Form_Load()
     addBlacklist "photodemon.org/about/contact"
     addBlacklist "photodemon.org/about/contact/"
     addBlacklist "HTML / CSS"
+    addBlacklist "jcbutton"
     
 End Sub
 
