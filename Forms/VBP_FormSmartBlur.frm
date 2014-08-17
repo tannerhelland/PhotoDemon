@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormSurfaceBlur 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Surface Blur"
+   Caption         =   " Surface blur"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

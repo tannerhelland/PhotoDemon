@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormContour 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Trace Contour"
+   Caption         =   " Trace contour"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

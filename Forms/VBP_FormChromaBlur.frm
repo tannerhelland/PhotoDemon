@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormChromaBlur 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Chroma Blur"
+   Caption         =   " Chroma blur"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -252,7 +252,7 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
     gaussDIB.createFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -327,22 +327,22 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
         Dim origLuminance As Double
         
         'The final step of the chroma blur function is to merge blurred color data with original luminance data
-        For X = initX To finalX
-            QuickVal = X * qvDepth
-        For Y = initY To finalY
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = srcImageData(QuickVal + 2, Y)
-            g = srcImageData(QuickVal + 1, Y)
-            b = srcImageData(QuickVal, Y)
+            r = srcImageData(QuickVal + 2, y)
+            g = srcImageData(QuickVal + 1, y)
+            b = srcImageData(QuickVal, y)
             
             'Determine original HSL values
             tRGBToHSL r, g, b, h, s, origLuminance
             
             'Now, retrieve the gaussian pixels
-            r = GaussImageData(QuickVal + 2, Y)
-            g = GaussImageData(QuickVal + 1, Y)
-            b = GaussImageData(QuickVal, Y)
+            r = GaussImageData(QuickVal + 2, y)
+            g = GaussImageData(QuickVal + 1, y)
+            b = GaussImageData(QuickVal, y)
             
             'Determine HSL for the blurred data
             tRGBToHSL r, g, b, h, s, l
@@ -351,19 +351,19 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
             tHSLToRGB h, s, origLuminance, r, g, b
             
             'Apply the new RGB colors to the image
-            dstImageData(QuickVal + 2, Y) = r
-            dstImageData(QuickVal + 1, Y) = g
-            dstImageData(QuickVal, Y) = b
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, Y) = srcImageData(QuickVal + 3, Y)
+            dstImageData(QuickVal + 2, y) = r
+            dstImageData(QuickVal + 1, y) = g
+            dstImageData(QuickVal, y) = b
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = srcImageData(QuickVal + 3, y)
             
-        Next Y
+        Next y
             If Not toPreview Then
-                If (X And progBarCheck) = 0 Then
+                If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal X + calcProgBarOffset
+                    SetProgBarVal x + calcProgBarOffset
                 End If
             End If
-        Next X
+        Next x
             
         'With our work complete, release all arrays
         CopyMemory ByVal VarPtrArray(GaussImageData), 0&, 4

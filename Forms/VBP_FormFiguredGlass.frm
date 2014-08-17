@@ -3,7 +3,7 @@ Begin VB.Form FormFiguredGlass
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Figured Glass"
+   Caption         =   " Figured glass"
    ClientHeight    =   6555
    ClientLeft      =   -15
    ClientTop       =   225
@@ -311,7 +311,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -359,14 +359,14 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     Dim perlinCacheSin As Double, perlinCacheCos As Double, pNoiseCache As Double
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
         'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
         ' user's turbulence value.
         If fxScale > 0 Then
-            pNoiseCache = PI_DOUBLE * cPerlin.Noise2D(X / fxScale, Y / fxScale) * fxTurbulence
+            pNoiseCache = PI_DOUBLE * cPerlin.Noise2D(x / fxScale, y / fxScale) * fxTurbulence
             perlinCacheSin = Sin(pNoiseCache) * fxScale
             perlinCacheCos = Cos(pNoiseCache) * fxScale * fxTurbulence
         Else
@@ -377,20 +377,20 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
         'Use the sine of the displacement to calculate a unique source pixel position.  (Sine improves the roundness
         ' of the conversion, but technically it would work fine without an additional modifier due to the way
         ' Perlin noise is generated.)
-        srcX = X + perlinCacheSin
-        srcY = Y + perlinCacheCos
+        srcX = x + perlinCacheSin
+        srcY = y + perlinCacheCos
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
-    Next Y
+    Next y
         If (Not toPreview) Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormFindEdges 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Find Edges"
+   Caption         =   " Find edges"
    ClientHeight    =   6525
    ClientLeft      =   45
    ClientTop       =   285

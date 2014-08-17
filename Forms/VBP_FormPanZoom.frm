@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormPanAndZoom 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Pan and Zoom"
+   Caption         =   " Pan and zoom"
    ClientHeight    =   6510
    ClientLeft      =   45
    ClientTop       =   285
@@ -344,7 +344,7 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     End If
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -397,28 +397,28 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     tHeight = curDIBValues.Height
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
                             
         'Remap the coordinates around a center point of (0, 0)
-        nX = X - midX
-        nY = Y - midY
+        nX = x - midX
+        nY = y - midY
         
         srcX = midX - hPan + nX * newZoom
         srcY = midY - vPan + nY * newZoom
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

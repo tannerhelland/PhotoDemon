@@ -598,26 +598,26 @@ Private Sub Form_Load()
         lblWarning.Visible = True
     End If
     
-    Dim X As Long
+    Dim x As Long
     
     'Load a list of printers into the combo box
-    For X = 0 To Printers.Count - 1
-        cbPrinters.AddItem Printers(X).DeviceName
-    Next X
+    For x = 0 To Printers.Count - 1
+        cbPrinters.AddItem Printers(x).DeviceName
+    Next x
 
     'Pre-select the current printer
     cbPrinters = Printer.DeviceName
 
     'Set a default quality (high, since we're working with images)
-    cbQuality.AddItem "Draft", 0
-    cbQuality.AddItem "Low", 1
-    cbQuality.AddItem "Medium", 2
-    cbQuality.AddItem "High", 3
+    cbQuality.AddItem "draft", 0
+    cbQuality.AddItem "low", 1
+    cbQuality.AddItem "medium", 2
+    cbQuality.AddItem "high", 3
     cbQuality.ListIndex = 3
 
     'Set image orientation based on its aspect ratio (as compared to an 8.5" x 11" sheet of paper)
-    cbOrientation.AddItem "Portrait", 0
-    cbOrientation.AddItem "Landscape", 1
+    cbOrientation.AddItem "portrait", 0
+    cbOrientation.AddItem "landscape", 1
     
     Dim imgAspect As Double, paperAspect As Double
     imgAspect = pdImages(g_CurrentImage).Width / pdImages(g_CurrentImage).Height

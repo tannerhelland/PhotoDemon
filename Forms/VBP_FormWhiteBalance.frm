@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormWhiteBalance 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " White Balance"
+   Caption         =   " White balance"
    ClientHeight    =   6510
    ClientLeft      =   45
    ClientTop       =   285
@@ -59,10 +59,6 @@ Begin VB.Form FormWhiteBalance
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
-      Min             =   0.01
-      Max             =   5
-      SigDigits       =   2
-      Value           =   0.05
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -72,6 +68,10 @@ Begin VB.Form FormWhiteBalance
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   0.01
+      Max             =   5
+      SigDigits       =   2
+      Value           =   0.05
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat

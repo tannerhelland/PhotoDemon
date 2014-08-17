@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormResize 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Resize Image"
+   Caption         =   " Resize image"
    ClientHeight    =   7500
    ClientLeft      =   45
    ClientTop       =   225
@@ -122,7 +122,7 @@ Begin VB.Form FormResize
       Top             =   4440
       Width           =   7905
       _ExtentX        =   13944
-      _ExtentY        =   529
+      _ExtentY        =   582
       Caption         =   "show technical names"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"

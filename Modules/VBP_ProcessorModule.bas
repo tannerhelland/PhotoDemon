@@ -510,7 +510,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "New layer from file"
             Layer_Handler.loadImageAsNewLayer showDialog, processParameters
         
-        Case "Duplicate Layer"
+        Case "Duplicate layer"
             Layer_Handler.duplicateLayerByIndex cParams.GetLong(1)
             
         'Remove layers from an image

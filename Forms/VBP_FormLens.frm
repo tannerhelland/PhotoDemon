@@ -3,7 +3,7 @@ Begin VB.Form FormLens
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Apply Lens Distortion"
+   Caption         =   " Apply lens distortion"
    ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
@@ -343,7 +343,7 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -401,20 +401,20 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
     sRadiusMult = sRadiusW * sRadiusH
               
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
-        nX = X - midX
-        nY = Y - midY
+        nX = x - midX
+        nY = y - midY
         nX2 = nX * nX
         nY2 = nY * nY
                 
         'If the values are going to be out-of-bounds, simply maintain the current x and y values
         If nY2 >= (sRadiusH2 - ((sRadiusH2 * nX2) / sRadiusW2)) Then
-            srcX = X
-            srcY = Y
+            srcX = x
+            srcY = y
         
         'Otherwise, reverse-map x and y back onto the original image using a reversed lens refraction calculation
         Else
@@ -428,28 +428,28 @@ Public Sub ApplyLensDistortion(ByVal refractiveIndex As Double, ByVal lensRadius
             firstAngle = PI_HALF - xAngle
             secondAngle = Asin(Sin(firstAngle) * refractiveIndex)
             secondAngle = PI_HALF - xAngle - secondAngle
-            srcX = X - Tan(secondAngle) * theta
+            srcX = x - Tan(secondAngle) * theta
             
             'Now do the same thing for y
             yAngle = Acos(nY / Sqr(nY2 + theta2))
             firstAngle = PI_HALF - yAngle
             secondAngle = Asin(Sin(firstAngle) * refractiveIndex)
             secondAngle = PI_HALF - yAngle - secondAngle
-            srcY = Y - Tan(secondAngle) * theta
+            srcY = y - Tan(secondAngle) * theta
             
         End If
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

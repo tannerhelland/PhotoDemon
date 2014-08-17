@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormMotionBlur 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Motion Blur"
+   Caption         =   " Motion blur"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285

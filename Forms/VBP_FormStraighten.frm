@@ -3,7 +3,7 @@ Begin VB.Form FormStraighten
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Straighten Image"
+   Caption         =   " Straighten image"
    ClientHeight    =   6540
    ClientLeft      =   -15
    ClientTop       =   225
