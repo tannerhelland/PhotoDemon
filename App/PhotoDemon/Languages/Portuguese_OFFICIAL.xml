@@ -317,6 +317,11 @@ Please usar outro programa para salvar esta imagem em um formato genérico (como 
 </phrase>
 
 <phrase>
+<original>Original image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>All images loaded successfully.</original>
 <translation>Todas as imagens carregadas com sucesso.</translation>
 </phrase>
@@ -431,7 +436,7 @@ To ativar o suporte para arquivos compactados PDI, clique em Ajuda> Verificar at
 <translation>Completa duplicação de imagem.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 75 phrases. 23 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 77 phrases. 24 were duplicates of existing phrases, so only 53 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -12454,11 +12459,11 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2175</phrasecount>
+<phrasecount>2176</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3796 phrases. -->
-<!-- 1621 are duplicates, so only 2175 unique phrases have been written to file. -->
-<!-- These 2175 phrases contain approximately 12627 total words. -->
+<!-- As of this build, PhotoDemon contains 3798 phrases. -->
+<!-- 1622 are duplicates, so only 2176 unique phrases have been written to file. -->
+<!-- These 2176 phrases contain approximately 12629 total words. -->
 
 </pdData>
 

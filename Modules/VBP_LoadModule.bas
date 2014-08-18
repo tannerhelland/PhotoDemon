@@ -1376,7 +1376,7 @@ PDI_Load_Continuation:
                 pdDebug.LogAction "Creating initial auto-save entry (this may take a moment)..."
             #End If
             
-            targetImage.undoManager.createUndoData "Original image", "", UNDO_EVERYTHING
+            targetImage.undoManager.createUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
             
         End If
         
