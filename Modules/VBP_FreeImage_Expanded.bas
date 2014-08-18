@@ -90,7 +90,10 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     'For JPEGs, specify a preference for accuracy and quality over load speed.
     If fileFIF = FIF_JPEG Then
-        fi_ImportFlags = FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE
+        fi_ImportFlags = FILO_JPEG_ACCURATE
+        
+        'If the user has not suspended EXIF auto-rotation, request it from FreeImage
+        If g_UserPreferences.GetPref_Boolean("Loading", "ExifAutoRotate", "True") Then fi_ImportFlags = fi_ImportFlags Or FILO_JPEG_EXIFROTATE
     End If
     
     'Check for CMYK JPEGs, TIFFs, and PSD files.  If an image is CMYK and an ICC profile is present, ask FreeImage to load the
