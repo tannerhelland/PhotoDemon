@@ -284,6 +284,11 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
     If translationActive Then
         Set xmlEngine = New pdXML
         xmlEngine.loadXMLFile availableLanguages(curLanguage).FileName
+        
+        'New as of August '14 is use of binary text comparisons.  This provides a huge performance boost, while also rendering
+        ' more faithful text where case is concerned.
+        xmlEngine.setTextCompareMode vbBinaryCompare
+        
     End If
 
     'Redraw all text on the main form using the new language
