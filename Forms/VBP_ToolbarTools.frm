@@ -200,7 +200,7 @@ Begin VB.Form toolbar_Tools
       ForeColor       =   &H80000008&
       Height          =   1575
       Index           =   2
-      Left            =   0
+      Left            =   15
       ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   950
@@ -573,7 +573,7 @@ Begin VB.Form toolbar_Tools
          Top             =   360
          Width           =   5775
          _ExtentX        =   10186
-         _ExtentY        =   529
+         _ExtentY        =   582
          Caption         =   "show layer borders"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -592,7 +592,7 @@ Begin VB.Form toolbar_Tools
          Top             =   780
          Width           =   5775
          _ExtentX        =   10186
-         _ExtentY        =   529
+         _ExtentY        =   582
          Caption         =   "show layer transform nodes"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -611,7 +611,7 @@ Begin VB.Form toolbar_Tools
          Top             =   360
          Width           =   6240
          _ExtentX        =   11007
-         _ExtentY        =   529
+         _ExtentY        =   582
          Caption         =   "automatically activate layer beneath mouse"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -630,7 +630,7 @@ Begin VB.Form toolbar_Tools
          Top             =   780
          Width           =   6240
          _ExtentX        =   11007
-         _ExtentY        =   529
+         _ExtentY        =   582
          Caption         =   "ignore transparent pixels when auto-activating layers"
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
