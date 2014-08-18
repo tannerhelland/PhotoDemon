@@ -1562,6 +1562,10 @@ Private Function loadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
         
             lblPleaseWait.Caption = g_Language.TranslateMessage("Please wait while the language file is validated...")
             lblPleaseWait.Refresh
+            
+            'New as of August '14 is the ability to set text comparison mode.  To ensure output matches
+            ' the rest of PD, the language editor now uses binary comparison mode exclusively.
+            xmlEngine.setTextCompareMode vbBinaryCompare
         
             'Attempt to load all phrase tag location occurrences
             Dim phraseLocations() As Long
