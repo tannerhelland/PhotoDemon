@@ -191,8 +191,9 @@ End Sub
 'To improve responsiveness, MouseDown is used instead of Click
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
-    If Me.Enabled And isMouseOverClickArea(x, y) Then
-        If CBool(Me.Value) Then Me.Value = vbUnchecked Else Me.Value = vbChecked
+    'Only apply mouse events if the control is enabled, the click is in a relevant location, and the control value is not already TRUE
+    If Me.Enabled And isMouseOverClickArea(x, y) And (Not Me.Value) Then
+        Me.Value = True
     End If
 
 End Sub
