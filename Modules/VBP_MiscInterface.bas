@@ -774,13 +774,13 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     MoveWindow dialogHwnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
     
     'Register the window with the window manager, which will also make it a top-most window
-    g_WindowManager.requestTopmostWindow dialogHwnd, getModalOwner().hWnd
+    If g_WindowManager.getFloatState(TOOLBAR_WINDOW) Then g_WindowManager.requestTopmostWindow dialogHwnd, getModalOwner().hWnd
     
     'Use VB to actually display the dialog
-    dialogForm.Show dialogModality, getModalOwner()
+    dialogForm.Show dialogModality, FormMain 'getModalOwner()
     
     'De-register this hWnd with the window manager
-    g_WindowManager.requestTopmostWindow dialogHwnd, 0, True
+    If g_WindowManager.getFloatState(TOOLBAR_WINDOW) Then g_WindowManager.requestTopmostWindow dialogHwnd, 0, True
     
     'Release our reference to this dialog
     If isSecondaryDialog Then
