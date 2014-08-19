@@ -60,6 +60,7 @@ Public Event Click()
 
 'Subclassing is used to better optimize the control's painting; this also requires manual validation of the control rect.
 Private Const WM_PAINT As Long = &HF
+Private Const WM_ERASEBKGND As Long = &H14
 Private Declare Function ValidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As Any) As Long
 
 'Retrieve the width and height of a string
@@ -319,7 +320,7 @@ Private Sub UserControl_Initialize()
         
         Set cSubclass = New cSelfSubHookCallback
         cSubclass.ssc_Subclass Me.hWnd, , , Me
-        cSubclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_PAINT
+        cSubclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
         
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
@@ -728,6 +729,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'Mark the message as handled and exit
         bHandled = True
         lReturn = 0
+    
+    ElseIf uMsg = WM_ERASEBKGND Then
+        
+        bHandled = True
+        lReturn = 1
         
     End If
 
