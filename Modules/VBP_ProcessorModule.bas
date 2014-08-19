@@ -398,8 +398,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             ' metadata, initialize properties) have to be repeated.
             DuplicateCurrentImage
             
-        'Resize operations
-        Case "Resize image"
+        'Resize operations; note that prior to 6.4, "Resize" was used in place of "Resize image".  To preserve functionality of old macros,
+        ' we add the old "Resize" operator here as well.
+        Case "Resize image", "Resize"
             If showDialog Then
                 showResizeDialog PD_AT_WHOLEIMAGE
             Else
@@ -445,16 +446,16 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
             End If
         
-        Case "Rotate image 90° clockwise"
+        Case "Rotate image 90° clockwise", "Rotate 90° clockwise"
             MenuRotate90Clockwise
             
-        Case "Rotate image 180°"
+        Case "Rotate image 180°", "Rotate 180°"
             MenuRotate180
             
-        Case "Rotate image 90° counter-clockwise"
+        Case "Rotate image 90° counter-clockwise", "Rotate 90° counter-clockwise"
             MenuRotate270Clockwise
             
-        Case "Arbitrary image rotation"
+        Case "Arbitrary image rotation", "Arbitrary rotation"
             If showDialog Then
                 showRotateDialog PD_AT_WHOLEIMAGE
             Else
@@ -462,10 +463,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
             
         'Other coordinate transforms
-        Case "Flip image vertically"
+        Case "Flip image vertically", "Flip vertically"
             MenuFlip
             
-        Case "Flip image horizontally"
+        Case "Flip image horizontally", "Flip horizontally"
             MenuMirror
         
         'NOTE: isometric conversion was removed in v6.4
