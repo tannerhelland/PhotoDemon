@@ -274,8 +274,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         penRadius = penRadius * curDIBValues.previewModifier
-        If penRadius < 1 Then penRadius = 1
-    
+        
     'If this is not a preview, initialize the main program progress bar
     Else
         
@@ -285,6 +284,8 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         progBarCheck = findBestProgBarValue()
         
     End If
+    
+    If penRadius < 1 Then penRadius = 1
     
     'Start by creating the blurred DIB
     If CreateApproximateGaussianBlurDIB(penRadius, workingDIB, blurDIB, 3, toPreview, finalY * 3 + finalX * 5) Then
