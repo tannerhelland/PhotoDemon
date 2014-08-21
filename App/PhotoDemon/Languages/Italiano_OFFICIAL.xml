@@ -4276,6 +4276,16 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>orientation</original>
+<translation>orientazione</translation>
+</phrase>
+
+<phrase>
 <original>color depth</original>
 <translation>profondità di colore</translation>
 </phrase>
@@ -4744,6 +4754,11 @@ Sei sicuro di voler continuare?</translation>
 </phrase>
 
 <phrase>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>automatically fit the image on-screen</original>
 <translation>adatta automaticamente l'immagine sullo schermo</translation>
 </phrase>
@@ -5161,7 +5176,7 @@ Se si sceglie di disattivare queste funzioni, potete sempre visitare photodemon.
 <translation>ATTENZIONE: questa cartella non è valida (accesso proibito). Per favore assegna una cartella valida. Se nessuna nuova cartella è assegnata, PhotoDemon utilizzerà la cartella predefinita per i file temporanei.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 273 phrases. 78 were duplicates of existing phrases, so only 195 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 277 phrases. 79 were duplicates of existing phrases, so only 198 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -5473,11 +5488,6 @@ Se si sceglie di disattivare queste funzioni, potete sempre visitare photodemon.
 </phrase>
 
 <phrase>
-<original>orientation</original>
-<translation>orientazione</translation>
-</phrase>
-
-<phrase>
 <original>printer</original>
 <translation>stampante</translation>
 </phrase>
@@ -5547,7 +5557,7 @@ Se si sceglie di disattivare queste funzioni, potete sempre visitare photodemon.
 <translation>Immagine stampata con successo. (Nota: dipendentemente dalla tua stampante, un'ulteriore conferma della stampa può apparire sullo schermo.)</translation>
 </phrase>
 
-<!-- VBP_FormPrint.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- VBP_FormPrint.frm contains 29 phrases. 6 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPrint.frm-->
 
@@ -10772,26 +10782,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
-<original>temperature</original>
-<translation>temperatura</translation>
-</phrase>
-
-<phrase>
-<original>tint</original>
-<translation>tinta</translation>
-</phrase>
-
-<phrase>
-<original>clarity</original>
-<translation>chiarezza</translation>
-</phrase>
-
-<phrase>
-<original>exposure</original>
-<translation>esposizione</translation>
-</phrase>
-
-<phrase>
 <original>show layer borders</original>
 <translation>mostra i bordi del livello</translation>
 </phrase>
@@ -10859,6 +10849,26 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <phrase>
 <original>smoothing</original>
 <translation>lisciatura</translation>
+</phrase>
+
+<phrase>
+<original>temperature</original>
+<translation>temperatura</translation>
+</phrase>
+
+<phrase>
+<original>tint</original>
+<translation>tinta</translation>
+</phrase>
+
+<phrase>
+<original>clarity</original>
+<translation>chiarezza</translation>
+</phrase>
+
+<phrase>
+<original>exposure</original>
+<translation>esposizione</translation>
 </phrase>
 
 <phrase>
@@ -12455,11 +12465,11 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2176</phrasecount>
+<phrasecount>2178</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3798 phrases. -->
-<!-- 1622 are duplicates, so only 2176 unique phrases have been written to file. -->
-<!-- These 2176 phrases contain approximately 12629 total words. -->
+<!-- As of this build, PhotoDemon contains 3802 phrases. -->
+<!-- 1624 are duplicates, so only 2178 unique phrases have been written to file. -->
+<!-- These 2178 phrases contain approximately 12681 total words. -->
 
 </pdData>
 
