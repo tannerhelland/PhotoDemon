@@ -346,12 +346,19 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         tmpParamString = tmpParamString & "False" & "|"
         convolutionMatrixString = getParamStringForEdgeDetector(edgeDetectionType, PD_EDGE_DIR_HORIZONTAL)
         tmpParamString = tmpParamString & convolutionMatrixString
-        
+                
         'Use the central ConvolveDIB function to apply the new convolution to workingDIB
         ConvolveDIB tmpParamString, workingDIB, tmpEdgeDIB, toPreview, workingDIB.getDIBWidth * numPassesRequired, workingDIB.getDIBWidth
         
+        'The compositor requires premultiplied alpha, so convert both top and bottom layers now
+        edgeDIB.fixPremultipliedAlpha True
+        tmpEdgeDIB.fixPremultipliedAlpha True
+        
         'Use the pdCompositor class to blend the results of the second edge detection pass with the first pass.
         cComposite.compositeDIBs edgeDIB, tmpEdgeDIB, BL_SCREEN, 0, 0
+        
+        'Remove premultiplication
+        edgeDIB.fixPremultipliedAlpha False
         
         Set tmpEdgeDIB = Nothing
         
@@ -361,6 +368,10 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     'edgeDIB now contains a complete edge-detection copy of the image, using the supplied edge detector algorithm.
     ' We now need to selectively blend the results back onto the main image, at the strength requested.
     If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", numPassesRequired, numPassesRequired, getNameOfEdgeDetector(edgeDetectionType)
+    
+    'Apply premultiplication prior to compositing
+    edgeDIB.fixPremultipliedAlpha True
+    workingDIB.fixPremultipliedAlpha True
     
     'To make the merge operation easier, we're going to place our DIBs inside temporary layers.  This allows us to use existing
     ' layer code to handle the merge.
@@ -383,7 +394,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     Set tmpLayerBottom = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
 
 End Sub
 

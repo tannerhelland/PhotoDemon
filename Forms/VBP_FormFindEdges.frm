@@ -352,6 +352,10 @@ Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Opti
     srcDIB.eraseDIB
     Set srcDIB = Nothing
     
+    'The compositor requires premultiplied alpha, so convert both top and bottom layers now
+    workingDIB.fixPremultipliedAlpha True
+    secondDstDIB.fixPremultipliedAlpha True
+    
     'Last step is to blend the two result arrays together.  Use the pdCompositor class to do this.
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
@@ -363,7 +367,7 @@ Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Opti
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
 
 End Sub
 

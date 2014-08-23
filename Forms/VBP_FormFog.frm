@@ -425,6 +425,10 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
+    'Apply premultiplication prior to compositing
+    tmpFogDIB.fixPremultipliedAlpha True
+    workingDIB.fixPremultipliedAlpha True
+    
     'A pdCompositor class will help us selectively blend the fog results back onto the main image
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
@@ -451,7 +455,7 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     Set tmpLayerBottom = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
         
 End Sub
 
