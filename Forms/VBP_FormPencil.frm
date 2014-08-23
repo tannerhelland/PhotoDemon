@@ -347,6 +347,10 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         'Release our array copy
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         
+        'Apply premultiplication to the layers prior to compositing
+        blurDIB.fixPremultipliedAlpha True
+        workingDIB.fixPremultipliedAlpha True
+        
         'A pdCompositor class will help us blend the invert+blur image back onto the original image
         Dim cComposite As pdCompositor
         Set cComposite = New pdCompositor
@@ -373,6 +377,9 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         
         'Copy the finished DIB from the bottom layer back into workingDIB
         workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
+        
+        'Remove premultiplied alpha
+        workingDIB.fixPremultipliedAlpha False
         
         'Release our temporary layers and DIBs
         Set blurDIB = Nothing

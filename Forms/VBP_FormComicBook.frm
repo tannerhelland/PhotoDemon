@@ -237,6 +237,10 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     'Use PD's central convolver to generate the vertical edge image
     ConvolveDIB finalParamString, workingDIB, inkDIBv, toPreview, workingDIB.getDIBWidth * 3, workingDIB.getDIBWidth
     
+    'Apply premultiplication prior to compositing
+    inkDIBv.fixPremultipliedAlpha True
+    inkDIBh.fixPremultipliedAlpha True
+    
     'With both ink images now available, we can composite the two into a single bidirectional ink image, using
     ' PD's central compositor class.
     Dim cComposite As pdCompositor
@@ -246,6 +250,9 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     
     'The bottom DIB (inkDIBh) now contains the composite image.  Release the vertical copy.
     Set inkDIBv = Nothing
+    
+    'Remove premultiplication from the horizontal ink dib
+    inkDIBh.fixPremultipliedAlpha False
     
     'Convert the ink DIB to grayscale
     GrayscaleDIB inkDIBh, True
@@ -259,6 +266,10 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
         createBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, workingDIB.getDIBWidth * 4, workingDIB.getDIBWidth * 2
         
     End If
+    
+    'Apply premultiplication to the DIBs prior to compositing
+    inkDIBh.fixPremultipliedAlpha True
+    workingDIB.fixPremultipliedAlpha True
     
     'Finally, composite the ink over the color smudge, using the opacity supplied by the user.  To make the composite
     ' operation easier, we're going to place our DIBs inside temporary layers.  This allows us to use existing layer
@@ -284,7 +295,7 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     Set tmpLayerBottom = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
     
 End Sub
 

@@ -369,6 +369,10 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
     Erase ImageData
     
+    'Apply premultiplication prior to compositing
+    edgeDIB.fixPremultipliedAlpha True
+    workingDIB.fixPremultipliedAlpha True
+    
     'A pdCompositor class will help us selectively blend the flame results back onto the main image
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
@@ -395,7 +399,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Set tmpLayerBottom = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
 
 End Sub
 
