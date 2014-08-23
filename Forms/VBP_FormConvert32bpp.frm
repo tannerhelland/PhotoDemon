@@ -220,13 +220,13 @@ Public Sub simpleConvert32bpp(Optional ByVal convertConstant As Long = 255, Opti
     
     'Call prepImageData, which will prepare a temporary copy of the image
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA, toPreview, dstPic
+    prepImageData tmpSA, toPreview, dstPic, , , True
     
     'Pretty simple - ask pdDIB to apply a constant alpha channel to the image, and we're done!
     workingDIB.convertTo32bpp convertConstant
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
     
 End Sub
 
