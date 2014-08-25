@@ -8,6 +8,7 @@ Begin VB.Form toolbar_Layers
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   3735
+   ClipControls    =   0   'False
    FillStyle       =   0  'Solid
    BeginProperty Font 
       Name            =   "Tahoma"

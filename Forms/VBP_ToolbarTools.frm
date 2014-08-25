@@ -1376,7 +1376,7 @@ Private Sub Form_Load()
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.setParentForm Me
     lastUsedSettings.loadAllControlValues
-    
+        
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
