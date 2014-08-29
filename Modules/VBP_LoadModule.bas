@@ -985,25 +985,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             End If
             
             DoEvents
-            
-            
-            '*************************************************************************************************************************************
-            ' If the incoming image is 24bpp, convert it to 32bpp.  PD assumes an available alpha channel for all layers.
-            '*************************************************************************************************************************************
-            
-            If targetDIB.getDIBColorDepth = 24 Then
-            
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Original image was 24bpp.  Converting to 32bpp now..."
-                #End If
-                
-                If g_GDIPlusAvailable Then
-                    GDI_Plus.GDIPlusConvertDIB24to32 targetDIB
-                Else
-                    targetDIB.convertTo32bpp
-                End If
-                
-            End If
+           
             
             
             '*************************************************************************************************************************************
@@ -1026,6 +1008,26 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             End If
             
             DoEvents
+            
+            
+            
+            '*************************************************************************************************************************************
+            ' If the incoming image is 24bpp, convert it to 32bpp.  PD assumes an available alpha channel for all layers.
+            '*************************************************************************************************************************************
+            
+            If targetDIB.getDIBColorDepth = 24 Then
+            
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Original image was 24bpp.  Converting to 32bpp now..."
+                #End If
+                
+                If g_GDIPlusAvailable Then
+                    GDI_Plus.GDIPlusConvertDIB24to32 targetDIB
+                Else
+                    targetDIB.convertTo32bpp
+                End If
+                
+            End If
             
             
             '*************************************************************************************************************************************
@@ -1334,13 +1336,13 @@ PDI_Load_Continuation:
 
             'Wait for metadata parsing to finish...
             If isMetadataFinished Then
-
+            
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "Metadata retrieved successfully."
                 #End If
-                
+            
                 targetImage.imgMetadata.loadAllMetadata retrieveMetadataString, targetImage.imageID
-
+            
             Else
                 
                 #If DEBUGMODE = 1 Then
@@ -1348,7 +1350,7 @@ PDI_Load_Continuation:
                 #End If
                 
                 If Not FormMain.tmrMetadata.Enabled Then FormMain.tmrMetadata.Enabled = True
-
+            
             End If
 
             'Next, retrieve any specific metadata-related entries that may be useful to further processing, like image resolution
