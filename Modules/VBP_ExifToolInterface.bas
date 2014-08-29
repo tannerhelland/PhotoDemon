@@ -385,8 +385,11 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     'Notify the program that stdout capture has begun
     captureModeActive = True
     
-    'Erase any previous metadata caches
-    curMetadataString = ""
+    'Erase any previous metadata caches.
+    ' NOTE! Upon implementing PD's new asynchronous metadata retrieval mechanism, we don't want to erase the master metadata string,
+    '        as its construction may lag behind the rest of the image load process.  When a full metadata string is retrieved,
+    '        the retrieveMetadataString() function will handle clearing for us.
+    'curMetadataString = ""
     
     'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
     ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
