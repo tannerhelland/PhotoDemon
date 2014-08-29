@@ -2165,8 +2165,8 @@ Private Sub tmrMetadata_Timer()
                     
                     If IsNumeric(tmpString) Then
                         curImageID = CLng(tmpString)
-                    Else
-                        MsgBox tmpString
+                    'Else
+                        'Debug.Print "Metadata ID calculation invalid - was ExifTool updated? - " & tmpString
                     End If
                     
                     'Now we know where the metadata for this image *ends*, but we still need to find where it *starts*.  All metadata XML entries start with
@@ -2177,7 +2177,7 @@ Private Sub tmrMetadata_Timer()
                     If (startPosition > 0) And ((terminalPosition - startPosition) > 0) Then
                         
                         'Make sure we calculated our curImageID value correctly
-                        If curImageID < UBound(pdImages) Then
+                        If (curImageID >= 0) And (curImageID <= UBound(pdImages)) Then
                             If Not pdImages(curImageID) Is Nothing Then
                             
                                 'Create the imgMetadata object as necessary, and load the selected metadata into it!
@@ -2191,14 +2191,17 @@ Private Sub tmrMetadata_Timer()
                         terminalPosition = InStr(terminalPosition + 6, mdString, "{ready", vbBinaryCompare)
                         
                     Else
+                        Debug.Print "(startPosition > 0) And ((terminalPosition - startPosition) > 0) failed"
                         terminalPosition = 0
                     End If
                                         
                 Else
+                    Debug.Print "(terminalPosition + 6 + lenFailsafe) was greater than Len(mdString)"
                     terminalPosition = 0
                 End If
                 
             Else
+                Debug.Print "lenFailsafe = 0"
                 terminalPosition = 0
             End If
         
@@ -2667,6 +2670,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutdown appears to be clean.  pdDebug will now be terminated."
+        Set pdDebug = Nothing
     #End If
     
 End Sub
