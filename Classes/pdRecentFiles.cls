@@ -272,6 +272,8 @@ End Sub
 'Save the current MRU list to file (currently done at program close)
 Public Sub MRU_SaveToFile()
 
+    On Error Resume Next
+
     'Reset whatever XML data we may have stored at present - we will be rewriting the full MRU file from scratch.
     resetXMLData
     
@@ -280,7 +282,7 @@ Public Sub MRU_SaveToFile()
     'Only write new entries if MRU data exists for them
     If numEntries > 0 Then
         For i = 0 To numEntries - 1
-            xmlEngine.writeTagWithAttribute "mruEntry", "id", Str(i), "", True
+            xmlEngine.writeTagWithAttribute "mruEntry", "id", CStr(i), "", True
             xmlEngine.writeTag "filePath", MRUlist(i)
             xmlEngine.closeTag "mruEntry"
             xmlEngine.writeBlankLine

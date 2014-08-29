@@ -777,6 +777,8 @@ End Function
 'Erase all undo files that this class has created
 Public Sub clearUndos()
     
+    On Error Resume Next
+    
     'Remember that we have no Undo files for this image
     undoState = False
     

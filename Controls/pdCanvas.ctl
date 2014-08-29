@@ -116,26 +116,34 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":0004
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "pdCanvas.ctx":002C
-         picturealign    =   7
-         pictureeffectondown=   0
-         captioneffects  =   0
-         tooltip         =   "Zoom in"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":0004
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Zoom in"
+         ColorScheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":087E
+         ItemData        =   "pdCanvas.ctx":0856
          Left            =   840
-         List            =   "pdCanvas.ctx":0880
+         List            =   "pdCanvas.ctx":0858
          Style           =   2  'Dropdown List
          TabIndex        =   8
          Top             =   15
@@ -147,19 +155,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   10
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":0882
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "pdCanvas.ctx":08AA
-         picturealign    =   0
-         pictureeffectondown=   0
-         captioneffects  =   0
-         tooltip         =   "Zoom out"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":085A
+         PictureAlign    =   0
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Zoom out"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdZoomFit 
          Height          =   345
@@ -167,19 +183,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   12
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":10FC
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "pdCanvas.ctx":1124
-         picturealign    =   7
-         pictureeffectondown=   0
-         captioneffects  =   0
-         tooltip         =   "Fit image on screen"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":10AC
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Fit image on screen"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdImgSize 
          Height          =   345
@@ -187,19 +211,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   13
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":1976
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "pdCanvas.ctx":199E
-         picturealign    =   7
-         pictureeffectondown=   0
-         captioneffects  =   0
-         tooltip         =   "Resize image"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":18FE
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Resize image"
+         ColorScheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -1922,30 +1954,30 @@ End Sub
 'Simple unified way to see if canvas interaction is allowed.
 Private Function isCanvasInteractionAllowed() As Boolean
 
+    'By default, canvas interaction is allowed
+    isCanvasInteractionAllowed = True
+    
+    'Now, check a bunch of states that might indicate canvas interactions should not be allowed
+    
     'If the main form is disabled, exit
-    If Not FormMain.Enabled Then
-        isCanvasInteractionAllowed = False
+    If Not FormMain.Enabled Then isCanvasInteractionAllowed = False
         
     'If user input has been forcibly disabled, exit
-    ElseIf g_DisableUserInput Then
-        isCanvasInteractionAllowed = False
+    If g_DisableUserInput Then isCanvasInteractionAllowed = False
     
     'If no images have been loaded, exit
-    ElseIf g_OpenImageCount = 0 Then
-        isCanvasInteractionAllowed = False
+    If g_OpenImageCount = 0 Then isCanvasInteractionAllowed = False
     
     'If the current image does not exist, exit
-    ElseIf pdImages(g_CurrentImage) Is Nothing Then
+    If pdImages(g_CurrentImage) Is Nothing Then
         isCanvasInteractionAllowed = False
-    
-    'If an image has not yet been loaded, exit
-    ElseIf Not pdImages(g_CurrentImage).loadedSuccessfully Then
-        isCanvasInteractionAllowed = False
-    
-    'If none of the above are true, canvas interaction is allowed
     Else
-        isCanvasInteractionAllowed = True
-    
+        
+        'If an image has not yet been loaded, exit
+        If Not pdImages(g_CurrentImage).IsActive Then isCanvasInteractionAllowed = False
+        If Not pdImages(g_CurrentImage).loadedSuccessfully Then isCanvasInteractionAllowed = False
+        If pdImages(g_CurrentImage).getNumOfLayers = 0 Then isCanvasInteractionAllowed = False
+        
     End If
-
+    
 End Function

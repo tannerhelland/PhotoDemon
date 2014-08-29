@@ -222,42 +222,46 @@ End Sub
 'If the user declines to restore old AutoSave data, purge it from the system (to prevent it from showing up in future searches).
 Public Sub purgeOldAutosaveData()
     
-    Message "Purging old autosave data..."
+    If m_numOfXMLFound > 0 Then
     
-    'Create a dummy pdUndo object.  This object will help us generate relevant filenames using PD's standard Undo filename formula.
-    Dim tmpUndoEngine As pdUndo
-    Set tmpUndoEngine = New pdUndo
-    
-    Dim tmpFilename As String
-    Dim i As Long, j As Long
-    
-    'Loop through all XML files found.  We will not only be deleting the XML files themselves, but also any child
-    ' files they may reference
-    For i = 0 To m_numOfXMLFound - 1
-    
-        'Delete all possible child references for this image.
-        For j = 0 To m_XmlEntries(i).undoStackAbsoluteMaximum
+        Message "Purging old autosave data..."
+        
+        'Create a dummy pdUndo object.  This object will help us generate relevant filenames using PD's standard Undo filename formula.
+        Dim tmpUndoEngine As pdUndo
+        Set tmpUndoEngine = New pdUndo
+        
+        Dim tmpFilename As String
+        Dim i As Long, j As Long
+        
+        'Loop through all XML files found.  We will not only be deleting the XML files themselves, but also any child
+        ' files they may reference
+        For i = 0 To m_numOfXMLFound - 1
+        
+            'Delete all possible child references for this image.
+            For j = 0 To m_XmlEntries(i).undoStackAbsoluteMaximum
+                
+                tmpFilename = tmpUndoEngine.generateUndoFilenameExternal(m_XmlEntries(i).parentImageID, j, m_XmlEntries(i).originalSessionID)
             
-            tmpFilename = tmpUndoEngine.generateUndoFilenameExternal(m_XmlEntries(i).parentImageID, j, m_XmlEntries(i).originalSessionID)
+                'Check image data first...
+                If FileExist(tmpFilename) Then Kill tmpFilename
+            
+                '...followed by layer data
+                If FileExist(tmpFilename & ".layer") Then Kill tmpFilename & ".layer"
+            
+                '...followed by selection data
+                If FileExist(tmpFilename & ".selection") Then Kill tmpFilename & ".selection"
+            
+            Next j
+            
+            'Finally, kill the Autosave XML file and preview image associated with this entry
+            ' TODO: tie this into a new file management class, which will do things like check access before deleting, etc.
+            On Error Resume Next
+            If FileExist(m_XmlEntries(i).xmlPath) Then Kill m_XmlEntries(i).xmlPath
+            If FileExist(m_XmlEntries(i).xmlPath & ".asp") Then Kill m_XmlEntries(i).xmlPath & ".asp"
         
-            'Check image data first...
-            If FileExist(tmpFilename) Then Kill tmpFilename
+        Next i
         
-            '...followed by layer data
-            If FileExist(tmpFilename & ".layer") Then Kill tmpFilename & ".layer"
-        
-            '...followed by selection data
-            If FileExist(tmpFilename & ".selection") Then Kill tmpFilename & ".selection"
-        
-        Next j
-        
-        'Finally, kill the Autosave XML file and preview image associated with this entry
-        ' TODO: tie this into a new file management class, which will do things like check access before deleting, etc.
-        On Error Resume Next
-        If FileExist(m_XmlEntries(i).xmlPath) Then Kill m_XmlEntries(i).xmlPath
-        If FileExist(m_XmlEntries(i).xmlPath & ".asp") Then Kill m_XmlEntries(i).xmlPath & ".asp"
-    
-    Next i
+    End If
     
     'As a nice gesture, release any module-level data associated with the Autosave engine
     m_numOfXMLFound = 0
