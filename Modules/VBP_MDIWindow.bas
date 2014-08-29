@@ -226,7 +226,11 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
     Debug.Print "(Image #" & imageID & " received a Query_Unload trigger)"
     
     'Failsafe to make sure the image was properly initialized; if it was not, ignore this request entirely.
-    If pdImages(imageID) Is Nothing Then Exit Function
+    If imageID <= UBound(pdImages) Then
+        If pdImages(imageID) Is Nothing Then Exit Function
+    Else
+        Exit Function
+    End If
     
     'If the user wants to be prompted about unsaved images, do it now
     If g_ConfirmClosingUnsaved And pdImages(imageID).IsActive And (Not pdImages(imageID).forInternalUseOnly) Then

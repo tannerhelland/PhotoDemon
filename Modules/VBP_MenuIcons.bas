@@ -880,6 +880,8 @@ End Function
 'Load all relevant program cursors into memory
 Public Sub initAllCursors()
 
+    ReDim customCursorHandles(0) As Long
+
     'Previously, system cursors were cached here.  This is no longer needed per https://github.com/tannerhelland/PhotoDemon/issues/78
     ' I am leaving this sub in case I need to pre-load tool cursors in the future.
     
@@ -890,6 +892,8 @@ End Sub
 
 'Unload any custom cursors from memory
 Public Sub unloadAllCursors()
+    
+    If numOfCustomCursors = 0 Then Exit Sub
     
     Dim i As Long
     For i = 0 To numOfCustomCursors - 1

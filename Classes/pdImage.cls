@@ -769,7 +769,7 @@ Public Sub deactivateImage()
     originalFileName = ""
     originalFileNameAndExtension = ""
     locationOnDisk = ""
-        
+    
     'Mark this image as inactive
     IsActive = False
     

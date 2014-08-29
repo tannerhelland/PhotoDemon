@@ -280,7 +280,7 @@ Public Sub syncInterfaceToCurrentImage()
             End If
             
             'If a selection is active on this image, update the text boxes to match
-            If pdImages(g_CurrentImage).selectionActive Then
+            If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
                 metaToggle tSelection, True
                 metaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
                 syncTextToCurrentSelection g_CurrentImage
@@ -677,17 +677,21 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
                 Next i
                 
                 'Quick fix buttons are only relevant if the current image has some non-destructive events applied
-                If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState() Then
-                    
-                    For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
-                        toolbar_Tools.cmdQuickFix(i).Enabled = True
-                    Next i
-                    
-                Else
-                    
-                    For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
-                        toolbar_Tools.cmdQuickFix(i).Enabled = False
-                    Next i
+                If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
+                
+                    If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState() Then
+                        
+                        For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
+                            toolbar_Tools.cmdQuickFix(i).Enabled = True
+                        Next i
+                        
+                    Else
+                        
+                        For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
+                            toolbar_Tools.cmdQuickFix(i).Enabled = False
+                        Next i
+                        
+                    End If
                     
                 End If
                 
@@ -696,9 +700,15 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
                     .setNDFXControlState False
                     
                     'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
-                    For i = 0 To .sltQuickFix.Count - 1
-                        .sltQuickFix(i) = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXValue(i)
-                    Next i
+                    If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
+                        For i = 0 To .sltQuickFix.Count - 1
+                            .sltQuickFix(i) = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXValue(i)
+                        Next i
+                    Else
+                        For i = 0 To .sltQuickFix.Count - 1
+                            .sltQuickFix(i) = 0
+                        Next i
+                    End If
                     
                     .setNDFXControlState True
                 End With

@@ -718,7 +718,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     'Copy the bits from the FreeImage DIB to our DIB
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
     
-    Debug.Print fi_hDIB, fi_multi_hDIB
+    'Debug.Print fi_hDIB, fi_multi_hDIB
     
     '****************************************************************************
     ' Release all FreeImage-specific structures and links
