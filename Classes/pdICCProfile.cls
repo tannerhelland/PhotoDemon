@@ -56,7 +56,7 @@ Private iccDataPresent As Boolean
 Private iccData() As Byte
 
 'CopyMemory is used to shuttle around ICC data in memory
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef lpDestination As Any, ByRef lpSource As Any, ByVal Length As Long)
+'Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef lpDestination As Any, ByRef lpSource As Any, ByVal Length As Long)
 
 'Retrieve the source render intent from the contained ICC profile
 Public Function getSourceRenderIntent() As Long
@@ -70,7 +70,11 @@ Public Function getSourceRenderIntent() As Long
     'Render intent is stored in bytes 63-67 of the ICC profile, per the spec.  (http://www.color.org/specification/ICC1v43_2010-12.pdf)
     ' Technically only byte 67 matters, as render intent can only be a value of 0, 1, 2, or 3.
     Dim srcIntent As Long
-    srcIntent = iccData(67)
+    If UBound(iccData) >= 67 Then
+        srcIntent = iccData(67)
+    Else
+        srcIntent = 0
+    End If
     
     'Validate the intent; it must fall between 0 and 3.  If it does not, set it to 0 (Perceptual)
     If srcIntent < 0 Or srcIntent > 3 Then srcIntent = 0
