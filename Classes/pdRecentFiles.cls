@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'MRU (Most Recently Used) List Handler
 'Copyright ©2005-2014 by Tanner Helland
 'Created: 22/May/05
-'Last updated: 20/May/14
-'Last update: replace custom PNG export code with a newly created "QuickSaveDIBAsPNG" function in the Saving module.
+'Last updated: 29/August/14
+'Last update: convert path truncation code to Unicode variant
 '
 'This class is responsible for the creation and maintenance of the program's Recent Files list, which is commonly
 ' referred to as an MRU or "Most Recently Used" list.
@@ -49,7 +49,7 @@ Private MRUlist() As String
 Private numEntries As Long
 
 'These functions are used to shrink long path entries to a max number of characters
-Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExA" (ByVal pszOut As String, ByVal pszSrc As String, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
+Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
 Private Const MAX_PATH As Long = 260
 Private Const maxMRULength As Long = 64
@@ -355,7 +355,7 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, ByRef srcImage As pdImage)
     For i = 0 To numEntries - 1
     
         'This file already exists in the list!  Make a note of its location, then exit.
-        If MRUlist(i) = newFile Then
+        If StrComp(MRUlist(i), newFile, vbBinaryCompare) = 0 Then
             alreadyThere = True
             curLocation = i
             Exit For
@@ -538,7 +538,7 @@ Private Function getShortMRU(ByVal sPath As String) As String
     Dim buff As String
       
     buff = Space$(MAX_PATH)
-    ret = PathCompactPathEx(buff, sPath, maxMRULength + 1, 0&)
+    ret = PathCompactPathEx(StrPtr(buff), StrPtr(sPath), maxMRULength + 1, 0&)
    
     getShortMRU = TrimNull(buff)
    
