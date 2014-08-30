@@ -289,7 +289,7 @@ Public Function getDirectory(ByRef sString As String) As String
     
     For x = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
-            getDirectory = Left(sString, x)
+            getDirectory = Left$(sString, x)
             Exit Function
         End If
     Next x

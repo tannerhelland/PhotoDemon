@@ -1287,7 +1287,7 @@ Private Sub redrawLayerBox()
     scrollOffset = vsLayer.Value
     
     'Erase the current DIB
-    bufferDIB.createBlank m_BufferWidth, m_BufferHeight
+    bufferDIB.createBlank m_BufferWidth, m_BufferHeight, 24
     
     'If the image has one or more layers, render them to the list.
     If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
@@ -1330,7 +1330,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         Dim tmpLayerRef As pdLayer
         Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(blockIndex)
         
-        If Not tmpLayerRef Is Nothing Then
+        If Not (tmpLayerRef Is Nothing) Then
         
             'If this layer is the active layer, draw the background with the system's current selection color
             If tmpLayerRef.getLayerID = pdImages(g_CurrentImage).getActiveLayerID Then

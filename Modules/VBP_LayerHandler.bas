@@ -381,52 +381,59 @@ End Sub
 ' is disallowed.
 '
 'Note that the return value for this function is a little wonky.  This function will return the TARGET MERGE LAYER
-' INDEX if the function is true.  This value will always be >= 0.  If no valid layer can be found, -1 will be
+' INDEX if the function is successful.  This value will always be >= 0.  If no valid layer can be found, -1 will be
 ' returned (which obviously isn't a valid index, but IS true, so it's a little confusing - handle accordingly!)
-Public Function isLayerAllowedToMergeAdjacent(ByVal dLayerIndex As Long, ByVal moveDown As Boolean) As Long
+'
+'It should be obvious, but the parameter srcLayerIndex is the index of the layer the caller wants to merge.
+Public Function isLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal moveDown As Boolean) As Long
 
     Dim i As Long
     
-    'Check MERGE DOWN
-    If moveDown Then
+    'First, make sure the layer in question exists
+    If Not pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex) Is Nothing Then
     
-        'As an easy check, make sure this layer is visible, and not already at the bottom.
-        If (dLayerIndex <= 0) Or (Not pdImages(g_CurrentImage).getLayerByIndex(dLayerIndex).getLayerVisibility) Then
-            isLayerAllowedToMergeAdjacent = -1
-            Exit Function
-        End If
+        'Check MERGE DOWN
+        If moveDown Then
         
-        'Search for the nearest valid layer beneath this one.
-        For i = dLayerIndex - 1 To 0 Step -1
-            If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
-                isLayerAllowedToMergeAdjacent = i
+            'As an easy check, make sure this layer is visible, and not already at the bottom.
+            If (srcLayerIndex <= 0) Or (Not pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).getLayerVisibility) Then
+                isLayerAllowedToMergeAdjacent = -1
                 Exit Function
             End If
-        Next i
-        
-        'If we made it all the way here, no valid merge target was found.  Return failure (-1).
-        isLayerAllowedToMergeAdjacent = -1
-    
-    'Check MERGE UP
-    Else
-    
-        'As an easy check, make sure this layer isn't already at the top.
-        If (dLayerIndex >= pdImages(g_CurrentImage).getNumOfLayers - 1) Or (Not pdImages(g_CurrentImage).getLayerByIndex(dLayerIndex).getLayerVisibility) Then
+            
+            'Search for the nearest valid layer beneath this one.
+            For i = srcLayerIndex - 1 To 0 Step -1
+                If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
+                    isLayerAllowedToMergeAdjacent = i
+                    Exit Function
+                End If
+            Next i
+            
+            'If we made it all the way here, no valid merge target was found.  Return failure (-1).
             isLayerAllowedToMergeAdjacent = -1
-            Exit Function
-        End If
         
-        'Search for the nearest valid layer above this one.
-        For i = dLayerIndex + 1 To pdImages(g_CurrentImage).getNumOfLayers - 1
-            If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
-                isLayerAllowedToMergeAdjacent = i
+        'Check MERGE UP
+        Else
+        
+            'As an easy check, make sure this layer isn't already at the top.
+            If (srcLayerIndex >= pdImages(g_CurrentImage).getNumOfLayers - 1) Or (Not pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).getLayerVisibility) Then
+                isLayerAllowedToMergeAdjacent = -1
                 Exit Function
             End If
-        Next i
+            
+            'Search for the nearest valid layer above this one.
+            For i = srcLayerIndex + 1 To pdImages(g_CurrentImage).getNumOfLayers - 1
+                If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
+                    isLayerAllowedToMergeAdjacent = i
+                    Exit Function
+                End If
+            Next i
+            
+            'If we made it all the way here, no valid merge target was found.  Return failure (-1).
+            isLayerAllowedToMergeAdjacent = -1
         
-        'If we made it all the way here, no valid merge target was found.  Return failure (-1).
-        isLayerAllowedToMergeAdjacent = -1
-    
+        End If
+        
     End If
 
 End Function
