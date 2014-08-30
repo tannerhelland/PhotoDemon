@@ -1745,7 +1745,7 @@ End Sub
 
 'Dynamically render some icons onto the status bar.
 Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
-
+    
     'Start by clearing the status bar
     picStatusBar.Picture = LoadPicture("")
     

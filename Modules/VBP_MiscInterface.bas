@@ -168,7 +168,7 @@ Public Sub syncInterfaceToCurrentImage()
             g_OpenImageCount = 0
             
         End If
-        
+                
         'Erase any remaining viewport buffer
         'eraseViewportBuffers
     
@@ -243,7 +243,6 @@ Public Sub syncInterfaceToCurrentImage()
             
             End If
             
-            
             'Determine whether metadata is present, and dis/enable metadata menu items accordingly
             If Not pdImages(g_CurrentImage).imgMetadata Is Nothing Then
                 metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
@@ -266,7 +265,7 @@ Public Sub syncInterfaceToCurrentImage()
             Else
                 setNewTaskbarIcon origIcon32, FormMain.hWnd
             End If
-            
+                        
             'Check the image's color depth, and check/uncheck the matching Image Mode setting
             'If Not (pdImages(g_CurrentImage).getActiveLayer() Is Nothing) Then
             '    If pdImages(g_CurrentImage).getCompositeImageColorDepth() = 32 Then metaToggle tImgMode32bpp, True Else metaToggle tImgMode32bpp, False
@@ -288,7 +287,7 @@ Public Sub syncInterfaceToCurrentImage()
                 metaToggle tSelection, False
                 metaToggle tSelectionTransform, False
             End If
-                    
+            
             'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
             ' are visible, and other criteria.
             If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
@@ -422,7 +421,7 @@ Public Sub syncInterfaceToCurrentImage()
         'End If
         
     End If
-    
+        
     'Perform a special check for the image tabstrip.  Its appearance is contingent on a setting provided by the user, coupled
     ' with the number of presently open images.
     
@@ -453,7 +452,7 @@ Public Sub syncInterfaceToCurrentImage()
         End If
     
     End If
-    
+        
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
     ' the "Next/Previous" Window menu items.
     If g_OpenImageCount >= 2 Then
@@ -463,10 +462,10 @@ Public Sub syncInterfaceToCurrentImage()
         FormMain.MnuWindow(7).Enabled = False
         FormMain.MnuWindow(8).Enabled = False
     End If
-    
+        
     'Redraw the layer box
     toolbar_Layers.forceRedraw
-    
+        
 End Sub
 
 'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items

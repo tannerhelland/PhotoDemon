@@ -618,16 +618,20 @@ Public Sub resetMenuIcons()
             'Start by seeing if an image exists for this MRU entry
             tmpFilename = g_RecentFiles.getMRUThumbnailPath(i)
             
-            'If the file exists, add it to the MRU icon handler
-            If FileExist(tmpFilename) Then
-                    
-                iconLocation = iconLocation + 1
-                cMRUIcons.AddImageFromFile tmpFilename
-                cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 1
+            If Len(tmpFilename) > 0 Then
             
-            'If a thumbnail for this file does not exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
-            Else
-                If g_IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 1
+                'If the file exists, add it to the MRU icon handler
+                If FileExist(tmpFilename) Then
+                        
+                    iconLocation = iconLocation + 1
+                    cMRUIcons.AddImageFromFile tmpFilename
+                    cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 1
+                
+                'If a thumbnail for this file does not exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
+                Else
+                    If g_IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 1
+                End If
+                
             End If
             
         Next i
