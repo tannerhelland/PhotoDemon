@@ -135,12 +135,12 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 
-Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
-Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 
-Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
 
 'Used to measure the expected length of a string (single line only; line breaks do not work)
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
@@ -233,7 +233,15 @@ Public Sub fastRenderText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcStrin
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with a constraining rect
-Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcString As String)
+Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String)
+    
+    'IMPORTANT NOTE!  Per MSDN, the following caveat is made regarding the source string pointer:
+    '  "A pointer to the string that specifies the text to be drawn. If the nCount parameter is -1, the string must
+    '   be null-terminated.  If uFormat includes DT_MODIFYSTRING, the function could add up to four additional characters
+    '   to this string. The buffer containing the string should be large enough to accommodate these extra characters."
+    '
+    'Because the string may be modified to fit within the clipping boundaries, we need to extend the string array by four chars.
+    srcString = srcString & ChrW(0) & ChrW(0) & ChrW(0) & ChrW(0)
     
     Dim tmpRect As RECT
     tmpRect.Left = dstX
@@ -241,14 +249,18 @@ Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     tmpRect.Right = dstX + dstWidth
     tmpRect.Bottom = dstY + dstHeight
     
-    'If the text is going to extend past the target rect, draw it with ellipses
-    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING
+    'If the text is going to extend past the target rect, draw it with ellipses.  Note that we deliberately misrepresent the
+    ' actual length of the string here.  This is on purpose, to account for the DT_MODIFYSTRING flag above.  (If the string
+    ' is too long to fit inside the clipping rect, DrawText may choose to extend the character count of the string.  As such
+    ' we pass only the currently relevant length of the string, without our added null chars, and DrawText can use the extra
+    ' buffer space as necessary.)
+    DrawText curDC, StrPtr(srcString), Len(srcString) - 4, tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING
     
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with support for linebreaks
 Public Sub fastRenderMultilineText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcString As String)
-    
+        
     'Find the bounding rect of the text
     Dim tmpRect As RECT
     
@@ -363,13 +375,13 @@ End Sub
 Public Function getWidthOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-    getWidthOfString = txtSize.X
+    getWidthOfString = txtSize.x
 End Function
 
 Public Function getHeightOfString(ByVal srcString As String) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-    getHeightOfString = txtSize.Y
+    getHeightOfString = txtSize.y
 End Function
 
 'With the current font settings, find the height of a word-wrapped string.  This action REQUIRES that a DC be currently
