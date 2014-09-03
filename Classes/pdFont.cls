@@ -241,6 +241,8 @@ Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     '   to this string. The buffer containing the string should be large enough to accommodate these extra characters."
     '
     'Because the string may be modified to fit within the clipping boundaries, we need to extend the string array by four chars.
+    Dim srcStringLen As Long
+    srcStringLen = Len(srcString)
     srcString = srcString & ChrW(0) & ChrW(0) & ChrW(0) & ChrW(0)
     
     Dim tmpRect As RECT
@@ -254,7 +256,7 @@ Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     ' is too long to fit inside the clipping rect, DrawText may choose to extend the character count of the string.  As such
     ' we pass only the currently relevant length of the string, without our added null chars, and DrawText can use the extra
     ' buffer space as necessary.)
-    DrawText curDC, StrPtr(srcString), Len(srcString) - 4, tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING
+    DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING
     
 End Sub
 
