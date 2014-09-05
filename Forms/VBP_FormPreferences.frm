@@ -347,219 +347,6 @@ Begin VB.Form FormPreferences
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   6465
-      Index           =   1
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   431
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   28
-      Top             =   240
-      Width           =   8295
-      Begin VB.ComboBox cmbLargeImages 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   29
-         Top             =   3600
-         Width           =   7920
-      End
-      Begin PhotoDemon.smartCheckBox chkInitialColorDepth 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   94
-         Top             =   360
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "count unique colors in incoming images (to determine optimal color depth)"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkToneMapping 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   95
-         Top             =   1320
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkLoadingOrientation 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   128
-         Top             =   2280
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "obey auto-rotate instructions inside image files"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "orientation"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00505050&
-         Height          =   285
-         Index           =   3
-         Left            =   60
-         TabIndex        =   129
-         Top             =   1920
-         Width           =   1140
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "color depth"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00505050&
-         Height          =   285
-         Index           =   15
-         Left            =   60
-         TabIndex        =   49
-         Top             =   0
-         Width           =   1200
-      End
-      Begin VB.Label lblFreeImageWarning 
-         BackStyle       =   0  'Transparent
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H000000FF&
-         Height          =   375
-         Left            =   120
-         TabIndex        =   38
-         Top             =   6000
-         Width           =   8055
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "high-dynamic range (HDR) images"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00505050&
-         Height          =   285
-         Index           =   6
-         Left            =   60
-         TabIndex        =   37
-         Top             =   960
-         Width           =   3675
-      End
-      Begin VB.Label lblInterfaceTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "zoom"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00505050&
-         Height          =   285
-         Index           =   5
-         Left            =   60
-         TabIndex        =   36
-         Top             =   2880
-         Width           =   585
-      End
-      Begin VB.Label lblImgOpen 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "when an image is first loaded, set its viewport zoom to: "
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Left            =   240
-         TabIndex        =   30
-         Top             =   3240
-         Width           =   4845
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
       Height          =   6480
       Index           =   4
       Left            =   3000
@@ -582,13 +369,13 @@ Begin VB.Form FormPreferences
          EndProperty
          ForeColor       =   &H00800000&
          Height          =   360
-         Index           =   2
+         Index           =   0
          ItemData        =   "VBP_FormPreferences.frx":9690
          Left            =   180
          List            =   "VBP_FormPreferences.frx":9692
          Style           =   2  'Dropdown List
-         TabIndex        =   125
-         Top             =   3690
+         TabIndex        =   130
+         Top             =   720
          Width           =   7920
       End
       Begin VB.ComboBox cboPerformance 
@@ -608,8 +395,8 @@ Begin VB.Form FormPreferences
          Left            =   180
          List            =   "VBP_FormPreferences.frx":9696
          Style           =   2  'Dropdown List
-         TabIndex        =   117
-         Top             =   2250
+         TabIndex        =   125
+         Top             =   1980
          Width           =   7920
       End
       Begin VB.ComboBox cboPerformance 
@@ -624,20 +411,41 @@ Begin VB.Form FormPreferences
          EndProperty
          ForeColor       =   &H00800000&
          Height          =   360
-         Index           =   0
+         Index           =   2
          ItemData        =   "VBP_FormPreferences.frx":9698
          Left            =   180
          List            =   "VBP_FormPreferences.frx":969A
          Style           =   2  'Dropdown List
+         TabIndex        =   117
+         Top             =   3240
+         Width           =   7920
+      End
+      Begin VB.ComboBox cboPerformance 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Index           =   3
+         ItemData        =   "VBP_FormPreferences.frx":969C
+         Left            =   180
+         List            =   "VBP_FormPreferences.frx":969E
+         Style           =   2  'Dropdown List
          TabIndex        =   115
-         Top             =   810
+         Top             =   4470
          Width           =   7920
       End
       Begin PhotoDemon.sliderTextCombo sltUndoCompression 
          Height          =   495
          Left            =   240
          TabIndex        =   124
-         Top             =   5160
+         Top             =   5730
          Width           =   7980
          _ExtentX        =   14076
          _ExtentY        =   873
@@ -653,6 +461,48 @@ Begin VB.Form FormPreferences
          Max             =   9
          SliderTrackStyle=   1
          NotchPosition   =   2
+      End
+      Begin VB.Label lblPerformanceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "color management"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   4
+         Left            =   0
+         TabIndex        =   132
+         Top             =   0
+         Width           =   1980
+      End
+      Begin VB.Label lblPerformanceSub 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "when calculating color values:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Index           =   4
+         Left            =   180
+         TabIndex        =   131
+         Top             =   390
+         Width           =   2580
       End
       Begin VB.Label lblPerformanceSub 
          AutoSize        =   -1  'True
@@ -672,7 +522,7 @@ Begin VB.Form FormPreferences
          Index           =   3
          Left            =   180
          TabIndex        =   127
-         Top             =   3315
+         Top             =   1650
          Width           =   3150
       End
       Begin VB.Label lblPerformanceTitle 
@@ -693,7 +543,7 @@ Begin VB.Form FormPreferences
          Index           =   3
          Left            =   0
          TabIndex        =   126
-         Top             =   2880
+         Top             =   1260
          Width           =   900
       End
       Begin VB.Label lblPNGCompression 
@@ -714,7 +564,7 @@ Begin VB.Form FormPreferences
          Index           =   3
          Left            =   360
          TabIndex        =   123
-         Top             =   5640
+         Top             =   6210
          Width           =   1785
       End
       Begin VB.Label lblPNGCompression 
@@ -736,7 +586,7 @@ Begin VB.Form FormPreferences
          Index           =   2
          Left            =   4980
          TabIndex        =   122
-         Top             =   5640
+         Top             =   6210
          Width           =   2295
       End
       Begin VB.Label lblPerformanceSub 
@@ -757,7 +607,7 @@ Begin VB.Form FormPreferences
          Index           =   2
          Left            =   240
          TabIndex        =   121
-         Top             =   4800
+         Top             =   5370
          Width           =   4110
       End
       Begin VB.Label lblPerformanceTitle 
@@ -778,7 +628,7 @@ Begin VB.Form FormPreferences
          Index           =   2
          Left            =   0
          TabIndex        =   120
-         Top             =   4320
+         Top             =   4980
          Width           =   1110
       End
       Begin VB.Label lblPerformanceTitle 
@@ -799,7 +649,7 @@ Begin VB.Form FormPreferences
          Index           =   1
          Left            =   0
          TabIndex        =   119
-         Top             =   1440
+         Top             =   2520
          Width           =   1170
       End
       Begin VB.Label lblPerformanceSub 
@@ -820,7 +670,7 @@ Begin VB.Form FormPreferences
          Index           =   1
          Left            =   180
          TabIndex        =   118
-         Top             =   1875
+         Top             =   2910
          Width           =   4530
       End
       Begin VB.Label lblPerformanceSub 
@@ -841,7 +691,7 @@ Begin VB.Form FormPreferences
          Index           =   0
          Left            =   180
          TabIndex        =   116
-         Top             =   435
+         Top             =   4140
          Width           =   2985
       End
       Begin VB.Label lblPerformanceTitle 
@@ -862,7 +712,7 @@ Begin VB.Form FormPreferences
          Index           =   0
          Left            =   0
          TabIndex        =   12
-         Top             =   0
+         Top             =   3750
          Width           =   915
       End
    End
@@ -901,7 +751,7 @@ Begin VB.Form FormPreferences
          EndProperty
          BackColor       =   0
          Caption         =   ""
-         PictureNormal   =   "VBP_FormPreferences.frx":969C
+         PictureNormal   =   "VBP_FormPreferences.frx":96A0
          PictureEffectOnOver=   0
          PictureEffectOnDown=   0
          CaptionEffects  =   0
@@ -2608,6 +2458,219 @@ Begin VB.Form FormPreferences
          Width           =   3285
       End
    End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6465
+      Index           =   1
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   431
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   28
+      Top             =   240
+      Width           =   8295
+      Begin VB.ComboBox cmbLargeImages 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   240
+         Style           =   2  'Dropdown List
+         TabIndex        =   29
+         Top             =   3600
+         Width           =   7920
+      End
+      Begin PhotoDemon.smartCheckBox chkInitialColorDepth 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   94
+         Top             =   360
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "count unique colors in incoming images (to determine optimal color depth)"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkToneMapping 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   95
+         Top             =   1320
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkLoadingOrientation 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   128
+         Top             =   2280
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "obey auto-rotate instructions inside image files"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "orientation"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   3
+         Left            =   60
+         TabIndex        =   129
+         Top             =   1920
+         Width           =   1140
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "color depth"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   15
+         Left            =   60
+         TabIndex        =   49
+         Top             =   0
+         Width           =   1200
+      End
+      Begin VB.Label lblFreeImageWarning 
+         BackStyle       =   0  'Transparent
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H000000FF&
+         Height          =   375
+         Left            =   120
+         TabIndex        =   38
+         Top             =   6000
+         Width           =   8055
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "high-dynamic range (HDR) images"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   6
+         Left            =   60
+         TabIndex        =   37
+         Top             =   960
+         Width           =   3675
+      End
+      Begin VB.Label lblInterfaceTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "zoom"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00505050&
+         Height          =   285
+         Index           =   5
+         Left            =   60
+         TabIndex        =   36
+         Top             =   2880
+         Width           =   585
+      End
+      Begin VB.Label lblImgOpen 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "when an image is first loaded, set its viewport zoom to: "
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   240
+         Left            =   240
+         TabIndex        =   30
+         Top             =   3240
+         Width           =   4845
+      End
+   End
    Begin VB.Line lneVertical 
       BorderColor     =   &H8000000D&
       X1              =   184
@@ -3045,17 +3108,21 @@ Private Sub CmdOK_Click()
     
     'START Performance preferences
     
-        'START/END viewport render performance
-            g_UserPreferences.SetPref_Long "Performance", "Viewport Render Performance", cboPerformance(0).ListIndex
-            g_ViewportPerformance = cboPerformance(0).ListIndex
-            
-        'START/END thumbnail render performance
-            g_UserPreferences.SetPref_Long "Performance", "Thumbnail Performance", cboPerformance(1).ListIndex
-            g_ThumbnailPerformance = cboPerformance(1).ListIndex
-            
+        'START/END color management performance
+            g_UserPreferences.SetPref_Long "Performance", "Color Performance", cboPerformance(0).ListIndex
+            g_ColorPerformance = cboPerformance(0).ListIndex
+    
         'START/END interface decoration performance
-            g_UserPreferences.SetPref_Long "Performance", "Interface Decoration Performance", cboPerformance(2).ListIndex
-            g_InterfacePerformance = cboPerformance(2).ListIndex
+            g_UserPreferences.SetPref_Long "Performance", "Interface Decoration Performance", cboPerformance(1).ListIndex
+            g_InterfacePerformance = cboPerformance(1).ListIndex
+        
+        'START/END thumbnail render performance
+            g_UserPreferences.SetPref_Long "Performance", "Thumbnail Performance", cboPerformance(2).ListIndex
+            g_ThumbnailPerformance = cboPerformance(2).ListIndex
+        
+        'START/END viewport render performance
+            g_UserPreferences.SetPref_Long "Performance", "Viewport Render Performance", cboPerformance(3).ListIndex
+            g_ViewportPerformance = cboPerformance(3).ListIndex
             
         'START/END undo/redo data compression
             g_UserPreferences.SetPref_Long "Performance", "Undo Compression", sltUndoCompression.Value
@@ -3425,35 +3492,35 @@ Private Sub LoadAllPreferences()
             'chkSelectionClearCrop.ToolTipText = g_Language.TranslateMessage("When the ""Crop to Selection"" command is used, the resulting image will always contain a selection the same size as the full image.  There is generally no need to retain this, so PhotoDemon can automatically clear it for you.")
         'END Clear selections after "Crop to Selection"
         
-        'START Viewport rendering performance
-            cboPerformance(0).Clear
-            cboPerformance(0).AddItem " maximize quality", 0
-            cboPerformance(0).AddItem " balance performance and quality", 1
-            cboPerformance(0).AddItem " maximize performance", 2
-            cboPerformance(0).ListIndex = g_ViewportPerformance
-            
-            cboPerformance(0).ToolTipText = g_Language.TranslateMessage("Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.")
-        'END Viewport rendering performance
+        'We can shortcut a bit of initialization here by populating all quality drop-downs with the same values.
+        Dim i As Long
         
-        'START Thumbnail rendering performance
-            cboPerformance(1).Clear
-            cboPerformance(1).AddItem " maximize quality", 0
-            cboPerformance(1).AddItem " balance performance and quality", 1
-            cboPerformance(1).AddItem " maximize performance", 2
-            cboPerformance(1).ListIndex = g_ThumbnailPerformance
-            
-            cboPerformance(1).ToolTipText = g_Language.TranslateMessage("PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance.")
-        'END Thumbnail rendering performance
+        For i = 0 To cboPerformance.UBound
+            cboPerformance(i).Clear
+            cboPerformance(i).AddItem " maximize quality", 0
+            cboPerformance(i).AddItem " balance performance and quality", 1
+            cboPerformance(i).AddItem " maximize performance", 2
+        Next i
+        
+        'START Color management accuracy v performance
+            cboPerformance(0).ListIndex = g_ColorPerformance
+            cboPerformance(0).ToolTipText = g_Language.TranslateMessage("Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.")
+        'END Color management accuracy v performance
         
         'START Interface decorations performance
-            cboPerformance(2).Clear
-            cboPerformance(2).AddItem " maximize quality", 0
-            cboPerformance(2).AddItem " balance performance and quality", 1
-            cboPerformance(2).AddItem " maximize performance", 2
-            cboPerformance(2).ListIndex = g_InterfacePerformance
-            
-            cboPerformance(2).ToolTipText = g_Language.TranslateMessage("Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.")
+            cboPerformance(1).ListIndex = g_InterfacePerformance
+            cboPerformance(1).ToolTipText = g_Language.TranslateMessage("Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.")
         'END Interface decorations performance
+        
+        'START Thumbnail rendering performance
+            cboPerformance(2).ListIndex = g_ThumbnailPerformance
+            cboPerformance(2).ToolTipText = g_Language.TranslateMessage("PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance.")
+        'END Thumbnail rendering performance
+        
+        'START Viewport rendering performance
+            cboPerformance(3).ListIndex = g_ViewportPerformance
+            cboPerformance(3).ToolTipText = g_Language.TranslateMessage("Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.")
+        'END Viewport rendering performance
         
         'START Undo data compression
             sltUndoCompression.ToolTipText = g_Language.TranslateMessage("By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but increases disk space usage.  Compressing undo data will reduce disk space usage, at some cost to performance.  (Note that undo data is erased when PhotoDemon exits, so this setting only affects disk space usage while PhotoDemon is running.)")
@@ -3482,7 +3549,6 @@ Private Sub LoadAllPreferences()
             
             Dim monitorEntry As String
             
-            Dim i As Long
             For i = 1 To g_cMonitors.Monitors.Count
                 monitorEntry = ""
                 
