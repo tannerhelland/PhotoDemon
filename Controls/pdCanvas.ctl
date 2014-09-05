@@ -1780,7 +1780,9 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         lineStatusBar(1).x2 = lineStatusBar(1).x1
         
         'After the "image size" panel and separator comes mouse coordinates.  The basic steps from above are repeated.
-        sbIconCoords.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(1).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconCoords.getDIBWidth), fixDPI(sbIconCoords.getDIBHeight)
+        If Not sbIconCoords Is Nothing Then
+            sbIconCoords.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(1).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconCoords.getDIBWidth), fixDPI(sbIconCoords.getDIBHeight)
+        End If
         lblCoordinates.Left = lineStatusBar(1).x1 + fixDPI(14) + fixDPI(16)
         
         If (Not lineStatusBar(2).Visible) Then lineStatusBar(2).Visible = True
