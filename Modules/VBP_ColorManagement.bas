@@ -3,11 +3,8 @@ Attribute VB_Name = "Color_Management"
 'PhotoDemon ICC (International Color Consortium) Profile Support Module
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/November/13
-'Last updated: 05/November/13
-'Last update: moved some code elements out of the pdICCProfile class and into this standalone support module.
-'              Because PD intends to color manage multiple parts of the interface (not just raw image data, but
-'              also picture boxes and screens being rendered to), it proved useful to build some standardized
-'              ICC-related functions that can be reused under various circumstances.
+'Last updated: 05/September/14
+'Last update: tie the multiprofile transform quality to the new Color Management Performance preference
 '
 'ICC profiles can be embedded in certain types of images (JPEG, PNG, and TIFF at the time of this writing).  These
 ' profiles can be used to convert an image to its true color space, taking into account any pecularities of the
@@ -87,7 +84,15 @@ End Enum
 
 'Windows provides different qualities for profile transformations (proof, normal, best).  As we only use two-component
 ' transforms, performance isn't a crucial issue, so we use BEST by default.
-Private Const BEST_MODE As Long = 3&
+Private Enum CMM_TRANSFORM_QUALITY
+    PROOF_MODE = 1&
+    NORMAL_MODE = 2&
+    BEST_MODE = 3&
+End Enum
+
+#If False Then
+    Const PROOF_MODE = 1&, NORMAL_MODE = 2&, BEST_MODE = 3&
+#End If
 
 'Because we only do ICC-to-ICC transforms, Windows can be instructed to use a 3rd-party CMS instead of its own
 ' internal one.  We don't care if it does this, and we tell it as much.
@@ -347,8 +352,11 @@ Public Function requestProfileTransform(ByVal srcProfile As Long, ByVal dstProfi
     'The destination
     intentMatrix(1) = preferredIntent
     
-    'We can now use our profile matrix to generate a transformation object, which we will use on the DIB itself
-    requestProfileTransform = CreateMultiProfileTransform(ByVal VarPtr(profileMatrix(0)), 2&, ByVal VarPtr(intentMatrix(0)), 2&, BEST_MODE, INDEX_DONT_CARE)
+    'We can now use our profile matrix to generate a transformation object, which we will use on the DIB itself.
+    ' Note: the quality of the transform will affect the speed of the resulting transformation.  Windows supports 3 quality levels
+    '       on the range [1, 3].  We map our internal g_ColorPerformance preference on the range [0, 2] to that range, and use it
+    '       to transparently adjust the quality of the transform.
+    requestProfileTransform = CreateMultiProfileTransform(ByVal VarPtr(profileMatrix(0)), 2&, ByVal VarPtr(intentMatrix(0)), 2&, (2 - g_ColorPerformance) + 1, INDEX_DONT_CARE)
     
     If requestProfileTransform = 0 Then
         Debug.Print "Requested color transformation could not be generated (Error #" & Err.LastDllError & ")."
