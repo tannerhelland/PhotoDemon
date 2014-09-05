@@ -55,9 +55,6 @@ Private iccDataPresent As Boolean
 'The actual ICC Profile is stored in this array
 Private iccData() As Byte
 
-'CopyMemory is used to shuttle around ICC data in memory
-'Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef lpDestination As Any, ByRef lpSource As Any, ByVal Length As Long)
-
 'Retrieve the source render intent from the contained ICC profile
 Public Function getSourceRenderIntent() As Long
 
@@ -136,41 +133,53 @@ Public Function applyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
         ' returned handle before continuing.
         If dstProfile <> 0 Then
             
-            'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
-            ' the DIB's RGB values.
-            Dim iccTransformation As Long
-            iccTransformation = requestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, getSourceRenderIntent)
+            'Before proceeding, check to see if the source and destination profiles are identical.  Some dSLRs will embed
+            ' sRGB transforms in their JPEGs, and applying another sRGB transform atop them is a waste of time and resources.
+            ' Thanks to VB developer LaVolpe for this suggestion.
+            If Not Color_Management.areColorProfilesEqual(srcProfile, dstProfile) Then
             
-            'If the transformation was generated successfully, carry on!
-            If iccTransformation <> 0 Then
+                'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
+                ' the DIB's RGB values.
+                Dim iccTransformation As Long
+                iccTransformation = requestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, getSourceRenderIntent)
                 
-                'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
-                ' the API with direct access to our DIB bits.
-                
-                'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
-                ' color depth.
-                Dim transformCheck As Boolean
-                transformCheck = applyColorTransformToDIB(iccTransformation, copyOfThisInstance)
-                
-                'If the transform was successful, pat ourselves on the back.
-                If transformCheck Then
-                
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "ICC profile transformation successful.  Image is now sRGB."
-                    #End If
+                'If the transformation was generated successfully, carry on!
+                If iccTransformation <> 0 Then
                     
-                    iccProfileHasBeenApplied = True
-                    applyICCtoSelf = True
+                    'The only transformation function relevant to PD involves the use of BitmapBits, so we will provide
+                    ' the API with direct access to our DIB bits.
+                    
+                    'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
+                    ' color depth.
+                    Dim transformCheck As Boolean
+                    transformCheck = applyColorTransformToDIB(iccTransformation, copyOfThisInstance)
+                    
+                    'If the transform was successful, pat ourselves on the back.
+                    If transformCheck Then
+                    
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "ICC profile transformation successful.  Image is now sRGB."
+                        #End If
+                        
+                        iccProfileHasBeenApplied = True
+                        applyICCtoSelf = True
+                    Else
+                        Message "ICC profile could not be applied.  Image remains in original profile."
+                    End If
+                    
+                    'Release our transformation
+                    releaseColorTransform iccTransformation
+                                    
                 Else
-                    Message "ICC profile could not be applied.  Image remains in original profile."
+                    Message "Both ICC profiles loaded successfully, but transformation could not be created."
+                    applyICCtoSelf = False
                 End If
                 
-                'Release our transformation
-                releaseColorTransform iccTransformation
-                                
             Else
-                Message "Both ICC profiles loaded successfully, but transformation could not be created."
-                applyICCtoSelf = False
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "ICC transform is not required, because source and destination profiles are identical."
+                #End If
+                applyICCtoSelf = True
             End If
         
             releaseICCProfile dstProfile
@@ -264,3 +273,4 @@ Private Sub Class_Initialize()
     ReDim iccData(0) As Byte
     
 End Sub
+

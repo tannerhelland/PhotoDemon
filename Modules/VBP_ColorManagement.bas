@@ -116,6 +116,7 @@ Private Declare Function CreateMultiProfileTransform Lib "mscms" (ByRef pProfile
 Private Declare Function DeleteColorTransform Lib "mscms" (ByVal hTransform As Long) As Long
 Private Declare Function TranslateBitmapBits Lib "mscms" (ByVal hTransform As Long, ByVal srcBitsPointer As Long, ByVal pBmInput As Long, ByVal dWidth As Long, ByVal dHeight As Long, ByVal dwInputStride As Long, ByVal dstBitsPointer As Long, ByVal pBmOutput As Long, ByVal dwOutputStride As Long, ByRef pfnCallback As Long, ByVal ulCallbackData As Long) As Long
 Private Declare Function GetColorDirectory Lib "mscms" Alias "GetColorDirectoryA" (ByVal pMachineName As Long, ByVal pBuffer As Long, ByRef pdwSize As Long) As Long
+Private Declare Function GetColorProfileHeader Lib "mscms" (ByVal pProfileHandle As Long, ByVal pHeaderBufferPointer As Long) As Long
 
 'Windows handles color management on a per-DC basis.  Use SetICMMode and these constants to activate/deactivate or query a DC.
 Private Declare Function SetICMMode Lib "gdi32" (ByVal targetDC As Long, ByVal iEnableICM As ICM_Mode) As Long
@@ -138,12 +139,20 @@ Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 
 'When PD is first loaded, the system's current color management file will be cached in this variable
 Private currentSystemColorProfile As String
+Private m_isSystemColorProfileSRGB As Boolean
+
 Private Const MAX_PATH As Long = 260
 
 'Shorthand way to activate color management for anything with a DC
 Public Sub turnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHWnd As Long)
-    assignDefaultColorProfileToObject targetHWnd, targetDC
-    turnOnColorManagementForDC targetDC
+    
+    'Perform a quick check to see if we the target DC is requesting sRGB management.  If it is, we can skip
+    ' color management entirely, because PD stores all RGB data in sRGB anyway.
+    If Not (g_UseSystemColorProfile And m_isSystemColorProfileSRGB) Then
+        assignDefaultColorProfileToObject targetHWnd, targetDC
+        turnOnColorManagementForDC targetDC
+    End If
+    
 End Sub
 
 'Retrieve the current system color profile directory
@@ -202,7 +211,40 @@ End Sub
 
 'When PD is first loaded, this function will be called, which caches the current color management file in use by the system
 Public Sub cacheCurrentSystemColorProfile()
+    
     currentSystemColorProfile = getDefaultICCProfile()
+    
+    'As part of this step, we will also temporarily load the default system ICC profile, and check to see if it's sRGB.
+    ' If it is, we can skip color management entirely, as all images are processed in sRGB.
+    
+    'Obtain a handle to the default system profile
+    Dim sysProfileHandle As Long
+    sysProfileHandle = loadICCProfileFromFile(currentSystemColorProfile)
+    
+    If sysProfileHandle <> 0 Then
+    
+        'Obtain a handle to a stock sRGB profile.
+        Dim srgbProfileHandle As Long
+        srgbProfileHandle = loadStandardICCProfile(LCS_sRGB)
+        
+        'Compare the two profiles
+        If areColorProfilesEqual(sysProfileHandle, srgbProfileHandle) Then
+            m_isSystemColorProfileSRGB = True
+        Else
+            m_isSystemColorProfileSRGB = False
+        End If
+        
+        'Release our profile handles
+        releaseICCProfile sysProfileHandle
+        releaseICCProfile srgbProfileHandle
+        
+    Else
+        
+        Debug.Print "System ICC profile couldn't be loaded.  Default color management is disabled for this session."
+        m_isSystemColorProfileSRGB = True
+        
+    End If
+    
 End Sub
 
 'Returns the path to the default color mangement profile file (ICC or WCS) currently in use by the system.
@@ -266,6 +308,67 @@ Public Function loadICCProfileFromMemory(ByVal profileArrayPointer As Long, ByVa
             Debug.Print "Color profile loaded succesfully, but XML failed to validate."
             CloseColorProfile loadICCProfileFromMemory
             loadICCProfileFromMemory = 0
+        End If
+        
+    Else
+        Debug.Print "ICC profile failed to load (OpenColorProfile failed with error #" & Err.LastDllError & ")."
+    End If
+
+End Function
+
+'Given a valid ICC profile path, convert it to an internal Windows color profile handle, validate it,
+' and return the result.  Returns a non-zero handle if successful.
+Public Function loadICCProfileFromFile(ByVal profilePath As String) As Long
+
+    'Start by loading the specified path into a byte array
+    Dim tmpProfileArray() As Byte
+    
+    If FileExist(profilePath) Then
+    
+        Dim fileNum As Integer
+        fileNum = FreeFile
+        
+        'Open the file
+        Open profilePath For Binary Access Read As #fileNum
+        
+            'Dump the unmodified file contents into a byte array
+            If LOF(fileNum) > 0 Then
+            
+                ReDim tmpProfileArray(0 To LOF(fileNum) - 1)
+                Get #fileNum, , tmpProfileArray
+                
+            Else
+            
+                Close #fileNum
+                loadICCProfileFromFile = 0
+                Exit Function
+            
+            End If
+            
+        Close #fileNum
+    
+    Else
+        loadICCProfileFromFile = 0
+        Exit Function
+    End If
+
+    'Next, prepare an ICC_PROFILE header to use with the color management APIs
+    Dim srcProfileHeader As ICC_PROFILE
+    srcProfileHeader.dwType = PROFILE_MEMBUFFER
+    srcProfileHeader.pProfileData = VarPtr(tmpProfileArray(0))
+    srcProfileHeader.cbDataSize = UBound(tmpProfileArray) + 1
+    
+    'Use that header to open a reference to an internal Windows color profile (which is required by all ICC-related API)
+    loadICCProfileFromFile = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
+    
+    If loadICCProfileFromFile <> 0 Then
+    
+        'Validate the profile's XML as well; it is possible for a profile to be ill-formed, which means we cannot use it.
+        Dim tmpCheck As Long
+        If IsColorProfileValid(loadICCProfileFromFile, tmpCheck) = 0 Then
+            Debug.Print "Color profile loaded succesfully, but XML failed to validate."
+            CloseColorProfile loadICCProfileFromFile
+            loadICCProfileFromFile = 0
         End If
         
     Else
@@ -547,3 +650,29 @@ Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False)
     
 End Sub
 
+'Compare two ICC profiles to determine equality.  Thank you to VB developer LaVolpe for this suggestion and original implementation.
+Public Function areColorProfilesEqual(ByVal profileHandle1 As Long, ByVal profileHandle2 As Long) As Boolean
+
+    Dim profilesEqual As Boolean
+    profilesEqual = True
+
+    'ICC profiles headers are fixed-length (128 bytes)
+    Dim firstHeader(0 To 127) As Byte, secondHeader(0 To 127) As Byte
+    
+    If GetColorProfileHeader(profileHandle1, VarPtr(firstHeader(0))) <> 0 Then
+        If GetColorProfileHeader(profileHandle2, VarPtr(secondHeader(0))) <> 0 Then
+                    
+            Dim x As Long
+            For x = 1 To 127
+                If firstHeader(x) <> secondHeader(x) Then
+                    profilesEqual = False
+                    Exit For
+                End If
+            Next x
+            
+        End If
+    End If
+    
+    areColorProfilesEqual = profilesEqual
+    
+End Function
