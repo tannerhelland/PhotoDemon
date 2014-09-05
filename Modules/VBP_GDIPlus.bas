@@ -1060,7 +1060,11 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     If (iPixelFormat = PixelFormat32bppCMYK) Then isCMYK = True
     
     'Create a blank PD-compatible DIB
-    dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 32
+    If isCMYK Then
+        dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 24
+    Else
+        dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 32
+    End If
     
     Dim copyBitmapData As BitmapData
     Dim tmpRect As RECTL
@@ -1137,7 +1141,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             
                 'The transform was successful, and the destination DIB is ready to go!
                 dstDIB.ICCProfile.markSuccessfulProfileApplication
-                
+                                
             'Something went horribly wrong.  Use GDI+ to apply a generic CMYK -> RGB transform.
             Else
             
