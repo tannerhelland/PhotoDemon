@@ -128,8 +128,10 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     
     'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
-    assignDefaultColorProfileToObject dstCanvas.hWnd, dstCanvas.hDC
-    turnOnColorManagementForDC dstCanvas.hDC
+    If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
+        assignDefaultColorProfileToObject dstCanvas.hWnd, dstCanvas.hDC
+        turnOnColorManagementForDC dstCanvas.hDC
+    End If
     
     'Finally, flip the front buffer to the screen
     'BitBlt formToBuffer.hDC, 0, 26, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy

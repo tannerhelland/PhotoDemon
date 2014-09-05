@@ -139,7 +139,7 @@ Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 
 'When PD is first loaded, the system's current color management file will be cached in this variable
 Private currentSystemColorProfile As String
-Private m_isSystemColorProfileSRGB As Boolean
+Public g_IsSystemColorProfileSRGB As Boolean
 
 Private Const MAX_PATH As Long = 260
 
@@ -148,7 +148,7 @@ Public Sub turnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHWnd
     
     'Perform a quick check to see if we the target DC is requesting sRGB management.  If it is, we can skip
     ' color management entirely, because PD stores all RGB data in sRGB anyway.
-    If Not (g_UseSystemColorProfile And m_isSystemColorProfileSRGB) Then
+    If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
         assignDefaultColorProfileToObject targetHWnd, targetDC
         turnOnColorManagementForDC targetDC
     End If
@@ -229,9 +229,9 @@ Public Sub cacheCurrentSystemColorProfile()
         
         'Compare the two profiles
         If areColorProfilesEqual(sysProfileHandle, srgbProfileHandle) Then
-            m_isSystemColorProfileSRGB = True
+            g_IsSystemColorProfileSRGB = True
         Else
-            m_isSystemColorProfileSRGB = False
+            g_IsSystemColorProfileSRGB = False
         End If
         
         'Release our profile handles
@@ -241,7 +241,7 @@ Public Sub cacheCurrentSystemColorProfile()
     Else
         
         Debug.Print "System ICC profile couldn't be loaded.  Default color management is disabled for this session."
-        m_isSystemColorProfileSRGB = True
+        g_IsSystemColorProfileSRGB = True
         
     End If
     
