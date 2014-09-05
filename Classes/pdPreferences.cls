@@ -278,9 +278,10 @@ Public Sub loadUserSettings()
     
     'For performance reasons, cache any performance-related settings.  (This is much faster than reading the preferences from file
     ' every time they're needed.)
-    g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
-    g_ThumbnailPerformance = g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
+    g_ColorPerformance = g_UserPreferences.GetPref_Long("Performance", "ColorPerformance", PD_PERF_BALANCED)
     g_InterfacePerformance = g_UserPreferences.GetPref_Long("Performance", "InterfaceDecorationPerformance", PD_PERF_BALANCED)
+    g_ThumbnailPerformance = g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
+    g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
     g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 0)
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
@@ -425,9 +426,10 @@ Private Sub createNewPreferencesFile()
     
     'Write out the "performance" block of preferences:
     xmlEngine.writeTag "Performance", "", True
-        xmlEngine.writeTag "ViewportRenderPerformance", "1"
-        xmlEngine.writeTag "ThumbnailPerformance", "1"
+        xmlEngine.writeTag "ColorPerformance", "1"
         xmlEngine.writeTag "InterfaceDecorationPerformance", "1"
+        xmlEngine.writeTag "ThumbnailPerformance", "1"
+        xmlEngine.writeTag "ViewportRenderPerformance", "1"
         xmlEngine.writeTag "UndoCompression", "0"
     xmlEngine.closeTag "Performance"
     xmlEngine.writeBlankLine
