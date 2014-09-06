@@ -1777,13 +1777,13 @@ Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolea
                     tmpAlphaModifier = tmpAlpha / 255
                     
                     'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                    r = r * tmpAlphaModifier
-                    g = g * tmpAlphaModifier
-                    b = b * tmpAlphaModifier
+                    r = CByte(r * tmpAlphaModifier)
+                    g = CByte(g * tmpAlphaModifier)
+                    b = CByte(b * tmpAlphaModifier)
                     
-                    iData(QuickX + 2, y) = CByte(r)
-                    iData(QuickX + 1, y) = CByte(g)
-                    iData(QuickX, y) = CByte(b)
+                    iData(QuickX + 2, y) = r
+                    iData(QuickX + 1, y) = g
+                    iData(QuickX, y) = b
                     
                 End If
             
@@ -1802,17 +1802,17 @@ Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolea
                 tmpAlphaModifier = 255 / tmpAlpha
                 
                 'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                r = r * tmpAlphaModifier
-                g = g * tmpAlphaModifier
-                b = b * tmpAlphaModifier
+                r = CByte(r * tmpAlphaModifier)
+                g = CByte(g * tmpAlphaModifier)
+                b = CByte(b * tmpAlphaModifier)
                 
                 If r > 255 Then r = 255
                 If g > 255 Then g = 255
                 If b > 255 Then b = 255
                                 
-                iData(QuickX + 2, y) = CByte(r)
-                iData(QuickX + 1, y) = CByte(g)
-                iData(QuickX, y) = CByte(b)
+                iData(QuickX + 2, y) = r
+                iData(QuickX + 1, y) = g
+                iData(QuickX, y) = b
             
             End If
             End If
