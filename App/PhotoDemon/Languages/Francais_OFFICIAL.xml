@@ -4267,43 +4267,13 @@ de fichiers</translation>
 </phrase>
 
 <phrase>
-<original>count unique colors in incoming images (to determine optimal color depth)</original>
-<translation>compter couleurs uniques en images entrantes (pour déterminer la profondeur optimale des couleurs)</translation>
+<original>color management</original>
+<translation>gestion des couleurs</translation>
 </phrase>
 
 <phrase>
-<original>automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)</original>
-<translation>appliquer automatiquement tone mapping pour HDR et RAW (48, 64, 96, 128bpp)</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
+<original>when calculating color values</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>orientation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color depth</original>
-<translation>profondeur de couleur</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>Gamme images haute dynamique (HDR)</translation>
-</phrase>
-
-<phrase>
-<original>zoom</original>
-<translation>zoom</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>quand une image est d'abord chargé, réglez son zoom de la fenêtre de</translation>
 </phrase>
 
 <phrase>
@@ -4487,11 +4457,6 @@ de fichiers</translation>
 </phrase>
 
 <phrase>
-<original>color management</original>
-<translation>gestion des couleurs</translation>
-</phrase>
-
-<phrase>
 <original>transparency checkerboard size</original>
 <translation>Taille</translation>
 </phrase>
@@ -4639,6 +4604,46 @@ de fichiers</translation>
 <phrase>
 <original>default file format when saving</original>
 <translation>format de fichier par défaut lors de l'enregistrement</translation>
+</phrase>
+
+<phrase>
+<original>count unique colors in incoming images (to determine optimal color depth)</original>
+<translation>compter couleurs uniques en images entrantes (pour déterminer la profondeur optimale des couleurs)</translation>
+</phrase>
+
+<phrase>
+<original>automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)</original>
+<translation>appliquer automatiquement tone mapping pour HDR et RAW (48, 64, 96, 128bpp)</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>orientation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color depth</original>
+<translation>profondeur de couleur</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>Gamme images haute dynamique (HDR)</translation>
+</phrase>
+
+<phrase>
+<original>zoom</original>
+<translation>zoom</translation>
+</phrase>
+
+<phrase>
+<original>when an image is first loaded, set its viewport zoom to</original>
+<translation>quand une image est d'abord chargé, réglez son zoom de la fenêtre de</translation>
 </phrase>
 
 <phrase>
@@ -4975,7 +4980,12 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation></translation>
 </phrase>
 
@@ -4985,7 +4995,7 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
 <translation></translation>
 </phrase>
 
@@ -5177,7 +5187,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 <translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 277 phrases. 79 were duplicates of existing phrases, so only 198 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 275 phrases. 75 were duplicates of existing phrases, so only 200 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -12461,11 +12471,11 @@ or the File > Open and File > Import menus.</original>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2178</phrasecount>
+<phrasecount>2180</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3802 phrases. -->
-<!-- 1624 are duplicates, so only 2178 unique phrases have been written to file. -->
-<!-- These 2178 phrases contain approximately 12681 total words. -->
+<!-- As of this build, PhotoDemon contains 3800 phrases. -->
+<!-- 1620 are duplicates, so only 2180 unique phrases have been written to file. -->
+<!-- These 2180 phrases contain approximately 12709 total words. -->
 
 </pdData>
 

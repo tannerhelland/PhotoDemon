@@ -4266,43 +4266,13 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 </phrase>
 
 <phrase>
-<original>count unique colors in incoming images (to determine optimal color depth)</original>
-<translation>bereken unieke kleuren in binnenkomende afbeeldingen (om een optimale kleurdiepte te bepalen)</translation>
+<original>color management</original>
+<translation>kleurbeheer</translation>
 </phrase>
 
 <phrase>
-<original>automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)</original>
-<translation>automatisch toepassen van tone mapping voor HDR en RAW-beelden (48, 64, 96, 128bpp)</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
+<original>when calculating color values</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>orientation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color depth</original>
-<translation>kleurdiepte</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>high-dynamic range (HDR) afbeeldingen</translation>
-</phrase>
-
-<phrase>
-<original>zoom</original>
-<translation>zoom</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>wanneer een afbeelding eerst wordt geladen, stel de viewport zoom in op</translation>
 </phrase>
 
 <phrase>
@@ -4486,11 +4456,6 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 </phrase>
 
 <phrase>
-<original>color management</original>
-<translation>kleurbeheer</translation>
-</phrase>
-
-<phrase>
 <original>transparency checkerboard size</original>
 <translation>transparantie dambord -grootte</translation>
 </phrase>
@@ -4638,6 +4603,46 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 <phrase>
 <original>default file format when saving</original>
 <translation>standaard bestandsformaat tijdens het opslaan</translation>
+</phrase>
+
+<phrase>
+<original>count unique colors in incoming images (to determine optimal color depth)</original>
+<translation>bereken unieke kleuren in binnenkomende afbeeldingen (om een optimale kleurdiepte te bepalen)</translation>
+</phrase>
+
+<phrase>
+<original>automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)</original>
+<translation>automatisch toepassen van tone mapping voor HDR en RAW-beelden (48, 64, 96, 128bpp)</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>orientation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color depth</original>
+<translation>kleurdiepte</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>high-dynamic range (HDR) afbeeldingen</translation>
+</phrase>
+
+<phrase>
+<original>zoom</original>
+<translation>zoom</translation>
+</phrase>
+
+<phrase>
+<original>when an image is first loaded, set its viewport zoom to</original>
+<translation>wanneer een afbeelding eerst wordt geladen, stel de viewport zoom in op</translation>
 </phrase>
 
 <phrase>
@@ -4974,7 +4979,12 @@ Weet u zeker dat u wilt doorgaan?</translation>
 </phrase>
 
 <phrase>
-<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation></translation>
 </phrase>
 
@@ -4984,7 +4994,7 @@ Weet u zeker dat u wilt doorgaan?</translation>
 </phrase>
 
 <phrase>
-<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
 <translation></translation>
 </phrase>
 
@@ -5176,7 +5186,7 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 <translation>WAARSCHUWING: deze map is ongeldig (toegang verboden). Geef een geldige map op. Als er geen nieuwe map wordt voorzien, zal PhotoDemon gebruik maken van de systeem standaard temp locatie.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 277 phrases. 79 were duplicates of existing phrases, so only 198 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 275 phrases. 75 were duplicates of existing phrases, so only 200 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -12459,11 +12469,11 @@ or the File > Open and File > Import menus.</original>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2178</phrasecount>
+<phrasecount>2180</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3802 phrases. -->
-<!-- 1624 are duplicates, so only 2178 unique phrases have been written to file. -->
-<!-- These 2178 phrases contain approximately 12681 total words. -->
+<!-- As of this build, PhotoDemon contains 3800 phrases. -->
+<!-- 1620 are duplicates, so only 2180 unique phrases have been written to file. -->
+<!-- These 2180 phrases contain approximately 12709 total words. -->
 
 </pdData>
 
