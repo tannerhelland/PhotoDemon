@@ -1364,7 +1364,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 If CC.VBGetSaveFileName(sFile, , True, cdFilter, , getDirectory(sFile), g_Language.TranslateMessage("Save current language file"), ".xml", Me.hWnd, 0) Then
                 
                     'Write the current XML file out to the user's requested path
-                    xmlEngine.writeXMLToFile sFile
+                    xmlEngine.writeXMLToFile sFile, True
                     unloadFormNow = True
                     
                 Else
