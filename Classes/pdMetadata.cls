@@ -614,35 +614,45 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             If g_ImageFormats.FreeImageEnabled Then
             
                 If StrComp(iMetadata(i).FullGroupAndName, "PNG:Transparency", vbBinaryCompare) = 0 Then
+                    
+                    '8bpp images are handled correctly by FreeImage, so we can safely ignore them.
+                    If InStr(1, iMetadata(i).Value, "Binary", vbTextCompare) = 0 Then
+                    
+                        'A transparency flag was found.  Retrieve the RGB values of the color that needs to be made transparent.
+                        ' (ExifTool reports colors as a string, with each color separated by a space.)
+                        Dim tmpColorString() As String
+                        tmpColorString = Split(iMetadata(i).Value)
                         
-                    'A transparency flag was found.  Retrieve the RGB values of the color that needs to be made transparent.
-                    ' (ExifTool reports colors as a string, with each color separated by a space.)
-                    Dim tmpColorString() As String
-                    tmpColorString = Split(iMetadata(i).Value)
-                    
-                    Dim oldQuad As RGBQUAD, newQuad As RGBQUAD
-                    
-                    oldQuad.Red = CLng(tmpColorString(0))
-                    oldQuad.Green = CLng(tmpColorString(1))
-                    oldQuad.Blue = CLng(tmpColorString(2))
-                    oldQuad.Alpha = 255
-                    
-                    newQuad.Red = 0
-                    newQuad.Green = 0
-                    newQuad.Blue = 0
-                    newQuad.Alpha = 0
-                    
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "PNG file with custom transparency color found.  Applying transparency now..."
-                    #End If
-                    
-                    'Replace the color in question
-                    Filters_Color_Effects.ReplaceColorInDIB pdImages(parentImageID).getActiveDIB, oldQuad, newQuad
-                    
-                    'Refresh the screen
-                    If parentImageID = g_CurrentImage Then
-                        PrepareViewport pdImages(parentImageID), FormMain.mainCanvas(0), "Custom PNG chunk found"
-                        toolbar_ImageTabs.notifyUpdatedImage parentImageID
+                        'Just to be safe, make sure the color was retrieved correctly
+                        If UBound(tmpColorString) = 2 Then
+                        
+                            Dim oldQuad As RGBQUAD, newQuad As RGBQUAD
+                            
+                            oldQuad.Red = CLng(tmpColorString(0))
+                            oldQuad.Green = CLng(tmpColorString(1))
+                            oldQuad.Blue = CLng(tmpColorString(2))
+                            oldQuad.Alpha = 255
+                            
+                            newQuad.Red = 0
+                            newQuad.Green = 0
+                            newQuad.Blue = 0
+                            newQuad.Alpha = 0
+                            
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "PNG file with custom transparency color found.  Applying transparency now..."
+                            #End If
+                            
+                            'Replace the color in question
+                            Filters_Color_Effects.ReplaceColorInDIB pdImages(parentImageID).getActiveDIB, oldQuad, newQuad
+                            
+                            'Refresh the screen
+                            If parentImageID = g_CurrentImage Then
+                                PrepareViewport pdImages(parentImageID), FormMain.mainCanvas(0), "Custom PNG chunk found"
+                                toolbar_ImageTabs.notifyUpdatedImage parentImageID
+                            End If
+                            
+                        End If
+                        
                     End If
                     
                 End If
