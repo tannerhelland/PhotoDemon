@@ -664,3 +664,55 @@ Public Sub fxAutoEnhanceLighting()
     finalizeImageData
 
 End Sub
+
+'Isolate the maximum or minimum channel.  Derived from the "Maximum RGB" tool concept in GIMP.
+Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQUAD, ByRef newQuad As RGBQUAD)
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = srcDIB.getDIBColorDepth \ 8
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long, a As Long
+        
+    'Apply the filter
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        b = ImageData(QuickVal, y)
+        g = ImageData(QuickVal + 1, y)
+        r = ImageData(QuickVal + 2, y)
+        a = ImageData(QuickVal + 3, y)
+        
+        If (r = oldQuad.Red) And (g = oldQuad.Green) And (b = oldQuad.Blue) And (a = oldQuad.Alpha) Then
+        
+            ImageData(QuickVal + 3, y) = newQuad.Alpha
+            ImageData(QuickVal + 2, y) = newQuad.Red
+            ImageData(QuickVal + 1, y) = newQuad.Green
+            ImageData(QuickVal, y) = newQuad.Blue
+            
+        End If
+        
+    Next y
+    Next x
+        
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+End Sub
