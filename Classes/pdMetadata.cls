@@ -258,6 +258,8 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
         Exit Function
     End If
     
+    Dim i As Long
+    
     'DEBUGGING ONLY: sometimes it is helpful to dump the full metadata text to the clipboard.  Uncomment as necessary.
     'Clipboard.Clear
     'Clipboard.SetText mdString
@@ -537,7 +539,8 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             End If
             
             'Next, one of ExifTool's neatest features is its "Composite" tags - basically, tags that don't actually exist in the file,
-            ' but which can be inferred from other information.  Let's rename these as "Intelligent", because it sounds better.  :)
+            ' but which can be inferred from other information.  Let's add an asterisk to these, to denote that the tags are only
+            ' inferred, not physically present.
             If StrComp(tmpString, "Composite") = 0 Then iMetadata(maxMetadataCount).Group = g_Language.TranslateMessage("Composite") & "*"
             
             'ANALYZE NAME
@@ -567,7 +570,6 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             
                 'Check the metadata list up to this point.  If a matching group and technical tag name are found,
                 ' move this tag into a separate "thumbnail" category.
-                Dim i As Long
                 For i = 0 To maxMetadataCount - 1
                     If StrComp(iMetadata(i).FullGroupAndName, iMetadata(maxMetadataCount).FullGroupAndName, vbTextCompare) = 0 Then
                     
@@ -598,7 +600,59 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
         End If
         
     Loop While curLine < UBound(xmlLines)
-
+    
+    'If present, metadata has now been loaded.  Certain metadata elements affect the RGB/A data of the image.  Look for such tags now,
+    ' and if found, apply any changes immediately.
+    If maxMetadataCount > 0 Then
+    
+        For i = 0 To maxMetadataCount - 1
+            
+            'The first tag we're gonna look for is the "PNG:Transparency" tag.  This tag reflects use of a transparent color inside
+            ' a 24bpp PNG file, via a specialized chunk.  FreeImage doesn't read this chunk, which will cause them to render the
+            ' color in its original form, instead of converting it to an alpha channel for a 32bpp image.  We can work around this
+            ' by applying the transparency manually.
+            If g_ImageFormats.FreeImageEnabled Then
+            
+                If StrComp(iMetadata(i).FullGroupAndName, "PNG:Transparency", vbBinaryCompare) = 0 Then
+                        
+                    'A transparency flag was found.  Retrieve the RGB values of the color that needs to be made transparent.
+                    ' (ExifTool reports colors as a string, with each color separated by a space.)
+                    Dim tmpColorString() As String
+                    tmpColorString = Split(iMetadata(i).Value)
+                    
+                    Dim oldQuad As RGBQUAD, newQuad As RGBQUAD
+                    
+                    oldQuad.Red = CLng(tmpColorString(0))
+                    oldQuad.Green = CLng(tmpColorString(1))
+                    oldQuad.Blue = CLng(tmpColorString(2))
+                    oldQuad.Alpha = 255
+                    
+                    newQuad.Red = 0
+                    newQuad.Green = 0
+                    newQuad.Blue = 0
+                    newQuad.Alpha = 0
+                    
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "PNG file with custom transparency color found.  Applying transparency now..."
+                    #End If
+                    
+                    'Replace the color in question
+                    Filters_Color_Effects.ReplaceColorInDIB pdImages(parentImageID).getActiveDIB, oldQuad, newQuad
+                    
+                    'Refresh the screen
+                    If parentImageID = g_CurrentImage Then
+                        PrepareViewport pdImages(parentImageID), FormMain.mainCanvas(0), "Custom PNG chunk found"
+                        toolbar_ImageTabs.notifyUpdatedImage parentImageID
+                    End If
+                    
+                End If
+                
+            End If
+            
+        Next i
+    
+    End If
+    
     'If no metadata was found, return a FAIL state.  (ExifTool should always return *some* metadata, e.g. file date/time and generic
     ' stuff like that).  Otherwise, if at least one piece of valid metadata was found, return SUCCESS.
     If maxMetadataCount = 0 Then
