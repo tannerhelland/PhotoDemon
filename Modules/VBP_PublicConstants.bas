@@ -21,7 +21,7 @@ End Enum
 ' segments through the program, including the bulk of PD's debugging code.
 '
 ' Obvious corollary: ALWAYS SET DEBUGMODE TO 0 IN PRODUCTION BUILDS!
-Public Const PD_BUILD_QUALITY As Long = PD_BETA
+Public Const PD_BUILD_QUALITY As Long = PD_PRODUCTION
 
 'Identifier for pdImage data saved to file.  (ASCII characters "PDID", as hex, listed here in little-endian notation.)
 Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450
