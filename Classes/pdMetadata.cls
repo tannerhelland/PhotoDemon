@@ -119,7 +119,7 @@ End Function
 
 'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
 ' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
-Private Function doesTagExist(ByVal tagName As String, Optional ByRef tagIndex As Long = -1) As Boolean
+Private Function doesTagExist(ByVal tagName As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
 
     doesTagExist = False
 
@@ -128,9 +128,32 @@ Private Function doesTagExist(ByVal tagName As String, Optional ByRef tagIndex A
     For i = 0 To maxMetadataCount - 1
     
         'Tag name found!  Mark the index and exit.
-        If StrComp(iMetadata(i).Name, tagName, vbTextCompare) = 0 Then
+        If StrComp(iMetadata(i).Name, tagName, searchMode) = 0 Then
         
             doesTagExist = True
+            tagIndex = i
+            Exit For
+        
+        End If
+        
+    Next i
+
+End Function
+
+'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
+' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
+Private Function doesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
+
+    doesTagExistFullName = False
+
+    'Scan the metadata collection, looking for the given tag name
+    Dim i As Long
+    For i = 0 To maxMetadataCount - 1
+    
+        'Tag name found!  Mark the index and exit.
+        If StrComp(iMetadata(i).FullGroupAndName, tagNameAndGroup, searchMode) = 0 Then
+        
+            doesTagExistFullName = True
             tagIndex = i
             Exit For
         
@@ -604,63 +627,98 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     'If present, metadata has now been loaded.  Certain metadata elements affect the RGB/A data of the image.  Look for such tags now,
     ' and if found, apply any changes immediately.
     If maxMetadataCount > 0 Then
-    
-        For i = 0 To maxMetadataCount - 1
+        
+        Dim tagIndex As Long, tmpMDItem As mdItem
+        
+        'The first tag we're gonna look for is the "PNG:Transparency" tag.  This tag reflects use of a transparent color inside
+        ' a PNG file, via a specialized chunk.  FreeImage doesn't read this chunk for certain color depths, which will cause the
+        ' image to render the transparent color as an actual color, instead of converting it to an alpha channel for a 32bpp image.
+        ' We can work around this by applying the transparency manually.
+        If doesTagExistFullName("PNG:Transparency", tagIndex, vbBinaryCompare) Then
             
-            'The first tag we're gonna look for is the "PNG:Transparency" tag.  This tag reflects use of a transparent color inside
-            ' a 24bpp PNG file, via a specialized chunk.  FreeImage doesn't read this chunk, which will cause them to render the
-            ' color in its original form, instead of converting it to an alpha channel for a 32bpp image.  We can work around this
-            ' by applying the transparency manually.
-            If g_ImageFormats.FreeImageEnabled Then
-            
-                If StrComp(iMetadata(i).FullGroupAndName, "PNG:Transparency", vbBinaryCompare) = 0 Then
+            'The PNG:Transparency tag was found, indicating presence of a tRNS chunk.  Retrieve detailed chunk info.
+            tmpMDItem = getMetadataEntry(tagIndex)
                     
-                    '8bpp images are handled correctly by FreeImage, so we can safely ignore them.
-                    If InStr(1, iMetadata(i).Value, "Binary", vbTextCompare) = 0 Then
+            '8bpp images are handled correctly by FreeImage, so we can safely ignore them.
+            If InStr(1, tmpMDItem.Value, "Binary", vbTextCompare) = 0 Then
+                
+                'This is not an 8bpp image, so custom handling is required.  Parse the RGB values of the color that needs to be
+                ' made transparent.  (ExifTool reports colors as a string, with each color separated by a space.)
+                Dim tmpColorString() As String
+                tmpColorString = Split(tmpMDItem.Value)
                     
-                        'A transparency flag was found.  Retrieve the RGB values of the color that needs to be made transparent.
-                        ' (ExifTool reports colors as a string, with each color separated by a space.)
-                        Dim tmpColorString() As String
-                        tmpColorString = Split(iMetadata(i).Value)
+                'Just to be safe, make sure the color was retrieved correctly.  For 24bpp images, ExifTool will return an RGB triplet.
+                ' For grayscale images, it will return a single gray value [0, 255].  If the chunk is not encoded correctly, ExifTool
+                ' may return odd gibberish, so we add a failsafe to work around that.
+                Dim safeToReplaceColor As Boolean
+                safeToReplaceColor = False
+                
+                Dim oldQuad As RGBQUAD, newQuad As RGBQUAD
+                
+                'Look for a color type declaration
+                If doesTagExistFullName("PNG:ColorType", tagIndex, vbTextCompare) Then
+                    
+                    'A color type was found.  For color type 0, look for a single value and treat it as a grayscale triplet.
+                    tmpMDItem = getMetadataEntry(tagIndex)
+                    
+                    If CLng(tmpMDItem.ActualValue) = 0 Then
+                    
+                        If UBound(tmpColorString) = 0 Then
+                            
+                            safeToReplaceColor = True
+                            
+                            oldQuad.Red = CLng(tmpColorString(0))
+                            oldQuad.Green = oldQuad.Red
+                            oldQuad.Blue = oldQuad.Red
+                            oldQuad.Alpha = 255
+                            
+                        End If
                         
-                        'Just to be safe, make sure the color was retrieved correctly
+                    'For any other color type, look for an RGB triplet
+                    Else
+                        
                         If UBound(tmpColorString) = 2 Then
                         
-                            Dim oldQuad As RGBQUAD, newQuad As RGBQUAD
+                            safeToReplaceColor = True
                             
                             oldQuad.Red = CLng(tmpColorString(0))
                             oldQuad.Green = CLng(tmpColorString(1))
                             oldQuad.Blue = CLng(tmpColorString(2))
                             oldQuad.Alpha = 255
                             
-                            newQuad.Red = 0
-                            newQuad.Green = 0
-                            newQuad.Blue = 0
-                            newQuad.Alpha = 0
-                            
-                            #If DEBUGMODE = 1 Then
-                                pdDebug.LogAction "PNG file with custom transparency color found.  Applying transparency now..."
-                            #End If
-                            
-                            'Replace the color in question
-                            Filters_Color_Effects.ReplaceColorInDIB pdImages(parentImageID).getActiveDIB, oldQuad, newQuad
-                            
-                            'Refresh the screen
-                            If parentImageID = g_CurrentImage Then
-                                PrepareViewport pdImages(parentImageID), FormMain.mainCanvas(0), "Custom PNG chunk found"
-                                toolbar_ImageTabs.notifyUpdatedImage parentImageID
-                            End If
-                            
+                        End If
+                        
+                    End If
+                    
+                    'If valid tRNS data was found, replace the color now.
+                    If safeToReplaceColor Then
+                        
+                        newQuad.Red = 0
+                        newQuad.Green = 0
+                        newQuad.Blue = 0
+                        newQuad.Alpha = 0
+                        
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "PNG file with custom transparency color found.  Applying transparency now..."
+                        #End If
+                        
+                        'Replace the color in question
+                        Filters_Color_Effects.ReplaceColorInDIB pdImages(parentImageID).getActiveDIB, oldQuad, newQuad
+                        
+                        'Refresh the screen
+                        If parentImageID = g_CurrentImage Then
+                            PrepareViewport pdImages(parentImageID), FormMain.mainCanvas(0), "Custom PNG chunk found"
+                            toolbar_ImageTabs.notifyUpdatedImage parentImageID
                         End If
                         
                     End If
                     
                 End If
-                
+            
             End If
             
-        Next i
-    
+        End If
+            
     End If
     
     'If no metadata was found, return a FAIL state.  (ExifTool should always return *some* metadata, e.g. file date/time and generic
