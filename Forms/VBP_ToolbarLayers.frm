@@ -405,6 +405,11 @@ Private m_WeAreResponsibleForResize As Boolean
 'When the mouse is over the layer list, this will be set to TRUE
 Private m_MouseOverLayerBox As Boolean
 
+'Because the layer toolbox changes tooltips dynamically (based on what area of the toolbox the user is hovering), we have to employ
+' some failsafes to prevent flicker.  This variable stores the last assigned tooltip.  When it comes time to assign a new tooltip,
+' we compare the new tooltip against this string, and only make a change if they differ.
+Private m_PreviousTooltip As String
+
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
 Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
@@ -892,7 +897,13 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
         'The tooltip is irrelevant if the current layer is already active
         If pdImages(g_CurrentImage).getActiveLayerIndex <> getLayerAtPosition(x, y) Then
-            toolString = g_Language.TranslateMessage("Click to make this the active layer.")
+            
+            If curLayerHover >= 0 Then
+                toolString = g_Language.TranslateMessage("Click to make this the active layer.")
+            Else
+                toolString = ""
+            End If
+            
         Else
             toolString = g_Language.TranslateMessage("This is the currently active layer.")
         End If
@@ -900,7 +911,8 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     End If
     
     'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
-    If StrComp(m_ToolTip.ToolText(picLayers), toolString, vbTextCompare) <> 0 Then m_ToolTip.ToolText(picLayers) = toolString
+    If StrComp(m_PreviousTooltip, toolString, vbBinaryCompare) <> 0 Then m_ToolTip.ToolText(picLayers) = toolString
+    m_PreviousTooltip = toolString
     
 End Sub
 
@@ -1301,7 +1313,7 @@ Private Sub redrawLayerBox()
             Next i
             
         End If
-        
+    
     End If
     
     'Copy the buffer to its container picture box

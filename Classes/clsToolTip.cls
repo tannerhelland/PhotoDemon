@@ -587,8 +587,8 @@ Public Property Let ToolText(ByRef ctrl As Object, _
 'MODIFICATION
 'sending a blank string to ToolText deletes the control from the collection
   If LenB(strText) = 0 Then
-    RemoveTool ctrl
-    Exit Property
+    'RemoveTool ctrl
+    'Exit Property
   End If
 'MODIFICATION
 'add ToolTipHeader to strText if requested
