@@ -524,34 +524,72 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         'If it is such a grayscale image, it requires a unique conversion operation
         If fi_imageType = FIT_UINT16 Then
             
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Tone-mapping high-bit-depth grayscale image to 24bpp..."
-            #End If
+            'Again, check for the user's preference on tone-mapping
+            If g_UserPreferences.GetPref_Boolean("Loading", "HDR Tone Mapping", True) Then
             
-            'First, convert it to a high-bit depth RGB image
-            fi_hDIB = FreeImage_ConvertToRGB16(fi_hDIB)
-            
-            'Now use tone-mapping to reduce it back to 24bpp or 32bpp (contingent on the presence of transparency)
-            fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
-            fi_transparentEntries = FreeImage_GetTransparencyCount(fi_hDIB)
-        
-            If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
-                new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Tone-mapping high-bit-depth grayscale image to 24bpp..."
+                #End If
                 
-                If pageToLoad <= 0 Then
-                    If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
-                Else
-                    If (new_hDIB <> fi_hDIB) Then
-                        needToCloseMulti = False
-                        FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                        FreeImage_CloseMultiBitmap fi_multi_hDIB
+                'First, convert it to a high-bit depth RGB image
+                fi_hDIB = FreeImage_ConvertToRGB16(fi_hDIB)
+                
+                'Now use tone-mapping to reduce it back to 24bpp or 32bpp (contingent on the presence of transparency)
+                fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
+                fi_transparentEntries = FreeImage_GetTransparencyCount(fi_hDIB)
+            
+                If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
+                    new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
+                    
+                    If pageToLoad <= 0 Then
+                        If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
+                    Else
+                        If (new_hDIB <> fi_hDIB) Then
+                            needToCloseMulti = False
+                            FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                            FreeImage_CloseMultiBitmap fi_multi_hDIB
+                        End If
                     End If
+                
+                    fi_hDIB = new_hDIB
+                Else
+                    new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
+                    
+                    If pageToLoad <= 0 Then
+                        If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
+                    Else
+                        If (new_hDIB <> fi_hDIB) Then
+                            needToCloseMulti = False
+                            FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+                            FreeImage_CloseMultiBitmap fi_multi_hDIB
+                        End If
+                    End If
+                
+                    fi_hDIB = new_hDIB
                 End If
             
-                fi_hDIB = new_hDIB
+            'User doesn't want tone-mapping, so perform a linear conversion to 24 or 32bpp
             Else
-                new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
+            
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "High bit-depth grayscale image identified.  Tone-mapping ignored at user's request."
+                #End If
                 
+                'First, convert it to a high-bit depth RGB image
+                fi_hDIB = FreeImage_ConvertToRGB16(fi_hDIB)
+                
+                'Look for transparency
+                fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
+                fi_transparentEntries = FreeImage_GetTransparencyCount(fi_hDIB)
+            
+                'Convert to 24bpp or 32bpp as appropriate
+                If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
+                    new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
+                Else
+                    new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, False)
+                End If
+                
+                'Unload the original source
                 If pageToLoad <= 0 Then
                     If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
@@ -561,8 +599,10 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
                         FreeImage_CloseMultiBitmap fi_multi_hDIB
                     End If
                 End If
-            
+                
+                'Replace the main FreeImage DIB handle with the new copy
                 fi_hDIB = new_hDIB
+                
             End If
             
         Else
