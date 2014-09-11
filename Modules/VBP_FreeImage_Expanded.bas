@@ -29,7 +29,7 @@ Public Function isFreeImageAvailable() As Boolean
 End Function
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
-Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True) As Boolean
+Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing) As Boolean
 
     On Error GoTo FreeImageV4_AdvancedError
     
@@ -367,7 +367,8 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
         'As of 25 Nov '12, the user can choose to disable tone-mapping (which makes HDR loading much faster, but reduces image quality).
         ' Check that preference before tone-mapping the image.
-        If g_UserPreferences.GetPref_Boolean("Loading", "HDR Tone Mapping", True) Then
+        ' Also, as of 11 Sep '14, images with attached ICC profiles will preferentially use that over forcible tone-mapping.
+        If g_UserPreferences.GetPref_Boolean("Loading", "HDR Tone Mapping", True) And (Not FreeImage_HasICCProfile(fi_hDIB)) Then
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Tone mapping HDR image to preserve tonal range..."
@@ -375,6 +376,12 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
             new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
             
+            'Add a note to the target image that tone-mapping was forcibly applied to the incoming data
+            If Not (targetImage Is Nothing) Then
+                targetImage.imgStorage.Add "Tone-mapping", True
+            End If
+            
+            'Immediately unload the original image copy (which is probably enormous, on account of its bit-depth)
             If pageToLoad <= 0 Then
                 If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
             Else
@@ -401,6 +408,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
                 
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
                 
+                'Immediately unload the original image copy (which is probably enormous, on account of its bit-depth)
                 If pageToLoad <= 0 Then
                     If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
                 Else
@@ -624,7 +632,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         tmpRGBDIB.createBlank tmpCMYKDIB.getDIBWidth, tmpCMYKDIB.getDIBHeight, 24
         
         'Apply the transformation using the dedicated CMYK transform handler
-        If applyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
+        If Color_Management.applyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Copying newly transformed sRGB data..."
