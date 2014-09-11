@@ -150,7 +150,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    Refresh
+    redrawBackBuffer
     
 End Property
 
@@ -203,7 +203,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     
     If m_MouseInsideUC Then
         m_MouseInsideUC = False
-        Refresh
+        redrawBackBuffer
     End If
     
     'Reset the cursor
@@ -222,7 +222,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         'Repaint the control as necessary
         If Not m_MouseInsideUC Then
             m_MouseInsideUC = True
-            Refresh
+            redrawBackBuffer
         End If
     
     Else
@@ -232,7 +232,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         'Repaint the control as necessary
         If m_MouseInsideUC Then
             m_MouseInsideUC = False
-            Refresh
+            redrawBackBuffer
         End If
         
     End If
@@ -273,7 +273,7 @@ Public Property Let Value(ByVal newValue As Boolean)
         PropertyChanged "Value"
         
         'Redraw the control; it's important to do this *before* raising the associated event, to maintain an impression of max responsiveness
-        Refresh
+        redrawBackBuffer
         
         'Set all other option buttons to FALSE
         If newValue Then updateValue
@@ -305,7 +305,7 @@ Private Sub UserControl_GotFocus()
     'If the mouse is *not* over the user control, assume focus was set via keyboard
     If Not m_MouseInsideUC Then
         m_FocusRectActive = True
-        Refresh
+        redrawBackBuffer
     End If
 
 End Sub
@@ -369,7 +369,7 @@ Private Sub UserControl_LostFocus()
     'If a focus rect has been drawn, remove it now
     If (Not m_MouseInsideUC) And m_FocusRectActive Then
         m_FocusRectActive = False
-        Refresh
+        redrawBackBuffer
     End If
 
 End Sub
@@ -456,7 +456,7 @@ Private Sub updateControlSize()
     curFont.attachToDC m_BackBuffer.getDIBDC
     
     'Redraw the control
-    Refresh
+    redrawBackBuffer
             
 End Sub
 
@@ -557,13 +557,15 @@ Public Sub translateCaption()
     If StrComp(newCaption, m_TranslatedCaption, vbBinaryCompare) <> 0 Then
         
         m_TranslatedCaption = newCaption
-        PaintUC
+        redrawBackBuffer
         
     End If
     
 End Sub
 
-Private Sub PaintUC()
+'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
+' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
+Private Sub redrawBackBuffer()
     
     'Start by erasing the back buffer
     If g_UserModeFix Then
@@ -676,6 +678,13 @@ Private Sub PaintUC()
         DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
 
     End If
+        
+    'Paint the buffer to the screen
+    PaintUC
+
+End Sub
+
+Private Sub PaintUC()
     
     'Flip the buffer to the user control
     BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
