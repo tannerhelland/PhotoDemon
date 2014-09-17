@@ -42,20 +42,20 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Type LOGFONT
-        lfHeight As Long
-        lfWidth As Long
-        lfEscapement As Long
-        lfOrientation As Long
-        lfWeight As Long
-        lfItalic As Byte
-        lfUnderline As Byte
-        lfStrikeOut As Byte
-        lfCharSet As Byte
-        lfOutPrecision As Byte
-        lfClipPrecision As Byte
-        lfQuality As Byte
-        lfPitchAndFamily As Byte
-        lfFaceName As String * 32
+    lfHeight As Long
+    lfWidth As Long
+    lfEscapement As Long
+    lfOrientation As Long
+    lfWeight As Long
+    lfItalic As Byte
+    lfUnderline As Byte
+    lfStrikeOut As Byte
+    lfCharSet As Byte
+    lfOutPrecision As Byte
+    lfClipPrecision As Byte
+    lfQuality As Byte
+    lfPitchAndFamily As Byte
+    lfFaceName As String * 32
 End Type
 
 Private Const LOGPIXELSX = 88
