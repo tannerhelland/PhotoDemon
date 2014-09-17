@@ -840,7 +840,7 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
             If (Len(Trim(eControl.Caption)) > 0) And (Not IsNumeric(eControl.Caption)) Then translateObjectCaption eControl
             If (Len(Trim(eControl.ToolTipText)) > 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
                         
-            'jcbutton controls have multiple tooltip entries, including a tooltip title
+            'jcButton controls have multiple tooltip entries, including a tooltip title
             If (TypeOf eControl Is jcbutton) Then
                 If (Len(Trim(eControl.TooltipTitle)) > 0) Then eControl.TooltipTitle = TranslateMessage(eControl.TooltipTitle)
                 If (Len(Trim(eControl.ToolTip)) > 0) Then eControl.ToolTip = TranslateMessage(eControl.ToolTip)
@@ -854,6 +854,11 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
             eControl.translateCaption
             If (Len(Trim(eControl.ToolTipText)) > 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
         
+        End If
+        
+        'PD's internal button strip also handles translations internally
+        If (TypeOf eControl Is buttonStrip) Then
+            eControl.translateButtonText
         End If
         
         'Picture boxes and text boxes can have tooltips.  Translate those too.
