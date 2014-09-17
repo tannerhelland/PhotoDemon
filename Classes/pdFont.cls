@@ -213,7 +213,7 @@ Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidt
         tmpRect.Right = tmpRect.Left + getWidthOfString(srcString)
         tmpRect.Top = halfDCHeight
         tmpRect.Bottom = tmpRect.Top + getHeightOfWordwrapString(srcString, getWidthOfString(srcString))
-        
+                
         'If the text is going to extend past the target rect, draw it with ellipses
         DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP
     
@@ -224,6 +224,15 @@ Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidt
     'Restore the original text alignment
     setTextAlignment backupAlignment
 
+End Sub
+
+'This function draws horizontally and vertically centered text within a specified rect, and it does it without modifying any of the current
+' font settings (including alignment).  It is designed for one-off renderings of centered text.
+Friend Sub drawCenteredTextToRect(ByVal srcString As String, ByRef dstRect As RECT)
+    
+    'Rendering this style of text is pretty damn easy
+    DrawText curDC, StrPtr(srcString), Len(srcString), dstRect, DT_CENTER Or DT_WORDBREAK
+    
 End Sub
 
 'If the font has already been created and set to a DC, this function can be used to quickly render text (because no
@@ -257,6 +266,34 @@ Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     ' we pass only the currently relevant length of the string, without our added null chars, and DrawText can use the extra
     ' buffer space as necessary.)
     DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING
+    
+End Sub
+
+'A roughly identical function to fastRenderText, above, but with a constraining rect and expansion to multiple lines as necessary
+Public Sub fastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String)
+    
+    'IMPORTANT NOTE!  Per MSDN, the following caveat is made regarding the source string pointer:
+    '  "A pointer to the string that specifies the text to be drawn. If the nCount parameter is -1, the string must
+    '   be null-terminated.  If uFormat includes DT_MODIFYSTRING, the function could add up to four additional characters
+    '   to this string. The buffer containing the string should be large enough to accommodate these extra characters."
+    '
+    'Because the string may be modified to fit within the clipping boundaries, we need to extend the string array by four chars.
+    Dim srcStringLen As Long
+    srcStringLen = Len(srcString)
+    srcString = srcString & ChrW(0) & ChrW(0) & ChrW(0) & ChrW(0)
+    
+    Dim tmpRect As RECT
+    tmpRect.Left = dstX
+    tmpRect.Top = dstY
+    tmpRect.Right = dstX + dstWidth
+    tmpRect.Bottom = dstY + dstHeight
+    
+    'If the text is going to extend past the target rect, draw it with ellipses.  Note that we deliberately misrepresent the
+    ' actual length of the string here.  This is on purpose, to account for the DT_MODIFYSTRING flag above.  (If the string
+    ' is too long to fit inside the clipping rect, DrawText may choose to extend the character count of the string.  As such
+    ' we pass only the currently relevant length of the string, without our added null chars, and DrawText can use the extra
+    ' buffer space as necessary.)
+    DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORDBREAK Or DT_MODIFYSTRING Or DT_END_ELLIPSIS
     
 End Sub
 
