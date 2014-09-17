@@ -42,7 +42,8 @@ Attribute VB_Exposed = False
 '
 'A few notes on this checkbox replacement, specifically:
 '
-' 1) The control is autosized based on the current font and caption.
+' 1) The control is no longer autosized based on the current font and caption.  If a caption exceeds the size of the
+'     (manually set) width, the font size will be repeatedly reduced until the caption fits.
 ' 2) High DPI settings are handled automatically, so do not attempt to handle this manually.
 ' 3) A hand cursor is automatically applied, and clicks on both the button and label are registered properly.
 ' 4) Coloration is automatically handled by PD's internal theming engine.
@@ -55,7 +56,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This function really only needs one event raised - Click
+'This control really only needs one event raised - Click
 Public Event Click()
 
 'Subclassing is used to better optimize the control's painting; this also requires manual validation of the control rect.
@@ -390,7 +391,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
 End Sub
 
-'The control dynamically resizes to match the dimensions of the caption.  The size cannot be set by the user.
+'The control dynamically resizes its font to make sure the full caption fits within the control area.
 Private Sub UserControl_Resize()
     updateControlSize
 End Sub
@@ -418,8 +419,7 @@ Private Sub UserControl_Show()
     
 End Sub
 
-'Whenever the size of the control changes (because the control is auto-sized, this is typically from font or caption changes),
-' we must recalculate some internal rendering metrics.
+'Whenever the size of the control changes, we must recalculate some internal rendering metrics.
 Private Sub updateControlSize()
 
     'By adjusting this fontY parameter, we can control the auto-height of a created check box
@@ -427,12 +427,12 @@ Private Sub updateControlSize()
     fontY = 1
     
     'Calculate a precise size for the requested caption.
-    Dim captionHeight As Long, txtSize As POINTAPI
+    Dim captionHeight As Long, txtsize As POINTAPI
     
     If Not m_BackBuffer Is Nothing Then
     
-        GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_Caption), Len(m_Caption), txtSize
-        captionHeight = txtSize.y
+        GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_Caption), Len(m_Caption), txtsize
+        captionHeight = txtsize.y
     
     'Failsafe if a Resize event is fired before we've initialized our back buffer DC
     Else
@@ -550,7 +550,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Colors used throughout this paint function are determined primarily control enablement
-    Dim chkBoxColorBorder, chkBoxColorFill As Long
+    Dim chkBoxColorBorder As Long, chkBoxColorFill As Long
     If Me.Enabled Then
         chkBoxColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
         chkBoxColorFill = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
