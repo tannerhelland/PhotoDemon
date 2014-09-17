@@ -431,12 +431,12 @@ Private Sub updateControlSize()
     fontY = 1
     
     'Calculate a precise size for the requested caption.
-    Dim captionWidth As Long, captionHeight As Long, txtSize As POINTAPI
+    Dim captionWidth As Long, captionHeight As Long, txtsize As POINTAPI
     
     If Not m_BackBuffer Is Nothing Then
         
-        GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_Caption), Len(m_Caption), txtSize
-        captionHeight = txtSize.y
+        GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_Caption), Len(m_Caption), txtsize
+        captionHeight = txtsize.y
     
     'Failsafe if a Resize event is fired before we've initialized our back buffer DC
     Else
@@ -577,7 +577,7 @@ Private Sub redrawBackBuffer()
     
     'Colors used throughout this paint function are determined primarily control enablement
     ' TODO: tie this into PD's central themer, instead of using custom values for this control!
-    Dim optButtonColorBorder, optButtonColorFill As Long
+    Dim optButtonColorBorder As Long, optButtonColorFill As Long
     If Me.Enabled Then
         optButtonColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
         optButtonColorFill = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
@@ -607,7 +607,7 @@ Private Sub redrawBackBuffer()
     optCircleSize = optCircleSize + 1
     
     'Because GDI+ is finicky with antialiasing on odd-number circle sizes, force the circle size to the nearest even number
-    If optCircleSize Mod 2 = 1 Then
+    If (optCircleSize Mod 2) = 1 Then
         optCircleSize = optCircleSize + 1
         offsetY = offsetY - 1
     End If
