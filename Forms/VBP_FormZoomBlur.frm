@@ -23,6 +23,24 @@ Begin VB.Form FormZoomBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStrip btsStyle 
+      Height          =   615
+      Left            =   6180
+      TabIndex        =   5
+      Top             =   2160
+      Width           =   5610
+      _ExtentX        =   9895
+      _ExtentY        =   1085
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -71,47 +89,6 @@ Begin VB.Form FormZoomBlur
       EndProperty
       Min             =   -200
       Max             =   200
-   End
-   Begin PhotoDemon.smartOptionButton OptStyle 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   2160
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "modern"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptStyle 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   2520
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "traditional"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -407,8 +384,22 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
     
 End Sub
 
+'Modern style allows for zooming in and out.  Traditional only allows out.
+Private Sub btsStyle_Click(ByVal buttonIndex As Long)
+    
+    If buttonIndex = 0 Then
+        sltDistance.Min = -200
+    Else
+        If sltDistance.Value < 0 Then sltDistance.Value = Abs(sltDistance.Value)
+        sltDistance.Min = 0
+    End If
+    
+    updatePreview
+    
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Zoom blur", , buildParams(OptStyle(0), sltDistance), UNDO_LAYER
+    Process "Zoom blur", , buildParams((btsStyle.ListIndex = 0), sltDistance), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -432,6 +423,11 @@ Private Sub Form_Load()
     'Disable previews until the form is fully initialized
     cmdBar.markPreviewStatus False
     
+    'Add style options to the button strip
+    btsStyle.AddItem "modern", 0
+    btsStyle.AddItem "traditional", 1
+    btsStyle.ListIndex = 0
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -440,21 +436,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ZoomBlurWrapper OptStyle(0), sltDistance, True, fxPreview
-End Sub
-
-'Modern style allows for zooming in and out.  Traditional only allows out.
-Private Sub OptStyle_Click(Index As Integer)
-
-    If OptStyle(0) Then
-        sltDistance.Min = -200
-    Else
-        If sltDistance.Value < 0 Then sltDistance.Value = Abs(sltDistance.Value)
-        sltDistance.Min = 0
-    End If
-    
-    updatePreview
-
+    If cmdBar.previewsAllowed Then ZoomBlurWrapper (btsStyle.ListIndex = 0), sltDistance, True, fxPreview
 End Sub
 
 Private Sub sltDistance_Change()
