@@ -6,15 +6,16 @@ Attribute VB_Name = "Color_Management"
 'Last updated: 05/September/14
 'Last update: tie the multiprofile transform quality to the new Color Management Performance preference
 '
-'ICC profiles can be embedded in certain types of images (JPEG, PNG, and TIFF at the time of this writing).  These
-' profiles can be used to convert an image to its true color space, taking into account any pecularities of the
-' device that captured the image (typically a camera), and the device now being used to display the image
-' (typically a monitor).
+'ICC profiles can be embedded in certain image file formats.  These profiles can be used to convert an image into
+' a precisely defined reference space, while taking into account any pecularities of the device that captured the
+' image (typically a camera).  From that reference space, we can then convert the image into any other
+' device-specific color space (typically a monitor or printer).
 '
-'ICC profile handling is broken into two parts: extracting the profile from an image, then applying that profile
-' to the image.  The extraction step is currently handled via FreeImage or GDI+, while the application step is handled
-' by Windows.  In the future I may look at adding ExifTool as a possibly mechanism for extracting the profile, as it
-' provides better support for esoteric formats than FreeImage.
+'ICC profile handling is broken into three parts: extracting the profile from an image, using the extracted profile to
+' convert an image into a reference space (currently sRGB only), and then activating color management for any
+' user-facing DCs using the color profiles specified by the user.  The extraction step is currently handled via
+' FreeImage or GDI+, while the application step is handled by Windows.  In the future I may look at adding ExifTool as
+' a possible mechanism for extracting the profile, as it provides better support for esoteric formats than FreeImage.
 '
 'This class does not perform the extraction of ICC Profile data from images.  That is handled by the pdICCProfile
 ' class, which operates on a per-image basis.  This module simply supplies a number of generic ICC-related functions.
