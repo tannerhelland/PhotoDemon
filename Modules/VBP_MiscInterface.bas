@@ -1131,7 +1131,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
             eControl.Font.Name = g_InterfaceFont
         End If
         
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is buttonStrip) Then
             eControl.updateAgainstCurrentTheme
         End If
                         
