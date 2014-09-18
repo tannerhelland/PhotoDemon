@@ -23,20 +23,12 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'TODO:
-' 1) Method for setting button captions
-' 2) Parse captions and store them at module-level
-' 3) Get render code working (no images yet); tricky part will be rendering all text with perfect centering
-' 4) Add mouse handling code.  Ideally we can re-use our coordinate math from (3) to detect hits
-' 5) Add keyboard handling code, including proper use of tab for setting focus
-' 6) Add image support.  This should probably be done per-button so each button can have (or not have) its own image
-
 '***************************************************************************
 'PhotoDemon "Button Strip" control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 13/September/14
-'Last updated: 13/September/14
-'Last update: initial build
+'Last updated: 18/September/14
+'Last update: add keyboard nav when control has focus
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -47,9 +39,10 @@ Attribute VB_Exposed = False
 '
 'A few notes on this button strip control, specifically:
 '
-' 1) The control supports an arbitrary number of button captions, but if captions are too long, its appearance may suffer.
-' 2) High DPI settings are handled automatically, so do not attempt to handle this manually.
-' 3) A hand cursor is automatically applied, and clicks on individual buttons are returned as such.
+' 1) The control supports an arbitrary number of button captions.  Captions are auto-wrapped, but DrawText requires word breaks to do this,
+'     so you can't rely on hyphenation for over-long words - plan accordingly!
+' 2) High DPI settings are handled automatically.
+' 3) A hand cursor is automatically applied, and clicks on individual buttons are returned via the Click event.
 ' 4) Coloration is automatically handled by PD's internal theming engine.
 ' 5) When the control receives focus via keyboard, a special focus rect is drawn.  Focus via mouse is conveyed via text glow.
 '
@@ -144,7 +137,7 @@ Private m_BackBuffer As pdDIB
 Private m_MouseInsideUC As Boolean
 
 'When the option button receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
-Private m_FocusRectActive As Boolean
+Private m_FocusRectActive As Long
 
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
@@ -197,6 +190,55 @@ Public Property Set Font(mNewFont As StdFont)
     
 End Property
 
+Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, markEventHandled As Boolean)
+
+    If rightArrow Then
+        
+        'See if a focus rect is already active
+        If (m_FocusRectActive >= 0) Then
+            m_FocusRectActive = m_FocusRectActive + 1
+        Else
+            m_FocusRectActive = m_ButtonIndex + 1
+        End If
+        
+        'Bounds-check the new m_FocusRectActive index
+        If m_FocusRectActive >= m_numOfButtons Then
+            m_FocusRectActive = m_numOfButtons - 1
+        Else
+            redrawBackBuffer
+        End If
+        
+    ElseIf leftArrow Then
+    
+        'See if a focus rect is already active
+        If (m_FocusRectActive >= 0) Then
+            m_FocusRectActive = m_FocusRectActive - 1
+        Else
+            m_FocusRectActive = m_ButtonIndex - 1
+        End If
+        
+        'Bounds-check the new m_FocusRectActive index
+        If m_FocusRectActive < 0 Then
+            m_FocusRectActive = 0
+        Else
+            redrawBackBuffer
+        End If
+    
+    End If
+
+End Sub
+
+Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean, markEventHandled As Boolean)
+
+    'If a focus rect is active, and space is pressed, activate the button with focus
+    If kSpaceBar Then
+        If m_FocusRectActive >= 0 Then
+            ListIndex = m_FocusRectActive
+        End If
+    End If
+
+End Sub
+
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
 End Sub
@@ -206,7 +248,10 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
 
     Dim mouseClickIndex As Long
     mouseClickIndex = isMouseOverButton(x, y)
-
+    
+    'Disable any keyboard-generated focus rectangles
+    m_FocusRectActive = -1
+    
     If Me.Enabled And (mouseClickIndex >= 0) Then
         
         If m_ButtonIndex <> mouseClickIndex Then
@@ -368,13 +413,12 @@ Public Sub translateButtonText()
     
 End Sub
 
-'TODO: got focus is going to be a little strange for this control, because we want to allow tabbing within the window itself...
-'      and given my past experience with VB's hideous tab mechanics, this may be messy.
+'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
 Private Sub UserControl_GotFocus()
 
     'If the mouse is *not* over the user control, assume focus was set via keyboard
     If Not m_MouseInsideUC Then
-        m_FocusRectActive = True
+        m_FocusRectActive = m_ButtonIndex
         redrawBackBuffer
     End If
 
@@ -396,6 +440,9 @@ Private Sub UserControl_Initialize()
         cMouseEvents.addInputTracker Me.hWnd, True, True, , True
         cMouseEvents.setSystemCursor IDC_HAND
         
+        cMouseEvents.requestKeyTracking Me.hWnd
+        cMouseEvents.setKeyTrackers Me.hWnd, True, , True
+        
         Set cSubclass = New cSelfSubHookCallback
         cSubclass.ssc_Subclass Me.hWnd, , , Me
         cSubclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
@@ -406,7 +453,7 @@ Private Sub UserControl_Initialize()
     End If
     
     m_MouseInsideUC = False
-    m_FocusRectActive = False
+    m_FocusRectActive = -1
     
     'Prepare a font object for use
     Set mFont = New StdFont
@@ -428,12 +475,12 @@ Private Sub UserControl_InitProperties()
     
 End Sub
 
-'TODO: figure out how to tie _LostFocus into the results of _GotFocus
+'When the control loses focus, erase any focus rects it may have active
 Private Sub UserControl_LostFocus()
 
     'If a focus rect has been drawn, remove it now
-    If (Not m_MouseInsideUC) And m_FocusRectActive Then
-        m_FocusRectActive = False
+    If (m_FocusRectActive >= 0) Then
+        m_FocusRectActive = -1
         redrawBackBuffer
     End If
 
@@ -683,6 +730,11 @@ Private Sub redrawBackBuffer()
                 'If this is the active button, paint it with a special border.
                 If i = m_ButtonIndex Then
                     GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorActiveBorder, 255, 1
+                End If
+                
+                'If this button has received focus via keyboard, paint it with a special interior border
+                If i = m_FocusRectActive Then
+                    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 2, .btBounds.Bottom - 3, btnColorActiveBorder, 255, 1
                 End If
                 
                 'Paint the caption
