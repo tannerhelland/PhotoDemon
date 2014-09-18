@@ -759,7 +759,7 @@ Private Function reportEditKeyUpdate(ByVal indexOfHwnd As Long, ByVal modifierKe
     keyEnter = isVirtualKeyDown(VK_RETURN)
     keySpaceBar = isVirtualKeyDown(VK_SPACE)
     keyBackspace = isVirtualKeyDown(VK_BACK)
-    keyTab = isVirtualKeyDown(VK_TAB)
+    keyTab = False 'isVirtualKeyDown(VK_TAB)
     keyInsert = isVirtualKeyDown(VK_INSERT)
     keyDelete = isVirtualKeyDown(VK_DELETE)
     keyEscape = isVirtualKeyDown(VK_ESCAPE)
@@ -862,7 +862,11 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             bHandled = bHandled Or reportEditKeyUpdate(0, retShiftConstants, lParam)
         End If
         
-        'If bHandled Then Debug.Print "pdInput is handling keypress: " & bHandled & ", " & nCode
+        'If bHandled Then
+        '    Debug.Print "pdInput is handling keypress: " & bHandled & ", " & nCode
+        'Else
+        '    Debug.Print "pdInput is NOT handling keypress: " & bHandled & ", " & nCode
+        'End If
                 
         'Per MSDN, return the value of CallNextHookEx
         If (Not bHandled) Then
