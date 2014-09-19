@@ -124,16 +124,14 @@ Begin VB.Form FormCurves
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin PhotoDemon.jcbutton cmdChannel 
+   Begin PhotoDemon.buttonStrip btsChannel 
       Height          =   600
-      Index           =   3
-      Left            =   11160
+      Left            =   6075
       TabIndex        =   8
       Top             =   120
-      Width           =   1650
-      _ExtentX        =   2910
+      Width           =   6840
+      _ExtentX        =   12065
       _ExtentY        =   1058
-      ButtonStyle     =   7
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -143,103 +141,6 @@ Begin VB.Form FormCurves
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "RGB"
-      ForeColor       =   3158064
-      Mode            =   1
-      Value           =   -1  'True
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormCurves.frx":0000
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
-   End
-   Begin PhotoDemon.jcbutton cmdChannel 
-      Height          =   600
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   9
-      Top             =   120
-      Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "red"
-      ForeColor       =   3158064
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormCurves.frx":0D52
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
-   End
-   Begin PhotoDemon.jcbutton cmdChannel 
-      Height          =   600
-      Index           =   1
-      Left            =   7800
-      TabIndex        =   10
-      Top             =   120
-      Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "green"
-      ForeColor       =   3158064
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormCurves.frx":1AA4
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
-   End
-   Begin PhotoDemon.jcbutton cmdChannel 
-      Height          =   600
-      Index           =   2
-      Left            =   9480
-      TabIndex        =   11
-      Top             =   120
-      Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "blue"
-      ForeColor       =   3158064
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormCurves.frx":27F6
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
    End
    Begin VB.Label lblTitle 
       Alignment       =   1  'Right Justify
@@ -371,6 +272,21 @@ Private mouseCoordDIB As pdDIB
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+'When the active channel is changed, redraw the curve display
+Private Sub btsChannel_Click(ByVal buttonIndex As Long)
+
+    m_curChannel = buttonIndex
+    
+    'Reset the selected node and mouse position
+    selectedNode = -1
+    m_MouseX = -1
+    m_MouseY = -1
+    
+    'Redraw the current preview (and curve interaction box)
+    updatePreview
+
+End Sub
 
 Private Sub cboHistogram_Click()
     updatePreview
@@ -684,29 +600,6 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
-'When the active channel is changed, redraw the curve display
-Private Sub cmdChannel_Click(Index As Integer)
-
-    Dim i As Long
-    For i = 0 To cmdChannel.Count - 1
-        If i = Index Then
-            cmdChannel(i).Value = True
-            m_curChannel = Index
-        Else
-            cmdChannel(i).Value = False
-        End If
-    Next i
-    
-    'Reset the selected node and mouse position
-    selectedNode = -1
-    m_MouseX = -1
-    m_MouseY = -1
-    
-    'Redraw the current preview (and curve interaction box)
-    updatePreview
-
-End Sub
-
 Private Sub Form_Activate()
     
     'Populate the explanation label
@@ -803,6 +696,17 @@ Private Sub Form_Load()
     'Disable previews until the form has finished initializing
     cmdBar.markPreviewStatus False
     
+    'Populate the channel selector
+    btsChannel.AddItem "red", 0
+    btsChannel.AddItem "green", 1
+    btsChannel.AddItem "blue", 2
+    btsChannel.AddItem "RGB", 3
+    
+    btsChannel.AssignImageToItem 0, "CHANNEL_RED"
+    btsChannel.AssignImageToItem 1, "CHANNEL_GREEN"
+    btsChannel.AssignImageToItem 2, "CHANNEL_BLUE"
+    btsChannel.AssignImageToItem 3, "CHANNEL_RGB"
+        
     'Populate the histogram display drop-down
     cboHistogram.Clear
     cboHistogram.AddItem " none", 0
@@ -824,7 +728,7 @@ Private Sub Form_Load()
     
     'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
     m_curChannel = 3
-    cmdChannel(3).Value = True
+    btsChannel.ListIndex = 3
     
 End Sub
 
