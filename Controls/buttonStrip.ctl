@@ -207,11 +207,10 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upAr
         End If
         
         'Bounds-check the new m_FocusRectActive index
-        If m_FocusRectActive >= m_numOfButtons Then
-            m_FocusRectActive = m_numOfButtons - 1
-        Else
-            redrawBackBuffer
-        End If
+        If m_FocusRectActive >= m_numOfButtons Then m_FocusRectActive = 0
+        
+        'Redraw the button strip
+        redrawBackBuffer
         
     ElseIf leftArrow Then
     
@@ -223,12 +222,11 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upAr
         End If
         
         'Bounds-check the new m_FocusRectActive index
-        If m_FocusRectActive < 0 Then
-            m_FocusRectActive = 0
-        Else
-            redrawBackBuffer
-        End If
-    
+        If m_FocusRectActive < 0 Then m_FocusRectActive = m_numOfButtons - 1
+        
+        'Redraw the button strip
+        redrawBackBuffer
+        
     End If
 
 End Sub
