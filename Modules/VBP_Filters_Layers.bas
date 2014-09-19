@@ -2722,6 +2722,92 @@ Public Function GrayscaleDIB(ByRef srcDIB As pdDIB, Optional ByVal suppressMessa
     
 End Function
 
+'Quickly modify RGB values by some constant factor.
+' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
+Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmount As Double = 1#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+
+    'Unpremultiply the source DIB, as necessary
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha False
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = srcDIB.getDIBColorDepth \ 8
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
+    End If
+    
+    'Color values
+    Dim r As Long, g As Long, b As Long
+    
+    'Look-up tables are the easiest way to handle this type of conversion
+    Dim scaleLookup() As Byte
+    ReDim scaleLookup(0 To 255) As Byte
+    
+    For x = 0 To 255
+        r = x * scaleAmount
+        If r < 0 Then r = 0
+        If r > 255 Then r = 255
+        scaleLookup(x) = r
+    Next x
+    
+    'Now we can loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+            
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'Assign the look-up table values
+        ImageData(QuickVal + 2, y) = scaleLookup(r)
+        ImageData(QuickVal + 1, y) = scaleLookup(g)
+        ImageData(QuickVal, y) = scaleLookup(b)
+                
+    Next y
+        If Not suppressMessages Then
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
+        End If
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Premultiply the source DIB, as necessary
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha True
+    
+    If cancelCurrentAction Then ScaleDIBRGBValues = 0 Else ScaleDIBRGBValues = 1
+    
+End Function
+
 'Apply bilateral smoothing (separable implementation, so faster but lower quality) to an arbitrary DIB
 ' INPUT RANGES:
 ' 1) kernelRadius: Any integer 1+
