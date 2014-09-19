@@ -4,7 +4,7 @@ Begin VB.Form FormLevels
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Adjust Image Levels"
-   ClientHeight    =   6525
+   ClientHeight    =   7545
    ClientLeft      =   45
    ClientTop       =   195
    ClientWidth     =   12870
@@ -20,24 +20,33 @@ Begin VB.Form FormLevels
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   435
+   ScaleHeight     =   503
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   858
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdAutoLevels 
-      Caption         =   "Auto-Levels"
-      Height          =   450
-      Left            =   8040
-      TabIndex        =   21
-      Top             =   5250
-      Width           =   2655
+      Caption         =   "set levels automatically"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   600
+      Left            =   120
+      TabIndex        =   17
+      Top             =   6000
+      Width           =   5640
    End
    Begin PhotoDemon.jcbutton cmdColorSelect 
       Height          =   375
       Index           =   0
-      Left            =   7710
-      TabIndex        =   19
-      Top             =   3720
+      Left            =   7740
+      TabIndex        =   15
+      Top             =   3135
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
@@ -63,9 +72,9 @@ Begin VB.Form FormLevels
    End
    Begin PhotoDemon.colorSelector csShadow 
       Height          =   375
-      Left            =   7200
-      TabIndex        =   17
-      Top             =   3720
+      Left            =   7230
+      TabIndex        =   13
+      Top             =   3135
       Width           =   495
       _ExtentX        =   873
       _ExtentY        =   661
@@ -83,7 +92,7 @@ Begin VB.Form FormLevels
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   473
       TabIndex        =   12
-      Top             =   4950
+      Top             =   4590
       Width           =   7095
    End
    Begin VB.PictureBox picInputArrows 
@@ -98,7 +107,7 @@ Begin VB.Form FormLevels
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   473
       TabIndex        =   11
-      Top             =   3390
+      Top             =   2790
       Width           =   7095
    End
    Begin VB.PictureBox picHistogram 
@@ -112,7 +121,7 @@ Begin VB.Form FormLevels
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   444
       TabIndex        =   10
-      Top             =   1080
+      Top             =   480
       Width           =   6690
    End
    Begin VB.PictureBox picOutputGradient 
@@ -126,7 +135,7 @@ Begin VB.Form FormLevels
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   444
       TabIndex        =   9
-      Top             =   4560
+      Top             =   4200
       Width           =   6690
    End
    Begin PhotoDemon.textUpDown tudLevels 
@@ -134,7 +143,7 @@ Begin VB.Form FormLevels
       Index           =   0
       Left            =   6000
       TabIndex        =   4
-      Top             =   3720
+      Top             =   3120
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
@@ -154,7 +163,7 @@ Begin VB.Form FormLevels
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5775
+      Top             =   6795
       Width           =   12870
       _ExtentX        =   22701
       _ExtentY        =   1323
@@ -183,7 +192,7 @@ Begin VB.Form FormLevels
       Index           =   1
       Left            =   8760
       TabIndex        =   5
-      Top             =   3720
+      Top             =   3120
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -206,7 +215,7 @@ Begin VB.Form FormLevels
       Index           =   2
       Left            =   11490
       TabIndex        =   6
-      Top             =   3720
+      Top             =   3120
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
@@ -228,7 +237,7 @@ Begin VB.Form FormLevels
       Index           =   3
       Left            =   6000
       TabIndex        =   7
-      Top             =   5280
+      Top             =   4920
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -248,7 +257,7 @@ Begin VB.Form FormLevels
       Index           =   4
       Left            =   11355
       TabIndex        =   8
-      Top             =   5280
+      Top             =   4920
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -264,128 +273,11 @@ Begin VB.Form FormLevels
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin PhotoDemon.jcbutton cmdChannel 
-      Height          =   600
-      Index           =   3
-      Left            =   11040
-      TabIndex        =   13
-      Top             =   120
-      Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "RGB"
-      ForeColor       =   3158064
-      Mode            =   1
-      Value           =   -1  'True
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":0852
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
-   End
-   Begin PhotoDemon.jcbutton cmdChannel 
-      Height          =   600
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   14
-      Top             =   120
-      Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "red"
-      ForeColor       =   3158064
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":15A4
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
-   End
-   Begin PhotoDemon.jcbutton cmdChannel 
-      Height          =   600
-      Index           =   1
-      Left            =   7680
-      TabIndex        =   15
-      Top             =   120
-      Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "green"
-      ForeColor       =   3158064
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":22F6
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
-   End
-   Begin PhotoDemon.jcbutton cmdChannel 
-      Height          =   600
-      Index           =   2
-      Left            =   9360
-      TabIndex        =   16
-      Top             =   120
-      Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "blue"
-      ForeColor       =   3158064
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":3048
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
-   End
    Begin PhotoDemon.colorSelector csHighlight 
       Height          =   375
       Left            =   10920
-      TabIndex        =   18
-      Top             =   3720
+      TabIndex        =   14
+      Top             =   3135
       Width           =   495
       _ExtentX        =   873
       _ExtentY        =   661
@@ -394,8 +286,8 @@ Begin VB.Form FormLevels
       Height          =   375
       Index           =   1
       Left            =   10530
-      TabIndex        =   20
-      Top             =   3720
+      TabIndex        =   16
+      Top             =   3135
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
@@ -413,10 +305,49 @@ Begin VB.Form FormLevels
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":3D9A
+      PictureNormal   =   "VBP_FormImageLevels.frx":0852
       CaptionEffects  =   0
       ToolTip         =   "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
       ColorScheme     =   3
+   End
+   Begin PhotoDemon.buttonStrip btsChannel 
+      Height          =   600
+      Left            =   6030
+      TabIndex        =   18
+      Top             =   6000
+      Width           =   6675
+      _ExtentX        =   11774
+      _ExtentY        =   1058
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "channel"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   6000
+      TabIndex        =   19
+      Top             =   5640
+      Width           =   810
    End
    Begin VB.Label lblOutput 
       AutoSize        =   -1  'True
@@ -435,7 +366,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   4200
+      Top             =   3840
       Width           =   1350
    End
    Begin VB.Label lblInput 
@@ -455,7 +386,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   720
+      Top             =   120
       Width           =   1200
    End
 End
@@ -468,9 +399,9 @@ Attribute VB_Exposed = False
 'Image Levels
 'Copyright ©2006-2014 by Tanner Helland
 'Created: 22/July/06
-'Last updated: 11/June/14
-'Last update: add a best-in-class Auto Levels implementation.  (Seriously, PD's algorithm kicks GIMP and Paint.NET's collective
-'              auto-leveling asses :)
+'Last updated: 19/September/14
+'Last update: further improvements to the interface, including increasing whitespace, fixing small layout annoyances,
+'              adding a channel button strip, and (hopefully) bringing the whole thing into line with the Curves dialog
 '
 'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool, and identical
 ' values entered into both programs should yield an identical image.
@@ -541,6 +472,26 @@ Private m_DisableMaxMinLimits As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+'When a new channel is selected, refresh all text box values to match the new channel's stored values
+Private Sub btsChannel_Click(ByVal buttonIndex As Long)
+
+    m_curChannel = buttonIndex
+    
+    'Draw the relevant histogram onto the histogram box
+    If Not hDIB(m_curChannel) Is Nothing Then
+        BitBlt picHistogram.hDC, 1, 0, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
+    End If
+    picHistogram.Picture = picHistogram.Image
+    
+    'Update the text boxes to match the values for the selected channel
+    updateTextBoxes
+    
+    'Update the preview.  (The preview itself doesn't actually need to be redrawn, but that function is responsible for
+    ' syncing the text box values with the arrow positions.)
+    updatePreview
+
+End Sub
 
 'Auto levels wil calculate new levels for the user, using the getIdealLevelParamString function below
 Private Sub cmdAutoLevels_Click()
@@ -859,10 +810,12 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    
+    'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
+    m_curChannel = 3
+    btsChannel.ListIndex = m_curChannel
         
     'Reset all values in our tracking array.
-    m_curChannel = 3
-        
     Dim i As Long
     For i = 0 To 3
     
@@ -908,32 +861,6 @@ Private Sub updateTextBoxes()
     
     'Reinstate automatic preview updates
     cmdBar.markPreviewStatus True
-
-End Sub
-
-'When a new channel is selected, refresh all text box values to match the new channel's stored values
-Private Sub cmdChannel_Click(Index As Integer)
-
-    Dim i As Long
-    For i = 0 To cmdChannel.Count - 1
-        If i = Index Then
-            cmdChannel(i).Value = True
-            m_curChannel = Index
-        Else
-            cmdChannel(i).Value = False
-        End If
-    Next i
-    
-    'Draw the relevant histogram onto the histogram box
-    BitBlt picHistogram.hDC, 1, 0, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
-    picHistogram.Picture = picHistogram.Image
-    
-    'Update the text boxes to match the values for the selected channel
-    updateTextBoxes
-    
-    'Update the preview.  (The preview itself doesn't actually need to be redrawn, but that function is responsible for
-    ' syncing the text box values with the arrow positions.)
-    updatePreview
 
 End Sub
 
@@ -1230,8 +1157,10 @@ Private Sub Form_Activate()
     ' when the dialog is first loaded.
     prepHistogramOverlays
         
-    'Make RGB adjustments the default
+    'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
     m_curChannel = 3
+    btsChannel.ListIndex = m_curChannel
+    
     m_DisableMaxMinLimits = False
     
     'Draw the default histogram onto the histogram box
@@ -1338,9 +1267,16 @@ Private Sub Form_Load()
     'Prevent automatic preview refreshes until we have finished initializing the dialog
     cmdBar.markPreviewStatus False
     
-    'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
-    m_curChannel = 3
-    cmdChannel(3).Value = True
+    'Populate the channel selector
+    btsChannel.AddItem "red", 0
+    btsChannel.AddItem "green", 1
+    btsChannel.AddItem "blue", 2
+    btsChannel.AddItem "RGB", 3
+    
+    btsChannel.AssignImageToItem 0, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
+    btsChannel.AssignImageToItem 1, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
+    btsChannel.AssignImageToItem 2, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
+    btsChannel.AssignImageToItem 3, "CHANNEL_RGB"
     
     'Prepare the custom input handlers
     Set cMouseEventsIn = New pdInput
