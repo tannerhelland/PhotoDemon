@@ -1066,6 +1066,9 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
                 Dim gdiPixelFormat As Long
                 GdipGetImagePixelFormat gdiBitmap, gdiPixelFormat
                 
+                'Create the DIB anew as necessary
+                If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+                
                 'If the image has an alpha channel, create a 32bpp DIB to receive it
                 If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
                     dstDIB.createBlank tmpRect.fWidth, tmpRect.fHeight, 32
