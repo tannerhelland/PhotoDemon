@@ -258,3 +258,15 @@ End Enum
 #If False Then
     Private Const PDIDE_INTERNAL = 0, PDIDE_FREEIMAGE = 1, PDIDE_GDIPLUS = 2, PDIDE_VBLOADPICTURE = 3
 #End If
+
+'Some UI DIBs are generated at run-time.  These DIBs can be requested by using the getRuntimeUIDIB() function.
+Public Enum PD_RUNTIME_UI_DIB
+    PDRUID_CHANNEL_RED = 0
+    PDRUID_CHANNEL_GREEN = 1
+    PDRUID_CHANNEL_BLUE = 2
+    PDRUID_CHANNEL_RGB = 3
+End Enum
+
+#If False Then
+    Private Const PDRUID_CHANNEL_RED = 0, PDRUID_CHANNEL_GREEN = 1, PDRUID_CHANNEL_BLUE = 2, PDRUID_CHANNEL_RGB = 3
+#End If

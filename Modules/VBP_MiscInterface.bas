@@ -1534,3 +1534,44 @@ Public Sub populateBlendModeComboBox(ByRef dstCombo As ComboBox, Optional ByVal 
     dstCombo.ListIndex = blendIndex
     
 End Sub
+
+'In an attempt to better serve high-DPI users, some of PD's stock UI icons are now generated at runtime.
+' Note that the requested size is in PIXELS, so it is up to the caller to determine the proper size IN PIXELS of
+' any requested UI elements.  (We would auto-adjust for DPI here, but some objects do not scale linearly.)
+Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByVal dibSize As Long = 16, Optional ByVal dibPadding As Long = 0, Optional ByVal backColor As Long = 0) As pdDIB
+
+    'Create the target DIB
+    Set getRuntimeUIDIB = New pdDIB
+    getRuntimeUIDIB.createBlank dibSize, dibSize, 32, backColor, 0
+    
+    'Dynamically create the requested icon
+    Select Case dibType
+    
+        'Red, green, and blue channel icons are all created similarly.
+        Case PDRUID_CHANNEL_RED, PDRUID_CHANNEL_GREEN, PDRUID_CHANNEL_BLUE
+        
+            Dim circleColor As Long
+            
+            If dibType = PDRUID_CHANNEL_RED Then
+                circleColor = RGB(220, 40, 36)
+            ElseIf dibType = PDRUID_CHANNEL_GREEN Then
+                circleColor = RGB(60, 207, 49)
+            ElseIf dibType = PDRUID_CHANNEL_BLUE Then
+                circleColor = RGB(49, 123, 207)
+            End If
+            
+            'Create a white border just within the bounds of the DIB
+            'GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, 2, 2, dibSize - 4, dibSize - 4, vbWhite, True
+            
+            'Draw a colored circle just within the bounds of the DIB
+            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, 2, 2, dibSize - 4, dibSize - 4, circleColor, True
+        
+        Case PDRUID_CHANNEL_RGB
+    
+    End Select
+    
+    'If the user requested any padding, apply it now
+    padDIB getRuntimeUIDIB, dibPadding
+    
+
+End Function
