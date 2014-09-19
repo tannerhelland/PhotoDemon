@@ -120,7 +120,7 @@ Begin VB.Form FormCurves
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "channel:"
+         Caption         =   "channel"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -136,7 +136,7 @@ Begin VB.Form FormCurves
          Left            =   120
          TabIndex        =   8
          Top             =   5160
-         Width           =   900
+         Width           =   810
       End
    End
    Begin VB.PictureBox picContainer 
@@ -274,7 +274,7 @@ Begin VB.Form FormCurves
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "show:"
+      Caption         =   "display"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -290,7 +290,7 @@ Begin VB.Form FormCurves
       Left            =   6000
       TabIndex        =   15
       Top             =   6360
-      Width           =   645
+      Width           =   735
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent
@@ -871,7 +871,7 @@ Private Sub Form_Load()
     
     'Populate the options selector
     btsOptions.AddItem "tool", 0
-    btsOptions.AddItem "display options", 1
+    btsOptions.AddItem "options", 1
     btsOptions.ListIndex = 0
     
     'Initialize the dynamic mouse coordinate font and DIB display
