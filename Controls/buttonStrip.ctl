@@ -403,10 +403,10 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
 End Sub
 
 'Assign a DIB to a button entry.  Disabled and hover states are automatically generated.
-Public Sub AssignImageToItem(ByVal itemIndex As Long, ByVal resName As String)
+Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB)
     
-    Dim srcDIB As pdDIB
-    loadResourceToDIB resName, srcDIB
+    'Load the requested resource DIB, as necessary
+    If Len(resName) > 0 Then loadResourceToDIB resName, srcDIB
     
     With m_Buttons(itemIndex)
         
