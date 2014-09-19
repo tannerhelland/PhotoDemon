@@ -702,9 +702,14 @@ Private Sub Form_Load()
     btsChannel.AddItem "blue", 2
     btsChannel.AddItem "RGB", 3
     
-    btsChannel.AssignImageToItem 0, "CHANNEL_RED"
-    btsChannel.AssignImageToItem 1, "CHANNEL_GREEN"
-    btsChannel.AssignImageToItem 2, "CHANNEL_BLUE"
+    'btsChannel.AssignImageToItem 0, "CHANNEL_RED"
+    'btsChannel.AssignImageToItem 1, "CHANNEL_GREEN"
+    'btsChannel.AssignImageToItem 2, "CHANNEL_BLUE"
+    'btsChannel.AssignImageToItem 3, "CHANNEL_RGB"
+    
+    btsChannel.AssignImageToItem 0, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
+    btsChannel.AssignImageToItem 1, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
+    btsChannel.AssignImageToItem 2, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
     btsChannel.AssignImageToItem 3, "CHANNEL_RGB"
         
     'Populate the histogram display drop-down
