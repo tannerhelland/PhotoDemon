@@ -112,7 +112,6 @@ Attribute mFont.VB_VarHelpID = -1
 ' is the ENGLISH CAPTION ONLY.  A translated caption, if one exists, will be stored in m_TranslatedCaption, after PD's
 ' central themer invokes the translateCaption function.
 Private m_Caption As String
-Private m_TranslatedCaption As String
 
 'Current button indices
 Private m_ButtonIndex As Long
@@ -122,9 +121,11 @@ Private m_ButtonHoverIndex As Long
 Private Type buttonEntry
     btCaption As String             'Current button caption
     btBounds As RECT                'Boundaries of this button (full clickable area, inclusive - meaning 1px border NOT included)
-    btCaptionRect As RECT           'Bounding rect of the caption.  This must be *MANUALLY* top-aligned, as DrawText doesn't support simultaneous
-                                    ' use of word-wrap and vertical centering.  At present, this rect is the same as the button rect, but that
-                                    ' might change if/when we add support for images.
+    btCaptionRect As RECT           'Bounding rect of the caption.  This is dynamically calculated by the updateControlSize function
+    btImage As pdDIB                'Optional image to use with the button.
+    btImageDisabled As pdDIB        'Auto-created disabled version of the image
+    btImageHover As pdDIB           'Auto-created hover (glow) version of the image
+    btImageCoords As POINTAPI       '(x, y) position of the button image, if any
 End Type
 
 Private m_Buttons() As buttonEntry
@@ -142,6 +143,10 @@ Private m_FocusRectActive As Long
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
 Private m_ToolString As String
+
+'Padding between images (if any) and text.  This is automatically adjusted according to DPI, so set this value as it would be at the
+' Windows default of 96 DPI
+Private Const IMG_TEXT_PADDING As Long = 4
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
@@ -389,8 +394,39 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     'Copy the new button into place
     m_Buttons(itemIndex).btCaption = srcString
     
+    'Erase any button references
+    Set m_Buttons(i).btImage = Nothing
+    Set m_Buttons(i).btImageDisabled = Nothing
+    Set m_Buttons(i).btImageHover = Nothing
+    
     'Before we can redraw the control, we need to recalculate all button positions - do that now!
     updateControlSize
+
+End Sub
+
+'Assign a DIB to a button entry.  Disabled and hover states are automatically generated.
+Public Sub AssignImageToItem(ByVal itemIndex As Long, ByVal resName As String)
+    
+    Dim srcDIB As pdDIB
+    loadResourceToDIB resName, srcDIB
+    
+    With m_Buttons(itemIndex)
+        
+        'Start by making a copy of the source DIB
+        Set .btImage = New pdDIB
+        .btImage.createFromExistingDIB srcDIB
+        
+        'Next, create a grayscale copy of the image for the disabled state
+        Set .btImageDisabled = New pdDIB
+        .btImageDisabled.createFromExistingDIB .btImage
+        GrayscaleDIB .btImageDisabled, True
+        
+        'Finally, create a "glowy" hovered version of the image
+        Set .btImageHover = New pdDIB
+        .btImageHover.createFromExistingDIB .btImage
+        ScaleDIBRGBValues .btImageHover, 1.2, True
+    
+    End With
 
 End Sub
 
@@ -604,9 +640,15 @@ Private Sub updateControlSize()
         'Calculate the width of this button (which may deviate by 1px between buttons, due to integer truncation)
         buttonWidth = m_Buttons(i).btBounds.Right - m_Buttons(i).btBounds.Left
         
+        'If a button has an image, we have to alter its sizing somewhat.  To make sure word-wrap is calculated correctly,
+        ' remove the width of the image, plus padding, in advance.
+        If Not (m_Buttons(i).btImage Is Nothing) Then
+            buttonWidth = buttonWidth - (m_Buttons(i).btImage.getDIBWidth + fixDPI(IMG_TEXT_PADDING))
+        End If
+        
         'Retrieve the expected size of the string, in pixels
         strWidth = curFont.getWidthOfString(m_Buttons(i).btCaption)
-        
+                
         'If the string is too long for its containing button, activate word wrap and measure again
         If strWidth > buttonWidth Then
             
@@ -620,14 +662,44 @@ Private Sub updateControlSize()
             strHeight = curFont.getHeightOfString(m_Buttons(i).btCaption)
         End If
         
-        'Use the size of the string and the size of the button to determine optimal painting position (using top-left alignment).
-        ' NOTE: at present, the caption bounding rect almost exactly mimics the full button rect.  This will need to be modified
-        '       if/when button image support is added (as the Curve dialog would require).
+        'Use the size of the string, the size of the button's image (if any), and the size of the button itself to determine
+        ' optimal painting position (using top-left alignment).
         With m_Buttons(i)
-            .btCaptionRect.Left = .btBounds.Left
+        
+            'No image...
+            If (.btImage Is Nothing) Then
+                .btCaptionRect.Left = .btBounds.Left
+            
+            'Image...
+            Else
+                
+                If strWidth < buttonWidth Then
+                    .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImage.getDIBWidth + fixDPI(IMG_TEXT_PADDING)
+                Else
+                    .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImage.getDIBWidth + fixDPI(IMG_TEXT_PADDING) * 2
+                End If
+                
+                '.btCaptionRect.Left = .btBounds.Left + fixDPI(IMG_TEXT_PADDING) * 2 + m_Buttons(i).btImage.getDIBWidth
+            
+            End If
+            
             .btCaptionRect.Top = .btBounds.Top + (buttonHeight - strHeight) \ 2
             .btCaptionRect.Right = .btBounds.Right
             .btCaptionRect.Bottom = .btBounds.Bottom
+        
+            'Calculate a position for the button image, if any
+            If Not (.btImage Is Nothing) Then
+            
+                If strWidth < buttonWidth Then
+                    .btImageCoords.x = .btBounds.Left + ((.btCaptionRect.Right - .btCaptionRect.Left) - strWidth) \ 2
+                Else
+                    .btImageCoords.x = .btBounds.Left + fixDPI(IMG_TEXT_PADDING)
+                End If
+                
+                .btImageCoords.y = .btBounds.Top + (buttonHeight - .btImage.getDIBHeight) \ 2
+            
+            End If
+        
         End With
         
     Next i
@@ -727,14 +799,19 @@ Private Sub redrawBackBuffer()
                     GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, .btBounds.Right + 1, 0, .btBounds.Right + 1, m_BackBuffer.getDIBHeight, btnColorInactiveBorder, 255, 1
                 End If
                 
-                'If this is the active button, paint it with a special border.
-                If i = m_ButtonIndex Then
-                    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorActiveBorder, 255, 1
-                End If
+                'Disable the next block of rendering if the control is disabled.
+                If Me.Enabled Then
                 
-                'If this button has received focus via keyboard, paint it with a special interior border
-                If i = m_FocusRectActive Then
-                    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 2, .btBounds.Bottom - 3, btnColorActiveBorder, 255, 1
+                    'If this is the active button, paint it with a special border.
+                    If i = m_ButtonIndex Then
+                        GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorActiveBorder, 255, 1
+                    End If
+                    
+                    'If this button has received focus via keyboard, paint it with a special interior border
+                    If i = m_FocusRectActive Then
+                        GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 2, .btBounds.Bottom - 3, btnColorActiveBorder, 255, 1
+                    End If
+                    
                 End If
                 
                 'Paint the caption
@@ -749,23 +826,31 @@ Private Sub redrawBackBuffer()
                 End If
                 
                 curFont.setFontColor curColor
-                
-                'Note that the specific paint call used varies according to the word-wrap requirement for this button
                 curFont.drawCenteredTextToRect .btCaption, .btCaptionRect
-            
+                
+                'Paint the image, if any
+                If Not (.btImage Is Nothing) Then
+                    
+                    If Me.Enabled Then
+                    
+                        If i = m_ButtonHoverIndex Then
+                            .btImageHover.alphaBlendToDC m_BackBuffer.getDIBDC, 255, .btImageCoords.x, .btImageCoords.y
+                        Else
+                            .btImage.alphaBlendToDC m_BackBuffer.getDIBDC, 255, .btImageCoords.x, .btImageCoords.y
+                        End If
+                        
+                    Else
+                        .btImageDisabled.alphaBlendToDC m_BackBuffer.getDIBDC, 255, .btImageCoords.x, .btImageCoords.y
+                    End If
+                    
+                End If
+                
             End With
         
         Next i
         
     End If
-    
-    'If a focus rect is required (because focus was set via keyboard, not mouse), render it now.
-    'If m_FocusRectActive And m_MouseInsideUC Then m_FocusRectActive = False
-    '
-    'If m_FocusRectActive And Me.Enabled Then
-    '    GDI_Plus.GDIPlusDrawRoundRect m_BackBuffer, 0, 0, clickableRect.Right, m_BackBuffer.getDIBHeight, 3, chkBoxColorFill, True, False
-    'End If
-    
+        
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
     If Not g_UserModeFix Then
         
