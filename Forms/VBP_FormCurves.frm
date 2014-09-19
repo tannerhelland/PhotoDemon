@@ -157,7 +157,7 @@ Begin VB.Form FormCurves
          Height          =   600
          Left            =   240
          TabIndex        =   9
-         Top             =   1380
+         Top             =   1260
          Width           =   6675
          _ExtentX        =   11774
          _ExtentY        =   1058
@@ -193,7 +193,7 @@ Begin VB.Form FormCurves
          Height          =   600
          Left            =   240
          TabIndex        =   13
-         Top             =   3780
+         Top             =   3900
          Width           =   6675
          _ExtentX        =   11774
          _ExtentY        =   1058
@@ -225,7 +225,7 @@ Begin VB.Form FormCurves
          Index           =   4
          Left            =   120
          TabIndex        =   14
-         Top             =   3360
+         Top             =   3480
          Width           =   3135
       End
       Begin VB.Label lblTitle 
@@ -267,7 +267,7 @@ Begin VB.Form FormCurves
          Index           =   1
          Left            =   120
          TabIndex        =   10
-         Top             =   960
+         Top             =   840
          Width           =   1995
       End
    End
@@ -542,6 +542,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
         
 End Sub
 
+'The bottom button bar toggle which panel is visible
 Private Sub btsOptions_Click(ByVal buttonIndex As Long)
     
     If buttonIndex = 0 Then
@@ -629,6 +630,9 @@ Private Sub cmdBar_RandomizeClick()
         Next j
     
     Next i
+    
+    'Don't change the active panel during a randomize event
+    btsOptions.ListIndex = 0
     
 End Sub
 
@@ -735,7 +739,7 @@ Private Sub cmdBar_ResetClick()
 
     resetCurvePoints
     
-    'Also, reset will automatically select the first entry in a combo box.  In this case, we actually want the 1st one.
+    'Also, reset will automatically select the first entry in a button strip.
     btsHistogram.ListIndex = 1
     
 End Sub
@@ -853,10 +857,12 @@ Private Sub Form_Load()
     btsHistogram.AddItem "logarithmic", 2
     btsHistogram.ListIndex = 1
     
-    'Populate the grid on/of selector
+    'Populate the grid on/off selector
     btsGrid.AddItem "on", 0
     btsGrid.AddItem "off", 1
     btsGrid.ListIndex = 0
+    picContainer(0).Visible = True
+    picContainer(1).Visible = False
     
     'Populate the original curve (diagonal line) selector
     btsDiagonalLine.AddItem "on", 0
