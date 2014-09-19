@@ -369,6 +369,11 @@ Public Property Let ListIndex(ByVal newIndex As Long)
     
 End Property
 
+'ListCount is necessary for the command bar's "Randomize" feature
+Public Property Get ListCount() As Long
+    ListCount = m_numOfButtons
+End Property
+
 'To simplify translation handling, this public sub is used to add buttons to the UC.  An optional index can also be specified.
 Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long = -1)
 

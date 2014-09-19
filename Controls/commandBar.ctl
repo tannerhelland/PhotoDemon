@@ -385,6 +385,10 @@ Private Sub cmdRandomize_Click()
             Case "HScrollBar", "VScrollBar"
                 eControl.Value = eControl.Min + Int(Rnd * (eControl.Max - eControl.Min + 1))
             
+            'Button strips work like list and drop-down boxes
+            Case "buttonStrip"
+                eControl.ListIndex = Int(Rnd * eControl.ListCount)
+                
             'List boxes and combo boxes are assigned a random ListIndex
             Case "ListBox", "ComboBox"
             
@@ -648,6 +652,10 @@ Private Sub cmdReset_Click()
                     eControl.Value = True
                     optButtonHasBeenSet = True
                 End If
+                
+            'Button strips are set to their first entry
+            Case "buttonStrip"
+                eControl.ListIndex = 0
             
             'Scroll bars obey the same rules as other numeric controls
             Case "HScrollBar", "VScrollBar"
@@ -954,9 +962,13 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
         'We only want to write out the value property of relevant controls.  Check that list now.
         Select Case controlType
         
-            'Our custom controls all have a .Value property
+            'Most custom controls all have a .Value property
             Case "sliderTextCombo", "smartCheckBox", "smartOptionButton", "textUpDown"
                 controlValue = Str(eControl.Value)
+            
+            'Button strips have a .ListIndex property
+            Case "buttonStrip"
+                controlValue = Str(eControl.ListIndex)
             
             'Color pickers have a .Color property
             Case "colorSelector"
@@ -1089,7 +1101,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
             'An entry exists!  Assign out its value according to the type of control this is.
             Select Case controlType
             
-                'Our custom controls all have a .Value property
+                'Most custom controls all have a .Value property
                 Case "sliderTextCombo", "textUpDown"
                     eControl.Value = CDblCustom(controlValue)
                     
@@ -1098,6 +1110,14 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                 
                 Case "smartOptionButton"
                     eControl.Value = CBool(controlValue)
+                    
+                'Button strips have a .ListIndex property
+                Case "buttonStrip"
+                    If CLng(controlValue) < eControl.ListCount Then
+                        eControl.ListIndex = CLng(controlValue)
+                    Else
+                        If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1
+                    End If
                 
                 'Color pickers have a .Color property
                 Case "colorSelector"
