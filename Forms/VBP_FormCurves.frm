@@ -43,40 +43,6 @@ Begin VB.Form FormCurves
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.ComboBox cboHistogram 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   8040
-      Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   6060
-      Width           =   4815
-   End
-   Begin VB.PictureBox picDraw 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5160
-      Left            =   6000
-      ScaleHeight     =   344
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   464
-      TabIndex        =   2
-      Top             =   840
-      Width           =   6960
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
@@ -86,51 +52,13 @@ Begin VB.Form FormCurves
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartCheckBox chkGrid 
-      Height          =   330
-      Left            =   6240
-      TabIndex        =   6
-      Top             =   6480
-      Width           =   6600
-      _ExtentX        =   11642
-      _ExtentY        =   582
-      Caption         =   "display grid"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartCheckBox chkDiagonal 
-      Height          =   330
-      Left            =   6240
-      TabIndex        =   7
-      Top             =   6960
-      Width           =   6600
-      _ExtentX        =   11642
-      _ExtentY        =   582
-      Caption         =   "display original curve (diagonal line)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.buttonStrip btsChannel 
+   Begin PhotoDemon.buttonStrip btsOptions 
       Height          =   600
-      Left            =   6075
-      TabIndex        =   8
-      Top             =   120
-      Width           =   6840
-      _ExtentX        =   12065
+      Left            =   6150
+      TabIndex        =   3
+      Top             =   6720
+      Width           =   6675
+      _ExtentX        =   11774
       _ExtentY        =   1058
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -142,14 +70,214 @@ Begin VB.Form FormCurves
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6150
+      Index           =   0
+      Left            =   5880
+      ScaleHeight     =   410
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   481
+      TabIndex        =   4
+      Top             =   60
+      Width           =   7215
+      Begin VB.PictureBox picDraw 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   5160
+         Left            =   120
+         ScaleHeight     =   344
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   464
+         TabIndex        =   6
+         Top             =   0
+         Width           =   6960
+      End
+      Begin PhotoDemon.buttonStrip btsChannel 
+         Height          =   600
+         Left            =   270
+         TabIndex        =   7
+         Top             =   5520
+         Width           =   6675
+         _ExtentX        =   11774
+         _ExtentY        =   1058
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "channel:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         TabIndex        =   8
+         Top             =   5160
+         Width           =   900
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6150
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   410
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   481
+      TabIndex        =   5
+      Top             =   60
+      Width           =   7215
+      Begin PhotoDemon.buttonStrip btsHistogram 
+         Height          =   600
+         Left            =   240
+         TabIndex        =   9
+         Top             =   1380
+         Width           =   6675
+         _ExtentX        =   11774
+         _ExtentY        =   1058
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.buttonStrip btsGrid 
+         Height          =   600
+         Left            =   240
+         TabIndex        =   11
+         Top             =   2580
+         Width           =   6675
+         _ExtentX        =   11774
+         _ExtentY        =   1058
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.buttonStrip btsDiagonalLine 
+         Height          =   600
+         Left            =   240
+         TabIndex        =   13
+         Top             =   3780
+         Width           =   6675
+         _ExtentX        =   11774
+         _ExtentY        =   1058
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "original curve (diagonal line):"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   4
+         Left            =   120
+         TabIndex        =   14
+         Top             =   3360
+         Width           =   3135
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "grid:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   120
+         TabIndex        =   12
+         Top             =   2160
+         Width           =   510
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "histogram overlay:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   120
+         TabIndex        =   10
+         Top             =   960
+         Width           =   1995
+      End
+   End
    Begin VB.Label lblTitle 
-      Alignment       =   1  'Right Justify
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "histogram overlay:"
+      Caption         =   "show:"
       BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -157,12 +285,12 @@ Begin VB.Form FormCurves
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   240
-      Index           =   1
-      Left            =   6240
-      TabIndex        =   4
-      Top             =   6120
-      Width           =   1605
+      Height          =   285
+      Index           =   2
+      Left            =   6000
+      TabIndex        =   15
+      Top             =   6360
+      Width           =   645
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent
@@ -178,7 +306,7 @@ Begin VB.Form FormCurves
       ForeColor       =   &H00404040&
       Height          =   1440
       Left            =   240
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   5910
       Width           =   5535
       WordWrap        =   -1  'True
@@ -193,8 +321,8 @@ Attribute VB_Exposed = False
 'Image Curves Adjustment Dialog
 'Copyright ©2008-2014 by Tanner Helland
 'Created: sometime 2008
-'Last updated: 06/May/14
-'Last update: add individual handling for each of red, green, blue, and luminance channels.
+'Last updated: 19/September/14
+'Last update: interface improvements
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -288,15 +416,15 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
 
 End Sub
 
-Private Sub cboHistogram_Click()
+Private Sub btsDiagonalLine_Click(ByVal buttonIndex As Long)
     updatePreview
 End Sub
 
-Private Sub chkDiagonal_Click()
+Private Sub btsGrid_Click(ByVal buttonIndex As Long)
     updatePreview
 End Sub
 
-Private Sub chkGrid_Click()
+Private Sub btsHistogram_Click(ByVal buttonIndex As Long)
     updatePreview
 End Sub
 
@@ -412,6 +540,18 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
         
+End Sub
+
+Private Sub btsOptions_Click(ByVal buttonIndex As Long)
+    
+    If buttonIndex = 0 Then
+        picContainer(0).Visible = True
+        picContainer(1).Visible = False
+    Else
+        picContainer(0).Visible = False
+        picContainer(1).Visible = True
+    End If
+    
 End Sub
 
 'Nodes from the Curves dialog must be manually added to the preset file when requested.  This event will be raised
@@ -596,7 +736,7 @@ Private Sub cmdBar_ResetClick()
     resetCurvePoints
     
     'Also, reset will automatically select the first entry in a combo box.  In this case, we actually want the 1st one.
-    cboHistogram.ListIndex = 1
+    btsHistogram.ListIndex = 1
     
 End Sub
 
@@ -702,22 +842,31 @@ Private Sub Form_Load()
     btsChannel.AddItem "blue", 2
     btsChannel.AddItem "RGB", 3
     
-    'btsChannel.AssignImageToItem 0, "CHANNEL_RED"
-    'btsChannel.AssignImageToItem 1, "CHANNEL_GREEN"
-    'btsChannel.AssignImageToItem 2, "CHANNEL_BLUE"
-    'btsChannel.AssignImageToItem 3, "CHANNEL_RGB"
-    
     btsChannel.AssignImageToItem 0, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
     btsChannel.AssignImageToItem 1, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
     btsChannel.AssignImageToItem 2, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
     btsChannel.AssignImageToItem 3, "CHANNEL_RGB"
         
-    'Populate the histogram display drop-down
-    cboHistogram.Clear
-    cboHistogram.AddItem " none", 0
-    cboHistogram.AddItem " standard", 1
-    cboHistogram.AddItem " logarithmic", 2
-    cboHistogram.ListIndex = 1
+    'Populate the histogram display options
+    btsHistogram.AddItem "none", 0
+    btsHistogram.AddItem "standard", 1
+    btsHistogram.AddItem "logarithmic", 2
+    btsHistogram.ListIndex = 1
+    
+    'Populate the grid on/of selector
+    btsGrid.AddItem "on", 0
+    btsGrid.AddItem "off", 1
+    btsGrid.ListIndex = 0
+    
+    'Populate the original curve (diagonal line) selector
+    btsDiagonalLine.AddItem "on", 0
+    btsDiagonalLine.AddItem "off", 1
+    btsDiagonalLine.ListIndex = 0
+    
+    'Populate the options selector
+    btsOptions.AddItem "tool", 0
+    btsOptions.AddItem "display options", 1
+    btsOptions.ListIndex = 0
     
     'Initialize the dynamic mouse coordinate font and DIB display
     Set mouseCoordDIB = New pdDIB
@@ -807,7 +956,7 @@ Private Sub redrawPreviewBox()
     picDraw.Picture = LoadPicture("")
     
     'Start by copying the proper histogram image into the picture box
-    Select Case cboHistogram.ListIndex
+    Select Case btsHistogram.ListIndex
     
         'No histogram
         Case 0
@@ -830,7 +979,7 @@ Private Sub redrawPreviewBox()
     Dim i As Long
     Dim loopUpperLimit As Long
     
-    If CBool(chkGrid) Then loopUpperLimit = 4 Else loopUpperLimit = 1
+    If btsGrid.ListIndex = 0 Then loopUpperLimit = 4 Else loopUpperLimit = 1
     
     For i = 0 To loopUpperLimit
         picDraw.Line (previewBorder + (i / loopUpperLimit) * (picDraw.ScaleWidth - previewBorder * 2), previewBorder)-(previewBorder + (i / loopUpperLimit) * (picDraw.ScaleWidth - previewBorder * 2), picDraw.ScaleHeight - previewBorder)
@@ -838,7 +987,7 @@ Private Sub redrawPreviewBox()
     Next i
     
     'Next, draw a diagonal per the user's request
-    If CBool(chkDiagonal) Then
+    If btsDiagonalLine.ListIndex = 0 Then
         GDIPlusDrawLineToDC picDraw.hDC, previewBorder, picDraw.ScaleHeight - previewBorder, picDraw.ScaleWidth - previewBorder, previewBorder, RGB(127, 127, 127), 127
     End If
     
