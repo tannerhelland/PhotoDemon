@@ -413,5 +413,11 @@ LVL_ARROW_BLK CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_black.png
 LVL_ARROW_GRY CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_gray.png
 LVL_ARROW_WHT CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_white.png
 
+//Channel ID images
+CHANNEL_RED   CUSTOM  MOVEABLE       LOADONCALL      red.png
+CHANNEL_GREEN CUSTOM  MOVEABLE       LOADONCALL      green.png
+CHANNEL_BLUE  CUSTOM  MOVEABLE       LOADONCALL      blue.png
+CHANNEL_RGB   CUSTOM  MOVEABLE       LOADONCALL      RGB.png
+
 //Sample image for rendering sample effects
 //SAMPLEIMAGE  CUSTOM  MOVEABLE        LOADONCALL      reference_flower.jpg
