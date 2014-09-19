@@ -1585,6 +1585,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
             'Use that alpha value to blend the current colors with the newly requested color
             If parentIsPremultiplied Then
             
+                iData(QuickX + 3, y) = 255
                 iData(QuickX + 2, y) = iData(QuickX + 2, y) + rLookup(checkAlpha)
                 iData(QuickX + 1, y) = iData(QuickX + 1, y) + gLookUp(checkAlpha)
                 iData(QuickX, y) = iData(QuickX, y) + bLookup(checkAlpha)
