@@ -485,7 +485,7 @@ Public Function applyColorTransformToDIB(ByVal srcTransform As Long, ByRef dstDI
         '       undocumented bug with Windows' color management engine!
         Dim bitDepthIdentifier As Long
         If .getDIBColorDepth = 24 Then bitDepthIdentifier = BM_RGBTRIPLETS Else bitDepthIdentifier = BM_xRGBQUADS
-        
+                
         'TranslateBitmapBits handles the actual transformation for us.
         transformCheck = TranslateBitmapBits(srcTransform, .getActualDIBBits, bitDepthIdentifier, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getActualDIBBits, bitDepthIdentifier, .getDIBArrayWidth, ByVal 0&, 0&)
         
