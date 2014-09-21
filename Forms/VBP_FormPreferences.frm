@@ -3137,6 +3137,7 @@ Private Sub CmdOK_Click()
         'START use system color profile
             g_UserPreferences.SetPref_Boolean "Transparency", "Use System Color Profile", optColorManagement(0)
             g_UseSystemColorProfile = optColorManagement(0)
+            cacheCurrentSystemColorProfile
         'END use system color profile
 
         'START alpha checkerboard colors
