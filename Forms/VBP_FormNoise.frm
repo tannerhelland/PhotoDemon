@@ -43,13 +43,13 @@ Begin VB.Form FormNoise
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkM 
-      Height          =   300
+      Height          =   330
       Left            =   6120
       TabIndex        =   3
       Top             =   3360
-      Width           =   5700
-      _ExtentX        =   4604
-      _ExtentY        =   529
+      Width           =   5730
+      _ExtentX        =   10107
+      _ExtentY        =   582
       Caption         =   "monochromatic noise only"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
