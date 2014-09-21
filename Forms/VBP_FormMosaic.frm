@@ -44,13 +44,13 @@ Begin VB.Form FormPixelate
       EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkUnison 
-      Height          =   300
+      Height          =   330
       Left            =   6120
       TabIndex        =   4
       Top             =   3600
-      Width           =   5760
-      _ExtentX        =   5080
-      _ExtentY        =   529
+      Width           =   5790
+      _ExtentX        =   10213
+      _ExtentY        =   582
       Caption         =   "keep both dimensions in sync"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
