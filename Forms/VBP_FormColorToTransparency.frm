@@ -250,7 +250,7 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     prepImageData tmpSA, toPreview, dstPic
     
     'Before doing anything else, convert this DIB to 32bpp.
-    workingDIB.convertTo32bpp
+    If workingDIB.getDIBColorDepth <> 32 Then workingDIB.convertTo32bpp
     
     'Create a local array and point it at the pixel data we want to operate on
     prepSafeArray tmpSA, workingDIB
@@ -274,7 +274,7 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long, a As Long
     
     'R2/G2/B2 store the RGB values of the color we are attempting to remove
     Dim r2 As Long, g2 As Long, b2 As Long
@@ -307,6 +307,7 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
+        If qvDepth = 4 Then a = ImageData(QuickVal + 3, y)
         
         'Convert the color to the L*a*b* color space
         RGBtoLAB r, g, b, labL, labA, labB
@@ -352,7 +353,11 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
             ImageData(QuickVal + 2, y) = r
             ImageData(QuickVal + 1, y) = g
             ImageData(QuickVal, y) = b
-            ImageData(QuickVal + 3, y) = newAlpha
+            If qvDepth = 3 Then
+                ImageData(QuickVal + 3, y) = newAlpha
+            Else
+                ImageData(QuickVal + 3, y) = newAlpha * (a / 255)
+            End If
                 
         End If
         
