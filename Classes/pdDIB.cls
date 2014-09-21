@@ -1803,9 +1803,9 @@ Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolea
                 tmpAlphaModifier = 255 / tmpAlpha
                 
                 'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                r = CByte(r * tmpAlphaModifier)
-                g = CByte(g * tmpAlphaModifier)
-                b = CByte(b * tmpAlphaModifier)
+                r = CLng(r * tmpAlphaModifier)
+                g = CLng(g * tmpAlphaModifier)
+                b = CLng(b * tmpAlphaModifier)
                 
                 If r > 255 Then r = 255
                 If g > 255 Then g = 255
