@@ -175,13 +175,22 @@ Public Sub LoadTheProgram()
     'Center the splash screen on whichever monitor the user previously used.
     g_cMonitors.CenterFormOnMonitor FormSplash, , wRect.Left, wRect.Right, wRect.Top, wRect.Bottom
     
-    'Make the splash screen's message display match the rest of PD
-    If g_IsVistaOrLater And g_UseFancyFonts Then
+    'If Segoe UI is available, we prefer to use it instead of Tahoma.  On XP this is not guaranteed, however, so we have to check.
+    Dim tmpFontCheck As pdFont
+    Set tmpFontCheck = New pdFont
+    
+    'If Segoe exists, we mark two variables: a String (which user controls use to create their own font objects), and a Boolean
+    ' (which some dialogs use to slightly modify their layout for better alignments).
+    If tmpFontCheck.doesFontExist("Segoe UI") Then
         g_InterfaceFont = "Segoe UI"
+        g_UseFancyFonts = True
     Else
         g_InterfaceFont = "Tahoma"
+        g_UseFancyFonts = False
     End If
-    FormSplash.lblMessage.FontName = g_InterfaceFont
+        
+    'Make the splash screen's message display match the rest of PD
+    FormSplash.lblMessage.fontName = g_InterfaceFont
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
     FormSplash.Show vbModeless
