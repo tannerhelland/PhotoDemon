@@ -484,3 +484,27 @@ Private Sub Class_Terminate()
     End If
     
 End Sub
+
+'Quick and dirty function for checking font existence.  Does not use API at present, so fonts with Unicode names won't return correct results.
+' I haven't done a check, but I expect this to be faster than enum-ing all available fonts and looking for a match...
+Public Function doesFontExist(ByVal fontNameToCheck As String, Optional ByRef fontSubstitute As String, Optional ByRef nearestFontSize As Long = 8) As Boolean
+
+    'I don't know if this function will throw errors, but better safe than sorry...
+    On Error Resume Next
+    
+    'Create a temporary font object to test name support
+    Dim tmpFont As StdFont
+    Set tmpFont = New StdFont
+    
+    'Copy name and size (if any)
+    tmpFont.Name = fontNameToCheck
+    tmpFont.Size = nearestFontSize
+    
+    'See if the font object has the same name.  Windows will automatically substitute a new font if the requested one can't be found.
+    If StrComp(fontNameToCheck, tmpFont.Name, vbTextCompare) = 0 Then doesFontExist = True Else doesFontExist = False
+    
+    'Not sure if helpful, but return the replacement font name and nearest supported size
+    fontSubstitute = tmpFont.Name
+    nearestFontSize = tmpFont.Size
+    
+End Function

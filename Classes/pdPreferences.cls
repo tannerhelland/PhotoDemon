@@ -262,9 +262,6 @@ Public Sub loadUserSettings()
         
     'Check if the user wants us to prompt them about closing unsaved images
     g_ConfirmClosingUnsaved = GetPref_Boolean("Saving", "ConfirmClosingUnsaved", True)
-        
-    'Check if the user wants the interface to use modern typefaces if available
-    g_UseFancyFonts = GetPref_Boolean("Interface", "UseFancyFonts", False)
     
     'Check if the user wants large images automatically zoomed when loaded
     g_AutozoomLargeImages = GetPref_Long("Loading", "InitialImageZoom", 0)
@@ -390,10 +387,6 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "CanvasDropShadow", "True"
         xmlEngine.writeTag "MRUCaptionLength", "0"
         xmlEngine.writeTag "RecentFilesLimit", "10"
-        
-        'On Vista and later, Segoe UI is used as the interface font instead of Tahoma
-        If g_IsVistaOrLater Then xmlEngine.writeTag "UseFancyFonts", "True" Else xmlEngine.writeTag "UseFancyFonts", "False"
-        
         xmlEngine.writeTag "WindowCaptionLength", "0"
     xmlEngine.closeTag "Interface"
     xmlEngine.writeBlankLine

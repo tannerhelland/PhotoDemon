@@ -98,7 +98,7 @@ Public g_IsWin7OrLater As Boolean
 'Is theming enabled?  (Used to handle some menu icon rendering quirks)
 Public g_IsThemingEnabled As Boolean
 
-'Render the interface using Segoe UI if the user specifies as much in the Preferences dialog
+'Render the interface using Segoe UI if available; g_UseFancyFonts will be set to FALSE if we have to fall back to Tahoma
 Public g_UseFancyFonts As Boolean
 Public g_InterfaceFont As String
 
