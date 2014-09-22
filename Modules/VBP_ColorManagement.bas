@@ -621,14 +621,14 @@ End Function
 
 'When the main PD window is moved, the window manager will trigger this function.  (Because the user can set color management
 ' on a per-monitor basis, we must keep track of which monitor contains this PD instance.)
-Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False)
+Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False, Optional ByVal forceRefresh As Boolean = False)
 
     'Use the API to determine the monitor with the largest intersect with this window
     Dim monitorCheck As Long
     monitorCheck = MonitorFromWindow(FormMain.hWnd, MONITOR_DEFAULTTONEAREST)
     
     'If the detected monitor does not match this one, update this window and refresh its image (if necessary)
-    If monitorCheck <> currentMonitor Then
+    If (monitorCheck <> currentMonitor) Or forceRefresh Then
         
         currentMonitor = monitorCheck
         currentColorProfile = g_UserPreferences.GetPref_String("Transparency", "MonitorProfile_" & currentMonitor, "")
