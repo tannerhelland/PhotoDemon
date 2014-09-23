@@ -364,14 +364,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Channel Mixer Form
-'Copyright ©2013-2014 by audioglider and Tanner Helland
+'Copyright ©2013-2014 by Audioglider and Tanner Helland
 'Created: 08/June/13
-'Last updated: 18/August/13
-'Last update: add command bar support.  This was a messy one because there are a whole bunch of stored values that
-'             are not visible on-screen, so the automatic preset code (obviously) couldn't handle most of what this
-'             tool does.  I believe save/load preset works, but I will need to do some extra testing just to be safe.
+'Last updated: 23/September/14
+'Last update: rework the interface a bit; add a button strip, increase white space, improve title labels
 '
-'Many thanks to talented contributer audioglider for creating this tool.
+'Many thanks to talented contributer Audioglider for creating this tool.
 '
 'Standard channel mixer dialog.  Layout and feature set derived from comparable tools in Photoshop and GIMP.
 ' Per convention, all channels can be modified simultaneously.  For convenience, a "constant" slider is also
