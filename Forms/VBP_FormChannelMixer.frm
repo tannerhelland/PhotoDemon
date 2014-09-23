@@ -3,10 +3,10 @@ Begin VB.Form FormChannelMixer
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Channel mixer"
-   ClientHeight    =   6540
+   ClientHeight    =   7845
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   12090
+   ClientWidth     =   12150
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,36 +19,15 @@ Begin VB.Form FormChannelMixer
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   436
+   ScaleHeight     =   523
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
+   ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
-   Begin VB.ComboBox cmbChannel 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      ItemData        =   "VBP_FormChannelMixer.frx":0000
-      Left            =   6120
-      List            =   "VBP_FormChannelMixer.frx":0002
-      Style           =   2  'Dropdown List
-      TabIndex        =   12
-      Top             =   480
-      Width           =   5820
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
       TabIndex        =   4
-      Top             =   120
+      Top             =   480
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
@@ -57,7 +36,7 @@ Begin VB.Form FormChannelMixer
       Height          =   495
       Left            =   6000
       TabIndex        =   5
-      Top             =   1260
+      Top             =   2145
       Width           =   6015
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -79,7 +58,7 @@ Begin VB.Form FormChannelMixer
       Height          =   495
       Left            =   6000
       TabIndex        =   6
-      Top             =   2160
+      Top             =   3090
       Width           =   6015
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -101,7 +80,7 @@ Begin VB.Form FormChannelMixer
       Height          =   495
       Left            =   6000
       TabIndex        =   7
-      Top             =   3060
+      Top             =   4035
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   873
@@ -123,7 +102,7 @@ Begin VB.Form FormChannelMixer
       Height          =   375
       Left            =   6120
       TabIndex        =   8
-      Top             =   5040
+      Top             =   6120
       Width           =   5760
       _ExtentX        =   10160
       _ExtentY        =   661
@@ -142,7 +121,7 @@ Begin VB.Form FormChannelMixer
       Height          =   495
       Left            =   6000
       TabIndex        =   9
-      Top             =   3960
+      Top             =   4980
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   873
@@ -163,7 +142,7 @@ Begin VB.Form FormChannelMixer
       Height          =   375
       Left            =   6120
       TabIndex        =   11
-      Top             =   5400
+      Top             =   6480
       Width           =   5760
       _ExtentX        =   10160
       _ExtentY        =   661
@@ -183,9 +162,9 @@ Begin VB.Form FormChannelMixer
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5790
-      Width           =   12090
-      _ExtentX        =   21325
+      Top             =   7095
+      Width           =   12150
+      _ExtentX        =   21431
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -197,10 +176,57 @@ Begin VB.Form FormChannelMixer
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin PhotoDemon.buttonStrip btsChannel 
+      Height          =   600
+      Left            =   6000
+      TabIndex        =   14
+      Top             =   480
+      Width           =   6000
+      _ExtentX        =   10583
+      _ExtentY        =   1058
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Line Line1 
+      BorderColor     =   &H8000000D&
+      Index           =   1
+      X1              =   392
+      X2              =   800
+      Y1              =   80
+      Y2              =   80
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "input channel(s):"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   15
+      Top             =   1320
+      Width           =   1800
+   End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "other options:"
+      Caption         =   "options for all channels:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -213,16 +239,17 @@ Begin VB.Form FormChannelMixer
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   14
-      Top             =   4680
-      Width           =   1500
+      TabIndex        =   13
+      Top             =   5760
+      Width           =   2550
    End
    Begin VB.Line Line1 
-      BorderColor     =   &H80000002&
+      BorderColor     =   &H8000000D&
+      Index           =   0
       X1              =   392
       X2              =   800
-      Y1              =   304
-      Y2              =   304
+      Y1              =   373
+      Y2              =   373
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -241,7 +268,7 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   120
       Width           =   1665
    End
@@ -263,7 +290,7 @@ Begin VB.Form FormChannelMixer
       Index           =   4
       Left            =   6000
       TabIndex        =   10
-      Top             =   3630
+      Top             =   4620
       Width           =   975
    End
    Begin VB.Label lblTitle 
@@ -284,7 +311,7 @@ Begin VB.Form FormChannelMixer
       Index           =   3
       Left            =   6000
       TabIndex        =   3
-      Top             =   2730
+      Top             =   3675
       Width           =   540
    End
    Begin VB.Label lblTitle 
@@ -305,7 +332,7 @@ Begin VB.Form FormChannelMixer
       Index           =   2
       Left            =   6000
       TabIndex        =   2
-      Top             =   1830
+      Top             =   2730
       Width           =   690
    End
    Begin VB.Label lblTitle 
@@ -326,7 +353,7 @@ Begin VB.Form FormChannelMixer
       Index           =   1
       Left            =   6000
       TabIndex        =   1
-      Top             =   930
+      Top             =   1785
       Width           =   435
    End
 End
@@ -388,6 +415,20 @@ Dim forbidUpdate As Boolean
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+Private Sub btsChannel_Click(ByVal buttonIndex As Long)
+
+    'Populate the sliders with any previously saved values
+    forbidUpdate = True
+    sltRed.Value = curSliderValues(btsChannel.ListIndex, RedInput)
+    sltGreen.Value = curSliderValues(btsChannel.ListIndex, GreenInput)
+    sltBlue.Value = curSliderValues(btsChannel.ListIndex, BlueInput)
+    sltConstant.Value = curSliderValues(btsChannel.ListIndex, ConstantInput)
+    forbidUpdate = False
+    
+    updatePreview
+
+End Sub
+
 Private Sub chkLuminance_Click()
     updatePreview
 End Sub
@@ -398,7 +439,7 @@ Private Sub chkMonochrome_Click()
     If CBool(chkMonochrome) Then
         
         chkLuminance.Enabled = False
-        cmbChannel.Enabled = False
+        btsChannel.Enabled = False
         
         'Populate the sliders with any previously saved values
         forbidUpdate = True
@@ -411,31 +452,17 @@ Private Sub chkMonochrome_Click()
     Else
     
         chkLuminance.Enabled = True
-        cmbChannel.Enabled = True
+        btsChannel.Enabled = True
         
         'Populate the sliders with any previously saved values
         forbidUpdate = True
-        sltRed.Value = curSliderValues(cmbChannel.ListIndex, RedInput)
-        sltGreen.Value = curSliderValues(cmbChannel.ListIndex, GreenInput)
-        sltBlue.Value = curSliderValues(cmbChannel.ListIndex, BlueInput)
-        sltConstant.Value = curSliderValues(cmbChannel.ListIndex, ConstantInput)
+        sltRed.Value = curSliderValues(btsChannel.ListIndex, RedInput)
+        sltGreen.Value = curSliderValues(btsChannel.ListIndex, GreenInput)
+        sltBlue.Value = curSliderValues(btsChannel.ListIndex, BlueInput)
+        sltConstant.Value = curSliderValues(btsChannel.ListIndex, ConstantInput)
         forbidUpdate = False
         
     End If
-    
-    updatePreview
-    
-End Sub
-
-Private Sub cmbChannel_Click()
-    
-    'Populate the sliders with any previously saved values
-    forbidUpdate = True
-    sltRed.Value = curSliderValues(cmbChannel.ListIndex, RedInput)
-    sltGreen.Value = curSliderValues(cmbChannel.ListIndex, GreenInput)
-    sltBlue.Value = curSliderValues(cmbChannel.ListIndex, BlueInput)
-    sltConstant.Value = curSliderValues(cmbChannel.ListIndex, ConstantInput)
-    forbidUpdate = False
     
     updatePreview
     
@@ -557,7 +584,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
         End If
                 
     Next y
-        If toPreview = False Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -628,13 +655,13 @@ Private Sub cmdBar_ReadCustomPresetData()
     'Sync the on-screen controls with whatever slider values are relevant
     forbidUpdate = True
     If Not CBool(chkMonochrome) Then
-        cmbChannel.Enabled = True
-        sltRed.Value = curSliderValues(cmbChannel.ListIndex, RedInput)
-        sltGreen.Value = curSliderValues(cmbChannel.ListIndex, GreenInput)
-        sltBlue.Value = curSliderValues(cmbChannel.ListIndex, BlueInput)
-        sltConstant.Value = curSliderValues(cmbChannel.ListIndex, ConstantInput)
+        btsChannel.Enabled = True
+        sltRed.Value = curSliderValues(btsChannel.ListIndex, RedInput)
+        sltGreen.Value = curSliderValues(btsChannel.ListIndex, GreenInput)
+        sltBlue.Value = curSliderValues(btsChannel.ListIndex, BlueInput)
+        sltConstant.Value = curSliderValues(btsChannel.ListIndex, ConstantInput)
     Else
-        cmbChannel.Enabled = False
+        btsChannel.Enabled = False
         sltRed.Value = curSliderValues(GrayOutput, RedInput)
         sltGreen.Value = curSliderValues(GrayOutput, GreenInput)
         sltBlue.Value = curSliderValues(GrayOutput, BlueInput)
@@ -690,7 +717,7 @@ Private Sub cmdBar_ResetClick()
     Next i
     
     'Reset the combo box and sliders on this page to default values
-    cmbChannel.ListIndex = 0
+    btsChannel.ListIndex = 0
     sltRed.Value = 100
     sltGreen.Value = 0
     sltBlue.Value = 0
@@ -706,6 +733,10 @@ Private Sub Form_Activate()
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
+    'If the last-used settings involve the monochrome check box, the luminance check box may not be deactivated properly
+    ' (due to no Click event being fired).  Forcibly check this state in advance.
+    chkLuminance.Enabled = Not CBool(chkMonochrome)
+    
     'Display the previewed effect in the neighboring window
     updatePreview
     
@@ -717,11 +748,17 @@ Private Sub Form_Load()
     ' it's difficult to apply changes to an imaginary "gray channel" (we'd have to divvy up any "gray channel"
     ' changes to each of red, green, and blue, and without a consistent way to do that the results would be
     ' unpredictable - I'm fairly certain this is why Photoshop etc. provide a separate "monochrome" checkbox)
-    cmbChannel.Clear
-    cmbChannel.AddItem " red", 0
-    cmbChannel.AddItem " green", 1
-    cmbChannel.AddItem " blue", 2
-    cmbChannel.ListIndex = 0
+    
+    'Populate the channel selector
+    btsChannel.AddItem "red", 0
+    btsChannel.AddItem "green", 1
+    btsChannel.AddItem "blue", 2
+    
+    btsChannel.AssignImageToItem 0, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
+    btsChannel.AssignImageToItem 1, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
+    btsChannel.AssignImageToItem 2, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
+    
+    btsChannel.ListIndex = 0
     
 End Sub
 
@@ -771,10 +808,10 @@ Private Sub updateStoredValues()
         curSliderValues(GrayOutput, BlueInput) = sltBlue.Value
         curSliderValues(GrayOutput, ConstantInput) = sltConstant.Value
     Else
-        curSliderValues(cmbChannel.ListIndex, RedInput) = sltRed.Value
-        curSliderValues(cmbChannel.ListIndex, GreenInput) = sltGreen.Value
-        curSliderValues(cmbChannel.ListIndex, BlueInput) = sltBlue.Value
-        curSliderValues(cmbChannel.ListIndex, ConstantInput) = sltConstant.Value
+        curSliderValues(btsChannel.ListIndex, RedInput) = sltRed.Value
+        curSliderValues(btsChannel.ListIndex, GreenInput) = sltGreen.Value
+        curSliderValues(btsChannel.ListIndex, BlueInput) = sltBlue.Value
+        curSliderValues(btsChannel.ListIndex, ConstantInput) = sltConstant.Value
     End If
 
 End Sub
