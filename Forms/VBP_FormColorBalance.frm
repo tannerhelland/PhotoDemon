@@ -6,7 +6,7 @@ Begin VB.Form FormColorBalance
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   12090
+   ClientWidth     =   12360
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,7 +21,7 @@ Begin VB.Form FormColorBalance
    MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
+   ScaleWidth      =   824
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -29,7 +29,7 @@ Begin VB.Form FormColorBalance
       Left            =   0
       TabIndex        =   0
       Top             =   5790
-      Width           =   12090
+      Width           =   12360
       _ExtentX        =   21325
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -55,8 +55,8 @@ Begin VB.Form FormColorBalance
       Height          =   495
       Left            =   6000
       TabIndex        =   8
-      Top             =   2160
-      Width           =   5895
+      Top             =   1800
+      Width           =   6255
       _ExtentX        =   10398
       _ExtentY        =   873
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -79,8 +79,8 @@ Begin VB.Form FormColorBalance
       Height          =   495
       Left            =   6000
       TabIndex        =   9
-      Top             =   3120
-      Width           =   5895
+      Top             =   2760
+      Width           =   6255
       _ExtentX        =   10398
       _ExtentY        =   873
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -102,8 +102,8 @@ Begin VB.Form FormColorBalance
       Height          =   495
       Left            =   6000
       TabIndex        =   10
-      Top             =   4080
-      Width           =   5895
+      Top             =   3720
+      Width           =   6255
       _ExtentX        =   10398
       _ExtentY        =   873
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -121,79 +121,36 @@ Begin VB.Form FormColorBalance
       GradientColorLeft=   65535
       GradientColorRight=   16711680
    End
-   Begin PhotoDemon.smartOptionButton OptTone 
+   Begin PhotoDemon.smartCheckBox chkLuminance 
       Height          =   360
-      Index           =   0
       Left            =   6240
       TabIndex        =   12
-      Top             =   480
-      Width           =   5550
-      _ExtentX        =   9790
+      Top             =   4800
+      Width           =   6015
+      _ExtentX        =   10610
       _ExtentY        =   635
-      Caption         =   "shadows"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptTone 
-      Height          =   360
-      Index           =   1
-      Left            =   6240
-      TabIndex        =   13
-      Top             =   840
-      Width           =   5550
-      _ExtentX        =   9790
-      _ExtentY        =   635
-      Caption         =   "midtones"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptTone 
-      Height          =   360
-      Index           =   2
-      Left            =   6240
-      TabIndex        =   14
-      Top             =   1200
-      Width           =   5550
-      _ExtentX        =   9790
-      _ExtentY        =   635
-      Caption         =   "highlights"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartCheckBox chkLuminance 
-      Height          =   330
-      Left            =   6240
-      TabIndex        =   15
-      Top             =   5160
-      Width           =   5550
-      _ExtentX        =   9790
-      _ExtentY        =   582
       Caption         =   "preserve luminance"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.buttonStrip btsTone 
+      Height          =   600
+      Left            =   6000
+      TabIndex        =   14
+      Top             =   540
+      Width           =   6255
+      _ExtentX        =   10425
+      _ExtentY        =   1058
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -217,9 +174,9 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   1
-      Left            =   6000
-      TabIndex        =   16
-      Top             =   1800
+      Left            =   5880
+      TabIndex        =   13
+      Top             =   1440
       Width           =   1395
    End
    Begin VB.Label lblTitle 
@@ -238,7 +195,7 @@ Begin VB.Form FormColorBalance
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   0
-      Left            =   6000
+      Left            =   5880
       TabIndex        =   11
       Top             =   120
       Width           =   1290
@@ -258,9 +215,9 @@ Begin VB.Form FormColorBalance
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   270
-      Left            =   6360
+      Left            =   6300
       TabIndex        =   7
-      Top             =   4560
+      Top             =   4200
       Width           =   570
    End
    Begin VB.Label lblMagenta 
@@ -278,9 +235,9 @@ Begin VB.Form FormColorBalance
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   270
-      Left            =   6360
+      Left            =   6300
       TabIndex        =   6
-      Top             =   3600
+      Top             =   3240
       Width           =   870
    End
    Begin VB.Label lblCyan 
@@ -298,9 +255,9 @@ Begin VB.Form FormColorBalance
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   270
-      Left            =   6360
+      Left            =   6300
       TabIndex        =   5
-      Top             =   2640
+      Top             =   2280
       Width           =   465
    End
    Begin VB.Label lblBlue 
@@ -319,9 +276,9 @@ Begin VB.Form FormColorBalance
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   270
-      Left            =   10275
+      Left            =   10770
       TabIndex        =   3
-      Top             =   4560
+      Top             =   4200
       Width           =   390
    End
    Begin VB.Label lblGreen 
@@ -340,9 +297,9 @@ Begin VB.Form FormColorBalance
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   270
-      Left            =   10125
+      Left            =   10605
       TabIndex        =   2
-      Top             =   3600
+      Top             =   3240
       Width           =   555
    End
    Begin VB.Label lblRed 
@@ -361,9 +318,9 @@ Begin VB.Form FormColorBalance
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   270
-      Left            =   10350
+      Left            =   10845
       TabIndex        =   1
-      Top             =   2640
+      Top             =   2280
       Width           =   315
    End
 End
@@ -434,7 +391,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -466,48 +423,48 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     
     Dim dl As Double, dm As Double
     
-    For X = 0 To 255
+    For x = 0 To 255
         
-        dl = 1.075 - 1 / (X / 16 + 1)
+        dl = 1.075 - 1 / (x / 16 + 1)
         
-        dm = (X - 127) / 127
+        dm = (x - 127) / 127
         dm = 0.667 * (1 - dm * dm)
         
-        shadowsAdd(X) = dl
-        shadowsSub(255 - X) = dl
-        highlightsAdd(255 - X) = dl
-        highlightsSub(X) = dl
-        midtonesAdd(X) = dm
-        midtonesSub(X) = dm
+        shadowsAdd(x) = dl
+        shadowsSub(255 - x) = dl
+        highlightsAdd(255 - x) = dl
+        highlightsSub(x) = dl
+        midtonesAdd(x) = dm
+        midtonesSub(x) = dm
         
-    Next X
+    Next x
     
     'Set up transfer arrays
     Dim rTransfer(0 To 2, 0 To 255) As Double, gTransfer(0 To 2, 0 To 255) As Double, bTransfer(0 To 2, 0 To 255) As Double
     
     'Add lighening/darkening modifiers to the transfer arrays
-    For X = 0 To 255
+    For x = 0 To 255
         
-        If rRgn(TONE_SHADOWS) > 0 Then rTransfer(TONE_SHADOWS, X) = shadowsAdd(X) Else rTransfer(TONE_SHADOWS, X) = shadowsSub(X)
-        If rRgn(TONE_MIDTONES) > 0 Then rTransfer(TONE_MIDTONES, X) = midtonesAdd(X) Else rTransfer(TONE_SHADOWS, X) = midtonesAdd(X)
-        If rRgn(TONE_HIGHLIGHTS) > 0 Then rTransfer(TONE_HIGHLIGHTS, X) = highlightsAdd(X) Else rTransfer(TONE_HIGHLIGHTS, X) = highlightsSub(X)
+        If rRgn(TONE_SHADOWS) > 0 Then rTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else rTransfer(TONE_SHADOWS, x) = shadowsSub(x)
+        If rRgn(TONE_MIDTONES) > 0 Then rTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else rTransfer(TONE_SHADOWS, x) = midtonesAdd(x)
+        If rRgn(TONE_HIGHLIGHTS) > 0 Then rTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else rTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
     
-        If gRgn(TONE_SHADOWS) > 0 Then gTransfer(TONE_SHADOWS, X) = shadowsAdd(X) Else gTransfer(TONE_SHADOWS, X) = shadowsSub(X)
-        If gRgn(TONE_MIDTONES) > 0 Then gTransfer(TONE_MIDTONES, X) = midtonesAdd(X) Else gTransfer(TONE_SHADOWS, X) = midtonesAdd(X)
-        If gRgn(TONE_HIGHLIGHTS) > 0 Then gTransfer(TONE_HIGHLIGHTS, X) = highlightsAdd(X) Else gTransfer(TONE_HIGHLIGHTS, X) = highlightsSub(X)
+        If gRgn(TONE_SHADOWS) > 0 Then gTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else gTransfer(TONE_SHADOWS, x) = shadowsSub(x)
+        If gRgn(TONE_MIDTONES) > 0 Then gTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else gTransfer(TONE_SHADOWS, x) = midtonesAdd(x)
+        If gRgn(TONE_HIGHLIGHTS) > 0 Then gTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else gTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
     
-        If bRgn(TONE_SHADOWS) > 0 Then bTransfer(TONE_SHADOWS, X) = shadowsAdd(X) Else bTransfer(TONE_SHADOWS, X) = shadowsSub(X)
-        If bRgn(TONE_MIDTONES) > 0 Then bTransfer(TONE_MIDTONES, X) = midtonesAdd(X) Else bTransfer(TONE_SHADOWS, X) = midtonesAdd(X)
-        If bRgn(TONE_HIGHLIGHTS) > 0 Then bTransfer(TONE_HIGHLIGHTS, X) = highlightsAdd(X) Else bTransfer(TONE_HIGHLIGHTS, X) = highlightsSub(X)
+        If bRgn(TONE_SHADOWS) > 0 Then bTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else bTransfer(TONE_SHADOWS, x) = shadowsSub(x)
+        If bRgn(TONE_MIDTONES) > 0 Then bTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else bTransfer(TONE_SHADOWS, x) = midtonesAdd(x)
+        If bRgn(TONE_HIGHLIGHTS) > 0 Then bTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else bTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
     
-    Next X
+    Next x
     
     'Populate the lookup tables
-    For X = 0 To 255
+    For x = 0 To 255
         
-        r = X
-        g = X
-        b = X
+        r = x
+        g = x
+        b = x
         
         'Apply the modifiers
         r = Clamp0255(r + (rRgn(TONE_SHADOWS) * rTransfer(TONE_SHADOWS, r)))
@@ -522,23 +479,23 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         b = Clamp0255(b + (bRgn(TONE_MIDTONES) * bTransfer(TONE_MIDTONES, b)))
         b = Clamp0255(b + (bRgn(TONE_HIGHLIGHTS) * bTransfer(TONE_HIGHLIGHTS, b)))
         
-        rLookup(X) = r
-        gLookUp(X) = g
-        bLookup(X) = b
+        rLookup(x) = r
+        gLookUp(x) = g
+        bLookup(x) = b
     
-    Next X
+    Next x
     
     Dim origLuminance As Double
         
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Get the original luminance
         origLuminance = getLuminance(r, g, b) / 255
@@ -561,18 +518,18 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         End If
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, Y) = r
-        ImageData(QuickVal + 1, Y) = g
-        ImageData(QuickVal, Y) = b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
         
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -592,12 +549,16 @@ Private Function Clamp0255(ByVal d As Double) As Double
     Clamp0255 = 255
 End Function
 
+Private Sub btsTone_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 Private Sub chkLuminance_Click()
     updatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Color balance", , buildParams(sltRed, sltGreen, sltBlue, -OptTone(1).Value - OptTone(2).Value * 2, CBool(chkLuminance.Value)), UNDO_LAYER
+    Process "Color balance", , buildParams(sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance.Value)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -608,7 +569,7 @@ Private Sub cmdBar_ResetClick()
     sltRed.Value = 0
     sltGreen.Value = 0
     sltBlue.Value = 0
-    OptTone(1).Value = True  'Default to midtone correction
+    btsTone.ListIndex = 1 'Default to midtone correction
     chkLuminance.Value = vbChecked
 End Sub
 
@@ -623,12 +584,18 @@ Private Sub Form_Activate()
     
 End Sub
 
-Private Sub Form_Unload(Cancel As Integer)
-    ReleaseFormTheming Me
+Private Sub Form_Load()
+    
+    'Populate the button strip
+    btsTone.AddItem "shadows", 0
+    btsTone.AddItem "midtones", 1
+    btsTone.AddItem "highlights", 2
+    btsTone.ListIndex = 1
+    
 End Sub
 
-Private Sub OptTone_Click(Index As Integer)
-    updatePreview
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub
 
 Private Sub sltBlue_Change()
@@ -644,7 +611,7 @@ Private Sub sltRed_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, -OptTone(1).Value - OptTone(2).Value * 2, CBool(chkLuminance), True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
