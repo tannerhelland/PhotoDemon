@@ -582,11 +582,12 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         tmpLayerRef.layerDIB.createBlank tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBWidth, 32
         
         'Use GDI+ to apply the rotation
-        GDIPlusRotateDIB tmpLayerRef.layerDIB, (tmpLayerRef.layerDIB.getDIBWidth - copyDIB.getDIBWidth) / 2, (tmpLayerRef.layerDIB.getDIBHeight - copyDIB.getDIBHeight) / 2, copyDIB.getDIBWidth, copyDIB.getDIBHeight, copyDIB, 0, 0, copyDIB.getDIBWidth, copyDIB.getDIBHeight, 90, InterpolationModeNearestNeighbor
         
-        'I know it's hard to believe, but after profiling both the above rotate call and a (much-simpler!) rotate/flip request,
-        ' the rotate call is actually faster on my PC.  I have NO IDEA how GDI+ manages this, but I'm leaving it as-is for now!
-        'GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, Rotate90FlipNone
+        'Full rotation call for reference:
+        'GDIPlusRotateDIB tmpLayerRef.layerDIB, (tmpLayerRef.layerDIB.getDIBWidth - copyDIB.getDIBWidth) / 2, (tmpLayerRef.layerDIB.getDIBHeight - copyDIB.getDIBHeight) / 2, copyDIB.getDIBWidth, copyDIB.getDIBHeight, copyDIB, 0, 0, copyDIB.getDIBWidth, copyDIB.getDIBHeight, 90, InterpolationModeNearestNeighbor
+        
+        'Simple rotate/flip call:
+        GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, Rotate90FlipNone
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
@@ -734,7 +735,12 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         tmpLayerRef.layerDIB.createBlank tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBWidth, 32
         
         'Use GDI+ to apply the rotation
-        GDIPlusRotateDIB tmpLayerRef.layerDIB, (tmpLayerRef.layerDIB.getDIBWidth - copyDIB.getDIBWidth) / 2, (tmpLayerRef.layerDIB.getDIBHeight - copyDIB.getDIBHeight) / 2, copyDIB.getDIBWidth, copyDIB.getDIBHeight, copyDIB, 0, 0, copyDIB.getDIBWidth, copyDIB.getDIBHeight, -90, InterpolationModeNearestNeighbor
+        
+        'Full rotate reference:
+        'GDIPlusRotateDIB tmpLayerRef.layerDIB, (tmpLayerRef.layerDIB.getDIBWidth - copyDIB.getDIBWidth) / 2, (tmpLayerRef.layerDIB.getDIBHeight - copyDIB.getDIBHeight) / 2, copyDIB.getDIBWidth, copyDIB.getDIBHeight, copyDIB, 0, 0, copyDIB.getDIBWidth, copyDIB.getDIBHeight, -90, InterpolationModeNearestNeighbor
+        
+        'Simpler rotate/flip only reference:
+        GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, Rotate270FlipNone
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
