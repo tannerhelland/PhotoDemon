@@ -133,6 +133,28 @@ Private Type EncoderParameters
     Parameter As EncoderParameter
 End Type
 
+Public Enum RotateFlipType
+   RotateNoneFlipNone = 0
+   Rotate90FlipNone = 1
+   Rotate180FlipNone = 2
+   Rotate270FlipNone = 3
+
+   RotateNoneFlipX = 4
+   Rotate90FlipX = 5
+   Rotate180FlipX = 6
+   Rotate270FlipX = 7
+
+   RotateNoneFlipY = Rotate180FlipX
+   Rotate90FlipY = Rotate270FlipX
+   Rotate180FlipY = RotateNoneFlipX
+   Rotate270FlipY = Rotate90FlipX
+
+   RotateNoneFlipXY = Rotate180FlipNone
+   Rotate90FlipXY = Rotate270FlipNone
+   Rotate180FlipXY = RotateNoneFlipNone
+   Rotate270FlipXY = Rotate90FlipNone
+End Enum
+
 Private Const EncoderCompression      As String = "{E09D739D-CCD4-44EE-8EBA-3FBF8BE4FC58}"
 Private Const EncoderColorDepth       As String = "{66087055-AD66-4C7C-9A18-38A2310B8337}"
 'Private Const EncoderColorSpace       As String = "{AE7A62A0-EE2C-49D8-9D07-1BA8A927596E}"
@@ -334,6 +356,7 @@ Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef hImageAt
 Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageAttr As Long) As Long
 Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal mWrap As WrapMode, ByVal argbConst As Long, ByVal bClamp As Long) As Long
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal pixOffsetMode As PixelOffsetMode) As Long
+Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal hImage As Long, ByVal rfType As RotateFlipType) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
@@ -549,6 +572,61 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    
+End Function
+
+'Simpler rotate/flip function, and limited to the constants specified by the enum.
+Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotationType As RotateFlipType) As Boolean
+
+    GDIPlusRotateFlipDIB = True
+    
+    'We need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
+    ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
+    Dim tBitmap As Long
+    
+    If srcDIB.getDIBColorDepth = 32 Then
+        
+        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
+        GdipCreateBitmapFromScan0 srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.getActualDIBBits, tBitmap
+        
+    Else
+    
+        'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
+        Dim imgHeader As BITMAPINFO
+        With imgHeader.Header
+            .Size = Len(imgHeader.Header)
+            .Planes = 1
+            .BitCount = srcDIB.getDIBColorDepth
+            .Width = srcDIB.getDIBWidth
+            .Height = -srcDIB.getDIBHeight
+        End With
+        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.getActualDIBBits, tBitmap
+        
+    End If
+    
+    'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
+    
+    'Apply the rotation
+    GdipImageRotateFlip tBitmap, rotationType
+    
+    'Resize the target DIB
+    Dim newWidth As Long, newHeight As Long
+    GdipGetImageWidth tBitmap, newWidth
+    GdipGetImageHeight tBitmap, newHeight
+    Debug.Print newWidth & "," & newHeight
+    
+    dstDIB.createBlank newWidth, newHeight, srcDIB.getDIBColorDepth, 0
+    
+    'Obtain a GDI+ handle to the target DIB
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    
+    'Render the rotated image
+    GdipDrawImage iGraphics, tBitmap, 0, 0
+    
+    'Release both the destination graphics object and the source bitmap object
+    GdipDeleteGraphics iGraphics
+    GdipDisposeImage tBitmap
     
 End Function
 
