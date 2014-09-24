@@ -515,25 +515,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    If srcDIB.getDIBColorDepth = 32 Then
-        
-        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GdipCreateBitmapFromScan0 srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.getActualDIBBits, tBitmap
-        
-    Else
-    
-        'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
-        Dim imgHeader As BITMAPINFO
-        With imgHeader.Header
-            .Size = Len(imgHeader.Header)
-            .Planes = 1
-            .BitCount = srcDIB.getDIBColorDepth
-            .Width = srcDIB.getDIBWidth
-            .Height = -srcDIB.getDIBHeight
-        End With
-        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.getActualDIBBits, tBitmap
-        
-    End If
+    getGdipBitmapHandleFromDIB tBitmap, srcDIB
     
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
@@ -575,15 +557,10 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     
 End Function
 
-'Simpler rotate/flip function, and limited to the constants specified by the enum.
-Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotationType As RotateFlipType) As Boolean
+'Simpler shorthand function for obtaining a GDI+ bitmap handle from a pdDIB object.  Note that 24/32bpp cases have to be handled separately
+' because GDI+ is stupid.
+Private Sub getGdipBitmapHandleFromDIB(ByRef tBitmap As Long, ByRef srcDIB As pdDIB)
 
-    GDIPlusRotateFlipDIB = True
-    
-    'We need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
-    ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    Dim tBitmap As Long
-    
     If srcDIB.getDIBColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
@@ -603,6 +580,18 @@ Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.getActualDIBBits, tBitmap
         
     End If
+
+End Sub
+
+'Simpler rotate/flip function, and limited to the constants specified by the enum.
+Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotationType As RotateFlipType) As Boolean
+
+    GDIPlusRotateFlipDIB = True
+    
+    'We need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
+    ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
+    Dim tBitmap As Long
+    getGdipBitmapHandleFromDIB tBitmap, srcDIB
     
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
@@ -613,7 +602,6 @@ Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     Dim newWidth As Long, newHeight As Long
     GdipGetImageWidth tBitmap, newWidth
     GdipGetImageHeight tBitmap, newHeight
-    Debug.Print newWidth & "," & newHeight
     
     dstDIB.createBlank newWidth, newHeight, srcDIB.getDIBColorDepth, 0
     
@@ -650,25 +638,7 @@ Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    If srcDIB.getDIBColorDepth = 32 Then
-        
-        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GdipCreateBitmapFromScan0 srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBWidth * 4, PixelFormat32bppPARGB, ByVal srcDIB.getActualDIBBits, tBitmap
-        
-    Else
-    
-        'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
-        Dim imgHeader As BITMAPINFO
-        With imgHeader.Header
-            .Size = Len(imgHeader.Header)
-            .Planes = 1
-            .BitCount = srcDIB.getDIBColorDepth
-            .Width = srcDIB.getDIBWidth
-            .Height = -srcDIB.getDIBHeight
-        End With
-        GdipCreateBitmapFromGdiDib imgHeader, ByVal srcDIB.getActualDIBBits, tBitmap
-        
-    End If
+    getGdipBitmapHandleFromDIB tBitmap, srcDIB
     
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
@@ -737,26 +707,7 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
     
     'Next, we need a temporary copy of the image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    
-    If dstDIB.getDIBColorDepth = 32 Then
-        
-        'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GdipCreateBitmapFromScan0 dstDIB.getDIBWidth, dstDIB.getDIBHeight, dstDIB.getDIBWidth * 4, PixelFormat32bppARGB, ByVal dstDIB.getActualDIBBits, tBitmap
-    
-    Else
-    
-        'Use GdipCreateBitmapFromGdiDib for 24bpp DIBs
-        Dim imgHeader As BITMAPINFO
-        With imgHeader.Header
-            .Size = Len(imgHeader.Header)
-            .Planes = 1
-            .BitCount = dstDIB.getDIBColorDepth
-            .Width = dstDIB.getDIBWidth
-            .Height = -dstDIB.getDIBHeight
-        End With
-        GdipCreateBitmapFromGdiDib imgHeader, ByVal dstDIB.getActualDIBBits, tBitmap
-        
-    End If
+    getGdipBitmapHandleFromDIB tBitmap, dstDIB
         
     'Create a GDI+ blur effect object
     Dim hEffect As Long
