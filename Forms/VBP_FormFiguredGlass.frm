@@ -46,8 +46,8 @@ Begin VB.Form FormFiguredGlass
    Begin PhotoDemon.sliderTextCombo sltScale 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
-      Top             =   1560
+      TabIndex        =   7
+      Top             =   1080
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -63,27 +63,6 @@ Begin VB.Form FormFiguredGlass
       Max             =   100
       SigDigits       =   1
       Value           =   10
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   4200
-      Width           =   5715
-      _ExtentX        =   10081
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
@@ -114,31 +93,11 @@ Begin VB.Form FormFiguredGlass
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   8
-      Top             =   4680
-      Width           =   5715
-      _ExtentX        =   10081
-      _ExtentY        =   635
-      Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
    Begin PhotoDemon.sliderTextCombo sltTurbulence 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
-      Top             =   2400
+      TabIndex        =   8
+      Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -154,6 +113,29 @@ Begin VB.Form FormFiguredGlass
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
+   End
+   Begin PhotoDemon.sliderTextCombo sltQuality 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   4200
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   1
+      Max             =   5
+      Value           =   2
+      NotchPosition   =   2
+      NotchValueCustom=   2
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -194,7 +176,7 @@ Begin VB.Form FormFiguredGlass
       Index           =   1
       Left            =   6000
       TabIndex        =   3
-      Top             =   2040
+      Top             =   1800
       Width           =   1200
    End
    Begin VB.Label lblTitle 
@@ -202,7 +184,7 @@ Begin VB.Form FormFiguredGlass
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "quality:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -218,7 +200,7 @@ Begin VB.Form FormFiguredGlass
       Left            =   6000
       TabIndex        =   2
       Top             =   3810
-      Width           =   1845
+      Width           =   795
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -240,7 +222,7 @@ Begin VB.Form FormFiguredGlass
       Index           =   0
       Left            =   6000
       TabIndex        =   1
-      Top             =   1200
+      Top             =   720
       Width           =   600
    End
 End
@@ -253,16 +235,16 @@ Attribute VB_Exposed = False
 'Image "Figured Glass" Distortion
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 08/January/13
-'Last updated: 07/March/14
-'Last update: improve spatial accuracy and output quality; thanks to Robert Rayment for additional testing and discussion!
+'Last updated: 23/September/14
+'Last update: add supersampling support
 '
 'This tool allows the user to apply a distort operation to an image that mimicks seeing it through warped glass, perhaps
 ' glass tiles of some sort.  Many different names are used for this effect - Paint.NET calls it "dents" (which I quite
 ' dislike); other software calls it "marbling".  I chose figured glass because it's an actual type of uneven glass - see:
 ' http://en.wikipedia.org/wiki/Architectural_glass#Rolled_plate_.28figured.29_glass
 '
-'As with other distorts in the program, bilinear interpolation (via reverse-mapping) is available for a
-' high-quality transformation.
+'As with other distorts in the program, bilinear interpolation (via reverse-mapping) and optional supersampling are
+' available for those who desire very a high-quality transformation.
 '
 'Unlike other distorts, no radius is required for this effect.  It always operates on the entire image/selection.
 '
@@ -288,7 +270,7 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'Apply a "figured glass" effect to an image
-Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If Not toPreview Then Message "Projecting image through simulated glass..."
     
@@ -325,7 +307,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -342,6 +324,46 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     Else
         fxScale = (fxScale / 100) * curDIBValues.Width
     End If
+    
+    'Due to the way this filter works, supersampling yields much better results (as the edges of the glass will take
+    ' the values of many pixels, and condense them down to a single pixel).  Because supersampling is extremely
+    ' energy-intensive, this is one of the few tools that uses a sliding value for quality, as opposed to a binary
+    ' TRUE/FALSE for antialiasing.  (For all but the lowest quality setting, this tool will use antialiasing by default.)
+    
+    'Thank you to awesome contributor Audioglider for the original supersampling code on which this implementation is based.
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    'Use the passed super-sampling constant (reported to the user as "quality") to come up with a number of actual
+    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 18)
+    Dim AA_Samples As Long
+    AA_Samples = (superSamplingAmount - 1) * 2
+    If AA_Samples = 0 Then AA_Samples = 1
+    
+    Dim m_aaPTX() As Single, m_aaPTY() As Single
+    ReDim m_aaPTX(0 To AA_Samples - 1) As Single, m_aaPTY(0 To AA_Samples - 1) As Single
+    Dim j As Double, k As Double
+    Dim mm As Long
+    
+    'Convert angles to radians.  We use a set radius for this calculation, as this tool doesn't support rotation,
+    ' but I've left the original sin/cos calculations, to make it easier to understand what's happening here.
+    Dim m_Sin As Double, m_Cos As Double
+    m_Sin = Sin(0 * PI_DIV_180)
+    m_Cos = Cos(0 * PI_DIV_180)
+    
+    'Precalculate all supersampling coordinate offsets
+    Dim i As Long
+    For i = 0 To AA_Samples - 1
+        
+        j = (i * 4) / CDbl(AA_Samples)
+        k = i / CDbl(AA_Samples)
+        
+        j = j - CLng(j)
+        
+        m_aaPTX(i) = m_Cos * j + m_Sin * k
+        m_aaPTY(i) = m_Cos * k - m_Sin * j
+        
+    Next i
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
@@ -362,26 +384,63 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
+                
+        newR = 0
+        newG = 0
+        newB = 0
+        newA = 0
         
-        'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
-        ' user's turbulence value.
-        If fxScale > 0 Then
-            pNoiseCache = PI_DOUBLE * cPerlin.Noise2D(x / fxScale, y / fxScale) * fxTurbulence
-            perlinCacheSin = Sin(pNoiseCache) * fxScale
-            perlinCacheCos = Cos(pNoiseCache) * fxScale * fxTurbulence
-        Else
-            perlinCacheSin = 0
-            perlinCacheCos = 0
+        'Sample a number of source pixels corresponding to the user's supplied quality value; more quality means
+        ' more samples, and much better representation in the final output.
+        For mm = 0 To AA_Samples - 1
+            
+            'Offset the pixel amount by the supersampling lookup table
+            j = x + m_aaPTX(mm)
+            k = y + m_aaPTY(mm)
+            
+            'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
+            ' user's turbulence value.
+            If fxScale > 0 Then
+                pNoiseCache = PI_DOUBLE * cPerlin.Noise2D(j / fxScale, k / fxScale) * fxTurbulence
+                perlinCacheSin = Sin(pNoiseCache) * fxScale
+                perlinCacheCos = Cos(pNoiseCache) * fxScale * fxTurbulence
+            Else
+                perlinCacheSin = 0
+                perlinCacheCos = 0
+            End If
+            
+            'Use the sine of the displacement to calculate a unique source pixel position.  (Sine improves the roundness
+            ' of the conversion, but technically it would work fine without an additional modifier due to the way
+            ' Perlin noise is generated.)
+            srcX = j + perlinCacheSin
+            srcY = k + perlinCacheCos
+            
+            'Use the filter support class to interpolate and edge-wrap pixels as necessary
+            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData
+            
+            'Add the retrieved values to our running averages
+            newR = newR + r
+            newG = newG + g
+            newB = newB + b
+            If qvDepth = 4 Then newA = newA + a
+        
+        Next mm
+        
+        'Find the average values of all samples, apply to the pixel, and move on!
+        newR = newR \ AA_Samples
+        newG = newG \ AA_Samples
+        newB = newB \ AA_Samples
+        
+        dstImageData(QuickVal + 2, y) = newR
+        dstImageData(QuickVal + 1, y) = newG
+        dstImageData(QuickVal, y) = newB
+        
+        'If the image has an alpha channel, repeat the calculation there too
+        If qvDepth = 4 Then
+            newA = newA \ AA_Samples
+            If newA > 255 Then newA = 255
+            dstImageData(QuickVal + 3, y) = newA
         End If
-        
-        'Use the sine of the displacement to calculate a unique source pixel position.  (Sine improves the roundness
-        ' of the conversion, but technically it would work fine without an additional modifier due to the way
-        ' Perlin noise is generated.)
-        srcX = x + perlinCacheSin
-        srcY = y + perlinCacheCos
-        
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
         If (Not toPreview) Then
@@ -405,7 +464,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Figured glass", , buildParams(sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
+    Process "Figured glass", , buildParams(sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -418,6 +477,7 @@ Private Sub cmdBar_ResetClick()
     cmbEdges.ListIndex = 1
     sltScale.Value = 10#
     sltTurbulence.Value = 0.5
+    sltQuality.Value = 2
 
 End Sub
 
@@ -457,6 +517,10 @@ Private Sub OptInterpolate_Click(Index As Integer)
     updatePreview
 End Sub
 
+Private Sub sltQuality_Change()
+    updatePreview
+End Sub
+
 Private Sub sltScale_Change()
     updatePreview
 End Sub
@@ -468,7 +532,7 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
     If cmdBar.previewsAllowed Then
-        FiguredGlassFX sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+        FiguredGlassFX sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), sltQuality, True, fxPreview
     End If
 End Sub
 

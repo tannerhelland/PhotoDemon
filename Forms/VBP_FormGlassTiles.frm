@@ -154,9 +154,10 @@ Begin VB.Form FormGlassTiles
          Strikethrough   =   0   'False
       EndProperty
       Min             =   1
-      Value           =   5
+      Max             =   5
+      Value           =   2
       NotchPosition   =   2
-      NotchValueCustom=   5
+      NotchValueCustom=   2
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -346,7 +347,7 @@ Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByV
     'Use the passed super-sampling constant (reported to the user as "quality") to come up with a number of actual
     ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 18)
     Dim AA_Samples As Long
-    AA_Samples = (superSamplingAmount - 1) * 2
+    AA_Samples = (superSamplingAmount * 2 - 1) * 2
     If AA_Samples = 0 Then AA_Samples = 1
     
     Dim m_aaPTX() As Single, m_aaPTY() As Single
@@ -503,7 +504,7 @@ Private Sub cmdBar_ResetClick()
     sltAngle.Value = 45
     sltSize.Value = 40
     sltCurvature.Value = 8
-    sltQuality.Value = 5
+    sltQuality.Value = 2
     cmbEdges.ListIndex = EDGE_CLAMP
 End Sub
 
