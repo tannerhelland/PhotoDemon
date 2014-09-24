@@ -1537,12 +1537,16 @@ End Sub
 
 'In an attempt to better serve high-DPI users, some of PD's stock UI icons are now generated at runtime.
 ' Note that the requested size is in PIXELS, so it is up to the caller to determine the proper size IN PIXELS of
-' any requested UI elements.  (We would auto-adjust for DPI here, but some objects do not scale linearly.)
-Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByVal dibSize As Long = 16, Optional ByVal dibPadding As Long = 0, Optional ByVal backColor As Long = 0) As pdDIB
+' any requested UI elements.  This value will be automatically scaled to the current DPI, so make sure the passed
+' pixel value is relevant to 100% DPI only (96 DPI).
+Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByVal dibSize As Long = 16, Optional ByVal dibPadding As Long = 0, Optional ByVal BackColor As Long = 0) As pdDIB
+
+    'Adjust the dib size to account for DPI
+    dibSize = fixDPI(dibSize)
 
     'Create the target DIB
     Set getRuntimeUIDIB = New pdDIB
-    getRuntimeUIDIB.createBlank dibSize, dibSize, 32, backColor, 0
+    getRuntimeUIDIB.createBlank dibSize, dibSize, 32, BackColor, 0
     
     'Dynamically create the requested icon
     Select Case dibType
@@ -1571,7 +1575,7 @@ Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
     End Select
     
     'If the user requested any padding, apply it now
-    padDIB getRuntimeUIDIB, dibPadding
+    If dibPadding > 0 Then padDIB getRuntimeUIDIB, dibPadding
     
 
 End Function
