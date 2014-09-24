@@ -180,6 +180,9 @@ Private Const PixelFormat32bppCMYK = &H200F
 'Now that PD supports the loading of ICC profiles, we use this constant to retrieve it
 Private Const PropertyTagICCProfile As Long = &H8773&
 
+'Orientation tag is used to auto-rotate incoming JPEGs
+Private Const PropertyTagOrientation As Long = &H112&
+
 'LockBits constants
 Private Const ImageLockModeRead = &H1
 Private Const ImageLockModeWrite = &H2
@@ -1064,7 +1067,55 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         Erase iccProfileBuffer
         
     End If
+    
+    'Look for orientation flags.  This is most relevant for JPEGs coming from a digital camera.
+    GdipGetPropertyItemSize hImage, PropertyTagOrientation, profileSize
+    
+    If (profileSize > 0) And g_UserPreferences.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
         
+        'Orientation tag will only ever be 2 bytes
+        Dim tmpPropertyBuffer() As Byte
+        ReDim tmpPropertyBuffer(0 To profileSize - 1) As Byte
+        GdipGetPropertyItem hImage, PropertyTagOrientation, profileSize, ByVal VarPtr(tmpPropertyBuffer(0))
+        
+        'The first 16 bytes of a GDI+ property are a standard header.  We need the MSB of the 2-byte trailer of the returned array.
+        Select Case tmpPropertyBuffer(profileSize - 2)
+        
+            'Standard orientation - ignore!
+            Case 1
+        
+            'The 0th row is at the visual top of the image, and the 0th column is the visual right-hand side
+            Case 2
+                GdipImageRotateFlip hImage, RotateNoneFlipX
+            
+            'The 0th row is at the visual bottom of the image, and the 0th column is the visual right-hand side
+            Case 3
+                GdipImageRotateFlip hImage, Rotate180FlipNone
+            
+            'The 0th row is at the visual bottom of the image, and the 0th column is the visual left-hand side
+            Case 4
+                GdipImageRotateFlip hImage, RotateNoneFlipY
+            
+            'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual top
+            Case 5
+                GdipImageRotateFlip hImage, Rotate270FlipY
+            
+            'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual top
+            Case 6
+                GdipImageRotateFlip hImage, Rotate90FlipNone
+                
+            'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual bottom
+            Case 7
+                GdipImageRotateFlip hImage, Rotate90FlipY
+                
+            'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual bottom
+            Case 8
+                GdipImageRotateFlip hImage, Rotate270FlipNone
+        
+        End Select
+        
+    End If
+    
     'Retrieve the image's size
     Dim imgWidth As Single, imgHeight As Single
     GdipGetImageDimension hImage, imgWidth, imgHeight
