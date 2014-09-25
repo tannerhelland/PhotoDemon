@@ -73,57 +73,14 @@ Begin VB.Form FormGaussianBlur
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartOptionButton OptQuality 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
+   Begin PhotoDemon.buttonStrip btsQuality 
+      Height          =   600
+      Left            =   6000
       TabIndex        =   6
-      Top             =   3120
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "good"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptQuality 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   3540
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "better"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptQuality 
-      Height          =   360
-      Index           =   2
-      Left            =   6120
-      TabIndex        =   8
-      Top             =   3960
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "best"
+      Top             =   3180
+      Width           =   5835
+      _ExtentX        =   11774
+      _ExtentY        =   1058
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -206,10 +163,8 @@ Attribute VB_Exposed = False
 'Gaussian Blur Tool
 'Copyright ©2010-2014 by Tanner Helland
 'Created: 01/July/10
-'Last updated: 17/September/13
-'Last update: provide options for "fast instead of accurate"; this is a huge speed gain (~20x for "good" vs "best")
-'              with minimal deterioration in quality (3% difference from a true Gaussian) - probably worth it for
-'              most applications, and the true Gaussian is still available for those who want/need it.
+'Last updated: 25/September/14
+'Last update: switch quality option buttons to button strip
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a variable radius gaussian blur filter
 ' that utilizes a separable convolution kernel AND allows for sub-pixel radii (at "best" quality, anyway).
@@ -239,9 +194,6 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
-
-'Track the active option button, so we can more easily pass it as a parameter when the user clicks OK
-Private qualityIndex As Long
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
@@ -297,9 +249,13 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
             
 End Sub
 
+Private Sub btsQuality_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Gaussian blur", , buildParams(sltRadius, qualityIndex), UNDO_LAYER
+    Process "Gaussian blur", , buildParams(sltRadius, btsQuality.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -328,17 +284,22 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Load()
+    
+    'Populate the quality selector
+    btsQuality.AddItem "good", 0
+    btsQuality.AddItem "better", 1
+    btsQuality.AddItem "best", 2
+    btsQuality.ListIndex = 0
+    
+End Sub
+
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then GaussianBlurFilter sltRadius.Value, qualityIndex, True, fxPreview
-End Sub
-
-Private Sub OptQuality_Click(Index As Integer)
-    qualityIndex = Index
-    updatePreview
+    If cmdBar.previewsAllowed Then GaussianBlurFilter sltRadius.Value, btsQuality.ListIndex, True, fxPreview
 End Sub
 
 Private Sub sltRadius_Change()
