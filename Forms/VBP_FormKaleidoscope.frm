@@ -430,8 +430,8 @@ Attribute VB_Exposed = False
 'Image "Kaleiodoscope" Distortion
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/January/13
-'Last updated: 10/January/14
-'Last update: add support for custom center-point selection by the user
+'Last updated: 25/September/14
+'Last update: interface improvements
 '
 'This tool allows the user to apply a simulated kaleidoscope distort to the image.  A number of variables can be
 ' set as part of the transformation; simply playing with the sliders should give a good indication of how they
