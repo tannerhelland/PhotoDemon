@@ -1196,7 +1196,15 @@ Private Sub getSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Singl
     'This dumb catch exists for when sliders are first loaded, and their max/min may both be zero.  This causes a divide-by-zero
     ' error in the horizontal slider position calculation, so if that happens, simply set the slider to its minimum position and exit.
     If controlMin <> controlMax Then
-        sliderX = getTrackMinPos + ((controlVal - controlMin) / (controlMax - controlMin)) * (getTrackMaxPos - getTrackMinPos)
+        
+        'If an integer-only slider is in use, limit positions to whole numbers only
+        If SigDigits = 0 Then
+            sliderX = getTrackMinPos + ((Int(controlVal + 0.5) - controlMin) / (controlMax - controlMin)) * (getTrackMaxPos - getTrackMinPos)
+        Else
+            sliderX = getTrackMinPos + ((controlVal - controlMin) / (controlMax - controlMin)) * (getTrackMaxPos - getTrackMinPos)
+        End If
+        
+        
     Else
         sliderX = getTrackMinPos
     End If
