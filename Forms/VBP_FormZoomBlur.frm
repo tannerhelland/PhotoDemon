@@ -142,9 +142,8 @@ Attribute VB_Exposed = False
 'Zoom Blur Tool
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/August/13
-'Last updated: 16/September/13
-'Last update: added a "traditional" mode, with optimizations based on aspect ratio (to minimize data loss from
-'              repeated polar coord conversions)
+'Last updated: 25/September/14
+'Last update: improve traditional mode output, and allow negative zoom values
 '
 'Basic zoom blur tool.  For performance reasons, my approach relies heavily on StretchBlt and AlphaBlend.  The
 ' resulting zoom is of reasonably good quality, and it outperforms similar tools in both GIMP and Paint.NET, so I
@@ -316,10 +315,7 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
     srcDIB.createFromExistingDIB workingDIB
     
     'By dividing blur distance by 200 (its maximum value), we can use it as a fractional amount to determine the strength of our horizontal blur.
-    If toPreview Then
-        bDistance = bDistance * curDIBValues.previewModifier
-        If bDistance < 1 Then bDistance = 1
-    End If
+    If toPreview Then bDistance = bDistance * curDIBValues.previewModifier
     
     Dim finalX As Long, finalY As Long
     finalX = workingDIB.getDIBWidth
@@ -327,9 +323,20 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
     
     Dim newProgBarMax As Long
     
-    'Zoom blur basically works by converting an image to polar coordinates, applying a horizontal blur, then converting
-    ' back to rectangular coordinates.  Even with interpolation, the two coordinate conversion functions result in a loss
-    ' of image data, so I've gone to some lengths to try and mitigate this.
+    'Negative and positive zooms are both allowed; these trigger whether we apply a forward or reverse horizontal/vertical blur.
+    Dim forwardBlurDistance As Long, backwardBlurDistance As Long
+    
+    If bDistance < 0 Then
+        forwardBlurDistance = Abs(bDistance)
+        backwardBlurDistance = 0
+    Else
+        forwardBlurDistance = 0
+        backwardBlurDistance = Abs(bDistance)
+    End If
+    
+    'Zoom blur basically works by converting an image to polar coordinates, applying a horizontal (or vertical) blur,
+    ' then converting back to rectangular coordinates.  Even with interpolation, the two coordinate conversion functions
+    ' result in a loss of image data, so I've gone to some lengths to try and mitigate this.
     '
     'Polar coordinate conversion basically works by using either X or Y to represent radius, and the other to represent theta
     ' (or the angle of the pixel).  Because images are stored as rectangles, radius tends to preserve more of the original data
@@ -347,7 +354,7 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
         If CreatePolarCoordDIB(1, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax) Then
             
             'Now we can apply the box blur to the temporary DIB, using the blur radius supplied by the user
-            If CreateVerticalBlurDIB(bDistance, bDistance, workingDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
+            If CreateVerticalBlurDIB(backwardBlurDistance, forwardBlurDistance, workingDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
                 
                 'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
                 CreatePolarCoordDIB 0, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + finalX
@@ -365,7 +372,7 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
         If CreateXSwappedPolarCoordDIB(1, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax) Then
             
             'Now we can apply the box blur to the temporary DIB, using the blur radius supplied by the user
-            If CreateHorizontalBlurDIB(bDistance, bDistance, workingDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
+            If CreateHorizontalBlurDIB(backwardBlurDistance, forwardBlurDistance, workingDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
                 
                 'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
                 CreateXSwappedPolarCoordDIB 0, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + finalY
@@ -386,16 +393,7 @@ End Sub
 
 'Modern style allows for zooming in and out.  Traditional only allows out.
 Private Sub btsStyle_Click(ByVal buttonIndex As Long)
-    
-    If buttonIndex = 0 Then
-        sltDistance.Min = -200
-    Else
-        If sltDistance.Value < 0 Then sltDistance.Value = Abs(sltDistance.Value)
-        sltDistance.Min = 0
-    End If
-    
     updatePreview
-    
 End Sub
 
 Private Sub cmdBar_OKClick()
