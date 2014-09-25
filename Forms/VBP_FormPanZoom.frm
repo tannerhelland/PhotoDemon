@@ -59,7 +59,7 @@ Begin VB.Form FormPanAndZoom
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   8
-      Top             =   3855
+      Top             =   5100
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -75,7 +75,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   495
       Left            =   6000
       TabIndex        =   1
-      Top             =   930
+      Top             =   570
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
@@ -96,7 +96,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   495
       Left            =   6000
       TabIndex        =   2
-      Top             =   1890
+      Top             =   1650
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
@@ -117,7 +117,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   495
       Left            =   6000
       TabIndex        =   3
-      Top             =   2850
+      Top             =   2730
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
@@ -133,53 +133,35 @@ Begin VB.Form FormPanAndZoom
       Min             =   -10
       SigDigits       =   2
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   9
-      Top             =   4800
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
+   Begin PhotoDemon.sliderTextCombo sltQuality 
+      Height          =   495
+      Left            =   6000
       TabIndex        =   10
-      Top             =   5160
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "speed"
+      Top             =   3870
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   11.25
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   5
+      Value           =   2
+      NotchPosition   =   2
+      NotchValueCustom=   2
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "quality:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -193,9 +175,9 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   12
-      Top             =   4410
-      Width           =   1845
+      TabIndex        =   11
+      Top             =   3480
+      Width           =   795
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -214,8 +196,8 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   11
-      Top             =   3480
+      TabIndex        =   9
+      Top             =   4680
       Width           =   3315
    End
    Begin VB.Label lblTitle 
@@ -236,7 +218,7 @@ Begin VB.Form FormPanAndZoom
       Index           =   2
       Left            =   6000
       TabIndex        =   7
-      Top             =   2520
+      Top             =   2400
       Width           =   675
    End
    Begin VB.Label lblTitle 
@@ -257,7 +239,7 @@ Begin VB.Form FormPanAndZoom
       Index           =   0
       Left            =   6000
       TabIndex        =   5
-      Top             =   600
+      Top             =   240
       Width           =   1605
    End
    Begin VB.Label lblTitle 
@@ -278,7 +260,7 @@ Begin VB.Form FormPanAndZoom
       Index           =   1
       Left            =   6000
       TabIndex        =   4
-      Top             =   1560
+      Top             =   1320
       Width           =   1305
    End
 End
@@ -291,8 +273,8 @@ Attribute VB_Exposed = False
 'Pan and Zoom Effect Interface
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 28/May/13
-'Last updated: 22/August/13
-'Last update: add command bar user control
+'Last updated: 25/September/14
+'Last update: integrate new adaptive supersampling engine
 '
 'Dialog for handling a Ken Burns transform (http://en.wikipedia.org/wiki/Ken_burns_effect).
 '
@@ -315,9 +297,9 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'Apply a Ken Burns effect (basically, variable pan and zoom parameters with optional wrapping)
-Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal newZoom As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal newZoom As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Applying pan and zoom (Ken Burns) effect..."
+    If Not toPreview Then Message "Applying pan and zoom (Ken Burns) effect..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -358,14 +340,58 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-          
-    'Lens distort correction requires a number of specialized variables
+    
+    '***************************************
+    ' /* BEGIN SUPERSAMPLING PREPARATION */
+    
+    'Due to the way this filter works, supersampling yields much better results.  Because supersampling is extremely
+    ' energy-intensive, this tool uses a sliding value for quality, as opposed to a binary TRUE/FALSE for antialiasing.
+    ' (For all but the lowest quality setting, antialiasing will be used, and higher quality values will simply increase
+    '  the amount of supersamples taken.)
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim tmpSum As Long, tmpSumFirst As Long
+    
+    'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
+    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
+    ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
+    Dim numSamples As Long
+    Dim ssX() As Single, ssY() As Single
+    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    
+    'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
+    ' count in advance.
+    numSamples = numSamples - 1
+    
+    'Additional variables are needed for supersampling handling
+    Dim j As Double, k As Double
+    Dim sampleIndex As Long, numSamplesUsed As Long
+    Dim superSampleVerify As Long, ssVerificationLimit As Long
+    
+    'Adaptive supersampling allows us to bypass supersampling if a pixel doesn't appear to benefit from it.  The superSampleVerify
+    ' variable controls how many pixels are sampled before we perform an adaptation check.  At present, the rule is:
+    ' Quality 3: check a minimum of 2 samples, Quality 4: check minimum 3 samples, Quality 5: check minimum 4 samples
+    superSampleVerify = superSamplingAmount - 2
+    
+    'Alongside a variable number of test samples, adaptive supersampling requires some threshold that indicates samples
+    ' are close enough that further supersampling is unlikely to improve output.  We calculate this as a minimum variance
+    ' as 1.5 per channel (for a total of 6 variance per pixel), multiplied by the total number of samples taken.
+    ssVerificationLimit = superSampleVerify * 6
+    
+    'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
+    ' by setting the verification checker to some impossible value.
+    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    
+    ' /* END SUPERSAMPLING PREPARATION */
+    '*************************************
+    
+    'Pan/zoom requires a number of specialized variables
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
@@ -400,16 +426,72 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
-                            
+                         
+        'Reset all supersampling values
+        newR = 0
+        newG = 0
+        newB = 0
+        newA = 0
+        numSamplesUsed = 0
+        
         'Remap the coordinates around a center point of (0, 0)
         nX = x - midX
         nY = y - midY
         
-        srcX = midX - hPan + nX * newZoom
-        srcY = midY - vPan + nY * newZoom
+        'Sample a number of source pixels corresponding to the user's supplied quality value; more quality means
+        ' more samples, and much better representation in the final output.
+        For sampleIndex = 0 To numSamples
+            
+            'Offset the pixel amount by the supersampling lookup table
+            j = nX + ssX(sampleIndex)
+            k = nY + ssY(sampleIndex)
+            
+            srcX = midX - hPan + j * newZoom
+            srcY = midY - vPan + k * newZoom
+            
+            'Use the filter support class to interpolate and edge-wrap pixels as necessary
+            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData
+            
+            'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
+            ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
+            ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
+            '  small enough to make it preferable over a true variance calculation.)
+            If sampleIndex = superSampleVerify Then
+                
+                'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
+                tmpSum = (r + g + b + a) * superSampleVerify
+                tmpSumFirst = newR + newG + newB + newA
+                
+                'If variance is below 1.5 per channel per pixel, abort further supersampling
+                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+            
+            End If
+            
+            'Increase the sample count
+            numSamplesUsed = numSamplesUsed + 1
+            
+            'Add the retrieved values to our running averages
+            newR = newR + r
+            newG = newG + g
+            newB = newB + b
+            If qvDepth = 4 Then newA = newA + a
         
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        Next sampleIndex
+        
+        'Find the average values of all samples, apply to the pixel, and move on!
+        newR = newR \ numSamplesUsed
+        newG = newG \ numSamplesUsed
+        newB = newB \ numSamplesUsed
+        
+        dstImageData(QuickVal + 2, y) = newR
+        dstImageData(QuickVal + 1, y) = newG
+        dstImageData(QuickVal, y) = newB
+        
+        'If the image has an alpha channel, repeat the calculation there too
+        If qvDepth = 4 Then
+            newA = newA \ numSamplesUsed
+            dstImageData(QuickVal + 3, y) = newA
+        End If
                 
     Next y
         If Not toPreview Then
@@ -434,7 +516,7 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Pan and zoom", , buildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
+    Process "Pan and zoom", , buildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -488,10 +570,10 @@ End Sub
 
 'Redraw the effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
-Private Sub OptInterpolate_Click(Index As Integer)
+Private Sub sltQuality_Change()
     updatePreview
 End Sub
 
