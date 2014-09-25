@@ -4,10 +4,10 @@ Begin VB.Form FormKaleidoscope
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Kaleidoscope"
-   ClientHeight    =   6540
+   ClientHeight    =   6675
    ClientLeft      =   -15
    ClientTop       =   225
-   ClientWidth     =   12090
+   ClientWidth     =   12135
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,18 +20,18 @@ Begin VB.Form FormKaleidoscope
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   436
+   ScaleHeight     =   445
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   806
+   ScaleWidth      =   809
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5790
-      Width           =   12090
-      _ExtentX        =   21325
+      Top             =   5925
+      Width           =   12135
+      _ExtentX        =   21405
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -46,7 +46,7 @@ Begin VB.Form FormKaleidoscope
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -54,283 +54,355 @@ Begin VB.Form FormKaleidoscope
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
+   Begin PhotoDemon.buttonStrip btsOptions 
+      Height          =   600
       Left            =   6120
-      TabIndex        =   7
-      Top             =   5205
-      Width           =   2715
-      _ExtentX        =   4789
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   8880
-      TabIndex        =   8
-      Top             =   5205
-      Width           =   2715
-      _ExtentX        =   4789
-      _ExtentY        =   635
-      Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.sliderTextCombo sltMirrors 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   1770
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Min             =   1
-      Max             =   16
-      Value           =   3
-      NotchPosition   =   2
-      NotchValueCustom=   8
-   End
-   Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   10
-      Top             =   2610
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Max             =   360
-      SigDigits       =   1
-   End
-   Begin PhotoDemon.sliderTextCombo sltAngle2 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   11
-      Top             =   3450
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Max             =   360
-      SigDigits       =   1
-   End
-   Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   12
-      Top             =   4305
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Min             =   1
-      Max             =   100
-      Value           =   100
-      NotchPosition   =   2
-      NotchValueCustom=   100
-   End
-   Begin PhotoDemon.sliderTextCombo sltXCenter 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   13
-      Top             =   480
-      Width           =   2895
-      _ExtentX        =   5106
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
-      NotchPosition   =   2
-      NotchValueCustom=   0.5
-   End
-   Begin PhotoDemon.sliderTextCombo sltYCenter 
-      Height          =   495
-      Left            =   9000
-      TabIndex        =   14
-      Top             =   480
-      Width           =   2895
-      _ExtentX        =   5106
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
-      NotchPosition   =   2
-      NotchValueCustom=   0.5
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "center position (x, y)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   5
-      Left            =   6000
-      TabIndex        =   16
-      Top             =   120
-      Width           =   2205
-   End
-   Begin VB.Label lblExplanation 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Note: you can also set a center position by clicking the preview window."
-      ForeColor       =   &H00404040&
-      Height          =   435
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   15
-      Top             =   1050
-      Width           =   5655
-      WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "secondary angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   4
-      Left            =   6000
-      TabIndex        =   6
-      Top             =   3135
-      Width           =   1800
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "number of mirrors:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   3
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   1440
-      Width           =   2055
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "radius (percentage):"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
       TabIndex        =   3
-      Top             =   3990
-      Width           =   2145
+      Top             =   4620
+      Width           =   5595
+      _ExtentX        =   9869
+      _ExtentY        =   1058
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3495
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   233
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   5
+      Top             =   360
+      Visible         =   0   'False
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltAngle2 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   14
+         Top             =   555
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   360
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltRadius 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   15
+         Top             =   1530
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   1
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.buttonStrip btsQuality 
+         Height          =   600
+         Left            =   240
+         TabIndex        =   19
+         Top             =   2640
+         Width           =   5595
+         _ExtentX        =   9869
+         _ExtentY        =   1058
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblTitle 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "render emphasis:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   120
+         TabIndex        =   18
+         Top             =   2265
+         Width           =   1845
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "radius (percentage):"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   120
+         TabIndex        =   17
+         Top             =   1215
+         Width           =   2145
+      End
+      Begin VB.Label lblTitle 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "secondary angle:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   4
+         Left            =   120
+         TabIndex        =   16
+         Top             =   240
+         Width           =   1800
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3495
+      Index           =   0
+      Left            =   5880
+      ScaleHeight     =   233
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   4
+      Top             =   360
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltMirrors 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   6
+         Top             =   1890
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   1
+         Max             =   16
+         Value           =   3
+         NotchPosition   =   2
+         NotchValueCustom=   8
+      End
+      Begin PhotoDemon.sliderTextCombo sltAngle 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   7
+         Top             =   2880
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   360
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltXCenter 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   8
+         Top             =   600
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   1
+         SigDigits       =   2
+         Value           =   0.5
+         NotchPosition   =   2
+         NotchValueCustom=   0.5
+      End
+      Begin PhotoDemon.sliderTextCombo sltYCenter 
+         Height          =   495
+         Left            =   3120
+         TabIndex        =   9
+         Top             =   600
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   1
+         SigDigits       =   2
+         Value           =   0.5
+         NotchPosition   =   2
+         NotchValueCustom=   0.5
+      End
+      Begin VB.Label lblTitle 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "primary angle:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         TabIndex        =   13
+         Top             =   2520
+         Width           =   1560
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "number of mirrors:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   120
+         TabIndex        =   12
+         Top             =   1560
+         Width           =   2055
+      End
+      Begin VB.Label lblExplanation 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Note: you can also set a center position by clicking the preview window."
+         ForeColor       =   &H00404040&
+         Height          =   435
+         Index           =   0
+         Left            =   240
+         TabIndex        =   11
+         Top             =   1170
+         Width           =   5655
+         WordWrap        =   -1  'True
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "center position (x, y)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   5
+         Left            =   120
+         TabIndex        =   10
+         Top             =   240
+         Width           =   2205
+      End
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "options:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -342,34 +414,11 @@ Begin VB.Form FormKaleidoscope
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Index           =   2
+      Index           =   6
       Left            =   6000
       TabIndex        =   2
-      Top             =   4800
-      Width           =   1845
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "primary angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   2280
-      Width           =   1560
+      Top             =   4200
+      Width           =   870
    End
 End
 Attribute VB_Name = "FormKaleidoscope"
@@ -405,7 +454,7 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 'Apply a "kaleidoscope" effect to an image
-Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As Double, ByVal secondaryAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Double, ByVal secondaryAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If Not toPreview Then Message "Peering at image through imaginary kaleidoscope..."
     
@@ -428,7 +477,7 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -480,13 +529,13 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
     sRadius = sRadius * (effectRadius / 100)
                   
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
-        nX = X - midX
-        nY = Y - midY
+        nX = x - midX
+        nY = y - midY
         
         'Calculate distance
         sDistance = Sqr((nX * nX) + (nY * nY))
@@ -511,16 +560,16 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
         srcY = midY + sDistance * Sin(theta)
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -534,9 +583,19 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Double, ByVal primaryAngle As D
         
 End Sub
 
+'Change the active options panel
+Private Sub btsOptions_Click(ByVal buttonIndex As Long)
+    picContainer(buttonIndex).Visible = True
+    picContainer(Abs(1 - buttonIndex)).Visible = False
+End Sub
+
+Private Sub btsQuality_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Kaleidoscope", , buildParams(sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Kaleidoscope", , buildParams(sltMirrors, sltAngle, sltAngle2, sltRadius, (btsQuality.ListIndex = 0), sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -558,6 +617,20 @@ Private Sub Form_Activate()
         
     'Create the preview
     updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    'Populate the options selector
+    btsOptions.AddItem "basic", 0
+    btsOptions.AddItem "advanced", 1
+    btsOptions.ListIndex = 0
+    
+    'Populate the quality selector
+    btsQuality.AddItem "quality", 0
+    btsQuality.AddItem "speed", 1
+    btsQuality.ListIndex = 0
     
 End Sub
 
@@ -587,7 +660,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then KaleidoscopeImage sltMirrors, sltAngle, sltAngle2, sltRadius, OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then KaleidoscopeImage sltMirrors, sltAngle, sltAngle2, sltRadius, (btsQuality.ListIndex = 0), sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'Return a repeating triangle shape in the range [0, 1] with wavelength 1
