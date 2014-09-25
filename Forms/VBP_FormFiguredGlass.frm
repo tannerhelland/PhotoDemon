@@ -80,7 +80,7 @@ Begin VB.Form FormFiguredGlass
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   5
-      Top             =   3285
+      Top             =   4425
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -118,7 +118,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   495
       Left            =   6000
       TabIndex        =   9
-      Top             =   4200
+      Top             =   3240
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -155,7 +155,7 @@ Begin VB.Form FormFiguredGlass
       Index           =   5
       Left            =   6000
       TabIndex        =   6
-      Top             =   2910
+      Top             =   3990
       Width           =   3315
    End
    Begin VB.Label lblTitle 
@@ -199,7 +199,7 @@ Begin VB.Form FormFiguredGlass
       Index           =   2
       Left            =   6000
       TabIndex        =   2
-      Top             =   3810
+      Top             =   2850
       Width           =   795
    End
    Begin VB.Label lblTitle 
@@ -325,45 +325,49 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
         fxScale = (fxScale / 100) * curDIBValues.Width
     End If
     
-    'Due to the way this filter works, supersampling yields much better results (as the edges of the glass will take
-    ' the values of many pixels, and condense them down to a single pixel).  Because supersampling is extremely
-    ' energy-intensive, this is one of the few tools that uses a sliding value for quality, as opposed to a binary
-    ' TRUE/FALSE for antialiasing.  (For all but the lowest quality setting, this tool will use antialiasing by default.)
+    '***************************************
+    ' /* BEGIN SUPERSAMPLING PREPARATION */
     
-    'Thank you to awesome contributor Audioglider for the original supersampling code on which this implementation is based.
+    'Due to the way this filter works, supersampling yields much better results.  Because supersampling is extremely
+    ' energy-intensive, this tool uses a sliding value for quality, as opposed to a binary TRUE/FALSE for antialiasing.
+    ' (For all but the lowest quality setting, antialiasing will be used, and higher quality values will simply increase
+    '  the amount of supersamples taken.)
     Dim newR As Long, newG As Long, newB As Long, newA As Long
     Dim r As Long, g As Long, b As Long, a As Long
+    Dim tmpSum As Long, tmpSumFirst As Long
     
-    'Use the passed super-sampling constant (reported to the user as "quality") to come up with a number of actual
-    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 18)
-    Dim AA_Samples As Long
-    AA_Samples = (superSamplingAmount - 1) * 2
-    If AA_Samples = 0 Then AA_Samples = 1
+    'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
+    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
+    ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
+    Dim numSamples As Long
+    Dim ssX() As Single, ssY() As Single
+    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
     
-    Dim m_aaPTX() As Single, m_aaPTY() As Single
-    ReDim m_aaPTX(0 To AA_Samples - 1) As Single, m_aaPTY(0 To AA_Samples - 1) As Single
+    'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
+    ' count in advance.
+    numSamples = numSamples - 1
+    
+    'Additional variables are needed for supersampling handling
     Dim j As Double, k As Double
-    Dim mm As Long
+    Dim sampleIndex As Long, numSamplesUsed As Long
+    Dim superSampleVerify As Long, ssVerificationLimit As Long
     
-    'Convert angles to radians.  We use a set radius for this calculation, as this tool doesn't support rotation,
-    ' but I've left the original sin/cos calculations, to make it easier to understand what's happening here.
-    Dim m_Sin As Double, m_Cos As Double
-    m_Sin = Sin(0 * PI_DIV_180)
-    m_Cos = Cos(0 * PI_DIV_180)
+    'Adaptive supersampling allows us to bypass supersampling if a pixel doesn't appear to benefit from it.  The superSampleVerify
+    ' variable controls how many pixels are sampled before we perform an adaptation check.  At present, the rule is:
+    ' Quality 3: check a minimum of 2 samples, Quality 4: check minimum 3 samples, Quality 5: check minimum 4 samples
+    superSampleVerify = superSamplingAmount - 2
     
-    'Precalculate all supersampling coordinate offsets
-    Dim i As Long
-    For i = 0 To AA_Samples - 1
-        
-        j = (i * 4) / CDbl(AA_Samples)
-        k = i / CDbl(AA_Samples)
-        
-        j = j - CLng(j)
-        
-        m_aaPTX(i) = m_Cos * j + m_Sin * k
-        m_aaPTY(i) = m_Cos * k - m_Sin * j
-        
-    Next i
+    'Alongside a variable number of test samples, adaptive supersampling requires some threshold that indicates samples
+    ' are close enough that further supersampling is unlikely to improve output.  We calculate this as a minimum variance
+    ' as 1.5 per channel (for a total of 6 variance per pixel), multiplied by the total number of samples taken.
+    ssVerificationLimit = superSampleVerify * 6
+    
+    'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
+    ' by setting the verification checker to some impossible value.
+    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    
+    ' /* END SUPERSAMPLING PREPARATION */
+    '*************************************
     
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
@@ -385,18 +389,20 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
         QuickVal = x * qvDepth
     For y = initY To finalY
                 
+        'Reset all supersampling values
         newR = 0
         newG = 0
         newB = 0
         newA = 0
+        numSamplesUsed = 0
         
         'Sample a number of source pixels corresponding to the user's supplied quality value; more quality means
         ' more samples, and much better representation in the final output.
-        For mm = 0 To AA_Samples - 1
+        For sampleIndex = 0 To numSamples
             
             'Offset the pixel amount by the supersampling lookup table
-            j = x + m_aaPTX(mm)
-            k = y + m_aaPTY(mm)
+            j = x + ssX(sampleIndex)
+            k = y + ssY(sampleIndex)
             
             'Calculate a displacement for this point, using perlin noise as the basis, but modifying it per the
             ' user's turbulence value.
@@ -418,18 +424,36 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData
             
+            'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
+            ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
+            ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
+            '  small enough to make it preferable over a true variance calculation.)
+            If sampleIndex = superSampleVerify Then
+                
+                'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
+                tmpSum = (r + g + b + a) * superSampleVerify
+                tmpSumFirst = newR + newG + newB + newA
+                
+                'If variance is below 1.5 per channel per pixel, abort further supersampling
+                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+            
+            End If
+            
+            'Increase the sample count
+            numSamplesUsed = numSamplesUsed + 1
+            
             'Add the retrieved values to our running averages
             newR = newR + r
             newG = newG + g
             newB = newB + b
             If qvDepth = 4 Then newA = newA + a
         
-        Next mm
+        Next sampleIndex
         
         'Find the average values of all samples, apply to the pixel, and move on!
-        newR = newR \ AA_Samples
-        newG = newG \ AA_Samples
-        newB = newB \ AA_Samples
+        newR = newR \ numSamplesUsed
+        newG = newG \ numSamplesUsed
+        newB = newB \ numSamplesUsed
         
         dstImageData(QuickVal + 2, y) = newR
         dstImageData(QuickVal + 1, y) = newG
@@ -437,8 +461,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
         
         'If the image has an alpha channel, repeat the calculation there too
         If qvDepth = 4 Then
-            newA = newA \ AA_Samples
-            If newA > 255 Then newA = 255
+            newA = newA \ numSamplesUsed
             dstImageData(QuickVal + 3, y) = newA
         End If
                 
