@@ -59,7 +59,7 @@ Begin VB.Form FormLensCorrect
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   6
-      Top             =   3765
+      Top             =   4725
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -72,52 +72,11 @@ Begin VB.Form FormLensCorrect
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   8
-      Top             =   4680
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   9
-      Top             =   5040
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
-      Top             =   1170
+      TabIndex        =   8
+      Top             =   690
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -137,8 +96,8 @@ Begin VB.Form FormLensCorrect
    Begin PhotoDemon.sliderTextCombo sltZoom 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
-      Top             =   2010
+      TabIndex        =   9
+      Top             =   1650
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -161,8 +120,8 @@ Begin VB.Form FormLensCorrect
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   12
-      Top             =   2850
+      TabIndex        =   10
+      Top             =   2610
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -180,6 +139,29 @@ Begin VB.Form FormLensCorrect
       Value           =   100
       NotchPosition   =   2
       NotchValueCustom=   100
+   End
+   Begin PhotoDemon.sliderTextCombo sltQuality 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   3600
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   1
+      Max             =   5
+      Value           =   2
+      NotchPosition   =   2
+      NotchValueCustom=   2
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -199,7 +181,7 @@ Begin VB.Form FormLensCorrect
       Index           =   5
       Left            =   6000
       TabIndex        =   7
-      Top             =   3360
+      Top             =   4320
       Width           =   4170
    End
    Begin VB.Label Label1 
@@ -221,7 +203,7 @@ Begin VB.Form FormLensCorrect
       Height          =   285
       Left            =   6000
       TabIndex        =   5
-      Top             =   1680
+      Top             =   1320
       Width           =   1800
    End
    Begin VB.Label lblHeight 
@@ -241,7 +223,7 @@ Begin VB.Form FormLensCorrect
       Height          =   285
       Left            =   6000
       TabIndex        =   3
-      Top             =   2520
+      Top             =   2280
       Width           =   2145
    End
    Begin VB.Label lblInterpolation 
@@ -249,7 +231,7 @@ Begin VB.Form FormLensCorrect
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "quality:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -263,8 +245,8 @@ Begin VB.Form FormLensCorrect
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   4290
-      Width           =   1845
+      Top             =   3240
+      Width           =   795
    End
    Begin VB.Label lblStrength 
       Appearance      =   0  'Flat
@@ -285,7 +267,7 @@ Begin VB.Form FormLensCorrect
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   840
+      Top             =   360
       Width           =   2085
    End
 End
@@ -326,9 +308,9 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'Correct lens distortion in an image
-Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Double, ByVal lensRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Double, ByVal lensRadius As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Correcting image distortion..."
+    If Not toPreview Then Message "Correcting image distortion..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -349,7 +331,7 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -363,13 +345,58 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-          
+    
+    '***************************************
+    ' /* BEGIN SUPERSAMPLING PREPARATION */
+    
+    'Due to the way this filter works, supersampling yields much better results.  Because supersampling is extremely
+    ' energy-intensive, this tool uses a sliding value for quality, as opposed to a binary TRUE/FALSE for antialiasing.
+    ' (For all but the lowest quality setting, antialiasing will be used, and higher quality values will simply increase
+    '  the amount of supersamples taken.)
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim tmpSum As Long, tmpSumFirst As Long
+    
+    'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
+    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
+    ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
+    Dim numSamples As Long
+    Dim ssX() As Single, ssY() As Single
+    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    
+    'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
+    ' count in advance.
+    numSamples = numSamples - 1
+    
+    'Additional variables are needed for supersampling handling
+    Dim j As Double, k As Double
+    Dim sampleIndex As Long, numSamplesUsed As Long
+    Dim superSampleVerify As Long, ssVerificationLimit As Long
+    
+    'Adaptive supersampling allows us to bypass supersampling if a pixel doesn't appear to benefit from it.  The superSampleVerify
+    ' variable controls how many pixels are sampled before we perform an adaptation check.  At present, the rule is:
+    ' Quality 3: check a minimum of 2 samples, Quality 4: check minimum 3 samples, Quality 5: check minimum 4 samples
+    superSampleVerify = superSamplingAmount - 2
+    
+    'Alongside a variable number of test samples, adaptive supersampling requires some threshold that indicates samples
+    ' are close enough that further supersampling is unlikely to improve output.  We calculate this as a minimum variance
+    ' as 1.5 per channel (for a total of 6 variance per pixel), multiplied by the total number of samples taken.
+    ssVerificationLimit = superSampleVerify * 6
+    
+    'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
+    ' by setting the verification checker to some impossible value.
+    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    
+    ' /* END SUPERSAMPLING PREPARATION */
+    '*************************************
+    
+    
     'Lens distort correction requires a number of specialized variables
     
     'Calculate the center of the image
@@ -381,7 +408,7 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     
     'Rotation values
     Dim theta As Double, sRadius As Double, sRadius2 As Double, sDistance As Double
-    Dim r As Double
+    Dim radius As Double
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
@@ -403,44 +430,100 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     sRadius2 = sRadius * sRadius
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
-                            
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        'Reset all supersampling values
+        newR = 0
+        newG = 0
+        newB = 0
+        newA = 0
+        numSamplesUsed = 0
+        
         'Remap the coordinates around a center point of (0, 0)
-        nX = X - midX
-        nY = Y - midY
+        nX = x - midX
+        nY = y - midY
         
-        'Calculate distance automatically
-        sDistance = (nX * nX) + (nY * nY)
-        
-        If sDistance <= sRadius2 Then
+        'Sample a number of source pixels corresponding to the user's supplied quality value; more quality means
+        ' more samples, and much better representation in the final output.
+        For sampleIndex = 0 To numSamples
             
-            sDistance = Sqr(sDistance)
-            r = sDistance / refDistance
+            'Offset the pixel amount by the supersampling lookup table
+            j = nX + ssX(sampleIndex)
+            k = nY + ssY(sampleIndex)
             
-            If r = 0 Then theta = 1 Else theta = Atn(r) / r
-            srcX = midX + theta * nX * fixZoom
-            srcY = midY + theta * nY * fixZoom
+            'Calculate distance automatically
+            sDistance = (j * j) + (k * k)
             
-        Else
-        
-            srcX = X
-            srcY = Y
-            
-        End If
-        
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+            If sDistance <= sRadius2 Then
                 
-    Next Y
+                sDistance = Sqr(sDistance)
+                radius = sDistance / refDistance
+                
+                If radius = 0 Then theta = 1 Else theta = Atn(radius) / radius
+                srcX = midX + theta * j * fixZoom
+                srcY = midY + theta * k * fixZoom
+                
+            Else
+            
+                srcX = x
+                srcY = y
+                
+            End If
+            
+            'Use the filter support class to interpolate and edge-wrap pixels as necessary
+            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            
+            'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
+            ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
+            ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
+            '  small enough to make it preferable over a true variance calculation.)
+            If sampleIndex = superSampleVerify Then
+                
+                'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
+                tmpSum = (r + g + b + a) * superSampleVerify
+                tmpSumFirst = newR + newG + newB + newA
+                
+                'If variance is below 1.5 per channel per pixel, abort further supersampling
+                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+            
+            End If
+            
+            'Increase the sample count
+            numSamplesUsed = numSamplesUsed + 1
+            
+            'Add the retrieved values to our running averages
+            newR = newR + r
+            newG = newG + g
+            newB = newB + b
+            If qvDepth = 4 Then newA = newA + a
+            
+        Next sampleIndex
+        
+        'Find the average values of all samples, apply to the pixel, and move on!
+        newR = newR \ numSamplesUsed
+        newG = newG \ numSamplesUsed
+        newB = newB \ numSamplesUsed
+        
+        dstImageData(QuickVal + 2, y) = newR
+        dstImageData(QuickVal + 1, y) = newG
+        dstImageData(QuickVal, y) = newB
+        
+        'If the image has an alpha channel, repeat the calculation there too
+        If qvDepth = 4 Then
+            newA = newA \ numSamplesUsed
+            dstImageData(QuickVal + 3, y) = newA
+        End If
+                
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -455,7 +538,7 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Correct lens distortion", , buildParams(sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
+    Process "Correct lens distortion", , buildParams(sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -467,6 +550,7 @@ Private Sub cmdBar_ResetClick()
     sltZoom.Value = 1.5
     sltRadius.Value = 100
     cmbEdges.ListIndex = EDGE_ERASE
+    sltQuality.Value = 2
 End Sub
 
 Private Sub Form_Activate()
@@ -500,6 +584,10 @@ Private Sub OptInterpolate_Click(Index As Integer)
     updatePreview
 End Sub
 
+Private Sub sltQuality_Change()
+    updatePreview
+End Sub
+
 Private Sub sltRadius_Change()
     updatePreview
 End Sub
@@ -514,7 +602,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyLensCorrection sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyLensCorrection sltStrength, sltZoom, sltRadius, CLng(cmbEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
