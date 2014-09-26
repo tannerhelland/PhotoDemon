@@ -3,7 +3,7 @@ Begin VB.Form FormLensFlare
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Lens flare"
-   ClientHeight    =   6540
+   ClientHeight    =   6750
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   12090
@@ -19,7 +19,7 @@ Begin VB.Form FormLensFlare
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   436
+   ScaleHeight     =   450
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
@@ -28,7 +28,7 @@ Begin VB.Form FormLensFlare
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5790
+      Top             =   6000
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
@@ -52,56 +52,409 @@ Begin VB.Form FormLensFlare
       _ExtentY        =   9922
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.sliderTextCombo sltXCenter 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   2280
-      Width           =   2895
-      _ExtentX        =   5106
-      _ExtentY        =   873
+   Begin PhotoDemon.buttonStrip btsOptions 
+      Height          =   600
+      Left            =   6240
+      TabIndex        =   19
+      Top             =   5160
+      Width           =   5595
+      _ExtentX        =   9869
+      _ExtentY        =   1058
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
-      NotchPosition   =   2
-      NotchValueCustom=   0.5
    End
-   Begin PhotoDemon.sliderTextCombo sltYCenter 
-      Height          =   495
-      Left            =   9000
-      TabIndex        =   3
-      Top             =   2280
-      Width           =   2895
-      _ExtentX        =   5106
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Max             =   1
-      SigDigits       =   2
-      Value           =   0.5
-      NotchPosition   =   2
-      NotchValueCustom=   0.5
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
+      Index           =   0
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   2
+      Top             =   0
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltXCenter 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   3
+         Top             =   480
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   1
+         SigDigits       =   2
+         Value           =   0.5
+         NotchPosition   =   2
+         NotchValueCustom=   0.5
+      End
+      Begin PhotoDemon.sliderTextCombo sltYCenter 
+         Height          =   495
+         Left            =   3120
+         TabIndex        =   4
+         Top             =   480
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   1
+         SigDigits       =   2
+         Value           =   0.5
+         NotchPosition   =   2
+         NotchValueCustom=   0.5
+      End
+      Begin PhotoDemon.sliderTextCombo sltIntensity 
+         Height          =   495
+         Index           =   0
+         Left            =   120
+         TabIndex        =   5
+         Top             =   3120
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   0.01
+         Max             =   3
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltRadius 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   6
+         Top             =   2160
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   1
+         Max             =   200
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltHue 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   20
+         Top             =   4080
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   359
+         SliderTrackStyle=   4
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "hue:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   7
+         Left            =   120
+         TabIndex        =   21
+         Top             =   3720
+         Width           =   480
+      End
+      Begin VB.Label lblExplanation 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Note: you can also set a position by clicking the preview window."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   675
+         Index           =   0
+         Left            =   240
+         TabIndex        =   10
+         Top             =   1080
+         Width           =   5655
+         WordWrap        =   -1  'True
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "position (x, y)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   4
+         Left            =   120
+         TabIndex        =   9
+         Top             =   120
+         Width           =   1485
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "intensity:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   120
+         TabIndex        =   8
+         Top             =   2760
+         Width           =   975
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "radius:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   120
+         TabIndex        =   7
+         Top             =   1800
+         Width           =   735
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   11
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltIntensity 
+         Height          =   495
+         Index           =   1
+         Left            =   120
+         TabIndex        =   12
+         Top             =   2400
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   0.01
+         Max             =   3
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltIntensity 
+         Height          =   495
+         Index           =   2
+         Left            =   120
+         TabIndex        =   13
+         Top             =   3360
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   0.01
+         Max             =   3
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.buttonStrip btsSyncIntensity 
+         Height          =   600
+         Left            =   360
+         TabIndex        =   17
+         Top             =   1140
+         Width           =   5595
+         _ExtentX        =   9869
+         _ExtentY        =   1058
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "synchronize intensity:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   5
+         Left            =   120
+         TabIndex        =   16
+         Top             =   720
+         Width           =   2295
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "secondary intensity:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         TabIndex        =   15
+         Top             =   2040
+         Width           =   2115
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "tertiary intensity:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   120
+         TabIndex        =   14
+         Top             =   3000
+         Width           =   1800
+      End
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "position (x, y)"
+      Caption         =   "options:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -113,32 +466,11 @@ Begin VB.Form FormLensFlare
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Index           =   4
+      Index           =   6
       Left            =   6000
-      TabIndex        =   5
-      Top             =   1920
-      Width           =   1485
-   End
-   Begin VB.Label lblExplanation 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Note: you can also set a center position by clicking the preview window."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   1035
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   3000
-      Width           =   5655
-      WordWrap        =   -1  'True
+      TabIndex        =   18
+      Top             =   4800
+      Width           =   870
    End
 End
 Attribute VB_Name = "FormLensFlare"
@@ -151,12 +483,14 @@ Attribute VB_Exposed = False
 'Copyright ©2014 by Audioglider
 'Created: 12/June/14
 'Last updated: 12/June/14
-'Last update: Initial build
+'Last update: expand options exposed to the user.  Flare radius, intensity, and hue offset are now settable.
+'              Advanced options also allow the user to specify intensity by flare group, if desired.
+'              (By default, intensities are synced across all groups.)
 '
-'This filter generates a "true" lens flare, giving the
-' impression that the sun hit the objective. You can
-' relocate the flare using x,y coordinates.
-' This is a simple model of how the lens flare works:
+'This filter generates a "true" lens flare, giving the impression that the sun hit the objective. The flare can
+' be relocated by specifying custom (x, y) coordinates.
+'
+'Here's a simplified model of how lens flare works:
 '
 '        -----------------------------------------------
 '        |               \ | / |                       |
@@ -181,6 +515,11 @@ Attribute VB_Exposed = False
 '
 '       n : n'th flare
 '
+'Many thanks to expert contributor Audioglider for contributing this tool to PhotoDemon.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
 '***************************************************************************
 
 Option Explicit
@@ -199,12 +538,18 @@ Private Type tFlare
     wType As Long
 End Type
 
-Dim m_Flares() As tFlare
-Dim m_numFlares As Long
-Dim m_sColor As Double, m_sGlow As Double, m_sInner As Double
-Dim m_sOuter As Double, m_sHalo As Double
-Dim m_Color As fRGB, m_cGlow As fRGB, m_cInner As fRGB
-Dim m_cOuter As fRGB, m_cHalo As fRGB
+'The main flare has its own collection of parameters, due to its specialized rendering
+Private m_sColor As Double, m_sGlow As Double, m_sInner As Double
+Private m_sOuter As Double, m_sHalo As Double
+Private m_Color As fRGB, m_cGlow As fRGB, m_cInner As fRGB
+Private m_cOuter As fRGB, m_cHalo As fRGB
+
+'Secondary and tertiary flares are handled in a larger array
+Private m_Flares() As tFlare
+Private m_numFlares As Long
+
+'To reduce the number of parameters passed mid-loop, some values are cached at module level
+Private m_PrimaryIntensity As Double, m_SecondaryIntensity As Double, m_TertiaryIntensity As Double
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -212,22 +557,22 @@ Dim m_ToolTip As clsToolTip
 'Helper function to initialize a flare
 Private Function SetFlare(ByVal wType As Long, ByVal fScale As Double, ByVal x As Long, ByVal y As Long, _
                           ByVal r As Double, ByVal g As Double, ByVal b As Double) As tFlare
-    Dim ret As tFlare
     
-    With ret
+    With SetFlare
         .wType = wType
         .fScale = fScale
         .ptX = x
         .ptY = y
         .RGBColor.r = r
-        .RGBColor.b = b
         .RGBColor.g = g
+        .RGBColor.b = b
     End With
-    SetFlare = ret
     
 End Function
 
-Private Sub initFlares(ByVal startX As Long, ByVal startY As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal matt As Long)
+'Initialize all flare objects (besides the primary flare, which is handled specially).
+' These values could be modified to produce different types of flares, but it's not a project for the faint of heart!
+Private Sub initFlares(ByVal startX As Long, ByVal startY As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal matt As Long, ByVal hueOffset As Double)
 
     Dim xh As Long, yh As Long, dx As Long, dy As Long
     
@@ -260,8 +605,39 @@ Private Sub initFlares(ByVal startX As Long, ByVal startY As Long, ByVal imgWidt
     m_Flares(17) = SetFlare(4, matt * 0.2, CLng(1.309 * dx + xh), CLng(1.309 * dy + yh), 17 / 255, 4 / 255, 0)
     m_Flares(18) = SetFlare(4, matt * 0.038, CLng(-1.301 * dx + xh), CLng(-1.301 * dy + yh), 17 / 255, 4 / 255, 0)
     
+    'Apply the requested hue offset, if any
+    If hueOffset > 0 Then
+    
+        Dim i As Long
+        
+        For i = 0 To m_numFlares - 1
+            rotateFlareHue m_Flares(i).RGBColor, hueOffset
+        Next i
+        
+    End If
+    
 End Sub
 
+'Given a flare's floating-point RGB triplet, and some hue adjustment value, rotate RGB values accordingly
+Private Sub rotateFlareHue(ByRef flareRGB As fRGB, ByRef hueOffset As Double)
+
+    Dim tmpH As Double, tmpS As Double, tmpV As Double
+    
+    With flareRGB
+        
+        fRGBtoHSV .r, .g, .b, tmpH, tmpS, tmpV
+        
+        'Rotate the returned hue by the specified amount
+        tmpH = tmpH + hueOffset
+        If tmpH > 1 Then tmpH = tmpH - 1
+        
+        fHSVtoRGB tmpH, tmpS, tmpV, .r, .g, .b
+        
+    End With
+
+End Sub
+
+'This central adjustment function is called by each flare handler, to apply the effect of a given flare point to a pixel
 Private Sub AdjustPixel(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByVal percent As Double, ByRef colPro As fRGB)
     
     srcR = CLng(srcR + (255 - srcR) * percent * colPro.r)
@@ -270,119 +646,167 @@ Private Sub AdjustPixel(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Lo
 
 End Sub
 
+'Main color block of the primary flare
 Private Sub mColor(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByVal h As Double)
     
     Dim percent As Double
     percent = 1 - h / m_sColor
+    
+    percent = percent * m_PrimaryIntensity
+    
     If percent > 0 Then
-        percent = percent * percent
+    
+        If percent > 1 Then
+            percent = 1
+        Else
+            percent = percent * percent
+        End If
+        
         AdjustPixel srcR, srcG, srcB, percent, m_Color
+        
     End If
     
 End Sub
 
-'Glow portion of the main flare
+'Glow portion of the primary flare
 Private Sub mGlow(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByVal h As Double)
     
     Dim percent As Double
     percent = 1 - h / m_sGlow
+    
+    percent = percent * m_PrimaryIntensity
+    
     If percent > 0 Then
-        percent = percent * percent
+        
+        If percent > 1 Then
+            percent = 1
+        Else
+            percent = percent * percent
+        End If
+        
         AdjustPixel srcR, srcG, srcB, percent, m_cGlow
+        
     End If
     
 End Sub
 
+'Inner glow of the primary flare
 Private Sub mInner(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByVal h As Double)
     
     Dim percent As Double
     percent = 1 - h / m_sInner
+    
+    percent = percent * m_PrimaryIntensity
+    
     If percent > 0 Then
-        percent = percent * percent
+        
+        If percent > 1 Then
+            percent = 1
+        Else
+            percent = percent * percent
+        End If
+        
         AdjustPixel srcR, srcG, srcB, percent, m_cInner
+        
     End If
     
 End Sub
 
+'Outer glow of the primary flare
 Private Sub mOuter(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByVal h As Double)
     
     Dim percent As Double
     percent = 1 - h / m_sOuter
-    If percent > 0 Then
-        AdjustPixel srcR, srcG, srcB, percent, m_cOuter
-    End If
+    
+    percent = percent * m_PrimaryIntensity
+    If percent > 1 Then percent = 1
+    
+    If percent > 0 Then AdjustPixel srcR, srcG, srcB, percent, m_cOuter
     
 End Sub
 
+'Thin halo of the primary flare
 Private Sub mHalo(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByVal h As Double)
     
     Dim percent As Double
     percent = Abs((h - m_sHalo) / (m_sHalo * 0.07))
-    If percent < 1 Then
-        AdjustPixel srcR, srcG, srcB, 1 - percent, m_cHalo
-    End If
+        
+    If percent < 1 Then AdjustPixel srcR, srcG, srcB, (1 - percent) * m_PrimaryIntensity, m_cHalo
     
 End Sub
 
-'Returns a fixed point hypotenuse (used to calculate the angle of the flares)
+'Returns a fixed point hypotenuse (used to calculate the angle of the flares, relative to the center of the image)
 Private Function FHypot(ByVal x As Double, y As Double) As Double
     FHypot = Sqr(x * x + y * y)
 End Function
 
+'Secondary flare type one
 Private Sub mRt1(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByRef ref As tFlare, ByVal x As Long, ByVal y As Long)
     
     Dim percent As Double
     percent = 1 - FHypot(ref.ptX - x, ref.ptY - y) / ref.fScale
+    
     If percent > 0 Then
+        
+        percent = percent * m_SecondaryIntensity
         percent = percent * percent
+        
         AdjustPixel srcR, srcG, srcB, percent, ref.RGBColor
+        
     End If
     
 End Sub
 
+'Secondary flare type two
 Private Sub mRt2(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByRef ref As tFlare, ByVal x As Long, ByVal y As Long)
     
     Dim percent As Double
     percent = ref.fScale - FHypot(ref.ptX - x, ref.ptY - y)
     percent = percent / (ref.fScale * 0.15)
+    
     If percent > 0 Then
-        If percent > 1 Then
-            percent = 1
-        End If
+        percent = percent * m_SecondaryIntensity
         AdjustPixel srcR, srcG, srcB, percent, ref.RGBColor
     End If
     
 End Sub
 
+'Tertiary flare type one
 Private Sub mRt3(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByRef ref As tFlare, ByVal x As Long, ByVal y As Long)
     
     Dim percent As Double
     percent = ref.fScale - FHypot(ref.ptX - x, ref.ptY - y)
     percent = percent / (ref.fScale * 0.12)
+    
     If percent > 0 Then
-        If percent > 1 Then
-            percent = 1 - (percent * 0.12)
-        End If
+        
+        If percent > 1 Then percent = 1 - (percent * 0.12)
+        percent = percent * m_TertiaryIntensity
+        
         AdjustPixel srcR, srcG, srcB, percent, ref.RGBColor
+        
     End If
     
 End Sub
 
+'Tertiary flare type two
 Private Sub mRt4(ByRef srcR As Long, ByRef srcG As Long, ByRef srcB As Long, ByRef ref As tFlare, ByVal x As Long, ByVal y As Long)
     
     Dim percent As Double
     percent = FHypot(ref.ptX - x, ref.ptY - y) - ref.fScale
+    
     percent = percent / (ref.fScale * 0.04)
+    percent = percent / m_TertiaryIntensity
     percent = Abs(percent)
-    If percent < 1 Then
-        AdjustPixel srcR, srcG, srcB, 1 - percent, ref.RGBColor
-    End If
+    
+    If percent < 1 Then AdjustPixel srcR, srcG, srcB, 1 - percent, ref.RGBColor
     
 End Sub
 
-Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+'Apply a lens flare filter to an image
+Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal flareRadius As Double = 100, Optional ByVal primaryIntensity As Double = 1#, Optional ByVal secondaryIntensity As Double = 1#, Optional ByVal tertiaryIntensity As Double = 1#, Optional ByVal hueOffset As Double = 0#, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Applying lens flare..."
+    If Not toPreview Then Message "Applying lens flare..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -429,16 +853,28 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
     'Color variables
     Dim r As Long, g As Long, b As Long
     
-    Dim imgWidth As Long, i As Long
+    Dim imgWidth As Long, imgHeight As Long, imgDiagonal As Long, i As Long
     Dim hyp As Double
     
     'Calculate width of drawing area available and adjust size of lens flare artifacts
     imgWidth = finalX - initX
-    m_sColor = imgWidth * 0.0375
-    m_sGlow = imgWidth * 0.078125
-    m_sInner = imgWidth * 0.1796875
-    m_sOuter = imgWidth * 0.3359375
-    m_sHalo = imgWidth * 0.084375
+    imgHeight = finalY - initY
+    
+    'Calculate a diagonal for the image, which will be used as the "base" radius
+    imgDiagonal = Sqr(imgWidth * imgWidth + imgHeight * imgHeight)
+    
+    'The user's "Flare radius" input is also used to modify various inputs
+    flareRadius = flareRadius / 100
+    
+    m_sColor = imgDiagonal * 0.0375 * flareRadius
+    m_sGlow = imgDiagonal * 0.078125 * flareRadius
+    m_sInner = imgDiagonal * 0.1796875 * flareRadius
+    m_sOuter = imgDiagonal * 0.3359375 * flareRadius
+    m_sHalo = imgDiagonal * 0.084375 * flareRadius
+    
+    m_PrimaryIntensity = primaryIntensity
+    m_SecondaryIntensity = secondaryIntensity
+    m_TertiaryIntensity = tertiaryIntensity
     
     'Setup our default colors for the flares
     m_Color.r = 239 / 255: m_Color.g = 239 / 255: m_Color.b = 239 / 255
@@ -447,9 +883,21 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
     m_cOuter.r = 69 / 255:  m_cOuter.g = 59 / 255:  m_cOuter.b = 64 / 255
     m_cHalo.r = 80 / 255:   m_cHalo.g = 15 / 255:   m_cHalo.b = 4 / 255
     
-    'Initialize array of lens flares
-    initFlares midX, midY, imgWidth, finalY - initY, imgWidth
-        
+    'Convert the hue modifier to the [0, 6] range
+    hueOffset = hueOffset / 360
+    
+    'Rotate the hue of the primary flare object, if the user has requested it
+    If hueOffset > 0 Then
+        rotateFlareHue m_Color, hueOffset
+        rotateFlareHue m_cGlow, hueOffset
+        rotateFlareHue m_cInner, hueOffset
+        rotateFlareHue m_cOuter, hueOffset
+        rotateFlareHue m_cHalo, hueOffset
+    End If
+    
+    'Initialize array of lens flare objects
+    initFlares midX, midY, imgWidth, imgHeight, imgDiagonal * flareRadius, hueOffset
+    
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
         QuickVal = x * qvDepth
@@ -468,6 +916,7 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
         mOuter r, g, b, hyp    ' Create outer
         mHalo r, g, b, hyp     ' Create halo
         
+        'Iterate through each flare, rendering its effect (as relevant to this pixel)
         For i = 0 To m_numFlares - 1
             Select Case m_Flares(i).wType
                 Case 1: mRt1 r, g, b, m_Flares(i), x, y
@@ -476,6 +925,16 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
                 Case 4: mRt4 r, g, b, m_Flares(i), x, y
             End Select
         Next i
+        
+        'The addition of variable intensity requires some additional failsafe checks, as the user's intensity values
+        ' may cause HDR-style light blooming
+        If r < 0 Then r = 0
+        If g < 0 Then g = 0
+        If b < 0 Then b = 0
+        
+        If r > 255 Then r = 255
+        If g > 255 Then g = 255
+        If b > 255 Then b = 255
         
         'Assign the new values to each color channel
         dstImageData(QuickVal + 2, y) = r
@@ -503,8 +962,38 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
    
 End Sub
 
+Private Sub btsOptions_Click(ByVal buttonIndex As Long)
+    picContainer(buttonIndex).Visible = True
+    picContainer(1 - buttonIndex).Visible = False
+End Sub
+
+Private Sub btsSyncIntensity_Click(ByVal buttonIndex As Long)
+
+    'Synchronize secondary and tertiary intensities to primary intensity
+    If buttonIndex = 0 Then
+    
+        cmdBar.markPreviewStatus False
+        sltIntensity(1).Value = sltIntensity(0).Value
+        sltIntensity(2).Value = sltIntensity(0).Value
+        cmdBar.markPreviewStatus True
+        
+        sltIntensity(1).Enabled = False
+        sltIntensity(2).Enabled = False
+    
+    'Do NOT synchronize intensities
+    Else
+    
+        sltIntensity(1).Enabled = True
+        sltIntensity(2).Enabled = True
+    
+    End If
+    
+    updatePreview
+
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Lens flare", , buildParams(sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Lens flare", , buildParams(sltXCenter, sltYCenter, sltRadius, sltIntensity(0), sltIntensity(1), sltIntensity(2), sltHue), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -512,8 +1001,16 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltXCenter.Value = 0.8
-    sltYCenter.Value = 0.2
+    
+    sltXCenter.Value = 0.75
+    sltYCenter.Value = 0.25
+    
+    sltIntensity(0).Value = 1
+    sltIntensity(1).Value = 1
+    sltIntensity(2).Value = 1
+    
+    sltRadius.Value = 100
+    
 End Sub
 
 Private Sub Form_Activate()
@@ -527,12 +1024,27 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Load()
+
+    'Set up the intensity sync option
+    btsSyncIntensity.AddItem "yes", 0
+    btsSyncIntensity.AddItem "no", 1
+    btsSyncIntensity.ListIndex = 0
+    btsSyncIntensity_Click 0
+    
+    'Set up the basic/advanced panels
+    btsOptions.AddItem "basic", 0
+    btsOptions.AddItem "advanced", 1
+    btsOptions.ListIndex = 0
+    
+End Sub
+
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then LensFlare sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then LensFlare sltXCenter.Value, sltYCenter.Value, sltRadius, sltIntensity(0), sltIntensity(1), sltIntensity(2), sltHue, True, fxPreview
 End Sub
 
 Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
@@ -545,6 +1057,32 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
+Private Sub sltHue_Change()
+    updatePreview
+End Sub
+
+Private Sub sltIntensity_Change(Index As Integer)
+    
+    'Synchronize secondary and tertiary options as necessary
+    If (Index = 0) And (btsSyncIntensity.ListIndex = 0) Then
+        
+        'We disable previews before changing the other two intensity sliders; otherwise, their value changes
+        ' will cause additional preview events to fire, harming performance.
+        cmdBar.markPreviewStatus False
+        sltIntensity(1).Value = sltIntensity(0).Value
+        sltIntensity(2).Value = sltIntensity(0).Value
+        cmdBar.markPreviewStatus True
+        
+    End If
+    
+    updatePreview
+    
+End Sub
+
+Private Sub sltRadius_Change()
     updatePreview
 End Sub
 

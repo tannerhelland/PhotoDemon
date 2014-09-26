@@ -1263,7 +1263,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormLensFlare
             Else
-                FormLensFlare.LensFlare cParams.GetDouble(1), cParams.GetDouble(2)
+                FormLensFlare.LensFlare cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5), cParams.GetDouble(6), cParams.GetDouble(7)
             End If
             
         Case "Rainbow"
