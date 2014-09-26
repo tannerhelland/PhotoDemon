@@ -76,6 +76,153 @@ Begin VB.Form FormLensFlare
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4695
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   11
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltIntensity 
+         Height          =   495
+         Index           =   1
+         Left            =   120
+         TabIndex        =   12
+         Top             =   2400
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   0.01
+         Max             =   3
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltIntensity 
+         Height          =   495
+         Index           =   2
+         Left            =   120
+         TabIndex        =   13
+         Top             =   3360
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Min             =   0.01
+         Max             =   3
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.buttonStrip btsSyncIntensity 
+         Height          =   600
+         Left            =   330
+         TabIndex        =   17
+         Top             =   1140
+         Width           =   5550
+         _ExtentX        =   9790
+         _ExtentY        =   1058
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   11.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "synchronize intensity:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   5
+         Left            =   120
+         TabIndex        =   16
+         Top             =   720
+         Width           =   2295
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "secondary intensity:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         TabIndex        =   15
+         Top             =   2040
+         Width           =   2115
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "tertiary intensity:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   1
+         Left            =   120
+         TabIndex        =   14
+         Top             =   3000
+         Width           =   1800
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
       Index           =   0
       Left            =   5880
       ScaleHeight     =   313
@@ -234,10 +381,10 @@ Begin VB.Form FormLensFlare
          ForeColor       =   &H00404040&
          Height          =   675
          Index           =   0
-         Left            =   240
+         Left            =   120
          TabIndex        =   10
          Top             =   1080
-         Width           =   5655
+         Width           =   5895
          WordWrap        =   -1  'True
       End
       Begin VB.Label lblTitle 
@@ -302,153 +449,6 @@ Begin VB.Form FormLensFlare
          TabIndex        =   7
          Top             =   1800
          Width           =   735
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
-      TabIndex        =   11
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
-         Height          =   495
-         Index           =   1
-         Left            =   120
-         TabIndex        =   12
-         Top             =   2400
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Min             =   0.01
-         Max             =   3
-         SigDigits       =   2
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
-         Height          =   495
-         Index           =   2
-         Left            =   120
-         TabIndex        =   13
-         Top             =   3360
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Min             =   0.01
-         Max             =   3
-         SigDigits       =   2
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.buttonStrip btsSyncIntensity 
-         Height          =   600
-         Left            =   360
-         TabIndex        =   17
-         Top             =   1140
-         Width           =   5595
-         _ExtentX        =   9869
-         _ExtentY        =   1058
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "synchronize intensity:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   5
-         Left            =   120
-         TabIndex        =   16
-         Top             =   720
-         Width           =   2295
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "secondary intensity:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   15
-         Top             =   2040
-         Width           =   2115
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "tertiary intensity:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   14
-         Top             =   3000
-         Width           =   1800
       End
    End
    Begin VB.Label lblTitle 
