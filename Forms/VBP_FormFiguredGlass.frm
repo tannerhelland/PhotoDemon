@@ -422,7 +422,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
             srcY = k + perlinCacheCos
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData
+            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
             
             'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
