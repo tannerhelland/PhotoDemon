@@ -580,10 +580,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
-End Sub
-
 Private Sub sltQuality_Change()
     updatePreview
 End Sub

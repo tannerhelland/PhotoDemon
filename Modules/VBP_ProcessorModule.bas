@@ -1129,7 +1129,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormMiscDistorts
             Else
-                FormMiscDistorts.ApplyMiscDistort cParams.GetString(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetBool(4)
+                FormMiscDistorts.ApplyMiscDistort cParams.GetString(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
             
         Case "Pan and zoom"

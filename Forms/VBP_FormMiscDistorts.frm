@@ -56,8 +56,8 @@ Begin VB.Form FormMiscDistorts
       ForeColor       =   &H00404040&
       Height          =   2460
       Left            =   6120
-      TabIndex        =   8
-      Top             =   960
+      TabIndex        =   6
+      Top             =   600
       Width           =   5655
    End
    Begin VB.ComboBox cmbEdges 
@@ -76,7 +76,7 @@ Begin VB.Form FormMiscDistorts
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   4
-      Top             =   4005
+      Top             =   4725
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -88,46 +88,28 @@ Begin VB.Form FormMiscDistorts
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   4920
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
+   Begin PhotoDemon.sliderTextCombo sltQuality 
+      Height          =   495
+      Left            =   6000
       TabIndex        =   7
-      Top             =   5280
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "speed"
+      Top             =   3600
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   11.25
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   5
+      Value           =   2
+      NotchPosition   =   2
+      NotchValueCustom=   2
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -147,15 +129,15 @@ Begin VB.Form FormMiscDistorts
       Index           =   5
       Left            =   6000
       TabIndex        =   5
-      Top             =   3600
+      Top             =   4320
       Width           =   4170
    End
-   Begin VB.Label lblInterpolation 
+   Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "quality:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -167,10 +149,11 @@ Begin VB.Form FormMiscDistorts
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
+      Index           =   0
       Left            =   6000
       TabIndex        =   2
-      Top             =   4530
-      Width           =   1845
+      Top             =   3210
+      Width           =   795
    End
    Begin VB.Label lblType 
       Appearance      =   0  'Flat
@@ -191,7 +174,7 @@ Begin VB.Form FormMiscDistorts
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   570
+      Top             =   210
       Width           =   1200
    End
 End
@@ -228,9 +211,9 @@ Option Explicit
 Dim m_ToolTip As clsToolTip
 
 'Correct lens distortion in an image
-Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As Long, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As Long, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Applying %1 distortion...", distortName
+    If Not toPreview Then Message "Applying %1 distortion...", distortName
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -251,7 +234,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -265,12 +248,56 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
+    
+    '***************************************
+    ' /* BEGIN SUPERSAMPLING PREPARATION */
+    
+    'Due to the way this filter works, supersampling yields much better results.  Because supersampling is extremely
+    ' energy-intensive, this tool uses a sliding value for quality, as opposed to a binary TRUE/FALSE for antialiasing.
+    ' (For all but the lowest quality setting, antialiasing will be used, and higher quality values will simply increase
+    '  the amount of supersamples taken.)
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim tmpSum As Long, tmpSumFirst As Long
+    
+    'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
+    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
+    ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
+    Dim numSamples As Long
+    Dim ssX() As Single, ssY() As Single
+    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    
+    'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
+    ' count in advance.
+    numSamples = numSamples - 1
+    
+    'Additional variables are needed for supersampling handling
+    Dim j As Double, k As Double
+    Dim sampleIndex As Long, numSamplesUsed As Long
+    Dim superSampleVerify As Long, ssVerificationLimit As Long
+    
+    'Adaptive supersampling allows us to bypass supersampling if a pixel doesn't appear to benefit from it.  The superSampleVerify
+    ' variable controls how many pixels are sampled before we perform an adaptation check.  At present, the rule is:
+    ' Quality 3: check a minimum of 2 samples, Quality 4: check minimum 3 samples, Quality 5: check minimum 4 samples
+    superSampleVerify = superSamplingAmount - 2
+    
+    'Alongside a variable number of test samples, adaptive supersampling requires some threshold that indicates samples
+    ' are close enough that further supersampling is unlikely to improve output.  We calculate this as a minimum variance
+    ' as 1.5 per channel (for a total of 6 variance per pixel), multiplied by the total number of samples taken.
+    ssVerificationLimit = superSampleVerify * 6
+    
+    'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
+    ' by setting the verification checker to some impossible value.
+    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    
+    ' /* END SUPERSAMPLING PREPARATION */
+    '*************************************
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
@@ -280,7 +307,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     midY = midY + initY
     
     'Rotation values
-    Dim theta As Double, r As Double
+    Dim theta As Double, radius As Double
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
@@ -301,99 +328,161 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     
     'Basically, we want to remap coordinates around a center point of (0, 0), and normalize them to (-1, 1).
     ' This makes distort strength uniform regardless of image size.
-    For X = initX To finalX
-        xCoords(X) = (2 * X) / tWidth - 1
-    Next X
+    For x = initX To finalX
+        xCoords(x) = (2 * x) / tWidth - 1
+    Next x
     
-    For Y = initY To finalY
-        yCoords(Y) = (2 * Y) / tHeight - 1
-    Next Y
+    For y = initY To finalY
+        yCoords(y) = (2 * y) / tHeight - 1
+    Next y
+    
+    'Do the same thing for our supersampling coordinates
+    For sampleIndex = 0 To numSamples
+        ssX(sampleIndex) = ssX(sampleIndex) / tWidth
+        ssY(sampleIndex) = ssY(sampleIndex) / tHeight
+    Next sampleIndex
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
-                            
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        'Reset all supersampling values
+        newR = 0
+        newG = 0
+        newB = 0
+        newA = 0
+        numSamplesUsed = 0
+        
         'Pull coordinates from the lookup table
-        nX = xCoords(X)
-        nY = yCoords(Y)
+        j = xCoords(x)
+        k = yCoords(y)
         
-        'Next, map them to polar coordinates
-        r = Sqr(nX * nX + nY * nY)
-        theta = Atan2(nY, nX)
+        'Sample a number of source pixels corresponding to the user's supplied quality value; more quality means
+        ' more samples, and much better representation in the final output.
+        For sampleIndex = 0 To numSamples
+            
+            'Offset the pixel amount by the supersampling lookup table
+            nX = j + ssX(sampleIndex)
+            nY = k + ssY(sampleIndex)
+            
+            'Next, map them to polar coordinates
+            radius = Sqr(nX * nX + nY * nY)
+            theta = Atan2(nY, nX)
+            
+            Select Case distortStyle
+                
+                'Emphasize center
+                Case 0
+                    nX = 2 * Asin(nX) / PI
+                    nY = 2 * Asin(nY) / PI
+                
+                'Flatten corners
+                Case 1
+                    nX = Sin(nX)
+                    nY = Sin(nY)
+                    
+                'Inside-out
+                Case 2
+                    If radius > 0 Then radius = 1 - radius Else radius = -1 - radius
+                    nX = radius * Cos(theta)
+                    nY = radius * Sin(theta)
+                    
+                'Pull in
+                Case 3
+                    radius = Sqr(radius)
+                    nX = radius * Cos(theta)
+                    nY = radius * Sin(theta)
+                
+                'Push out
+                Case 4
+                    radius = radius * radius
+                    nX = radius * Cos(theta)
+                    nY = radius * Sin(theta)
+                
+                'Rounding
+                Case 5
+                    If nX < 0 Then
+                        nX = -1 * nX * nX
+                    Else
+                        nX = nX * nX
+                    End If
+                    If nY < 0 Then
+                        nY = -1 * nY * nY
+                    Else
+                        nY = nY * nY
+                    End If
+                    
+                'Twist edges
+                Case 6
+                    radius = Sin(PI * radius / 2)
+                    nX = radius * Cos(theta)
+                    nY = radius * Sin(theta)
+                    
+                'Wormhole
+                Case 7
+                    If radius = 0 Then radius = 0 Else radius = Sin(1 / radius)
+                    nX = radius * Cos(theta)
+                    nY = radius * Sin(theta)
+                
+            End Select
+            
+            'Convert the recalculated coordinates back to the Cartesian plane
+            srcX = (tWidth * (nX + 1)) / 2
+            srcY = (tHeight * (nY + 1)) / 2
+            
+            'Use the filter support class to interpolate and edge-wrap pixels as necessary
+            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            
+            'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
+            ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
+            ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
+            '  small enough to make it preferable over a true variance calculation.)
+            If sampleIndex = superSampleVerify Then
+                
+                'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
+                tmpSum = (r + g + b + a) * superSampleVerify
+                tmpSumFirst = newR + newG + newB + newA
+                
+                'If variance is below 1.5 per channel per pixel, abort further supersampling
+                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+            
+            End If
+            
+            'Increase the sample count
+            numSamplesUsed = numSamplesUsed + 1
+            
+            'Add the retrieved values to our running averages
+            newR = newR + r
+            newG = newG + g
+            newB = newB + b
+            If qvDepth = 4 Then newA = newA + a
         
-        Select Case distortStyle
-            
-            'Emphasize center
-            Case 0
-                nX = 2 * Asin(nX) / PI
-                nY = 2 * Asin(nY) / PI
-            
-            'Flatten corners
-            Case 1
-                nX = Sin(nX)
-                nY = Sin(nY)
-                
-            'Inside-out
-            Case 2
-                If r > 0 Then r = 1 - r Else r = -1 - r
-                nX = r * Cos(theta)
-                nY = r * Sin(theta)
-                
-            'Pull in
-            Case 3
-                r = Sqr(r)
-                nX = r * Cos(theta)
-                nY = r * Sin(theta)
-            
-            'Push out
-            Case 4
-                r = r * r
-                nX = r * Cos(theta)
-                nY = r * Sin(theta)
-            
-            'Rounding
-            Case 5
-                If nX < 0 Then
-                    nX = -1 * nX * nX
-                Else
-                    nX = nX * nX
-                End If
-                If nY < 0 Then
-                    nY = -1 * nY * nY
-                Else
-                    nY = nY * nY
-                End If
-                
-            'Twist edges
-            Case 6
-                r = Sin(PI * r / 2)
-                nX = r * Cos(theta)
-                nY = r * Sin(theta)
-                
-            'Wormhole
-            Case 7
-                If r = 0 Then r = 0 Else r = Sin(1 / r)
-                nX = r * Cos(theta)
-                nY = r * Sin(theta)
-            
-        End Select
+        Next sampleIndex
         
-        'Convert the recalculated coordinates back to the Cartesian plane
-        srcX = (tWidth * (nX + 1)) / 2
-        srcY = (tHeight * (nY + 1)) / 2
+        'Find the average values of all samples, apply to the pixel, and move on!
+        newR = newR \ numSamplesUsed
+        newG = newG \ numSamplesUsed
+        newB = newB \ numSamplesUsed
         
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+        dstImageData(QuickVal + 2, y) = newR
+        dstImageData(QuickVal + 1, y) = newG
+        dstImageData(QuickVal, y) = newB
+        
+        'If the image has an alpha channel, repeat the calculation there too
+        If qvDepth = 4 Then
+            newA = newA \ numSamplesUsed
+            dstImageData(QuickVal + 3, y) = newA
+        End If
                 
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -408,7 +497,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Miscellaneous distort", , buildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
+    Process "Miscellaneous distort", , buildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -417,6 +506,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     cmbEdges.ListIndex = EDGE_WRAP
+    sltQuality = 2
 End Sub
 
 Private Sub Form_Activate()
@@ -461,13 +551,9 @@ Private Sub lstDistorts_Click()
     updatePreview
 End Sub
 
-Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
-End Sub
-
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -475,4 +561,6 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
-
+Private Sub sltQuality_Change()
+    updatePreview
+End Sub
