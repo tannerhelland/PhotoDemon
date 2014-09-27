@@ -739,7 +739,8 @@ Private Sub cmdBar_ResetClick()
 
     resetCurvePoints
     
-    'Also, reset will automatically select the first entry in a button strip.
+    'Also, reset will automatically select the first entry in a button strip, which isn't ideal for this control.
+    btsChannel.ListIndex = 3
     btsHistogram.ListIndex = 1
     
 End Sub
@@ -1004,7 +1005,7 @@ Private Sub redrawPreviewBox()
     
     'Next, render the spline control points.
     Dim circRadius As Long
-    circRadius = 8
+    circRadius = fixDPI(8)
     
     Dim circAlpha As Long
     circAlpha = 190
