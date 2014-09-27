@@ -24,25 +24,6 @@ Begin VB.Form FormPoke
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.commandBar cmdBar 
-      Align           =   2  'Align Bottom
-      Height          =   750
-      Left            =   0
-      TabIndex        =   0
-      Top             =   5790
-      Width           =   12090
-      _ExtentX        =   21325
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -58,14 +39,14 @@ Begin VB.Form FormPoke
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   4
-      Top             =   3645
+      TabIndex        =   3
+      Top             =   4440
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -73,52 +54,11 @@ Begin VB.Form FormPoke
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   4560
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   4920
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   635
-      Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
-      Top             =   2610
+      TabIndex        =   5
+      Top             =   2400
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -141,8 +81,8 @@ Begin VB.Form FormPoke
    Begin PhotoDemon.sliderTextCombo sltXCenter 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
-      Top             =   1320
+      TabIndex        =   6
+      Top             =   1080
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
@@ -164,8 +104,8 @@ Begin VB.Form FormPoke
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   495
       Left            =   9000
-      TabIndex        =   10
-      Top             =   1320
+      TabIndex        =   7
+      Top             =   1080
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
@@ -184,6 +124,48 @@ Begin VB.Form FormPoke
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
+   Begin PhotoDemon.commandBar cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   10
+      Top             =   5790
+      Width           =   12090
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.sliderTextCombo sltQuality 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   3360
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   1
+      Max             =   5
+      Value           =   2
+      NotchPosition   =   2
+      NotchValueCustom=   2
+   End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
@@ -201,8 +183,8 @@ Begin VB.Form FormPoke
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   12
-      Top             =   960
+      TabIndex        =   9
+      Top             =   720
       Width           =   2205
    End
    Begin VB.Label lblExplanation 
@@ -212,15 +194,15 @@ Begin VB.Form FormPoke
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   11
-      Top             =   1890
+      TabIndex        =   8
+      Top             =   1650
       Width           =   5655
       WordWrap        =   -1  'True
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "if pixels lie outside the corrected area..."
+      Caption         =   "if pixels lie outside the image..."
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -234,16 +216,16 @@ Begin VB.Form FormPoke
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   5
-      Top             =   3240
-      Width           =   4170
+      TabIndex        =   4
+      Top             =   3960
+      Width           =   3315
    End
-   Begin VB.Label lblInterpolation 
+   Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "quality:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -255,10 +237,11 @@ Begin VB.Form FormPoke
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
+      Index           =   0
       Left            =   6000
-      TabIndex        =   2
-      Top             =   4170
-      Width           =   1845
+      TabIndex        =   1
+      Top             =   3000
+      Width           =   795
    End
    Begin VB.Label lblStrength 
       Appearance      =   0  'Flat
@@ -278,8 +261,8 @@ Begin VB.Form FormPoke
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
-      Top             =   2280
+      TabIndex        =   0
+      Top             =   2040
       Width           =   960
    End
 End
@@ -292,8 +275,8 @@ Attribute VB_Exposed = False
 'Poke Distort Tool
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/June/13
-'Last updated: 10/January/14
-'Last update: added support for user-selected custom center point
+'Last updated: 26/September/14
+'Last update: add supersampling support
 '
 'I'm not sold on the "poke" moniker for this tool, but I couldn't come up with a better visualization for how
 ' the tool works.  When I use it, I envision an imaginary finger poking through the screen.  :)
@@ -303,7 +286,7 @@ Attribute VB_Exposed = False
 ' actually bend the corner edges to match, which makes it capable of correcting certain types of image distortion.
 ' (GIMP relies heavily on this in its own lens correction algorithm.)
 '
-'Bilinear interpolation is available to improve output quality.
+'Supersampling and reverse-mapping interpolation are available for very high-quality output.
 '
 'The transformation used by this tool is a heavily modified version of basic math originally shared by Paul Bourke.
 ' You can see Paul's original (and very helpful article) at the following link, good as of 05 June '13:
@@ -324,7 +307,7 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'Correct lens distortion in an image
-Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Poking image..."
     
@@ -347,7 +330,7 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -361,13 +344,58 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-          
+    
+    '***************************************
+    ' /* BEGIN SUPERSAMPLING PREPARATION */
+    
+    'Due to the way this filter works, supersampling yields much better results.  Because supersampling is extremely
+    ' energy-intensive, this tool uses a sliding value for quality, as opposed to a binary TRUE/FALSE for antialiasing.
+    ' (For all but the lowest quality setting, antialiasing will be used, and higher quality values will simply increase
+    '  the amount of supersamples taken.)
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim tmpSum As Long, tmpSumFirst As Long
+    
+    'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
+    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
+    ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
+    Dim numSamples As Long
+    Dim ssX() As Single, ssY() As Single
+    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    
+    'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
+    ' count in advance.
+    numSamples = numSamples - 1
+    
+    'Additional variables are needed for supersampling handling
+    Dim j As Double, k As Double
+    Dim sampleIndex As Long, numSamplesUsed As Long
+    Dim superSampleVerify As Long, ssVerificationLimit As Long
+    
+    'Adaptive supersampling allows us to bypass supersampling if a pixel doesn't appear to benefit from it.  The superSampleVerify
+    ' variable controls how many pixels are sampled before we perform an adaptation check.  At present, the rule is:
+    ' Quality 3: check a minimum of 2 samples, Quality 4: check minimum 3 samples, Quality 5: check minimum 4 samples
+    superSampleVerify = superSamplingAmount - 2
+    
+    'Alongside a variable number of test samples, adaptive supersampling requires some threshold that indicates samples
+    ' are close enough that further supersampling is unlikely to improve output.  We calculate this as a minimum variance
+    ' as 1.5 per channel (for a total of 6 variance per pixel), multiplied by the total number of samples taken.
+    ssVerificationLimit = superSampleVerify * 6
+    
+    'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
+    ' by setting the verification checker to some impossible value.
+    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    
+    ' /* END SUPERSAMPLING PREPARATION */
+    '*************************************
+    
+        
     'Poking requires a number of specialized variables
     
     'Because the algorithm normalizes the image data to the range [-1,1] for an operation around [0], we actually
@@ -376,7 +404,7 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     centerY = centerY * 2
     
     'Rotation values
-    Dim theta As Double, r As Double
+    Dim theta As Double, radius As Double
     
     'X and Y values, remapped around a center point of (0, 0)
     Dim nX As Double, nY As Double
@@ -396,49 +424,111 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
     Dim xLookup() As Single, yLookup() As Single
     ReDim xLookup(initX To finalX) As Single, yLookup(initY To finalY) As Single
     
-    For X = initX To finalX
-        xLookup(X) = (2 * X) / tWidth - centerX
-    Next X
+    For x = initX To finalX
+        xLookup(x) = (2 * x) / tWidth - centerX
+    Next x
     
-    For Y = initY To finalY
-        yLookup(Y) = (2 * Y) / tHeight - centerY
-    Next Y
+    For y = initY To finalY
+        yLookup(y) = (2 * y) / tHeight - centerY
+    Next y
+    
+    'Do the same thing for our supersampling coordinates
+    For sampleIndex = 0 To numSamples
+        ssX(sampleIndex) = ssX(sampleIndex) / tWidth
+        ssY(sampleIndex) = ssY(sampleIndex) / tHeight
+    Next sampleIndex
     
     'To avoid divide-by-zero errors, fix the input value to a non-zero value as necessary
     If pokeStrength = 0 Then pokeStrength = 0.00000001
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
-        'UPDATE 10 Jan 2014 - center the poke around whatever coordinates the user wants!
-        nX = xLookup(X)
-        nY = yLookup(Y)
+        'Reset all supersampling values
+        newR = 0
+        newG = 0
+        newB = 0
+        newA = 0
+        numSamplesUsed = 0
         
-        'Next, map them to polar coordinates and apply the stretch
-        r = Sqr(nX * nX + nY * nY)
-        theta = Atan2(nY, nX)
+        'Pull coordinates from the lookup table
+        j = xLookup(x)
+        k = yLookup(y)
         
-        r = r ^ pokeStrength
+        'Sample a number of source pixels corresponding to the user's supplied quality value; more quality means
+        ' more samples, and much better representation in the final output.
+        For sampleIndex = 0 To numSamples
+            
+            'Offset the pixel amount by the supersampling lookup table
+            nX = j + ssX(sampleIndex)
+            nY = k + ssY(sampleIndex)
         
-        'Convert them back to the Cartesian plane
-        nX = r * Cos(theta)
-        srcX = (tWidth * (nX + centerX)) / 2
-        nY = r * Sin(theta)
-        srcY = (tHeight * (nY + centerY)) / 2
+            'Next, map them to polar coordinates and apply the stretch
+            radius = Sqr(nX * nX + nY * nY)
+            theta = Atan2(nY, nX)
+            
+            radius = radius ^ pokeStrength
+            
+            'Convert them back to the Cartesian plane
+            nX = radius * Cos(theta)
+            srcX = (tWidth * (nX + centerX)) / 2
+            nY = radius * Sin(theta)
+            srcY = (tHeight * (nY + centerY)) / 2
         
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+            'Use the filter support class to interpolate and edge-wrap pixels as necessary
+            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            
+            'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
+            ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
+            ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
+            '  small enough to make it preferable over a true variance calculation.)
+            If sampleIndex = superSampleVerify Then
                 
-    Next Y
+                'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
+                tmpSum = (r + g + b + a) * superSampleVerify
+                tmpSumFirst = newR + newG + newB + newA
+                
+                'If variance is below 1.5 per channel per pixel, abort further supersampling
+                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+            
+            End If
+            
+            'Increase the sample count
+            numSamplesUsed = numSamplesUsed + 1
+            
+            'Add the retrieved values to our running averages
+            newR = newR + r
+            newG = newG + g
+            newB = newB + b
+            If qvDepth = 4 Then newA = newA + a
+        
+        Next sampleIndex
+        
+        'Find the average values of all samples, apply to the pixel, and move on!
+        newR = newR \ numSamplesUsed
+        newG = newG \ numSamplesUsed
+        newB = newB \ numSamplesUsed
+        
+        dstImageData(QuickVal + 2, y) = newR
+        dstImageData(QuickVal + 1, y) = newG
+        dstImageData(QuickVal, y) = newB
+        
+        'If the image has an alpha channel, repeat the calculation there too
+        If qvDepth = 4 Then
+            newA = newA \ numSamplesUsed
+            dstImageData(QuickVal + 3, y) = newA
+        End If
+                
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -454,7 +544,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Poke", , buildParams(sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Poke", , buildParams(sltStrength, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -466,6 +556,7 @@ Private Sub cmdBar_ResetClick()
     sltYCenter.Value = 0.5
     cmbEdges.ListIndex = EDGE_CLAMP
     sltStrength.Value = 1
+    sltQuality.Value = 2
 End Sub
 
 Private Sub Form_Activate()
@@ -495,7 +586,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub OptInterpolate_Click(Index As Integer)
+Private Sub sltQuality_Change()
     updatePreview
 End Sub
 
@@ -505,7 +596,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyPokeDistort sltStrength, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyPokeDistort sltStrength, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

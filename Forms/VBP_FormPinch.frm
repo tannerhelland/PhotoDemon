@@ -430,7 +430,7 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
     
-     '***************************************
+    '***************************************
     ' /* BEGIN SUPERSAMPLING PREPARATION */
     
     'Due to the way this filter works, supersampling yields much better results.  Because supersampling is extremely
