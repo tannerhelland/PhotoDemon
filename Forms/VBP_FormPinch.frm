@@ -693,7 +693,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then PinchImage sltAmount, sltAngle, sltRadius, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then PinchImage sltAmount, sltAngle, sltRadius, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
