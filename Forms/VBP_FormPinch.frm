@@ -59,7 +59,7 @@ Begin VB.Form FormPinch
       Left            =   6120
       Style           =   2  'Dropdown List
       TabIndex        =   6
-      Top             =   4335
+      Top             =   5295
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -73,51 +73,10 @@ Begin VB.Form FormPinch
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   8
-      Top             =   5280
-      Width           =   2685
-      _ExtentX        =   4736
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   8880
-      TabIndex        =   9
-      Top             =   5280
-      Width           =   2685
-      _ExtentX        =   4736
-      _ExtentY        =   635
-      Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   2610
       Width           =   5895
       _ExtentX        =   10398
@@ -138,7 +97,7 @@ Begin VB.Form FormPinch
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   3450
       Width           =   5895
       _ExtentX        =   10398
@@ -161,7 +120,7 @@ Begin VB.Form FormPinch
    Begin PhotoDemon.sliderTextCombo sltAmount 
       Height          =   495
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   10
       Top             =   1770
       Width           =   5895
       _ExtentX        =   10398
@@ -183,7 +142,7 @@ Begin VB.Form FormPinch
    Begin PhotoDemon.sliderTextCombo sltXCenter 
       Height          =   495
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   11
       Top             =   480
       Width           =   2895
       _ExtentX        =   5106
@@ -206,7 +165,7 @@ Begin VB.Form FormPinch
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   495
       Left            =   9000
-      TabIndex        =   14
+      TabIndex        =   12
       Top             =   480
       Width           =   2895
       _ExtentX        =   5106
@@ -226,6 +185,29 @@ Begin VB.Form FormPinch
       NotchPosition   =   2
       NotchValueCustom=   0.5
    End
+   Begin PhotoDemon.sliderTextCombo sltQuality 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   15
+      Top             =   4320
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   1
+      Max             =   5
+      Value           =   2
+      NotchPosition   =   2
+      NotchValueCustom=   2
+   End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent
       Caption         =   "Note: you can also set a center position by clicking the preview window."
@@ -233,7 +215,7 @@ Begin VB.Form FormPinch
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   16
+      TabIndex        =   14
       Top             =   1050
       Width           =   5655
       WordWrap        =   -1  'True
@@ -255,7 +237,7 @@ Begin VB.Form FormPinch
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   15
+      TabIndex        =   13
       Top             =   120
       Width           =   2205
    End
@@ -277,7 +259,7 @@ Begin VB.Form FormPinch
       Index           =   5
       Left            =   6000
       TabIndex        =   7
-      Top             =   3960
+      Top             =   4920
       Width           =   3315
    End
    Begin VB.Label lblTitle 
@@ -327,7 +309,7 @@ Begin VB.Form FormPinch
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "quality:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -342,8 +324,8 @@ Begin VB.Form FormPinch
       Index           =   2
       Left            =   6000
       TabIndex        =   2
-      Top             =   4890
-      Width           =   1845
+      Top             =   3960
+      Width           =   795
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -378,17 +360,14 @@ Attribute VB_Exposed = False
 'Image "Pinch and Whirl" Distortion
 'Copyright ©2000-2014 by Tanner Helland
 'Created: 05/January/13
-'Last updated: 23/August/13
-'Last update: added command bar
+'Last updated: 26/September/14
+'Last update: add supersampling support
 '
 'This tool allows the user to "pinch" an image.  Negative pinch values result in a "bulging" effect.  A "whirl"
-' component has also been added, as that seems to be standard for this tool in other software.  Bilinear interpolation
-' (via reverse-mapping) is available for a high-quality transformation.
+' component has also been added, as that seems to be standard for this tool in other software.  Supersampling and
+' interpolation via reverse-mapping can be activated for a very high-quality transformation.
 '
-'At present, the tool assumes that you want to pinch the image at its center.  The code is already set up to handle
-' alternative center points - there simply needs to be a good user interface technique for establishing the center.
-'
-'Finally, the transformation used by this tool is a modified version of a transformation originally written by
+'The transformation used by this tool is a modified version of a transformation originally written by
 ' Jerry Huxtable of JH Labs.  Jerry's original code is licensed under an Apache 2.0 license.  You may download his
 ' original version at the following link (good as of 07 January '13): http://www.jhlabs.com/ip/filters/index.html
 '
@@ -407,7 +386,7 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'Apply a "pinch and whirl" effect to an image
-Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, ByVal effectRadius As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, ByVal effectRadius As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
     If Not toPreview Then Message "Pinching and whirling image..."
     
@@ -444,13 +423,58 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-          
+    
+     '***************************************
+    ' /* BEGIN SUPERSAMPLING PREPARATION */
+    
+    'Due to the way this filter works, supersampling yields much better results.  Because supersampling is extremely
+    ' energy-intensive, this tool uses a sliding value for quality, as opposed to a binary TRUE/FALSE for antialiasing.
+    ' (For all but the lowest quality setting, antialiasing will be used, and higher quality values will simply increase
+    '  the amount of supersamples taken.)
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim tmpSum As Long, tmpSumFirst As Long
+    
+    'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
+    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
+    ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
+    Dim numSamples As Long
+    Dim ssX() As Single, ssY() As Single
+    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    
+    'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
+    ' count in advance.
+    numSamples = numSamples - 1
+    
+    'Additional variables are needed for supersampling handling
+    Dim j As Double, k As Double
+    Dim sampleIndex As Long, numSamplesUsed As Long
+    Dim superSampleVerify As Long, ssVerificationLimit As Long
+    
+    'Adaptive supersampling allows us to bypass supersampling if a pixel doesn't appear to benefit from it.  The superSampleVerify
+    ' variable controls how many pixels are sampled before we perform an adaptation check.  At present, the rule is:
+    ' Quality 3: check a minimum of 2 samples, Quality 4: check minimum 3 samples, Quality 5: check minimum 4 samples
+    superSampleVerify = superSamplingAmount - 2
+    
+    'Alongside a variable number of test samples, adaptive supersampling requires some threshold that indicates samples
+    ' are close enough that further supersampling is unlikely to improve output.  We calculate this as a minimum variance
+    ' as 1.5 per channel (for a total of 6 variance per pixel), multiplied by the total number of samples taken.
+    ssVerificationLimit = superSampleVerify * 6
+    
+    'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
+    ' by setting the verification checker to some impossible value.
+    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    
+    ' /* END SUPERSAMPLING PREPARATION */
+    '*************************************
+    
+    
     'Swirling requires some specialized variables
     
     'Calculate the center of the image
@@ -490,46 +514,102 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
     For x = initX To finalX
         QuickVal = x * qvDepth
     For y = initY To finalY
-    
+        
+        'Reset all supersampling values
+        newR = 0
+        newG = 0
+        newB = 0
+        newA = 0
+        numSamplesUsed = 0
+        
         'Remap the coordinates around a center point of (0, 0)
-        nX = x - midX
-        nY = y - midY
+        j = x - midX
+        k = y - midY
         
-        'Calculate distance automatically
-        sDistance = (nX * nX) + (nY * nY)
+        'Sample a number of source pixels corresponding to the user's supplied quality value; more quality means
+        ' more samples, and much better representation in the final output.
+        For sampleIndex = 0 To numSamples
+            
+            'Offset the pixel amount by the supersampling lookup table
+            nX = j + ssX(sampleIndex)
+            nY = k + ssY(sampleIndex)
+                    
+            'Calculate distance
+            sDistance = (nX * nX) + (nY * nY)
                 
-        'Calculate remapped x and y values
-        If (sDistance > sRadius2) Then
-            srcX = x
-            srcY = y
-        Else
+            'Calculate remapped x and y values
+            If (sDistance > sRadius2) Then
+                srcX = x
+                srcY = y
+            Else
+            
+                'Calculate distance as a ratio of the effect radius
+                sDistance = Sqr(sDistance) / sRadius
+                
+                'Calculate theta
+                theta = Sin(PI_HALF * sDistance)
+                If theta <> 0 Then theta = theta ^ pinchAmount
+                                                    
+                'Modify the source coordinates based on the calculated theta value
+                nX = nX * theta
+                nY = nY * theta
+                
+                'Now, apply the whirl effect (if any)
+                whirlCalc = 1 - sDistance
+                whirlCalc = whirlCalc * whirlCalc * whirlAngle
+                
+                whirlSin = Sin(whirlCalc)
+                whirlCos = Cos(whirlCalc)
+                
+                'Use the whirl calculation results to determine a final source pixel location
+                srcX = midX + (whirlCos * nX) - (whirlSin * nY)
+                srcY = midY + (whirlSin * nX) + (whirlCos * nY)
+                            
+            End If
+            
+            'Use the filter support class to interpolate and edge-wrap pixels as necessary
+            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            
+            'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
+            ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
+            ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
+            '  small enough to make it preferable over a true variance calculation.)
+            If sampleIndex = superSampleVerify Then
+                
+                'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
+                tmpSum = (r + g + b + a) * superSampleVerify
+                tmpSumFirst = newR + newG + newB + newA
+                
+                'If variance is below 1.5 per channel per pixel, abort further supersampling
+                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+            
+            End If
+            
+            'Increase the sample count
+            numSamplesUsed = numSamplesUsed + 1
+            
+            'Add the retrieved values to our running averages
+            newR = newR + r
+            newG = newG + g
+            newB = newB + b
+            If qvDepth = 4 Then newA = newA + a
+            
+        Next sampleIndex
         
-            'Calculate distance as a ratio of the effect radius
-            sDistance = Sqr(sDistance) / sRadius
-            
-            'Calculate theta
-            theta = Sin(PI_HALF * sDistance)
-            If theta <> 0 Then theta = theta ^ pinchAmount
-                                                
-            'Modify the source coordinates based on the calculated theta value
-            nX = nX * theta
-            nY = nY * theta
-            
-            'Now, apply the whirl effect (if any)
-            whirlCalc = 1 - sDistance
-            whirlCalc = whirlCalc * whirlCalc * whirlAngle
-            
-            whirlSin = Sin(whirlCalc)
-            whirlCos = Cos(whirlCalc)
-            
-            'Use the whirl calculation results to determine a final source pixel location
-            srcX = midX + (whirlCos * nX) - (whirlSin * nY)
-            srcY = midY + (whirlSin * nX) + (whirlCos * nY)
-                        
+        'Find the average values of all samples, apply to the pixel, and move on!
+        newR = newR \ numSamplesUsed
+        newG = newG \ numSamplesUsed
+        newB = newB \ numSamplesUsed
+        
+        dstImageData(QuickVal + 2, y) = newR
+        dstImageData(QuickVal + 1, y) = newG
+        dstImageData(QuickVal, y) = newB
+        
+        'If the image has an alpha channel, repeat the calculation there too
+        If qvDepth = 4 Then
+            newA = newA \ numSamplesUsed
+            dstImageData(QuickVal + 3, y) = newA
         End If
-        
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
         If toPreview = False Then
@@ -553,7 +633,7 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Pinch and whirl", , buildParams(sltAmount, sltAngle, sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Pinch and whirl", , buildParams(sltAmount, sltAngle, sltRadius.Value, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -565,6 +645,7 @@ Private Sub cmdBar_ResetClick()
     sltYCenter.Value = 0.5
     cmbEdges.ListIndex = EDGE_CLAMP
     sltRadius.Value = 100
+    sltQuality.Value = 2
 End Sub
 
 Private Sub Form_Activate()
@@ -594,15 +675,15 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
-End Sub
-
 Private Sub sltAmount_Change()
     updatePreview
 End Sub
 
 Private Sub sltAngle_Change()
+    updatePreview
+End Sub
+
+Private Sub sltQuality_Change()
     updatePreview
 End Sub
 
@@ -612,7 +693,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then PinchImage sltAmount, sltAngle, sltRadius, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then PinchImage sltAmount, sltAngle, sltRadius, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
