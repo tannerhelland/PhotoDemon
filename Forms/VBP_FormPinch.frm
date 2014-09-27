@@ -612,7 +612,7 @@ Public Sub PinchImage(ByVal pinchAmount As Double, ByVal whirlAngle As Double, B
         End If
                 
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
