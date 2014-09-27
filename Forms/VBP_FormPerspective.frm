@@ -39,8 +39,8 @@ Begin VB.Form FormPerspective
       Height          =   360
       Left            =   240
       Style           =   2  'Dropdown List
-      TabIndex        =   9
-      Top             =   6360
+      TabIndex        =   6
+      Top             =   6240
       Width           =   5550
    End
    Begin PhotoDemon.commandBar cmdBar 
@@ -72,7 +72,7 @@ Begin VB.Form FormPerspective
       ScaleHeight     =   574
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   598
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   120
       Width           =   9000
    End
@@ -91,59 +91,64 @@ Begin VB.Form FormPerspective
       Height          =   360
       Left            =   240
       Style           =   2  'Dropdown List
-      TabIndex        =   3
-      Top             =   7335
+      TabIndex        =   2
+      Top             =   8175
       Width           =   5550
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
+   Begin PhotoDemon.sliderTextCombo sltQuality 
+      Height          =   495
       Left            =   240
-      TabIndex        =   5
-      Top             =   8280
-      Width           =   2715
-      _ExtentX        =   4789
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
+      TabIndex        =   7
+      Top             =   7230
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   873
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   11.25
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Min             =   1
+      Max             =   5
+      Value           =   2
+      NotchPosition   =   2
+      NotchValueCustom=   2
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   3000
-      TabIndex        =   6
-      Top             =   8280
-      Width           =   2715
-      _ExtentX        =   4789
-      _ExtentY        =   635
-      Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+   Begin VB.Label lblTitle 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "quality:"
+      BeginProperty Font 
          Name            =   "Tahoma"
-         Size            =   11.25
+         Size            =   12
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   1
+      Left            =   120
+      TabIndex        =   8
+      Top             =   6840
+      Width           =   795
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -162,8 +167,8 @@ Begin VB.Form FormPerspective
       Height          =   285
       Index           =   0
       Left            =   120
-      TabIndex        =   8
-      Top             =   6000
+      TabIndex        =   5
+      Top             =   5880
       Width           =   2175
    End
    Begin VB.Label lblTitle 
@@ -183,32 +188,9 @@ Begin VB.Form FormPerspective
       Height          =   285
       Index           =   5
       Left            =   120
-      TabIndex        =   4
-      Top             =   6960
+      TabIndex        =   3
+      Top             =   7800
       Width           =   3315
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   120
-      TabIndex        =   1
-      Top             =   7890
-      Width           =   1845
    End
 End
 Attribute VB_Name = "FormPerspective"
@@ -220,11 +202,8 @@ Attribute VB_Exposed = False
 'Image Perspective Distortion
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 08/April/13
-'Last updated: 30/August/13
-'Last update: added an option for forward or reverse transformations.  I was hesitant to do this previously, because
-'             the difference is confusing, but I think I've finally found a way to present it that won't alienate
-'             casual users.  Hopefully this is the best of both worlds, as the reverse option really is nice if you
-'             have a reference object in the source image that needs to be perspective-corrected.
+'Last updated: 26/September/14
+'Last update: add supersampling support
 '
 'This tool allows the user to apply arbitrary perspective to an image.  The code is fairly involved linear
 ' algebra, as a series of equations must be solved to generate the homography matrix used for the transform.
@@ -232,7 +211,7 @@ Attribute VB_Exposed = False
 '
 ' http://en.wikipedia.org/wiki/Homography
 '
-'As with all distorts, reverse-mapping is used to allow for high-quality antialiasing.
+'As with all distorts, reverse-mapping plus supersampling is supported for high-quality antialiasing.
 '
 'I used a number of projects as references while build this tool.  Thank you to the following:
 '
@@ -251,10 +230,10 @@ Option Explicit
 
 'When previewing, we need to modify all measurements by the ratio between the (generally smaller) preview image
 ' and the full-size image.
-Dim iWidth As Long, iHeight As Long
+Private iWidth As Long, iHeight As Long
 
 'Width and height of the preview image
-Dim m_previewWidth As Long, m_previewHeight As Long
+Private m_previewWidth As Long, m_previewHeight As Long
 
 'Control points for the live preview box
 Private Type fPoint
@@ -264,14 +243,14 @@ End Type
 
 'We track two sets of control point coordinates - the original points, and the new points.  The difference between
 ' these is passed to the perspective function.
-Dim m_oPoints(0 To 3) As fPoint
-Dim m_nPoints(0 To 3) As fPoint
+Private m_oPoints(0 To 3) As fPoint
+Private m_nPoints(0 To 3) As fPoint
 
 'Track mouse status between MouseDown and MouseMove events
-Dim m_isMouseDown As Boolean
+Private m_isMouseDown As Boolean
 
 'Currently selected node in the workspace area
-Dim m_selPoint As Long
+Private m_selPoint As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -311,7 +290,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -338,13 +317,61 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, cParams.GetLong(10), cParams.GetBool(11), curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.setDistortParameters qvDepth, cParams.GetLong(10), (cParams.GetLong(11) <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-            
+    
+    '***************************************
+    ' /* BEGIN SUPERSAMPLING PREPARATION */
+    
+    'Start by retrieving the supersampling parameter from the param string
+    Dim superSamplingAmount As Long
+    superSamplingAmount = cParams.GetLong(11)
+    
+    'Due to the way this filter works, supersampling yields much better results.  Because supersampling is extremely
+    ' energy-intensive, this tool uses a sliding value for quality, as opposed to a binary TRUE/FALSE for antialiasing.
+    ' (For all but the lowest quality setting, antialiasing will be used, and higher quality values will simply increase
+    '  the amount of supersamples taken.)
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim tmpSum As Long, tmpSumFirst As Long
+    
+    'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
+    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
+    ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
+    Dim numSamples As Long
+    Dim ssX() As Single, ssY() As Single
+    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    
+    'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
+    ' count in advance.
+    numSamples = numSamples - 1
+    
+    'Additional variables are needed for supersampling handling
+    Dim j As Double, k As Double
+    Dim sampleIndex As Long, numSamplesUsed As Long
+    Dim superSampleVerify As Long, ssVerificationLimit As Long
+    
+    'Adaptive supersampling allows us to bypass supersampling if a pixel doesn't appear to benefit from it.  The superSampleVerify
+    ' variable controls how many pixels are sampled before we perform an adaptation check.  At present, the rule is:
+    ' Quality 3: check a minimum of 2 samples, Quality 4: check minimum 3 samples, Quality 5: check minimum 4 samples
+    superSampleVerify = superSamplingAmount - 2
+    
+    'Alongside a variable number of test samples, adaptive supersampling requires some threshold that indicates samples
+    ' are close enough that further supersampling is unlikely to improve output.  We calculate this as a minimum variance
+    ' as 1.5 per channel (for a total of 6 variance per pixel), multiplied by the total number of samples taken.
+    ssVerificationLimit = superSampleVerify * 6
+    
+    'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
+    ' by setting the verification checker to some impossible value.
+    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    
+    ' /* END SUPERSAMPLING PREPARATION */
+    '*************************************
+    
     'Store region width and height as floating-point
     Dim imgWidth As Double, imgHeight As Double
     imgWidth = finalX - initX
@@ -465,29 +492,29 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
         ' image instead of a section of the DESTINATION image.)  For a detailed explanation of this process, please
         ' read pages 24-25 of Paul Heckbert's thesis on projective transformations, which is really the best source
         ' for understanding projective mappings in general: http://www.cs.cmu.edu/~ph/texfund/texfund.pdf
-        Dim newA As Double, newB As Double, newC As Double
+        Dim newA2 As Double, newB2 As Double, newC As Double
         Dim newD As Double, newE As Double, newF As Double
-        Dim newG As Double, newH As Double, newI As Double
+        Dim newG2 As Double, newH As Double, newI As Double
         
-        newA = hE * hI - hF * hH
-        newB = hC * hH - hB * hI
+        newA2 = hE * hI - hF * hH
+        newB2 = hC * hH - hB * hI
         newC = hB * hF - hC * hE
         
         newD = hF * hG - hD * hI
         newE = hA * hI - hC * hG
         newF = hC * hD - hA * hF
         
-        newG = hD * hH - hE * hG
+        newG2 = hD * hH - hE * hG
         newH = hB * hG - hA * hH
         newI = hA * hE - hB * hD
     
-        hA = newA
-        hB = newB
+        hA = newA2
+        hB = newB2
         hC = newC
         hD = newD
         hE = newE
         hF = newF
-        hG = newG
+        hG = newG2
         hH = newH
         hI = newI
         
@@ -506,29 +533,87 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     'Source X and Y values, which may or may not be used as part of a bilinear interpolation function
     Dim srcX As Double, srcY As Double
     
+    Dim newX As Double, newY As Double
+    
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
-                
-        'Reverse-map the coordinates back onto the original image (to allow for resampling)
-        chkDenom = (hG * X + hH * Y + hI)
-        If chkDenom = 0 Then chkDenom = 0.000000001
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
         
-        srcX = imgWidth * (hA * X + hB * Y + hC) / chkDenom
-        srcY = imgHeight * (hD * X + hE * Y + hF) / chkDenom
+        'Reset all supersampling values
+        newR = 0
+        newG = 0
+        newB = 0
+        newA = 0
+        numSamplesUsed = 0
+        
+        'Sample a number of source pixels corresponding to the user's supplied quality value; more quality means
+        ' more samples, and much better representation in the final output.
+        For sampleIndex = 0 To numSamples
+            
+            'Pull coordinates from the lookup table
+            newX = x + ssX(sampleIndex)
+            newY = y + ssY(sampleIndex)
+            
+            'Reverse-map the coordinates back onto the original image (to allow for resampling)
+            chkDenom = (hG * newX + hH * newY + hI)
+            If chkDenom = 0 Then chkDenom = 0.000000001
+            
+            srcX = imgWidth * (hA * newX + hB * newY + hC) / chkDenom
+            srcY = imgHeight * (hD * newX + hE * newY + hF) / chkDenom
                 
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels X, Y, srcX, srcY, srcImageData, dstImageData
+            'Use the filter support class to interpolate and edge-wrap pixels as necessary
+            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            
+            'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
+            ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
+            ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
+            '  small enough to make it preferable over a true variance calculation.)
+            If sampleIndex = superSampleVerify Then
                 
-    Next Y
-        If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+                'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
+                tmpSum = (r + g + b + a) * superSampleVerify
+                tmpSumFirst = newR + newG + newB + newA
+                
+                'If variance is below 1.5 per channel per pixel, abort further supersampling
+                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+            
+            End If
+            
+            'Increase the sample count
+            numSamplesUsed = numSamplesUsed + 1
+            
+            'Add the retrieved values to our running averages
+            newR = newR + r
+            newG = newG + g
+            newB = newB + b
+            If qvDepth = 4 Then newA = newA + a
+        
+        Next sampleIndex
+        
+        'Find the average values of all samples, apply to the pixel, and move on!
+        newR = newR \ numSamplesUsed
+        newG = newG \ numSamplesUsed
+        newB = newB \ numSamplesUsed
+        
+        dstImageData(QuickVal + 2, y) = newR
+        dstImageData(QuickVal + 1, y) = newG
+        dstImageData(QuickVal, y) = newB
+        
+        'If the image has an alpha channel, repeat the calculation there too
+        If qvDepth = 4 Then
+            newA = newA \ numSamplesUsed
+            dstImageData(QuickVal + 3, y) = newA
+        End If
+                
+    Next y
+        If Not toPreview Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
@@ -612,6 +697,9 @@ Private Sub cmdBar_ResetClick()
     'Set edge handling to match the default specified in Form_Load
     cmbEdges.ListIndex = EDGE_ERASE
     
+    'Default quality is interpolation, but no supersampling
+    sltQuality.Value = 2
+    
     'Copy the original values into the "current values" point array and redraw everything
     Dim i As Long
     For i = 0 To 3
@@ -692,10 +780,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
-End Sub
-
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
     If cmdBar.previewsAllowed Then PerspectiveImage getPerspectiveParamString, True, fxPreview
@@ -757,24 +841,24 @@ Private Sub redrawPreviewBox()
 
 End Sub
 
-Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     m_isMouseDown = True
     
     'If the mouse is over a point, mark it as the active point
-    m_selPoint = checkClick(X, Y)
+    m_selPoint = checkClick(x, y)
     
 End Sub
 
-Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'If the mouse is not down, indicate to the user that points can be moved
     If Not m_isMouseDown Then
         
         'If the user is close to a knot, change the mousepointer to 'move'
-        If checkClick(X, Y) > -1 Then
+        If checkClick(x, y) > -1 Then
             If picDraw.MousePointer <> 5 Then picDraw.MousePointer = 5
             
-            Select Case checkClick(X, Y)
+            Select Case checkClick(x, y)
                 Case 0
                     picDraw.ToolTipText = g_Language.TranslateMessage("top-left")
                 Case 1
@@ -794,8 +878,8 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, X As Single, 
     Else
     
         If m_selPoint >= 0 Then
-            m_nPoints(m_selPoint).pX = X
-            m_nPoints(m_selPoint).pY = Y
+            m_nPoints(m_selPoint).pX = x
+            m_nPoints(m_selPoint).pY = y
             redrawPreviewBox
             updatePreview
         End If
@@ -804,17 +888,17 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, X As Single, 
 
 End Sub
 
-Private Sub picDraw_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     m_isMouseDown = False
     m_selPoint = -1
 End Sub
 
 'Simple distance routine to see if a location on the picture box is near an existing point
-Private Function checkClick(ByVal X As Long, ByVal Y As Long) As Long
+Private Function checkClick(ByVal x As Long, ByVal y As Long) As Long
     Dim dist As Double
     Dim i As Long
     For i = 0 To 3
-        dist = pDistance(X, Y, m_nPoints(i).pX, m_nPoints(i).pY)
+        dist = pDistance(x, y, m_nPoints(i).pX, m_nPoints(i).pY)
         'If we're close to an existing point, return the index of that point
         If dist < g_MouseAccuracy Then
             checkClick = i
@@ -858,8 +942,8 @@ Private Function getPerspectiveParamString() As String
     'Edge handling
     paramString = paramString & "|" & CLng(cmbEdges.ListIndex)
     
-    'Resampling
-    paramString = paramString & "|" & OptInterpolate(0).Value
+    'Supersampling
+    paramString = paramString & "|" & sltQuality
     
     getPerspectiveParamString = paramString
 
@@ -870,3 +954,6 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+Private Sub sltQuality_Change()
+    updatePreview
+End Sub
