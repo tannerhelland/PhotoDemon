@@ -638,6 +638,11 @@ Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub
 
+Private Sub cmdBar_ResetClick()
+    sltQuality = 2
+    cmbEdges.ListIndex = EDGE_WRAP
+End Sub
+
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
