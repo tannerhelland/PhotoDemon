@@ -385,6 +385,10 @@ End Sub
 ' performance takes a huge hit, but output results are not significantly improved.
 Public Sub getSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples As Long, ByRef ssOffsetsX() As Single, ByRef ssOffsetsY() As Single)
     
+    'Old PD versions used a Boolean value for quality.  As such, if the user enabled interpolation, and saved it as part of a preset,
+    ' this function may get passed a "-1" for userQuality.  In that case, activate an identical method in the new supersampler.
+    If userQuality < 1 Then userQuality = 2
+    
     'Quality is typically presented to the user on a 1-5 scale.  1 = lowest quality/highest speed, 5 = highest quality/lowest speed.
     Select Case userQuality
     
@@ -400,7 +404,7 @@ Public Sub getSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples A
         
         'Cases 3, 4, 5: use rotated grid supersampling, at the recommended rotation of arctan(1/2), with 4 additional sample points
         ' per quality level.
-        Case 3, 4, 5
+        Case Else
         
             'Four additional samples are provided at each quality level
             numAASamples = (userQuality - 2) * 4 + 1
