@@ -58,66 +58,25 @@ Begin VB.Form FormShear
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   4
-      Top             =   3540
+      TabIndex        =   3
+      Top             =   4410
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   4440
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   4800
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   635
-      Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
    Begin PhotoDemon.sliderTextCombo sltAngleX 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
-      Top             =   1770
+      TabIndex        =   6
+      Top             =   1410
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -137,8 +96,8 @@ Begin VB.Form FormShear
    Begin PhotoDemon.sliderTextCombo sltAngleY 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
-      Top             =   2610
+      TabIndex        =   7
+      Top             =   2370
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -154,6 +113,52 @@ Begin VB.Form FormShear
       Min             =   -85
       Max             =   85
       SigDigits       =   1
+   End
+   Begin PhotoDemon.sliderTextCombo sltQuality 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   3360
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Min             =   1
+      Max             =   5
+      Value           =   2
+      NotchPosition   =   2
+      NotchValueCustom=   2
+   End
+   Begin VB.Label lblTitle 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "quality:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   2
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   3000
+      Width           =   795
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -174,8 +179,8 @@ Begin VB.Form FormShear
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   8
-      Top             =   2280
+      TabIndex        =   5
+      Top             =   2040
       Width           =   1485
    End
    Begin VB.Label lblTitle 
@@ -195,32 +200,9 @@ Begin VB.Form FormShear
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   5
-      Top             =   3165
+      TabIndex        =   4
+      Top             =   3960
       Width           =   3315
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   4050
-      Width           =   1845
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -242,7 +224,7 @@ Begin VB.Form FormShear
       Index           =   0
       Left            =   6000
       TabIndex        =   1
-      Top             =   1440
+      Top             =   1080
       Width           =   1785
    End
 End
@@ -255,11 +237,11 @@ Attribute VB_Exposed = False
 'Image Shear Distortion
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 03/April/13
-'Last updated: 28/April/13
-'Last update: double the strength of the "shear" calculation to allow for more extreme shearing
+'Last updated: 27/September/14
+'Last update: add supersampling support
 '
-'This tool allows the user to "shear" an image, or convert it from a rectangle to a parallelogram.  Bilinear
-' interpolation (via reverse-mapping) is available for a high-quality transformation.
+'This tool allows the user to "shear" an image, or convert it from a rectangle to a parallelogram.
+' Supersampling and reverse-mapped interpolation are available for a high-quality transformation.
 '
 'This version does not change the size of the final image.  A separate shear tool should be written that operates
 ' at an Image level, and it will provide the ability to resize the output to contain the entire sheared image.
@@ -279,9 +261,9 @@ Private Sub cmbEdges_Click()
 End Sub
 
 'Shear an image in one or two directions
-Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Shearing image..."
+    If Not toPreview Then Message "Shearing image..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -316,13 +298,57 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = findBestProgBarValue()
-        
+    
+    '***************************************
+    ' /* BEGIN SUPERSAMPLING PREPARATION */
+    
+    'Due to the way this filter works, supersampling yields much better results.  Because supersampling is extremely
+    ' energy-intensive, this tool uses a sliding value for quality, as opposed to a binary TRUE/FALSE for antialiasing.
+    ' (For all but the lowest quality setting, antialiasing will be used, and higher quality values will simply increase
+    '  the amount of supersamples taken.)
+    Dim newR As Long, newG As Long, newB As Long, newA As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim tmpSum As Long, tmpSumFirst As Long
+    
+    'Use the passed super-sampling constant (displayed to the user as "quality") to come up with a number of actual
+    ' pixels to sample.  (The total amount of sampled pixels will range from 1 to 13).  Note that supersampling
+    ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
+    Dim numSamples As Long
+    Dim ssX() As Single, ssY() As Single
+    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    
+    'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
+    ' count in advance.
+    numSamples = numSamples - 1
+    
+    'Additional variables are needed for supersampling handling
+    Dim j As Double, k As Double
+    Dim sampleIndex As Long, numSamplesUsed As Long
+    Dim superSampleVerify As Long, ssVerificationLimit As Long
+    
+    'Adaptive supersampling allows us to bypass supersampling if a pixel doesn't appear to benefit from it.  The superSampleVerify
+    ' variable controls how many pixels are sampled before we perform an adaptation check.  At present, the rule is:
+    ' Quality 3: check a minimum of 2 samples, Quality 4: check minimum 3 samples, Quality 5: check minimum 4 samples
+    superSampleVerify = superSamplingAmount - 2
+    
+    'Alongside a variable number of test samples, adaptive supersampling requires some threshold that indicates samples
+    ' are close enough that further supersampling is unlikely to improve output.  We calculate this as a minimum variance
+    ' as 1.5 per channel (for a total of 6 variance per pixel), multiplied by the total number of samples taken.
+    ssVerificationLimit = superSampleVerify * 6
+    
+    'To improve performance for quality 1 and 2 (which perform no supersampling), we can forcibly disable supersample checks
+    ' by setting the verification checker to some impossible value.
+    If superSampleVerify <= 0 Then superSampleVerify = LONG_MAX
+    
+    ' /* END SUPERSAMPLING PREPARATION */
+    '*************************************
+    
     'Convert both input angles to radians
     xAngle = -xAngle * (PI / 180)
     yAngle = yAngle * (PI / 180)
@@ -340,14 +366,70 @@ Public Sub ShearImage(ByVal xAngle As Double, ByVal yAngle As Double, ByVal edge
         QuickVal = x * qvDepth
     For y = initY To finalY
        
-        srcX = x + ((finalY - y) * sinX) * 2
-        srcY = y + (x * sinY) * 2
+       'Reset all supersampling values
+        newR = 0
+        newG = 0
+        newB = 0
+        newA = 0
+        numSamplesUsed = 0
+        
+        'Sample a number of source pixels corresponding to the user's supplied quality value; more quality means
+        ' more samples, and much better representation in the final output.
+        For sampleIndex = 0 To numSamples
+            
+            'Offset the pixel amount by the supersampling lookup table
+            j = x + ssX(sampleIndex)
+            k = y + ssY(sampleIndex)
+            
+            srcX = j + ((finalY - k) * sinX) * 2
+            srcY = k + (j * sinY) * 2
                 
-        'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+            'Use the filter support class to interpolate and edge-wrap pixels as necessary
+            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            
+            'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
+            ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
+            ' (Note that this is an ugly shorthand way to calculate variance, but it's fast, and the chance of false outliers is
+            '  small enough to make it preferable over a true variance calculation.)
+            If sampleIndex = superSampleVerify Then
+                
+                'Calculate variance for the first two pixels (Q3), three pixels (Q4), or four pixels (Q5)
+                tmpSum = (r + g + b + a) * superSampleVerify
+                tmpSumFirst = newR + newG + newB + newA
+                
+                'If variance is below 1.5 per channel per pixel, abort further supersampling
+                If Abs(tmpSum - tmpSumFirst) < ssVerificationLimit Then Exit For
+            
+            End If
+            
+            'Increase the sample count
+            numSamplesUsed = numSamplesUsed + 1
+            
+            'Add the retrieved values to our running averages
+            newR = newR + r
+            newG = newG + g
+            newB = newB + b
+            If qvDepth = 4 Then newA = newA + a
+            
+        Next sampleIndex
+        
+        'Find the average values of all samples, apply to the pixel, and move on!
+        newR = newR \ numSamplesUsed
+        newG = newG \ numSamplesUsed
+        newB = newB \ numSamplesUsed
+        
+        dstImageData(QuickVal + 2, y) = newR
+        dstImageData(QuickVal + 1, y) = newG
+        dstImageData(QuickVal, y) = newB
+        
+        'If the image has an alpha channel, repeat the calculation there too
+        If qvDepth = 4 Then
+            newA = newA \ numSamplesUsed
+            dstImageData(QuickVal + 3, y) = newA
+        End If
                 
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -369,7 +451,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Shear", , buildParams(sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
+    Process "Shear", , buildParams(sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -378,6 +460,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     cmbEdges.ListIndex = EDGE_WRAP
+    sltQuality = 2
 End Sub
 
 Private Sub Form_Activate()
@@ -407,10 +490,6 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
-End Sub
-
 Private Sub sltAngleX_Change()
     updatePreview
 End Sub
@@ -421,7 +500,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ShearImage sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ShearImage sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -429,3 +508,6 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+Private Sub sltQuality_Change()
+    updatePreview
+End Sub
