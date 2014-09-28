@@ -92,3 +92,7 @@ Public Const MAX_PATH_LEN = 260
 ' versions, we don't want to store our constant in the FreeImage modules - so we keep it here!
 Public Const FIF_PDI As Long = 100
 
+'Some other FIF_ formats supported by PhotoDemon, but not by FreeImage
+Public Const FIF_WMF As Long = 110
+Public Const FIF_EMF As Long = 111
+

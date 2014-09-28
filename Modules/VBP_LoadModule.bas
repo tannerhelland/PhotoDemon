@@ -190,7 +190,7 @@ Public Sub LoadTheProgram()
     End If
         
     'Make the splash screen's message display match the rest of PD
-    FormSplash.lblMessage.fontName = g_InterfaceFont
+    FormSplash.lblMessage.FontName = g_InterfaceFont
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
     FormSplash.Show vbModeless
@@ -870,9 +870,8 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                     
                 End If
                 
-                'If FreeImage fails for some reason, offload the image to GDI+ - UNLESS the image is a WMF or EMF, which can cause
-                ' GDI+ to experience a silent fail, thus bringing down the entire program.
-                If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then
+                'If FreeImage fails for some reason, offload the image to GDI+.
+                If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled Then
                     
                     #If DEBUGMODE = 1 Then
                         pdDebug.LogAction "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
@@ -896,8 +895,9 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                         
                 End If
                 
-                'If both FreeImage and GDI+ failed, give the image one last try with VB's LoadPicture
-                If (Not loadSuccessful) Then
+                'If both FreeImage and GDI+ failed, give the image one last try with VB's LoadPicture - UNLESS the image is a WMF or EMF,
+                ' which if malformed can cause LoadPicture to experience a silent fail, bringing down the entire program.
+                If (Not loadSuccessful) And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then
                     
                     #If DEBUGMODE = 1 Then
                         Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."

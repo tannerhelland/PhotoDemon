@@ -3,8 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 07/August/14
-'Last update: new function for rapidly converting 24bpp images to 32bpp
+'Last updated: 28/September/14
+'Last update: provisional WMF/EMF support, with (awesome) support for antialiasing on Win 7 and later
 '
 'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally used as a fallback for image loading
 ' and saving if the FreeImage DLL was not found, but over time it has become more and more integrated into PD.  As of version 6.0, GDI+
@@ -96,6 +96,22 @@ Private Enum EncoderValue
     [EncoderValueFrameDimensionPage] = 23
     [EncoderValueColorTypeGray] = 24
     [EncoderValueColorTypeRGB] = 25
+End Enum
+
+'EMFs can be converted between various formats.  GDI+ prefers "EMF+", which supports GDI+ primitives as well
+Private Enum MetafileType
+   MetafileTypeInvalid            'Invalid metafile
+   MetafileTypeWmf                'Standard WMF
+   MetafileTypeWmfPlaceable       'Placeable WMF
+   MetafileTypeEmf                'EMF (not EMF+)
+   MetafileTypeEmfPlusOnly        'EMF+ without dual down-level records
+   MetafileTypeEmfPlusDual        'EMF+ with dual down-level records
+End Enum
+
+Private Enum EMFType
+    EmfTypeEmfOnly = MetafileTypeEmf               'no EMF+  only EMF
+    EmfTypeEmfPlusOnly = MetafileTypeEmfPlusOnly   'no EMF  only EMF+
+    EmfTypeEmfPlusDual = MetafileTypeEmfPlusDual   'both EMF+ and EMF
 End Enum
 
 Private Type CLSID
@@ -300,6 +316,14 @@ Private Declare Function GdipGetDC Lib "gdiplus" (ByVal mGraphics As Long, ByRef
 Private Declare Function GdipReleaseDC Lib "gdiplus" (ByVal mGraphics As Long, ByVal hDC As Long) As Long
 Private Declare Function GdipBitmapLockBits Lib "gdiplus" (ByVal gdipBitmap As Long, gdipRect As RECTL, ByVal gdipFlags As Long, ByVal iPixelFormat As Long, LockedBitmapData As BitmapData) As GDIPlusStatus
 Private Declare Function GdipBitmapUnlockBits Lib "gdiplus" (ByVal gdipBitmap As Long, LockedBitmapData As BitmapData) As GDIPlusStatus
+Private Declare Function GdipGetImageRawFormat Lib "gdiplus" (ByVal gImage As Long, ByRef guidContainer As CLSID) As GDIPlusStatus
+Private Declare Function GdipGetImageGraphicsContext Lib "gdiplus" (ByVal hImage As Long, ByRef hGraphics As Long) As GDIPlusStatus
+Private Declare Function GdipCreateMetafileFromFile Lib "gdiplus" (ByVal srcFilePtr As Long, ByRef hMetafile As Long) As GDIPlusStatus
+Private Declare Function GdipGraphicsClear Lib "gdiplus" (ByVal hGraphics As Long, ByVal lColor As Long) As GDIPlusStatus
+Private Declare Function GdipSetMetafileDownLevelRasterizationLimit Lib "gdiplus" (ByVal hMetafile As Long, ByVal metafileRasterizationLimitDpi As Long) As GDIPlusStatus
+
+'Note: only supported in GDI+ v1.1!
+Private Declare Function GdipConvertToEmfPlus Lib "gdiplus" (ByVal refGraphics As Long, ByVal metafilePtr As Long, ByRef conversionSuccess As Long, ByVal typeOfEMF As EMFType, ByVal descriptionPointer As Long, ByRef out_metafile_ptr As Long) As Long
 
 'Retrieve properties from an image
 'Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, ByVal propSize As Long, ByRef mBuffer As PropertyItem) As Long
@@ -312,8 +336,9 @@ Private Declare Function GdipGetImageVerticalResolution Lib "gdiplus" (ByVal hIm
 Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, riid As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
 
 'CLSIDFromString is used to convert a mimetype into a CLSID required by the GDI+ image encoder
-Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, pclsid As CLSID) As Long
-
+Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, ByRef pclsid As CLSID) As Long
+Private Declare Function StringFromCLSID Lib "ole32" (ByRef pclsid As CLSID, ByRef lpszProgID As Long) As Long
+         
 'Necessary for converting between ASCII and UNICODE strings
 Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
 'Private Declare Function lstrlenA Lib "kernel32" (ByVal psString As Any) As Long
@@ -1049,6 +1074,27 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         Exit Function
     End If
     
+    'Retrieve the image's format as a GUID
+    Dim imgCLSID As CLSID
+    GdipGetImageRawFormat hImage, imgCLSID
+    
+    'Convert the GUID into a string
+    Dim imgStringPointer As Long, imgFormatGuidString As String
+    StringFromCLSID imgCLSID, imgStringPointer
+    imgFormatGuidString = pvPtrToStrW(imgStringPointer)
+    
+    'And finally, convert the string into an FIF long
+    Dim imgFormatFIF As Long
+    imgFormatFIF = getFIFFromGUID(imgFormatGuidString)
+    
+    'Metafiles require special consideration; set that flag in advance
+    Dim isMetafile As Boolean
+    If (imgFormatFIF = FIF_EMF) Or (imgFormatFIF = FIF_WMF) Then
+        isMetafile = True
+    Else
+        isMetafile = False
+    End If
+    
     'Look for an ICC profile by asking GDI+ to return the ICC profile property's size
     Dim profileSize As Long, hasProfile As Boolean
     GdipGetPropertyItemSize hImage, PropertyTagICCProfile, profileSize
@@ -1116,9 +1162,65 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
     End If
     
+    'Metafiles can contain brushes and other objects stored at extremely high DPIs.  Limit these to 300 dpi to prevent OOM errors later on.
+    If isMetafile Then GdipSetMetafileDownLevelRasterizationLimit hImage, 300
+    
     'Retrieve the image's size
-    Dim imgWidth As Single, imgHeight As Single
-    GdipGetImageDimension hImage, imgWidth, imgHeight
+    ' RANDOM FACT! GdipGetImageDimension works fine on bitmaps.  On metafiles, it returns bizarre values that may be astronomically large.
+    '  My assumption is that image dimensions are not necessarily returned in pixels (though pixels are the default for bitmaps).  Anyway,
+    '  it's trivial to switch to GdipGetImageWidth/Height.  Original code was: GdipGetImageDimension hImage, imgWidth, imgHeight -- and
+    '  note that the original code required Single-type values instead of Longs.
+    Dim imgWidth As Long, imgHeight As Long
+    GdipGetImageWidth hImage, imgWidth
+    GdipGetImageHeight hImage, imgHeight
+    
+    'Metafile containers (EMF, WMF) require special handling.
+    If isMetafile Then
+        
+        'Metafiles may return huge dimensions.  In lieu of a better import screen (a la GIMP), restrict sizes arbitrarily if they exceed
+        ' a certain threshold.
+        'If (imgWidth > 3000) Or (imgHeight > 3000) Then
+        '    imgWidth = imgWidth \ 10
+        '    imgHeight = imgHeight \ 10
+        'End If
+        
+        'If GDI+ v1.1 is available, we can translate EMFs and WMFs into the new GDI+ EMF+ format, which supports antialiasing
+        ' (among other things).
+        If g_GDIPlusFXAvailable Then
+            
+            'Create a temporary GDI+ graphics object, whose properties will be used to control the render state of the EMF
+            Dim tmpSettingsDIB As pdDIB
+            Set tmpSettingsDIB = New pdDIB
+            tmpSettingsDIB.createBlank 8, 8, 32, 0, 0
+            
+            Dim tmpGraphics As Long
+            If GdipCreateFromHDC(tmpSettingsDIB.getDIBDC, tmpGraphics) = 0 Then
+                
+                'Set high-quality antialiasing and interpolation
+                GdipSetSmoothingMode tmpGraphics, SmoothingModeHighQuality
+                GdipSetInterpolationMode tmpGraphics, InterpolationModeHighQualityBicubic
+                
+                'Attempt to convert the EMF to EMF+ format
+                Dim mfHandleDst As Long, convSuccess As Long
+                If GdipConvertToEmfPlus(tmpGraphics, hImage, convSuccess, EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
+                
+                    'Conversion successful!  Replace our current image handle with the EMF+ copy
+                    GdipDisposeImage hImage
+                    hImage = mfHandleDst
+                    
+                End If
+                
+                'Release our temporary graphics container
+                GdipDeleteGraphics tmpGraphics
+                
+            End If
+            
+            'Release our temporary settings DIB
+            Set tmpSettingsDIB = Nothing
+            
+        End If
+        
+    End If
     
     'Retrieve the image's horizontal and vertical resolution (if any)
     Dim imgHResolution As Single, imgVResolution As Single
@@ -1664,7 +1766,7 @@ Private Function pvPtrToStrW(ByVal lpsz As Long) As String
     End If
 End Function
 
-'Same as above, but in reverse
+'Same as above, but in ANSI format (current unused)
 'Private Function pvPtrToStrA(ByVal lpsz As Long) As String
 '
 '  Dim sOut As String
@@ -1679,3 +1781,38 @@ End Function
 '    End If
 'End Function
 
+'Given a GUID string, return a Long-type image format identifier
+Private Function getFIFFromGUID(ByRef srcGUID As String) As Long
+
+    Select Case srcGUID
+    
+        Case "{B96B3CAB-0728-11D3-9D7B-0000F81EF32E}"
+            getFIFFromGUID = FIF_BMP
+            
+        Case "{B96B3CAC-0728-11D3-9D7B-0000F81EF32E}"
+            getFIFFromGUID = FIF_EMF
+            
+        Case "{B96B3CAD-0728-11D3-9D7B-0000F81EF32E}"
+            getFIFFromGUID = FIF_WMF
+        
+        Case "{B96B3CAE-0728-11D3-9D7B-0000F81EF32E}"
+            getFIFFromGUID = FIF_JPEG
+            
+        Case "{B96B3CAF-0728-11D3-9D7B-0000F81EF32E}"
+            getFIFFromGUID = FIF_PNG
+            
+        Case "{B96B3CB0-0728-11D3-9D7B-0000F81EF32E}"
+            getFIFFromGUID = FIF_GIF
+            
+        Case "{B96B3CB1-0728-11D3-9D7B-0000F81EF32E}"
+            getFIFFromGUID = FIF_TIFF
+            
+        Case "{B96B3CB5-0728-11D3-9D7B-0000F81EF32E}"
+            getFIFFromGUID = FIF_ICO
+        Case Else
+            getFIFFromGUID = -1
+            
+    End Select
+    
+
+End Function
