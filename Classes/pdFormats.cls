@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Format Manager
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 16/January/14
-'Last update: added WebP export support
+'Last updated: 29/September/14
+'Last update: add import support for WMF and EMF metafiles
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
@@ -211,6 +211,11 @@ Public Sub generateInputFormats()
     If FreeImageEnabled Then
         addInputFormat "DDS - DirectDraw Surface", "*.dds", FIF_DDS
         addInputFormat "DNG - Adobe Digital Negative", "*.dng", FIF_RAW
+    End If
+    
+    If GDIPlusEnabled Then addInputFormat "EMF - Enhanced Metafile", "*.emf", FIF_EMF
+    
+    If FreeImageEnabled Then
         addInputFormat "EXR - Industrial Light and Magic", "*.exr", FIF_EXR
         addInputFormat "G3 - Digital Fax Format", "*.g3", FIF_FAXG3
     End If
@@ -266,7 +271,9 @@ Public Sub generateInputFormats()
         addInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", FIF_WBMP
         addInputFormat "WEBP - Google WebP", "*.webp", FIF_WEBP
     End If
-        
+    
+    If GDIPlusEnabled Then addInputFormat "WMF - Windows Metafile", "*.wmf", FIF_EMF
+    
     'Finish out the list with an obligatory "All files" option
     addInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
     
@@ -407,18 +414,38 @@ Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
     
         Case FIF_BMP
             getExtensionFromFIF = "bmp"
+        Case FIF_CUT
+            getExtensionFromFIF = "cut"
+        Case FIF_DDS
+            getExtensionFromFIF = "dds"
+        Case FIF_EMF
+            getExtensionFromFIF = "emf"
+        Case FIF_EXR
+            getExtensionFromFIF = "exr"
+        Case FIF_FAXG3
+            getExtensionFromFIF = "g3"
+        Case FIF_GIF
+            getExtensionFromFIF = "gif"
+        Case FIF_HDR
+            getExtensionFromFIF = "hdr"
         Case FIF_ICO
             getExtensionFromFIF = "ico"
-        Case FIF_JPEG
-            getExtensionFromFIF = "jpg"
+        Case FIF_IFF
+            getExtensionFromFIF = "iff"
+        Case FIF_J2K
+            getExtensionFromFIF = "j2k"
         Case FIF_JNG
             getExtensionFromFIF = "jng"
+        Case FIF_JP2
+            getExtensionFromFIF = "jp2"
+        Case FIF_JPEG
+            getExtensionFromFIF = "jpg"
+        Case FIF_JXR
+            getExtensionFromFIF = "jxr"
         Case FIF_KOALA
             getExtensionFromFIF = "koa"
         Case FIF_LBM
             getExtensionFromFIF = "lbm"
-        Case FIF_IFF
-            getExtensionFromFIF = "iff"
         Case FIF_MNG
             getExtensionFromFIF = "mng"
         Case FIF_PBM
@@ -429,62 +456,47 @@ Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
             getExtensionFromFIF = "pcd"
         Case FIF_PCX
             getExtensionFromFIF = "pcx"
+        Case FIF_PDI
+            getExtensionFromFIF = "pdi"
+        Case FIF_PFM
+            getExtensionFromFIF = "pfm"
         Case FIF_PGM
             getExtensionFromFIF = "pgm"
         Case FIF_PGMRAW
             getExtensionFromFIF = "pgm"
+        Case FIF_PICT
+            getExtensionFromFIF = "pct"
         Case FIF_PNG
             getExtensionFromFIF = "png"
         Case FIF_PPM
             getExtensionFromFIF = "ppm"
         Case FIF_PPMRAW
             getExtensionFromFIF = "ppm"
+        Case FIF_PSD
+            getExtensionFromFIF = "psd"
         Case FIF_RAS
             getExtensionFromFIF = "ras"
         Case FIF_RAW
             getExtensionFromFIF = "hdr"
+        'Case FIF_RAW
+            'getExtensionFromFIF = "raw"
+        Case FIF_SGI
+            getExtensionFromFIF = "sgi"
         Case FIF_TARGA
             getExtensionFromFIF = "tga"
         Case FIF_TIFF
             getExtensionFromFIF = "tif"
         Case FIF_WBMP
             getExtensionFromFIF = "wbm"
-        Case FIF_PSD
-            getExtensionFromFIF = "psd"
-        Case FIF_CUT
-            getExtensionFromFIF = "cut"
+        Case FIF_WEBP
+            getExtensionFromFIF = "webp"
+        Case FIF_WMF
+            getExtensionFromFIF = "wmf"
         Case FIF_XBM
             getExtensionFromFIF = "xbm"
         Case FIF_XPM
             getExtensionFromFIF = "xpm"
-        Case FIF_DDS
-            getExtensionFromFIF = "dds"
-        Case FIF_GIF
-            getExtensionFromFIF = "gif"
-        Case FIF_HDR
-            getExtensionFromFIF = "hdr"
-        Case FIF_FAXG3
-            getExtensionFromFIF = "g3"
-        Case FIF_SGI
-            getExtensionFromFIF = "sgi"
-        Case FIF_EXR
-            getExtensionFromFIF = "exr"
-        Case FIF_J2K
-            getExtensionFromFIF = "j2k"
-        Case FIF_JP2
-            getExtensionFromFIF = "jp2"
-        Case FIF_PFM
-            getExtensionFromFIF = "pfm"
-        Case FIF_PICT
-            getExtensionFromFIF = "pct"
-        Case FIF_RAW
-            getExtensionFromFIF = "raw"
-        Case FIF_WEBP
-            getExtensionFromFIF = "webp"
-        Case FIF_JXR
-            getExtensionFromFIF = "jxr"
-        Case FIF_PDI
-            getExtensionFromFIF = "pdi"
+        
         Case Else
             getExtensionFromFIF = ""
     
