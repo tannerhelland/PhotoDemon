@@ -324,6 +324,7 @@ Private Declare Function GdipSetMetafileDownLevelRasterizationLimit Lib "gdiplus
 
 'Note: only supported in GDI+ v1.1!
 Private Declare Function GdipConvertToEmfPlus Lib "gdiplus" (ByVal refGraphics As Long, ByVal metafilePtr As Long, ByRef conversionSuccess As Long, ByVal typeOfEMF As EMFType, ByVal descriptionPointer As Long, ByRef out_metafile_ptr As Long) As Long
+Private Declare Function GdipConvertToEmfPlusToFile Lib "gdiplus" (ByVal refGraphics As Long, ByVal metafilePtr As Long, ByRef conversionSuccess As Long, ByVal filenamePointer As Long, ByVal typeOfEMF As EMFType, ByVal descriptionPointer As Long, ByRef out_metafile_ptr As Long) As Long
 
 'Retrieve properties from an image
 'Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, ByVal propSize As Long, ByRef mBuffer As PropertyItem) As Long
@@ -1174,18 +1175,34 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     GdipGetImageWidth hImage, imgWidth
     GdipGetImageHeight hImage, imgHeight
     
+    'Retrieve the image's horizontal and vertical resolution (if any)
+    Dim imgHResolution As Single, imgVResolution As Single
+    GdipGetImageHorizontalResolution hImage, imgHResolution
+    GdipGetImageVerticalResolution hImage, imgVResolution
+    dstDIB.setDPI imgHResolution, imgVResolution
+    
     'Metafile containers (EMF, WMF) require special handling.
     If isMetafile Then
         
-        'Metafiles may return huge dimensions.  In lieu of a better import screen (a la GIMP), restrict sizes arbitrarily if they exceed
-        ' a certain threshold.
-        'If (imgWidth > 3000) Or (imgHeight > 3000) Then
-        '    imgWidth = imgWidth \ 10
-        '    imgHeight = imgHeight \ 10
-        'End If
+        'In a perfect world, we might do something like GIMP, and display an import dialog for metafiles.  This would allow the user to
+        ' set an initial size for metafiles, taking advantage of their lossless rescalability before forcibly rasterizing them.
+        
+        'I don't want to implement this just yet, so instead, I'm simply aiming to report the same default size as MS Paint and Irfanview
+        ' (which are the only programs I have that reliably load WMF and EMF files).
+        
+        'EMF dimensions are already reported identical to those programs, but WMF files are not.  The following code will make WMF sizes
+        ' align with other software.
+        If (imgFormatFIF = FIF_WMF) Then
+        
+            'I assume 96 is used because it's the default DPI value in Windows.  I have not tested if different system DPI values affect
+            ' the way GDI+ reports metafile size.
+            imgWidth = imgWidth * CDbl(96 / imgHResolution)
+            imgHeight = imgHeight * CDbl(96 / imgVResolution)
+            
+        End If
         
         'If GDI+ v1.1 is available, we can translate EMFs and WMFs into the new GDI+ EMF+ format, which supports antialiasing
-        ' (among other things).
+        ' and alpha channels (among other things).
         If g_GDIPlusFXAvailable Then
             
             'Create a temporary GDI+ graphics object, whose properties will be used to control the render state of the EMF
@@ -1202,6 +1219,14 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 
                 'Attempt to convert the EMF to EMF+ format
                 Dim mfHandleDst As Long, convSuccess As Long
+                
+                'For reference: if we ever want to write our improved EMF+ data to file, we can use code like the following:
+                'Dim newEmfPlusFilename As String
+                'newEmfPlusFilename = srcFilename
+                'StripOffExtension newEmfPlusFilename
+                'newEmfPlusFilename = newEmfPlusFilename & " (EMFPlus).emf"
+                'If GdipConvertToEmfPlusToFile(tmpGraphics, hImage, convSuccess, StrPtr(newEmfPlusFilename), EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
+                
                 If GdipConvertToEmfPlus(tmpGraphics, hImage, convSuccess, EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
                 
                     'Conversion successful!  Replace our current image handle with the EMF+ copy
@@ -1221,13 +1246,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         End If
         
     End If
-    
-    'Retrieve the image's horizontal and vertical resolution (if any)
-    Dim imgHResolution As Single, imgVResolution As Single
-    GdipGetImageHorizontalResolution hImage, imgHResolution
-    GdipGetImageVerticalResolution hImage, imgVResolution
-    dstDIB.setDPI imgHResolution, imgVResolution
-    
+        
     'Retrieve the image's alpha channel data (if any)
     Dim hasAlpha As Boolean
     hasAlpha = False
