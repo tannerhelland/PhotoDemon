@@ -1689,6 +1689,10 @@ Public Sub fixChromeLayout()
     
         'Ignore redraws if the program is being closed; this improves program termination performance
         If (Not g_ProgramShuttingDown) Then
+        
+            'Hide scrollbars if they aren't already
+            setScrollVisibility PD_HORIZONTAL, False
+            setScrollVisibility PD_VERTICAL, False
     
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
