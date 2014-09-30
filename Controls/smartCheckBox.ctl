@@ -100,7 +100,7 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect A
 Private curFont As pdFont
 
 'Mouse input handler
-Private WithEvents cMouseEvents As pdInput
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Subclasser for handling window messages
@@ -315,7 +315,7 @@ Private Sub UserControl_Initialize()
     'When not in design mode, initialize a tracker for mouse events
     If g_UserModeFix Then
     
-        Set cMouseEvents = New pdInput
+        Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker Me.hWnd, True, True, , True
         cMouseEvents.setSystemCursor IDC_HAND
         
@@ -427,12 +427,12 @@ Private Sub updateControlSize()
     fontY = 1
     
     'Calculate a precise size for the requested caption.
-    Dim captionHeight As Long, txtsize As POINTAPI
+    Dim captionHeight As Long, txtSize As POINTAPI
     
     If Not m_BackBuffer Is Nothing Then
     
-        GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_Caption), Len(m_Caption), txtsize
-        captionHeight = txtsize.y
+        GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_Caption), Len(m_Caption), txtSize
+        captionHeight = txtSize.y
     
     'Failsafe if a Resize event is fired before we've initialized our back buffer DC
     Else

@@ -89,7 +89,7 @@ Private bufferDIB As pdDIB
 Private m_BufferWidth As Long, m_BufferHeight As Long
 
 'An outside class provides access to mousewheel events for scrolling the tabstrip view
-Private WithEvents cMouseEvents As pdInput
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'The currently selected and currently hovered thumbnail
@@ -451,7 +451,7 @@ Private Sub Form_Load()
     ReDim imgThumbnails(0 To numOfThumbnails) As thumbEntry
     
     'Enable mousewheel scrolling
-    Set cMouseEvents = New pdInput
+    Set cMouseEvents = New pdInputMouse
     cMouseEvents.addInputTracker Me.hWnd, True, , , True
     cMouseEvents.setSystemCursor IDC_HAND
     

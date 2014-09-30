@@ -1484,7 +1484,7 @@ Private m_ToolTip As clsToolTip
 Private tooltipBackup As Collection
 
 'An outside class provides access to specialized mouse events (like mousewheel and forward/back keys)
-Private WithEvents cMouseEvents As pdInput
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Keyboard accelerators are troublesome to handle because they interfere with PD's dynamic hooking solution for canvas hotkeys.  To work around this
@@ -2281,7 +2281,7 @@ Private Sub Form_Load()
     refreshAllCanvases
     
     'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
-    Set cMouseEvents = New pdInput
+    Set cMouseEvents = New pdInputMouse
     cMouseEvents.addInputTracker Me.hWnd
     
     
