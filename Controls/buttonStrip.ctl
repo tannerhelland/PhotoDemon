@@ -96,9 +96,11 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect A
 ' via a pdFont object.
 Private curFont As pdFont
 
-'Mouse input handler
-Private WithEvents cMouseEvents As pdInput
+'Mouse and keyboard input handlers
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
+Private WithEvents cKeyEvents As pdInputKeyboard
+Attribute cKeyEvents.VB_VarHelpID = -1
 
 'Subclasser for handling window messages
 Private cSubclass As cSelfSubHookCallback
@@ -195,9 +197,10 @@ Public Property Set Font(mNewFont As StdFont)
     
 End Property
 
-Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, markEventHandled As Boolean)
+'A few key events are also handled
+Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
 
-    If rightArrow Then
+    If (vkCode = VK_RIGHT) Then
         
         'See if a focus rect is already active
         If (m_FocusRectActive >= 0) Then
@@ -212,7 +215,7 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upAr
         'Redraw the button strip
         redrawBackBuffer
         
-    ElseIf leftArrow Then
+    ElseIf (vkCode = VK_LEFT) Then
     
         'See if a focus rect is already active
         If (m_FocusRectActive >= 0) Then
@@ -227,17 +230,11 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upAr
         'Redraw the button strip
         redrawBackBuffer
         
-    End If
-
-End Sub
-
-Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean, markEventHandled As Boolean)
-
     'If a focus rect is active, and space is pressed, activate the button with focus
-    If kSpaceBar Then
-        If m_FocusRectActive >= 0 Then
-            ListIndex = m_FocusRectActive
-        End If
+    ElseIf (vkCode = VK_SPACE) Then
+
+        If m_FocusRectActive >= 0 Then ListIndex = m_FocusRectActive
+        
     End If
 
 End Sub
@@ -475,12 +472,12 @@ Private Sub UserControl_Initialize()
     'When not in design mode, initialize a tracker for mouse events
     If g_UserModeFix Then
     
-        Set cMouseEvents = New pdInput
+        Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker Me.hWnd, True, True, , True
         cMouseEvents.setSystemCursor IDC_HAND
         
-        cMouseEvents.requestKeyTracking Me.hWnd
-        cMouseEvents.setKeyTrackers Me.hWnd, True, , True
+        Set cKeyEvents = New pdInputKeyboard
+        cKeyEvents.createKeyboardTracker Me.hWnd, VK_RIGHT, VK_LEFT, VK_SPACE
         
         Set cSubclass = New cSelfSubHookCallback
         cSubclass.ssc_Subclass Me.hWnd, , , Me

@@ -96,3 +96,28 @@ Public Const FIF_PDI As Long = 100
 Public Const FIF_WMF As Long = 110
 Public Const FIF_EMF As Long = 111
 
+'Virtual key constants
+Public Const VK_LEFT As Long = &H25
+Public Const VK_UP As Long = &H26
+Public Const VK_RIGHT As Long = &H27
+Public Const VK_DOWN As Long = &H28
+
+Public Const VK_NUMLOCK As Long = &H90
+Public Const VK_NUMPAD0 As Long = &H60
+Public Const VK_NUMPAD1 As Long = &H61
+Public Const VK_NUMPAD2 As Long = &H62
+Public Const VK_NUMPAD3 As Long = &H63
+Public Const VK_NUMPAD4 As Long = &H64
+Public Const VK_NUMPAD5 As Long = &H65
+Public Const VK_NUMPAD6 As Long = &H66
+Public Const VK_NUMPAD7 As Long = &H67
+Public Const VK_NUMPAD8 As Long = &H68
+Public Const VK_NUMPAD9 As Long = &H69
+
+Public Const VK_BACK As Long = &H8
+Public Const VK_TAB As Long = &H9
+Public Const VK_RETURN As Long = &HD
+Public Const VK_SPACE As Long = &H20
+Public Const VK_INSERT As Long = &H2D
+Public Const VK_DELETE As Long = &H2E
+Public Const VK_ESCAPE As Long = &H1B

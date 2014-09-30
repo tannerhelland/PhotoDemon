@@ -153,8 +153,10 @@ Dim numOfUndos As Long, curUndoIndex As Long
 Private Const BLOCKHEIGHT As Long = 53
 
 'An outside class provides access to mousewheel events for scrolling the filter view
-Private WithEvents cMouseEvents As pdInput
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
+Private WithEvents cKeyEvents As pdInputKeyboard
+Attribute cKeyEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -297,29 +299,17 @@ Private Function getStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional
 
 End Function
 
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-Private Sub CmdOK_Click()
-    
-    Me.Visible = False
-    Process "Undo history", , buildParams(curBlock + 1), UNDO_NOTHING
-    Unload Me
-    
-End Sub
-
-Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, ByRef markEventHandled As Boolean)
+Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
 
     'Up and down arrows navigate the list
-    If upArrow Or downArrow Then
+    If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Then
     
-        If upArrow Then
+        If (vkCode = VK_UP) Then
             curBlock = curBlock - 1
             If curBlock < 0 Then curBlock = numOfUndos - 1
         End If
         
-        If downArrow Then
+        If (vkCode = VK_DOWN) Then
             curBlock = curBlock + 1
             If curBlock >= numOfUndos Then curBlock = 0
         End If
@@ -334,6 +324,18 @@ Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upAr
         redrawUndoList
         
     End If
+
+End Sub
+
+Private Sub CmdCancel_Click()
+    Unload Me
+End Sub
+
+Private Sub CmdOK_Click()
+    
+    Me.Visible = False
+    Process "Undo history", , buildParams(curBlock + 1), UNDO_NOTHING
+    Unload Me
     
 End Sub
 
@@ -390,12 +392,14 @@ End Sub
 Private Sub Form_Load()
     
     'Enable mousewheel scrolling for the filter box
-    Set cMouseEvents = New pdInput
+    Set cMouseEvents = New pdInputMouse
     cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
     cMouseEvents.addInputTracker Me.hWnd
     cMouseEvents.setSystemCursor IDC_HAND
-    cMouseEvents.requestKeyTracking picBuffer.hWnd
-    cMouseEvents.setKeyTrackers picBuffer.hWnd, True
+    
+    'Enable some key events as well
+    Set cKeyEvents = New pdInputKeyboard
+    cKeyEvents.createKeyboardTracker picBuffer.hWnd, VK_UP, VK_DOWN
     
     'Create a background buffer the same size as the buffer picture box
     Set bufferDIB = New pdDIB

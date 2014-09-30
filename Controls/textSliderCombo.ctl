@@ -141,9 +141,11 @@ Private significantDigits As Long
 'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
 Private textBoxInitiated As Boolean
 
-'Mouse input handler
-Private WithEvents cMouseEvents As pdInput
+'Mouse and keyboard input handlers
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
+Private WithEvents cKeyEvents As pdInputKeyboard
+Attribute cKeyEvents.VB_VarHelpID = -1
 
 'When the mouse is down on the slider, these values will be updated accordingly
 Private m_MouseDown As Boolean
@@ -383,9 +385,18 @@ Public Property Set Font(mNewFont As StdFont)
 End Property
 
 'Arrow keys can be used to "nudge" the control value in single-unit increments.
-Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, ByRef markEventHandled As Boolean)
-    If upArrow Or rightArrow Then Value = Value + getIncrementAmount
-    If leftArrow Or downArrow Then Value = Value - getIncrementAmount
+Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+
+    'Up and right arrows are used to increment the slider value
+    If (vkCode = VK_UP) Or (vkCode = VK_RIGHT) Then
+        Value = Value + getIncrementAmount
+    End If
+    
+    'Left and down arrows decrement it
+    If (vkCode = VK_LEFT) Or (vkCode = VK_DOWN) Then
+        Value = Value - getIncrementAmount
+    End If
+
 End Sub
 
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -608,14 +619,16 @@ Private Sub UserControl_Initialize()
     'When compiled, manifest-themed controls need to be further subclassed so they can have transparent backgrounds.
     'If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.requestContainerSubclass UserControl.hWnd
     
-    'When not in design mode, initialize a tracker for mouse events
+    'When not in design mode, initialize a tracker for mouse and keyboard events
     If g_UserModeFix Then
-        Set cMouseEvents = New pdInput
+        
+        Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker picScroll.hWnd, True, True, , True
         cMouseEvents.setSystemCursor IDC_HAND
-        cMouseEvents.requestKeyTracking picScroll.hWnd
-        cMouseEvents.setKeyTrackers picScroll.hWnd, True
-    
+        
+        Set cKeyEvents = New pdInputKeyboard
+        cKeyEvents.createKeyboardTracker picScroll.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
+        
     'In design mode, initialize a base theming class, so our paint functions don't fail
     Else
         Set g_Themer = New pdVisualThemes

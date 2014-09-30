@@ -400,8 +400,10 @@ Private m_UserInteractedWithCanvas As Boolean
 Private curPointOfInterest As Long
 
 'PD's custom input class completely replaces all mouse interfacing for this control
-Private WithEvents cMouseEvents As pdInput
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
+Private WithEvents cKeyEvents As pdInputKeyboard
+Attribute cKeyEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -739,6 +741,174 @@ Public Function getZoomDropDownReference() As ComboBox
     Set getZoomDropDownReference = cmbZoom
 End Function
 
+'Key presses are handled by PhotoDemon's custom pdInputKeyboard class
+Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+
+    'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
+    If isCanvasInteractionAllowed() Then
+    
+        Dim hOffset As Long, vOffset As Long
+        Dim canvasUpdateRequired As Boolean
+
+        'Any further processing depends on which tool is currently active
+        Select Case g_CurrentTool
+        
+            'Drag-to-pan canvas
+            Case NAV_DRAG
+                
+                canvasUpdateRequired = False
+                
+                'Suspend automatic redraws until all arrow keys have been processed
+                m_suspendRedraws = True
+                
+                'If scrollbars are visible, nudge the canvas in the direction of the arrows.
+                If VScroll.Enabled Then
+                    If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Then canvasUpdateRequired = True
+                    If (vkCode = VK_UP) Then VScroll.Value = VScroll.Value - 1
+                    If (vkCode = VK_DOWN) Then VScroll.Value = VScroll.Value + 1
+                End If
+                
+                If HScroll.Enabled Then
+                    If (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then canvasUpdateRequired = True
+                    If (vkCode = VK_LEFT) Then HScroll.Value = HScroll.Value - 1
+                    If (vkCode = VK_RIGHT) Then HScroll.Value = HScroll.Value + 1
+                End If
+                
+                'Re-enable automatic redraws
+                m_suspendRedraws = False
+                
+                'Redraw the viewport if necessary
+                If canvasUpdateRequired Then ScrollViewport pdImages(g_CurrentImage), Me
+                    
+            'Move stuff around
+            Case NAV_MOVE
+            
+                'Handle arrow keys first
+                If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
+            
+                    'Calculate offset modifiers for the current layer
+                    If (vkCode = VK_UP) Then vOffset = vOffset - 1
+                    If (vkCode = VK_DOWN) Then vOffset = vOffset + 1
+                    If (vkCode = VK_LEFT) Then hOffset = hOffset - 1
+                    If (vkCode = VK_RIGHT) Then hOffset = hOffset + 1
+                    
+                    If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then canvasUpdateRequired = True
+                    
+                    'Apply the offsets
+                    With pdImages(g_CurrentImage).getActiveLayer
+                        .setLayerOffsetX .getLayerOffsetX + hOffset
+                        .setLayerOffsetY .getLayerOffsetY + vOffset
+                    End With
+                    
+                    'Redraw the viewport if necessary
+                    If canvasUpdateRequired Then ScrollViewport pdImages(g_CurrentImage), Me
+                    
+                'Handle non-arrow keys next
+                Else
+                
+                    'Delete key: delete the active layer (if allowed)
+                    If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+                        Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+                    End If
+                    
+                    'Insert: raise Add New Layer dialog
+                    If (vkCode = VK_INSERT) Then
+                        Process "Add new layer", True
+                    End If
+                
+                    'Tab and Shift+Tab: move through layer stack
+                    If (vkCode = VK_TAB) Then
+                        
+                        'Retrieve the active layer index
+                        Dim curLayerIndex As Long
+                        curLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
+                        
+                        'Advance the layer index according to the Shift modifier
+                        If (Shift And vbShiftMask) <> 0 Then
+                            curLayerIndex = curLayerIndex + 1
+                        Else
+                            curLayerIndex = curLayerIndex - 1
+                        End If
+                        
+                        If curLayerIndex < 0 Then curLayerIndex = pdImages(g_CurrentImage).getNumOfLayers - 1
+                        If curLayerIndex > pdImages(g_CurrentImage).getNumOfLayers - 1 Then curLayerIndex = 0
+                        
+                        'Activate the new layer
+                        pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
+                        
+                        'Redraw the viewport and interface to match
+                        RenderViewport pdImages(g_CurrentImage), Me
+                        syncInterfaceToCurrentImage
+                        
+                    End If
+                
+                    'Space bar: toggle active layer visibility
+                    If (vkCode = VK_SPACE) Then
+                        pdImages(g_CurrentImage).getActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility)
+                        ScrollViewport pdImages(g_CurrentImage), Me
+                        syncInterfaceToCurrentImage
+                    End If
+                
+                End If
+            
+            'Selections
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+            
+                'Handle arrow keys first
+                If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
+            
+                    'If a selection is active, nudge it using the arrow keys
+                    If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
+                    
+                        'Disable automatic refresh requests
+                        pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = True
+                        
+                        'Calculate offsets
+                        If (vkCode = VK_UP) Then vOffset = vOffset - 1
+                        If (vkCode = VK_DOWN) Then vOffset = vOffset + 1
+                        If (vkCode = VK_LEFT) Then hOffset = hOffset - 1
+                        If (vkCode = VK_RIGHT) Then hOffset = hOffset + 1
+                        
+                        'Update the selection coordinate text boxes with the new offsets
+                        toolbar_Tools.tudSel(0).Value = toolbar_Tools.tudSel(0).Value + hOffset
+                        toolbar_Tools.tudSel(1).Value = toolbar_Tools.tudSel(1).Value + vOffset
+                        
+                        If g_CurrentTool = SELECT_LINE Then
+                            toolbar_Tools.tudSel(2).Value = toolbar_Tools.tudSel(2).Value + hOffset
+                            toolbar_Tools.tudSel(3).Value = toolbar_Tools.tudSel(3).Value + vOffset
+                        End If
+                        
+                        'Update the screen
+                        pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
+                        
+                        If (hOffset <> 0) Or (vOffset <> 0) Then
+                            pdImages(g_CurrentImage).mainSelection.updateViaTextBox
+                            RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                        End If
+                    
+                    End If
+                
+                'Handle non-arrow keys next
+                Else
+                
+                    'Delete key: if a selection is active, erase the selected area
+                    If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).selectionActive Then
+                        Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
+                    End If
+                    
+                    'Escape key: if a selection is active, clear it
+                    If (vkCode = VK_ESCAPE) And pdImages(g_CurrentImage).selectionActive Then
+                        Process "Remove selection", , , UNDO_SELECTION
+                    End If
+                
+                End If
+            
+        End Select
+        
+    End If
+
+End Sub
+
 Private Sub cmbSizeUnit_Click()
     If g_OpenImageCount > 0 Then displayImageSize pdImages(g_CurrentImage)
 End Sub
@@ -813,187 +983,6 @@ Private Sub cMouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Sh
 
     End If
 
-End Sub
-
-'An arrow key (or arrow key equivalent on the number pad) has been pressed.  How we handle it differs according to the current tool.
-Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, ByRef markEventHandled As Boolean)
-    
-    'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
-    If isCanvasInteractionAllowed() Then
-    
-        Dim hOffset As Long, vOffset As Long
-        Dim canvasUpdateRequired As Boolean
-
-        'Any further processing depends on which tool is currently active
-        Select Case g_CurrentTool
-        
-            'Drag-to-pan canvas
-            Case NAV_DRAG
-                
-                canvasUpdateRequired = False
-                
-                'Suspend automatic redraws until all arrow keys have been processed
-                m_suspendRedraws = True
-                
-                'If scrollbars are visible, nudge the canvas in the direction of the arrows.
-                If VScroll.Enabled Then
-                    If upArrow Or downArrow Then canvasUpdateRequired = True
-                    If upArrow Then VScroll.Value = VScroll.Value - 1
-                    If downArrow Then VScroll.Value = VScroll.Value + 1
-                End If
-                
-                If HScroll.Enabled Then
-                    If leftArrow Or rightArrow Then canvasUpdateRequired = True
-                    If leftArrow Then HScroll.Value = HScroll.Value - 1
-                    If rightArrow Then HScroll.Value = HScroll.Value + 1
-                End If
-                
-                'Re-enable automatic redraws
-                m_suspendRedraws = False
-                
-                'Redraw the viewport if necessary
-                If canvasUpdateRequired Then ScrollViewport pdImages(g_CurrentImage), Me
-                    
-            'Move stuff around
-            Case NAV_MOVE
-            
-                'Calculate offset modifiers for the current layer
-                If upArrow Then vOffset = vOffset - 1
-                If downArrow Then vOffset = vOffset + 1
-                If leftArrow Then hOffset = hOffset - 1
-                If rightArrow Then hOffset = hOffset + 1
-                
-                If upArrow Or downArrow Or leftArrow Or rightArrow Then canvasUpdateRequired = True
-                
-                'Apply the offsets
-                With pdImages(g_CurrentImage).getActiveLayer
-                    .setLayerOffsetX .getLayerOffsetX + hOffset
-                    .setLayerOffsetY .getLayerOffsetY + vOffset
-                End With
-                
-                'Redraw the viewport if necessary
-                If canvasUpdateRequired Then ScrollViewport pdImages(g_CurrentImage), Me
-            
-            'Selections
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
-            
-                'If a selection is active, nudge it using the arrow keys
-                If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
-                
-                    'Disable automatic refresh requests
-                    pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = True
-                    
-                    'Calculate offsets
-                    If upArrow Then vOffset = vOffset - 1
-                    If downArrow Then vOffset = vOffset + 1
-                    If leftArrow Then hOffset = hOffset - 1
-                    If rightArrow Then hOffset = hOffset + 1
-                    
-                    'Update the selection coordinate text boxes with the new offsets
-                    toolbar_Tools.tudSel(0).Value = toolbar_Tools.tudSel(0).Value + hOffset
-                    toolbar_Tools.tudSel(1).Value = toolbar_Tools.tudSel(1).Value + vOffset
-                    
-                    If g_CurrentTool = SELECT_LINE Then
-                        toolbar_Tools.tudSel(2).Value = toolbar_Tools.tudSel(2).Value + hOffset
-                        toolbar_Tools.tudSel(3).Value = toolbar_Tools.tudSel(3).Value + vOffset
-                    End If
-                    
-                    'Update the screen
-                    pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
-                    
-                    If (hOffset <> 0) Or (vOffset <> 0) Then
-                        pdImages(g_CurrentImage).mainSelection.updateViaTextBox
-                        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-                    End If
-                
-                End If
-            
-        End Select
-        
-    End If
-    
-    
-
-End Sub
-
-'An edit key (http://en.wikipedia.org/wiki/Template:Keyboard_keys) has been pressed.  How we handle it differs according to the current tool.
-Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean, ByRef markEventHandled As Boolean)
-
-    'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
-    If isCanvasInteractionAllowed() Then
-        
-        'Any further processing depends on which tool is currently active
-        Select Case g_CurrentTool
-        
-            'Drag-to-pan canvas
-            Case NAV_DRAG
-                
-            'Move and resize layers
-            Case NAV_MOVE
-            
-                'Delete key: delete the active layer (if allowed)
-                If kDelete And pdImages(g_CurrentImage).getNumOfLayers > 1 Then
-                    Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
-                End If
-                
-                'Insert: raise Add New Layer dialog
-                If kInsert Then
-                    Process "Add new layer", True
-                End If
-                
-                'Tab and Shift+Tab: move through layer stack
-                If kTab Then
-                    
-                    'Retrieve the active layer index
-                    Dim curLayerIndex As Long
-                    curLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
-                    
-                    'Advance the layer index according to the Shift modifier
-                    If (Shift And vbShiftMask) <> 0 Then
-                        curLayerIndex = curLayerIndex + 1
-                    Else
-                        curLayerIndex = curLayerIndex - 1
-                    End If
-                    
-                    If curLayerIndex < 0 Then curLayerIndex = pdImages(g_CurrentImage).getNumOfLayers - 1
-                    If curLayerIndex > pdImages(g_CurrentImage).getNumOfLayers - 1 Then curLayerIndex = 0
-                    
-                    'Activate the new layer
-                    pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
-                    
-                    'Redraw the viewport and interface to match
-                    RenderViewport pdImages(g_CurrentImage), Me
-                    syncInterfaceToCurrentImage
-                    
-                End If
-                
-                'Space bar: toggle active layer visibility
-                If kSpaceBar Then
-                    pdImages(g_CurrentImage).getActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility)
-                    ScrollViewport pdImages(g_CurrentImage), Me
-                    syncInterfaceToCurrentImage
-                End If
-            
-            'Selections
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
-            
-                'Delete key: if a selection is active, erase the selected area
-                If kDelete And pdImages(g_CurrentImage).selectionActive Then
-                    Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
-                End If
-                
-                'Escape key: if a selection is active, clear it
-                If kEscape And pdImages(g_CurrentImage).selectionActive Then
-                    Process "Remove selection", , , UNDO_SELECTION
-                End If
-        
-        End Select
-        
-    End If
-
-    'The Enter key is not trapped by this control, so we need to make sure other hooks receive those keypresses
-    If kEnter Then markEventHandled = False
-    
 End Sub
 
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -1357,8 +1346,8 @@ Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConsta
     If Not isCanvasInteractionAllowed() Then Exit Sub
     
     'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed BUT a ctrl
-    ' button has not been pressed.  (TODO: shift the burden of mask detection to the pdInput class)
-    If picScrollH.Visible And Not (Shift And vbCtrlMask) Then
+    ' button has not been pressed.
+    If picScrollH.Visible Then
         
         If scrollAmount > 0 Then
         
@@ -1394,7 +1383,7 @@ Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConsta
 
 End Sub
 
-'Vertical mousewheel scrolling.  Note that Shift+Wheel and Ctrl+Wheel modifiers do NOT raise this event; pdInput automatically
+'Vertical mousewheel scrolling.  Note that Shift+Wheel and Ctrl+Wheel modifiers do NOT raise this event; pdInputMouse automatically
 ' reroutes them to MouseWheelHorizontal and MouseWheelZoom, respectively.
 Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
@@ -1447,7 +1436,7 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
     
 End Sub
 
-'The pdInput class now provides a dedicated zoom event for us - how nice!
+'The pdInputMouse class now provides a dedicated zoom event for us - how nice!
 Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
 
     'Make sure interactions with this canvas are allowed
@@ -1514,16 +1503,18 @@ Private Sub UserControl_Initialize()
     If g_UserModeFix Then
         
         'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
-        Set cMouseEvents = New pdInput
+        Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker picCanvas.hWnd, True, True, True, True
-        cMouseEvents.requestKeyTracking picCanvas.hWnd
-        cMouseEvents.setKeyTrackers picCanvas.hWnd, True, True, True
         
         'This user control contains a lot of child controls whose key events we want to intercept (as they aren't designed to have
         ' focus on their own).  Submit these controls to the tracker, so it knows to mass any key events into the UC's master
         ' key handler function.
-        cMouseEvents.addOverrideHwnds picStatusBar.hWnd, picScrollH.hWnd, picScrollV.hWnd, picProgressBar.hWnd, cmdZoomIn.hWnd, cmdZoomOut.hWnd, cmdZoomFit.hWnd, cmdImgSize.hWnd
+        'cMouseEvents.addOverrideHwnds picStatusBar.hWnd, picScrollH.hWnd, picScrollV.hWnd, picProgressBar.hWnd, cmdZoomIn.hWnd, cmdZoomOut.hWnd, cmdZoomFit.hWnd, cmdImgSize.hWnd
         
+        'Enable key tracking as well
+        Set cKeyEvents = New pdInputKeyboard
+        cKeyEvents.createKeyboardTracker picCanvas.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE
+                
         'Assign tooltips manually (so theming is supported)
         Set m_ToolTip = New clsToolTip
         m_ToolTip.Create Me

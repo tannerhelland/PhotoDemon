@@ -1493,7 +1493,7 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 ' it evaluates the accelerator like normal.
 Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Double
 
-'Horizontal mousewheel; note that the pdInput class automatically converts Shift+Wheel to horizontal wheel for us
+'Horizontal mousewheel; note that the pdInputMouse class automatically converts Shift+Wheel to horizontal wheel for us
 Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
     Dim newX As Long, newY As Long
@@ -1520,7 +1520,7 @@ Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConst
 
 End Sub
 
-'Vertical mousewheel; note that the pdInput class automatically converts Shift+Wheel and Ctrl+Wheel actions to dedicated events,
+'Vertical mousewheel; note that the pdInputMouse class automatically converts Shift+Wheel and Ctrl+Wheel actions to dedicated events,
 ' so this function will only return plain MouseWheel events (or Alt+MouseWheel, I suppose)
 Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 
@@ -1548,7 +1548,7 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
 
 End Sub
 
-'Ctrl+Wheel actions are detected by pdInput and sent to this dedicated class
+'Ctrl+Wheel actions are detected by pdInputMouse and sent to this dedicated class
 Private Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
 
     'The only child window that supports mousewheel zoom is the main canvas, so redirect any zoom events there.

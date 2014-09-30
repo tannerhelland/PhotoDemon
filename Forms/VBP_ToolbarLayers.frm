@@ -337,12 +337,18 @@ Private Const thumbBorder As Long = 3
 Dim m_ToolTip As clsToolTip
 
 'An outside class provides access to mousewheel events for scrolling the layer view
-Private WithEvents cMouseEvents As pdInput
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'A separate mouse handler helps with dynamically resizing the layer toolbox
-Private WithEvents cMouseEventsForm As pdInput
+Private WithEvents cMouseEventsForm As pdInputMouse
 Attribute cMouseEventsForm.VB_VarHelpID = -1
+
+'Key events are also tracked, but this will likely be reworked before the next release
+Private WithEvents cKeyEvents As pdInputKeyboard
+Attribute cKeyEvents.VB_VarHelpID = -1
+Private WithEvents cKeyEventsForm As pdInputKeyboard
+Attribute cKeyEventsForm.VB_VarHelpID = -1
 
 'Height of each layer content block.  Note that this is effectively a "magic number", in pixels, representing the
 ' height of each layer block in the layer selection UI.  This number will be dynamically resized per the current
@@ -479,7 +485,7 @@ Private Sub checkButtonEnablement()
     Else
     
         Dim i As Long
-        For i = cmdLayerAction.lBound To cmdLayerAction.UBound
+        For i = cmdLayerAction.lBound To cmdLayerAction.ubound
             cmdLayerAction(i).Enabled = False
         Next i
         
@@ -505,6 +511,104 @@ Private Sub cboBlendMode_Click()
     
     End If
 
+End Sub
+
+Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+
+    'Ignore user interaction while in drag/drop mode
+    If m_InOLEDragDropMode Then Exit Sub
+    
+    'Ignore key presses unless an image has been loaded
+    If Not pdImages(g_CurrentImage) Is Nothing Then
+    
+        'Up key activates the next layer upward
+        If (vkCode = VK_UP) And (pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1) Then
+            Layer_Handler.setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex + 1, True
+        End If
+        
+        'Down key activates the next layer downward
+        If (vkCode = VK_DOWN) And pdImages(g_CurrentImage).getActiveLayerIndex > 0 Then
+            Layer_Handler.setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex - 1, True
+        End If
+        
+        'Right key increases active layer opacity
+        If (vkCode = VK_RIGHT) And (pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility) Then
+            sltLayerOpacity.Value = sltLayerOpacity.Value + 10
+            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        End If
+        
+        'Left key decreases active layer opacity
+        If (vkCode = VK_LEFT) And (pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility) Then
+            sltLayerOpacity.Value = sltLayerOpacity.Value - 10
+            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        End If
+        
+        'Delete key: delete the active layer (if allowed)
+        If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+        End If
+        
+        'Insert: raise Add New Layer dialog
+        If (vkCode = VK_INSERT) Then
+            Process "Add new layer", True
+            
+            'Recapture focus
+            picLayers.SetFocus
+        End If
+        
+        'Tab and Shift+Tab: move through layer stack
+        If (vkCode = VK_TAB) Then
+            
+            'Retrieve the active layer index
+            Dim curLayerIndex As Long
+            curLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
+            
+            'Advance the layer index according to the Shift modifier
+            If (Shift And vbShiftMask) <> 0 Then
+                curLayerIndex = curLayerIndex + 1
+            Else
+                curLayerIndex = curLayerIndex - 1
+            End If
+            
+            'I'm currently working on letting the user tab through the layer list, then tab *out of the control* upon reaching
+            ' the last layer.  But this requires some changes to the pdCanvas control (it's complicated), so this doesn't work just yet.
+            If (curLayerIndex >= 0) And (curLayerIndex < pdImages(g_CurrentImage).getNumOfLayers) Then
+                
+                'Debug.Print "HANDLING KEY!"
+                
+                'Activate the new layer
+                pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
+                
+                'Redraw the viewport and interface to match
+                RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                syncInterfaceToCurrentImage
+                
+                'All that interface stuff may have messed up focus; retain it on the layer box
+                picLayers.SetFocus
+            
+            Else
+                
+                markEventHandled = False
+                'Debug.Print "event not handled!"
+                
+            End If
+            
+        End If
+        
+        'Space bar: toggle active layer visibility
+        If (vkCode = VK_SPACE) Then
+            pdImages(g_CurrentImage).getActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility)
+            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            syncInterfaceToCurrentImage
+        End If
+        
+    End If
+
+End Sub
+
+'Form key events are forwarded to the layer box handler
+Private Sub cKeyEventsForm_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    Call cKeyEvents_KeyDownCustom(Shift, vkCode, markEventHandled)
 End Sub
 
 'Layer action buttons - move layers up/down, delete layers, etc.
@@ -620,118 +724,6 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
         'Hide the text box if it isn't already
         txtLayerName.Visible = False
     
-    End If
-
-End Sub
-
-'Arrow keys have been pressed (or number pad arrow keys)
-Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, ByRef markEventHandled As Boolean)
-    
-    'Ignore user interaction while in drag/drop mode
-    If m_InOLEDragDropMode Then Exit Sub
-    
-    'Ignore arrow keys unless an image has been loaded
-    If Not pdImages(g_CurrentImage) Is Nothing Then
-    
-        'Up key activates the next layer upward
-        If upArrow And (pdImages(g_CurrentImage).getActiveLayerIndex < pdImages(g_CurrentImage).getNumOfLayers - 1) Then
-            Layer_Handler.setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex + 1, True
-        End If
-        
-        'Down key activates the next layer downward
-        If downArrow And pdImages(g_CurrentImage).getActiveLayerIndex > 0 Then
-            Layer_Handler.setActiveLayerByIndex pdImages(g_CurrentImage).getActiveLayerIndex - 1, True
-        End If
-        
-        'Right key increases active layer opacity
-        If rightArrow And (pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility) Then
-            sltLayerOpacity.Value = sltLayerOpacity.Value + 10
-            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-        End If
-        
-        'Left key decreases active layer opacity
-        If leftArrow And (pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility) Then
-            sltLayerOpacity.Value = sltLayerOpacity.Value - 10
-            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-        End If
-        
-    End If
-
-End Sub
-
-'An edit key (http://en.wikipedia.org/wiki/Template:Keyboard_keys) has been pressed.  Note that PD strives to provide the same hotkeys for
-' both this layer toolbox and the Move/Resize tool, so mirror any changes here to the pdCanvas user control as well!
-Private Sub cMouseEvents_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean, ByRef markEventHandled As Boolean)
-
-    'Ignore user interaction while in drag/drop mode
-    If m_InOLEDragDropMode Then Exit Sub
-    
-    'Ignore key presses unless an image has been loaded
-    If Not pdImages(g_CurrentImage) Is Nothing Then
-    
-        'Delete key: delete the active layer (if allowed)
-        If kDelete And pdImages(g_CurrentImage).getNumOfLayers > 1 Then
-            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
-        End If
-        
-        'Insert: raise Add New Layer dialog
-        If kInsert Then
-            Process "Add new layer", True
-            
-            'Recapture focus
-            picLayers.SetFocus
-        End If
-        
-        'Tab and Shift+Tab: move through layer stack
-        If kTab Then
-            
-            'Retrieve the active layer index
-            Dim curLayerIndex As Long
-            curLayerIndex = pdImages(g_CurrentImage).getActiveLayerIndex
-            
-            'Advance the layer index according to the Shift modifier
-            If (Shift And vbShiftMask) <> 0 Then
-                curLayerIndex = curLayerIndex + 1
-            Else
-                curLayerIndex = curLayerIndex - 1
-            End If
-            
-            'I'm currently working on letting the user tab through the layer list, then tab *out of the control* upon reaching
-            ' the last layer.  But this requires some changes to the pdCanvas control (it's complicated), so this doesn't work just yet.
-            If (curLayerIndex >= 0) And (curLayerIndex < pdImages(g_CurrentImage).getNumOfLayers) Then
-                
-                'Debug.Print "HANDLING KEY!"
-                
-                'Activate the new layer
-                pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
-                
-                'Redraw the viewport and interface to match
-                RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-                syncInterfaceToCurrentImage
-                
-                'All that interface stuff may have messed up focus; retain it on the layer box
-                picLayers.SetFocus
-            
-            Else
-                
-                markEventHandled = False
-                'Debug.Print "event not handled!"
-                
-            End If
-            
-        End If
-        
-        'Space bar: toggle active layer visibility
-        If kSpaceBar Then
-            pdImages(g_CurrentImage).getActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility)
-            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-            syncInterfaceToCurrentImage
-        End If
-    
-    End If
-    
-    If kEnter Then
-        'Debug.Print "layer noticed enter"
     End If
 
 End Sub
@@ -996,15 +988,6 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
 
 End Sub
 
-'Forward any key events from the form to the layer box handler
-Private Sub cMouseEventsForm_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, ByRef markEventHandled As Boolean)
-    Call cMouseEvents_KeyDownArrows(Shift, upArrow, rightArrow, downArrow, leftArrow, markEventHandled)
-End Sub
-
-Private Sub cMouseEventsForm_KeyDownEdits(ByVal Shift As ShiftConstants, ByVal kReturn As Boolean, ByVal kEnter As Boolean, ByVal kSpaceBar As Boolean, ByVal kBackspace As Boolean, ByVal kInsert As Boolean, ByVal kDelete As Boolean, ByVal kTab As Boolean, ByVal kEscape As Boolean, ByRef markEventHandled As Boolean)
-    Call cMouseEvents_KeyDownEdits(Shift, kReturn, kEnter, kSpaceBar, kBackspace, kInsert, kDelete, kTab, kEscape, markEventHandled)
-End Sub
-
 'Forward mousewheel events to the layer box handler
 Private Sub cMouseEventsForm_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     Call cMouseEvents_MouseWheelVertical(Button, Shift, x, y, scrollAmount)
@@ -1038,17 +1021,19 @@ Private Sub Form_Load()
     makeFormPretty Me
     
     'Enable custom input handling for the layer box
-    Set cMouseEvents = New pdInput
+    Set cMouseEvents = New pdInputMouse
     cMouseEvents.addInputTracker picLayers.hWnd, True, True, , True
-    cMouseEvents.requestKeyTracking picLayers.hWnd
-    cMouseEvents.setKeyTrackers picLayers.hWnd, True, True, True
     m_MouseOverLayerBox = False
     
-    'Enable simple mouse handling for the form as well
-    Set cMouseEventsForm = New pdInput
+    Set cKeyEvents = New pdInputKeyboard
+    cKeyEvents.createKeyboardTracker picLayers.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
+    
+    'Enable simple input handling for the form as well
+    Set cMouseEventsForm = New pdInputMouse
     cMouseEventsForm.addInputTracker Me.hWnd, True, , , True
-    cMouseEventsForm.requestKeyTracking Me.hWnd
-    cMouseEventsForm.setKeyTrackers Me.hWnd, True, True, True
+    
+    Set cKeyEventsForm = New pdInputKeyboard
+    cKeyEventsForm.createKeyboardTracker Me.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
         
     'To prevent the parent form's cursor handler from overriding that of the child, we must manually notify pdInput to
     ' ignore cursor handling in certain situations.
