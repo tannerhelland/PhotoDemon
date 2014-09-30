@@ -172,7 +172,7 @@ Private curImageState As Boolean
 'GetPixel is used to retrieve colors from the image
 Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
 
-'Mouse events are raised with the help of the pdInput class
+'Mouse events are raised with the help of the pdInputMouse class
 Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 

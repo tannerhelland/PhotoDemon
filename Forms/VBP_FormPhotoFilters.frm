@@ -209,8 +209,10 @@ Dim numOfFilters As Long
 Private Const BLOCKHEIGHT As Long = 53
 
 'An outside class provides access to mousewheel events for scrolling the filter view
-Private WithEvents cMouseEvents As pdInput
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
+Private WithEvents cKeyEvents As pdInputKeyboard
+Attribute cKeyEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
@@ -320,6 +322,46 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
 
 End Sub
 
+Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+
+    'Up and down arrows navigate the list
+    If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Then
+    
+        If (vkCode = VK_UP) Then
+            curFilter = curFilter - 1
+            If curFilter < 0 Then curFilter = numOfFilters - 1
+        End If
+        
+        If (vkCode = VK_DOWN) Then
+            curFilter = curFilter + 1
+            If curFilter >= numOfFilters Then curFilter = 0
+        End If
+        
+        'Calculate a new vertical scroll position so that the selected filter appears on-screen
+        Dim newScrollOffset As Long
+        newScrollOffset = curFilter * fixDPI(BLOCKHEIGHT)
+        If newScrollOffset > vsFilter.Max Then newScrollOffset = vsFilter.Max
+        vsFilter.Value = newScrollOffset
+        
+        'Redraw the custom filter list
+        redrawFilterList
+        
+    End If
+    
+    'Right and left arrows modify strength
+    If (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
+        
+        cmdBar.markPreviewStatus False
+        If (vkCode = VK_RIGHT) Then sltDensity.Value = sltDensity.Value + 10
+        If (vkCode = VK_LEFT) Then sltDensity.Value = sltDensity.Value - 10
+        cmdBar.markPreviewStatus True
+        
+    End If
+    
+    updatePreview
+
+End Sub
+
 Private Sub cmdBar_AddCustomPresetData()
     cmdBar.addPresetData "CurrentFilter", Str(curFilter)
 End Sub
@@ -357,46 +399,6 @@ Private Sub cmdBar_ResetClick()
     'Remove any active effect
     redrawFilterList
     
-End Sub
-
-Private Sub cMouseEvents_KeyDownArrows(ByVal Shift As ShiftConstants, ByVal upArrow As Boolean, ByVal rightArrow As Boolean, ByVal downArrow As Boolean, ByVal leftArrow As Boolean, ByRef markEventHandled As Boolean)
-
-    'Up and down arrows navigate the list
-    If upArrow Or downArrow Then
-    
-        If upArrow Then
-            curFilter = curFilter - 1
-            If curFilter < 0 Then curFilter = numOfFilters - 1
-        End If
-        
-        If downArrow Then
-            curFilter = curFilter + 1
-            If curFilter >= numOfFilters Then curFilter = 0
-        End If
-        
-        'Calculate a new vertical scroll position so that the selected filter appears on-screen
-        Dim newScrollOffset As Long
-        newScrollOffset = curFilter * fixDPI(BLOCKHEIGHT)
-        If newScrollOffset > vsFilter.Max Then newScrollOffset = vsFilter.Max
-        vsFilter.Value = newScrollOffset
-        
-        'Redraw the custom filter list
-        redrawFilterList
-        
-    End If
-    
-    'Right and left arrows modify strength
-    If leftArrow Or rightArrow Then
-        
-        cmdBar.markPreviewStatus False
-        If rightArrow Then sltDensity.Value = sltDensity.Value + 10
-        If leftArrow Then sltDensity.Value = sltDensity.Value - 10
-        cmdBar.markPreviewStatus True
-        
-    End If
-    
-    updatePreview
-
 End Sub
 
 'When the mouse leaves the filter box, remove any hovered entries and redraw
@@ -470,12 +472,14 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
 
     'Enable mousewheel scrolling for the filter box
-    Set cMouseEvents = New pdInput
+    Set cMouseEvents = New pdInputMouse
     cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
     cMouseEvents.addInputTracker Me.hWnd
     cMouseEvents.setSystemCursor IDC_HAND
-    cMouseEvents.requestKeyTracking picBuffer.hWnd
-    cMouseEvents.setKeyTrackers picBuffer.hWnd, True
+    
+    'Track a few keypresses to make list navigation easier
+    Set cKeyEvents = New pdInputKeyboard
+    cKeyEvents.createKeyboardTracker picBuffer.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
     
     'Create a background buffer the same size as the buffer picture box
     Set bufferDIB = New pdDIB
@@ -654,7 +658,7 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim r As Long, g As Long, B As Long
     Dim h As Double, s As Double, l As Double
     Dim originalLuminance As Double
     Dim tmpR As Long, tmpG As Long, tmpB As Long
@@ -675,27 +679,27 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
         'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        B = ImageData(QuickVal, y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
-        originalLuminance = (getLuminance(r, g, b) / 255)
+        originalLuminance = (getLuminance(r, g, B) / 255)
         
         'Blend the original and new RGB values using the specified strength
         r = BlendColors(r, tmpR, filterDensity)
         g = BlendColors(g, tmpG, filterDensity)
-        b = BlendColors(b, tmpB, filterDensity)
+        B = BlendColors(B, tmpB, filterDensity)
         
         'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
         ' value with the original
         If preserveLuminance Then
-            tRGBToHSL r, g, b, h, s, l
-            tHSLToRGB h, s, originalLuminance, r, g, b
+            tRGBToHSL r, g, B, h, s, l
+            tHSLToRGB h, s, originalLuminance, r, g, B
         End If
         
         'Assign the new values to each color channel
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(QuickVal, y) = B
         
     Next y
         If toPreview = False Then
