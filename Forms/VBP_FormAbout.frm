@@ -208,7 +208,7 @@ Private inHoverState As Boolean
 Private clickToVisitText As String
 
 'An outside class provides access to specialized mouse events (mouse enter/leave, in this case)
-Private WithEvents cMouseEvents As pdInput
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'When the mouse moves over something clickable, update the pointer and stop the timer
@@ -304,7 +304,7 @@ Private Sub Form_Load()
     clickToVisitText = "(" & g_Language.TranslateMessage("click to visit") & ") "
     
     'Enable mouse subclassing for the main buffer box, which allows us to track when the mouse leaves
-    Set cMouseEvents = New pdInput
+    Set cMouseEvents = New pdInputMouse
     cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
     cMouseEvents.setSystemCursor IDC_ARROW
 

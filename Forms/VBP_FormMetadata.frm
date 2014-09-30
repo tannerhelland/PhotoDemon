@@ -179,7 +179,7 @@ Private curTagCount() As Long
 Private Const BLOCKHEIGHT As Long = 64
 
 'An outside class provides access to mousewheel events for scrolling the filter view
-Private WithEvents cMouseEvents As pdInput
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
@@ -256,7 +256,7 @@ Private Sub Form_Load()
     'Note that this form will be interacting heavily with the current image's metadata container.
     
     'Enable mousewheel scrolling for the metadata box
-    Set cMouseEvents = New pdInput
+    Set cMouseEvents = New pdInputMouse
     cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
     cMouseEvents.addInputTracker Me.hWnd
     cMouseEvents.setSystemCursor IDC_ARROW

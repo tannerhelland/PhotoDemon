@@ -455,9 +455,9 @@ Private m_curChannel As Long
 Private m_LevelValues(0 To 3, 0 To 4) As Double
 
 'Two special input classes are required; one each for the input and output arrow boxes
-Private WithEvents cMouseEventsIn As pdInput
+Private WithEvents cMouseEventsIn As pdInputMouse
 Attribute cMouseEventsIn.VB_VarHelpID = -1
-Private WithEvents cMouseEventsOut As pdInput
+Private WithEvents cMouseEventsOut As pdInputMouse
 Attribute cMouseEventsOut.VB_VarHelpID = -1
 
 'If the user is using the mouse to slide nodes around, these values will be used to store the node's index
@@ -543,7 +543,7 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'Color values
-    Dim r As Long, g As Long, b As Long, l As Long
+    Dim r As Long, g As Long, B As Long, l As Long
     
     'Maximum and minimum values, which will be detected by our initial histogram run
     Dim rMax As Byte, gMax As Byte, bMax As Byte, lMax As Byte
@@ -571,12 +571,12 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     For y = initY To finalY
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        B = ImageData(QuickVal, y)
         rCount(r) = rCount(r) + 1
         gCount(g) = gCount(g) + 1
-        bCount(b) = bCount(b) + 1
+        bCount(B) = bCount(B) + 1
         
-        l = (213 * r + 715 * g + 72 * b) \ 1000
+        l = (213 * r + 715 * g + 72 * B) \ 1000
         lCount(l) = lCount(l) + 1
     Next y
     Next x
@@ -593,7 +593,7 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     Dim wbThreshold As Long
     wbThreshold = NumOfPixels * percentIgnore
     
-    r = 0: g = 0: b = 0: l = 0
+    r = 0: g = 0: B = 0: l = 0
     
     Dim rTally As Long, gTally As Long, bTally As Long, lTally As Long
     rTally = 0: gTally = 0: bTally = 0: lTally = 0
@@ -624,11 +624,11 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     foundYet = False
     
     Do
-        If bCount(b) + bTally < wbThreshold Then
-            b = b + 1
-            bTally = bTally + bCount(b)
+        If bCount(B) + bTally < wbThreshold Then
+            B = B + 1
+            bTally = bTally + bCount(B)
         Else
-            bMin = b
+            bMin = B
             foundYet = True
         End If
     Loop While foundYet = False
@@ -648,7 +648,7 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     'Now, find maximum values of red, green, blue, and luminance
     foundYet = False
     
-    r = 255: g = 255: b = 255: l = 255
+    r = 255: g = 255: B = 255: l = 255
     rTally = 0: gTally = 0: bTally = 0: lTally = 0
     
     Do
@@ -676,11 +676,11 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     foundYet = False
     
     Do
-        If bCount(b) + bTally < wbThreshold Then
-            b = b - 1
-            bTally = bTally + bCount(b)
+        If bCount(B) + bTally < wbThreshold Then
+            B = B - 1
+            bTally = bTally + bCount(B)
         Else
-            bMax = b
+            bMax = B
             foundYet = True
         End If
     Loop While foundYet = False
@@ -1081,21 +1081,21 @@ Private Sub csHighlight_ColorChanged()
         ' the updatePreview function attempting to set our color to match the new RGB values.)
         cmdBar.markPreviewStatus False
     
-        Dim r As Long, g As Long, b As Long, l As Long
+        Dim r As Long, g As Long, B As Long, l As Long
         r = ExtractR(csHighlight.Color)
         g = ExtractG(csHighlight.Color)
-        b = ExtractB(csHighlight.Color)
+        B = ExtractB(csHighlight.Color)
         
         'Set the internal shadow colors to match these RGB values
         If r < m_LevelValues(0, 0) + 2 Then r = m_LevelValues(0, 0) + 2
         If g < m_LevelValues(1, 0) + 2 Then g = m_LevelValues(1, 0) + 2
-        If b < m_LevelValues(2, 0) + 2 Then b = m_LevelValues(2, 0) + 2
+        If B < m_LevelValues(2, 0) + 2 Then B = m_LevelValues(2, 0) + 2
         
         m_LevelValues(0, 2) = r
         m_LevelValues(1, 2) = g
-        m_LevelValues(2, 2) = b
+        m_LevelValues(2, 2) = B
         
-        l = (r + g + b) \ 3
+        l = (r + g + B) \ 3
         If l < m_LevelValues(3, 0) + 2 Then l = m_LevelValues(3, 0) + 2
         m_LevelValues(3, 2) = l
         
@@ -1118,21 +1118,21 @@ Private Sub csShadow_ColorChanged()
     
         cmdBar.markPreviewStatus False
     
-        Dim r As Long, g As Long, b As Long, l As Long
+        Dim r As Long, g As Long, B As Long, l As Long
         r = ExtractR(csShadow.Color)
         g = ExtractG(csShadow.Color)
-        b = ExtractB(csShadow.Color)
+        B = ExtractB(csShadow.Color)
         
         'Set the internal shadow colors to match these RGB values
         If r > m_LevelValues(0, 2) - 2 Then r = m_LevelValues(0, 2) - 2
         If g > m_LevelValues(1, 2) - 2 Then g = m_LevelValues(1, 2) - 2
-        If b > m_LevelValues(2, 2) - 2 Then b = m_LevelValues(2, 2) - 2
+        If B > m_LevelValues(2, 2) - 2 Then B = m_LevelValues(2, 2) - 2
         
         m_LevelValues(0, 0) = r
         m_LevelValues(1, 0) = g
-        m_LevelValues(2, 0) = b
+        m_LevelValues(2, 0) = B
         
-        l = (r + g + b) \ 3
+        l = (r + g + B) \ 3
         If l > m_LevelValues(3, 2) - 2 Then l = m_LevelValues(3, 2) - 2
         m_LevelValues(3, 0) = l
         
@@ -1279,8 +1279,8 @@ Private Sub Form_Load()
     btsChannel.AssignImageToItem 3, "CHANNEL_RGB"
     
     'Prepare the custom input handlers
-    Set cMouseEventsIn = New pdInput
-    Set cMouseEventsOut = New pdInput
+    Set cMouseEventsIn = New pdInputMouse
+    Set cMouseEventsOut = New pdInputMouse
     cMouseEventsIn.addInputTracker picInputArrows.hWnd, True, True, , True
     cMouseEventsOut.addInputTracker picOutputArrows.hWnd, True, True, , True
     
@@ -1324,7 +1324,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
+    Dim r As Long, g As Long, B As Long
         
     'Look-up table for the midtone (gamma) leveled values
     Dim gValues(0 To 255) As Double
@@ -1437,12 +1437,12 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
         'Get the source pixel color values
         r = newLevels(0, ImageData(QuickVal + 2, y))
         g = newLevels(1, ImageData(QuickVal + 1, y))
-        b = newLevels(2, ImageData(QuickVal, y))
+        B = newLevels(2, ImageData(QuickVal, y))
         
         'Assign new values looking the lookup table
         ImageData(QuickVal + 2, y) = newLevels(3, r)
         ImageData(QuickVal + 1, y) = newLevels(3, g)
-        ImageData(QuickVal, y) = newLevels(3, b)
+        ImageData(QuickVal, y) = newLevels(3, B)
         
     Next y
         If Not toPreview Then
@@ -1520,33 +1520,33 @@ Private Sub updatePreview()
         picOutputArrows.Refresh
                 
         'Update the shadow color box to match the new level values
-        Dim r As Long, g As Long, b As Long, l As Long
+        Dim r As Long, g As Long, B As Long, l As Long
         r = m_LevelValues(0, 0)
         g = m_LevelValues(1, 0)
-        b = m_LevelValues(2, 0)
+        B = m_LevelValues(2, 0)
         
-        l = (r + g + b) \ 3
+        l = (r + g + B) \ 3
         l = m_LevelValues(3, 0) - l
         
         r = ByteMe(r + l)
         g = ByteMe(g + l)
-        b = ByteMe(b + l)
+        B = ByteMe(B + l)
         
-        csShadow.Color = RGB(r, g, b)
+        csShadow.Color = RGB(r, g, B)
         
         'Repeat the above steps for the highlight box
         r = m_LevelValues(0, 2)
         g = m_LevelValues(1, 2)
-        b = m_LevelValues(2, 2)
+        B = m_LevelValues(2, 2)
         
-        l = (r + g + b) \ 3
+        l = (r + g + B) \ 3
         l = m_LevelValues(3, 2) - l
         
         r = ByteMe(r + l)
         g = ByteMe(g + l)
-        b = ByteMe(b + l)
+        B = ByteMe(B + l)
         
-        csHighlight.Color = RGB(r, g, b)
+        csHighlight.Color = RGB(r, g, B)
         
         cmdBar.markPreviewStatus True
         

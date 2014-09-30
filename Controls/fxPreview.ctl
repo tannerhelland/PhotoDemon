@@ -173,7 +173,7 @@ Private curImageState As Boolean
 Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
 
 'Mouse events are raised with the help of the pdInput class
-Private WithEvents cMouseEvents As pdInput
+Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 
 'If the viewport is not set to "fit 100%", the user can click-drag around the image.  To do this successfully,
@@ -571,7 +571,7 @@ Private Sub UserControl_Initialize()
     If g_UserModeFix Then
         
         'Set up a mouse events handler.  (NOTE: this handler subclasses, which may cause instability in the IDE.)
-        Set cMouseEvents = New pdInput
+        Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker picPreview.hWnd, True, , , True
         cMouseEvents.setSystemCursor IDC_ARROW
         
