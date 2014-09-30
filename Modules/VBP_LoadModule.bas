@@ -883,14 +883,19 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                     ' to retrieve that info from GDI+, but I haven't bothered to look!)
                     If loadSuccessful Then
                     
-                        loadedByOtherMeans = True
-                        mustCountColors = True
-                        
-                        'Also, mirror the discovered resolution, if any, from the source DIB
-                        targetImage.setDPI targetDIB.getDPI, targetDIB.getDPI
+                        loadedByOtherMeans = False
                         
                         decoderUsed = PDIDE_GDIPLUS
                         
+                        'Mirror the determined file format from the DIB to the parent pdImage object
+                        targetImage.originalFileFormat = targetDIB.getOriginalFormat
+                        
+                        'Mirror the discovered resolution, if any, from the DIB
+                        targetImage.setDPI targetDIB.getDPI, targetDIB.getDPI
+                        
+                        'Mirror the original file's color depth
+                        targetImage.originalColorDepth = targetDIB.getOriginalColorDepth
+                                                
                     End If
                         
                 End If
@@ -1555,10 +1560,10 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
                 
             'If FreeImage fails for some reason, offload the image to GDI+ - UNLESS the image is a WMF or EMF, which can cause
             ' GDI+ to experience a silent fail, thus bringing down the entire program.
-            If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
+            If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
             
             'If both FreeImage and GDI+ failed, give the image one last try with VB's LoadPicture
-            If (Not loadSuccessful) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
+            If (Not loadSuccessful) And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
                     
     End Select
     

@@ -186,12 +186,24 @@ Private Const EncoderQuality          As String = "{1D5BE4B5-FA4A-452D-9CDD-5DB3
 'Private Const CodecIImageBytes        As String = "{025D1823-6C7D-447B-BBDB-A3CBC3DFA2FC}"
 
 'GDI+ recognizes a variety of pixel formats, but we are only concerned with the ones relevant to PhotoDemon:
-Private Const PixelFormat24bppRGB = &H21808
-Private Const PixelFormat32bppARGB = &H26200A
-Public Const PixelFormat32bppPARGB = &HE200B
 Private Const PixelFormatAlpha = &H40000
 Private Const PixelFormatPremultipliedAlpha = &H80000
 Private Const PixelFormat32bppCMYK = &H200F
+
+Private Const PixelFormat1bppIndexed = &H30101
+Private Const PixelFormat4bppIndexed = &H30402
+Private Const PixelFormat8bppIndexed = &H30803
+Private Const PixelFormat16bppGreyscale = &H101004
+Private Const PixelFormat16bppRGB555 = &H21005
+Private Const PixelFormat16bppRGB565 = &H21006
+Private Const PixelFormat16bppARGB1555 = &H61007
+Private Const PixelFormat24bppRGB = &H21808
+Private Const PixelFormat32bppRGB = &H22009
+Private Const PixelFormat32bppARGB = &H26200A
+Public Const PixelFormat32bppPARGB = &HE200B
+Private Const PixelFormat48bppRGB = &H10300C
+Private Const PixelFormat64bppARGB = &H34400D
+Private Const PixelFormat64bppPARGB = &H1C400E
 
 'Now that PD supports the loading of ICC profiles, we use this constant to retrieve it
 Private Const PropertyTagICCProfile As Long = &H8773&
@@ -1256,6 +1268,10 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     If (iPixelFormat And PixelFormatAlpha) <> 0 Then hasAlpha = True
     If (iPixelFormat And PixelFormatPremultipliedAlpha) <> 0 Then hasAlpha = True
     
+    'Make a note of the image's specific color depth, as relevant to PD
+    Dim imgColorDepth As Long
+    imgColorDepth = getColorDepthFromPixelFormat(iPixelFormat)
+    
     'Check for CMYK images
     Dim isCMYK As Boolean
     If (iPixelFormat = PixelFormat32bppCMYK) Then isCMYK = True
@@ -1369,10 +1385,39 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     End If
     
+    'Note some original file settings inside the DIB
+    dstDIB.setOriginalFormat imgFormatFIF
+    dstDIB.setOriginalColorDepth imgColorDepth
+    
     'Release any remaining GDI+ handles and exit
     GdipDisposeImage hImage
     GDIPlusLoadPicture = True
     
+End Function
+
+'Given a GDI+ pixel format value, return a numeric color depth (e.g. 24, 32, etc)
+Private Function getColorDepthFromPixelFormat(ByVal gdipPixelFormat As Long) As Long
+
+    If (gdipPixelFormat And PixelFormat1bppIndexed) <> 0 Then
+        getColorDepthFromPixelFormat = 1
+    ElseIf (gdipPixelFormat And PixelFormat4bppIndexed) <> 0 Then
+        getColorDepthFromPixelFormat = 4
+    ElseIf (gdipPixelFormat And PixelFormat8bppIndexed) <> 0 Then
+        getColorDepthFromPixelFormat = 8
+    ElseIf ((gdipPixelFormat And PixelFormat16bppGreyscale) <> 0) Or ((gdipPixelFormat And PixelFormat16bppRGB555) <> 0) Or ((gdipPixelFormat And PixelFormat16bppRGB565) <> 0) Or ((gdipPixelFormat And PixelFormat16bppARGB1555) <> 0) Then
+        getColorDepthFromPixelFormat = 16
+    ElseIf ((gdipPixelFormat And PixelFormat24bppRGB) <> 0) Or ((gdipPixelFormat And PixelFormat32bppRGB) <> 0) Then
+        getColorDepthFromPixelFormat = 24
+    ElseIf ((gdipPixelFormat And PixelFormat32bppARGB) <> 0) Or ((gdipPixelFormat And PixelFormat32bppPARGB) <> 0) Then
+        getColorDepthFromPixelFormat = 32
+    ElseIf ((gdipPixelFormat And PixelFormat48bppRGB) <> 0) Then
+        getColorDepthFromPixelFormat = 48
+    ElseIf ((gdipPixelFormat And PixelFormat64bppARGB) <> 0) Or ((gdipPixelFormat And PixelFormat64bppPARGB) <> 0) Then
+        getColorDepthFromPixelFormat = 64
+    Else
+        getColorDepthFromPixelFormat = 24
+    End If
+
 End Function
 
 'Save an image using GDI+.  Per the current save spec, ImageID must be specified.
