@@ -627,7 +627,7 @@ Private Sub UserControl_Initialize()
         cMouseEvents.setSystemCursor IDC_HAND
         
         Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker picScroll.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
+        cKeyEvents.createKeyboardTracker "Slider/Text UC", picScroll.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
         
     'In design mode, initialize a base theming class, so our paint functions don't fail
     Else

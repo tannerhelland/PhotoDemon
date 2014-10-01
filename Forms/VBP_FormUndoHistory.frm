@@ -399,7 +399,7 @@ Private Sub Form_Load()
     
     'Enable some key events as well
     Set cKeyEvents = New pdInputKeyboard
-    cKeyEvents.createKeyboardTracker picBuffer.hWnd, VK_UP, VK_DOWN
+    cKeyEvents.createKeyboardTracker "Undo History picBuffer", picBuffer.hWnd, VK_UP, VK_DOWN
     
     'Create a background buffer the same size as the buffer picture box
     Set bufferDIB = New pdDIB

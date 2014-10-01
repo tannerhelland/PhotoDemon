@@ -477,7 +477,7 @@ Private Sub UserControl_Initialize()
         cMouseEvents.setSystemCursor IDC_HAND
         
         Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker Me.hWnd, VK_RIGHT, VK_LEFT, VK_SPACE
+        cKeyEvents.createKeyboardTracker "Button Strip UC", Me.hWnd, VK_RIGHT, VK_LEFT, VK_SPACE
         
         Set cSubclass = New cSelfSubHookCallback
         cSubclass.ssc_Subclass Me.hWnd, , , Me

@@ -479,7 +479,7 @@ Private Sub Form_Load()
     
     'Track a few keypresses to make list navigation easier
     Set cKeyEvents = New pdInputKeyboard
-    cKeyEvents.createKeyboardTracker picBuffer.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
+    cKeyEvents.createKeyboardTracker "Photo Filters picBuffer", picBuffer.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
     
     'Create a background buffer the same size as the buffer picture box
     Set bufferDIB = New pdDIB
@@ -658,7 +658,7 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
     progBarCheck = findBestProgBarValue()
     
     'Color variables
-    Dim r As Long, g As Long, B As Long
+    Dim r As Long, g As Long, b As Long
     Dim h As Double, s As Double, l As Double
     Dim originalLuminance As Double
     Dim tmpR As Long, tmpG As Long, tmpB As Long
@@ -679,27 +679,27 @@ Public Sub ApplyPhotoFilter(ByVal filterColor As Long, ByVal filterDensity As Do
         'Get the source pixel color values
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
-        B = ImageData(QuickVal, y)
+        b = ImageData(QuickVal, y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
-        originalLuminance = (getLuminance(r, g, B) / 255)
+        originalLuminance = (getLuminance(r, g, b) / 255)
         
         'Blend the original and new RGB values using the specified strength
         r = BlendColors(r, tmpR, filterDensity)
         g = BlendColors(g, tmpG, filterDensity)
-        B = BlendColors(B, tmpB, filterDensity)
+        b = BlendColors(b, tmpB, filterDensity)
         
         'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
         ' value with the original
         If preserveLuminance Then
-            tRGBToHSL r, g, B, h, s, l
-            tHSLToRGB h, s, originalLuminance, r, g, B
+            tRGBToHSL r, g, b, h, s, l
+            tHSLToRGB h, s, originalLuminance, r, g, b
         End If
         
         'Assign the new values to each color channel
         ImageData(QuickVal + 2, y) = r
         ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = B
+        ImageData(QuickVal, y) = b
         
     Next y
         If toPreview = False Then

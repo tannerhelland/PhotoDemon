@@ -73,6 +73,10 @@ Private m_TrackedKeys() As Long, m_NumOfTrackedKeys As Long
 ' This value will be set to TRUE if the tracked object currently has focus.
 Private m_HasFocus As Boolean
 
+'Debugging keyboard hooks is a nightmare, so to make it easier, we track debug data on what controls have hooked the keyboard.
+' This is done via a non-optional Name parameter supplied in the initial hook request.
+Private m_HookedControlName As String
+
 Private Sub Class_Initialize()
     
     'Reset all input tracking variables
@@ -88,7 +92,9 @@ Private Sub Class_Initialize()
 End Sub
 
 'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
-Public Function createKeyboardTracker(ByVal targetHWnd As Long, ParamArray listOfKeys() As Variant) As Boolean
+Public Function createKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHWnd As Long, ParamArray listOfKeys() As Variant) As Boolean
+    
+    m_HookedControlName = nameOfTarget
     
     If targetHWnd <> 0 Then
         
@@ -98,7 +104,7 @@ Public Function createKeyboardTracker(ByVal targetHWnd As Long, ParamArray listO
         'Attach the subclasser to this hWnd
         If Not cSubclass.ssc_Subclass(targetHWnd, , 1, Me) Then
             
-            Debug.Print "WARNING: keyboard subclasser failed to subclass hWnd #" & targetHWnd & ".  Fix it!"
+            Debug.Print "WARNING: keyboard subclasser failed to subclass " & m_HookedControlName & ".  Fix it!"
             createKeyboardTracker = False
             Exit Function
         
@@ -148,7 +154,7 @@ Public Function createKeyboardTracker(ByVal targetHWnd As Long, ParamArray listO
             Next i
         
         Else
-            Debug.Print "WARNING: a function just requested keyboard tracking, but didn't supply any keycodes.  Fix it!"
+            Debug.Print "WARNING: keyboard tracking requested for " & m_HookedControlName & ", but no keycodes suplied.  Fix it!"
             createKeyboardTracker = False
             Exit Function
         End If
@@ -211,7 +217,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
     
     If lHookType = WH_KEYBOARD Then
     
-        bHandled = True
+        bHandled = False
         
         'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
         Dim retShiftConstants As ShiftConstants
@@ -227,6 +233,8 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             
                 'This is a key we are supposed to be tracking.  Check its state by using isVirtualKeyDown.
                 If isVirtualKeyDown(wParam) Then
+                
+                    bHandled = True
                 
                     'This key is being pressed.  Raise the associated event.
                     RaiseEvent KeyDownCustom(retShiftConstants, wParam, bHandled)
@@ -308,14 +316,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     If m_HasFocus Then
                         
                         'A hook was found.  Uninstall it now.
-                        Debug.Print "Uninstalling keyboard hook for hWnd #" & m_targetHwnd & " due to WM_ACTIVATE"
+                        Debug.Print "Uninstalling keyboard hook for " & m_HookedControlName & " due to WM_ACTIVATE"
                         cSubclass.shk_UnHook WH_KEYBOARD
                         
                         'Note that this window is now inactive
                         m_HasFocus = False
                         
                     Else
-                        Debug.Print "hWnd # " & m_targetHwnd & " just lost focus, but no keyboard hook was ever installed??"
+                        Debug.Print m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
                     End If
                         
                 'This hWnd is being activated.  Install a hook now.
@@ -325,14 +333,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     If Not m_HasFocus Then
                         
                         'No hook exists.  Hook the keyboard for this window.
-                        Debug.Print "Installing keyboard hook for hWnd #" & m_targetHwnd & " due to WM_ACTIVATE"
+                        Debug.Print "Installing keyboard hook for " & m_HookedControlName & " due to WM_ACTIVATE"
                         cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_targetHwnd, 2, Me
                         
                         'Note that this window is now active
                         m_HasFocus = True
                         
                     Else
-                        Debug.Print "hWnd # " & m_targetHwnd & " just gained focus, but a keyboard hook is already installed??"
+                        Debug.Print m_HookedControlName & " just gained focus, but a keyboard hook is already installed??"
                     End If
                     
                 End If
@@ -344,14 +352,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 If Not m_HasFocus Then
                 
                     'No hook exists.  Hook the control now.
-                    Debug.Print "Installing keyboard hook for hWnd #" & m_targetHwnd & " due to WM_SETFOCUS"
+                    Debug.Print "Installing keyboard hook for " & m_HookedControlName & " due to WM_SETFOCUS"
                     cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_targetHwnd, 2, Me
                     
                     'Note that this window is now active
                     m_HasFocus = True
                     
                 Else
-                    Debug.Print "hWnd # " & m_targetHwnd & " just gained focus, but a keyboard hook is already installed??"
+                    Debug.Print m_HookedControlName & " just gained focus, but a keyboard hook is already installed??"
                 End If
                 
             Case WM_KILLFOCUS
@@ -360,14 +368,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 If m_HasFocus Then
                     
                     'A hook exists.  Uninstall it now.
-                    Debug.Print "Uninstalling keyboard hook for hWnd #" & m_targetHwnd & " due to WM_KILLFOCUS"
+                    Debug.Print "Uninstalling keyboard hook for " & m_HookedControlName & " due to WM_KILLFOCUS"
                     cSubclass.shk_UnHook WH_KEYBOARD
                         
                     'Note that this window is now considered inactive
                     m_HasFocus = False
                     
                 Else
-                    Debug.Print "hWnd # " & m_targetHwnd & " just lost focus, but no keyboard hook was ever installed??"
+                    Debug.Print m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
                 End If
                 
         End Select

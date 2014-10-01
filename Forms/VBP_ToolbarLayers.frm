@@ -485,7 +485,7 @@ Private Sub checkButtonEnablement()
     Else
     
         Dim i As Long
-        For i = cmdLayerAction.lBound To cmdLayerAction.ubound
+        For i = cmdLayerAction.lBound To cmdLayerAction.UBound
             cmdLayerAction(i).Enabled = False
         Next i
         
@@ -1026,14 +1026,14 @@ Private Sub Form_Load()
     m_MouseOverLayerBox = False
     
     Set cKeyEvents = New pdInputKeyboard
-    cKeyEvents.createKeyboardTracker picLayers.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
+    cKeyEvents.createKeyboardTracker "Layers Toolbar - picLayers", picLayers.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
     
     'Enable simple input handling for the form as well
     Set cMouseEventsForm = New pdInputMouse
     cMouseEventsForm.addInputTracker Me.hWnd, True, , , True
     
     Set cKeyEventsForm = New pdInputKeyboard
-    cKeyEventsForm.createKeyboardTracker Me.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
+    cKeyEventsForm.createKeyboardTracker "Layers Toolbar (form)", Me.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
         
     'To prevent the parent form's cursor handler from overriding that of the child, we must manually notify pdInput to
     ' ignore cursor handling in certain situations.
