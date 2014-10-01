@@ -69,54 +69,23 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     
     'Disable AutoScroll, because that messes with our calculations
     g_AllowViewportRendering = False
-    
-    'Note that all window dimension and position information comes from PD's window manager.  Because we modify window borders on-the-fly,
-    ' VB's internal measurements are not accurate, so we must rely on the window manager's measurements.
-    
-    'In order to properly calculate auto-zoom, we need to know the largest possible area we have to work with. Ask the window manager
-    ' for that value now (which is calculated based on the main form's area, minus toolbar sizes if docked).
-    Dim maxWidth As Long, maxHeight As Long
-    maxWidth = g_WindowManager.requestActualMainFormClientWidth
-    maxHeight = g_WindowManager.requestActualMainFormClientHeight
-    
-    'Remove any additional per-window chrome from the available space (rulers, status bar, etc)
-    maxHeight = maxHeight - pdImages(g_CurrentImage).imgViewport.getVerticalOffset
         
-    'Use this to track the zoom value required to fit the image on-screen; we will start at 100%, then move downward until we find an ideal zoom.
-    Dim zVal As Long
-    zVal = g_Zoom.getZoom100Index
+    'If the "fit all" zoom value is greater than 100%, use 100%.  Otherwise, use the "fit all" value as-is.
+    Dim newZoomIndex As Long
+    newZoomIndex = g_Zoom.getZoomFitAllIndex
     
-    Dim i As Long
+    If g_Zoom.getZoomValue(newZoomIndex) > 1 Then newZoomIndex = g_Zoom.getZoom100Index
     
-    'First, let's check to see if we need to adjust zoom because the width is too big
-    If pdImages(g_CurrentImage).Width > maxWidth Then
+    'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
+    ' the user switches between loaded images).
+    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = newZoomIndex
+    pdImages(g_CurrentImage).currentZoomValue = newZoomIndex
+    
+    'Re-enable scrolling
+    g_AllowViewportRendering = True
         
-        'The image is larger than the maximum available area.  Loop backwards through all possible zoom values until we find one that fits.
-        For i = g_Zoom.getZoom100Index To g_Zoom.getZoomCount Step 1
-        
-            If (pdImages(g_CurrentImage).Width * g_Zoom.getZoomValue(i)) < maxWidth Then
-                zVal = i
-                Exit For
-            End If
-        Next i
-        
-    End If
-    
-    'Repeat the above step, but for height.  Note that we start our "find best zoom" search from whatever zoom the horizontal search found.
-    If (pdImages(g_CurrentImage).Height * g_Zoom.getZoomValue(zVal)) > maxHeight Then
-    
-        For i = zVal To g_Zoom.getZoomCount Step 1
-            If (pdImages(g_CurrentImage).Height * g_Zoom.getZoomValue(i)) < maxHeight Then
-                zVal = i
-                Exit For
-            End If
-        Next i
-        
-    End If
-    
-    'Change the zoom combo box to reflect the new zoom value
-    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = zVal
-    pdImages(g_CurrentImage).currentZoomValue = zVal
+    'Now fix scrollbars and everything
+    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitOnScreen"
     
     'Re-enable scrolling
     g_AllowViewportRendering = True
@@ -134,42 +103,9 @@ Public Sub FitOnScreen()
     'Disable AutoScroll, because that messes with our calculations
     g_AllowViewportRendering = False
     
-    'Note that all window dimension and position information comes from PD's window manager.  Because we modify window borders on-the-fly,
-    ' VB's internal measurements are not accurate, so we must rely on the window manager's measurements.
-    
-    'In order to properly calculate auto-zoom, we need to know the largest possible area we have to work with. Ask the window manager
-    ' for that value now (which is calculated based on the main form's area, minus toolbar sizes if docked).
-    Dim maxWidth As Long, maxHeight As Long
-    maxWidth = g_WindowManager.requestActualMainFormClientWidth
-    maxHeight = g_WindowManager.requestActualMainFormClientHeight
-    
-    'Remove any additional per-window chrome from the available space (rulers, status bar, etc)
-    maxHeight = maxHeight - pdImages(g_CurrentImage).imgViewport.getVerticalOffset
-        
-    'Use this to track zoom
-    Dim zVal As Long
-    zVal = 0
-    
-    Dim i As Long
-    
-    'Run a loop backwards through the possible zoom values, until we find one that fits the current image
-    For i = 0 To g_Zoom.getZoomCount Step 1
-        If (pdImages(g_CurrentImage).Width * g_Zoom.getZoomValue(i)) < maxWidth Then
-            zVal = i
-            Exit For
-        End If
-    Next i
-    
-    'Now do the same thing for the height, starting at whatever zoom value we previously found
-    For i = zVal To g_Zoom.getZoomCount Step 1
-        If (pdImages(g_CurrentImage).Height * g_Zoom.getZoomValue(i)) < maxHeight Then
-            zVal = i
-            Exit For
-        End If
-    Next i
-    
-    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = zVal
-    pdImages(g_CurrentImage).currentZoomValue = zVal
+    'Set zoom to the "fit whole" index
+    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoomFitAllIndex
+    pdImages(g_CurrentImage).currentZoomValue = g_Zoom.getZoomFitAllIndex
     
     'Re-enable scrolling
     g_AllowViewportRendering = True

@@ -2032,12 +2032,12 @@ Private Sub tmrAccelerators_Timer()
         
         'Zoom in
         If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_In" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex > 0 Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex - 1
+            Call MnuZoomIn_Click
         End If
         
         'Zoom out
         If ctlAccelerator.Key(m_AcceleratorIndex) = "Zoom_Out" Then
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex < (FormMain.mainCanvas(0).getZoomDropDownReference().ListCount - 1) Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex + 1
+            Call MnuZoomOut_Click
         End If
         
         'Actual size
@@ -4119,12 +4119,17 @@ Private Sub MnuWindowTabstrip_Click(Index As Integer)
 
 End Sub
 
+'Zoom in/out rely on the g_Zoom object to calculate a new value
 Private Sub MnuZoomIn_Click()
-    If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex > 0 Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex - 1
+    If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex > 0 Then
+        FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
+    End If
 End Sub
 
 Private Sub MnuZoomOut_Click()
-    If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex < (FormMain.mainCanvas(0).getZoomDropDownReference().ListCount - 1) Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex + 1
+    If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex <> g_Zoom.getZoomCount Then
+        FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
+    End If
 End Sub
 
 'Because we want tooltips preserved, outside functions should use THIS sub to request FormMain rethemes
