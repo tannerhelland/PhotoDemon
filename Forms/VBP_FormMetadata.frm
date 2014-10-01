@@ -467,6 +467,10 @@ Private Sub lstMetadata_MouseMove(Button As Integer, Shift As Integer, x As Sing
     mouseOverMetadataCategoryBox = True
 End Sub
 
+Private Sub picBuffer_Click()
+    picBuffer.SetFocus
+End Sub
+
 'When the scrollbar is moved, redraw the metadata list
 Private Sub vsMetadata_Change()
     redrawMetadataList

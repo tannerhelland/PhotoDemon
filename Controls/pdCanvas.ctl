@@ -1513,7 +1513,7 @@ Private Sub UserControl_Initialize()
         
         'Enable key tracking as well
         Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker picCanvas.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE
+        cKeyEvents.createKeyboardTracker "pdCanvas", picCanvas.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE
                 
         'Assign tooltips manually (so theming is supported)
         Set m_ToolTip = New clsToolTip

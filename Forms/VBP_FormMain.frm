@@ -18,6 +18,7 @@ Begin VB.Form FormMain
       Strikethrough   =   0   'False
    EndProperty
    Icon            =   "VBP_FormMain.frx":0000
+   KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
    ScaleHeight     =   757
