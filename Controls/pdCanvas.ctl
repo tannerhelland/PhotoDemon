@@ -333,8 +333,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 14/July/14
-'Last update: fix active layer reset when mouse leaves canvas area, and interactions have occurred
+'Last updated: 01/October/14
+'Last update: fix mousewheel zoom to work with new "fit image" zoom options
 '
 'In years past, PhotoDemon would use a separate canvas (a full VB Form) for each loaded image.  In 2013, as part of the massive
 ' window manager rewrite, I rewrote the program to only have a single canvas active at any time.  The canvas was rebuilt as a user
@@ -347,8 +347,8 @@ Attribute VB_Exposed = False
 ' viewports can support different images simultaneously.  So I have postponed this work until some later date, with the caveat
 ' that implementing it will be a lot of work, and likely have unexpected interactions throughout the program.
 '
-'This canvas relies on pdInput for all mouse interactions.  See the pdInput class for details on why we do our own mouse management
-' instead of using VB's intrinsic mouse functions.
+'This canvas relies on pdInputMouse for all mouse interactions.  See the pdInputMouse class for details on why we do our own mouse
+' management instead of using VB's intrinsic mouse functions.
 '
 'As much as possible, I've tried to keep paint tool operation within this canvas to a minimum.  Generally speaking, the only tool
 ' interactions the canvas should handle is reporting mouse events to external functions that actually handle paint tool processing
@@ -1451,12 +1451,16 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
     
     'Calculate a new zoom value
     If zoomAmount > 0 Then
-            
-        If cmbZoom.ListIndex > 0 Then cmbZoom.ListIndex = cmbZoom.ListIndex - 1
+        
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex > 0 Then
+            FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
+        End If
            
     ElseIf zoomAmount < 0 Then
         
-        If cmbZoom.ListIndex < (cmbZoom.ListCount - 1) Then cmbZoom.ListIndex = cmbZoom.ListIndex + 1
+        If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled And FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex <> g_Zoom.getZoomCount Then
+            FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
+        End If
            
     End If
     
