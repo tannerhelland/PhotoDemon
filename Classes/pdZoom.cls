@@ -11,6 +11,20 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'***************************************************************************
+'PhotoDemon Zoom Handler - calculates and tracks zoom values for a given image
+'Copyright ©2001-2014 by Tanner Helland
+'Created: 4/15/01
+'Last updated: 01/October/14
+'Last update: add support for "fit width", "fit height", and "fit all" zoom values, which are calculated dynamically.
+'
+'The main user of this class is the Viewport_Handler module.  Look there for relevant implementation details.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
+'***************************************************************************
+
 Option Explicit
 
 'Array index of the zoom array entry that corresponds to 100% zoom.  Calculated manually and treated as a constant.
@@ -27,23 +41,124 @@ Private zoomValues() As Double
 Private zoomOffsetFactors() As Double
 
 'Upper bound of primary zoom array (e.g. number of unique zoom values - 1)
-Private zoomCount As Long
+Private zoomCountFixed As Long
+
+'Number of dynamic zoom entries, currently 3 - fit width, fit height, and fit all
+Private zoomCountDynamic As Long
 
 'This set of functions are simply wrappers that external code can use to access individual zoom entries
 Public Function getZoomValue(ByVal zoomIndex As Long) As Double
-    getZoomValue = zoomValues(zoomIndex)
+    
+    'If the zoom value is a fixed entry, our work is easy - simply return the fixed zoom value at that index
+    If zoomIndex <= zoomCountFixed Then
+        getZoomValue = zoomValues(zoomIndex)
+        
+    'If the zoom value is a dynamic entry, we need to calculate a specific zoom value at run-time
+    Else
+    
+        'Make sure a valid image is loaded and ready
+        If (g_OpenImageCount > 0) And Not (pdImages(g_CurrentImage) Is Nothing) Then
+        
+            'Retrieve the current image's width and height
+            Dim imgWidth As Double, imgHeight As Double
+            imgWidth = pdImages(g_CurrentImage).Width
+            imgHeight = pdImages(g_CurrentImage).Height
+            
+            'Retrieve the current viewport's width and height
+            Dim viewportWidth As Double, viewportHeight As Double
+            viewportWidth = FormMain.mainCanvas(0).getCanvasWidth
+            viewportHeight = FormMain.mainCanvas(0).getCanvasHeight - pdImages(g_CurrentImage).imgViewport.getVerticalOffset
+            
+            'Calculate a width and height ratio in advance
+            Dim horizontalRatio As Double, verticalRatio As Double
+            horizontalRatio = viewportWidth / imgWidth
+            verticalRatio = viewportHeight / imgHeight
+            
+            Select Case zoomIndex
+            
+                'Fit width
+                Case zoomCountFixed + 1
+                
+                    'Check to see if the calculated zoom value will require a vertical scroll bar (since we are only fitting width).
+                    ' If it will, we must subtract the scroll bar's width from our calculation.
+                    If imgHeight * horizontalRatio > viewportHeight Then
+                        getZoomValue = (viewportWidth - FormMain.mainCanvas(0).getScrollWidth(PD_VERTICAL)) / imgWidth
+                    Else
+                        getZoomValue = horizontalRatio
+                    End If
+                    
+                'Fit height
+                Case zoomCountFixed + 2
+                
+                    'Check to see if the calculated zoom value will require a horizontal scroll bar (since we are only fitting height).
+                    ' If it will, we must subtract the scroll bar's height from our calculation.
+                    If imgWidth * verticalRatio > viewportWidth Then
+                        getZoomValue = (viewportHeight - FormMain.mainCanvas(0).getScrollHeight(PD_HORIZONTAL)) / imgHeight
+                    Else
+                        getZoomValue = verticalRatio
+                    End If
+                    
+                'Fit everything
+                Case zoomCountFixed + 3
+                    If horizontalRatio < verticalRatio Then
+                        getZoomValue = horizontalRatio
+                    Else
+                        getZoomValue = verticalRatio
+                    End If
+            
+            End Select
+            
+        Else
+            getZoomValue = 1
+        End If
+        
+    
+    End If
+    
 End Function
 
 Public Function getZoomOffsetFactor(ByVal zoomIndex As Long) As Double
-    getZoomOffsetFactor = zoomOffsetFactors(zoomIndex)
+    
+    'If the zoom value is a fixed entry, our work is easy - simply return the fixed zoom offset at that index
+    If zoomIndex <= zoomCountFixed Then
+        getZoomOffsetFactor = zoomOffsetFactors(zoomIndex)
+    
+    'If the zoom value is a dynamic entry, we need to calculate a specific zoom offset at run-time
+    Else
+    
+        Dim curZoomValue As Double
+        curZoomValue = getZoomValue(zoomIndex)
+        
+        If curZoomValue >= 1 Then
+            getZoomOffsetFactor = curZoomValue
+        Else
+            getZoomOffsetFactor = 1 / curZoomValue
+        End If
+    
+    End If
+    
 End Function
 
+'To minimize the possibility of program-wide changes if I ever decide to fiddle with PD's fixed zoom values, these functions are used
+' externally to retrieve specific zoom indices.
 Public Function getZoom100Index() As Long
     getZoom100Index = ZOOM_100_PERCENT
 End Function
 
+Public Function getZoomFitWidthIndex() As Long
+    getZoomFitWidthIndex = zoomCountFixed + 1
+End Function
+
+Public Function getZoomFitHeightIndex() As Long
+    getZoomFitHeightIndex = zoomCountFixed + 2
+End Function
+
+Public Function getZoomFitAllIndex() As Long
+    getZoomFitAllIndex = zoomCountFixed + 3
+End Function
+
 Public Function getZoomCount() As Long
-    getZoomCount = zoomCount
+    getZoomCount = zoomCountFixed
 End Function
 
 'Whenever one of these classes is created, remember to call this initialization function.  It will manually prepare a
@@ -53,12 +168,18 @@ Public Sub initializeViewportEngine()
     'This list of zoom values is (effectively) arbitrary.  I've based this list off similar lists (Paint.NET, GIMP)
     ' while including a few extra values for convenience's sake
     
-    'Total number of available zoom values
-    zoomCount = 25
+    'Total number of fixed zoom values.  Some legacy PD functions (like the old Fit to Screen code) require this so
+    ' they can iterate all fixed zoom values, and find an appropriate one for their purpose.
+    zoomCountFixed = 25
     
-    ReDim zoomStrings(0 To zoomCount) As String
-    ReDim zoomValues(0 To zoomCount) As Double
-    ReDim zoomOffsetFactors(0 To zoomCount) As Double
+    'Total number of dynamic zoom values, e.g. values dynamically calculated on a per-image basis.  At present these include:
+    ' fit width, fit height, and fit all
+    zoomCountDynamic = 3
+    
+    'Prepare our zoom array.
+    ReDim zoomStrings(0 To zoomCountFixed + zoomCountDynamic) As String
+    ReDim zoomValues(0 To zoomCountFixed + zoomCountDynamic) As Double
+    ReDim zoomOffsetFactors(0 To zoomCountFixed + zoomCountDynamic) As Double
     
     'Manually create a list of user-friendly zoom values
     zoomStrings(0) = "3200%"
@@ -165,6 +286,18 @@ Public Sub initializeViewportEngine()
         zoomValues(25) = 0.01
         zoomOffsetFactors(25) = 100
     
+    zoomStrings(26) = g_Language.TranslateMessage("Fit width")
+        zoomValues(26) = 0
+        zoomOffsetFactors(26) = 0
+    
+    zoomStrings(27) = g_Language.TranslateMessage("Fit height")
+        zoomValues(27) = 0
+        zoomOffsetFactors(27) = 0
+        
+    zoomStrings(28) = g_Language.TranslateMessage("Fit image")
+        zoomValues(28) = 0
+        zoomOffsetFactors(28) = 0
+    
     'Note which index corresponds to 100%
     ZOOM_100_PERCENT = 11
     
@@ -177,7 +310,7 @@ Public Sub populateZoomComboBox(ByRef dstComboBox As ComboBox, Optional ByVal in
     
     Dim i As Long
     
-    For i = 0 To zoomCount
+    For i = 0 To zoomCountFixed + zoomCountDynamic
         dstComboBox.AddItem zoomStrings(i), i
     Next i
     
@@ -188,3 +321,63 @@ Public Sub populateZoomComboBox(ByRef dstComboBox As ComboBox, Optional ByVal in
     End If
 
 End Sub
+
+'Given a current zoom index, find the nearest relevant "zoom in" index.  This requires special handling in the case of "fit image on screen".
+Public Function getNearestZoomInIndex(ByVal curIndex As Long) As Long
+
+    'This function is split into two cases.  If the current zoom index is a fixed value (e.g. "100%"), finding
+    ' the nearest zoom-in index is easy.
+    If curIndex <= zoomCountFixed Then
+        
+        getNearestZoomInIndex = curIndex - 1
+        If getNearestZoomInIndex < 0 Then getNearestZoomInIndex = 0
+    
+    'If the current zoom index is one of the "fit" options, this is more complicated.  We want to set the first fixed index we
+    ' find that is larger than the current dynamic value being used.
+    Else
+    
+        Dim curZoomValue As Double
+        curZoomValue = getZoomValue(curIndex)
+        
+        'Start searching the zoom array for the nearest value that is larger than the current zoom value.
+        Dim i As Long
+        For i = zoomCountFixed To 0 Step -1
+            If zoomValues(i) > curZoomValue Then
+                getNearestZoomInIndex = i
+                Exit For
+            End If
+        Next i
+    
+    End If
+
+End Function
+
+'Given a current zoom index, find the nearest relevant "zoom out" index.  This requires special handling in the case of "fit image on screen".
+Public Function getNearestZoomOutIndex(ByVal curIndex As Long) As Long
+
+    'This function is split into two cases.  If the current zoom index is a fixed value (e.g. "100%"), finding
+    ' the nearest zoom-out index is easy.
+    If curIndex <= zoomCountFixed Then
+        
+        getNearestZoomOutIndex = curIndex + 1
+        If getNearestZoomOutIndex > zoomCountFixed Then getNearestZoomOutIndex = zoomCountFixed
+    
+    'If the current zoom index is one of the "fit" options, this is more complicated.  We want to set the first fixed index we
+    ' find that is smaller than the current dynamic value being used.
+    Else
+    
+        Dim curZoomValue As Double
+        curZoomValue = getZoomValue(curIndex)
+        
+        'Start searching the zoom array for the nearest value that is larger than the current zoom value.
+        Dim i As Long
+        For i = 0 To zoomCountFixed
+            If zoomValues(i) < curZoomValue Then
+                getNearestZoomOutIndex = i
+                Exit For
+            End If
+        Next i
+    
+    End If
+
+End Function

@@ -103,7 +103,7 @@ Begin VB.UserControl pdCanvas
          CausesValidation=   0   'False
          Height          =   315
          ItemData        =   "pdCanvas.ctx":0000
-         Left            =   3480
+         Left            =   3630
          List            =   "pdCanvas.ctx":0002
          Style           =   2  'Dropdown List
          TabIndex        =   11
@@ -112,7 +112,7 @@ Begin VB.UserControl pdCanvas
       End
       Begin PhotoDemon.jcbutton cmdZoomIn 
          Height          =   345
-         Left            =   1830
+         Left            =   1980
          TabIndex        =   9
          Top             =   0
          Width           =   390
@@ -147,7 +147,7 @@ Begin VB.UserControl pdCanvas
          Style           =   2  'Dropdown List
          TabIndex        =   8
          Top             =   15
-         Width           =   960
+         Width           =   1110
       End
       Begin PhotoDemon.jcbutton cmdZoomOut 
          Height          =   345
@@ -207,7 +207,7 @@ Begin VB.UserControl pdCanvas
       End
       Begin PhotoDemon.jcbutton cmdImgSize 
          Height          =   345
-         Left            =   2640
+         Left            =   2790
          TabIndex        =   13
          Top             =   0
          Width           =   390
@@ -236,8 +236,8 @@ Begin VB.UserControl pdCanvas
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
          Index           =   0
-         X1              =   174
-         X2              =   174
+         X1              =   184
+         X2              =   184
          Y1              =   1
          Y2              =   22
       End
@@ -258,7 +258,7 @@ Begin VB.UserControl pdCanvas
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   210
-         Left            =   3120
+         Left            =   3270
          TabIndex        =   4
          Top             =   60
          Width           =   345
@@ -266,8 +266,8 @@ Begin VB.UserControl pdCanvas
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
          Index           =   1
-         X1              =   304
-         X2              =   304
+         X1              =   314
+         X2              =   314
          Y1              =   1
          Y2              =   22
       End
@@ -287,7 +287,7 @@ Begin VB.UserControl pdCanvas
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   210
-         Left            =   4950
+         Left            =   5100
          TabIndex        =   3
          Top             =   60
          Width           =   525
@@ -295,8 +295,8 @@ Begin VB.UserControl pdCanvas
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
          Index           =   2
-         X1              =   392
-         X2              =   392
+         X1              =   402
+         X2              =   402
          Y1              =   1
          Y2              =   22
       End
@@ -928,7 +928,7 @@ Private Sub CmbZoom_Click()
             If Not cmdZoomIn.Enabled Then cmdZoomIn.Enabled = True
         End If
         
-        If cmbZoom.ListIndex = cmbZoom.ListCount - 1 Then
+        If cmbZoom.ListIndex = g_Zoom.getZoomCount Then
             cmdZoomOut.Enabled = False
         Else
             If Not cmdZoomOut.Enabled Then cmdZoomOut.Enabled = True
@@ -951,11 +951,11 @@ Private Sub cmdZoomFit_Click()
 End Sub
 
 Private Sub cmdZoomIn_Click()
-    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex - 1
+    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomInIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
 End Sub
 
 Private Sub cmdZoomOut_Click()
-    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex + 1
+    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getNearestZoomOutIndex(FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex)
 End Sub
 
 'At present, the only App Commands the canvas will handle are forward/back, which link to Undo/Redo

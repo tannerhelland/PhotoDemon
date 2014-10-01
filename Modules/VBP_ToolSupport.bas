@@ -75,7 +75,7 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
         hOffset = (initX - curX)
         
         'When zoomed-in, sub-pixel scrolling is not allowed.  Compensate for that now
-        If srcImage.currentZoomValue < g_Zoom.getZoom100Index Then
+        If g_Zoom.getZoomValue(srcImage.currentZoomValue) > 1 Then
             hOffset = hOffset / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)
         End If
         
@@ -101,7 +101,7 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
         vOffset = (initY - curY)
         
         'When zoomed-in, sub-pixel scrolling is not allowed.  Compensate for that now
-        If srcImage.currentZoomValue < g_Zoom.getZoom100Index Then
+        If g_Zoom.getZoomValue(srcImage.currentZoomValue) > 1 Then
             vOffset = vOffset / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)
         End If
         
