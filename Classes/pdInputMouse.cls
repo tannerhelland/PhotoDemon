@@ -16,7 +16,8 @@ Attribute VB_Exposed = False
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
 'Last updated: 02/October/14
-'Last update: implement high-resolution mouse tracking via GetMouseMovePointsEx
+'Last update: implement high-resolution mouse tracking via GetMouseMovePointsEx and enable by default.  Also, implement
+'              auto-dropping of messages that are delayed beyond a certain threshold (100 ms by default).
 '
 'As I get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
 ' become clear.  Until now, a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel)
@@ -261,6 +262,27 @@ Private m_HighResModeActive As Boolean
 Private m_PrevPointStored As Boolean
 Private m_LastPointTracked As MOUSEMOVEPOINT
 
+'Because PD sometimes performs energy-intensive actions within mouse events, it is possible for raised messages to become
+' increasingly delayed, especially if high-resolution tracking is active.  In an attempt to mitigate this, this class supports
+' auto-dropping of messages delayed beyond a certain threshold.  NOTE: this behavior only affects MouseMove events.  All other
+' mouse events will be fired regardless of delay.
+Private m_DelayTrackingActive As Boolean
+Private m_DelayThreshold As Long
+Private Const DEFAULT_DELAY_THRESHOLD_MS = 100
+
+'Use this function enable/disable automatic dropping of severely delayed events
+Public Sub setAutoDropOfDelayedEvents(ByVal newMode As Boolean)
+    m_DelayTrackingActive = newMode
+End Sub
+
+'Use this function to set the threshold, in milliseconds, after which a message is considered unacceptably delayed.
+' NOTE: system timer resolution limits this value to roughly [10, 16] ms, so setting a threshold below that point may cause
+'       nearly all events to be dropped.  Try to limit the requested value to > 100 ms for best results.
+Public Sub setAutoDropDelayThreshold(ByVal newThreshold As Long)
+    m_DelayThreshold = newThreshold
+    If m_DelayThreshold < 16 Then m_DelayThreshold = 16
+End Sub
+
 'Use this function to enable/disable high-resolution tracking
 Public Sub setHighResolutionTrackingMode(ByVal newMode As Boolean)
     m_HighResModeActive = newMode
@@ -284,6 +306,13 @@ Private Sub Class_Initialize()
     
     'Reset the cursor handle for this instance
     m_CursorHandle = 0
+    
+    'Auto-dropping of severely delayed events is activated by default
+    m_DelayTrackingActive = True
+    m_DelayThreshold = DEFAULT_DELAY_THRESHOLD_MS
+    
+    'Debugging high-resolution mode is made easier by enabling it automatically.
+    m_HighResModeActive = True
     
 End Sub
 
@@ -586,7 +615,7 @@ End Function
 
 'If high-resolution tracking is active, the subclasser will call this function when it receives a WM_MOUSEMOVE message.  This function will
 ' then use GetMouseMovePointsEx to reconstruct any missing mouse movement history.
-Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal msgTimeStamp As Long, ByVal srcHwnd As Long)
+Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal msgTimestamp As Long, ByVal srcHwnd As Long)
 
     'First, note that the passed points are in *window* coordinates.  We need to convert them to *screen* coordinates.
     Dim tmpPoint As POINTAPI
@@ -607,7 +636,7 @@ Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
         With m_LastPointTracked
             .x = x And &HFFFF&
             .y = y And &HFFFF&
-            .ptTime = msgTimeStamp
+            .ptTime = msgTimestamp
         End With
         
         RaiseEvent MouseMoveCustom(Button, Shift, x, y)
@@ -640,7 +669,7 @@ Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
     With curMouseMovePoint
         .x = x And &HFFFF&
         .y = y And &HFFFF&
-        .ptTime = msgTimeStamp
+        .ptTime = msgTimestamp
     End With
     
     'Prepare a buffer to receive the mouse movement history.  The max number of retrievable events is 64.
@@ -692,9 +721,19 @@ Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
             tmpPoint.y = mouseHistory(i).y
             ScreenToClient m_TrackingData(0, 0), tmpPoint
             
-            'Raise this point
-            Debug.Print tmpPoint.x & "," & tmpPoint.y
-            RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
+            'If automatic message dropping is active, make sure this message falls within the acceptable threshold
+            ' before firing it.
+            If m_DelayTrackingActive Then
+            
+                If (getMessageDelay(mouseHistory(i).ptTime) <= m_DelayThreshold) Then
+                    RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
+                Else
+                    Debug.Print "message dropped: " & getMessageDelay(mouseHistory(i).ptTime)
+                End If
+            
+            Else
+                RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
+            End If
         
         Next i
         
@@ -705,18 +744,35 @@ Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
         tmpPoint.x = x
         tmpPoint.y = y
         ScreenToClient m_TrackingData(0, 0), tmpPoint
-        RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
-    
+        
+        'If automatic message dropping is active, make sure this message falls within the acceptable threshold
+        ' before firing it.
+        If m_DelayTrackingActive Then
+        
+            If (getMessageDelay(msgTimestamp) <= m_DelayThreshold) Then
+                RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
+            End If
+        
+        Else
+            RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
+        End If
+        
     End If
     
     'Update the "previous point" tracker with the current point, then exit
     With m_LastPointTracked
         .x = x And &HFFFF&
         .y = y And &HFFFF&
-        .ptTime = msgTimeStamp
+        .ptTime = msgTimestamp
     End With
     
 End Sub
+
+'Given a message time (as retrieved by GetMessageTime(), typically), report the delay in milliseconds between the posted time and the current time.
+Private Function getMessageDelay(ByVal srcMessageTime As Long) As Long
+    getMessageDelay = GetTickCount() - srcMessageTime
+End Function
+
 
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
@@ -747,14 +803,18 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     Dim i As Long
     Dim overrideRequired As Boolean
     
-    'Before processing anything, do a failsafe check to make sure the hWnd we've been passed is one we're
-    ' actually responsible for.
+    'Before processing anything, retrieve this message's timestamp
+    Dim msgTimestamp As Long
+    msgTimestamp = GetMessageTime()
+    
+    'Next, do a failsafe check to make sure the hWnd we've been passed is one we're actually responsible for.
+    ' (This should always be TRUE, but better safe than sorry.)
     Dim indexOfHwnd As Long
     indexOfHwnd = getIndexFromHwnd(lng_hWnd)
     
     'If the hWnd was found in our tracking array, start processing the window message.
     If (indexOfHwnd >= 0) Then
-    
+        
         'As VB already does with its own mouse events, it is helpful to supply key modifiers directly in the event
         ' params.  Unfortunately, the window messages that report key states will only report SHIFT and CTRL masks,
         ' not ALT.  (This is by design, as most windows use the Alt key to forcibly switch focus to the menu, which
@@ -841,9 +901,22 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         ' we need to reconstruct any missing mouse events and raise them all in turn.  Otherwise, we can
                         ' simply return this event.
                         If m_HighResModeActive Then
-                            reconstructMouseMoveHistory retMouseButton, retShiftConstants, mouseX, mouseY, GetMessageTime(), lng_hWnd
+                            reconstructMouseMoveHistory retMouseButton, retShiftConstants, mouseX, mouseY, msgTimestamp, lng_hWnd
                         Else
-                            RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                        
+                            'If automatic message dropping is active, make sure this message falls within the acceptable threshold
+                            ' before firing it.
+                            If m_DelayTrackingActive Then
+                            
+                                If (getMessageDelay(msgTimestamp) <= m_DelayThreshold) Then
+                                    RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                                End If
+                                
+                            Else
+                                RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                            End If
+                            
+                            
                         End If
                         
                         'Random fact!  If bHandled is set to TRUE, tooltips will not appear for the window in question.
@@ -1009,9 +1082,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         'NOTE! This will raise more MouseLeave events than we want in the case of a UC with multiple
                         '       tracked controls; I'll investigate a better solution if/when it proves necessary.
                         If indexOfHwnd = 0 Then RaiseEvent MouseLeave(retMouseButton, retShiftConstants, mouseX, mouseY)
-                        
-                        'Reset our previous point value, which is no longer valid since the mouse has left the container
-                        m_PrevPointStored = False
                         
                         'If cursor handling is enabled for this hWnd, reset the cursor to its original value whenever
                         ' the mouse has left the control.  This will prevent us from mistakenly assigning our custom
