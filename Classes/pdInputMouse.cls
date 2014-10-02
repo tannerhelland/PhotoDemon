@@ -15,10 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Mouse Input Handler (mouse, pen, etc) class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
-'Last updated: 30/September/14
-'Last update: separate mouse and keyboard handling into two separate classes.  The reasons for this are many and
-'              complicated, but my dream of a unified pdInput class have been dashed by some of the harsh realities
-'              of intermixing subclassing, hooking, and VB6.
+'Last updated: 02/October/14
+'Last update: implement high-resolution mouse tracking via GetMouseMovePointsEx
 '
 'As I get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
 ' become clear.  Until now, a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel)
@@ -58,7 +56,8 @@ Attribute VB_Exposed = False
 '   now, but may not be forever).
 '
 '- As a bonus, this class can also (optionally) handle WM_APP_COMMAND messages.  This is useful for handling some buttons that
-'   may appear on a mouse, such as back/forward, instead of using X-button messages.
+'   may appear on a mouse, such as back/forward, instead of using X-button messages (which may not be accurate, if the user has
+'   remapped functionality in a non-standard way).
 '
 'Also, let me give a big thank you to Steve McMahon for translating the GET_APPCOMMAND_LPARAM, GET_DEVICE_LPARAM, and
 ' GET_KEYSTATE_LPARAM macros into VB; this class uses these events to respond to actions like "back"/"forward", regardless
@@ -171,6 +170,32 @@ Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal 
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
 Private Const GCL_HCURSOR = (-12)
 
+'Reconstruct a full mouse movement history
+Private Type MOUSEMOVEPOINT
+    x As Long
+    y As Long
+    ptTime As Long
+    dwExtraInfo As Long
+End Type
+
+Private Enum mouseResolution
+    GMMP_USE_DISPLAY_POINTS = 1
+    GMMP_USE_HIGH_RESOLUTION_POINTS = 2
+End Enum
+
+#If False Then
+    Const GMMP_USE_DISPLAY_POINTS = 1, GMMP_USE_HIGH_RESOLUTION_POINTS = 2
+#End If
+
+Private Declare Function GetMouseMovePointsEx Lib "user32" (ByVal sizeOfMouseMoveStruct As Long, ByRef currentMouseMovePoint As MOUSEMOVEPOINT, ByVal ptrToMouseMovePointArray As Long, ByVal numOfPointsToRetrieve As Long, ByVal resolutionFlag As mouseResolution) As Long
+Private Declare Function GetMessageTime Lib "user32" () As Long
+
+'Weird legacy desktop issues require us to transform points passed to/from GetMouseMovePointsEx, relative to the current monitor system
+Private Const SM_XVIRTUALSCREEN = 76
+Private Const SM_YVIRTUALSCREEN = 77
+Private Const SM_CXVIRTUALSCREEN = 78
+Private Const SM_CYVIRTUALSCREEN = 79
+
 'API helper functions for converting between screen and client coordinate spaces
 Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
@@ -225,6 +250,21 @@ Private m_MouseMoveCount As Long
 ' cursor setting will always override the child.  In this rare instance, this override value will be set to TRUE to notify the class
 ' that WM_SETCURSOR can be ignored for the parent object.  (Note that this behavior must be manually set via setCursorOverrideState.)
 Private m_OverrideSetCursorMessages As Boolean
+
+'While we can't track mouse events any faster than the WM_MOUSEMOVE messages we receive, we can reconstruct missed mouse events by
+' using GetMouseMovePointsEx.  To activate this feature, pass TRUE to the setHighResolutionTrackingMode sub, which will in turn
+' activate this boolean.  If active, the subclasser will reconstruct any missing mouse events history, and raise each missed event
+' in turn.
+Private m_HighResModeActive As Boolean
+
+'To reconstruct missing mouse movement points, we must track the last returned mouse point.  Otherwise, we risk repeating points.
+Private m_PrevPointStored As Boolean
+Private m_LastPointTracked As MOUSEMOVEPOINT
+
+'Use this function to enable/disable high-resolution tracking
+Public Sub setHighResolutionTrackingMode(ByVal newMode As Boolean)
+    m_HighResModeActive = newMode
+End Sub
 
 Public Sub setCursorOverrideState(ByVal newOverride As Boolean)
     m_OverrideSetCursorMessages = newOverride
@@ -544,6 +584,140 @@ Private Function getLoWord(ByVal lParam As Long) As Integer
     End If
 End Function
 
+'If high-resolution tracking is active, the subclasser will call this function when it receives a WM_MOUSEMOVE message.  This function will
+' then use GetMouseMovePointsEx to reconstruct any missing mouse movement history.
+Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal msgTimeStamp As Long, ByVal srcHwnd As Long)
+
+    'First, note that the passed points are in *window* coordinates.  We need to convert them to *screen* coordinates.
+    Dim tmpPoint As POINTAPI
+    tmpPoint.x = x
+    tmpPoint.y = y
+    
+    ClientToScreen srcHwnd, tmpPoint
+    
+    x = tmpPoint.x
+    y = tmpPoint.y
+
+    'If we have never tracked a previous point, we don't want to reconstruct a mouse movement history yet (because this is the user's
+    ' first click!)  Store the passed point for future reference, then exit immediately.
+    If Not m_PrevPointStored Then
+    
+        m_PrevPointStored = True
+        
+        With m_LastPointTracked
+            .x = x And &HFFFF&
+            .y = y And &HFFFF&
+            .ptTime = msgTimeStamp
+        End With
+        
+        RaiseEvent MouseMoveCustom(Button, Shift, x, y)
+        Exit Sub
+        
+    End If
+    
+    'If we made it all the way here, a previous point has been stored.  We will now reconstruct a full mouse history between that point
+    ' and the current one.
+
+    'Current tracking mode.  We can use either high-resolution pen input coordinates, or regular mouse coordinates.
+    ' For now, PD only uses regular mouse coordinates, but perhaps we could make use of the pen code in the future,
+    ' so I've included it here.
+    Dim curTrackingResolution As mouseResolution
+    curTrackingResolution = GMMP_USE_DISPLAY_POINTS
+    
+    'First, we need to prepare a reference MOUSEMOVEPOINTS struct.  This struct is used as the reference for "current point",
+    ' and GetMouseMovePointsEx will automatically find all mouse movement events up to and including this one.
+    
+    'Because GetMouseMovePointsEx does not support the concept of negative coordinates, we must transform all points passed to/from
+    ' it to account for multimonitor setups.  Start by retrieving the virtual desktop size.
+    Dim nVirtualWidth As Long, nVirtualHeight As Long, nVirtualLeft As Long, nVirtualTop As Long
+    nVirtualWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN)
+    nVirtualHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN)
+    nVirtualLeft = GetSystemMetrics(SM_XVIRTUALSCREEN)
+    nVirtualTop = GetSystemMetrics(SM_YVIRTUALSCREEN)
+    
+    'Populate our reference point
+    Dim curMouseMovePoint As MOUSEMOVEPOINT
+    With curMouseMovePoint
+        .x = x And &HFFFF&
+        .y = y And &HFFFF&
+        .ptTime = msgTimeStamp
+    End With
+    
+    'Prepare a buffer to receive the mouse movement history.  The max number of retrievable events is 64.
+    Dim mouseHistory(0 To 63) As MOUSEMOVEPOINT
+    
+    'Retrieve the mouse movement history.  The return value of the function is the number of points filled.
+    Dim numPoints As Long
+    numPoints = GetMouseMovePointsEx(Len(curMouseMovePoint), curMouseMovePoint, VarPtr(mouseHistory(0)), 64, GMMP_USE_DISPLAY_POINTS)
+        
+    'If one or more valid points were returned, carry on
+    If numPoints > 0 Then
+    
+        'We now want to search the mouse movement history for the previous point we returned.  All points after that will need to be manually raised.
+        Dim i As Long
+        For i = 0 To numPoints - 1
+        
+            'If we reach a point that occurred prior to our last tracked time, exit
+            If mouseHistory(i).ptTime < m_LastPointTracked.ptTime Then Exit For
+            
+            'If we reach our exact last point time, also exit
+            If (mouseHistory(i).ptTime = m_LastPointTracked.ptTime) And (mouseHistory(i).x = m_LastPointTracked.x) And (mouseHistory(i).y = m_LastPointTracked.y) Then Exit For
+        
+        Next i
+        
+        'The variable "i" now contains the index of the previous point (or one that occurred just prior to it, if the previous point wasn't found).
+        ' Iterate through all points following that one, and convert them to valid screen coordinates.
+        numPoints = i - 1
+        If numPoints < 0 Then numPoints = 0
+        
+        For i = numPoints To 0 Step -1
+        
+            'Convert the unsigned 16-bit return values to signed 32-bit values
+            Select Case curTrackingResolution
+            
+                Case GMMP_USE_DISPLAY_POINTS
+                
+                    If (mouseHistory(i).x > 32767) Then mouseHistory(i).x = mouseHistory(i).x - 65536
+                    If (mouseHistory(i).y > 32767) Then mouseHistory(i).y = mouseHistory(i).y - 65536
+                
+                Case GMMP_USE_HIGH_RESOLUTION_POINTS
+                
+                    mouseHistory(i).x = ((mouseHistory(i).x * (nVirtualWidth - 1)) - (nVirtualLeft * 65536)) / nVirtualWidth
+                    mouseHistory(i).y = ((mouseHistory(i).y * (nVirtualHeight - 1)) - (nVirtualTop * 65536)) / nVirtualHeight
+                
+            End Select
+            
+            'With this point successfully transformed, the last thing we need to do is convert it from screen to window coordinates.
+            tmpPoint.x = mouseHistory(i).x
+            tmpPoint.y = mouseHistory(i).y
+            ScreenToClient m_TrackingData(0, 0), tmpPoint
+            
+            'Raise this point
+            Debug.Print tmpPoint.x & "," & tmpPoint.y
+            RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
+        
+        Next i
+        
+    'If the current point is also the previous point, GetMouseMovePointsEx may not have any prior points to return.  This is fine -
+    ' simply raise the point we received, then exit.
+    Else
+        
+        tmpPoint.x = x
+        tmpPoint.y = y
+        ScreenToClient m_TrackingData(0, 0), tmpPoint
+        RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
+    
+    End If
+    
+    'Update the "previous point" tracker with the current point, then exit
+    With m_LastPointTracked
+        .x = x And &HFFFF&
+        .y = y And &HFFFF&
+        .ptTime = msgTimeStamp
+    End With
+    
+End Sub
+
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
                       ByRef bHandled As Boolean, _
@@ -662,7 +836,15 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                                         
                     'If custom MouseMove tracking has been requested for this hWnd, raise a mouse move event now
                     If m_TrackingData(PDIT_STANDARD_MOUSE, indexOfHwnd) Then
-                        RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                    
+                        'There are two ways to raise MouseMove events for a window.  If high-resolution tracking is active,
+                        ' we need to reconstruct any missing mouse events and raise them all in turn.  Otherwise, we can
+                        ' simply return this event.
+                        If m_HighResModeActive Then
+                            reconstructMouseMoveHistory retMouseButton, retShiftConstants, mouseX, mouseY, GetMessageTime(), lng_hWnd
+                        Else
+                            RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                        End If
                         
                         'Random fact!  If bHandled is set to TRUE, tooltips will not appear for the window in question.
                         ' I haven't yet discovered a reason for this, but I can reliably reproduce the issue.  My assumption,
@@ -827,6 +1009,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         'NOTE! This will raise more MouseLeave events than we want in the case of a UC with multiple
                         '       tracked controls; I'll investigate a better solution if/when it proves necessary.
                         If indexOfHwnd = 0 Then RaiseEvent MouseLeave(retMouseButton, retShiftConstants, mouseX, mouseY)
+                        
+                        'Reset our previous point value, which is no longer valid since the mouse has left the container
+                        m_PrevPointStored = False
                         
                         'If cursor handling is enabled for this hWnd, reset the cursor to its original value whenever
                         ' the mouse has left the control.  This will prevent us from mistakenly assigning our custom

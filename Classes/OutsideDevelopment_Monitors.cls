@@ -33,12 +33,12 @@ Option Explicit
 ' --------------------------------------------------------------------------
 
 'Virtual Desktop sizes
-Const SM_XVIRTUALSCREEN = 76    'Virtual Left
-Const SM_YVIRTUALSCREEN = 77    'Virtual Top
-Const SM_CXVIRTUALSCREEN = 78   'Virtual Width
-Const SM_CYVIRTUALSCREEN = 79   'Virtual Height
+Private Const SM_XVIRTUALSCREEN = 76    'Virtual Left
+Private Const SM_YVIRTUALSCREEN = 77    'Virtual Top
+Private Const SM_CXVIRTUALSCREEN = 78   'Virtual Width
+Private Const SM_CYVIRTUALSCREEN = 79   'Virtual Height
 
-Const SM_CMONITORS = 80         'Get number of monitors
+Private Const SM_CMONITORS = 80         'Get number of monitors
 
 'Constants for the return value when finding a monitor
 Private Const MONITOR_DEFAULTTONEAREST As Long = &H2    'If the monitor is not found, return the nearest monitor
