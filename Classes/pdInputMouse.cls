@@ -618,14 +618,19 @@ End Function
 Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal msgTimestamp As Long, ByVal srcHwnd As Long)
 
     'First, note that the passed points are in *window* coordinates.  We need to convert them to *screen* coordinates.
+    Dim clientX As Long, clientY As Long
+    clientX = x
+    clientY = y
+    
     Dim tmpPoint As POINTAPI
-    tmpPoint.x = x
-    tmpPoint.y = y
+    tmpPoint.x = clientX
+    tmpPoint.y = clientY
     
     ClientToScreen srcHwnd, tmpPoint
     
-    x = tmpPoint.x
-    y = tmpPoint.y
+    Dim screenX As Long, screenY As Long
+    screenX = tmpPoint.x
+    screenY = tmpPoint.y
 
     'If we have never tracked a previous point, we don't want to reconstruct a mouse movement history yet (because this is the user's
     ' first click!)  Store the passed point for future reference, then exit immediately.
@@ -634,12 +639,12 @@ Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
         m_PrevPointStored = True
         
         With m_LastPointTracked
-            .x = x And &HFFFF&
-            .y = y And &HFFFF&
+            .x = screenX And &HFFFF&
+            .y = screenY And &HFFFF&
             .ptTime = msgTimestamp
         End With
         
-        RaiseEvent MouseMoveCustom(Button, Shift, x, y)
+        RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY)
         Exit Sub
         
     End If
@@ -667,8 +672,8 @@ Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
     'Populate our reference point
     Dim curMouseMovePoint As MOUSEMOVEPOINT
     With curMouseMovePoint
-        .x = x And &HFFFF&
-        .y = y And &HFFFF&
+        .x = screenX And &HFFFF&
+        .y = screenY And &HFFFF&
         .ptTime = msgTimestamp
     End With
     
@@ -727,8 +732,6 @@ Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
             
                 If (getMessageDelay(mouseHistory(i).ptTime) <= m_DelayThreshold) Then
                     RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
-                Else
-                    Debug.Print "message dropped: " & getMessageDelay(mouseHistory(i).ptTime)
                 End If
             
             Else
@@ -741,28 +744,24 @@ Private Sub reconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
     ' simply raise the point we received, then exit.
     Else
         
-        tmpPoint.x = x
-        tmpPoint.y = y
-        ScreenToClient m_TrackingData(0, 0), tmpPoint
-        
         'If automatic message dropping is active, make sure this message falls within the acceptable threshold
         ' before firing it.
         If m_DelayTrackingActive Then
         
             If (getMessageDelay(msgTimestamp) <= m_DelayThreshold) Then
-                RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
+                RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY)
             End If
         
         Else
-            RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
+            RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY)
         End If
         
     End If
     
     'Update the "previous point" tracker with the current point, then exit
     With m_LastPointTracked
-        .x = x And &HFFFF&
-        .y = y And &HFFFF&
+        .x = screenX And &HFFFF&
+        .y = screenY And &HFFFF&
         .ptTime = msgTimestamp
     End With
     
