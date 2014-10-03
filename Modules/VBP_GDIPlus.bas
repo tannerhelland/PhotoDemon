@@ -923,7 +923,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
 End Function
 
 'Use GDI+ to render a filled ellipse, with optional antialiasing
-Public Function GDIPlusDrawEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusDrawEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal eTransparency As Byte = 255) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -932,7 +932,7 @@ Public Function GDIPlusDrawEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, 
         
     'Create a solid fill brush
     Dim iBrush As Long
-    GdipCreateSolidFill fillQuadWithVBRGB(eColor, 255), iBrush
+    GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), iBrush
     
     'Fill the ellipse
     GdipFillEllipseI iGraphics, iBrush, x1, y1, xWidth, yHeight

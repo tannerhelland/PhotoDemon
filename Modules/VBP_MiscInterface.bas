@@ -1541,36 +1541,43 @@ End Sub
 ' pixel value is relevant to 100% DPI only (96 DPI).
 Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByVal dibSize As Long = 16, Optional ByVal dibPadding As Long = 0, Optional ByVal BackColor As Long = 0) As pdDIB
 
-    'Adjust the dib size to account for DPI
+    'Adjust the dib size and padding to account for DPI
     dibSize = fixDPI(dibSize)
+    dibPadding = fixDPI(dibPadding)
 
     'Create the target DIB
     Set getRuntimeUIDIB = New pdDIB
     getRuntimeUIDIB.createBlank dibSize, dibSize, 32, BackColor, 0
+    
+    Dim paintColor As Long
     
     'Dynamically create the requested icon
     Select Case dibType
     
         'Red, green, and blue channel icons are all created similarly.
         Case PDRUID_CHANNEL_RED, PDRUID_CHANNEL_GREEN, PDRUID_CHANNEL_BLUE
-        
-            Dim circleColor As Long
             
             If dibType = PDRUID_CHANNEL_RED Then
-                circleColor = RGB(220, 40, 36)
+                paintColor = RGB(220, 40, 36)
             ElseIf dibType = PDRUID_CHANNEL_GREEN Then
-                circleColor = RGB(60, 207, 49)
+                paintColor = RGB(60, 207, 49)
             ElseIf dibType = PDRUID_CHANNEL_BLUE Then
-                circleColor = RGB(49, 123, 207)
+                paintColor = RGB(49, 123, 207)
             End If
             
-            'Create a white border just within the bounds of the DIB
-            'GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, 2, 2, dibSize - 4, dibSize - 4, vbWhite, True
-            
             'Draw a colored circle just within the bounds of the DIB
-            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, 2, 2, dibSize - 4, dibSize - 4, circleColor, True
+            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibPadding, dibPadding, dibSize - dibPadding * 2, dibSize - dibPadding * 2, paintColor, True
         
+        'The RGB DIB is a triad of the individual RGB circles
         Case PDRUID_CHANNEL_RGB
+        
+            'Draw the red, green, and blue circles, with slight overlap toward the middle
+            Dim circleSize As Long
+            circleSize = (dibSize - dibPadding) * 0.55
+            
+            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, RGB(49, 123, 207), True, 210
+            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, RGB(60, 207, 49), True, 210
+            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, RGB(220, 40, 36), True, 210
     
     End Select
     
