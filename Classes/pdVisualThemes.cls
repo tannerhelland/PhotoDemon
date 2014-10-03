@@ -36,7 +36,7 @@ Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hW
 'I have no idea what colors will actually be used in the final theme format; these are just placeholders for now,
 ' to enable centralized coloration of a few UCs.  The end goal is to provide the smallest possible subset of colors
 ' necessary to render PD's various UI elements.
-Private Const numThemeColors As Long = 14
+Private Const numThemeColors As Long = 20
 
 Public Enum PD_THEME_COLOR
     
@@ -67,6 +67,10 @@ Public Enum PD_THEME_COLOR
     PDTC_CANCEL_RED
     PDTC_FOCUS_RECT
     
+    PDTC_CHANNEL_RED
+    PDTC_CHANNEL_GREEN
+    PDTC_CHANNEL_BLUE
+    
 End Enum
 
 #If False Then
@@ -75,6 +79,7 @@ End Enum
     Private Const PDTC_BACKGROUND_DEFAULT = 0, PDTC_BACKGROUND_CANVAS = 0, PDTC_BACKGROUND_COMMANDBAR = 0
     Private Const PDTC_TEXT_DEFAULT = 0, PDTC_TEXT_HYPERLINK = 0, PDTC_TEXT_TITLE = 0, PDTC_TEXT_INVERT = 0
     Private Const PDTC_DISABLED = 0, PDTC_OK_GREEN = 0, PDTC_CANCEL_RED = 0, PDTC_FOCUS_RECT = 0
+    Private Const PDTC_CHANNEL_RED = 0, PDTC_CHANNEL_GREEN = 0, PDTC_CHANNEL_BLUE = 0
 #End If
 
 'As a broad advisement, themes are classified as:
@@ -260,7 +265,16 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
             Case PDTC_OK_GREEN
             Case PDTC_CANCEL_RED
             Case PDTC_FOCUS_RECT
-        
+            
+            Case PDTC_CHANNEL_RED
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#dc2824")
+                    
+            Case PDTC_CHANNEL_GREEN
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3ccf31")
+                    
+            Case PDTC_CHANNEL_BLUE
+                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#317bcf")
+            
         End Select
     
     'DARK THEME DEFAULTS

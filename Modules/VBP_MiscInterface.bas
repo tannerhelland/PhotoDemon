@@ -1558,11 +1558,11 @@ Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
         Case PDRUID_CHANNEL_RED, PDRUID_CHANNEL_GREEN, PDRUID_CHANNEL_BLUE
             
             If dibType = PDRUID_CHANNEL_RED Then
-                paintColor = RGB(220, 40, 36)
+                paintColor = g_Themer.getThemeColor(PDTC_CHANNEL_RED)
             ElseIf dibType = PDRUID_CHANNEL_GREEN Then
-                paintColor = RGB(60, 207, 49)
+                paintColor = g_Themer.getThemeColor(PDTC_CHANNEL_GREEN)
             ElseIf dibType = PDRUID_CHANNEL_BLUE Then
-                paintColor = RGB(49, 123, 207)
+                paintColor = g_Themer.getThemeColor(PDTC_CHANNEL_BLUE)
             End If
             
             'Draw a colored circle just within the bounds of the DIB
@@ -1575,9 +1575,9 @@ Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             Dim circleSize As Long
             circleSize = (dibSize - dibPadding) * 0.55
             
-            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, RGB(49, 123, 207), True, 210
-            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, RGB(60, 207, 49), True, 210
-            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, RGB(220, 40, 36), True, 210
+            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_BLUE), True, 210
+            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_GREEN), True, 210
+            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_RED), True, 210
     
     End Select
     
