@@ -268,7 +268,7 @@ Private m_LastPointTracked As MOUSEMOVEPOINT
 ' mouse events will be fired regardless of delay.
 Private m_DelayTrackingActive As Boolean
 Private m_DelayThreshold As Long
-Private Const DEFAULT_DELAY_THRESHOLD_MS = 100
+Private Const DEFAULT_DELAY_THRESHOLD_MS = 120
 
 'Use this function enable/disable automatic dropping of severely delayed events
 Public Sub setAutoDropOfDelayedEvents(ByVal newMode As Boolean)

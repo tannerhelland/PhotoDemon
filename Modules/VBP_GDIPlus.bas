@@ -1194,6 +1194,9 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     dstDIB.setDPI imgHResolution, imgVResolution
     
     'Metafile containers (EMF, WMF) require special handling.
+    Dim emfPlusConversionSuccessful As Boolean
+    emfPlusConversionSuccessful = False
+    
     If isMetafile Then
         
         'In a perfect world, we might do something like GIMP, and display an import dialog for metafiles.  This would allow the user to
@@ -1242,6 +1245,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 If GdipConvertToEmfPlus(tmpGraphics, hImage, convSuccess, EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
                 
                     'Conversion successful!  Replace our current image handle with the EMF+ copy
+                    emfPlusConversionSuccessful = True
                     GdipDisposeImage hImage
                     hImage = mfHandleDst
                     
@@ -1267,7 +1271,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     GdipGetImagePixelFormat hImage, iPixelFormat
     If (iPixelFormat And PixelFormatAlpha) <> 0 Then hasAlpha = True
     If (iPixelFormat And PixelFormatPremultipliedAlpha) <> 0 Then hasAlpha = True
-    
+        
     'Make a note of the image's specific color depth, as relevant to PD
     Dim imgColorDepth As Long
     imgColorDepth = getColorDepthFromPixelFormat(iPixelFormat)
@@ -1280,7 +1284,21 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     If isCMYK Then
         dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 24
     Else
-        dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 32
+        
+        'Metafiles require special handling on Vista and earlier
+        If isMetafile Then
+            
+            If emfPlusConversionSuccessful Or hasAlpha Or g_IsWin7OrLater Then
+                dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 32
+            Else
+                dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 24
+            End If
+        
+        'Non-metafiles can always be placed into a 32bpp container.
+        Else
+            dstDIB.createBlank CLng(imgWidth), CLng(imgHeight), 32
+        End If
+        
     End If
     
     Dim copyBitmapData As BitmapData
