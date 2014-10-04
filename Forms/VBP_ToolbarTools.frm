@@ -1762,16 +1762,16 @@ Private Sub updateSelectionPanelLayout()
 
     'Display the feathering slider as necessary
     If cmbSelSmoothing(0).ListIndex = sFullyFeathered Then
-        If Not sltSelectionFeathering.Visible Then sltSelectionFeathering.Visible = True
+        sltSelectionFeathering.Visible = True
     Else
-        If sltSelectionFeathering.Visible Then sltSelectionFeathering.Visible = False
+        sltSelectionFeathering.Visible = False
     End If
     
     'Display the border slider as necessary
     If cmbSelType(0).ListIndex = sBorder Then
-        If Not sltSelectionBorder.Visible Then sltSelectionBorder.Visible = True
+        sltSelectionBorder.Visible = True
     Else
-        If sltSelectionBorder.Visible Then sltSelectionBorder.Visible = False
+        sltSelectionBorder.Visible = False
     End If
     
 End Sub
