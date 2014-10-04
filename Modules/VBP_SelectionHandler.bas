@@ -355,7 +355,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
 
 End Function
 
-'Use this to populate the text boxes on the main form with the current selection values
+'Use this to populate the text boxes on the main form with the current selection values.  Note that this does not cause a screen refresh, by design.
 Public Sub syncTextToCurrentSelection(ByVal formID As Long)
 
     Dim i As Long

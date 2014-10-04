@@ -440,13 +440,10 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
             'Based on the transform mode, set the initial points accordingly
             Select Case selTransformationType
             
-                'Case -1 should never occur, but if it does - treat this like a normal initial coordinate call
+                'Case -1 should never occur, because -1 means "no point of interest clicked"
                 Case -1
-                    x1 = x
-                    y1 = y
-                    x2 = x
-                    y2 = y
-                
+                    Debug.Print "Selection transform initiated on a non-existent point - FIX THIS!"
+                    
                 '0 - NW corner
                 Case 0
                     x1 = selLeft + selWidth
@@ -667,21 +664,13 @@ Public Function isLockedIn() As Boolean
     isLockedIn = lockedIn
 End Function
 
-'Whenever the x1, y1, x2, y2 values are changed, this sub needs to be called to update the left/right/width/height values accordingly
-Private Sub updateInternalCoords()
+'If the user is using the SHIFT key to request a square-shaped (or circle-shaped) selection, this function will be called.
+Private Sub makeCoordinatesSquare()
 
-    'This function only needs to be run if the selection is transformable.  If it is not, the internal coordinates will already be correctly set.
-    If isTransformable Then
-    
-        'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
-        isMaskReady = False
-
-        'If a square (1:1 aspect ratio) selection has been requested, calculate new coordinates now.
+    Select Case sShape
+                
+        Case sRectangle, sCircle, sLine
         
-        ' (This set of if/then blocks looks complicated, but it's actually very simple - we simply have to account for every variation
-        '  of quadrants, because the selection can be drawn up or down in both directions, giving eight possible variants of x1 </> x2
-        '  and y1 </> y2.  By covering all those cases, square selections can be drawn in any direction.)
-        If isSquare Then
             If x1 < x2 Then
                 If y1 < y2 Then
                     If Abs(x1 - x2) > Abs(y1 - y2) Then
@@ -711,24 +700,55 @@ Private Sub updateInternalCoords()
                     End If
                 End If
             End If
-        End If
+            
+        'Other selection types do not currently support square modifiers
+        Case Else
         
-        'Finally, calculate a left, top, width and height for this selection based off the current x1/x2/y1/y2 values
-        If x1 < x2 Then
-            selLeft = x1
-            selWidth = x2 - x1
-        Else
-            selLeft = x2
-            selWidth = x1 - x2
-        End If
+    End Select
+    
+End Sub
+
+'Whenever the x1, y1, x2, y2 values are changed, this sub needs to be called to update the left/right/width/height values accordingly
+Private Sub updateInternalCoords()
+
+    'This function only needs to be run if the selection is transformable.  If it is not, the internal coordinates will already be correctly set.
+    If isTransformable Then
+    
+        'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
+        isMaskReady = False
+
+        'If a square (1:1 aspect ratio) selection has been requested, calculate new coordinates now.
         
-        If y1 < y2 Then
-            selTop = y1
-            selHeight = y2 - y1
-        Else
-            selTop = y2
-            selHeight = y1 - y2
-        End If
+        ' (This set of if/then blocks looks complicated, but it's actually very simple - we simply have to account for every variation
+        '  of quadrants, because the selection can be drawn up or down in both directions, giving eight possible variants of x1 </> x2
+        '  and y1 </> y2.  By covering all those cases, square selections can be drawn in any direction.)
+        If isSquare Then makeCoordinatesSquare
+        
+        'Finally, calculate a left, top, width and height for this selection based off the current individual coordinate values
+        Select Case sShape
+        
+            'Rectangles, ellipses, and lines all use the same (x1, y1) - (x2, y2) coordinate system, so finding selection bounds is easy.
+            Case sRectangle, sCircle, sLine
+            
+                If x1 < x2 Then
+                    selLeft = x1
+                    selWidth = x2 - x1
+                Else
+                    selLeft = x2
+                    selWidth = x1 - x2
+                End If
+                
+                If y1 < y2 Then
+                    selTop = y1
+                    selHeight = y2 - y1
+                Else
+                    selTop = y2
+                    selHeight = y1 - y2
+                End If
+                
+            Case Else
+            
+        End Select
         
     End If
 
@@ -862,6 +882,7 @@ Private Sub createSelectionMask()
 
     'At present, mask creation is only applicable for certain transformable shapes (rectangles, ellipses, lines).  Other functions,
     ' like "Invert selection", rely on an already-created mask - so attempting to create a mask again will have undesirable behavior.
+    ' As such, use caution when calling this function, as the existing mask will be completely erased.
     
     'Start by creating a blank mask (this will also erase any existing mask)
     selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
@@ -979,12 +1000,9 @@ Private Sub createSelectionMask()
                 
             'Border selections are a bit different; we must draw two lines - an interior and an exterior one
             Else
-            
-                Dim useLineAA As Boolean
-                If sSmooth > sNone Then useLineAA = True Else useLineAA = False
                 
                 'Draw the exterior line
-                GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, selectionLineWidth, useLineAA, LineCapRound
+                GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, selectionLineWidth, (sSmooth > sNone), LineCapRound
                 
                 'Next, draw the interior one
                 Dim xDiff As Double, yDiff As Double
@@ -1007,15 +1025,15 @@ Private Sub createSelectionMask()
                 If newLineWidth > 0 Then
                     If x1 = minX Then
                         If y1 = MinY Then
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
+                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (sSmooth > sNone), LineCapRound
                         Else
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
+                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (sSmooth > sNone), LineCapRound
                         End If
                     Else
                         If y1 = MinY Then
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
+                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (sSmooth > sNone), LineCapRound
                         Else
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, useLineAA, LineCapRound
+                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (sSmooth > sNone), LineCapRound
                         End If
                     End If
                 End If
@@ -1082,83 +1100,94 @@ Private Sub createSelectionMask()
         
     End Select
     
-    'Do some basic bounds checking on the bound values to make sure they lie inside the image.
+    'Do some basic bounds checking on the bound values to make sure they lie inside the image.  This is important because the
+    ' selection mask (and any code that operates on it) assumes a match to image boundaries, despite the fact that selection
+    ' points can actually lie anywhere on the canvas - even outside the image!
+    fixBoundsToImageSize
+    
+    'Finally, if the selection is locked and feathering has been requested, apply it now
+    If lockedIn And (sSmooth = sFullyFeathered) And (featheringRadius > 0) Then applyFeatheringToMask
+    
+    'Mark the mask as ready for use
+    isMaskReady = True
+
+End Sub
+
+'When calculating selection boundaries, all bounds must ultimately lie on or inside image borders.  Use this function to verify that.
+Private Sub fixBoundsToImageSize()
+    
     If boundLeft < 0 Then
         boundWidth = boundWidth + boundLeft
         boundLeft = 0
     End If
+    
     If boundTop < 0 Then
         boundHeight = boundHeight + boundTop
         boundTop = 0
     End If
+    
     If boundLeft + boundWidth > containingPDImage.Width Then boundWidth = containingPDImage.Width - boundLeft
     If boundTop + boundHeight > containingPDImage.Height Then boundHeight = containingPDImage.Height - boundTop
     
-    'Finally, if the selection is locked and feathering has been requested, apply it now
-    If lockedIn And (sSmooth = sFullyFeathered) And (featheringRadius > 0) Then
+End Sub
+
+'Apply feathering to the current selection mask.  If the user is on Win 7 or later, we do this via GDI+.  Otherwise we use
+' our own internal blur functions (which are fast but lower quality).
+Private Sub applyFeatheringToMask()
     
-        'Time to experiment with a new kind of selection feathering!  This time, we're going to take advantage of the fast drawing time
-        ' for antialiased shapes to see if we can improve performance over the original Gaussian blur implementation.
+    'If GDI+ 1.1 exists, use it for a faster blur operation.
+    If g_GDIPlusFXAvailable Then
+    
+        GDIPlusBlurDIB selMask, featheringRadius, boundLeft, boundTop, boundWidth, boundHeight
+    
+    'If GDI+ v1.0 is found, blurring is not supported, so fall back to PD's internal Gaussian blur function.
+    Else
+    
+        'For exterior selections, the whole mask needs to be blurred.  No way around that.  But for interior and bordered selections,
+        ' we can blur only the active area of the selection - saving precious time in the process.
+        If (sType = sExterior) Or ((boundLeft = 0) And (boundTop = 0) And (boundWidth = containingPDImage.Width - 1) And (boundHeight = containingPDImage.Height - 1)) Then
+            
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createFromExistingDIB selMask
         
-        'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to PD's internal Gaussian blur function.
-        If g_GDIPlusFXAvailable Then
-        
-            GDIPlusBlurDIB selMask, featheringRadius, boundLeft, boundTop, boundWidth, boundHeight
-        
+            Message "Feathering selection..."
+            CreateApproximateGaussianBlurDIB featheringRadius, tmpDIB, selMask, 1, True
+            SetProgBarVal 0
+            releaseProgressBar
+            Message "Finished."
+            
         Else
         
-            'For exterior selections, the whole mask needs to be blurred.  No way around that.  But for interior and bordered selections,
-            ' we can blur only the active area of the selection - saving precious time in the process.
-            If (sType = sExterior) Or ((boundLeft = 0) And (boundTop = 0) And (boundWidth = containingPDImage.Width - 1) And (boundHeight = containingPDImage.Height - 1)) Then
-                
-                Dim tmpDIB As pdDIB
-                Set tmpDIB = New pdDIB
-                tmpDIB.createFromExistingDIB selMask
+            'Create a DIB the size of the active selection, and copy the selection mask into that
+            Message "Feathering selection..."
+            Dim srcDIB As pdDIB
+            Set srcDIB = New pdDIB
+            srcDIB.createBlank boundWidth, boundHeight, 24
+            BitBlt srcDIB.getDIBDC, 0, 0, boundWidth, boundHeight, selMask.getDIBDC, boundLeft, boundTop, vbSrcCopy
             
-                Message "Feathering selection..."
-                CreateApproximateGaussianBlurDIB featheringRadius, tmpDIB, selMask, 1, True
-                SetProgBarVal 0
-                releaseProgressBar
-                Message "Finished."
-                
-            Else
+            'Create a second DIB (which will receive the blurred data)
+            Dim dstDIB As pdDIB
+            Set dstDIB = New pdDIB
+            dstDIB.createBlank boundWidth, boundHeight, 24
             
-                'Create a DIB the size of the active selection, and copy the selection mask into that
-                Message "Feathering selection..."
-                Dim srcDIB As pdDIB
-                Set srcDIB = New pdDIB
-                srcDIB.createBlank boundWidth, boundHeight, 24
-                BitBlt srcDIB.getDIBDC, 0, 0, boundWidth, boundHeight, selMask.getDIBDC, boundLeft, boundTop, vbSrcCopy
-                
-                'Create a second DIB (which will receive the blurred data)
-                Dim dstDIB As pdDIB
-                Set dstDIB = New pdDIB
-                dstDIB.createBlank boundWidth, boundHeight, 24
-                
-                'Blur the selection
-                CreateApproximateGaussianBlurDIB featheringRadius, srcDIB, dstDIB, 1, True
-                
-                'Copy the blurred area back onto the selection mask
-                BitBlt selMask.getDIBDC, boundLeft, boundTop, boundWidth, boundHeight, dstDIB.getDIBDC, 0, 0, vbSrcCopy
-                
-                'Erase both temporary DIBs
-                srcDIB.eraseDIB
-                Set srcDIB = Nothing
-                dstDIB.eraseDIB
-                Set dstDIB = Nothing
-                
-                SetProgBarVal 0
-                releaseProgressBar
-                Message "Finished."
+            'Blur the selection
+            CreateApproximateGaussianBlurDIB featheringRadius, srcDIB, dstDIB, 1, True
             
-            End If
+            'Copy the blurred area back onto the selection mask
+            BitBlt selMask.getDIBDC, boundLeft, boundTop, boundWidth, boundHeight, dstDIB.getDIBDC, 0, 0, vbSrcCopy
+            
+            'Erase both temporary DIBs
+            Set srcDIB = Nothing
+            Set dstDIB = Nothing
+            
+            SetProgBarVal 0
+            releaseProgressBar
+            Message "Finished."
         
         End If
     
     End If
-    
-    'Mark the mask as ready for us
-    isMaskReady = True
 
 End Sub
 
@@ -1218,6 +1247,9 @@ Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                 'Lines only need transform nodes at the end points of the line
                 GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
                 GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, dstBottom, circRadius, circAlpha
+                
+            'Other selection types will require more involved transform code
+            Case Else
                 
         End Select
         

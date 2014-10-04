@@ -116,34 +116,26 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":0004
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom in"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":0004
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "pdCanvas.ctx":002C
+         pictureeffectondown=   0
+         captioneffects  =   0
+         picturealign    =   7
+         tooltip         =   "Zoom in"
+         colorscheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":0856
+         ItemData        =   "pdCanvas.ctx":087E
          Left            =   840
-         List            =   "pdCanvas.ctx":0858
+         List            =   "pdCanvas.ctx":0880
          Style           =   2  'Dropdown List
          TabIndex        =   8
          Top             =   15
@@ -155,27 +147,19 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   10
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":085A
-         PictureAlign    =   0
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom out"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":0882
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "pdCanvas.ctx":08AA
+         pictureeffectondown=   0
+         captioneffects  =   0
+         picturealign    =   0
+         tooltip         =   "Zoom out"
+         colorscheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdZoomFit 
          Height          =   345
@@ -183,27 +167,19 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   12
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":10AC
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Fit image on screen"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":10FC
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "pdCanvas.ctx":1124
+         pictureeffectondown=   0
+         captioneffects  =   0
+         picturealign    =   7
+         tooltip         =   "Fit image on screen"
+         colorscheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdImgSize 
          Height          =   345
@@ -211,27 +187,19 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   13
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":18FE
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Resize image"
-         ColorScheme     =   3
+         _extentx        =   688
+         _extenty        =   609
+         buttonstyle     =   7
+         font            =   "pdCanvas.ctx":1976
+         backcolor       =   -2147483626
+         caption         =   ""
+         handpointer     =   -1  'True
+         picturenormal   =   "pdCanvas.ctx":199E
+         pictureeffectondown=   0
+         captioneffects  =   0
+         picturealign    =   7
+         tooltip         =   "Resize image"
+         colorscheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -869,21 +837,23 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                         If (vkCode = VK_LEFT) Then hOffset = hOffset - 1
                         If (vkCode = VK_RIGHT) Then hOffset = hOffset + 1
                         
-                        'Update the selection coordinate text boxes with the new offsets
-                        toolbar_Tools.tudSel(0).Value = toolbar_Tools.tudSel(0).Value + hOffset
-                        toolbar_Tools.tudSel(1).Value = toolbar_Tools.tudSel(1).Value + vOffset
-                        
-                        If g_CurrentTool = SELECT_LINE Then
-                            toolbar_Tools.tudSel(2).Value = toolbar_Tools.tudSel(2).Value + hOffset
-                            toolbar_Tools.tudSel(3).Value = toolbar_Tools.tudSel(3).Value + vOffset
-                        End If
-                        
-                        'Update the screen
-                        pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
-                        
+                        'If offsets were generated, update the selection and redraw the screen
                         If (hOffset <> 0) Or (vOffset <> 0) Then
+                        
+                            'Update the selection coordinate text boxes with the new offsets
+                            toolbar_Tools.tudSel(0).Value = toolbar_Tools.tudSel(0).Value + hOffset
+                            toolbar_Tools.tudSel(1).Value = toolbar_Tools.tudSel(1).Value + vOffset
+                            
+                            If g_CurrentTool = SELECT_LINE Then
+                                toolbar_Tools.tudSel(2).Value = toolbar_Tools.tudSel(2).Value + hOffset
+                                toolbar_Tools.tudSel(3).Value = toolbar_Tools.tudSel(3).Value + vOffset
+                            End If
+                            
+                            'Update the screen
+                            pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
                             pdImages(g_CurrentImage).mainSelection.updateViaTextBox
                             RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                            
                         End If
                     
                     End If
@@ -1067,39 +1037,21 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                     Dim sCheck As Long
                     sCheck = findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
                     
-                    'If that function did not return zero, notify the selection and exit
+                    'If a point of interest was clicked, initiate a transform
                     If (sCheck <> -1) And pdImages(g_CurrentImage).mainSelection.isTransformable Then
                     
-                        'If the selection type matches the current selection tool, start transforming the selection.
-                        If (pdImages(g_CurrentImage).mainSelection.getSelectionShape = getSelectionTypeFromCurrentTool()) Then
-                            
-                            'Initialize a selection transformation
-                            pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
-                            pdImages(g_CurrentImage).mainSelection.setInitialTransformCoordinates imgX, imgY
-                            
-                        'If the selection type does NOT match the current selection tool, select the proper tool, then start transforming
-                        ' the selection.
-                        Else
-                        
-                            toolbar_Tools.selectNewTool getRelevantToolFromSelectType()
-                            
-                            'Initialize a selection transformation
-                            pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
-                            pdImages(g_CurrentImage).mainSelection.setInitialTransformCoordinates imgX, imgY
-                            
-                        End If
+                        'Initialize a selection transformation
+                        pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
+                        pdImages(g_CurrentImage).mainSelection.setInitialTransformCoordinates imgX, imgY
                                         
-                    'If it did return zero, erase any existing selection and start a new one
+                    'If a point of interest was *not* clicked, erase any existing selection and start a new one
                     Else
-                    
                         Selection_Handler.initSelectionByPoint imgX, imgY
-                    
                     End If
                 
+                'If a selection is not active, start a new one
                 Else
-                    
                     Selection_Handler.initSelectionByPoint imgX, imgY
-                    
                 End If
             
         End Select
@@ -1284,6 +1236,15 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     If ((ClickEventAlsoFiring) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
                         Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
                     Else
+                    
+                        'If the selection is transformable, pass the final mouse coordinates to it
+                        If pdImages(g_CurrentImage).mainSelection.isTransformable Then
+
+                            pdImages(g_CurrentImage).mainSelection.requestSquare (Shift And vbShiftMask)
+                            pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+                            syncTextToCurrentSelection g_CurrentImage
+                                                
+                        End If
                     
                         'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
                         If pdImages(g_CurrentImage).mainSelection.areAllCoordinatesInvalid Then
