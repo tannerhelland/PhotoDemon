@@ -55,6 +55,8 @@ End Type
 
 'These functions are used to interact with various windows
 Public Const MONITOR_DEFAULTTONEAREST As Long = &H2
+Public Const CB_SETMINVISIBLE As Long = 339
+Public Const CB_SHOWDROPDOWN As Long = &H14F
 Public Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Any, lParam As Any) As Long
 Public Declare Function ReleaseCapture Lib "user32" () As Long
 Public Declare Function MonitorFromWindow Lib "user32" (ByVal myHwnd As Long, ByVal dwFlags As Long) As Long

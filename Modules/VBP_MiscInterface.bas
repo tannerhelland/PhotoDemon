@@ -1139,6 +1139,10 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         ' at design-time.
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
         
+        'STEP 4: make drop-down boxes display their full drop-down contents, without a scroll bar.
+        '         (This behavior requires a manifest, so useless in the IDE.)
+        If (TypeOf eControl Is ComboBox) Then SendMessage eControl.hWnd, CB_SETMINVISIBLE, CLng(eControl.ListCount), ByVal 0&
+        
         'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
         ' bars to be automatically refreshed.
         If useDoEvents Then DoEvents
