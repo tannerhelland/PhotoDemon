@@ -62,27 +62,6 @@ End Type
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 
-'Object API functions
-Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-
-'Pen drawing
-Private Const PS_SOLID = 0
-Private Const PS_DASH = 1
-Private Const PS_DOT = 2
-Private Const PS_DASHDOT = 3
-Private Const PS_DASHDOTDOT = 4
-
-Private Const RGN_AND = 1
-Private Const RGN_OR = 2
-Private Const RGN_XOR = 3
-Private Const RGN_DIFF = 4
-Private Const RGN_COPY = 5
-
-Private Const HS_DIAGCROSS = 5
-
-Private Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
-   
 'Rectangle drawing
 Private Type RECT
     Left As Long
@@ -90,26 +69,6 @@ Private Type RECT
     Right As Long
     Bottom As Long
 End Type
-'Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
-Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
-'Private Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Private Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
-Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-
-'Region drawing
-Private Declare Function CreateEllipticRgnIndirect Lib "gdi32" (ByRef lpRect As RECT) As Long
-Private Declare Function CreateRoundRectRgn Lib "gdi32" (ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal x3 As Long, ByVal y3 As Long) As Long
-Private Declare Function FillRgn Lib "gdi32" (ByVal hDC As Long, ByVal hRgn As Long, ByVal hBrush As Long) As Long
-
-'Brush creation
-Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
-
-'Stock object retrieval
-Private Const NULL_BRUSH = 5
-Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Long
-
-'RasterOp selection
-Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode As Long) As Long
 
 'What shape does this selection have?
 Public Enum SelectionShape
@@ -136,9 +95,7 @@ Public Enum SelectionType
 End Enum
 
 #If False Then
-    Const sInterior = 0
-    Const sExterior = 1
-    Const sBorder = 2
+    Const sInterior = 0, sExterior = 1, sBorder = 2
 #End If
 
 Private sType As SelectionType
@@ -151,9 +108,7 @@ Public Enum SelectionSmoothing
 End Enum
 
 #If False Then
-    Const sNone = 0
-    Const sAntialiased = 1
-    Const sFullyFeathered = 2
+    Const sNone = 0, sAntialiased = 1, sFullyFeathered = 2
 #End If
 
 Private sSmooth As SelectionSmoothing
@@ -421,6 +376,7 @@ Public Sub setSelectionShape(ByVal selShape As SelectionShape)
     
     If isTransformable Then isMaskReady = False
     sShape = selShape
+    
 End Sub
 
 'Get/set a selection type
@@ -660,8 +616,7 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                         y1 = y - moveYDist
                         x2 = x1 + selWidth
                         y2 = y1 + selHeight
-                        'Message x1 & "," & y1 & " <--> " & x2 & "," & y2 & " | " & selLeft & "," & selTop & " <--> " & selWidth & "," & selHeight
-                
+                        
                 End Select
         
             Case sLine
@@ -907,31 +862,27 @@ Private Sub createSelectionMask()
 
     'At present, mask creation is only applicable for certain transformable shapes (rectangles, ellipses, lines).  Other functions,
     ' like "Invert selection", rely on an already-created mask - so attempting to create a mask again will have undesirable behavior.
-    'Debug.Print "Drawing new selection mask now"
-
+    
     'Start by creating a blank mask (this will also erase any existing mask)
     selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
-    
-    Dim hBrush As Long
-    Dim maskRect As RECT
-    Dim maskRegion As Long
-    
-    'Border-style selections require some additional checking; in particular, if the border value is too large, just ignore it
-    ' and draw a regular shape instead.
-    Dim rectModifier As Long
-    rectModifier = borderSize
-    
-    Dim modifiedCornerVal As Long
-    
+        
+    'For rounded corners, the smallest dimension (width or height) controls the maximum value of the curvature.
+    ' Calculate that value in advance.
     Dim minDimension As Long
     If selWidth < selHeight Then minDimension = selWidth Else minDimension = selHeight
-    
-    Dim ignoreBorderValue As Boolean
-    ignoreBorderValue = False
-    
+        
+    Dim modifiedCornerVal As Long
+    If roundedCorners > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = roundedCorners
+        
     'Border selections require a bit of extra calculation, depending on the shape - basically, all bordered selections are created by
     ' rendering a smaller version of the selection within itself.  In the case of rectangles and ellipses, we don't want the smaller
     ' version to have negative values, so we check it in advance to make sure the border value is acceptable.
+    Dim ignoreBorderValue As Boolean
+    ignoreBorderValue = False
+    
+    Dim rectModifier As Long
+    rectModifier = borderSize
+    
     If sType = sBorder Then
         
         Select Case sShape
@@ -960,75 +911,39 @@ Private Sub createSelectionMask()
                 'Interior/exterior selections use identical rendering code.
                 If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
                 
-                    SetRect maskRect, selLeft, selTop, selLeft + selWidth, selTop + selHeight
-                    hBrush = CreateSolidBrush(maskForeColor)
-                    FillRect selMask.getDIBDC, maskRect, hBrush
-                    DeleteObject hBrush
+                    GDI_Plus.GDIPlusFillDIBRect selMask, selLeft, selTop, selWidth, selHeight, maskForeColor
                     
                 'Border selections are a bit different; we must draw two rectangles - an exterior and an interior one.
                 Else
                 
                     'Draw the exterior rectangle
-                    hBrush = CreateSolidBrush(maskForeColor)
-                    SetRect maskRect, selLeft, selTop, selLeft + selWidth, selTop + selHeight
-                    FillRect selMask.getDIBDC, maskRect, hBrush
-                    DeleteObject hBrush
+                    GDI_Plus.GDIPlusFillDIBRect selMask, selLeft, selTop, selWidth, selHeight, maskForeColor
                     
                     'Next, draw the interior one
-                    hBrush = CreateSolidBrush(maskBackColor)
-                    SetRect maskRect, selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth - rectModifier, selTop + selHeight - rectModifier
-                    FillRect selMask.getDIBDC, maskRect, hBrush
-                    DeleteObject hBrush
+                    GDI_Plus.GDIPlusFillDIBRect selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor
                     
                 End If
             
             'RECTANGLE SELECTION *WITH* ROUNDED CORNERS
             Else
                 
-                'Interior/exterior selections use identical rendering code.
+                'Interior/exterior selections use identical rendering code.  The only difference is the render color (whether the
+                ' rounded rect represents the selected or non-selected region, basically).
                 If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
                     
                     'Use GDI+ for antialiasing, regular GDI for non-antialiased
-                    If sSmooth > sNone Then
-                        If roundedCorners > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = roundedCorners
-                        GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, True
-                    Else
-                        maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
-                        hBrush = CreateSolidBrush(maskForeColor)
-                        FillRgn selMask.getDIBDC, maskRegion, hBrush
-                        DeleteObject hBrush
-                        DeleteObject maskRegion
-                    End If
+                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, (sSmooth > sNone) 'True
                     
                 'Border selections are a bit different; we must draw two rounded rectangles - an exterior and an interior one.
                 Else
                     
-                    If sSmooth > sNone Then
+                    'Draw the exterior rectangle
+                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, (sSmooth > sNone)
                     
-                        'Draw the exterior rectangle
-                        If roundedCorners > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = roundedCorners
-                        GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, True
-                        
-                        'Next, draw the interior one.  Note that specialized handling is required to prevent the corner curvature from rendering incorrectly.
-                        If (selWidth - (rectModifier * 2) - 1) < (selHeight - (rectModifier * 2) - 1) Then minDimension = (selWidth - (rectModifier * 2) - 1) Else minDimension = (selHeight - (rectModifier * 2) - 1)
-                        If roundedCorners > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = roundedCorners
-                        GDIPlusDrawRoundRect selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, modifiedCornerVal, maskBackColor, True
-                    
-                    Else
-                        
-                        maskRegion = CreateRoundRectRgn(selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1, roundedCorners, roundedCorners)
-                        hBrush = CreateSolidBrush(maskForeColor)
-                        FillRgn selMask.getDIBDC, maskRegion, hBrush
-                        DeleteObject hBrush
-                        DeleteObject maskRegion
-                        
-                        maskRegion = CreateRoundRectRgn(selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier, roundedCorners, roundedCorners)
-                        hBrush = CreateSolidBrush(maskBackColor)
-                        FillRgn selMask.getDIBDC, maskRegion, hBrush
-                        DeleteObject hBrush
-                        DeleteObject maskRegion
-                        
-                    End If
+                    'Next, draw the interior one.  Note that specialized handling is required to prevent the corner curvature from rendering incorrectly.
+                    If (selWidth - (rectModifier * 2) - 1) < (selHeight - (rectModifier * 2) - 1) Then minDimension = (selWidth - (rectModifier * 2) - 1) Else minDimension = (selHeight - (rectModifier * 2) - 1)
+                    If roundedCorners > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = roundedCorners
+                    GDIPlusDrawRoundRect selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, modifiedCornerVal, maskBackColor, (sSmooth > sNone)
                     
                 End If
                 
@@ -1040,45 +955,16 @@ Private Sub createSelectionMask()
             'Interior/exterior selections use identical rendering code.
             If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
             
-                If sSmooth > sNone Then
-                    GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth - 1, selHeight - 1, maskForeColor, True
-                Else
-                    SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
-                    maskRegion = CreateEllipticRgnIndirect(maskRect)
-                    hBrush = CreateSolidBrush(maskForeColor)
-                    FillRgn selMask.getDIBDC, maskRegion, hBrush
-                    DeleteObject hBrush
-                    DeleteObject maskRegion
-                End If
+                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth - 1, selHeight - 1, maskForeColor, (sSmooth > sNone)
                 
             'Border selections are a bit different; we must draw two ellipses - an exterior and an interior one.
             Else
             
-                If sSmooth > sNone Then
+                'Draw the exterior oval
+                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth, selHeight, maskForeColor, (sSmooth > sNone)
                 
-                    'Draw the exterior oval
-                    GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth, selHeight, maskForeColor, True
-                    
-                    'Next, draw the interior one
-                    GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, True
-                        
-                Else
-                    
-                    SetRect maskRect, selLeft, selTop, selLeft + selWidth + 1, selTop + selHeight + 1
-                    maskRegion = CreateEllipticRgnIndirect(maskRect)
-                    hBrush = CreateSolidBrush(maskForeColor)
-                    FillRgn selMask.getDIBDC, maskRegion, hBrush
-                    DeleteObject hBrush
-                    DeleteObject maskRegion
-                    
-                    SetRect maskRect, selLeft + rectModifier, selTop + rectModifier, selLeft + selWidth + 1 - rectModifier, selTop + selHeight + 1 - rectModifier
-                    maskRegion = CreateEllipticRgnIndirect(maskRect)
-                    hBrush = CreateSolidBrush(maskBackColor)
-                    FillRgn selMask.getDIBDC, maskRegion, hBrush
-                    DeleteObject hBrush
-                    DeleteObject maskRegion
-                    
-                End If
+                'Next, draw the interior one
+                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, (sSmooth > sNone)
                         
             End If
             
@@ -1089,11 +975,7 @@ Private Sub createSelectionMask()
             'Interior/exterior line selections use identical rendering code.
             If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
             
-                If sSmooth > sNone Then
-                    GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, selectionLineWidth, True, LineCapRound
-                Else
-                    GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, selectionLineWidth, False, LineCapRound
-                End If
+                GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, selectionLineWidth, (sSmooth > sNone), LineCapRound
                 
             'Border selections are a bit different; we must draw two lines - an interior and an exterior one
             Else
@@ -1228,16 +1110,17 @@ Private Sub createSelectionMask()
             'For exterior selections, the whole mask needs to be blurred.  No way around that.  But for interior and bordered selections,
             ' we can blur only the active area of the selection - saving precious time in the process.
             If (sType = sExterior) Or ((boundLeft = 0) And (boundTop = 0) And (boundWidth = containingPDImage.Width - 1) And (boundHeight = containingPDImage.Height - 1)) Then
+                
                 Dim tmpDIB As pdDIB
                 Set tmpDIB = New pdDIB
                 tmpDIB.createFromExistingDIB selMask
             
                 Message "Feathering selection..."
-                'CreateGaussianBlurDIB featheringRadius, tmpDIB, selMask
                 CreateApproximateGaussianBlurDIB featheringRadius, tmpDIB, selMask, 1, True
                 SetProgBarVal 0
                 releaseProgressBar
                 Message "Finished."
+                
             Else
             
                 'Create a DIB the size of the active selection, and copy the selection mask into that
@@ -1253,7 +1136,6 @@ Private Sub createSelectionMask()
                 dstDIB.createBlank boundWidth, boundHeight, 24
                 
                 'Blur the selection
-                'CreateGaussianBlurDIB featheringRadius, srcDIB, dstDIB
                 CreateApproximateGaussianBlurDIB featheringRadius, srcDIB, dstDIB, 1, True
                 
                 'Copy the blurred area back onto the selection mask
@@ -1280,6 +1162,7 @@ Private Sub createSelectionMask()
 
 End Sub
 
+'While a selection tool is active, we draw transform nodes around it
 Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
@@ -1289,37 +1172,17 @@ Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
     ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render the transform nodes
     '   on the screen, we need to translate the coordinates to the current viewport - this makes them display accurately when scroll
     '   and zoom parameters are in effect.)
-    Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
-    
-    Dim hScrollVal As Long, vScrollVal As Long
-    hScrollVal = dstCanvas.getScrollValue(PD_HORIZONTAL)
-    vScrollVal = dstCanvas.getScrollValue(PD_VERTICAL)
-    
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
     
     If (sShape = sRectangle) Or (sShape = sCircle) Then
-        dstLeft = ((selLeft - hScrollVal) * zoomVal) + imgLeft
-        dstRight = ((selLeft + selWidth - hScrollVal) * zoomVal) + imgLeft + 0.5
-        dstTop = ((selTop - vScrollVal) * zoomVal) + imgTop
-        dstBottom = ((selTop + selHeight - vScrollVal) * zoomVal) + imgTop + 0.5
+        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), selLeft, selTop, dstLeft, dstTop
+        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), selLeft + selWidth, selTop + selHeight, dstRight, dstBottom
     Else
-        dstLeft = ((x1 - hScrollVal) * zoomVal) + imgLeft
-        dstRight = ((x2 - hScrollVal) * zoomVal) + imgLeft + 0.5
-        dstTop = ((y1 - vScrollVal) * zoomVal) + imgTop
-        dstBottom = ((y2 - vScrollVal) * zoomVal) + imgTop + 0.5
+        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), x1, y1, dstLeft, dstTop
+        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), x2, y2, dstRight, dstBottom
     End If
     
-    'Vertical and/or horizontal offsets may be necessary if the form's status bar and/or rulers are visible
-    Dim horzOffset As Long, vertOffset As Long
-    vertOffset = srcImage.imgViewport.getVerticalOffset
-    
-    'Add offsets to the destination locations
-    If vertOffset > 0 Then
-        dstTop = dstTop + srcImage.imgViewport.getTopOffset
-        dstBottom = dstBottom + srcImage.imgViewport.getTopOffset
-    End If
     
     'If this selection is transformable, we can now draw transform circles at appropriate locations for the selection's shape.
     If isTransformable Then

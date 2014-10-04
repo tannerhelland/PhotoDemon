@@ -1169,7 +1169,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
     
-                'First, check to see if a selection is active. (In the future, we will be checking for other tools as well.)
+                'First, check to see if a selection is both active and transformable.
                 If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
                     
                     'If the SHIFT key is down, notify the selection engine that a square shape is requested
@@ -1281,17 +1281,17 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
-                    If ((x = m_initMouseX) And (y = m_initMouseY) And (hasMouseMoved <= 1) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
+                    If ((ClickEventAlsoFiring) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
                         Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
                     Else
                     
-                        'Check to see if all selection coordinates are invalid.  If they are, forget about this selection.
+                        'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
                         If pdImages(g_CurrentImage).mainSelection.areAllCoordinatesInvalid Then
                             Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
                         Else
                             
-                            'Depending on the type of transformation that may or may not have been applied, call the appropriate processor
-                            ' function.  This has no practical purpose at present, except to give the user a pleasant name for this action.
+                            'Depending on the type of transformation that may or may not have been applied, call the appropriate processor function.
+                            ' This is required to add the current selection event to the Undo/Redo chain.
                             Select Case pdImages(g_CurrentImage).mainSelection.getTransformationType
                             
                                 'Creating a new selection

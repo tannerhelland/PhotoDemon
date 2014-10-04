@@ -916,3 +916,4 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     metaToggle tSelectionTransform, True
                         
 End Sub
+
