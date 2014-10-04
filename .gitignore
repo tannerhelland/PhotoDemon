@@ -120,6 +120,7 @@ README_PSC-version.txt
 /Data/Macros
 /Data/Languages
 /Data/Autosave
+/Data/Selections
 *.tmpxml
 *.backup
 README.txt
