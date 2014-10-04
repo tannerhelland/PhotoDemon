@@ -27,14 +27,12 @@ End Enum
 
 'How should the selection be rendered?
 Public Enum SelectionRender
-    sLightbox = 0
-    sHighlightBlue = 1
-    sHighlightRed = 2
-    sInvertRect = 3
+    SELECTION_RENDER_LIGHTBOX = 0
+    SELECTION_RENDER_HIGHLIGHT = 1
 End Enum
 
 #If False Then
-    Const sLightbox = 0, sHighlightBlue = 1, sHighlightRed = 2, sInvertRect = 3
+    Const SELECTION_RENDER_LIGHTBOX = 0, SELECTION_RENDER_HIGHLIGHT = 1
 #End If
 
 'JPEG automatic quality detection modes

@@ -1259,9 +1259,11 @@ Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
     
 End Sub
 
-'Render a selection using one of several methods.
-Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As SelectionRender)
-
+'Render the current selection mask using one of several methods.  Note that this code operates entirely independent of selection type.
+' It only requires that valid selection boundaries be specified in advance, which it uses to accelerate the render process.
+' (Also note that the renderColor default constant evaluates to RGB(112, 183, 255), but VB doesn't let us use RGB inside a function dec.)
+Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As SelectionRender, Optional ByVal renderColor As Long = 16758640)
+    
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
     If rejectRefreshRequests Then Exit Sub
 
@@ -1272,20 +1274,10 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on the screen,
     '   we need to translate the coordinates to the current viewport - this makes them display accurately when scroll and zoom are
     '   in effect.)
-    Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
-    
-    Dim hScrollVal As Long, vScrollVal As Long
-    hScrollVal = dstCanvas.getScrollValue(PD_HORIZONTAL)
-    vScrollVal = dstCanvas.getScrollValue(PD_VERTICAL)
-    
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
-        
-    dstLeft = ((boundLeft - hScrollVal) * zoomVal) + imgLeft
-    dstRight = ((boundLeft + boundWidth - hScrollVal) * zoomVal) + imgLeft + 0.5
-    dstTop = ((boundTop - vScrollVal) * zoomVal) + imgTop
-    dstBottom = ((boundTop + boundHeight - vScrollVal) * zoomVal) + imgTop + 0.5
+    Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, boundLeft, boundTop, dstLeft, dstTop
+    Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, boundLeft + boundWidth, boundTop + boundHeight, dstRight, dstBottom
     
     'Several different selection rendering methods use the same variables.  I've declared the common ones here.
     Dim iData() As Byte
@@ -1309,25 +1301,39 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     If rightBound > srcImage.backBuffer.getDIBWidth - 1 Then rightBound = srcImage.backBuffer.getDIBWidth - 1
     If bottomBound > srcImage.backBuffer.getDIBHeight - 1 Then bottomBound = srcImage.backBuffer.getDIBHeight - 1
     
+    'Build look-up tables for both the x and y direction.  This is faster than constantly calculating new values for
+    ' every pixel inside the loop.  Note also that this code is identical among various selection render methods.
+    Dim newX As Double, newY As Double
     Dim xLookup() As Long, yLookup() As Long
-    Dim tmpCalculation As Long
+    
+    ReDim xLookup(imgLeft To rightBound) As Long
+    For x = imgLeft To rightBound
+        Drawing.convertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, x, imgTop, newX, newY, True
+        xLookup(x) = newX * 3
+    Next x
+    
+    ReDim yLookup(imgTop To bottomBound) As Long
+    For y = imgTop To bottomBound
+        Drawing.convertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, imgLeft, y, newX, newY, True
+        yLookup(y) = newY
+    Next y
     
     Dim tmpSelHolder As Byte
     Dim tmpSelDivider As Double
+    
+    'Start by acquiring a pointer to the target DIB's pixel bits
+    prepDIBSafeArray dstDIB, tmpSA
+    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+    'Next, acquire a pointer to the selection mask's pixel bits
+    prepDIBSafeArray selMask, selMaskSA
+    CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
     
     'Based on the selection type, draw a corresponding selection visualization.
     Select Case renderType
     
         'Lightbox style
-        Case 0
-        
-            'Start by acquiring a pointer to the target DIB's pixel bits
-            prepDIBSafeArray dstDIB, tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-            
-            'Next, acquire a pointer to the selection mask's pixel bits
-            prepDIBSafeArray selMask, selMaskSA
-            CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+        Case SELECTION_RENDER_LIGHTBOX
             
             'Use a look-up table to dim the non-active parts of the image
             Dim hData(0 To 255) As Byte
@@ -1335,28 +1341,7 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
             For x = 0 To 255
                 hData(x) = x \ 3
             Next x
-            
-            dstRight = dstRight - 1
-            dstBottom = dstBottom - 1
-            
-            'Build look-up tables for both the x and y direction.  This is faster than constantly calculating new values for
-            ' every pixel inside the loop.
-            ReDim xLookup(imgLeft To rightBound) As Long
-            For x = imgLeft To rightBound
-                tmpCalculation = hScrollVal + Int((x - imgLeft) / zoomVal)
-                If tmpCalculation < 0 Then tmpCalculation = 0
-                If tmpCalculation > srcWidth Then tmpCalculation = srcWidth
-                xLookup(x) = tmpCalculation * 3
-            Next x
-            
-            ReDim yLookup(imgTop To bottomBound) As Long
-            For y = imgTop To bottomBound
-                tmpCalculation = vScrollVal + Int((y - imgTop) / zoomVal)
-                If tmpCalculation < 0 Then tmpCalculation = 0
-                If tmpCalculation > srcHeight Then tmpCalculation = srcHeight
-                yLookup(y) = tmpCalculation
-            Next y
-                        
+                                    
             'Dim the non-active parts of the image
             For x = imgLeft To rightBound
                 QuickVal = x * 3
@@ -1379,69 +1364,25 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
             Next y
             Next x
             
-            'With our work complete, point all arrays away from their respective DIBs, then deallocate them
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
-            Erase iData
-            Erase selMaskData
-                    
-            dstRight = dstRight + 1
-            dstBottom = dstBottom + 1
-        
         'Highlight style (Paint.NET)
-        Case 1, 2
+        Case SELECTION_RENDER_HIGHLIGHT
         
-            'Start by acquiring a pointer to the target DIB's pixel bits
-            prepDIBSafeArray dstDIB, tmpSA
-            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-            
-            'Next, acquire a pointer to the selection mask's pixel bits
-            prepDIBSafeArray selMask, selMaskSA
-            CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+            'Extract RGB values from the passed color
+            Dim newR As Long, newG As Long, newB As Long
+            newR = ExtractR(renderColor)
+            newG = ExtractG(renderColor)
+            newB = ExtractB(renderColor)
             
             'Use look-up tables to highlight the active parts of the image
             Dim rData(0 To 255) As Byte, gData(0 To 255) As Byte, bData(0 To 255) As Byte
-            
-            Dim newR As Long, newG As Long, newB As Long
-            
-            If renderType = sHighlightBlue Then
-                newR = 112
-                newG = 183
-                newB = 255
-            Else
-                newR = 255
-                newG = 35
-                newB = 49
-            End If
             
             For x = 0 To 255
                 rData(x) = (newR + x) \ 2
                 gData(x) = (newG + x) \ 2
                 bData(x) = (newB + x) \ 2
             Next x
-            
-            dstRight = dstRight - 1
-            dstBottom = dstBottom - 1
-            
-            'Build look-up tables for both the x and y direction.  This is faster than calculating
-            ' such values for every pixel inside the loop.
-            ReDim xLookup(imgLeft To rightBound) As Long
-            For x = imgLeft To rightBound
-                tmpCalculation = hScrollVal + Int((x - imgLeft) / zoomVal)
-                If tmpCalculation < 0 Then tmpCalculation = 0
-                If tmpCalculation > srcWidth Then tmpCalculation = srcWidth
-                xLookup(x) = tmpCalculation * 3
-            Next x
-            
-            ReDim yLookup(imgTop To bottomBound) As Long
-            For y = imgTop To bottomBound
-                tmpCalculation = vScrollVal + Int((y - imgTop) / zoomVal)
-                If tmpCalculation < 0 Then tmpCalculation = 0
-                If tmpCalculation > srcHeight Then tmpCalculation = srcHeight
-                yLookup(y) = tmpCalculation
-            Next y
-            
-            'Dim the non-active parts of the image
+                        
+            'Highlight the selected parts of the image
             For x = imgLeft To rightBound
                 QuickVal = x * 3
             For y = imgTop To bottomBound
@@ -1465,17 +1406,12 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
             Next y
             Next x
             
-            'With our work complete, point all arrays away from their respective DIBs, then deallocate them
-            CopyMemory ByVal VarPtrArray(iData), 0&, 4
-            CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
-            Erase iData
-            Erase selMaskData
-            
-            dstRight = dstRight + 1
-            dstBottom = dstBottom + 1
-                    
     End Select
-        
+    
+    'With our work complete, point all arrays away from their respective DIBs, then deallocate them
+    CopyMemory ByVal VarPtrArray(iData), 0&, 4
+    CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+    
 End Sub
 
 Private Sub Class_Initialize()
