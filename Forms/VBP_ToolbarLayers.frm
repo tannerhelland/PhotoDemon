@@ -1073,16 +1073,7 @@ Private Sub Form_Load()
     'If a UI image can be disabled, make a grayscale copy of it in advance
     Filters_Layers.GrayscaleDIB img_MergeUpDisabled, True
     Filters_Layers.GrayscaleDIB img_MergeDownDisabled, True
-    
-    'Force the blend mode drop-down to display the full list of items.  The SendMessage call is structured as:
-    ' 1) hWnd of combo box
-    ' 2) Constant for "set number of visible items" request
-    ' 3) Number of visible items requested (in our case, the count of the combo box)
-    ' 4) (unused)
-    ' NOTE: this requires a manifest, so it won't work in the IDE.
-    Const CB_SETMINVISIBLE As Long = 339
-    SendMessage cboBlendMode.hWnd, 339, CLng(cboBlendMode.ListCount), ByVal 0&
-    
+        
     'Reflow the interface to match its current size
     reflowInterface
     

@@ -198,146 +198,6 @@ Begin VB.Form toolbar_Tools
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
-      ClipControls    =   0   'False
-      ForeColor       =   &H80000008&
-      Height          =   1575
-      Index           =   1
-      Left            =   15
-      ScaleHeight     =   105
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   950
-      TabIndex        =   25
-      Top             =   1020
-      Visible         =   0   'False
-      Width           =   14250
-      Begin PhotoDemon.smartCheckBox chkLayerBorder 
-         Height          =   330
-         Left            =   7080
-         TabIndex        =   27
-         Top             =   360
-         Width           =   6000
-         _ExtentX        =   10583
-         _ExtentY        =   582
-         Caption         =   "show layer borders"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkLayerNodes 
-         Height          =   330
-         Left            =   7080
-         TabIndex        =   28
-         Top             =   780
-         Width           =   6000
-         _ExtentX        =   10583
-         _ExtentY        =   582
-         Caption         =   "show layer transform nodes"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
-         Height          =   330
-         Left            =   120
-         TabIndex        =   30
-         Top             =   360
-         Width           =   6810
-         _ExtentX        =   12012
-         _ExtentY        =   582
-         Caption         =   "automatically activate layer beneath mouse"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
-         Height          =   330
-         Left            =   120
-         TabIndex        =   31
-         Top             =   780
-         Width           =   6810
-         _ExtentX        =   12012
-         _ExtentY        =   582
-         Caption         =   "ignore transparent pixels when auto-activating layers"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblOptions 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "interaction options:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   1
-         Left            =   120
-         TabIndex        =   29
-         Top             =   60
-         Width           =   1650
-      End
-      Begin VB.Label lblOptions 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "display options:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   0
-         Left            =   7080
-         TabIndex        =   26
-         Top             =   60
-         Width           =   1335
-      End
-   End
-   Begin VB.PictureBox picTools 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   1575
       Index           =   0
@@ -346,6 +206,7 @@ Begin VB.Form toolbar_Tools
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   950
       TabIndex        =   0
+      TabStop         =   0   'False
       Top             =   1020
       Visible         =   0   'False
       Width           =   14250
@@ -391,7 +252,6 @@ Begin VB.Form toolbar_Tools
          List            =   "VBP_ToolbarTools.frx":4A32
          Style           =   2  'Dropdown List
          TabIndex        =   2
-         TabStop         =   0   'False
          ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
          Top             =   390
          Width           =   2445
@@ -415,7 +275,6 @@ Begin VB.Form toolbar_Tools
          List            =   "VBP_ToolbarTools.frx":4A36
          Style           =   2  'Dropdown List
          TabIndex        =   1
-         TabStop         =   0   'False
          ToolTipText     =   "Use this option to change the way selections blend with their surroundings."
          Top             =   390
          Width           =   2445
@@ -1085,6 +944,146 @@ Begin VB.Form toolbar_Tools
          Width           =   855
       End
    End
+   Begin VB.PictureBox picTools 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ClipControls    =   0   'False
+      ForeColor       =   &H80000008&
+      Height          =   1575
+      Index           =   1
+      Left            =   15
+      ScaleHeight     =   105
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   950
+      TabIndex        =   25
+      Top             =   1020
+      Visible         =   0   'False
+      Width           =   14250
+      Begin PhotoDemon.smartCheckBox chkLayerBorder 
+         Height          =   330
+         Left            =   7080
+         TabIndex        =   27
+         Top             =   360
+         Width           =   6000
+         _ExtentX        =   10583
+         _ExtentY        =   582
+         Caption         =   "show layer borders"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkLayerNodes 
+         Height          =   330
+         Left            =   7080
+         TabIndex        =   28
+         Top             =   780
+         Width           =   6000
+         _ExtentX        =   10583
+         _ExtentY        =   582
+         Caption         =   "show layer transform nodes"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
+         Height          =   330
+         Left            =   120
+         TabIndex        =   30
+         Top             =   360
+         Width           =   6810
+         _ExtentX        =   12012
+         _ExtentY        =   582
+         Caption         =   "automatically activate layer beneath mouse"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
+         Height          =   330
+         Left            =   120
+         TabIndex        =   31
+         Top             =   780
+         Width           =   6810
+         _ExtentX        =   12012
+         _ExtentY        =   582
+         Caption         =   "ignore transparent pixels when auto-activating layers"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblOptions 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "interaction options:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   1
+         Left            =   120
+         TabIndex        =   29
+         Top             =   60
+         Width           =   1650
+      End
+      Begin VB.Label lblOptions 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "display options:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   0
+         Left            =   7080
+         TabIndex        =   26
+         Top             =   60
+         Width           =   1335
+      End
+   End
    Begin VB.Label lblCategory 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
@@ -1421,7 +1420,7 @@ End Sub
 
 'When the selection type is changed, update the corresponding preference and redraw all selections
 Private Sub cmbSelRender_Click(Index As Integer)
-            
+    
     If g_OpenImageCount > 0 Then
     
         Dim i As Long
@@ -1505,6 +1504,7 @@ Public Sub resetToolButtonStates()
         Case QUICK_FIX_LIGHTING
             activeToolPanel = 2
         
+        'If a tool does not require an extra settings panel, set the active panel to -1.  This will hide all panels.
         Case Else
             activeToolPanel = -1
         
@@ -1558,7 +1558,9 @@ Public Sub resetToolButtonStates()
         If i = activeToolPanel Then
             If Not picTools(i).Visible Then
                 picTools(i).Visible = True
+                picTools(i).Refresh
                 setArrowCursor picTools(i)
+                If Me.Visible Then picTools(i).SetFocus
             End If
         Else
             If picTools(i).Visible Then picTools(i).Visible = False
@@ -1590,7 +1592,6 @@ Private Sub newToolSelected()
                     
                         'Remove any existing selections
                         If g_OpenImageCount > 0 Then Process "Remove selection", , , UNDO_SELECTION
-                    
                         metaToggle tSelectionTransform, False
                         
                     End If
@@ -1612,7 +1613,6 @@ Private Sub newToolSelected()
                         
                         'Remove any existing selections
                         If g_OpenImageCount > 0 Then Process "Remove selection", , , UNDO_SELECTION
-                        
                         metaToggle tSelectionTransform, False
                         
                     End If
@@ -1630,7 +1630,6 @@ Private Sub newToolSelected()
                 
                     'Remove any existing selections
                     If g_OpenImageCount > 0 Then Process "Remove selection", , , UNDO_SELECTION
-                
                     metaToggle tSelectionTransform, False
                     
                 End If
@@ -1732,6 +1731,9 @@ Private Sub sltSelectionLineWidth_Change()
     End If
 End Sub
 
+'Are selections currently allowed?  Program states like "no open images" prevent selections from ever being created, and individual
+' functions can use this function to determine it.  Passing TRUE for the transformableMatters param will add a check for an existing,
+' transformable-type selection (squares, etc) to the evaluation list.
 Private Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
     If g_OpenImageCount > 0 Then
         If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) And (Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests) Then
@@ -1760,16 +1762,16 @@ Private Sub updateSelectionPanelLayout()
 
     'Display the feathering slider as necessary
     If cmbSelSmoothing(0).ListIndex = sFullyFeathered Then
-        sltSelectionFeathering.Visible = True
+        If Not sltSelectionFeathering.Visible Then sltSelectionFeathering.Visible = True
     Else
-        sltSelectionFeathering.Visible = False
+        If sltSelectionFeathering.Visible Then sltSelectionFeathering.Visible = False
     End If
     
     'Display the border slider as necessary
     If cmbSelType(0).ListIndex = sBorder Then
-        sltSelectionBorder.Visible = True
+        If Not sltSelectionBorder.Visible Then sltSelectionBorder.Visible = True
     Else
-        sltSelectionBorder.Visible = False
+        If sltSelectionBorder.Visible Then sltSelectionBorder.Visible = False
     End If
     
 End Sub
