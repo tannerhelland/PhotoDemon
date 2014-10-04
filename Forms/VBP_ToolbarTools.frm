@@ -210,6 +210,15 @@ Begin VB.Form toolbar_Tools
       Top             =   1020
       Visible         =   0   'False
       Width           =   14250
+      Begin PhotoDemon.colorSelector csSelectionHighlight 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   49
+         Top             =   840
+         Width           =   2220
+         _ExtentX        =   3916
+         _ExtentY        =   661
+      End
       Begin VB.ComboBox cmbSelRender 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
@@ -1315,6 +1324,13 @@ Private Sub cmdTools_Click(Index As Integer)
         
 End Sub
 
+Private Sub csSelectionHighlight_ColorChanged()
+    
+    'Redraw the viewport
+    If selectionsAllowed(False) Then RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
 Private Sub Form_Load()
 
     Dim i As Long
@@ -1338,10 +1354,11 @@ Private Sub Form_Load()
         toolbar_Tools.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
         For i = 0 To toolbar_Tools.cmbSelRender.Count - 1
             toolbar_Tools.cmbSelRender(i).AddItem "Lightbox", 0
-            toolbar_Tools.cmbSelRender(i).AddItem "Highlight (Blue)", 1
-            toolbar_Tools.cmbSelRender(i).AddItem "Highlight (Red)", 2
+            toolbar_Tools.cmbSelRender(i).AddItem "Highlight", 1
             toolbar_Tools.cmbSelRender(i).ListIndex = 0
         Next i
+        csSelectionHighlight.Color = RGB(112, 183, 255)
+        csSelectionHighlight.Visible = False
         
         'Selection smoothing (currently none, antialiased, fully feathered)
         toolbar_Tools.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
@@ -1418,19 +1435,18 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
 
 End Sub
 
-'When the selection type is changed, update the corresponding preference and redraw all selections
+'When the selection render type is changed, we must redraw the viewport to match
 Private Sub cmbSelRender_Click(Index As Integer)
     
-    If g_OpenImageCount > 0 Then
-    
-        Dim i As Long
-        For i = 0 To g_NumOfImagesLoaded
-            If (Not pdImages(i) Is Nothing) Then
-                If pdImages(i).IsActive And pdImages(i).selectionActive Then RenderViewport pdImages(i), FormMain.mainCanvas(0)
-            End If
-        Next i
-    
+    'Show or hide the color selector, as appropriate
+    If cmbSelRender(Index).ListIndex = SELECTION_RENDER_HIGHLIGHT Then
+        csSelectionHighlight.Visible = True
+    Else
+        csSelectionHighlight.Visible = False
     End If
+    
+    'Redraw the viewport
+    If selectionsAllowed(False) Then RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
