@@ -588,15 +588,57 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
 
 End Function
 
-'Invert the current selection.  Note that this will make a transformable selection non-transformable.
+'Invert the current selection.  Note that this will make a transformable selection non-transformable - to maintain transformability, use
+' the "exterior"/"interior" options on the main form.
 Public Sub invertCurrentSelection()
 
     'Unselect any existing selection
     pdImages(g_CurrentImage).mainSelection.lockRelease
     pdImages(g_CurrentImage).selectionActive = False
         
-    'Ask the selection to invert itself
-    pdImages(g_CurrentImage).mainSelection.invertSelection
+    Message "Inverting selection..."
+    
+    'Point a standard 2D byte array at the selection mask
+    Dim x As Long, y As Long
+    Dim QuickVal As Long
+    
+    Dim selMaskData() As Byte
+    Dim selMaskSA As SAFEARRAY2D
+    prepSafeArray selMaskSA, pdImages(g_CurrentImage).mainSelection.selMask
+    CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+    
+    Dim maskWidth As Long, maskHeight As Long
+    maskWidth = pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth - 1
+    maskHeight = pdImages(g_CurrentImage).mainSelection.selMask.getDIBHeight - 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    SetProgBarMax maskWidth
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'After all that work, the Invert code itself is very small and unexciting!
+    For x = 0 To maskWidth
+        QuickVal = x * 3
+    For y = 0 To maskHeight
+        selMaskData(QuickVal, y) = 255 - selMaskData(QuickVal, y)
+        selMaskData(QuickVal + 1, y) = 255 - selMaskData(QuickVal + 1, y)
+        selMaskData(QuickVal + 2, y) = 255 - selMaskData(QuickVal + 2, y)
+    Next y
+        If (x And progBarCheck) = 0 Then SetProgBarVal x
+    Next x
+    
+    'Release our temporary byte array
+    CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+    Erase selMaskData
+    
+    'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
+    ' being non-transformable)
+    pdImages(g_CurrentImage).mainSelection.findNewBoundsManually
+    
+    SetProgBarVal 0
+    releaseProgressBar
+    Message "Selection inversion complete."
     
     'Lock in this selection
     pdImages(g_CurrentImage).mainSelection.lockIn
@@ -627,13 +669,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         pdImages(g_CurrentImage).selectionActive = False
         
         'Use PD's built-in Gaussian blur function to apply the blur
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
-        CreateApproximateGaussianBlurDIB featherRadius, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, 3, False
-        
-        tmpDIB.eraseDIB
-        Set tmpDIB = Nothing
+        quickBlurDIB pdImages(g_CurrentImage).mainSelection.selMask, featherRadius, True
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
@@ -655,7 +691,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
 
 End Sub
 
-'Sharpen the current selection.  Note that this will make a transformable selection non-transformable.
+'Sharpen (un-feather?) the current selection.  Note that this will make a transformable selection non-transformable.
 Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sharpenRadius As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
@@ -674,8 +710,109 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         pdImages(g_CurrentImage).mainSelection.lockRelease
         pdImages(g_CurrentImage).selectionActive = False
         
-        'Ask the selection to sharpen itself
-        pdImages(g_CurrentImage).mainSelection.sharpenSelection sharpenRadius
+       'Point an array at the current selection mask
+        Dim selMaskData() As Byte
+        Dim selMaskSA As SAFEARRAY2D
+        
+        'Create a second local array.  This will contain the a copy of the selection mask, and we will use it as our source reference
+        ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
+        Dim srcDIB As pdDIB
+        Set srcDIB = New pdDIB
+        srcDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+                
+        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        Dim x As Long, y As Long
+        
+        'Unsharp masking requires a gaussian blur DIB to operate.  Create one now.
+        quickBlurDIB srcDIB, sharpenRadius, True
+        
+        'Now that we have a gaussian DIB created in workingDIB, we can point arrays toward it and the source DIB
+        prepSafeArray selMaskSA, pdImages(g_CurrentImage).mainSelection.selMask
+        CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+        
+        Dim srcImageData() As Byte
+        Dim srcSA As SAFEARRAY2D
+        prepSafeArray srcSA, srcDIB
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim QuickVal As Long, qvDepth As Long
+        qvDepth = 3
+        
+        'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+        ' based on the size of the area to be processed.
+        Dim progBarCheck As Long
+        SetProgBarMax pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth
+        progBarCheck = findBestProgBarValue()
+        
+        'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
+        Dim scaleFactor As Double, invScaleFactor As Double
+        scaleFactor = sharpenRadius
+        invScaleFactor = 1 - scaleFactor
+        
+        Dim iWidth As Long, iHeight As Long
+        iWidth = pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth - 1
+        iHeight = pdImages(g_CurrentImage).mainSelection.selMask.getDIBHeight - 1
+        
+        Dim blendVal As Double
+        
+        'More color variables - in this case, sums for each color component
+        Dim r As Long, g As Long, b As Long
+        Dim r2 As Long, g2 As Long, b2 As Long
+        Dim newR As Long, newG As Long, newB As Long
+        Dim tLumDelta As Long
+        
+        'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
+        For x = 0 To iWidth
+            QuickVal = x * 3
+        For y = 0 To iHeight
+                
+            'Retrieve the original image's pixels
+            r = selMaskData(QuickVal + 2, y)
+            g = selMaskData(QuickVal + 1, y)
+            b = selMaskData(QuickVal, y)
+            
+            'Now, retrieve the gaussian pixels
+            r2 = srcImageData(QuickVal + 2, y)
+            g2 = srcImageData(QuickVal + 1, y)
+            b2 = srcImageData(QuickVal, y)
+            
+            tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
+                
+            newR = (scaleFactor * r) + (invScaleFactor * r2)
+            If newR > 255 Then newR = 255
+            If newR < 0 Then newR = 0
+                
+            newG = (scaleFactor * g) + (invScaleFactor * g2)
+            If newG > 255 Then newG = 255
+            If newG < 0 Then newG = 0
+                
+            newB = (scaleFactor * b) + (invScaleFactor * b2)
+            If newB > 255 Then newB = 255
+            If newB < 0 Then newB = 0
+            
+            blendVal = tLumDelta / 255
+            
+            newR = BlendColors(newR, r, blendVal)
+            newG = BlendColors(newG, g, blendVal)
+            newB = BlendColors(newB, b, blendVal)
+            
+            selMaskData(QuickVal + 2, y) = newR
+            selMaskData(QuickVal + 1, y) = newG
+            selMaskData(QuickVal, y) = newB
+                    
+        Next y
+            If (x And progBarCheck) = 0 Then SetProgBarVal x
+        Next x
+        
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        Erase srcImageData
+        
+        CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+        Erase selMaskData
+        
+        Set srcDIB = Nothing
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
@@ -722,7 +859,6 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
         CreateMedianDIB growSize, 100, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
         
-        tmpDIB.eraseDIB
         Set tmpDIB = Nothing
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
@@ -770,7 +906,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
         CreateMedianDIB shrinkSize, 1, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
         
-        tmpDIB.eraseDIB
+        'Erase the temporary DIB
         Set tmpDIB = Nothing
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
@@ -812,13 +948,34 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         pdImages(g_CurrentImage).mainSelection.lockRelease
         pdImages(g_CurrentImage).selectionActive = False
         
-        'Ask the DIB to border itself
-        pdImages(g_CurrentImage).mainSelection.borderSelection borderRadius
+        'Bordering a selection requires two passes: a grow pass and a shrink pass.  The results of these two passes are then blended
+        ' to create the final bordered selection.
+        
+        'Start by creating the grow and shrink DIBs using a median function.
+        Dim growDIB As pdDIB
+        Set growDIB = New pdDIB
+        growDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+        
+        Dim shrinkDIB As pdDIB
+        Set shrinkDIB = New pdDIB
+        shrinkDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+        
+        'Use a median function to dilate and erode the existing mask
+        CreateMedianDIB borderRadius, 1, pdImages(g_CurrentImage).mainSelection.selMask, shrinkDIB, False, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth * 2
+        CreateMedianDIB borderRadius, 100, pdImages(g_CurrentImage).mainSelection.selMask, growDIB, False, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth * 2, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth
+        
+        'Blend those two DIBs together, and use the difference between the two to calculate the new border area
+        pdImages(g_CurrentImage).mainSelection.selMask.createFromExistingDIB growDIB
+        BitBlt pdImages(g_CurrentImage).mainSelection.selMask.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth, pdImages(g_CurrentImage).mainSelection.selMask.getDIBHeight, shrinkDIB.getDIBDC, 0, 0, vbSrcInvert
+        
+        'Erase the temporary DIBs
+        Set growDIB = Nothing
+        Set shrinkDIB = Nothing
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
         pdImages(g_CurrentImage).mainSelection.findNewBoundsManually
-        
+                
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.lockIn
         pdImages(g_CurrentImage).selectionActive = True

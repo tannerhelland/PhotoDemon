@@ -151,8 +151,10 @@ Public selMask As pdDIB
 Public maskHasBeenCreated As Boolean
 
 'After the mask has been generated, its status will be set as "ready".  Any function that changes the selected area will reset this to "false".
-' The selection rendering code can check this value to see if the mask needs to be recreated before rendering it to screen.
-Private isMaskReady As Boolean
+' The selection rendering code can check this value to see if the mask needs to be recreated before rendering it to screen.  If external
+' functions modify the selection in some way (e.g. Select menu dialogs), they need to set this to TRUE to prevent the engine from attempting
+' to recreate a mask from existing vector data.
+Public isMaskReady As Boolean
 
 'Some types of transformations (basic shapes, like rectangles, etc), are transformable, meaning that after they are created, the user can
 ' click on them again to resize or move them.  Complex transformations (magic wand, lasso, etc), may not be transformable.  This boolean
@@ -1709,64 +1711,6 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
 
 End Function
 
-'Invert the current selection.  Note that this will make a transformable selection non-transformable - to maintain transformability, use
-' the "exterior"/"interior" options on the main form.
-Public Sub invertSelection()
-
-    Message "Inverting selection..."
-    
-    'Point a standard 2D byte array at the selection mask
-    Dim x As Long, y As Long
-    Dim QuickVal As Long
-    
-    Dim selMaskData() As Byte
-    Dim selMaskSA As SAFEARRAY2D
-    prepDIBSafeArray selMask, selMaskSA
-    CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
-    
-    Dim maskWidth As Long, maskHeight As Long
-    maskWidth = selMask.getDIBWidth - 1
-    maskHeight = selMask.getDIBHeight - 1
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    SetProgBarMax maskWidth
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
-    
-    'After all that work, the Invert code itself is very small and unexciting!
-    For x = 0 To maskWidth
-        QuickVal = x * 3
-    For y = 0 To maskHeight
-        selMaskData(QuickVal, y) = 255 - selMaskData(QuickVal, y)
-        selMaskData(QuickVal + 1, y) = 255 - selMaskData(QuickVal + 1, y)
-        selMaskData(QuickVal + 2, y) = 255 - selMaskData(QuickVal + 2, y)
-    Next y
-        If (x And progBarCheck) = 0 Then
-            'If userPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
-    Next x
-    
-    'Release our temporary byte array
-    CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
-    Erase selMaskData
-    
-    'We now need to find selection boundaries.  Use a standalone function for that.
-    findNewBoundsManually
-    
-    'Inverting a selection makes it non-transformable
-    isTransformable = False
-    
-    'Mark the mask as ready (it should already be marked this way, but set it again just to be safe)
-    isMaskReady = True
-    
-    SetProgBarVal 0
-    releaseProgressBar
-    Message "Selection inversion complete."
-
-End Sub
-
 'When working with raster selections (e.g. non-transformable ones), we still want to minimize selection processing time by processing the
 ' smallest possible rectangle that includes all selected pixels.  This function will scan the selection mask and populate the
 ' selLeft/Top/Width/Height and boundLeft/Top/Width/Height values automatically, based on the mask's contents.
@@ -1940,148 +1884,6 @@ Public Sub findNewBoundsManually()
     CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
     Erase selMaskData
     
-End Sub
-
-'Sharpen (un-feather?) the current selection.  In the future, this code will be replaced with a much simpler "sharpen DIB" function, but until
-' that happens, a copy-and-paste implementation is provided here for ease of use.
-Public Sub sharpenSelection(ByVal sharpenRadius As Long)
-        
-    'Point an array at the current selection mask
-    Dim selMaskData() As Byte
-    Dim selMaskSA As SAFEARRAY2D
-    
-    'Create a second local array.  This will contain the a copy of the selection mask, and we will use it as our source reference
-    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB selMask
-            
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long
-    
-    'Unsharp masking requires a gaussian blur DIB to operate.  Create one now.
-    If CreateGaussianBlurDIB(sharpenRadius, selMask, srcDIB, False, selMask.getDIBHeight * 2 + selMask.getDIBWidth) Then
-    
-        'Now that we have a gaussian DIB created in workingDIB, we can point arrays toward it and the source DIB
-        prepDIBSafeArray selMask, selMaskSA
-        CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
-        
-        Dim srcImageData() As Byte
-        Dim srcSA As SAFEARRAY2D
-        prepDIBSafeArray srcDIB, srcSA
-        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim QuickVal As Long, qvDepth As Long
-        qvDepth = 3
-        
-        'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-        ' based on the size of the area to be processed.
-        Dim progBarCheck As Long
-        progBarCheck = findBestProgBarValue()
-            
-        'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
-        Dim scaleFactor As Double, invScaleFactor As Double
-        scaleFactor = sharpenRadius
-        invScaleFactor = 1 - scaleFactor
-    
-        Dim blendVal As Double
-        
-        'More color variables - in this case, sums for each color component
-        Dim r As Long, g As Long, b As Long
-        Dim r2 As Long, g2 As Long, b2 As Long
-        Dim newR As Long, newG As Long, newB As Long
-        Dim tLumDelta As Long
-        
-        'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-        For x = 0 To selMask.getDIBWidth - 1
-            QuickVal = x * 3
-        For y = 0 To selMask.getDIBHeight - 1
-            
-            'Retrieve the original image's pixels
-            r = selMaskData(QuickVal + 2, y)
-            g = selMaskData(QuickVal + 1, y)
-            b = selMaskData(QuickVal, y)
-            
-            'Now, retrieve the gaussian pixels
-            r2 = srcImageData(QuickVal + 2, y)
-            g2 = srcImageData(QuickVal + 1, y)
-            b2 = srcImageData(QuickVal, y)
-            
-            tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
-                
-            newR = (scaleFactor * r) + (invScaleFactor * r2)
-            If newR > 255 Then newR = 255
-            If newR < 0 Then newR = 0
-                
-            newG = (scaleFactor * g) + (invScaleFactor * g2)
-            If newG > 255 Then newG = 255
-            If newG < 0 Then newG = 0
-                
-            newB = (scaleFactor * b) + (invScaleFactor * b2)
-            If newB > 255 Then newB = 255
-            If newB < 0 Then newB = 0
-            
-            blendVal = tLumDelta / 255
-            
-            newR = BlendColors(newR, r, blendVal)
-            newG = BlendColors(newG, g, blendVal)
-            newB = BlendColors(newB, b, blendVal)
-            
-            selMaskData(QuickVal + 2, y) = newR
-            selMaskData(QuickVal + 1, y) = newG
-            selMaskData(QuickVal, y) = newB
-                    
-        Next y
-            If (x And progBarCheck) = 0 Then
-                SetProgBarVal x + (selMask.getDIBHeight * 2)
-            End If
-        Next x
-        
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        Erase srcImageData
-        
-        srcDIB.eraseDIB
-        Set srcDIB = Nothing
-        
-        CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
-        Erase selMaskData
-        
-    End If
-        
-End Sub
-
-'Convert the selection to border-type
-Public Sub borderSelection(ByVal borderRadius As Long)
-
-    'Bordering a selection requires two passes: a grow pass and a shrink pass.  The results of these two passes are then blended
-    ' to create the final bordered selection.
-    
-    'Start by creating the grow and shrink DIBs using the median function.
-    
-    'Create a second local array.  This will contain the a copy of the selection mask, and we will use it as our source reference
-    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim growDIB As pdDIB
-    Set growDIB = New pdDIB
-    growDIB.createFromExistingDIB selMask
-    
-    Dim shrinkDIB As pdDIB
-    Set shrinkDIB = New pdDIB
-    shrinkDIB.createFromExistingDIB selMask
-    
-    'Unsharp masking requires a gaussian blur DIB to operate.  Create one now.
-    CreateMedianDIB borderRadius, 1, selMask, shrinkDIB, False, selMask.getDIBWidth * 2
-    CreateMedianDIB borderRadius, 100, selMask, growDIB, False, selMask.getDIBWidth * 2, selMask.getDIBWidth
-    
-    'Blend those two DIBs over the existing mask
-    selMask.createFromExistingDIB growDIB
-    growDIB.eraseDIB
-    BitBlt selMask.getDIBDC, 0, 0, selMask.getDIBWidth, selMask.getDIBHeight, shrinkDIB.getDIBDC, 0, 0, vbSrcInvert
-    
-    'Erase the temporary DIBs
-    shrinkDIB.eraseDIB
-        
 End Sub
 
 'External functions can use this function to request a thumbnail version of the selection mask.
