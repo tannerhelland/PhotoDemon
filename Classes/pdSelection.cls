@@ -16,8 +16,7 @@ Attribute VB_Exposed = False
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 25/September/12
 'Last updated: 16/May/14
-'Last update: remove all "backup selection param" functions, which were required by the old lazy Undo/Redo engine, but
-'              are no longer relevant.
+'Last update: refactor all code in preparation for new selection tools.
 '
 'This class handles all selections in PhotoDemon.  Rectangular and elliptical selections are now implemented, with more
 ' to follow in the coming months.
@@ -116,11 +115,6 @@ Private sSmooth As SelectionSmoothing
 'The coordinates of the current selection (if rectangular)
 Public x1 As Double, x2 As Double
 Public y1 As Double, y2 As Double
-
-'The actual coordinates passed from the user's mouse movements to this selection object.  These coordinates are not modified in any way.
-' (e.g. these coordinates could lie outside the image, viewport, or screen, because no bounds checking is applied to them)
-Private actualX1 As Double, actualX2 As Double
-Private actualY1 As Double, actualY2 As Double
 
 'When a selection is "locked in", the x and y values of corner points are converted to these values
 Public selLeft As Long, selTop As Long
@@ -233,26 +227,43 @@ Public Sub initFromParamString(ByVal paramString As String)
     '11 - height
     selHeight = cParams.GetLong(11)
     
-    '12 - x1
-    x1 = cParams.GetDouble(12)
+    'Beyond this point, parameters vary by selection type
+    Select Case sShape
     
-    '13 - y1
-    y1 = cParams.GetDouble(13)
+        'Rectangles, ellipses, and lines only require bounding rect values (stored as two (x, y) pairs).  Retrieve these
+        ' values from positions [12, 15] inclusive.
+        Case sRectangle, sCircle, sLine
+        
+            x1 = cParams.GetDouble(12)
+            y1 = cParams.GetDouble(13)
+            x2 = cParams.GetDouble(14)
+            y2 = cParams.GetDouble(15)
+        
+        Case Else
     
-    '14 - x2
-    x2 = cParams.GetDouble(14)
-    
-    '15 - y2
-    y2 = cParams.GetDouble(15)
-    
+    End Select
+        
 End Sub
 
 'Return all of this selection's important settings as a specifically formatted parameter string.  This string can be passed to a selection
 ' object at any future point to recreate this selection exactly.
 ' (See also: "initFromParamString" above)
 Public Function getSelectionParamString() As String
-    getSelectionParamString = buildParams(sShape, sType, sSmooth, featheringRadius, borderSize, roundedCorners, selectionLineWidth, selLeft, selTop, selWidth, selHeight, x1, y1, x2, y2)
+    
+    'All selection types store a preset list of standardized values
+    getSelectionParamString = buildParams(sShape, sType, sSmooth, featheringRadius, borderSize, roundedCorners, selectionLineWidth, selLeft, selTop, selWidth, selHeight)
+    
+    'After the preset values, each selection type can write its own coords, relevant to its particular shape
+    Select Case sShape
+    
+        'Rectangles, ellipses, and lines require only (x1, y1) and (x2, y2) coordinates
+        Case sRectangle, sCircle, sLine
+            getSelectionParamString = getSelectionParamString & "|" & buildParams(x1, y1, x2, y2)
+    
+    End Select
+    
     getSelectionParamString = translateParamStringToRelativeFormat(getSelectionParamString, True)
+    
 End Function
 
 'Simple - use this to select the entire image attached to this selection object.  Note that this DOES NOT render the new selection on-screen,
@@ -546,10 +557,6 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
     x1 = x
     y1 = y
     
-    'Make a back-up copy of the coordinates.  These values will never be changed except by the user moving the mouse.
-    actualX1 = x
-    actualY1 = y
-    
     'Set the second set of point to match the first set
     Select Case sShape
         
@@ -641,21 +648,25 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
         'If a transform mode is active, re-mark the selection as being transformable
         isTransformable = True
         
-        updateInternalCoords
-    
-    'No transform mode makes this easy; just update the second set of points and redraw the selection
+    'This is not a transform, meaning the selection is being created for the first time.  For standard selection types,
+    ' this simply means copying the passed (x, y) values.  Polygon/lasso selections are more complicated.
     Else
-    
-        x2 = x
-        y2 = y
         
-        'Make a back-up copy of the coordinates.  These values will never be changed except by the user moving the mouse.
-        actualX2 = x
-        actualY2 = y
-    
-        updateInternalCoords
+        Select Case sShape
+        
+            'Rectangle, ellipse, and line selections are easy - just copy the passed (x, y) values into (x2, y2)
+            Case sRectangle, sCircle, sLine
+                x2 = x
+                y2 = y
+                
+            Case Else
+            
+        End Select
         
     End If
+    
+    'Update the bounding rect for the selection as a whole, based on the new coordinates
+    updateInternalCoords
     
 End Sub
 
@@ -758,24 +769,25 @@ End Sub
 ' image.  If this is the case, we don't want to finalize the current selection - we want to forget it.
 Public Function areAllCoordinatesInvalid() As Boolean
 
-    'Transforms (resizing, moving, etc) do their own validation.  As such, this function is unnecessary because transforms
-    ' can only result in a valid selection.
-    If transformModeActive Then
-        areAllCoordinatesInvalid = False
+    'Selections must lie at least partially on the image.  If all coordinates lie outside the image, return TRUE, and the caller
+    ' will know to remove the selection completely.
+    Select Case sShape
     
-    'If this selection wasn't just adjusted by a transform, it may be invalid (for example, if all its coordinates lie off the image).
-    ' Check for validity now.
-    Else
-        
-        'If both coordinates lie outside the image, there is still a chance the selection itself can be valid (for example,
-        ' if the selection extends the full width or height of the image).  Check for this special case now.
-        If (actualX1 < 0) And (actualX2 < 0) Then areAllCoordinatesInvalid = True
-        If (actualX1 > containingPDImage.Width) And (actualX2 > containingPDImage.Width) Then areAllCoordinatesInvalid = True
-        If (actualY1 < 0) And (actualY2 < 0) Then areAllCoordinatesInvalid = True
-        If (actualY1 > containingPDImage.Height) And (actualY2 > containingPDImage.Height) Then areAllCoordinatesInvalid = True
-        
-    End If
-
+        'Rectangles, ellipses, and lines are easy - check the bounding box, and if it lies completely outside the image,
+        ' reject it.  Note that this occurs before a final bound rect has been calculated, so you have no choice but to
+        ' rely on intermediate x/y coords instead of the boundLeft/boundTop etc values.
+        Case sRectangle, sCircle, sLine
+            
+            If (selLeft < 0) And (selLeft + selWidth < 0) Then areAllCoordinatesInvalid = True
+            If (selLeft > containingPDImage.Width) And (selLeft + selWidth > containingPDImage.Width) Then areAllCoordinatesInvalid = True
+            If (selTop < 0) And (selTop + selHeight < 0) Then areAllCoordinatesInvalid = True
+            If (selTop > containingPDImage.Height) And (selTop + selHeight > containingPDImage.Height) Then areAllCoordinatesInvalid = True
+            
+        'In the future, additional selection types can be handled here.
+        Case Else
+            
+    End Select
+    
 End Function
 
 'Update this selection using the values in the main form's selection text boxes
@@ -789,13 +801,22 @@ Public Sub updateViaTextBox()
     'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
     isMaskReady = False
 
-    'Check all text box entries for validity, then update the corresponding selection values
-    If toolbar_Tools.tudSel(0).IsValid(False) Then selLeft = toolbar_Tools.tudSel(0)
-    If toolbar_Tools.tudSel(1).IsValid(False) Then selTop = toolbar_Tools.tudSel(1)
-    If toolbar_Tools.tudSel(2).IsValid(False) Then selWidth = toolbar_Tools.tudSel(2)
-    If toolbar_Tools.tudSel(3).IsValid(False) Then selHeight = toolbar_Tools.tudSel(3)
+    'Check all text box entries for validity, then update the corresponding selection values.
+    Select Case sShape
     
-    'Adjust the x1, y1, x2, y2 values to match these new ones
+        'Rectangles, ellipses, and lines all support movement via text box
+        Case sRectangle, sCircle, sLine
+            If toolbar_Tools.tudSel(0).IsValid(False) Then selLeft = toolbar_Tools.tudSel(0)
+            If toolbar_Tools.tudSel(1).IsValid(False) Then selTop = toolbar_Tools.tudSel(1)
+            If toolbar_Tools.tudSel(2).IsValid(False) Then selWidth = toolbar_Tools.tudSel(2)
+            If toolbar_Tools.tudSel(3).IsValid(False) Then selHeight = toolbar_Tools.tudSel(3)
+            
+        'I haven't decided if other selection types will support movement via text box...
+        Case Else
+        
+    End Select
+        
+    'Adjust the x1, y1, x2, y2 values to match the retrieved text box values
     Select Case sShape
     
         Case sRectangle, sCircle
@@ -827,7 +848,8 @@ Public Sub lockIn()
         
         updateInternalCoords
     
-        'The final thing we need to check for is the width and height, which may be still be zero at this point.  Do not allow selections of size 0.
+        'The final thing we need to check for is the width and height, which may be still be zero at this point.
+        ' Due to the way outside filters and effects use selection bounding rects, we can't allow selections of size 0.
         If selWidth < 1 Then selWidth = 1
         If selHeight < 1 Then selHeight = 1
         
@@ -1048,56 +1070,63 @@ Private Sub createSelectionMask()
     
     'We now need to establish a bounding region for the selection.  For certain types of selections, we can do this with existing knowledge
     ' (e.g. the selLeft/Top/Width/Height values may reflect this).  For other types of selections, we need to find bounds via pixel searching.
-    Select Case sShape
+    '
+    'Why not just use selLeft/Top/Width/Height?  The bounding rect may differ from those values if feathering is in use.
+    ' The viewport renderer uses the actual bounding rect to optimize its rendering of the selection effect, so it needs values that
+    ' incorporate the full affected area, including any feathering or other modifications.
+    
+    'As a rule, exterior selections enclose the entire image boundary, so we sort by sType first
+    Select Case sType
+    
+        'Exterior selections typically bound the entire image.  We could search for a smaller area, but at present the costs
+        ' of this outweigh any potential benefits.
+        Case sExterior
+            boundLeft = 0
+            boundTop = 0
+            boundWidth = containingPDImage.Width
+            boundHeight = containingPDImage.Height
         
-        'Rectangle and ellipse selections are easy; bounds have already been set by the width/height values
-        Case sRectangle, sCircle
-            
-            If sType = sExterior Then
-                boundLeft = 0
-                boundTop = 0
-                boundWidth = containingPDImage.Width
-                boundHeight = containingPDImage.Height
-            Else
-                If sSmooth = sFullyFeathered Then
-                    boundLeft = selLeft - featheringRadius
-                    boundTop = selTop - featheringRadius
-                    boundWidth = selWidth + featheringRadius * 2
-                    boundHeight = selHeight + featheringRadius * 2
-                Else
-                    boundLeft = selLeft
-                    boundTop = selTop
-                    boundWidth = selWidth
-                    boundHeight = selHeight
-                End If
-            End If
-            
-        'Lines are a bit weirder.  Because the two points are not sorted by distance (e.g. x1 may be greater than x2), we have to check that now.
-        Case sLine
-
-            If sType = sExterior Then
-                boundLeft = 0
-                boundTop = 0
-                boundWidth = containingPDImage.Width
-                boundHeight = containingPDImage.Height
-            Else
-                If sSmooth = sFullyFeathered Then
-                    boundLeft = minX - (selectionLineWidth / 2) - featheringRadius
-                    boundTop = MinY - (selectionLineWidth / 2) - featheringRadius
-                    boundWidth = (maxX - minX) + selectionLineWidth + featheringRadius * 2
-                    boundHeight = (MaxY - MinY) + selectionLineWidth + featheringRadius * 2
-                Else
-                    boundLeft = minX - (selectionLineWidth / 2)
-                    boundTop = MinY - (selectionLineWidth / 2)
-                    boundWidth = (maxX - minX) + selectionLineWidth
-                    boundHeight = (MaxY - MinY) + selectionLineWidth
-                End If
-            End If
-            
+        'Interior and bordered selections are handled more normally
         Case Else
         
-            'findBoundsManually()
-        
+            'Next, we sort bound calculations by selection shape
+            Select Case sShape
+            
+                'Rectangle and ellipse selections are easy; bounds have already been set by the width/height values
+                Case sRectangle, sCircle
+                    If sSmooth = sFullyFeathered Then
+                        boundLeft = selLeft - featheringRadius
+                        boundTop = selTop - featheringRadius
+                        boundWidth = selWidth + featheringRadius * 2
+                        boundHeight = selHeight + featheringRadius * 2
+                    Else
+                        boundLeft = selLeft
+                        boundTop = selTop
+                        boundWidth = selWidth
+                        boundHeight = selHeight
+                    End If
+                    
+                'Lines are a bit weirder.  Because the two points are not sorted by distance (e.g. x1 may be greater than x2), we have to check that now.
+                Case sLine
+                
+                    If sSmooth = sFullyFeathered Then
+                        boundLeft = minX - (selectionLineWidth / 2) - featheringRadius
+                        boundTop = MinY - (selectionLineWidth / 2) - featheringRadius
+                        boundWidth = (maxX - minX) + selectionLineWidth + featheringRadius * 2
+                        boundHeight = (MaxY - MinY) + selectionLineWidth + featheringRadius * 2
+                    Else
+                        boundLeft = minX - (selectionLineWidth / 2)
+                        boundTop = MinY - (selectionLineWidth / 2)
+                        boundWidth = (maxX - minX) + selectionLineWidth
+                        boundHeight = (MaxY - MinY) + selectionLineWidth
+                    End If
+                    
+                'Other shapes currently rely on manual bounds-checking, using the rendered mask as the guide
+                Case Else
+                    findNewBoundsManually
+                    
+            End Select
+                
     End Select
     
     'Do some basic bounds checking on the bound values to make sure they lie inside the image.  This is important because the
@@ -1114,6 +1143,7 @@ Private Sub createSelectionMask()
 End Sub
 
 'When calculating selection boundaries, all bounds must ultimately lie on or inside image borders.  Use this function to verify that.
+' (Because bounds have already been precisely calculated, this function's behavior does not need to differ by selection type.)
 Private Sub fixBoundsToImageSize()
     
     If boundLeft < 0 Then
@@ -1191,7 +1221,7 @@ Private Sub applyFeatheringToMask()
 
 End Sub
 
-'While a selection tool is active, we draw transform nodes around it
+'While a selection tool is active, we draw transform nodes around it.  The viewport renderer invokes this function as necessary.
 Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
@@ -1615,60 +1645,60 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
     Set tmpParser = New pdParamString
     tmpParser.setParamString paramString
     
+    Dim i As Long
+    
     'Convert absolute values to relative values (typically used when WRITING a selection file)
     If toRelativeFormat Then
     
-        '08 - left
+        'All selection types have their left/top/width/height values normalized to [0, 1]. These values are stored in
+        ' positions [8, 11] inclusive.
         tmpParser.setNewValueAtLocation 8, Trim$(Str(CDbl(tmpParser.GetLong(8)) / CDbl(containingPDImage.Width)))
-        
-        '09 - top
         tmpParser.setNewValueAtLocation 9, Trim$(Str(CDbl(tmpParser.GetLong(9)) / CDbl(containingPDImage.Height)))
-        
-        '10 - width
         tmpParser.setNewValueAtLocation 10, Trim$(Str(CDbl(tmpParser.GetLong(10)) / CDbl(containingPDImage.Width)))
-        
-        '11 - height
         tmpParser.setNewValueAtLocation 11, Trim$(Str(CDbl(tmpParser.GetLong(11)) / CDbl(containingPDImage.Height)))
         
-        '12 - x1
-        tmpParser.setNewValueAtLocation 12, Trim$(Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width)))
+        'Other transformable parameters vary by selection type, which is stored as the first parameter
+        Select Case tmpParser.GetLong(1)
         
-        '13 - y1
-        tmpParser.setNewValueAtLocation 13, Trim$(Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height)))
-        
-        '14 - x2
-        tmpParser.setNewValueAtLocation 14, Trim$(Str(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width)))
-        
-        '15 - y2
-        tmpParser.setNewValueAtLocation 15, Trim$(Str(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height)))
+            'Rectangles, ellipses, and lines all need their bounding rect transformed.  The bounding rect values are
+            ' stored in positions [12, 15] inclusive.
+            Case sRectangle, sCircle, sLine
+                
+                tmpParser.setNewValueAtLocation 12, Trim$(Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width)))
+                tmpParser.setNewValueAtLocation 13, Trim$(Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height)))
+                tmpParser.setNewValueAtLocation 14, Trim$(Str(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width)))
+                tmpParser.setNewValueAtLocation 15, Trim$(Str(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height)))
+                
+            Case Else
+            
+        End Select
     
     'Convert relative values to absolute values (typically used when READING a selection file)
     Else
-    
-        '08 - left
+        
+        'All selection types have their left/top/width/height values normalized from [0, 1]. These values are stored in
+        ' positions [8, 11] inclusive.
         tmpParser.setNewValueAtLocation 8, Trim$(Str(CLng(tmpParser.GetDouble(8) * CDbl(containingPDImage.Width))))
-        
-        '09 - top
         tmpParser.setNewValueAtLocation 9, Trim$(Str(CLng(tmpParser.GetDouble(9) * CDbl(containingPDImage.Height))))
-        
-        '10 - width
         tmpParser.setNewValueAtLocation 10, Trim$(Str(CLng(tmpParser.GetDouble(10) * CDbl(containingPDImage.Width))))
-        
-        '11 - height
         tmpParser.setNewValueAtLocation 11, Trim$(Str(CLng(tmpParser.GetDouble(11) * CDbl(containingPDImage.Height))))
         
-        '12 - x1
-        tmpParser.setNewValueAtLocation 12, Trim$(Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width))))
+        'Other transformable parameters vary by selection type, which is stored as the first parameter
+        Select Case tmpParser.GetLong(1)
         
-        '13 - y1
-        tmpParser.setNewValueAtLocation 13, Trim$(Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height))))
-        
-        '14 - x2
-        tmpParser.setNewValueAtLocation 14, Trim$(Str(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width))))
-        
-        '15 - y2
-        tmpParser.setNewValueAtLocation 15, Trim$(Str(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height))))
-    
+            'Rectangles, ellipses, and lines all need their bounding rect transformed.  The bounding rect values are
+            ' stored in positions [12, 15] inclusive.
+            Case sRectangle, sCircle, sLine
+            
+                tmpParser.setNewValueAtLocation 12, Trim$(Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width))))
+                tmpParser.setNewValueAtLocation 13, Trim$(Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height))))
+                tmpParser.setNewValueAtLocation 14, Trim$(Str(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width))))
+                tmpParser.setNewValueAtLocation 15, Trim$(Str(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height))))
+                
+            Case Else
+            
+        End Select
+            
     End If
     
     'Rebuild the parameter string
