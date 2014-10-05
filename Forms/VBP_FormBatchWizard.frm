@@ -3267,7 +3267,7 @@ Private Sub lstFiles_OLEDragDrop(Data As DataObject, Effect As Long, Button As I
         Dim tmpString As String
         
         For Each oleFilename In Data.Files
-            tmpString = Str(oleFilename)
+            tmpString = CStr(oleFilename)
             If tmpString <> "" Then
                 If FileExist(tmpString) Then addFileToBatchList tmpString
             End If
