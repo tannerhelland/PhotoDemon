@@ -3,8 +3,8 @@ Attribute VB_Name = "Saving"
 'File Saving Interface
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 28/June/14
-'Last update: add support for embedding metadata in PDI files
+'Last updated: 05/October/14
+'Last update: fix a rare bug involving BMP format and binary alpha channels
 '
 'Module responsible for all image saving, with the exception of the GDI+ image save function (which has been left in the GDI+ module
 ' for consistency's sake).  Export functions are sorted by file type, and most serve as relatively lightweight wrappers to corresponding
@@ -130,7 +130,16 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     ' this, but other formats do not.  Because even the PNG transformation is not lossless, set these types of
                     ' images to be exported as 32bpp.
                     If (outputColorDepth <= 8) And (tmpCompositeDIB.getDIBColorDepth = 32) Then
-                        If (Not tmpCompositeDIB.isAlphaBinary) Then outputColorDepth = 32
+                        
+                        If (Not tmpCompositeDIB.isAlphaBinary) Then
+                            outputColorDepth = 32
+                        
+                        'PNG and GIF can write 8bpp images with a binary alpha channel.  Other formats (e.g. BMP) require 32bpp
+                        ' if any alpha whatsoever is present.
+                        Else
+                            If (saveFormat <> FIF_GIF) And (saveFormat <> FIF_PNG) Then outputColorDepth = 32
+                        End If
+                        
                     End If
                     
                     Message "Color count successful (%1 bpp recommended)", outputColorDepth
