@@ -145,7 +145,7 @@ Private Type EncoderParameter
 End Type
 
 Private Type EncoderParameters
-    Count     As Long
+    count     As Long
     Parameter As EncoderParameter
 End Type
 
@@ -398,6 +398,15 @@ Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageA
 Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal mWrap As WrapMode, ByVal argbConst As Long, ByVal bClamp As Long) As Long
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal pixOffsetMode As PixelOffsetMode) As Long
 Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal hImage As Long, ByVal rfType As RotateFlipType) As Long
+Private Declare Function GdipFillClosedCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
+Private Declare Function GdipFillClosedCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
+Private Declare Function GdipFillClosedCurve2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single, ByVal FillMd As GDIFillMode) As Long
+Private Declare Function GdipFillClosedCurve2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single, ByVal FillMd As GDIFillMode) As Long
+Private Declare Function GdipFillPolygon Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal FillMd As GDIFillMode) As Long
+Private Declare Function GdipFillPolygonI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal FillMd As GDIFillMode) As Long
+Private Declare Function GdipFillPolygon2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
+Private Declare Function GdipFillPolygon2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
+
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
@@ -479,7 +488,7 @@ Public Enum PixelOffsetMode
    PixelOffsetModeHalf = 4
 End Enum
 
-Private Enum GDIFillMode
+Public Enum GDIFillMode
    FillModeAlternate = 0
    FillModeWinding = 1
 End Enum
@@ -874,6 +883,31 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
 
 End Function
 
+'Use GDI+ to render a filled, closed shape, with optional color, opacity, antialiasing, curvature, and more
+Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate) As Boolean
+
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstDC, iGraphics
+    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    
+    'Create a solid fill brush
+    Dim iBrush As Long
+    GdipCreateSolidFill fillQuadWithVBRGB(eColor, cTransparency), iBrush
+    
+    'We have a few different options for drawing the shape, based on the passed parameters.
+    If useCurveAlgorithm Then
+        GdipFillClosedCurve2 iGraphics, iBrush, ptrToFloatArray, numOfPoints, curvatureTension, useFillMode
+    Else
+        GdipFillPolygon iGraphics, iBrush, ptrToFloatArray, numOfPoints, useFillMode
+    End If
+    
+    'Release all created objects
+    GdipDeleteBrush iBrush
+    GdipDeleteGraphics iGraphics
+
+End Function
+
 'Use GDI+ to render a hollow rectangle, with optional color, opacity, and antialiasing
 Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinecap As LineCap = 0) As Boolean
 
@@ -1110,6 +1144,10 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Look for an ICC profile by asking GDI+ to return the ICC profile property's size
     Dim profileSize As Long, hasProfile As Boolean
+    
+    'NOTE! the passed profileSize value must always be zeroed before using GdipGetPropertyItemSize, because the function will not update
+    ' the variable's value if no tag is found.  Seems like an asinine oversight, but oh well.
+    profileSize = 0
     GdipGetPropertyItemSize hImage, PropertyTagICCProfile, profileSize
     
     'If the returned size is > 0, this image contains an ICC profile!  Retrieve it now.
@@ -1128,6 +1166,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     End If
     
     'Look for orientation flags.  This is most relevant for JPEGs coming from a digital camera.
+    profileSize = 0
     GdipGetPropertyItemSize hImage, PropertyTagOrientation, profileSize
     
     If (profileSize > 0) And g_UserPreferences.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
@@ -1556,7 +1595,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'BMP export
         Case [ImageBMP]
             pvGetEncoderClsID "image/bmp", uEncCLSID
-            uEncParams.Count = 1
+            uEncParams.count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1571,7 +1610,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'GIF export
         Case [ImageGIF]
             pvGetEncoderClsID "image/gif", uEncCLSID
-            uEncParams.Count = 1
+            uEncParams.count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1586,7 +1625,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'JPEG export (requires extra work to specify a quality for the encode)
         Case [ImageJPEG]
             pvGetEncoderClsID "image/jpeg", uEncCLSID
-            uEncParams.Count = 1
+            uEncParams.count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1601,7 +1640,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'PNG export
         Case [ImagePNG]
             pvGetEncoderClsID "image/png", uEncCLSID
-            uEncParams.Count = 1
+            uEncParams.count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1616,7 +1655,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'TIFF export (requires extra work to specify compression and color depth for the encode)
         Case [ImageTIFF]
             pvGetEncoderClsID "image/tiff", uEncCLSID
-            uEncParams.Count = 2
+            uEncParams.count = 2
             ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.Parameter) * 2)
             
             With uEncParams.Parameter
@@ -1714,7 +1753,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     Dim aEncParams() As Byte
         
     pvGetEncoderClsID "image/png", uEncCLSID
-    uEncParams.Count = 1
+    uEncParams.count = 1
     ReDim aEncParams(1 To Len(uEncParams))
     
     Dim gdipColorDepth As Long

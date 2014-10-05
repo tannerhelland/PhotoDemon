@@ -1018,6 +1018,9 @@ Public Function getSelectionTypeFromCurrentTool() As SelectionShape
         
         Case SELECT_LINE
             getSelectionTypeFromCurrentTool = sLine
+            
+        Case SELECT_LASSO
+            getSelectionTypeFromCurrentTool = sLasso
     
     End Select
     
@@ -1038,6 +1041,9 @@ Public Function getRelevantToolFromSelectType() As PDTools
             
             Case sLine
                 getRelevantToolFromSelectType = SELECT_LINE
+                
+            Case sLasso
+                getRelevantToolFromSelectType = SELECT_LASSO
         
         End Select
         

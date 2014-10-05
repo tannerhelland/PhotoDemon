@@ -145,8 +145,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Const DOUBLE_MAX As Double = 1.79769313486231E+308
-
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 

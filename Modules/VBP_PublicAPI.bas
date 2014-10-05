@@ -10,6 +10,11 @@ Public Type POINTAPI
    y As Long
 End Type
 
+Public Type POINTFLOAT
+   x As Single
+   y As Single
+End Type
+
 Public Type RECT
     Left    As Long
     Top     As Long

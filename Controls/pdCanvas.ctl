@@ -116,26 +116,34 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":0004
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "pdCanvas.ctx":002C
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   7
-         tooltip         =   "Zoom in"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":0004
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Zoom in"
+         ColorScheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":087E
+         ItemData        =   "pdCanvas.ctx":0856
          Left            =   840
-         List            =   "pdCanvas.ctx":0880
+         List            =   "pdCanvas.ctx":0858
          Style           =   2  'Dropdown List
          TabIndex        =   8
          Top             =   15
@@ -147,19 +155,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   10
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":0882
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "pdCanvas.ctx":08AA
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   0
-         tooltip         =   "Zoom out"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":085A
+         PictureAlign    =   0
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Zoom out"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdZoomFit 
          Height          =   345
@@ -167,19 +183,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   12
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":10FC
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "pdCanvas.ctx":1124
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   7
-         tooltip         =   "Fit image on screen"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":10AC
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Fit image on screen"
+         ColorScheme     =   3
       End
       Begin PhotoDemon.jcbutton cmdImgSize 
          Height          =   345
@@ -187,19 +211,27 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   13
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         buttonstyle     =   7
-         font            =   "pdCanvas.ctx":1976
-         backcolor       =   -2147483626
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "pdCanvas.ctx":199E
-         pictureeffectondown=   0
-         captioneffects  =   0
-         picturealign    =   7
-         tooltip         =   "Resize image"
-         colorscheme     =   3
+         _ExtentX        =   688
+         _ExtentY        =   609
+         ButtonStyle     =   7
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   -2147483626
+         Caption         =   ""
+         HandPointer     =   -1  'True
+         PictureNormal   =   "pdCanvas.ctx":18FE
+         PictureAlign    =   7
+         PictureEffectOnDown=   0
+         CaptionEffects  =   0
+         ToolTip         =   "Resize image"
+         ColorScheme     =   3
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -1028,7 +1060,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
         
             'Rectangular selection
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
             
                 'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
                 If pdImages(g_CurrentImage).selectionActive Then
@@ -1136,6 +1168,19 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 'Force a redraw of the viewport
                 If hasMouseMoved > 1 Then RenderViewport pdImages(g_CurrentImage), Me
                 
+            Case SELECT_LASSO
+            
+                'First, check to see if a selection is active
+                If pdImages(g_CurrentImage).selectionActive Then
+                    
+                    'Pass new points to the active selection
+                    pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+                                        
+                End If
+                
+                'Force a redraw of the viewport
+                If hasMouseMoved > 1 Then RenderViewport pdImages(g_CurrentImage), Me
+                
         End Select
     
     'This else means the LEFT mouse button is NOT down
@@ -1226,7 +1271,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 Tool_Support.terminateGenericToolTracking
                 
             'Selection tools
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
             
                 'If a selection was being drawn, lock it into place
                 If pdImages(g_CurrentImage).selectionActive Then
@@ -1237,13 +1282,13 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                         Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
                     Else
                     
-                        'If the selection is transformable, pass the final mouse coordinates to it
-                        If pdImages(g_CurrentImage).mainSelection.isTransformable Then
+                        'If the selection is not raster-type, pass the final mouse coordinates to it
+                        If (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sRaster) Then
 
                             pdImages(g_CurrentImage).mainSelection.requestSquare (Shift And vbShiftMask)
                             pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
                             syncTextToCurrentSelection g_CurrentImage
-                                                
+                            
                         End If
                     
                         'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
