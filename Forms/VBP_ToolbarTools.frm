@@ -76,7 +76,7 @@ Begin VB.Form toolbar_Tools
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarTools.frx":0BE2
+      PictureNormal   =   "VBP_ToolbarTools.frx":0D52
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -104,7 +104,7 @@ Begin VB.Form toolbar_Tools
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarTools.frx":17C4
+      PictureNormal   =   "VBP_ToolbarTools.frx":1AA4
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -132,7 +132,7 @@ Begin VB.Form toolbar_Tools
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarTools.frx":23A6
+      PictureNormal   =   "VBP_ToolbarTools.frx":27F6
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -160,15 +160,15 @@ Begin VB.Form toolbar_Tools
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarTools.frx":30F8
+      PictureNormal   =   "VBP_ToolbarTools.frx":3548
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
    End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
-      Index           =   5
-      Left            =   4560
+      Index           =   6
+      Left            =   5280
       TabIndex        =   33
       Top             =   315
       Width           =   720
@@ -188,7 +188,7 @@ Begin VB.Form toolbar_Tools
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarTools.frx":3CDA
+      PictureNormal   =   "VBP_ToolbarTools.frx":429A
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -212,6 +212,7 @@ Begin VB.Form toolbar_Tools
       Width           =   14250
       Begin PhotoDemon.colorSelector csSelectionHighlight 
          Height          =   375
+         Index           =   0
          Left            =   120
          TabIndex        =   49
          Top             =   840
@@ -233,9 +234,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":4A2C
+         ItemData        =   "VBP_ToolbarTools.frx":4FEC
          Left            =   120
-         List            =   "VBP_ToolbarTools.frx":4A2E
+         List            =   "VBP_ToolbarTools.frx":4FEE
          Style           =   2  'Dropdown List
          TabIndex        =   20
          TabStop         =   0   'False
@@ -256,9 +257,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":4A30
+         ItemData        =   "VBP_ToolbarTools.frx":4FF0
          Left            =   8340
-         List            =   "VBP_ToolbarTools.frx":4A32
+         List            =   "VBP_ToolbarTools.frx":4FF2
          Style           =   2  'Dropdown List
          TabIndex        =   2
          ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
@@ -279,9 +280,9 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":4A34
+         ItemData        =   "VBP_ToolbarTools.frx":4FF4
          Left            =   5640
-         List            =   "VBP_ToolbarTools.frx":4A36
+         List            =   "VBP_ToolbarTools.frx":4FF6
          Style           =   2  'Dropdown List
          TabIndex        =   1
          ToolTipText     =   "Use this option to change the way selections blend with their surroundings."
@@ -724,7 +725,7 @@ Begin VB.Form toolbar_Tools
          BackColor       =   -2147483643
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarTools.frx":4A38
+         PictureNormal   =   "VBP_ToolbarTools.frx":4FF8
          PictureEffectOnDown=   0
          CaptionEffects  =   0
          ColorScheme     =   3
@@ -751,7 +752,7 @@ Begin VB.Form toolbar_Tools
          BackColor       =   -2147483643
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarTools.frx":578A
+         PictureNormal   =   "VBP_ToolbarTools.frx":5D4A
          PictureEffectOnDown=   0
          CaptionEffects  =   0
          ColorScheme     =   3
@@ -1093,6 +1094,34 @@ Begin VB.Form toolbar_Tools
          Width           =   1335
       End
    End
+   Begin PhotoDemon.jcbutton cmdTools 
+      Height          =   600
+      Index           =   5
+      Left            =   4110
+      TabIndex        =   50
+      Top             =   315
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarTools.frx":6A9C
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
    Begin VB.Label lblCategory 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
@@ -1111,7 +1140,7 @@ Begin VB.Form toolbar_Tools
       ForeColor       =   &H00606060&
       Height          =   240
       Index           =   2
-      Left            =   4560
+      Left            =   5280
       TabIndex        =   32
       Top             =   30
       Width           =   690
@@ -1324,7 +1353,7 @@ Private Sub cmdTools_Click(Index As Integer)
         
 End Sub
 
-Private Sub csSelectionHighlight_ColorChanged()
+Private Sub csSelectionHighlight_ColorChanged(Index As Integer)
     
     'Redraw the viewport
     If selectionsAllowed(False) Then RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -1357,8 +1386,8 @@ Private Sub Form_Load()
             toolbar_Tools.cmbSelRender(i).AddItem "Highlight", 1
             toolbar_Tools.cmbSelRender(i).ListIndex = 0
         Next i
-        csSelectionHighlight.Color = RGB(112, 183, 255)
-        csSelectionHighlight.Visible = False
+        csSelectionHighlight(0).Color = RGB(112, 183, 255)
+        csSelectionHighlight(0).Visible = False
         
         'Selection smoothing (currently none, antialiased, fully feathered)
         toolbar_Tools.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
@@ -1440,9 +1469,9 @@ Private Sub cmbSelRender_Click(Index As Integer)
     
     'Show or hide the color selector, as appropriate
     If cmbSelRender(Index).ListIndex = SELECTION_RENDER_HIGHLIGHT Then
-        csSelectionHighlight.Visible = True
+        csSelectionHighlight(Index).Visible = True
     Else
-        csSelectionHighlight.Visible = False
+        csSelectionHighlight(Index).Visible = False
     End If
     
     'Redraw the viewport
@@ -1513,7 +1542,7 @@ Public Sub resetToolButtonStates()
             activeToolPanel = 1
         
         'Rectangular, Elliptical, Line selections
-        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
             activeToolPanel = 0
             
         '"Quick fix" tool(s)
@@ -1536,18 +1565,28 @@ Public Sub resetToolButtonStates()
             toolbar_Tools.lblSelection(5).Visible = True
             toolbar_Tools.sltCornerRounding.Visible = True
             toolbar_Tools.sltSelectionLineWidth.Visible = False
+            setSelectionTUDVisibility True
             
         'For elliptical selections, hide the rounded corners option
         Case SELECT_CIRC
             toolbar_Tools.lblSelection(5).Visible = False
             toolbar_Tools.sltCornerRounding.Visible = False
             toolbar_Tools.sltSelectionLineWidth.Visible = False
+            setSelectionTUDVisibility True
             
         'Line selections also show the rounded corners slider, though they repurpose it for line width
         Case SELECT_LINE
             toolbar_Tools.lblSelection(5).Visible = True
             toolbar_Tools.sltCornerRounding.Visible = False
             toolbar_Tools.sltSelectionLineWidth.Visible = True
+            setSelectionTUDVisibility True
+            
+        'Lasso selections do not need rounded corners or other options
+        Case SELECT_LASSO
+            toolbar_Tools.lblSelection(5).Visible = False
+            toolbar_Tools.sltCornerRounding.Visible = False
+            toolbar_Tools.sltSelectionLineWidth = False
+            setSelectionTUDVisibility False
         
     End Select
     
@@ -1587,72 +1626,58 @@ Public Sub resetToolButtonStates()
         
 End Sub
 
-'When a new tool is selected, we may need to initialize certain values
+'To show/hide the position and size text up/downs in one fell swoop, use this function
+Private Sub setSelectionTUDVisibility(ByVal newVisibility As Boolean)
+
+    Dim i As Long
+    For i = toolbar_Tools.tudSel.lBound To toolbar_Tools.tudSel.UBound
+        tudSel(i).Visible = newVisibility
+    Next i
+    
+    'Also set their header label visibility
+    lblSelection(1).Visible = newVisibility
+    lblSelection(2).Visible = newVisibility
+
+End Sub
+
+'When a new tool is selected, we may need to initialize certain values.
 Private Sub newToolSelected()
     
     Select Case g_CurrentTool
     
-        'Rectangular, elliptical selections
-        Case SELECT_RECT
+        'Selection tools
+        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
+        
+            'See if a selection is already active on the image
+            If selectionsAllowed(False) Then
+            
+                'A selection is already active!
                 
-            'If a similar selection is already active, change its shape to match the current tool, then redraw it
-            If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
-                If (g_PreviousTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sCircle) Then
-                    pdImages(g_CurrentImage).mainSelection.setSelectionShape sRectangle
-                    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-                Else
-                    
-                    If pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle Then
-                        metaToggle tSelectionTransform, True
-                    Else
-                    
-                        'Remove any existing selections
-                        If g_OpenImageCount > 0 Then Process "Remove selection", , , UNDO_SELECTION
-                        metaToggle tSelectionTransform, False
-                        
-                    End If
-                End If
-            End If
-            
-        Case SELECT_CIRC
-        
-            'If a similar selection is already active, change its shape to match the current tool, then redraw it
-            If selectionsAllowed(True) And (Not g_UndoRedoActive) Then
-                If (g_PreviousTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle) Then
-                    pdImages(g_CurrentImage).mainSelection.setSelectionShape sCircle
-                    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-                Else
-                    
-                    If pdImages(g_CurrentImage).mainSelection.getSelectionShape = sCircle Then
-                        metaToggle tSelectionTransform, True
-                    Else
-                        
-                        'Remove any existing selections
-                        If g_OpenImageCount > 0 Then Process "Remove selection", , , UNDO_SELECTION
-                        metaToggle tSelectionTransform, False
-                        
-                    End If
-                End If
-            End If
-            
-        'Line selections
-        Case SELECT_LINE
-        
-            'Deactivate the position text boxes - those shouldn't be accessible unless a line selection is presently active
-            If selectionsAllowed(True) Then
-                If pdImages(g_CurrentImage).mainSelection.getSelectionShape = sLine Then
-                    metaToggle tSelectionTransform, True
+                'If the existing selection type matches the tool type, no problem - activate the transform tools
+                ' (if relevant), but make no other changes to the image
+                If (g_CurrentTool = Selection_Handler.getRelevantToolFromSelectType()) Then
+                    metaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
+                
+                'A selection is already active, and it doesn't match the current tool type!
                 Else
                 
-                    'Remove any existing selections
-                    If g_OpenImageCount > 0 Then Process "Remove selection", , , UNDO_SELECTION
-                    metaToggle tSelectionTransform, False
-                    
+                    'Handle the special case of circle and rectangular selections, which can be swapped non-destructively.
+                    If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle) Then
+                        pdImages(g_CurrentImage).mainSelection.setSelectionShape sCircle
+                        
+                    ElseIf (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sCircle) Then
+                        pdImages(g_CurrentImage).mainSelection.setSelectionShape sRectangle
+                        
+                    'A selection exists, but it does not match the current tool, and it cannot be non-destructively
+                    ' changed to the current type.  Remove it.
+                    Else
+                        Process "Remove selection", , , UNDO_SELECTION
+                    End If
+                
                 End If
-            Else
-                metaToggle tSelectionTransform, False
+                
             End If
-            
+                
         Case Else
         
     End Select
@@ -1751,6 +1776,7 @@ End Sub
 ' functions can use this function to determine it.  Passing TRUE for the transformableMatters param will add a check for an existing,
 ' transformable-type selection (squares, etc) to the evaluation list.
 Private Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
+
     If g_OpenImageCount > 0 Then
         If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) And (Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests) Then
             
@@ -1770,6 +1796,7 @@ Private Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boo
     Else
         selectionsAllowed = False
     End If
+    
 End Function
 
 'When certain selection settings are enabled or disabled, corresponding controls are shown or hidden.  To keep the

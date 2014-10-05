@@ -18,11 +18,12 @@ Public Enum PDTools
     SELECT_RECT = 2
     SELECT_CIRC = 3
     SELECT_LINE = 4
-    QUICK_FIX_LIGHTING = 5
+    SELECT_LASSO = 5
+    QUICK_FIX_LIGHTING = 6
 End Enum
 
 #If False Then
-    Const NAV_DRAG = 0, NAV_MOVE = 1, SELECT_RECT = 2, SELECT_CIRC = 3, SELECT_LINE = 4, QUICK_FIX_LIGHTING = 5
+    Const NAV_DRAG = 0, NAV_MOVE = 1, SELECT_RECT = 2, SELECT_CIRC = 3, SELECT_LINE = 4, SELECT_LASSO = 5, QUICK_FIX_LIGHTING = 6
 #End If
 
 'How should the selection be rendered?
