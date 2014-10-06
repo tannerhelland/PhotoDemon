@@ -1218,11 +1218,10 @@ Private Sub createSelectionMask()
             End If
             
         
-        'Lasso selections do not support the "border" type, just yet, so don't try it!
+        'Lasso selections do not support the "border" type while drawing.  It must be triggered by using the Select menu.
         Case sLasso
-        
             GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (sSmooth > sNone), False, , FillModeWinding
-        
+            
         'Other selection types will be added in the future
         Case Else
     
