@@ -114,6 +114,18 @@ End Enum
 
 Private sSmooth As SelectionSmoothing
 
+'Is a special drawing display mode in use?
+Public Enum SelectionDrawingDisplay
+    sNormalDisplay = 0
+    sOutlineOnlyDisplay = 1
+End Enum
+
+#If False Then
+    Const sNormalDisplay = 0, sOutlineOnlyDisplay = 1
+#End If
+
+Private sDrawingDisplay As SelectionDrawingDisplay
+
 'The coordinates of the current selection (if rectangular)
 Public x1 As Double, x2 As Double
 Public y1 As Double, y2 As Double
@@ -228,7 +240,7 @@ Public Sub initFromParamString(ByVal paramString As String)
     '08 - left
     selLeft = cParams.GetLong(8)
     
-    '09 - top
+    '9 - top
     selTop = cParams.GetLong(9)
     
     '10 - width
@@ -250,10 +262,14 @@ Public Sub initFromParamString(ByVal paramString As String)
             y2 = cParams.GetDouble(15)
         
         'Lasso/freehand selections have a variable number of parameters, based on the number of points in the lasso.
-        ' Position (12) stores the number of points
+        ' Position (13) stores the number of points.
         Case sLasso
             
-            m_numOfLassoPoints = cParams.GetLong(12)
+            '12 - Draw mode display
+            setDrawModeDisplay cParams.GetLong(12)
+            
+            '13 - number of points in the lasso array
+            m_numOfLassoPoints = cParams.GetLong(13)
             
             If m_numOfLassoPoints > 0 Then
             
@@ -262,8 +278,8 @@ Public Sub initFromParamString(ByVal paramString As String)
                 'Retrieve all remaining lasso points
                 If m_numOfLassoPoints > 0 Then
                     For i = 0 To m_numOfLassoPoints - 1
-                        m_LassoPoints(i).x = cParams.GetDouble(13 + i * 2)
-                        m_LassoPoints(i).y = cParams.GetDouble(14 + i * 2)
+                        m_LassoPoints(i).x = cParams.GetDouble(14 + i * 2)
+                        m_LassoPoints(i).y = cParams.GetDouble(15 + i * 2)
                     Next i
                 End If
                 
@@ -299,7 +315,7 @@ Public Function getSelectionParamString() As String
         ' (TODO: use a string builder class for this, to improve performance)
         Case sLasso
             
-            getSelectionParamString = getSelectionParamString & "|" & CStr(m_numOfLassoPoints)
+            getSelectionParamString = getSelectionParamString & "|" & CStr(sDrawingDisplay) & "|" & CStr(m_numOfLassoPoints)
             
             If m_numOfLassoPoints > 0 Then
                 For i = 0 To m_numOfLassoPoints - 1
@@ -484,6 +500,15 @@ End Function
 Public Sub setSelectionLineWidth(ByVal newLineWidth As Long)
     If (sShape <> sRaster) Then isMaskReady = False
     selectionLineWidth = newLineWidth
+End Sub
+
+'Get/set special drawing mode views.  Note that these are only relevant for certain selection types.
+Public Function getDrawModeDisplay() As SelectionDrawingDisplay
+    getDrawModeDisplay = sDrawingDisplay
+End Function
+
+Public Sub setDrawModeDisplay(ByVal newDisplayMode As SelectionDrawingDisplay)
+    sDrawingDisplay = newDisplayMode
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
@@ -1436,6 +1461,12 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     'Is the selection mask ready to be used?  If not, prepare it now.
     If Not isMaskReady Then createSelectionMask
     
+    'Is a special drawing mode active?  If it is, this function will be canceled in favor of a custom draw routine.
+    If (sShape = sLasso) And (sDrawingDisplay = sOutlineOnlyDisplay) And (Not lockedIn) Then
+        renderOutlineOnly dstDIB, srcImage, dstCanvas
+        Exit Sub
+    End If
+    
     'Before rendering the selection, we need to convert the its coordinates from "image coordinates" to "viewport coordinates".
     ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on the screen,
     '   we need to translate the coordinates to the current viewport - this makes them display accurately when scroll and zoom are
@@ -1580,6 +1611,30 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     
 End Sub
 
+'Lasso and Polygon tools support the display of an outline (instead of normal highlight) during the draw phase.  It is assumed that the
+' caller has verified whether this mode is what the user wants, PRIOR to calling this function.
+Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+
+    'To render the outline correctly, we must first translate all lasso (or polygon) points from the image coordinate space
+    ' to the viewport coordinate space.
+    Dim tmpViewportSpace() As POINTFLOAT
+    ReDim tmpViewportSpace(0 To m_numOfLassoPoints - 1) As POINTFLOAT
+    
+    Dim tmpX As Double, tmpY As Double
+    
+    Dim i As Long
+    For i = 0 To m_numOfLassoPoints - 1
+        Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
+        tmpViewportSpace(i).x = tmpX
+        tmpViewportSpace(i).y = tmpY
+    Next i
+    
+    'Use GDI+ to stroke the temporary path
+    GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, m_numOfLassoPoints, VarPtr(tmpViewportSpace(0)), False, RGB(0, 0, 0), 192, True, 2
+    GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, m_numOfLassoPoints, VarPtr(tmpViewportSpace(0)), False, RGB(255, 255, 255), 192, True, 1
+    
+End Sub
+
 Private Sub Class_Initialize()
     
     lockedIn = False
@@ -1597,8 +1652,11 @@ Private Sub Class_Initialize()
     'By default, don't round off the corners of rectangular selections
     roundedCorners = 0
     
-    'By default, selection lines have a width of 10
+    'By default, selection lines have a width of 1
     selectionLineWidth = 1
+    
+    'By default, the normal display mode is used for lasso and polygon selections
+    sDrawingDisplay = sNormalDisplay
     
     'No lasso points yet
     m_numOfLassoPoints = 0
@@ -1809,14 +1867,14 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
                 tmpParser.setNewValueAtLocation 14, Trim$(Str(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width)))
                 tmpParser.setNewValueAtLocation 15, Trim$(Str(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height)))
                 
-            'Lasso selections are more complicated.  Position [12] contains the number of points in the lasso.  Every parameter
+            'Lasso selections are more complicated.  Position [13] contains the number of points in the lasso.  Every parameter
             ' past that point needs to be transformed in an x/y pattern.
             Case sLasso
             
-                If tmpParser.GetLong(12) > 0 Then
-                    For i = 0 To tmpParser.GetLong(12) - 1
-                        tmpParser.setNewValueAtLocation 13 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(13 + i * 2)) / CDbl(containingPDImage.Width)))
-                        tmpParser.setNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) / CDbl(containingPDImage.Height)))
+                If tmpParser.GetLong(13) > 0 Then
+                    For i = 0 To tmpParser.GetLong(13) - 1
+                        tmpParser.setNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) / CDbl(containingPDImage.Width)))
+                        tmpParser.setNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) / CDbl(containingPDImage.Height)))
                     Next i
                 End If
                 
@@ -1846,14 +1904,14 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
                 tmpParser.setNewValueAtLocation 14, Trim$(Str(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width))))
                 tmpParser.setNewValueAtLocation 15, Trim$(Str(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height))))
                 
-            'Lasso selections are more complicated.  Position [12] contains the number of points in the lasso.  Every parameter
+            'Lasso selections are more complicated.  Position [13] contains the number of points in the lasso.  Every parameter
             ' past that point needs to be transformed in an x/y pattern.
             Case sLasso
             
-                If tmpParser.GetLong(12) > 0 Then
-                    For i = 0 To tmpParser.GetLong(12) - 1
-                        tmpParser.setNewValueAtLocation 13 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(13 + i * 2)) * CDbl(containingPDImage.Width)))
-                        tmpParser.setNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) * CDbl(containingPDImage.Height)))
+                If tmpParser.GetLong(13) > 0 Then
+                    For i = 0 To tmpParser.GetLong(13) - 1
+                        tmpParser.setNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) * CDbl(containingPDImage.Width)))
+                        tmpParser.setNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) * CDbl(containingPDImage.Height)))
                     Next i
                 End If
             

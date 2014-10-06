@@ -389,7 +389,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
             
         Else
         
-            For i = 0 To toolbar_Tools.tudSel.Count - 1
+            For i = 0 To toolbar_Tools.tudSel.count - 1
                 If toolbar_Tools.tudSel(i).Value <> 0 Then toolbar_Tools.tudSel(i).Value = 0
             Next i
             
@@ -411,6 +411,9 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
             
             Case sLine
                 If toolbar_Tools.sltSelectionLineWidth.Value <> pdImages(formID).mainSelection.getSelectionLineWidth Then toolbar_Tools.sltSelectionLineWidth.Value = pdImages(formID).mainSelection.getSelectionLineWidth
+                
+            Case sLasso
+                If toolbar_Tools.btsLassoRender.ListIndex <> pdImages(formID).mainSelection.getDrawModeDisplay Then toolbar_Tools.btsLassoRender.ListIndex = pdImages(formID).mainSelection.getDrawModeDisplay
         
         End Select
         
@@ -420,7 +423,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
         metaToggle tSelection, False
         metaToggle tSelectionTransform, False
-        For i = 0 To toolbar_Tools.tudSel.Count - 1
+        For i = 0 To toolbar_Tools.tudSel.count - 1
             If toolbar_Tools.tudSel(i).Value <> 0 Then toolbar_Tools.tudSel(i).Value = 0
         Next i
         
@@ -1067,7 +1070,15 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     
     'Populate a variety of selection attributes using a single shorthand declaration.  A breakdown of these
     ' values and what they mean can be found in the corresponding pdSelection.initFromParamString function
-    pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+    Select Case getSelectionTypeFromCurrentTool()
+    
+        Case sRectangle, sCircle, sLine
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+            
+        Case sLasso
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.btsLassoRender.ListIndex, 0, 0, 0)
+        
+    End Select
     
     'Set the first two coordinates of this selection to this mouseclick's location
     pdImages(g_CurrentImage).mainSelection.setInitialCoordinates x, y
