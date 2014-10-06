@@ -149,6 +149,10 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
             Case "sliderTextCombo", "smartCheckBox", "smartOptionButton", "textUpDown"
                 controlValue = Str(eControl.Value)
             
+            'Button strips have a .ListIndex property
+            Case "buttonStrip"
+                controlValue = Str(eControl.ListIndex)
+                
             'Color pickers have a .Color property
             Case "colorSelector"
                 controlValue = Str(eControl.Color)
@@ -276,6 +280,14 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                 
                 Case "smartOptionButton"
                     eControl.Value = CBool(controlValue)
+                    
+                'Button strips have a .ListIndex property
+                Case "buttonStrip"
+                    If CLng(controlValue) < eControl.ListCount Then
+                        eControl.ListIndex = CLng(controlValue)
+                    Else
+                        If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1
+                    End If
                 
                 'Color pickers have a .Color property
                 Case "colorSelector"
