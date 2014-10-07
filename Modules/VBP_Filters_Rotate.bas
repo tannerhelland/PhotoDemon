@@ -384,21 +384,9 @@ Public Sub MenuCropToSelection()
     CopyMemory ByVal VarPtrArray(selData), 0&, 4
     Erase selData
     
-    'Update the current image size
+    'Update the viewport
     pdImages(g_CurrentImage).updateSize False, selectionWidth, selectionHeight
     DisplaySize pdImages(g_CurrentImage)
-    
-    'Deactivate the current selection, as it's no longer needed
-    ' NOTE: this preference is still created in new preference files, but it is no longer exposed to the user.  I'm leaving the preference check
-    '        here (just commented out) in case this is ever revisited, but for now, the active selection is always cleared after a crop has been
-    '        applied.  The work involved in properly translating the crop (including as-of-yet unwritten code for non-transformable crops) is
-    '        extensive, and its dubious benefit has left me unwilling to work on it just yet.
-    'If g_UserPreferences.GetPref_Boolean("Tools", "Clear Selection After Crop", True) Then
-        pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
-        Message "Crop complete.  (Note: the selected area was automatically unselected.)"
-    'End If
-    
     PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Crop to selection"
     
     'Reset the progress bar to zero
