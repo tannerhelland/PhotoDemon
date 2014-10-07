@@ -342,6 +342,7 @@ Begin VB.Form toolbar_Tools
          Left            =   10860
          TabIndex        =   3
          Top             =   345
+         Visible         =   0   'False
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
@@ -354,7 +355,8 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Max             =   10000
+         Max             =   1
+         SigDigits       =   2
       End
       Begin PhotoDemon.textUpDown tudSel 
          Height          =   405
@@ -469,6 +471,7 @@ Begin VB.Form toolbar_Tools
          Left            =   5520
          TabIndex        =   9
          Top             =   840
+         Visible         =   0   'False
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
@@ -489,6 +492,7 @@ Begin VB.Form toolbar_Tools
          Left            =   10860
          TabIndex        =   10
          Top             =   345
+         Visible         =   0   'False
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
@@ -504,6 +508,28 @@ Begin VB.Form toolbar_Tools
          Min             =   1
          Max             =   10000
          Value           =   10
+      End
+      Begin PhotoDemon.sliderTextCombo sltSmoothStroke 
+         CausesValidation=   0   'False
+         Height          =   495
+         Left            =   10860
+         TabIndex        =   52
+         Top             =   360
+         Visible         =   0   'False
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   1
+         SigDigits       =   2
       End
       Begin VB.Label lblSelection 
          Appearance      =   0  'Flat
@@ -1407,6 +1433,7 @@ Private Sub Form_Load()
         cmdTools(SELECT_RECT).ToolTip = g_Language.TranslateMessage("Rectangular Selection")
         cmdTools(SELECT_CIRC).ToolTip = g_Language.TranslateMessage("Elliptical (Oval) Selection")
         cmdTools(SELECT_LINE).ToolTip = g_Language.TranslateMessage("Line Selection")
+        cmdTools(SELECT_LASSO).ToolTip = g_Language.TranslateMessage("Lasso (Freehand) Selection")
         cmdTools(QUICK_FIX_LIGHTING).ToolTip = g_Language.TranslateMessage("Apply non-destructive lighting adjustments")
     
         'Selection visual styles (currently lightbox or highlight)
@@ -1440,10 +1467,11 @@ Private Sub Form_Load()
         toolbar_Tools.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
         toolbar_Tools.sltSelectionBorder.assignTooltip "This option adjusts the width of the selection border."
         
+        'Lasso options
         btsLassoRender.AddItem "normal", 0
         btsLassoRender.AddItem "outline only", 1
         btsLassoRender.ListIndex = 0
-        
+                
         'Quick-fix tools
         cmdQuickFix(0).ToolTip = g_Language.TranslateMessage("Reset all quick-fix adjustment values")
         cmdQuickFix(1).ToolTip = g_Language.TranslateMessage("Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.")
@@ -1599,6 +1627,7 @@ Public Sub resetToolButtonStates()
             toolbar_Tools.sltSelectionLineWidth.Visible = False
             setSelectionTUDVisibility True
             btsLassoRender.Visible = False
+            sltSmoothStroke.Visible = False
             
         'For elliptical selections, hide the rounded corners option
         Case SELECT_CIRC
@@ -1608,6 +1637,7 @@ Public Sub resetToolButtonStates()
             toolbar_Tools.sltSelectionLineWidth.Visible = False
             setSelectionTUDVisibility True
             btsLassoRender.Visible = False
+            sltSmoothStroke.Visible = False
             
         'Line selections also show the rounded corners slider, though they repurpose it for line width
         Case SELECT_LINE
@@ -1617,6 +1647,7 @@ Public Sub resetToolButtonStates()
             toolbar_Tools.sltSelectionLineWidth.Visible = True
             setSelectionTUDVisibility True
             btsLassoRender.Visible = False
+            sltSmoothStroke.Visible = False
             
         'Lasso selections do not need rounded corners or other options
         Case SELECT_LASSO
@@ -1626,6 +1657,7 @@ Public Sub resetToolButtonStates()
             toolbar_Tools.sltSelectionLineWidth.Visible = False
             setSelectionTUDVisibility False
             btsLassoRender.Visible = True
+            sltSmoothStroke.Visible = False
         
     End Select
     
@@ -1648,6 +1680,7 @@ Public Sub resetToolButtonStates()
         'Lasso selections repurpose the position label for drawing options
         Case SELECT_LASSO
             lblSelection(1).Caption = g_Language.TranslateMessage("drawing view")
+            lblSelection(5).Caption = g_Language.TranslateMessage("stroke smoothing")
             
     End Select
     
@@ -1889,6 +1922,13 @@ Private Sub updateSelectionPanelLayout()
         sltSelectionBorder.Visible = False
     End If
     
+End Sub
+
+Private Sub sltSmoothStroke_Change()
+    If selectionsAllowed(False) Then
+        pdImages(g_CurrentImage).mainSelection.setSmoothStroke sltSmoothStroke.Value
+        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    End If
 End Sub
 
 'When the selection text boxes are updated, change the scrollbars to match

@@ -389,7 +389,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
             
         Else
         
-            For i = 0 To toolbar_Tools.tudSel.count - 1
+            For i = 0 To toolbar_Tools.tudSel.Count - 1
                 If toolbar_Tools.tudSel(i).Value <> 0 Then toolbar_Tools.tudSel(i).Value = 0
             Next i
             
@@ -423,7 +423,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
         metaToggle tSelection, False
         metaToggle tSelectionTransform, False
-        For i = 0 To toolbar_Tools.tudSel.count - 1
+        For i = 0 To toolbar_Tools.tudSel.Count - 1
             If toolbar_Tools.tudSel(i).Value <> 0 Then toolbar_Tools.tudSel(i).Value = 0
         Next i
         
@@ -1076,7 +1076,7 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
             pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
             
         Case sLasso
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.btsLassoRender.ListIndex, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.btsLassoRender.ListIndex, toolbar_Tools.sltSmoothStroke.Value, 0, 0, 0)
         
     End Select
     
