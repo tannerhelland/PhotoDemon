@@ -3321,6 +3321,9 @@ Private Sub MnuImage_Click(Index As Integer)
         'Crop to selection
         Case 9
             Process "Crop", , , UNDO_IMAGE
+            
+            'Deactivate the current selection, as it's no longer needed
+            Process "Remove selection", , , UNDO_SELECTION
         
         'Trim empty borders
         Case 10
@@ -3713,7 +3716,7 @@ Private Sub MnuSelect_Click(Index As Integer)
     
         'Select all.  (Note that Square Selection is passed as the relevant tool for this action.)
         Case 0
-            Process "Select all", , , UNDO_SELECTION, 0
+            Process "Select all", , , UNDO_SELECTION
         
         'Select none
         Case 1
