@@ -31,6 +31,7 @@ Option Explicit
 ' If the user sets markEventHandled to FALSE, this class will pass the keycode on to its default handler.  Otherwise, it is assumed
 ' that the caller processed the key, and thus no further processing is required.
 Event KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
+Event KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
 
 'This class tracks several different window messages.  Most objects won't need this level of tracking, but they're there if needed.
 Private Const WM_KEYDOWN As Long = &H100
@@ -239,7 +240,24 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                     'This key is being pressed.  Raise the associated event.
                     RaiseEvent KeyDownCustom(retShiftConstants, wParam, bHandled)
                     Exit For
-                    
+                
+                'The key has just been released.
+                Else
+                
+                    'This is a little complicated (see http://msdn.microsoft.com/en-us/library/windows/desktop/ms644984%28v=vs.85%29.aspx
+                    ' for details).  Basically, lParam contains detailed key state tracking.  Bits 30 and 31 contain previous state and
+                    ' transition state values, respectively.  By testing these values, we can insure that only one KeyUp event is raised;
+                    ' specifically, it is only raised at the moment when the transition state is UP and the previous state is DOWN.
+                    If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
+                
+                        bHandled = True
+                        
+                        'This key is being released.  Raise the associated event.
+                        RaiseEvent KeyUpCustom(retShiftConstants, wParam, bHandled)
+                        Exit For
+                        
+                    End If
+                
                 End If
             
             End If
