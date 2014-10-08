@@ -846,13 +846,19 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
             'Lasso selections will increment the current lasso array, and add the new points to their list
             Case sLasso
             
-                'Make room in the point array
-                m_numOfLassoPoints = m_numOfLassoPoints + 1
-                If m_numOfLassoPoints > UBound(m_LassoPoints) Then ReDim Preserve m_LassoPoints(0 To m_numOfLassoPoints * 2 - 1) As POINTFLOAT
-                
-                'Store the new point
-                m_LassoPoints(m_numOfLassoPoints - 1).x = x
-                m_LassoPoints(m_numOfLassoPoints - 1).y = y
+                'Perform a quick check to make sure this point isn't a duplicate of the previous point.  With high-DPI mice,
+                ' this is a distinct possibility.
+                If m_LassoPoints(m_numOfLassoPoints - 1).x <> x Or m_LassoPoints(m_numOfLassoPoints - 1).y <> y Then
+            
+                    'Make room in the point array
+                    m_numOfLassoPoints = m_numOfLassoPoints + 1
+                    If m_numOfLassoPoints > UBound(m_LassoPoints) Then ReDim Preserve m_LassoPoints(0 To m_numOfLassoPoints * 2 - 1) As POINTFLOAT
+                    
+                    'Store the new point
+                    m_LassoPoints(m_numOfLassoPoints - 1).x = x
+                    m_LassoPoints(m_numOfLassoPoints - 1).y = y
+                    
+                End If
             
             Case Else
             
@@ -1051,6 +1057,43 @@ Public Sub nudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal 
             updateInternalCoords
             
     End Select
+
+End Sub
+
+'Lasso selections have the unique burden of being somewhat unfavorable to user error.  This function (typically triggered via
+' the BACKSPACE key) can be used to retreat the lasso position, and potentially correct any errors.  The calling function must
+' supply two Double-type variables, which will receive the new cursor position IN IMAGE COORDINATES.  The calling function is
+' responsible for translating these to screen coordinates and actually applying the cursor repositioning.
+Public Sub retreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newCursorY_ImgCoords As Double)
+
+    'Determine a point to retreat to.  We could do this a number of different ways, but because PD generally favors quality
+    ' over all else, we're going to complicate it a bit.  The goal is to retreat a distance of ten pixels, which may correspond
+    ' to any number of actual lasso points.
+    Dim newLassoIndex As Long
+    newLassoIndex = m_numOfLassoPoints - 1
+    
+    Dim netDistance As Double
+    netDistance = 0
+    
+    'Start calculating the net distance traveled by the lasso.  Once a distance of 10 pixels is exceeded, set that as our new
+    ' lasso position.
+    Do While (netDistance < 10) And (newLassoIndex > 0)
+    
+        'Calculate a distance between this coordinate and the previous one.
+        netDistance = netDistance + Math_Functions.distanceTwoPoints(m_LassoPoints(newLassoIndex).x, m_LassoPoints(newLassoIndex).y, m_LassoPoints(newLassoIndex - 1).x, m_LassoPoints(newLassoIndex - 1).y)
+    
+        'Decrement the test index and repeat
+        newLassoIndex = newLassoIndex - 1
+    
+    Loop
+    
+    'Reposition the lasso point index to match
+    m_numOfLassoPoints = newLassoIndex + 1
+    If m_numOfLassoPoints < 1 Then m_numOfLassoPoints = 1
+    
+    'Return the new cursor coordinates at this position, then exit
+    newCursorX_ImgCoords = m_LassoPoints(m_numOfLassoPoints - 1).x
+    newCursorY_ImgCoords = m_LassoPoints(m_numOfLassoPoints - 1).y
 
 End Sub
 
