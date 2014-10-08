@@ -137,3 +137,7 @@ Public Const HTLEFT As Long = 10
 Public Const HTTOP As Long = 12
 Public Const HTRIGHT As Long = 11
 Public Const HTBOTTOM As Long = 15
+
+'Sometimes it is necessary to realign the cursor, particularly while painting
+Public Declare Sub SetCursorPos Lib "user32" (ByVal newX As Long, ByVal newY As Long)
+Public Declare Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long

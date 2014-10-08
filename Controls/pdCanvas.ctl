@@ -921,24 +921,74 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 'Handle non-arrow keys next
                 Else
                 
-                    'Delete key: if a selection is active, erase the selected area
-                    If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).selectionActive Then
-                        markEventHandled = True
-                        Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
-                    End If
                     
-                    'Escape key: if a selection is active, clear it
-                    If (vkCode = VK_ESCAPE) And pdImages(g_CurrentImage).selectionActive Then
-                        markEventHandled = True
-                        Process "Remove selection", , , UNDO_SELECTION
-                    End If
-                
+                                    
                 End If
             
         End Select
         
     End If
 
+End Sub
+
+'Key presses are handled by PhotoDemon's custom pdInputKeyboard class
+Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    
+    markEventHandled = False
+
+    'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
+    If isCanvasInteractionAllowed() Then
+        
+        'Any further processing depends on which tool is currently active
+        Select Case g_CurrentTool
+        
+            Case NAV_DRAG
+            
+            Case NAV_MOVE
+            
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
+                
+                'Delete key: if a selection is active, erase the selected area
+                If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).selectionActive Then
+                    markEventHandled = True
+                    Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
+                End If
+                
+                'Escape key: if a selection is active, clear it
+                If (vkCode = VK_ESCAPE) And pdImages(g_CurrentImage).selectionActive Then
+                    markEventHandled = True
+                    Process "Remove selection", , , UNDO_SELECTION
+                End If
+                
+                'Backspace key: for lasso selections only, retreat back a handful of coordinates, giving the user a chance to
+                ' correct any potential mistakes.
+                If (g_CurrentTool = SELECT_LASSO) And (vkCode = VK_BACK) And pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection.isLockedIn) Then
+                    
+                    markEventHandled = True
+                    
+                    'Ask the selection object to retreat its position
+                    Dim newImageX As Double, newImageY As Double
+                    pdImages(g_CurrentImage).mainSelection.retreatLassoPosition newImageX, newImageY
+                    
+                    'The returned coordinates will be in image coordinates.  Convert them to viewport coordinates.
+                    Dim newCanvasX As Double, newCanvasY As Double
+                    Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), newImageX, newImageY, newCanvasX, newCanvasY
+                    
+                    'Finally, convert the canvas coordinates to screen coordinates, and move the cursor accordingly
+                    setCursorToCanvasPosition newCanvasX, newCanvasY
+                    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                
+                End If
+            
+        End Select
+        
+    End If
+    
+End Sub
+
+'Set the mouse cursor to a specified position on the canvas.  This function will automatically handle the translation to screen coordinates.
+Private Sub setCursorToCanvasPosition(ByVal canvasX As Double, ByVal canvasY As Double)
+    cMouseEvents.moveCursorToNewPosition canvasX, canvasY
 End Sub
 
 Private Sub cmbSizeUnit_Click()
@@ -1556,7 +1606,7 @@ Private Sub UserControl_Initialize()
         
         'Enable key tracking as well
         Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker "pdCanvas", picCanvas.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE
+        cKeyEvents.createKeyboardTracker "pdCanvas", picCanvas.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE, VK_BACK
                 
         'Assign tooltips manually (so theming is supported)
         Set m_ToolTip = New clsToolTip
@@ -1985,13 +2035,20 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             End Select
             
         Case SELECT_LASSO
-        
+            
             Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
             
+                '-1: mouse is outside the lasso selection area
                 Case -1
                     cMouseEvents.setSystemCursor IDC_ARROW
+                
+                '0: mouse is inside the lasso selection area
                 Case 0
-                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    If pdImages(g_CurrentImage).mainSelection.isLockedIn Then
+                        cMouseEvents.setSystemCursor IDC_SIZEALL
+                    Else
+                        cMouseEvents.setSystemCursor IDC_ARROW
+                    End If
                     
             End Select
             
