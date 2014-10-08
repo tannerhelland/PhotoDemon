@@ -574,6 +574,26 @@ Private Function getCurrentCursorPosition(ByVal srcHwnd As Long, ByRef controlX 
 
 End Function
 
+'The primary hWnd can use this function to move the mouse to some new position.
+Public Sub moveCursorToNewPosition(ByVal xRelativeToHwnd As Double, ByVal yRelativeToHwnd As Double)
+
+    'Retrieve the requested position, in screen coordinates
+    Dim tmpPoint As POINTAPI
+    tmpPoint.x = xRelativeToHwnd
+    tmpPoint.y = yRelativeToHwnd
+    
+    If ClientToScreen(m_TrackingData(PDIT_DEFAULT, 0), tmpPoint) <> 0 Then
+        
+        'Cursor trails may cause ghosting, where we move the cursor, but a cursor is still shown at the old mouse position.
+        ' To account for that, we must hide the cursor, move it, then re-display it.
+        ShowCursor 0
+        SetCursorPos tmpPoint.x, tmpPoint.y
+        ShowCursor 1
+        
+    End If
+    
+End Sub
+
 'Use SystemParametersInfo to retrieve the current user setting for mouse wheel sensitivity
 Private Function getUserScrollSetting(ByVal directionIsVertical As Long) As Double
 
