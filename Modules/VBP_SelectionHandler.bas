@@ -447,8 +447,8 @@ End Sub
 ' coordinate space.
 Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY As Double, ByRef srcImage As pdImage) As Long
     
-    'If the current selection is NOT transformable, return 0.
-    If Not srcImage.mainSelection.isTransformable Then
+    'If the current selection is of raster-type, return 0.
+    If srcImage.mainSelection.getSelectionShape = sRaster Then
         findNearestSelectionCoordinates = -1
         Exit Function
     End If
@@ -477,19 +477,16 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
     'Adjust the mouseAccuracy value based on the current zoom value
     Dim mouseAccuracy As Double
     mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.getZoomValue(srcImage.currentZoomValue))
-    
-    'Before doing anything else, make sure the pointer is actually worth checking - e.g. make sure it's near the selection
-    'If (x1 < tLeft - mouseAccuracy) Or (x1 > tRight + mouseAccuracy) Or (y1 < tTop - mouseAccuracy) Or (y1 > tBottom + mouseAccuracy) Then
-    '    findNearestSelectionCoordinates = 0
-    '    Exit Function
-    'End If
-    
+        
     'Find the smallest distance for this mouse position
     Dim minDistance As Double
     minDistance = mouseAccuracy
     
     Dim closestPoint As Long
     closestPoint = -1
+    
+    'Some selection types (lasso, polygon) must use a more complicated region for hit-testing.  GDI+ will be used for this.
+    Dim gdipRegionHandle As Long, gdipHitCheck As Boolean
     
     'If we made it here, this mouse location is worth evaluating.  How we evaluate it depends on the shape of the current selection.
     Select Case srcImage.mainSelection.getSelectionShape
@@ -583,6 +580,18 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             findNearestSelectionCoordinates = closestPoint
             Exit Function
             
+        Case sLasso
+            'Create a GDI+ region from the current selection points
+            gdipRegionHandle = pdImages(g_CurrentImage).mainSelection.getGdipRegionForSelection()
+            
+            'Check the point for a hit
+            gdipHitCheck = GDI_Plus.isPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
+            
+            'Release the GDI+ region
+            GDI_Plus.releaseGDIPlusRegion gdipRegionHandle
+            
+            If gdipHitCheck Then findNearestSelectionCoordinates = 0 Else findNearestSelectionCoordinates = -1
+        
         Case Else
             findNearestSelectionCoordinates = -1
             Exit Function

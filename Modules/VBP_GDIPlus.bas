@@ -145,7 +145,7 @@ Private Type EncoderParameter
 End Type
 
 Private Type EncoderParameters
-    count     As Long
+    Count     As Long
     Parameter As EncoderParameter
 End Type
 
@@ -374,6 +374,7 @@ Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal mBrushMode As GDIFi
 Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal mPath As Long) As Long
 'Private Declare Function GdipAddPathLine Lib "gdiplus" (ByVal mPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
 Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal mPath As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
+Private Declare Function GdipAddPathPolygon Lib "gdiplus" (ByVal mPath As Long, ByVal pointerFloatArray As Long, ByVal numPoints As Long) As Long
 Private Declare Function GdipClosePathFigure Lib "gdiplus" (ByVal mPath As Long) As Long
 Private Declare Function GdipFillPath Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mPath As Long) As Long
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal mPath As Long) As Long
@@ -420,7 +421,8 @@ Private Declare Function GdipFillPolygon Lib "gdiplus" (ByVal mGraphics As Long,
 Private Declare Function GdipFillPolygonI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal FillMd As GDIFillMode) As Long
 Private Declare Function GdipFillPolygon2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipFillPolygon2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
-
+Private Declare Function GdipCreateRegionPath Lib "gdiplus" (ByVal hPath As Long, hRegion As Long) As Long
+Private Declare Function GdipIsVisibleRegionPoint Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphics As Long, ByRef boolResult As Long) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
@@ -504,7 +506,7 @@ End Enum
 
 Public Enum GDIFillMode
    FillModeAlternate = 0
-   FillModeWinding = 1
+   fillmodewinding = 1
 End Enum
 
 Public Enum GpUnit
@@ -1041,7 +1043,7 @@ Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, 
     
     'GDI+ doesn't have a direct rounded rectangles call, so we have to do it ourselves with a custom path
     Dim rrPath As Long
-    GdipCreatePath FillModeWinding, rrPath
+    GdipCreatePath fillmodewinding, rrPath
         
     'The path will be rendered in two sections: first, filling it.  Second, stroking the path itself to complete the
     ' 1px outside border.
@@ -1649,7 +1651,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'BMP export
         Case [ImageBMP]
             pvGetEncoderClsID "image/bmp", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1664,7 +1666,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'GIF export
         Case [ImageGIF]
             pvGetEncoderClsID "image/gif", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1679,7 +1681,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'JPEG export (requires extra work to specify a quality for the encode)
         Case [ImageJPEG]
             pvGetEncoderClsID "image/jpeg", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1694,7 +1696,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'PNG export
         Case [ImagePNG]
             pvGetEncoderClsID "image/png", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1709,7 +1711,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'TIFF export (requires extra work to specify compression and color depth for the encode)
         Case [ImageTIFF]
             pvGetEncoderClsID "image/tiff", uEncCLSID
-            uEncParams.count = 2
+            uEncParams.Count = 2
             ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.Parameter) * 2)
             
             With uEncParams.Parameter
@@ -1807,7 +1809,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     Dim aEncParams() As Byte
         
     pvGetEncoderClsID "image/png", uEncCLSID
-    uEncParams.count = 1
+    uEncParams.Count = 1
     ReDim aEncParams(1 To Len(uEncParams))
     
     Dim gdipColorDepth As Long
@@ -1843,6 +1845,45 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
 GDIPlusQuickSaveError:
 
     GDIPlusQuickSavePNG = False
+    
+End Function
+
+'Given an arbitrary array of points, return a handle to a GDI+ region created from the closed shape formed by the points.
+' Note that this function does not perform automatic management of the returned region.  The caller must release the region manually,
+' using releaseGDIPlusRegion() below.
+Public Function getGDIPlusRegionFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate) As Long
+
+    'Start by creating a blank GDI+ path object.
+    Dim gdipRegionHandle As Long, gdipPathHandle As Long
+    GdipCreatePath useFillMode, gdipPathHandle
+    
+    'Populate the region with the polygon point array we were passed.
+    GdipAddPathPolygon gdipPathHandle, ptrFloatArray, numOfPoints
+    
+    'Use the path to create a region
+    GdipCreateRegionPath gdipPathHandle, gdipRegionHandle
+    
+    'Release the path
+    GdipDeletePath gdipPathHandle
+    
+    'Return the newly formed region handle
+    getGDIPlusRegionFromPoints = gdipRegionHandle
+
+End Function
+
+Public Sub releaseGDIPlusRegion(ByVal gdipRegionHandle As Long)
+    GdipDeletePath gdipRegionHandle
+End Sub
+
+'Given a point and a region, return whether the point is inside or not inside the region.  Because GDI+ does not maintain the concept of
+' "partially within a region", antialiasing has no effect here - only the "perfect" theoretical boundary of the region is used for hit-testing.
+Public Function isPointInGDIPlusRegion(ByVal srcX As Single, ByVal srcY As Single, ByRef regionHandle As Long) As Boolean
+    
+    'Use GDI+ to test the point
+    Dim retLong As Long
+    GdipIsVisibleRegionPoint regionHandle, srcX, srcY, 0&, retLong
+    
+    isPointInGDIPlusRegion = (retLong = 1)
     
 End Function
 

@@ -195,6 +195,10 @@ Private selectionLineWidth As Long
 Private m_numOfLassoPoints As Long
 Private m_LassoPoints() As POINTFLOAT
 
+'When transforms are applied to a lasso selection, we must maintain a backup copy of the original lasso curve.  Any transformation
+' values are then applied to this backup data, and the backup is erased when the mouse is released.
+Private m_LassoPointsBackup() As POINTFLOAT
+
 'Lasso selections support rendering via both lines and curves.  If sSmoothStroke is 0, the lasso is rendered as a closed polygon.
 ' Increasing smooth stroke values affect the tension of the cardinal spline used to enclose the region.
 Private sSmoothStroke As Double
@@ -528,6 +532,11 @@ Public Sub setSmoothStroke(ByVal newSmoothness As Double)
     sSmoothStroke = newSmoothness
 End Sub
 
+'For lasso and polygon selections, this function will return the current selecton region as a GDI+ region handle
+Public Function getGdipRegionForSelection() As Long
+    getGdipRegionForSelection = GDI_Plus.getGDIPlusRegionFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), fillmodewinding)
+End Function
+
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
 ' Note that this this should only be called after a transformation type has been set.
 Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
@@ -621,26 +630,49 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
         'Line selections
         Case sLine
         
-            'Case 0 should never occur, but if it does - treat this like a normal initial coordinate call
-            Case -1
-                x1 = x
-                y1 = y
-                x2 = x
-                y2 = y
-            
-            'First point is being moved
-            Case 0
-                x1 = x
-                y1 = y
-            
-            'Second point is being moved
-            Case 1
-                x2 = x
-                y2 = y
+            'Based on the transform mode, set the initial points accordingly
+            Select Case selTransformationType
+        
+                'Case -1 should never occur, but if it does - treat this like a normal initial coordinate call
+                Case -1
+                    x1 = x
+                    y1 = y
+                    x2 = x
+                    y2 = y
+                
+                'First point is being moved
+                Case 0
+                    x1 = x
+                    y1 = y
+                
+                'Second point is being moved
+                Case 1
+                    x2 = x
+                    y2 = y
+                    
+            End Select
                 
         
+        'Lasso selections can only be moved, so the only valid transform type is type 0
+        Case sLasso
+        
+            'Based on the transform mode, set the initial points accordingly
+            Select Case selTransformationType
+        
+                '0 - interior of the selection, which will trigger a move transformation
+                Case 0
+                    moveXDist = x
+                    moveYDist = y
+                    
+                    'For the transform to work, we need to apply any transformed data to the *original lasso points*.
+                    ' Make a backup copy of the original array now.
+                    ReDim m_LassoPointsBackup(0 To m_numOfLassoPoints - 1) As POINTFLOAT
+                    CopyMemory ByVal VarPtr(m_LassoPointsBackup(0)), ByVal VarPtr(m_LassoPoints(0)), m_numOfLassoPoints * 8
+                    
+            End Select
+        
         'Some selection types cannot be transformed!
-        Case sLasso, sRaster
+        Case sRaster
         
     End Select
     
@@ -704,6 +736,9 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
     ' versus drawing a new one from scratch.)
     If transformModeActive Then
         
+        Dim transX As Double, transY As Double
+        Dim i As Long
+        
         Select Case sShape
     
             Case sRectangle, sCircle
@@ -744,6 +779,9 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                         y2 = y1 + selHeight
                         
                 End Select
+                
+                'If a transform mode is active, re-mark the selection as being transformable
+                isTransformable = True
         
             Case sLine
             
@@ -764,12 +802,33 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                         y2 = y
                         
                 End Select
+                
+                'If a transform mode is active, re-mark the selection as being transformable
+                isTransformable = True
+            
+            'Lasso transforms require us to transform the entire lasso array
+            Case sLasso
+            
+                'Based on the transform mode, set the initial points accordingly
+                Select Case selTransformationType
+            
+                    'Case -1 should never occur.  (-1 represents an invalid transformation request)
+                    Case -1
+                    
+                    'Move transform
+                    Case 0
+                        
+                        'Rebuild the main lasso array by copying all points from the backup array, and applying the current
+                        ' x/y transformation distance to them.
+                        For i = 0 To m_numOfLassoPoints - 1
+                            m_LassoPoints(i).x = m_LassoPointsBackup(i).x + (x - moveXDist)
+                            m_LassoPoints(i).y = m_LassoPointsBackup(i).y + (y - moveYDist)
+                        Next i
+                        
+                End Select
                         
         End Select
-        
-        'If a transform mode is active, re-mark the selection as being transformable
-        isTransformable = True
-        
+                
     'This is not a transform, meaning the selection is being created for the first time.  For standard selection types,
     ' this simply means copying the passed (x, y) values.  Polygon/lasso selections are more complicated.
     Else
@@ -923,7 +982,7 @@ Private Sub updateInternalCoords()
                 selHeight = selMaxY - selTop
                 
                 'If curvature is active, we must perform a manual scan as well
-                If isLockedIn Then findNewBoundsManually True
+                If isLockedIn And (sSmoothStroke > 0) Then findNewBoundsManually True
                 
             Case Else
             
@@ -1242,7 +1301,7 @@ Private Sub createSelectionMask()
         Case sLasso
         
             'Smooth stroke affects whether curves or lines are used to draw the shape
-            GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (sSmooth > sNone), True, sSmoothStroke, FillModeWinding
+            GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (sSmooth > sNone), True, sSmoothStroke, fillmodewinding
             
         'Other selection types will be added in the future
         Case Else
@@ -2038,7 +2097,7 @@ Public Sub findNewBoundsManually(Optional ByVal overrideRasterState As Boolean =
         Next x
         
         'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
-        If (Not boundFound) And (y = maskHeight) Then
+        If (Not boundFound) And (y >= maskHeight) Then
             Debug.Print "No top boundary found - is mask blank?"
             boundFound = True
             selTop = 0
@@ -2047,7 +2106,7 @@ Public Sub findNewBoundsManually(Optional ByVal overrideRasterState As Boolean =
         
         y = y + 1
     
-    Loop While Not boundFound
+    Loop While (Not boundFound)
     
     'Next, find the bottom bound
     boundFound = False
@@ -2083,7 +2142,7 @@ Public Sub findNewBoundsManually(Optional ByVal overrideRasterState As Boolean =
         
         y = y - 1
     
-    Loop While Not boundFound
+    Loop While (Not boundFound)
     
     'Next, find the left bound
     boundFound = False
@@ -2117,7 +2176,7 @@ Public Sub findNewBoundsManually(Optional ByVal overrideRasterState As Boolean =
         
         x = x + 3
     
-    Loop While Not boundFound
+    Loop While (Not boundFound)
     
     'Finally, find the right bound
     boundFound = False
@@ -2152,7 +2211,7 @@ Public Sub findNewBoundsManually(Optional ByVal overrideRasterState As Boolean =
         
         x = x - 3
         
-    Loop While Not boundFound
+    Loop While (Not boundFound)
     
     'All selection boundaries have now been located
     
