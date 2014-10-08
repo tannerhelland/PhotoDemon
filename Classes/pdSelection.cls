@@ -465,7 +465,7 @@ Public Sub setSelectionShape(ByVal selShape As SelectionShape)
             isTransformable = True
             
         Case sLasso
-            isTransformable = False
+            isTransformable = True
         
     End Select
     
@@ -702,9 +702,9 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
             'Also, mark selections of any of these shapes (rectangle, circle, line) as transformable
             isTransformable = True
         
-        'Lasso selections are non-transformable, and they have a variable number of points
+        'Lasso selections have limited transform capabilities, and they have a variable number of points
         Case sLasso
-            isTransformable = False
+            isTransformable = True
             
             m_numOfLassoPoints = 1
             ReDim m_LassoPoints(0 To 127) As POINTFLOAT
@@ -826,6 +826,9 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                         Next i
                         
                 End Select
+                
+                'If a transform mode is active, re-mark the selection as being transformable
+                isTransformable = True
                         
         End Select
                 
@@ -966,6 +969,8 @@ Private Sub updateInternalCoords()
                 selTop = LONG_MAX
                 
                 Dim selMaxX As Long, selMaxY As Long
+                selMaxX = -LONG_MAX
+                selMaxY = -LONG_MAX
                 
                 For i = 0 To m_numOfLassoPoints - 1
                     
@@ -1006,10 +1011,10 @@ Public Function areAllCoordinatesInvalid() As Boolean
         ' rely on intermediate x/y coords instead of the boundLeft/boundTop etc values.
         Case sRectangle, sCircle, sLine, sLasso
             
-            If (selLeft < 0) And (selLeft + selWidth < 0) Then areAllCoordinatesInvalid = True
-            If (selLeft > containingPDImage.Width) And (selLeft + selWidth > containingPDImage.Width) Then areAllCoordinatesInvalid = True
-            If (selTop < 0) And (selTop + selHeight < 0) Then areAllCoordinatesInvalid = True
-            If (selTop > containingPDImage.Height) And (selTop + selHeight > containingPDImage.Height) Then areAllCoordinatesInvalid = True
+            If (selLeft + selWidth <= 0) Then areAllCoordinatesInvalid = True
+            If (selLeft > containingPDImage.Width) Then areAllCoordinatesInvalid = True
+            If (selTop + selHeight <= 0) Then areAllCoordinatesInvalid = True
+            If (selTop > containingPDImage.Height) Then areAllCoordinatesInvalid = True
             
         'In the future, additional selection types can be handled here.
         Case Else
@@ -1017,6 +1022,37 @@ Public Function areAllCoordinatesInvalid() As Boolean
     End Select
     
 End Function
+
+'Nudge the selection in a given direction.  This function is supplied as a convenience for SELECTION TYPES WHOSE POSITION CANNOT
+' BE MODIFIED BY TEXT BOX.  If a selection's position can be modified via text box (e.g. rectangle, ellipse, etc), you need to
+' use the updateViaTextBox() function instead.
+Public Sub nudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal vOffset As Double = 0#)
+
+    Dim i As Long
+
+    Select Case sShape
+    
+        Case sRectangle, sCircle, sLine
+            Debug.Print "nudgeSelection function was used on an invalid selection type - FIX THIS!"
+    
+        Case sLasso
+            
+            Debug.Print hOffset & "," & vOffset
+            
+            'Apply the new offsets to all points in the lasso array
+            For i = 0 To m_numOfLassoPoints - 1
+                With m_LassoPoints(i)
+                    .x = .x + hOffset
+                    .y = .y + vOffset
+                End With
+            Next i
+            
+            'We also need to update the selection's bounding rect
+            updateInternalCoords
+            
+    End Select
+
+End Sub
 
 'Update this selection using the values in the main form's selection text boxes
 Public Sub updateViaTextBox()
@@ -1045,7 +1081,6 @@ Public Sub updateViaTextBox()
     End Select
     
     'For some selection types, we need to update more than just the selLeft/Top/Width/Height values.
-    
     Select Case sShape
     
         'Adjust the x1, y1, x2, y2 values to match the retrieved text box values

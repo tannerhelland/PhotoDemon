@@ -423,6 +423,7 @@ Private Declare Function GdipFillPolygon2 Lib "gdiplus" (ByVal mGraphics As Long
 Private Declare Function GdipFillPolygon2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipCreateRegionPath Lib "gdiplus" (ByVal hPath As Long, hRegion As Long) As Long
 Private Declare Function GdipIsVisibleRegionPoint Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphics As Long, ByRef boolResult As Long) As Long
+Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
@@ -1872,7 +1873,7 @@ Public Function getGDIPlusRegionFromPoints(ByVal numOfPoints As Long, ByVal ptrF
 End Function
 
 Public Sub releaseGDIPlusRegion(ByVal gdipRegionHandle As Long)
-    GdipDeletePath gdipRegionHandle
+    GdipDeleteRegion gdipRegionHandle
 End Sub
 
 'Given a point and a region, return whether the point is inside or not inside the region.  Because GDI+ does not maintain the concept of

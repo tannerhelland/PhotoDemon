@@ -744,6 +744,8 @@ End Function
 'Key presses are handled by PhotoDemon's custom pdInputKeyboard class
 Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
 
+    markEventHandled = False
+
     'Make sure canvas interactions are allowed (e.g. an image has been loaded, etc)
     If isCanvasInteractionAllowed() Then
     
@@ -778,7 +780,10 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 m_suspendRedraws = False
                 
                 'Redraw the viewport if necessary
-                If canvasUpdateRequired Then ScrollViewport pdImages(g_CurrentImage), Me
+                If canvasUpdateRequired Then
+                    markEventHandled = True
+                    ScrollViewport pdImages(g_CurrentImage), Me
+                End If
                     
             'Move stuff around
             Case NAV_MOVE
@@ -801,23 +806,30 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                     End With
                     
                     'Redraw the viewport if necessary
-                    If canvasUpdateRequired Then ScrollViewport pdImages(g_CurrentImage), Me
+                    If canvasUpdateRequired Then
+                        markEventHandled = True
+                        ScrollViewport pdImages(g_CurrentImage), Me
+                    End If
                     
                 'Handle non-arrow keys next
                 Else
                 
                     'Delete key: delete the active layer (if allowed)
                     If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).getNumOfLayers > 1 Then
+                        markEventHandled = True
                         Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
                     End If
                     
                     'Insert: raise Add New Layer dialog
                     If (vkCode = VK_INSERT) Then
+                        markEventHandled = True
                         Process "Add new layer", True
                     End If
                 
                     'Tab and Shift+Tab: move through layer stack
                     If (vkCode = VK_TAB) Then
+                        
+                        markEventHandled = True
                         
                         'Retrieve the active layer index
                         Dim curLayerIndex As Long
@@ -844,6 +856,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 
                     'Space bar: toggle active layer visibility
                     If (vkCode = VK_SPACE) Then
+                        markEventHandled = True
                         pdImages(g_CurrentImage).getActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility)
                         ScrollViewport pdImages(g_CurrentImage), Me
                         syncInterfaceToCurrentImage
@@ -852,14 +865,16 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 End If
             
             'Selections
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
             
                 'Handle arrow keys first
                 If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
             
                     'If a selection is active, nudge it using the arrow keys
                     If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
-                    
+                        
+                        markEventHandled = True
+                        
                         'Disable automatic refresh requests
                         pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = True
                         
@@ -872,18 +887,31 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                         'If offsets were generated, update the selection and redraw the screen
                         If (hOffset <> 0) Or (vOffset <> 0) Then
                         
-                            'Update the selection coordinate text boxes with the new offsets
-                            toolbar_Tools.tudSel(0).Value = toolbar_Tools.tudSel(0).Value + hOffset
-                            toolbar_Tools.tudSel(1).Value = toolbar_Tools.tudSel(1).Value + vOffset
+                            'Some selection types can be modified by simply updating the selection text boxes.  Others cannot.
                             
-                            If g_CurrentTool = SELECT_LINE Then
-                                toolbar_Tools.tudSel(2).Value = toolbar_Tools.tudSel(2).Value + hOffset
-                                toolbar_Tools.tudSel(3).Value = toolbar_Tools.tudSel(3).Value + vOffset
+                            'Non-textbox-compatible selections are handled here
+                            If (g_CurrentTool = SELECT_LASSO) Then
+                                pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
+                                pdImages(g_CurrentImage).mainSelection.nudgeSelection hOffset, vOffset
+                            
+                            'Textbox-compatible selections are handled here
+                            Else
+                            
+                                'Update the selection coordinate text boxes with the new offsets
+                                toolbar_Tools.tudSel(0).Value = toolbar_Tools.tudSel(0).Value + hOffset
+                                toolbar_Tools.tudSel(1).Value = toolbar_Tools.tudSel(1).Value + vOffset
+                                
+                                If g_CurrentTool = SELECT_LINE Then
+                                    toolbar_Tools.tudSel(2).Value = toolbar_Tools.tudSel(2).Value + hOffset
+                                    toolbar_Tools.tudSel(3).Value = toolbar_Tools.tudSel(3).Value + vOffset
+                                End If
+                                
+                                'Update the screen
+                                pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
+                                pdImages(g_CurrentImage).mainSelection.updateViaTextBox
+                            
                             End If
                             
-                            'Update the screen
-                            pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
-                            pdImages(g_CurrentImage).mainSelection.updateViaTextBox
                             RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                             
                         End If
@@ -895,11 +923,13 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 
                     'Delete key: if a selection is active, erase the selected area
                     If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).selectionActive Then
+                        markEventHandled = True
                         Process "Erase selected area", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
                     End If
                     
                     'Escape key: if a selection is active, clear it
                     If (vkCode = VK_ESCAPE) And pdImages(g_CurrentImage).selectionActive Then
+                        markEventHandled = True
                         Process "Remove selection", , , UNDO_SELECTION
                     End If
                 
