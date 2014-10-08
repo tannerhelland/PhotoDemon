@@ -1059,7 +1059,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
                 setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
         
-            'Rectangular selection
+            'Selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
             
                 'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
@@ -1070,7 +1070,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                     sCheck = findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
                     
                     'If a point of interest was clicked, initiate a transform
-                    If (sCheck <> -1) And pdImages(g_CurrentImage).mainSelection.isTransformable Then
+                    If (sCheck <> -1) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sRaster) Then
                     
                         'Initialize a selection transformation
                         pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
@@ -1154,7 +1154,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
     
                 'First, check to see if a selection is both active and transformable.
-                If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
+                If pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sRaster) Then
                     
                     'If the SHIFT key is down, notify the selection engine that a square shape is requested
                     pdImages(g_CurrentImage).mainSelection.requestSquare (Shift And vbShiftMask)
@@ -1230,6 +1230,9 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             'Standard selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
             
+            'Lasso selection
+            Case SELECT_LASSO
+                
             Case Else
             
         End Select
@@ -1949,6 +1952,17 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 Case 1
                     cMouseEvents.setSystemCursor IDC_SIZEALL
             
+            End Select
+            
+        Case SELECT_LASSO
+        
+            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            
+                Case -1
+                    cMouseEvents.setSystemCursor IDC_ARROW
+                Case 0
+                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    
             End Select
             
         Case Else
