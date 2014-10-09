@@ -1378,8 +1378,18 @@ Private Sub createSelectionMask()
         'Lasso selections do not support the "border" type while drawing.  It must be triggered by using the Select menu.
         Case sLasso
         
-            'Smooth stroke affects whether curves or lines are used to draw the shape
-            GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (sSmooth > sNone), True, sSmoothStroke, fillmodewinding
+            'Interior/exterior lasso selections use identical rendering code.
+            If (sType = sInterior) Or (sType = sExterior) Then
+        
+                'Smooth stroke affects whether curves or lines are used to draw the shape
+                GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (sSmooth > sNone), True, sSmoothStroke, fillmodewinding
+                
+            'Border selections stroke the path instead of filling it
+            Else
+            
+                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (sSmooth > sNone), borderSize, LineCapRound
+            
+            End If
             
         'Other selection types will be added in the future
         Case Else
