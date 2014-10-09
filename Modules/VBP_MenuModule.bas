@@ -355,13 +355,17 @@ Public Sub MenuClose()
     ' are not closing ALL images - just this one.)
     g_ClosingAllImages = False
     fullPDImageUnload g_CurrentImage
+    
+    'Reset any relevant parameters
+    g_ClosingAllImages = False
+    g_DealWithAllUnsavedImages = False
 
 End Sub
 
 'Close all active images
 Public Sub MenuCloseAll()
 
-    'Note that the user has opted to close ALL open images; this is used by the MDI children to know what kind
+    'Note that the user has opted to close ALL open images; this is used by the central image handler to know what kind
     ' of "Unsaved changes" dialog to display.
     g_ClosingAllImages = True
 
