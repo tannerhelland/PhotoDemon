@@ -1090,6 +1090,9 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     'Display a relevant cursor for the current action
     setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
     
+    'Selection tools all use the same variable for tracking POIs
+    Dim sCheck As Long
+    
     'Check mouse button use
     If Button = vbLeftButton Then
         
@@ -1139,39 +1142,109 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
                 setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
         
-            'Selections
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
+            'Standard selections
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
             
                 'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
                 If pdImages(g_CurrentImage).selectionActive Then
                 
                     'Check the mouse coordinates of this click.
-                    Dim sCheck As Long
                     sCheck = findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
                     
                     'If a point of interest was clicked, initiate a transform
-                    If (sCheck <> -1) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sRaster) Then
-                    
+                    If (sCheck <> -1) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sPolygon) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sRaster) Then
+                        
                         'Initialize a selection transformation
                         pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
                         pdImages(g_CurrentImage).mainSelection.setInitialTransformCoordinates imgX, imgY
                                         
                     'If a point of interest was *not* clicked, erase any existing selection and start a new one
                     Else
-                        Selection_Handler.initSelectionByPoint imgX, imgY
+                        
+                        'Polygon selections require special handling, because they don't operate on the "mouse up = complete" assumption.
+                        ' They are completed when the user re-clicks the first point.  Any clicks prior to that point are treated as
+                        ' an instruction to add a new points.
+                        If g_CurrentTool = SELECT_POLYGON Then
+                            
+                            'First, see if the selection is locked in.  If it is, treat this is a regular transformation.
+                            If pdImages(g_CurrentImage).mainSelection.isLockedIn Then
+                                pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
+                                pdImages(g_CurrentImage).mainSelection.setInitialTransformCoordinates imgX, imgY
+                            
+                            'Selection is not locked in, meaning the user is still constructing it.
+                            Else
+                            
+                                'If the user clicked on the initial polygon point, attempt to close the polygon
+                                If (sCheck = 0) And (pdImages(g_CurrentImage).mainSelection.getNumOfPolygonPoints > 2) Then
+                                    pdImages(g_CurrentImage).mainSelection.setPolygonClosedState True
+                                    pdImages(g_CurrentImage).mainSelection.setTransformationType 0
+                                
+                                'The user did not click the initial polygon point, meaning we should add this coordinate as a new polygon point.
+                                Else
+                                    
+                                    'Remove transformation mode (if any)
+                                    pdImages(g_CurrentImage).mainSelection.setTransformationType -1
+                                    pdImages(g_CurrentImage).mainSelection.overrideTransformMode False
+                                    
+                                    'Add the new point
+                                    If pdImages(g_CurrentImage).mainSelection.getNumOfPolygonPoints = 0 Then
+                                        Selection_Handler.initSelectionByPoint imgX, imgY
+                                    Else
+                                        
+                                        If (sCheck = -1) Or (sCheck = pdImages(g_CurrentImage).mainSelection.getNumOfPolygonPoints) Then
+                                            pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+                                            pdImages(g_CurrentImage).mainSelection.setTransformationType pdImages(g_CurrentImage).mainSelection.getNumOfPolygonPoints - 1
+                                        Else
+                                            pdImages(g_CurrentImage).mainSelection.setTransformationType sCheck
+                                        End If
+                                        
+                                    End If
+                                    
+                                    'Reinstate transformation mode, using the index of the new point as the transform ID
+                                    pdImages(g_CurrentImage).mainSelection.setInitialTransformCoordinates imgX, imgY
+                                    pdImages(g_CurrentImage).mainSelection.overrideTransformMode True
+                                    
+                                    'Redraw the screen
+                                    RenderViewport pdImages(g_CurrentImage), Me
+                                    
+                                End If
+                            
+                            End If
+                            
+                        Else
+                            Selection_Handler.initSelectionByPoint imgX, imgY
+                        End If
+                        
                     End If
                 
                 'If a selection is not active, start a new one
                 Else
+                    
                     Selection_Handler.initSelectionByPoint imgX, imgY
+                    
+                    'Polygon selections require special handling, as usual.  After creating the initial point, we want to immediately initiate
+                    ' transform mode, because dragging the mouse will simply move the newly created point.
+                    If g_CurrentTool = SELECT_POLYGON Then
+                        pdImages(g_CurrentImage).mainSelection.setTransformationType pdImages(g_CurrentImage).mainSelection.getNumOfPolygonPoints - 1
+                        pdImages(g_CurrentImage).mainSelection.overrideTransformMode True
+                    End If
+                    
                 End If
             
+            'In the future, other tools can be handled here
+            Case Else
+            
+            
         End Select
+    
+    ElseIf Button = vbRightButton Then
+    
+        rMouseDown = True
         
+        'TODO: right-button functionality
+    
     End If
     
-    If Button = vbRightButton Then rMouseDown = True
-
 End Sub
 
 'When the mouse enters the canvas, any floating toolbars must be automatically dimmed.
@@ -1230,8 +1303,8 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 Message "Shift key: preserve layer aspect ratio"
                 transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
         
-            'Selection tools
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+            'Basic selection tools
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
     
                 'First, check to see if a selection is both active and transformable.
                 If pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sRaster) Then
@@ -1247,7 +1320,8 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 
                 'Force a redraw of the viewport
                 If hasMouseMoved > 1 Then RenderViewport pdImages(g_CurrentImage), Me
-                
+            
+            'Lasso selections are handled specially, because mouse move events control the drawing of the lasso
             Case SELECT_LASSO
             
                 'First, check to see if a selection is active
@@ -1307,12 +1381,9 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                     m_LayerAutoActivateIndex = pdImages(g_CurrentImage).getActiveLayerIndex
                 End If
                 
-            'Standard selection tools
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+            'Selection tools
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
             
-            'Lasso selection
-            Case SELECT_LASSO
-                
             Case Else
             
         End Select
@@ -1353,7 +1424,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 'Reset the generic tool mouse tracking function
                 Tool_Support.terminateGenericToolTracking
                 
-            'Selection tools
+            'Most selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
             
                 'If a selection was being drawn, lock it into place
@@ -1362,10 +1433,13 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
                     If ((ClickEventAlsoFiring) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
+                        
                         Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                    
+                    'The mouse is being released after a significant move event, or on a point of interest to the current selection.
                     Else
                     
-                        'If the selection is not raster-type, pass the final mouse coordinates to it
+                        'If the selection is not raster-type, pass these final mouse coordinates to it
                         If (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sRaster) Then
 
                             pdImages(g_CurrentImage).mainSelection.requestSquare (Shift And vbShiftMask)
@@ -1381,20 +1455,40 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                             
                             'Depending on the type of transformation that may or may not have been applied, call the appropriate processor function.
                             ' This is required to add the current selection event to the Undo/Redo chain.
-                            Select Case pdImages(g_CurrentImage).mainSelection.getTransformationType
+                            Select Case g_CurrentTool
                             
-                                'Creating a new selection
-                                Case -1
-                                    Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+                                
+                                    Select Case pdImages(g_CurrentImage).mainSelection.getTransformationType
+                            
+                                        'Creating a new selection
+                                        Case -1
+                                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            
+                                        'Moving an existing selection
+                                        Case 8
+                                            Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            
+                                        'Anything else is assumed to be resizing an existing selection
+                                        Case Else
+                                            Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            
+                                    End Select
                                     
-                                'Moving an existing selection
-                                Case 8
-                                    Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
-                                    
-                                'Anything else is assumed to be resizing an existing selection
-                                Case Else
-                                    Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
-                                    
+                                Case SELECT_LASSO
+                                
+                                    Select Case pdImages(g_CurrentImage).mainSelection.getTransformationType
+                            
+                                        'Creating a new selection
+                                        Case -1
+                                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            
+                                        'Moving an existing selection
+                                        Case Else
+                                            Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            
+                                    End Select
+                            
                             End Select
                             
                         End If
@@ -1411,6 +1505,64 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 
                 'Synchronize the selection text box values with the final selection
                 syncTextToCurrentSelection g_CurrentImage
+                
+            
+            'As usual, polygon selections have some special considerations.
+            Case SELECT_POLYGON
+            
+                'If a selection was being drawn, lock it into place
+                If pdImages(g_CurrentImage).selectionActive Then
+                
+                    'Check to see if the selection is locked in.  If it is, we need to check for an "erase selection" click.
+                    If pdImages(g_CurrentImage).mainSelection.getPolygonClosedState And ClickEventAlsoFiring And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1) Then
+                        Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                    
+                    Else
+                        
+                        'If the polygon is already closed, we want to lock in the newly modified polygon
+                        If pdImages(g_CurrentImage).mainSelection.getPolygonClosedState Then
+                        
+                            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+                            
+                                Case pdImages(g_CurrentImage).mainSelection.getNumOfPolygonPoints
+                                    Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                    
+                                Case 0
+                                    If ClickEventAlsoFiring Then
+                                        Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                    Else
+                                        Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                    End If
+                                    
+                                Case -1
+                                    Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                                
+                                Case Else
+                                    Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                    
+                            End Select
+                            
+                            'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
+                            If pdImages(g_CurrentImage).mainSelection.isLockedIn And pdImages(g_CurrentImage).mainSelection.areAllCoordinatesInvalid Then
+                                Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                            End If
+                            
+                        Else
+                        
+                            'Pass these final mouse coordinates to the selection engine
+                            pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+                            
+                        End If
+                    
+                    End If
+                    
+                    'Force a redraw of the screen
+                    RenderViewport pdImages(g_CurrentImage), Me
+                
+                Else
+                    'If the selection is not active, make sure it stays that way
+                    pdImages(g_CurrentImage).mainSelection.lockRelease
+                End If
                 
             Case Else
                     
@@ -2033,7 +2185,29 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     cMouseEvents.setSystemCursor IDC_SIZEALL
             
             End Select
+        
+         Case SELECT_POLYGON
             
+            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            
+                '-1: mouse is outside the lasso selection area
+                Case -1
+                    cMouseEvents.setSystemCursor IDC_ARROW
+                
+                'numOfPolygonPoints: mouse is inside the polygon, but not over a polygon node
+                Case pdImages(g_CurrentImage).mainSelection.getNumOfPolygonPoints
+                    If pdImages(g_CurrentImage).mainSelection.isLockedIn Then
+                        cMouseEvents.setSystemCursor IDC_SIZEALL
+                    Else
+                        cMouseEvents.setSystemCursor IDC_ARROW
+                    End If
+                    
+                'Everything else: mouse is over a polygon node
+                Case Else
+                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    
+            End Select
+        
         Case SELECT_LASSO
             
             Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
@@ -2042,7 +2216,8 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 Case -1
                     cMouseEvents.setSystemCursor IDC_ARROW
                 
-                '0: mouse is inside the lasso selection area
+                '0: mouse is inside the lasso selection area.  As a convenience to the user, we don't update the cursor
+                '   if they're still in "drawing" mode - we only update it if the selection is complete.
                 Case 0
                     If pdImages(g_CurrentImage).mainSelection.isLockedIn Then
                         cMouseEvents.setSystemCursor IDC_SIZEALL
