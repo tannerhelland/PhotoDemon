@@ -145,7 +145,7 @@ Private Type EncoderParameter
 End Type
 
 Private Type EncoderParameters
-    count     As Long
+    Count     As Long
     Parameter As EncoderParameter
 End Type
 
@@ -372,6 +372,7 @@ Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal mGraphics As Long
 Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
 Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal mBrushMode As GDIFillMode, mPath As Long) As Long
 Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal mPath As Long) As Long
+Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal mPath As Long, ByRef dstBounds As RECTF, ByVal optionalTransformMatrix As Long, ByVal optionalHPen As Long) As Long
 'Private Declare Function GdipAddPathLine Lib "gdiplus" (ByVal mPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
 Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal mPath As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
 Private Declare Function GdipAddPathPolygon Lib "gdiplus" (ByVal mPath As Long, ByVal pointerFloatArray As Long, ByVal numPoints As Long) As Long
@@ -532,13 +533,6 @@ End Type
 
 Private Type tmpLong
     lngResult As Long
-End Type
-
-Private Type RECTF
-    Left        As Single
-    Top         As Single
-    Width       As Single
-    Height      As Single
 End Type
 
 Private Type RECTL
@@ -1657,7 +1651,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'BMP export
         Case [ImageBMP]
             pvGetEncoderClsID "image/bmp", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1672,7 +1666,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'GIF export
         Case [ImageGIF]
             pvGetEncoderClsID "image/gif", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1687,7 +1681,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'JPEG export (requires extra work to specify a quality for the encode)
         Case [ImageJPEG]
             pvGetEncoderClsID "image/jpeg", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1702,7 +1696,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'PNG export
         Case [ImagePNG]
             pvGetEncoderClsID "image/png", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1717,7 +1711,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'TIFF export (requires extra work to specify compression and color depth for the encode)
         Case [ImageTIFF]
             pvGetEncoderClsID "image/tiff", uEncCLSID
-            uEncParams.count = 2
+            uEncParams.Count = 2
             ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.Parameter) * 2)
             
             With uEncParams.Parameter
@@ -1815,7 +1809,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     Dim aEncParams() As Byte
         
     pvGetEncoderClsID "image/png", uEncCLSID
-    uEncParams.count = 1
+    uEncParams.Count = 1
     ReDim aEncParams(1 To Len(uEncParams))
     
     Dim gdipColorDepth As Long
@@ -1879,6 +1873,38 @@ Public Function getGDIPlusRegionFromPoints(ByVal numOfPoints As Long, ByVal ptrF
     'Return the newly formed region handle
     getGDIPlusRegionFromPoints = gdipRegionHandle
 
+End Function
+
+'Given an arbitrary array of points, use GDI+ to find a bounding rect for the region created from the closed shape formed by the points.
+' This function is self-managing, meaning it will delete any GDI+ objects it generates.
+Public Function getGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single, Optional ByVal penWidth As Single = 1#, Optional ByVal customLinecap As LineCap = 0) As RECTF
+
+    'Start by creating a blank GDI+ path object.
+    Dim gdipRegionHandle As Long, gdipPathHandle As Long
+    GdipCreatePath useFillMode, gdipPathHandle
+    
+    'Populate the region with the polygon point array we were passed.
+    If useCurveMode Then
+        GdipAddPathClosedCurve2 gdipPathHandle, ptrFloatArray, numOfPoints, curveTension
+    Else
+        GdipAddPathPolygon gdipPathHandle, ptrFloatArray, numOfPoints
+    End If
+    
+    'Create a pen object with width and linecaps matching the passed params; these are important in the bounds calculation, as a wider pen
+    ' means a wider region.
+    Dim iPen As Long
+    GdipCreatePen1 fillQuadWithVBRGB(0, 255), penWidth, UnitPixel, iPen
+    
+    'If a custom line cap was specified, apply it now
+    If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
+    
+    'Using the generated pen, calculate a bounding rect for the path as drawn with that pen
+    GdipGetPathWorldBounds gdipPathHandle, getGDIPlusBoundingRectFromPoints, 0, iPen
+    
+    'Release the path and pen before exiting
+    GdipDeletePath gdipPathHandle
+    GdipDeletePen iPen
+    
 End Function
 
 Public Sub releaseGDIPlusRegion(ByVal gdipRegionHandle As Long)

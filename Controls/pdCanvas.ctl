@@ -865,7 +865,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 End If
             
             'Selections
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
             
                 'Handle arrow keys first
                 If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
@@ -890,7 +890,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                             'Some selection types can be modified by simply updating the selection text boxes.  Others cannot.
                             
                             'Non-textbox-compatible selections are handled here
-                            If (g_CurrentTool = SELECT_LASSO) Then
+                            If (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_LASSO) Then
                                 pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
                                 pdImages(g_CurrentImage).mainSelection.nudgeSelection hOffset, vOffset
                             
@@ -918,7 +918,8 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                     
                     End If
                 
-                'Handle non-arrow keys next
+                'Handle non-arrow keys next.  (Note: most non-arrow keys are not meant to work with key-repeating, so they
+                ' are handled in the KeyUp event instead.)
                 Else
                 
                     
@@ -946,7 +947,7 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
             
             Case NAV_MOVE
             
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
                 
                 'Delete key: if a selection is active, erase the selected area
                 If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).selectionActive Then
@@ -960,22 +961,40 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
                     Process "Remove selection", , , UNDO_SELECTION
                 End If
                 
-                'Backspace key: for lasso selections only, retreat back a handful of coordinates, giving the user a chance to
+                'Backspace key: for lasso and polygon selections, retreat back one or more coordinates, giving the user a chance to
                 ' correct any potential mistakes.
-                If (g_CurrentTool = SELECT_LASSO) And (vkCode = VK_BACK) And pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection.isLockedIn) Then
+                If ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And (vkCode = VK_BACK) And pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection.isLockedIn) Then
                     
                     markEventHandled = True
                     
-                    'Ask the selection object to retreat its position
-                    Dim newImageX As Double, newImageY As Double
-                    pdImages(g_CurrentImage).mainSelection.retreatLassoPosition newImageX, newImageY
+                    'Polygons
+                    If (g_CurrentTool = SELECT_POLYGON) Then
                     
-                    'The returned coordinates will be in image coordinates.  Convert them to viewport coordinates.
-                    Dim newCanvasX As Double, newCanvasY As Double
-                    Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), newImageX, newImageY, newCanvasX, newCanvasY
+                        'Do not allow point removal if the polygon has already been successfully closed.
+                        If Not pdImages(g_CurrentImage).mainSelection.getPolygonClosedState Then pdImages(g_CurrentImage).mainSelection.removeLastPolygonPoint
                     
-                    'Finally, convert the canvas coordinates to screen coordinates, and move the cursor accordingly
-                    setCursorToCanvasPosition newCanvasX, newCanvasY
+                    'Lassos
+                    Else
+                    
+                        'Do not allow point removal if the lasso has already been successfully closed.
+                        If Not pdImages(g_CurrentImage).mainSelection.getLassoClosedState Then
+                    
+                            'Ask the selection object to retreat its position
+                            Dim newImageX As Double, newImageY As Double
+                            pdImages(g_CurrentImage).mainSelection.retreatLassoPosition newImageX, newImageY
+                            
+                            'The returned coordinates will be in image coordinates.  Convert them to viewport coordinates.
+                            Dim newCanvasX As Double, newCanvasY As Double
+                            Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), newImageX, newImageY, newCanvasX, newCanvasY
+                            
+                            'Finally, convert the canvas coordinates to screen coordinates, and move the cursor accordingly
+                            setCursorToCanvasPosition newCanvasX, newCanvasY
+                            
+                        End If
+                        
+                    End If
+                    
+                    'Redraw the screen to reflect this new change.
                     RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
                 End If
@@ -1535,7 +1554,19 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                                     End If
                                     
                                 Case -1
-                                    Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                                
+                                    'If the user has clicked off the selection, we want to remove it.
+                                    If ClickEventAlsoFiring Then
+                                        Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                                    
+                                    'If they haven't clicked, this could simply indicate that they dragged a polygon point off the polygon
+                                    ' and into some new region of the image.
+                                    Else
+                                        
+                                        pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+                                        Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                        
+                                    End If
                                 
                                 Case Else
                                     Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool

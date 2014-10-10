@@ -76,13 +76,6 @@ Private Declare Sub CreateStreamOnHGlobal Lib "ole32.dll" (ByRef hGlobal As Any,
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function VarPtrArray Lib "msvbvm60.dll" Alias "VarPtr" (Ptr() As Any) As Long
 
-Private Type RECTF
-    Left        As Single
-    Top         As Single
-    Width       As Single
-    Height      As Single
-End Type
-
 Private Type GdiplusStartupInput
     GdiplusVersion           As Long
     DebugEventCallback       As Long
@@ -327,16 +320,16 @@ End Function
 'pone una Imágen desde un hBitmap de GDI+ al boton
 '------------------------------------------------------------------------
 Public Function SetGdiPlusImagen(hWnd As Long, hBitmap As Long, ByVal cx As Long, ByVal cy As Long) As Boolean
-    Dim TR          As RECTF
+    Dim tR          As RECTF
     Dim ResizeBmp   As Long
     Dim ResizeGra   As Long
     Dim hIcon       As Long
     
     If hBitmap = 0 Then Exit Function
     
-    Call GdipGetImageBounds(hBitmap, TR, UnitPixel)
+    Call GdipGetImageBounds(hBitmap, tR, UnitPixel)
     
-    If cx <> TR.Width Or cy <> TR.Height Then
+    If cx <> tR.Width Or cy <> tR.Height Then
         If GdipCreateBitmapFromScan0(cx, cy, 0&, PixelFormat32bppARGB, ByVal 0&, ResizeBmp) = 0 Then
             If GdipGetImageGraphicsContext(ResizeBmp, ResizeGra) = 0 Then
                 GdipSetInterpolationMode ResizeGra, InterpolationModeHighQuality

@@ -270,3 +270,10 @@ End Enum
 #If False Then
     Private Const PDRUID_CHANNEL_RED = 0, PDRUID_CHANNEL_GREEN = 1, PDRUID_CHANNEL_BLUE = 2, PDRUID_CHANNEL_RGB = 3
 #End If
+
+Public Type RECTF
+    Left As Single
+    Top As Single
+    Width As Single
+    Height As Single
+End Type

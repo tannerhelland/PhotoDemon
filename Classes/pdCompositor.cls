@@ -39,14 +39,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-'Floating-point rect
-Private Type RECTF
-    Left        As Single
-    Top         As Single
-    Right       As Single
-    Bottom      As Single
-End Type
     
 'Some API functions are used to simplify the process of things like merging layers
 Private Declare Function UnionRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Long
@@ -994,21 +986,23 @@ End Sub
 ' from the source coordinate space to the destination coordinate space.
 Private Function getDstRectFromSrcRect(ByRef dstRect As RECT, ByRef srcRect As RECT, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long)
     
-    'Convert the source rectangle coordinates into a [0, 1] scale relative to the total source area
+    'Convert the source rectangle coordinates into a [0, 1] scale relative to the total source area.
+    ' Note that we use a RECTF here, which typically uses WIDTH and HEIGHT markers - however, we use them as RIGHT and BOTTOM here,
+    ' so ignore the original named values.
     Dim srcRectF As RECTF
     With srcRectF
         .Left = (srcRect.Left - srcX) / srcWidth
-        .Right = (srcRect.Right - srcX) / srcWidth
+        .Width = (srcRect.Right - srcX) / srcWidth
         .Top = (srcRect.Top - srcY) / srcHeight
-        .Bottom = (srcRect.Bottom - srcY) / srcHeight
+        .Height = (srcRect.Bottom - srcY) / srcHeight
     End With
     
     'Using those source values, fill the destination rect
     With dstRect
         .Left = dstX + (srcRectF.Left * dstWidth)
-        .Right = dstX + (srcRectF.Right * dstWidth)
+        .Right = dstX + (srcRectF.Width * dstWidth)
         .Top = dstY + (srcRectF.Top * dstHeight)
-        .Bottom = dstY + (srcRectF.Bottom * dstHeight)
+        .Bottom = dstY + (srcRectF.Height * dstHeight)
     End With
 
 End Function
