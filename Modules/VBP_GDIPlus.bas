@@ -231,6 +231,11 @@ Public Enum LineCap
    LineCapAnchorMask = &HF0
 End Enum
 
+#If False Then
+    Const LineCapFlat = 0, LineCapSquare = 1, LineCapRound = 2, LineCapTriangle = 3, LineCapNoAnchor = &H10, LineCapSquareAnchor = &H11
+    Const LineCapRoundAnchor = &H12, LineCapDiamondAnchor = &H13, LineCapArrowAnchor = &H14, LineCapCustom = &HFF, LineCapAnchorMask = &HF0
+#End If
+
 Public Enum DashStyle
    DashStyleSolid = 0
    DashStyleDash = 1
