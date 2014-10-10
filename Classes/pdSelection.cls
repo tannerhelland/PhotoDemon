@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 09/October/14
-'Last update: initial build of polygon selections
+'Last updated: 10/October/14
+'Last update: wrap up final work on polygon and lasso selections
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, line, polygon, and lasso selections are
 ' currently implemented, with magic wand set to be tackled in the coming weeks.
@@ -1685,7 +1685,7 @@ Private Sub createSelectionMask()
                 
             'Border selections stroke the path instead of filling it
             Else
-                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (sSmooth > sNone), borderSize, LineCapRound, True, sPolygonCurvature
+                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (sSmooth > sNone), borderSize, LineCapFlat, True, sPolygonCurvature
             End If
         
         'Strangely enough, lasso selections are arguably the simplest selection type to render, as we simply close the lasso shape,
@@ -1698,7 +1698,7 @@ Private Sub createSelectionMask()
                 
             'Border selections stroke the path instead of filling it
             Else
-                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (sSmooth > sNone), borderSize, LineCapRound
+                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (sSmooth > sNone), borderSize, LineCapFlat
             End If
             
         'Other selection types will be added in the future
