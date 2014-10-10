@@ -158,6 +158,10 @@ Private Const VK_XBUTTON2 As Long = &H6
 ' handle it, using GetSystemMetrics (which is publicly declared in PD).
 Private Const SM_SWAPBUTTON As Long = 23
 
+'Mouse capturing provides more predictable behavior, particularly on UCs
+Private Declare Function ReleaseCapture Lib "user32" () As Long
+Private Declare Function SetCapture Lib "user32" (ByVal hWnd As Long) As Long
+
 'This class also handles cursor management, but because cursors can be requested by external functions, they are declared
 ' publicly in the Icon and Cursor module.  Look there for cursor-related API constants.
 
@@ -270,6 +274,11 @@ Private m_DelayTrackingActive As Boolean
 Private m_DelayThreshold As Long
 Private Const DEFAULT_DELAY_THRESHOLD_MS = 120
 
+'To improve mouse behavior on UCs, this class will auto-capture the mouse when a button is pressed.  Each press of a button increments
+' this internal capture counter.  When a button is released, the capture counter is decremented.  When all buttons have been released,
+' the mouse capture is released.
+Private m_CaptureCounter As Long
+
 'Use this function enable/disable automatic dropping of severely delayed events
 Public Sub setAutoDropOfDelayedEvents(ByVal newMode As Boolean)
     m_DelayTrackingActive = newMode
@@ -313,6 +322,9 @@ Private Sub Class_Initialize()
     
     'Debugging high-resolution mode is made easier by enabling it automatically.
     m_HighResModeActive = True
+    
+    'Reset the capture counter
+    m_CaptureCounter = 0
     
 End Sub
 
@@ -957,6 +969,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
                 lReturn = 0
                 
+                'Increment the capture counter
+                m_CaptureCounter = m_CaptureCounter + 1
+                
+                'If we have not captured the mouse, capture it now
+                If m_CaptureCounter = 1 Then SetCapture lng_hWnd
+                
                 'Reset the mouse move counter
                 m_MouseMoveCount = 0
                 
@@ -993,6 +1011,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
             
                 lReturn = 0
+                
+                'Decrement the capture counter; if all buttons have been released, release our capture entirely
+                m_CaptureCounter = m_CaptureCounter - 1
+                If m_CaptureCounter <= 0 Then
+                    m_CaptureCounter = 0
+                    ReleaseCapture
+                End If
                 
                 'Because mouse up/down events tend to focus on the use of a single button, it makes more sense for us to
                 ' manually return a single-button type here (rather than a composite flag).  The calling function can
