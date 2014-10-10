@@ -50,12 +50,6 @@ Private Const PixelFormatPAlpha = &H80000            ' Pre-multiplied alpha
 
 'GDI+ types and constants
 Private Const UnitPixel As Long = &H2&
-Private Type RECTF
-    fLeft As Single
-    fTop As Single
-    fWidth As Single
-    fHeight As Single
-End Type
 
 'Type required to create an icon on-the-fly
 Private Type ICONINFO
@@ -1071,9 +1065,9 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
                 
                 'If the image has an alpha channel, create a 32bpp DIB to receive it
                 If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
-                    dstDIB.createBlank tmpRect.fWidth, tmpRect.fHeight, 32
+                    dstDIB.createBlank tmpRect.Width, tmpRect.Height, 32
                 Else
-                    dstDIB.createBlank tmpRect.fWidth, tmpRect.fHeight, 24
+                    dstDIB.createBlank tmpRect.Width, tmpRect.Height, 24
                 End If
                 
                 'Convert the GDI+ bitmap to a standard Windows hBitmap
@@ -1085,7 +1079,7 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
                     SelectObject gdiDC, hBitmap
                     
                     'Copy the GDI+ bitmap into the DIB
-                    BitBlt dstDIB.getDIBDC, 0, 0, tmpRect.fWidth, tmpRect.fHeight, gdiDC, 0, 0, vbSrcCopy
+                    BitBlt dstDIB.getDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
                     
                     'Verify the alpha channel
                     If Not dstDIB.verifyAlphaChannel Then dstDIB.convertTo24bpp

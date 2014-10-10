@@ -58,6 +58,13 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     pdImages(g_CurrentImage).mainSelection.lockIn
     pdImages(g_CurrentImage).selectionActive = True
     
+    'For lasso selections, mark the lasso as closed if the selection is being created anew
+    Dim cParam As pdParamString
+    Set cParam = New pdParamString
+    cParam.setParamString paramString
+    
+    If cParam.GetLong(1) = sLasso Then pdImages(g_CurrentImage).mainSelection.setLassoClosedState True
+    
     'Synchronize all user-facing controls to match
     syncTextToCurrentSelection g_CurrentImage
     
