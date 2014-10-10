@@ -175,7 +175,7 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
         
         'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
         ' draw transform nodes around the selection area.
-        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE
+        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
             
             'Next, check to see if a selection is active and transformable.  If it is, draw nodes around the selected area.
             If srcImage.selectionActive And srcImage.mainSelection.isTransformable Then

@@ -15,16 +15,28 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 05/October/14
-'Last update: initial build of lasso selections
+'Last updated: 09/October/14
+'Last update: initial build of polygon selections
 '
-'This class handles all selections in PhotoDemon.  Rectangular and elliptical selections are now implemented, with more
-' to follow in the coming months.
+'This class handles all selections in PhotoDemon.  Rectangular, elliptical, line, polygon, and lasso selections are
+' currently implemented, with magic wand set to be tackled in the coming weeks.
 '
-'All selections are treated as a subset of pixels within a rectangular area. The x1, y1, x2, y2 coordinates define opposite
-' corners of the selection area. There is no guarantee that these coordinates will appear in a given corner - so they must
-' be checked manually. When a selection is set, those values are translated into Left, Top, Width and Height values, which
-' are in turn used for everything from cropping to applying filters.
+'All selections are treated as a subset of pixels within a bounding rectangle.  Each selection will calculate this bounding
+' rectangle differently; simple shapes like rectangles and ellipses can calculate it using their x1, y1, x2, y2 coordinates,
+' while more complex shapes (lasso, polygon) must search their point collection and manually construct a bounding rect that
+' way.  Certain modifiable parameters - e.g. feathering, possibly border width - may also affect the bounding rect calculation.
+'
+'To that end, multiple coordinate sets are used within this class.  Individual shapes have their own coordinate collections;
+' these vary from simple coordinate pairs, as with rectangle selections, to large variable-size arrays, as with a lasso
+' selection.  From these, a uniform set of selLeft, selTop, selWidth, and selHeight values are calculated, which define the
+' boundaries of the raw geometric shape constructed by the selection.  These four values are primarily used internally, or to
+' show the user the size of their created shape (rectangle and elliptical selections allow the user to modify these values
+' via text box), but generally they should not be used externally.
+'
+'At selection mask creation time, a final bounding rect (used by variables boundLeft, boundTop, boundWidth, and boundHeight)
+' is created, factoring in any extra settings like feathering, border considerations, etc.  These bounding values are the
+' ones that external functions should use, because they enclose the full image area affected by the selection.  In some rare
+' cases, e.g. raster selections, these boundary coordinates may actually be calculated by a manual scan of the selection mask.
 '
 'Note also that this class is treated as a subset of pdImage(). Right now each image object only contains one selection,
 ' but there's no reason it couldn't store multiples in the future. (Some software allows for selection blending modes, e.g.
@@ -74,7 +86,8 @@ Public Enum SelectionShape
     sRectangle = 0
     sCircle = 1
     sLine = 2
-    sLasso = 3
+    sPolygon = 3
+    sLasso = 4
     sRaster = 10
 End Enum
 
@@ -82,7 +95,8 @@ End Enum
     Const sRectangle = 0
     Const sCircle = 1
     Const sLine = 2
-    Const sLasso = 3
+    Const sPolygon = 3
+    Const sLasso = 4
     Const sRaster = 10
 #End If
 
@@ -191,17 +205,28 @@ Private featheringRadius As Long
 'Line selections have variable width.
 Private selectionLineWidth As Long
 
-'Lasso/Polygon selections have a variable number of points.  As such, we have to track their contents dynamically.
+'Lasso and polygon selections have a variable number of points.  As such, we have to track their contents dynamically.
 Private m_numOfLassoPoints As Long
 Private m_LassoPoints() As POINTFLOAT
 
-'When transforms are applied to a lasso selection, we must maintain a backup copy of the original lasso curve.  Any transformation
-' values are then applied to this backup data, and the backup is erased when the mouse is released.
+Private m_numOfPolygonPoints As Long
+Private m_PolygonPoints() As POINTFLOAT
+
+'When move transforms are applied to lasso or polygon selections, we must maintain a backup copy of the original point array.
+' Any transformation values are then applied to this backup data, and the backup is erased when the mouse is released.
 Private m_LassoPointsBackup() As POINTFLOAT
+Private m_PolygonPointsBackup() As POINTFLOAT
 
 'Lasso selections support rendering via both lines and curves.  If sSmoothStroke is 0, the lasso is rendered as a closed polygon.
 ' Increasing smooth stroke values affect the tension of the cardinal spline used to enclose the region.
 Private sSmoothStroke As Double
+
+'Polygon selections also support a notion of curvature.  If sPolygonCurvature is 0, the polygon is rendered with straight sides.
+' Increasing the curvature value will increase the tension of the cardinal spline used to enclose the region.
+Private sPolygonCurvature As Double
+
+'When a polygon selection is closed, this value will be set to TRUE
+Private m_PolygonClosed As Boolean
 
 'To save code elsewhere, a selection can be initialized by using a param string generated by a pdParamString object.  This condenses a huge
 ' list of variables into a single string.  This function is especially helpful when writing full selection data to/from file.
@@ -269,8 +294,37 @@ Public Sub initFromParamString(ByVal paramString As String)
             x2 = cParams.GetDouble(14)
             y2 = cParams.GetDouble(15)
         
+        'Polygon selections have a variable number of parameters, based on the number of points in the polygon.
+        ' Position (14) stores the number of points.
+        Case sPolygon
+        
+            '12 - Draw mode display
+            setDrawModeDisplay cParams.GetLong(12)
+            
+            '13 - Polygon curvature
+            setPolygonCurvature cParams.GetDouble(13)
+            
+            '14 - number of points in the polygon array
+            m_numOfPolygonPoints = cParams.GetLong(14)
+            
+            If m_numOfPolygonPoints > 0 Then
+            
+                ReDim m_PolygonPoints(0 To m_numOfPolygonPoints - 1) As POINTFLOAT
+                
+                'Retrieve all polygon points from the param string
+                If m_numOfPolygonPoints > 0 Then
+                    For i = 0 To m_numOfPolygonPoints - 1
+                        m_PolygonPoints(i).x = cParams.GetDouble(15 + i * 2)
+                        m_PolygonPoints(i).y = cParams.GetDouble(16 + i * 2)
+                    Next i
+                End If
+                
+            Else
+                ReDim m_PolygonPoints(0 To 127) As POINTFLOAT
+            End If
+        
         'Lasso/freehand selections have a variable number of parameters, based on the number of points in the lasso.
-        ' Position (13) stores the number of points.
+        ' Position (14) stores the number of points.
         Case sLasso
             
             '12 - Draw mode display
@@ -321,7 +375,19 @@ Public Function getSelectionParamString() As String
         'Rectangles, ellipses, and lines require only (x1, y1) and (x2, y2) coordinates
         Case sRectangle, sCircle, sLine
             getSelectionParamString = getSelectionParamString & "|" & buildParams(x1, y1, x2, y2)
+        
+        'Polygon selections are trickier; they have a dynamic length based on the number of points in the shape.
+        ' (TODO: use a string builder class for this, to improve performance)
+        Case sPolygon
             
+            getSelectionParamString = getSelectionParamString & "|" & CStr(sDrawingDisplay) & "|" & Trim$(Str(sPolygonCurvature)) & "|" & CStr(m_numOfPolygonPoints)
+            
+            If m_numOfPolygonPoints > 0 Then
+                For i = 0 To m_numOfPolygonPoints - 1
+                    getSelectionParamString = getSelectionParamString & "|" & Trim$(Str(m_PolygonPoints(i).x)) & "|" & Trim$(Str(m_PolygonPoints(i).y))
+                Next i
+            End If
+        
         'Lasso selections are trickier; they have a dynamic length based on the number of drawn points.
         ' (TODO: use a string builder class for this, to improve performance)
         Case sLasso
@@ -353,6 +419,8 @@ Public Sub selectAll()
     setFeatheringRadius 0
     setSmoothingType sAntialiased
     setRoundedCornerAmount 0
+    setSmoothStroke 0
+    setPolygonCurvature 0
     x1 = 0
     y1 = 0
     x2 = containingPDImage.Width
@@ -440,7 +508,12 @@ Public Sub setTransformationType(ByVal transShape As Long)
     selTransformationType = transShape
 End Sub
 
-'Get/set the selection's current coordinates
+Public Sub overrideTransformMode(ByVal newOverride As Boolean)
+    transformModeActive = newOverride
+End Sub
+
+'Get/set the selection's current coordinates.  At present, this is only used by line selections, as part of "compare mouse
+' coordinates against selection coordinates" functionality.
 Public Sub getSelectionCoordinates(ByVal numPoint As Long, ByRef xDst As Double, ByRef yDst As Double)
     If numPoint = 1 Then
         xDst = x1
@@ -464,7 +537,7 @@ Public Sub setSelectionShape(ByVal selShape As SelectionShape)
         Case sRectangle, sCircle, sLine
             isTransformable = True
             
-        Case sLasso
+        Case sLasso, sPolygon
             isTransformable = True
         
     End Select
@@ -522,7 +595,34 @@ Public Sub setDrawModeDisplay(ByVal newDisplayMode As SelectionDrawingDisplay)
     sDrawingDisplay = newDisplayMode
 End Sub
 
-'Get/set smooth stroke mode.  Note that this is only relevant for certain selection types.
+'Get/set polygon curvature tension (for polygon selections, obviously)
+Public Function getPolygonCurvature() As Double
+    getPolygonCurvature = sPolygonCurvature
+End Function
+
+Public Sub setPolygonCurvature(ByVal newCurvature As Double)
+    If (sShape <> sRaster) Then isMaskReady = False
+    sPolygonCurvature = newCurvature
+End Sub
+
+'Return the number of polygon points
+Public Function getNumOfPolygonPoints() As Long
+    getNumOfPolygonPoints = m_numOfPolygonPoints
+End Function
+
+'Copy the current polygon point collection into an outside array.  This is used by mouse coordinate checking functions.
+Friend Sub getPolygonPoints(ByRef ptFloatArray() As POINTFLOAT)
+    
+    If m_numOfPolygonPoints > 0 Then
+        ReDim ptFloatArray(0 To m_numOfPolygonPoints - 1) As POINTFLOAT
+        CopyMemory ByVal VarPtr(ptFloatArray(0)), ByVal VarPtr(m_PolygonPoints(0)), m_numOfPolygonPoints * 8
+    Else
+        ReDim ptFloatArray(0) As POINTFLOAT
+    End If
+    
+End Sub
+
+'Get/set smooth stroke mode.  Note that at present, this is only relevant for lasso selections.
 Public Function getSmoothStroke() As Double
     getSmoothStroke = sSmoothStroke
 End Function
@@ -532,9 +632,23 @@ Public Sub setSmoothStroke(ByVal newSmoothness As Double)
     sSmoothStroke = newSmoothness
 End Sub
 
-'For lasso and polygon selections, this function will return the current selecton region as a GDI+ region handle
+'For polygon selections, the canvas needs to know if the current polygon selection is open (e.g. still under construction) or closed.
+Public Function getPolygonClosedState() As Boolean
+    getPolygonClosedState = m_PolygonClosed
+End Function
+
+Public Sub setPolygonClosedState(ByVal NewState As Boolean)
+    m_PolygonClosed = NewState
+End Sub
+
+'For lasso and polygon selections, this function will return the current selecton region as a GDI+ region handle.  The mouse coordinate
+' checker code uses this to see if the mouse cursor is currently within the bounds of the selection area.
 Public Function getGdipRegionForSelection() As Long
-    getGdipRegionForSelection = GDI_Plus.getGDIPlusRegionFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), fillmodewinding)
+    If sShape = sPolygon Then
+        getGdipRegionForSelection = GDI_Plus.getGDIPlusRegionFromPoints(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), FillModeWinding, True, sPolygonCurvature)
+    Else
+        getGdipRegionForSelection = GDI_Plus.getGDIPlusRegionFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), FillModeWinding, True, sSmoothStroke)
+    End If
 End Function
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
@@ -652,6 +766,27 @@ Public Sub setInitialTransformCoordinates(ByVal x As Double, y As Double)
                     
             End Select
                 
+        'Polygons can be both moved and resized (by click-dragging individual points)
+        Case sPolygon
+        
+            'Based on the transform mode, set the initial points accordingly
+            Select Case selTransformationType
+        
+                'numOfPolygonPoints - interior of the selection, which will trigger a move transformation
+                Case m_numOfPolygonPoints
+                    moveXDist = x
+                    moveYDist = y
+                    
+                    'For the transform to work, we need to apply any transformed data to the *original polygon points*.
+                    ' Make a backup copy of the original array now.
+                    ReDim m_PolygonPointsBackup(0 To m_numOfPolygonPoints - 1) As POINTFLOAT
+                    CopyMemory ByVal VarPtr(m_PolygonPointsBackup(0)), ByVal VarPtr(m_PolygonPoints(0)), m_numOfPolygonPoints * 8
+                    
+                'Other transforms don't actually require special handling, as all the work is done in the
+                ' setAdditionalTransformCoordinates function.
+                Case Else
+                    
+            End Select
         
         'Lasso selections can only be moved, so the only valid transform type is type 0
         Case sLasso
@@ -702,6 +837,22 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
             'Also, mark selections of any of these shapes (rectangle, circle, line) as transformable
             isTransformable = True
         
+        'Polygon selections require us to initialize a whole bunch of polygon tracking variables
+        Case sPolygon
+            isTransformable = True
+            
+            m_numOfPolygonPoints = 1
+            ReDim m_PolygonPoints(0 To 127) As POINTFLOAT
+            
+            m_PolygonPoints(0).x = x
+            m_PolygonPoints(0).y = y
+            
+            'Also set up a dummy set of initial boundary coordinates
+            selLeft = x
+            selTop = y
+            selWidth = 1
+            selHeight = 1
+            
         'Lasso selections have limited transform capabilities, and they have a variable number of points
         Case sLasso
             isTransformable = True
@@ -712,9 +863,7 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
             m_LassoPoints(0).x = x
             m_LassoPoints(0).y = y
             
-            'Finding the bounding rect of a lasso selection is a little more complicated than other selections,
-            ' because we have to search all points to find the full bounding rect.  To avoid the need for that,
-            ' we'll keep running track as we go - so start out by setting our bounding rect to the initial coordinates.
+            'Also set up a dummy set of initial boundary coordinates
             selLeft = x
             selTop = y
             selWidth = 1
@@ -806,6 +955,38 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                 'If a transform mode is active, re-mark the selection as being transformable
                 isTransformable = True
             
+            'Polygon transforms consist of either moving an individual polygon point, or moving the entire polygon array
+            Case sPolygon
+            
+                'Based on the transform mode, set the initial points accordingly
+                Select Case selTransformationType
+            
+                    'Case -1 should never occur.  (-1 represents an invalid transformation request)
+                    Case -1
+                    
+                    'Move transform
+                    Case m_numOfPolygonPoints
+                        
+                        'Rebuild the main polygon array by copying all points from the backup array, and applying the current
+                        ' x/y transformation distance to them.
+                        For i = 0 To m_numOfPolygonPoints - 1
+                            m_PolygonPoints(i).x = m_PolygonPointsBackup(i).x + (x - moveXDist)
+                            m_PolygonPoints(i).y = m_PolygonPointsBackup(i).y + (y - moveYDist)
+                        Next i
+                    
+                    'Anything else is just moving a polygon point
+                    Case Else
+                    
+                        With m_PolygonPoints(selTransformationType)
+                            .x = x
+                            .y = y
+                        End With
+                        
+                End Select
+                
+                'If a transform mode is active, re-mark the selection as being transformable
+                isTransformable = True
+            
             'Lasso transforms require us to transform the entire lasso array
             Case sLasso
             
@@ -843,7 +1024,18 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
                 x2 = x
                 y2 = y
                 
-            'Lasso selections will increment the current lasso array, and add the new points to their list
+            'Polygon selections will increment the current polygon array by one, adding the new point as the latest polygon coordinate
+            Case sPolygon
+            
+                'Make room in the point array
+                m_numOfPolygonPoints = m_numOfPolygonPoints + 1
+                If m_numOfPolygonPoints > UBound(m_PolygonPoints) Then ReDim Preserve m_PolygonPoints(0 To m_numOfPolygonPoints * 2 - 1) As POINTFLOAT
+                    
+                'Store the new point
+                m_PolygonPoints(m_numOfPolygonPoints - 1).x = x
+                m_PolygonPoints(m_numOfPolygonPoints - 1).y = y
+                
+            'Lasso selections will increment the current lasso array, and add the new point to its list
             Case sLasso
             
                 'Perform a quick check to make sure this point isn't a duplicate of the previous point.  With high-DPI mice,
@@ -921,11 +1113,8 @@ Private Sub makeCoordinatesSquare()
 End Sub
 
 'Whenever internal vector or coordinate values are changed, this sub needs to be called to update the left/right/width/height
-' values accordingly.  If desired, a full check can be initiated by setting that param to TRUE.  Normally this is not advised,
-' as a full scan of all available coordinates may take some time for lasso selections.  Similarly, for lasso or polygon selections,
-' the newX and newY parameters can be passed.  These will be compared against existing max/min values and updated accordingly,
-' which is much faster than a full check.  (From this, you might infer that setting forceFullCheck to TRUE and also passing
-' newX/newY values is pointless!)
+' values accordingly.  Note that for some selection types - e.g. lasso - a full scan of all available coordinates must be performed,
+' which can be performance-intensive if the shape is complex.  As such, try not to call this function any more than is necessary.
 Private Sub updateInternalCoords()
 
     'This function only needs to be run if the selection is stored in vector format.  If it is not, a bounding rect
@@ -933,6 +1122,7 @@ Private Sub updateInternalCoords()
     If (sShape <> sRaster) Then
     
         Dim i As Long
+        Dim selMaxX As Long, selMaxY As Long
     
         'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
         isMaskReady = False
@@ -966,18 +1156,42 @@ Private Sub updateInternalCoords()
                     selHeight = y1 - y2
                 End If
             
-            'The way we find bounds for lasso selections varies according to the forceFullCheck parameter.  If FALSE, simply compare
-            ' the passed points to the existing max/min values.  If TRUE, search all points to find max/min values.
-            Case sLasso
-            
-                'Search the entire lasso array for new left/top/width/height values
+            'Polygon selections require us to search all polygon points in order to construct a bounding rect.
+            Case sPolygon
+                
                 selLeft = LONG_MAX
                 selTop = LONG_MAX
-                
-                Dim selMaxX As Long, selMaxY As Long
                 selMaxX = -LONG_MAX
                 selMaxY = -LONG_MAX
                 
+                'Search the entire polygon array for new left/top/width/height values
+                For i = 0 To m_numOfPolygonPoints - 1
+                    
+                    With m_PolygonPoints(i)
+                        If .x < selLeft Then selLeft = .x
+                        If .y < selTop Then selTop = .y
+                        If .x > selMaxX Then selMaxX = .x
+                        If .y > selMaxY Then selMaxY = .y
+                    End With
+                    
+                Next i
+                
+                selWidth = selMaxX - selLeft
+                selHeight = selMaxY - selTop
+                
+                'If curvature is active, we must perform a manual scan as well
+                If isLockedIn And (sPolygonCurvature > 0) Then findNewBoundsManually True
+            
+            'Like polygon selection, lasso selections require us to search all lasso points in order to construct
+            ' a bounding rect.
+            Case sLasso
+            
+                selLeft = LONG_MAX
+                selTop = LONG_MAX
+                selMaxX = -LONG_MAX
+                selMaxY = -LONG_MAX
+                
+                'Search the entire lasso array for new left/top/width/height values
                 For i = 0 To m_numOfLassoPoints - 1
                     
                     With m_LassoPoints(i)
@@ -1015,7 +1229,7 @@ Public Function areAllCoordinatesInvalid() As Boolean
         'Rectangles, ellipses, and lines are easy - check the bounding box, and if it lies completely outside the image,
         ' reject it.  Note that this occurs before a final bound rect has been calculated, so you have no choice but to
         ' rely on intermediate x/y coords instead of the boundLeft/boundTop etc values.
-        Case sRectangle, sCircle, sLine, sLasso
+        Case sRectangle, sCircle, sLine, sPolygon, sLasso
             
             If (selLeft + selWidth <= 0) Then areAllCoordinatesInvalid = True
             If (selLeft > containingPDImage.Width) Then areAllCoordinatesInvalid = True
@@ -1031,7 +1245,7 @@ End Function
 
 'Nudge the selection in a given direction.  This function is supplied as a convenience for SELECTION TYPES WHOSE POSITION CANNOT
 ' BE MODIFIED BY TEXT BOX.  If a selection's position can be modified via text box (e.g. rectangle, ellipse, etc), you need to
-' use the updateViaTextBox() function instead.
+' use the updateViaTextBox() function instead, to ensure that text box and internal position are properly synched.
 Public Sub nudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal vOffset As Double = 0#)
 
     Dim i As Long
@@ -1041,9 +1255,20 @@ Public Sub nudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal 
         Case sRectangle, sCircle, sLine
             Debug.Print "nudgeSelection function was used on an invalid selection type - FIX THIS!"
     
-        Case sLasso
+        Case sPolygon
+        
+            'Apply the new offsets to all points in the polygon
+            For i = 0 To m_numOfPolygonPoints - 1
+                With m_PolygonPoints(i)
+                    .x = .x + hOffset
+                    .y = .y + vOffset
+                End With
+            Next i
             
-            Debug.Print hOffset & "," & vOffset
+            'We also need to update the selection's bounding rect
+            updateInternalCoords
+        
+        Case sLasso
             
             'Apply the new offsets to all points in the lasso array
             For i = 0 To m_numOfLassoPoints - 1
@@ -1172,6 +1397,13 @@ End Sub
 '"Unlock" a selection
 Public Sub lockRelease()
     lockedIn = False
+End Sub
+
+'For polygon and lasso selection, it reduces risk to reset a few custom trackers when a selection is erased.
+Public Sub eraseCustomTrackers()
+    m_numOfLassoPoints = 0
+    m_numOfPolygonPoints = 0
+    m_PolygonClosed = False
 End Sub
 
 'Create a selection mask based on the current selection type.  A few items to note:
@@ -1373,22 +1605,30 @@ Private Sub createSelectionMask()
                 End If
                 
             End If
-            
         
-        'Lasso selections do not support the "border" type while drawing.  It must be triggered by using the Select menu.
+        'Polygon selections are easy - simply close the current point collection, then fill (or stroke) it via GDI+.
+        Case sPolygon
+        
+            'Interior/exterior lasso selections use identical rendering code.
+            If (sType = sInterior) Or (sType = sExterior) Then
+                GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), maskForeColor, 255, (sSmooth > sNone), True, sPolygonCurvature, FillModeWinding
+                
+            'Border selections stroke the path instead of filling it
+            Else
+                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (sSmooth > sNone), borderSize, LineCapRound, True, sPolygonCurvature
+            End If
+        
+        'Strangely enough, lasso selections are arguably the simplest selection type to render, as we simply close the lasso shape,
+        ' then fill it as if it represents an arbitrary region.
         Case sLasso
         
             'Interior/exterior lasso selections use identical rendering code.
             If (sType = sInterior) Or (sType = sExterior) Then
-        
-                'Smooth stroke affects whether curves or lines are used to draw the shape
-                GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (sSmooth > sNone), True, sSmoothStroke, fillmodewinding
+                GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (sSmooth > sNone), True, sSmoothStroke, FillModeWinding
                 
             'Border selections stroke the path instead of filling it
             Else
-            
                 GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (sSmooth > sNone), borderSize, LineCapRound
-            
             End If
             
         'Other selection types will be added in the future
@@ -1449,28 +1689,65 @@ Private Sub createSelectionMask()
                         boundHeight = (MaxY - MinY) + selectionLineWidth
                     End If
                 
-                'Lasso selections support artificial smoothing via cardinal spline.  If active, we must manually calculate bounds,
-                ' because the spline may extend beyond the drawn coordinates.
-                Case sLasso
+                'Polygon selections support curvature via cardinal spline.  If active, we must manually calculate bounds,
+                ' because the spline may extend beyond the current coordinate collection.
+                Case sPolygon
                 
-                    If sSmoothStroke = 0 Then
+                    If (sPolygonCurvature <> 0) And isLockedIn Then findNewBoundsManually True
                     
-                        If sSmooth = sFullyFeathered Then
+                    If sSmooth = sFullyFeathered Then
+                    
+                        'Because of the way GDI+ pens work, they will be centered on the stroked path.  This means that we must
+                        ' factor the pen width into our boundary calculations.
+                        If sType = sBorder Then
+                            boundLeft = selLeft - featheringRadius - (borderSize \ 2)
+                            boundTop = selTop - featheringRadius - (borderSize \ 2)
+                            boundWidth = selWidth + featheringRadius * 2 + borderSize
+                            boundHeight = selHeight + featheringRadius * 2 + borderSize
+                        Else
                             boundLeft = selLeft - featheringRadius
                             boundTop = selTop - featheringRadius
                             boundWidth = selWidth + featheringRadius * 2
                             boundHeight = selHeight + featheringRadius * 2
-                        Else
-                            boundLeft = selLeft
-                            boundTop = selTop
-                            boundWidth = selWidth
-                            boundHeight = selHeight
                         End If
                         
                     Else
-                        If isLockedIn Then findNewBoundsManually True
+                        boundLeft = selLeft
+                        boundTop = selTop
+                        boundWidth = selWidth
+                        boundHeight = selHeight
                     End If
+                    
+                    
+                'Lasso selections support artificial smoothing via cardinal spline.  If active, we must manually calculate bounds,
+                ' because the spline may extend beyond the drawn coordinates.
+                Case sLasso
                 
+                    If (sSmoothStroke <> 0) And isLockedIn Then findNewBoundsManually True
+                    
+                    If sSmooth = sFullyFeathered Then
+                    
+                        'Because of the way GDI+ pens work, they will be centered on the stroked path.  This means that we must
+                        ' factor the pen width into our boundary calculations.
+                        If sType = sBorder Then
+                            boundLeft = selLeft - featheringRadius - (borderSize \ 2)
+                            boundTop = selTop - featheringRadius - (borderSize \ 2)
+                            boundWidth = selWidth + featheringRadius * 2 + borderSize
+                            boundHeight = selHeight + featheringRadius * 2 + borderSize
+                        Else
+                            boundLeft = selLeft - featheringRadius
+                            boundTop = selTop - featheringRadius
+                            boundWidth = selWidth + featheringRadius * 2
+                            boundHeight = selHeight + featheringRadius * 2
+                        End If
+                        
+                    Else
+                        boundLeft = selLeft
+                        boundTop = selTop
+                        boundWidth = selWidth
+                        boundHeight = selHeight
+                    End If
+                    
                 'Other shapes currently rely on manual bounds-checking, using the rendered mask as the guide
                 Case Else
                     findNewBoundsManually
@@ -1603,6 +1880,8 @@ Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         Dim circAlpha As Long
         circAlpha = 190
         
+        Dim i As Long
+        
         Select Case sShape
         
             Case sRectangle, sCircle
@@ -1628,7 +1907,14 @@ Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                 'Lines only need transform nodes at the end points of the line
                 GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
                 GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, dstBottom, circRadius, circAlpha
-                
+            
+            Case sPolygon
+            
+                For i = 0 To m_numOfPolygonPoints - 1
+                    Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_PolygonPoints(i).x, m_PolygonPoints(i).y, dstLeft, dstTop
+                    GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
+                Next i
+            
             'Other selection types will require more involved transform code
             Case Else
                 
@@ -1651,8 +1937,14 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     'Is the selection mask ready to be used?  If not, prepare it now.
     If Not isMaskReady Then createSelectionMask
     
-    'Is a special drawing mode active?  If it is, this function will be canceled in favor of a custom draw routine.
+    'For lasso selections, is a special drawing mode active?  If it is, this function will be canceled in favor of a custom draw routine.
     If (sShape = sLasso) And (sDrawingDisplay = sOutlineOnlyDisplay) And (Not lockedIn) Then
+        renderOutlineOnly dstDIB, srcImage, dstCanvas
+        Exit Sub
+    End If
+    
+    'For polygon selections, if the polygon is a) incomplete, or b) has a special drawing mode active, render an outline only.
+    If (sShape = sPolygon) And ((sDrawingDisplay = sOutlineOnlyDisplay) And (Not lockedIn)) Or (Not m_PolygonClosed) Then
         renderOutlineOnly dstDIB, srcImage, dstCanvas
         Exit Sub
     End If
@@ -1808,20 +2100,39 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
     'To render the outline correctly, we must first translate all lasso (or polygon) points from the image coordinate space
     ' to the viewport coordinate space.
     Dim tmpViewportSpace() As POINTFLOAT
-    ReDim tmpViewportSpace(0 To m_numOfLassoPoints - 1) As POINTFLOAT
     
-    Dim tmpX As Double, tmpY As Double
+    Dim numOfRenderPoints As Long
+    If sShape = sPolygon Then numOfRenderPoints = m_numOfPolygonPoints Else numOfRenderPoints = m_numOfLassoPoints
     
-    Dim i As Long
-    For i = 0 To m_numOfLassoPoints - 1
-        Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
-        tmpViewportSpace(i).x = tmpX
-        tmpViewportSpace(i).y = tmpY
-    Next i
+    If numOfRenderPoints > 0 Then
     
-    'Use GDI+ to stroke the temporary path
-    GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, m_numOfLassoPoints, VarPtr(tmpViewportSpace(0)), False, RGB(0, 0, 0), 192, True, 2
-    GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, m_numOfLassoPoints, VarPtr(tmpViewportSpace(0)), False, RGB(255, 255, 255), 192, True, 1
+        ReDim tmpViewportSpace(0 To numOfRenderPoints - 1) As POINTFLOAT
+        Dim tmpX As Double, tmpY As Double
+        
+        Dim i As Long
+        
+        For i = 0 To numOfRenderPoints - 1
+            
+            If (sShape = sPolygon) Then
+                Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, tmpX, tmpY
+            Else
+                Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
+            End If
+            
+            tmpViewportSpace(i).x = tmpX
+            tmpViewportSpace(i).y = tmpY
+        Next i
+        
+        'Use GDI+ to stroke the temporary path
+        If sShape = sPolygon Then
+            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, RGB(0, 0, 0), 192, True, 2, , True, sPolygonCurvature
+            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, RGB(255, 255, 255), 192, True, 1, , True, sPolygonCurvature
+        Else
+            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), False, RGB(0, 0, 0), 192, True, 2
+            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), False, RGB(255, 255, 255), 192, True, 1
+        End If
+        
+    End If
     
 End Sub
 
@@ -1848,9 +2159,19 @@ Private Sub Class_Initialize()
     'By default, the normal display mode is used for lasso and polygon selections
     sDrawingDisplay = sNormalDisplay
     
-    'No lasso points yet
+    'No curvature for lasso or polygon selections
+    sPolygonCurvature = 0
+    sSmoothStroke = 0
+    
+    'No lasso or polygon points yet
     m_numOfLassoPoints = 0
     ReDim m_LassoPoints(0) As POINTFLOAT
+    
+    m_numOfPolygonPoints = 0
+    ReDim m_PolygonPoints(0) As POINTFLOAT
+    
+    'Any polygon selections are not closed!
+    m_PolygonClosed = False
     
 End Sub
 
@@ -1887,7 +2208,10 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
         readSelectionFromFile = False
         Exit Function
     End If
-
+    
+    'Note that our mask is not yet ready
+    isMaskReady = False
+    
     Dim fileNum As Integer
     fileNum = FreeFile
     
@@ -1955,6 +2279,9 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
     
     'If this selection isn't a vector, we need to manually find its boundaries now
     If (sShape = sRaster) And dibLoadedSuccessfully Then findNewBoundsManually
+    
+    'Polygon selections loaded from file are assumed to be closed
+    m_PolygonClosed = True
     
     'If this selection was locked in at the time of its save, lock this selection in as well
     If Not ignoreLockStatus Then
@@ -2056,10 +2383,10 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
                 tmpParser.setNewValueAtLocation 13, Trim$(Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height)))
                 tmpParser.setNewValueAtLocation 14, Trim$(Str(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width)))
                 tmpParser.setNewValueAtLocation 15, Trim$(Str(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height)))
-                
-            'Lasso selections are more complicated.  Position [14] contains the number of points in the lasso.  Every parameter
-            ' past that point needs to be transformed in an x/y pattern.
-            Case sLasso
+            
+            'Lasso and polygon selections are more complicated.  Position [14] contains the number of points in both shapes.
+            ' Every parameter past that point needs to be transformed in an x/y pattern.
+            Case sLasso, sPolygon
             
                 If tmpParser.GetLong(14) > 0 Then
                     For i = 0 To tmpParser.GetLong(14) - 1
@@ -2094,9 +2421,9 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
                 tmpParser.setNewValueAtLocation 14, Trim$(Str(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width))))
                 tmpParser.setNewValueAtLocation 15, Trim$(Str(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height))))
                 
-            'Lasso selections are more complicated.  Position [13] contains the number of points in the lasso.  Every parameter
-            ' past that point needs to be transformed in an x/y pattern.
-            Case sLasso
+            'Lasso and polygon selections are more complicated.  Position [14] contains the number of points in each shape.
+            ' Every parameter past that point needs to be transformed in an x/y pattern.
+            Case sLasso, sPolygon
             
                 If tmpParser.GetLong(14) > 0 Then
                     For i = 0 To tmpParser.GetLong(14) - 1
@@ -2128,7 +2455,7 @@ End Function
 ' will cause errors on tools that try to map the selection back to the active layer.
 Public Sub findNewBoundsManually(Optional ByVal overrideRasterState As Boolean = False)
 
-    Message "Finding new selection boundaries..."
+    'Message "Finding new selection boundaries..."
 
     'This function assumes two things: that a selection is not transformable (otherwise we'd know the boundaries already), and
     ' a mask has already been created.  If either of these two conditions is not met, this function may fail.

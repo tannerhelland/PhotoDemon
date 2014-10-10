@@ -69,9 +69,12 @@ End Sub
 'Remove the current selection
 Public Sub RemoveCurrentSelection()
     
-    'Use the passed parameter string to initialize the selection
+    'Release the selection object and mark it as inactive
     pdImages(g_CurrentImage).mainSelection.lockRelease
     pdImages(g_CurrentImage).selectionActive = False
+    
+    'Reset any internal selection state trackers
+    pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
     
     'Synchronize all user-facing controls to match
     syncTextToCurrentSelection g_CurrentImage
@@ -488,6 +491,9 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
     'Some selection types (lasso, polygon) must use a more complicated region for hit-testing.  GDI+ will be used for this.
     Dim gdipRegionHandle As Long, gdipHitCheck As Boolean
     
+    Dim poiList() As POINTAPI
+    Dim poiListFloat() As POINTFLOAT
+    
     'If we made it here, this mouse location is worth evaluating.  How we evaluate it depends on the shape of the current selection.
     Select Case srcImage.mainSelection.getSelectionShape
     
@@ -495,7 +501,6 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
         Case sRectangle, sCircle
     
             'Corners get preference, so check them first.
-            Dim poiList() As POINTAPI
             ReDim poiList(0 To 3) As POINTAPI
             
             poiList(0).x = tLeft
@@ -579,7 +584,35 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             'Was a close point found? If yes, then return that value.
             findNearestSelectionCoordinates = closestPoint
             Exit Function
+        
+        Case sPolygon
+        
+            'First, we want to check all polygon points for a hit.
+            pdImages(g_CurrentImage).mainSelection.getPolygonPoints poiListFloat()
             
+            'Used the generalized point comparison function to see if one of the points matches
+            closestPoint = findClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
+            
+            'Was a close point found? If yes, then return that value
+            If closestPoint <> -1 Then
+                findNearestSelectionCoordinates = closestPoint
+                Exit Function
+            End If
+            
+            'If no polygon point was a hit, our final check is to see if the mouse lies within the polygon itself.  This will trigger
+            ' a move transformation.
+            
+            'Create a GDI+ region from the current selection points
+            gdipRegionHandle = pdImages(g_CurrentImage).mainSelection.getGdipRegionForSelection()
+            
+            'Check the point for a hit
+            gdipHitCheck = GDI_Plus.isPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
+            
+            'Release the GDI+ region
+            GDI_Plus.releaseGDIPlusRegion gdipRegionHandle
+            
+            If gdipHitCheck Then findNearestSelectionCoordinates = pdImages(g_CurrentImage).mainSelection.getNumOfPolygonPoints Else findNearestSelectionCoordinates = -1
+        
         Case sLasso
             'Create a GDI+ region from the current selection points
             gdipRegionHandle = pdImages(g_CurrentImage).mainSelection.getGdipRegionForSelection()
@@ -1031,6 +1064,9 @@ Public Function getSelectionTypeFromCurrentTool() As SelectionShape
         Case SELECT_LINE
             getSelectionTypeFromCurrentTool = sLine
             
+        Case SELECT_POLYGON
+            getSelectionTypeFromCurrentTool = sPolygon
+            
         Case SELECT_LASSO
             getSelectionTypeFromCurrentTool = sLasso
     
@@ -1041,24 +1077,31 @@ End Function
 'The inverse of "getSelectionTypeFromCurrentTool", above
 Public Function getRelevantToolFromSelectType() As PDTools
 
-    If g_OpenImageCount > 0 Then
+    If (g_OpenImageCount > 0) Then
 
-        Select Case pdImages(g_CurrentImage).mainSelection.getSelectionShape
-        
-            Case sRectangle
-                getRelevantToolFromSelectType = SELECT_RECT
-                
-            Case sCircle
-                getRelevantToolFromSelectType = SELECT_CIRC
+        If (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
+
+            Select Case pdImages(g_CurrentImage).mainSelection.getSelectionShape
             
-            Case sLine
-                getRelevantToolFromSelectType = SELECT_LINE
+                Case sRectangle
+                    getRelevantToolFromSelectType = SELECT_RECT
+                    
+                Case sCircle
+                    getRelevantToolFromSelectType = SELECT_CIRC
                 
-            Case sLasso
-                getRelevantToolFromSelectType = SELECT_LASSO
-        
-        End Select
-        
+                Case sLine
+                    getRelevantToolFromSelectType = SELECT_LINE
+                
+                Case sPolygon
+                    getRelevantToolFromSelectType = SELECT_POLYGON
+                    
+                Case sLasso
+                    getRelevantToolFromSelectType = SELECT_LASSO
+            
+            End Select
+            
+        End If
+            
     End If
 
 End Function
@@ -1067,12 +1110,6 @@ End Function
 ' to this function.  Initial X/Y values are required.
 Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
 
-    'I don't have a good explanation, but without DoEvents here, creating a line selection for the first
-    ' time may inexplicably fail.  While I try to track down the exact cause, I'll leave this here to
-    ' maintain desired behavior...
-    ' TODO: solve the mystery of why line selections require DoEvents here, but nothing else does...
-    'DoEvents
-    
     'Activate the attached image's primary selection
     pdImages(g_CurrentImage).selectionActive = True
     pdImages(g_CurrentImage).mainSelection.lockRelease
@@ -1083,6 +1120,9 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     
         Case sRectangle, sCircle, sLine
             pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+        
+        Case sPolygon
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.btsLassoRender.ListIndex, toolbar_Tools.sltPolygonCurvature.Value, 0, 0, 0)
             
         Case sLasso
             pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.btsLassoRender.ListIndex, toolbar_Tools.sltSmoothStroke.Value, 0, 0, 0)
@@ -1093,10 +1133,13 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     pdImages(g_CurrentImage).mainSelection.setInitialCoordinates x, y
     syncTextToCurrentSelection g_CurrentImage
     pdImages(g_CurrentImage).mainSelection.requestNewMask
-        
+    
     'Make the selection tools visible
     metaToggle tSelection, True
     metaToggle tSelectionTransform, True
+    
+    'Redraw the screen
+    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                         
 End Sub
 
