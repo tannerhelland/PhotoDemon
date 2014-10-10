@@ -357,6 +357,7 @@ Private Sub Form_Load()
     GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html", True
     GenerateThankyou "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock", True
     GenerateThankyou "Google Translate", "http://translate.google.com", True
+    GenerateThankyou "Helmut Kuerbiss"
     GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1", True
     GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html", True
     GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1", True
