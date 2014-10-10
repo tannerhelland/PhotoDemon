@@ -82,10 +82,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ### Who has contributed to PhotoDemon's development?
 
 PhotoDemon would not be possible without the help of many talented contributors, including...
-* Frank Donckers for extensive help with the translation engine. Frank also maintains the Dutch, German, and French language files.
+* Frank Donckers for extensive help with the translation engine. Frank also maintains the Dutch and French language files.
 (http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=2213335741)
 * GioRock for the Italian language file and extensive debugging (http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266)
 * Audioglider for the development of many Adjustment and Effect tools, including Channel Mixer, Vibrance, Exposure, Sunshine, Bilateral Smoothing, Lens Flare, and more (https://github.com/audioglider)
+* Helmut Kuerbiss for maintaining (and hand-editing!) the German language file.
 * Robert Rayment for detailed research and bug-testing  (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1)
 * Rod Stephens and VB-Helper.com for a themable, multiline-supporting tooltip class (http://www.vb-helper.com/howto_multi_line_tooltip.html)
 * Kroc of camendesign.com for the bluDownload library and debugging contributions (http://camendesign.com)
