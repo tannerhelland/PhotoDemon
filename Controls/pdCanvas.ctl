@@ -1351,6 +1351,14 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                                         
                 End If
                 
+                'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
+                ' while in debug mode.
+                #If DEBUGMODE = 1 Then
+                    Message "Release the mouse button to complete the lasso selection", "DONOTLOG"
+                #Else
+                    Message "Release the mouse button to complete the lasso selection"
+                #End If
+                
                 'Force a redraw of the viewport
                 If hasMouseMoved > 1 Then RenderViewport pdImages(g_CurrentImage), Me
                 
@@ -1582,6 +1590,14 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                         
                             'Pass these final mouse coordinates to the selection engine
                             pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+                            
+                            'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
+                            ' while in debug mode.
+                            #If DEBUGMODE = 1 Then
+                                Message "Click on the first point to complete the polygon selection", "DONOTLOG"
+                            #Else
+                                Message "Click on the first point to complete the polygon selection"
+                            #End If
                             
                         End If
                     
