@@ -673,10 +673,12 @@ Public Sub fillBoundsUsingGDIPlus()
     Dim boundRect As RECTF
     
     If sShape = sPolygon Then
-        boundRect = GDI_Plus.getGDIPlusBoundingRectFromPoints(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), FillModeWinding, True, sPolygonCurvature)
+        boundRect = GDI_Plus.getGDIPlusUnionFromPointsAndImage(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), containingPDImage, FillModeWinding, True, sPolygonCurvature)
     Else
-        boundRect = GDI_Plus.getGDIPlusBoundingRectFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), FillModeWinding, True, sSmoothStroke)
+        boundRect = GDI_Plus.getGDIPlusUnionFromPointsAndImage(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), containingPDImage, FillModeWinding, True, sSmoothStroke)
     End If
+    
+    'The returned boundaries encompass the entire
     
     'Copy the rect values into our internal selLeft/selTop/etc and boundLeft/boundTop/etc values
     
@@ -1768,7 +1770,8 @@ Private Sub createSelectionMask()
                 ' because the spline may extend beyond the current coordinate collection.
                 Case sPolygon
                 
-                    If (sPolygonCurvature <> 0) And isLockedIn Then fillBoundsUsingGDIPlus
+                    'If (sPolygonCurvature <> 0) And m_PolygonClosed Then
+                    fillBoundsUsingGDIPlus
                     
                     If sSmooth = sFullyFeathered Then
                     
@@ -1798,7 +1801,8 @@ Private Sub createSelectionMask()
                 ' because the spline may extend beyond the drawn coordinates.
                 Case sLasso
                 
-                    If (sSmoothStroke <> 0) And isLockedIn Then fillBoundsUsingGDIPlus
+                    'If (sSmoothStroke <> 0) And isLockedIn Then
+                    fillBoundsUsingGDIPlus
                     
                     If sSmooth = sFullyFeathered Then
                     
@@ -1831,10 +1835,14 @@ Private Sub createSelectionMask()
                 
     End Select
     
+    Debug.Print "B: " & boundLeft & "," & boundTop & "," & boundWidth & "," & boundHeight
+    
     'Do some basic bounds checking on the bound values to make sure they lie inside the image.  This is important because the
     ' selection mask (and any code that operates on it) assumes a match to image boundaries, despite the fact that selection
     ' points can actually lie anywhere on the canvas - even outside the image!
     fixBoundsToImageSize
+    
+    Debug.Print "A: " & boundLeft & "," & boundTop & "," & boundWidth & "," & boundHeight
     
     'Finally, if the selection is locked and feathering has been requested, apply it now
     If lockedIn And (sSmooth = sFullyFeathered) And (featheringRadius > 0) Then applyFeatheringToMask

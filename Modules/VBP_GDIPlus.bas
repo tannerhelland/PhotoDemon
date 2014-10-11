@@ -3,8 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 28/September/14
-'Last update: provisional WMF/EMF support, with (awesome) support for antialiasing on Win 7 and later
+'Last updated: 11/October/14
+'Last update: added a bunch of support functions for new selection tools
 '
 'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally used as a fallback for image loading
 ' and saving if the FreeImage DLL was not found, but over time it has become more and more integrated into PD.  As of version 6.0, GDI+
@@ -428,8 +428,11 @@ Private Declare Function GdipFillPolygon Lib "gdiplus" (ByVal mGraphics As Long,
 Private Declare Function GdipFillPolygonI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long, ByVal FillMd As GDIFillMode) As Long
 Private Declare Function GdipFillPolygon2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipFillPolygon2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
+Private Declare Function GdipCreateRegionRect Lib "gdiplus" (ByRef srcRect As RECTF, ByRef hRegion As Long) As Long
 Private Declare Function GdipCreateRegionPath Lib "gdiplus" (ByVal hPath As Long, hRegion As Long) As Long
 Private Declare Function GdipIsVisibleRegionPoint Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphics As Long, ByRef boolResult As Long) As Long
+Private Declare Function GdipCombineRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByRef newRect As RECTF, ByVal useCombineMode As CombineMode) As Long
+Private Declare Function GdipGetRegionBounds Lib "gdiplus" (ByVal hRegion As Long, ByVal mGraphics As Long, ByRef dstRect As RECTF) As Long
 Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) As Long
 
 'Transforms
@@ -530,6 +533,23 @@ Public Enum GpUnit
    UnitDocument = 5
    UnitMillimeter = 6
 End Enum
+
+#If False Then
+   Const UnitWorld = 0, UnitDisplay = 1, UnitPixel = 2, UnitPoint = 3, UnitInch = 4, UnitDocument = 5, UnitMillimeter = 6
+#End If
+
+Public Enum CombineMode
+   CombineModeReplace = 0
+   CombineModeIntersect = 1
+   CombineModeUnion = 2
+   CombineModeXor = 3
+   CombineModeExclude = 4
+   CombineModeComplement = 5
+End Enum
+
+#If False Then
+   Const CombineModeReplace = 0, CombineModeIntersect = 1, CombineModeUnion = 2, CombineModeXor = 3, CombineModeExclude = 4, CombineModeComplement = 5
+#End If
 
 Private Type BlurParams
   bRadius As Single
@@ -1904,11 +1924,66 @@ Public Function getGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVa
     If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
     
     'Using the generated pen, calculate a bounding rect for the path as drawn with that pen
-    GdipGetPathWorldBounds gdipPathHandle, getGDIPlusBoundingRectFromPoints, 0, iPen
+    GdipGetPathWorldBounds gdipPathHandle, getGDIPlusBoundingRectFromPoints, 0, 0& 'iPen
     
     'Release the path and pen before exiting
     GdipDeletePath gdipPathHandle
     GdipDeletePen iPen
+    
+End Function
+
+'Given an arbitrary array of points, and a pdImage handle, use GDI+ to find the union a rect of the path and the image.  This is relevant for shapes,
+' which may be placed off the image, and we are only interested in the part the shape that actually overlaps the image itself.
+Public Function getGDIPlusUnionFromPointsAndImage(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, ByRef srcImage As pdImage, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single) As RECTF
+
+    'Start by creating a blank GDI+ path object.
+    Dim gdipRegionHandle As Long, gdipPathHandle As Long
+    GdipCreatePath useFillMode, gdipPathHandle
+    
+    'Populate the region with the polygon point array we were passed.
+    If useCurveMode Then
+        GdipAddPathClosedCurve2 gdipPathHandle, ptrFloatArray, numOfPoints, curveTension
+    Else
+        GdipAddPathPolygon gdipPathHandle, ptrFloatArray, numOfPoints
+    End If
+    
+    'Convert the created path to a region.
+    GdipCreateRegionPath gdipPathHandle, gdipRegionHandle
+    
+    'Next, create a rect that represents the bounds of the image
+    Dim imgRect As RECTF
+    With imgRect
+        .Left = 0
+        .Top = 0
+        .Width = srcImage.Width
+        .Height = srcImage.Height
+    End With
+    
+    'Combine the image rect with the path region, using INTERSECT mode.
+    GdipCombineRegionRect gdipRegionHandle, imgRect, CombineModeIntersect
+    
+    'The region now contains only the union of the path and the region itself.  Retrive the region's bounds.
+    
+    'Start by creating a blank graphics object to supply to the region boundary check.  (This object normally contains any world transforms,
+    ' but we don't care about transforms in this function.)
+    Dim tmpSettingsDIB As pdDIB
+    Set tmpSettingsDIB = New pdDIB
+    tmpSettingsDIB.createBlank 8, 8, 32, 0, 0
+    
+    Dim tmpGraphics As Long
+    If GdipCreateFromHDC(tmpSettingsDIB.getDIBDC, tmpGraphics) = 0 Then
+    
+        'Retrieve the new bounding rect of the region, and place it directly into the function return
+        GdipGetRegionBounds gdipRegionHandle, tmpGraphics, getGDIPlusUnionFromPointsAndImage
+        
+        'Release our temporary graphics object
+        GdipDeleteGraphics tmpGraphics
+        
+    End If
+    
+    'Release the region and path before exiting
+    GdipDeleteRegion gdipRegionHandle
+    GdipDeletePath gdipPathHandle
     
 End Function
 
