@@ -1076,6 +1076,9 @@ Public Function getSelectionTypeFromCurrentTool() As SelectionShape
             
         Case SELECT_LASSO
             getSelectionTypeFromCurrentTool = sLasso
+            
+        Case SELECT_WAND
+            getSelectionTypeFromCurrentTool = sWand
     
     End Select
     
@@ -1104,6 +1107,9 @@ Public Function getRelevantToolFromSelectType() As PDTools
                     
                 Case sLasso
                     getRelevantToolFromSelectType = SELECT_LASSO
+                    
+                Case sWand
+                    getRelevantToolFromSelectType = SELECT_WAND
             
             End Select
             

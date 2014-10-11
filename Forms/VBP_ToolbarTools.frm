@@ -167,8 +167,8 @@ Begin VB.Form toolbar_Tools
    End
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
-      Index           =   7
-      Left            =   6000
+      Index           =   8
+      Left            =   6720
       TabIndex        =   33
       Top             =   315
       Width           =   720
@@ -552,6 +552,87 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Max             =   1
          SigDigits       =   2
+      End
+      Begin PhotoDemon.buttonStrip btsWandMerge 
+         Height          =   825
+         Left            =   2520
+         TabIndex        =   56
+         Top             =   390
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   1455
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.sliderTextCombo sltWandTolerance 
+         CausesValidation=   0   'False
+         Height          =   495
+         Left            =   11400
+         TabIndex        =   57
+         Top             =   345
+         Visible         =   0   'False
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Max             =   255
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.buttonStrip btsWandArea 
+         Height          =   825
+         Left            =   8340
+         TabIndex        =   58
+         Top             =   390
+         Width           =   2895
+         _ExtentX        =   4366
+         _ExtentY        =   1455
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin VB.Label lblSelection 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "tolerance"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   6
+         Left            =   11520
+         TabIndex        =   59
+         Top             =   60
+         Width           =   795
       End
       Begin VB.Label lblSelection 
          Appearance      =   0  'Flat
@@ -1218,6 +1299,34 @@ Begin VB.Form toolbar_Tools
       CaptionEffects  =   0
       ColorScheme     =   3
    End
+   Begin PhotoDemon.jcbutton cmdTools 
+      Height          =   600
+      Index           =   7
+      Left            =   5550
+      TabIndex        =   55
+      Top             =   315
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarTools.frx":8540
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
+   End
    Begin VB.Label lblCategory 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
@@ -1236,7 +1345,7 @@ Begin VB.Form toolbar_Tools
       ForeColor       =   &H00606060&
       Height          =   240
       Index           =   2
-      Left            =   6000
+      Left            =   6720
       TabIndex        =   32
       Top             =   30
       Width           =   690
@@ -1485,6 +1594,7 @@ Private Sub Form_Load()
         cmdTools(SELECT_LINE).ToolTip = g_Language.TranslateMessage("Line Selection")
         cmdTools(SELECT_POLYGON).ToolTip = g_Language.TranslateMessage("Polygon Selection")
         cmdTools(SELECT_LASSO).ToolTip = g_Language.TranslateMessage("Lasso (Freehand) Selection")
+        cmdTools(SELECT_WAND).ToolTip = g_Language.TranslateMessage("Magic Wand Selection")
         cmdTools(QUICK_FIX_LIGHTING).ToolTip = g_Language.TranslateMessage("Apply non-destructive lighting adjustments")
     
         'Selection visual styles (currently lightbox or highlight)
@@ -1524,7 +1634,16 @@ Private Sub Form_Load()
         btsLassoRender.AddItem "normal", 0
         btsLassoRender.AddItem "outline only", 1
         btsLassoRender.ListIndex = 0
-                
+        
+        'Magic wand options
+        btsWandMerge.AddItem "image", 0
+        btsWandMerge.AddItem "layer", 1
+        btsWandMerge.ListIndex = 0
+        
+        btsWandArea.AddItem "contiguous", 0
+        btsWandArea.AddItem "global", 1
+        btsWandArea.ListIndex = 0
+        
         'Quick-fix tools
         cmdQuickFix(0).ToolTip = g_Language.TranslateMessage("Reset all quick-fix adjustment values")
         cmdQuickFix(1).ToolTip = g_Language.TranslateMessage("Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.")
@@ -1658,7 +1777,7 @@ Public Sub resetToolButtonStates()
             activeToolPanel = 1
         
         'Rectangular, Elliptical, Line selections
-        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
+        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
             activeToolPanel = 0
             
         '"Quick fix" tool(s)
@@ -1671,6 +1790,11 @@ Public Sub resetToolButtonStates()
         
     End Select
     
+    'Check the selection state before swapping tools.  If a selection is active, and the user is switching to the same
+    ' tool used to create the current selection, we don't want to erase the current selection.  If they are switching
+    ' to a *different* selection tool, however, then we *do* want to erase the current selection.
+    If selectionsAllowed(False) And (getRelevantToolFromSelectType() <> g_CurrentTool) Then pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
+    
     'If tools share the same panel, they may need to show or hide a few additional controls.  (For example,
     ' "corner rounding", which is needed for rectangular selections but not elliptical ones, despite the two
     ' sharing the same tool panel.)  Do this before showing or hiding the tool panel.
@@ -1678,68 +1802,100 @@ Public Sub resetToolButtonStates()
     
         'For rectangular selections, show the rounded corners option
         Case SELECT_RECT
-            'setSelectionAreaOptions True
+            setSelectionAreaOptions True
+            setSelectionTUDVisibility True, True
+            setSelectionAreaVisibility True
             toolbar_Tools.lblSelection(5).Visible = True
+            toolbar_Tools.lblSelection(6).Visible = False
             toolbar_Tools.sltCornerRounding.Visible = True
             toolbar_Tools.sltSelectionLineWidth.Visible = False
-            setSelectionTUDVisibility True
             btsLassoRender.Visible = False
             sltSmoothStroke.Visible = False
             sltPolygonCurvature.Visible = False
-            
-            'Check the selection state before swapping tools.  If a selection is active, and the user is switching to the same
-            ' tool used to create the current selection, we don't want to erase the current selection.  If they are switching
-            ' to a *different* selection tool, however, then we *do* want to erase the current selection.
-            If selectionsAllowed(False) And (getRelevantToolFromSelectType() <> g_CurrentTool) Then pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
+            btsWandMerge.Visible = False
+            btsWandArea.Visible = False
+            sltWandTolerance.Visible = False
                     
         'For elliptical selections, hide the rounded corners option
         Case SELECT_CIRC
-            'setSelectionAreaOptions True
+            setSelectionAreaOptions True
+            setSelectionTUDVisibility True, True
+            setSelectionAreaVisibility True
             toolbar_Tools.lblSelection(5).Visible = False
+            toolbar_Tools.lblSelection(6).Visible = False
             toolbar_Tools.sltCornerRounding.Visible = False
             toolbar_Tools.sltSelectionLineWidth.Visible = False
-            setSelectionTUDVisibility True
             btsLassoRender.Visible = False
             sltSmoothStroke.Visible = False
             sltPolygonCurvature.Visible = False
-            If selectionsAllowed(False) And (getRelevantToolFromSelectType() <> g_CurrentTool) Then pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
+            btsWandMerge.Visible = False
+            btsWandArea.Visible = False
+            sltWandTolerance.Visible = False
             
         'Line selections also show the rounded corners slider, though they repurpose it for line width
         Case SELECT_LINE
-            'setSelectionAreaOptions True
+            setSelectionAreaOptions True
+            setSelectionTUDVisibility True, True
+            setSelectionAreaVisibility True
             toolbar_Tools.lblSelection(5).Visible = True
+            toolbar_Tools.lblSelection(6).Visible = False
             toolbar_Tools.sltCornerRounding.Visible = False
             toolbar_Tools.sltSelectionLineWidth.Visible = True
-            setSelectionTUDVisibility True
             btsLassoRender.Visible = False
             sltSmoothStroke.Visible = False
             sltPolygonCurvature.Visible = False
-            If selectionsAllowed(False) And (getRelevantToolFromSelectType() <> g_CurrentTool) Then pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
+            btsWandMerge.Visible = False
+            btsWandArea.Visible = False
+            sltWandTolerance.Visible = False
             
         'Polygon selections are most similar to lasso selections, below, but with an extra curvature parameter.
         Case SELECT_POLYGON
-            'setSelectionAreaOptions True
+            setSelectionAreaOptions True
+            setSelectionTUDVisibility False, False
+            setSelectionAreaVisibility True
             toolbar_Tools.lblSelection(5).Visible = True
+            toolbar_Tools.lblSelection(6).Visible = False
             toolbar_Tools.sltCornerRounding.Visible = False
             toolbar_Tools.sltSelectionLineWidth.Visible = False
-            setSelectionTUDVisibility False
             btsLassoRender.Visible = True
             sltSmoothStroke.Visible = False
             sltPolygonCurvature.Visible = True
-            If selectionsAllowed(False) And (getRelevantToolFromSelectType() <> g_CurrentTool) Then pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
+            btsWandMerge.Visible = False
+            btsWandArea.Visible = False
+            sltWandTolerance.Visible = False
             
         'Lasso selections do not need rounded corners or other options
         Case SELECT_LASSO
-            'setSelectionAreaOptions True
+            setSelectionAreaOptions True
+            setSelectionTUDVisibility False, False
+            setSelectionAreaVisibility True
             toolbar_Tools.lblSelection(5).Visible = False
+            toolbar_Tools.lblSelection(6).Visible = False
             toolbar_Tools.sltCornerRounding.Visible = False
             toolbar_Tools.sltSelectionLineWidth.Visible = False
-            setSelectionTUDVisibility False
             btsLassoRender.Visible = True
             sltSmoothStroke.Visible = False
             sltPolygonCurvature.Visible = False
-            If selectionsAllowed(False) And (getRelevantToolFromSelectType() <> g_CurrentTool) Then pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
+            btsWandMerge.Visible = False
+            btsWandArea.Visible = False
+            sltWandTolerance.Visible = False
             
+        'Magic wand selections have the fewest available options
+        Case SELECT_WAND
+            setSelectionAreaOptions False
+            setSelectionTUDVisibility False, False
+            setSelectionAreaVisibility False
+            toolbar_Tools.lblSelection(5).Visible = False
+            toolbar_Tools.lblSelection(6).Visible = True
+            toolbar_Tools.sltCornerRounding.Visible = False
+            toolbar_Tools.sltSelectionLineWidth.Visible = False
+            btsLassoRender.Visible = False
+            sltSmoothStroke.Visible = False
+            sltPolygonCurvature.Visible = False
+            btsWandMerge.Visible = True
+            btsWandArea.Visible = True
+            sltWandTolerance.Visible = True
+        
     End Select
     
     'Even if tools share the same panel, they may name controls differently, or use different max/min values.
@@ -1768,6 +1924,11 @@ Public Sub resetToolButtonStates()
             lblSelection(1).Caption = g_Language.TranslateMessage("drawing view")
             lblSelection(5).Caption = g_Language.TranslateMessage("stroke smoothing")
             
+        'Lasso selections repurpose the position label for drawing options
+        Case SELECT_WAND
+            lblSelection(1).Caption = g_Language.TranslateMessage("sampling area")
+            lblSelection(5).Caption = g_Language.TranslateMessage("tolerance")
+            
     End Select
     
     'Display the current tool options panel, while hiding all inactive ones
@@ -1777,8 +1938,8 @@ Public Sub resetToolButtonStates()
                 picTools(i).Visible = True
                 picTools(i).Refresh
                 setArrowCursor picTools(i)
-                If Me.Visible Then picTools(i).SetFocus
             End If
+            If Me.Visible And picTools(i).Visible Then picTools(i).SetFocus
         Else
             If picTools(i).Visible Then picTools(i).Visible = False
         End If
@@ -1790,6 +1951,9 @@ End Sub
 
 'Set selection area options.  Some selection types (e.g. lasso, polygon) do not allow the border type while drawing.
 Private Sub setSelectionAreaOptions(ByVal borderAllowed As Boolean, Optional ByVal forceIndex As Long = -1)
+
+    'Before modifying anything, see if the box even needs to be changed.  If it doesn't, ignore this request.
+    If (borderAllowed And (toolbar_Tools.cmbSelType(0).ListCount = 3)) Or ((Not borderAllowed) And (toolbar_Tools.cmbSelType(0).ListCount = 2)) Then Exit Sub
 
     'Make a backup of the current selection area choice
     Dim curListIndex As Long
@@ -1819,16 +1983,28 @@ Private Sub setSelectionAreaOptions(ByVal borderAllowed As Boolean, Optional ByV
 End Sub
 
 'To show/hide the position and size text up/downs in one fell swoop, use this function
-Private Sub setSelectionTUDVisibility(ByVal newVisibility As Boolean)
+Private Sub setSelectionTUDVisibility(ByVal newVisibilityPrimary As Boolean, ByVal newVisibilitySecondary As Boolean)
 
-    Dim i As Long
-    For i = toolbar_Tools.tudSel.lBound To toolbar_Tools.tudSel.UBound
-        tudSel(i).Visible = newVisibility
-    Next i
+    'Set the primary (position) text up/down visibility
+    toolbar_Tools.tudSel(0).Visible = newVisibilityPrimary
+    toolbar_Tools.tudSel(1).Visible = newVisibilityPrimary
     
-    'Also set the secondary header label visibility
-    lblSelection(2).Visible = newVisibility
+    'Set the secondary (width/height) text up/down visibility, and also set the header label visibility.
+    ' (The primary header label is always visible; it's simply repurposed depending on the text box usage.)
+    lblSelection(2).Visible = newVisibilitySecondary
+    toolbar_Tools.tudSel(2).Visible = newVisibilitySecondary
+    toolbar_Tools.tudSel(3).Visible = newVisibilitySecondary
+    
+End Sub
 
+'To show/hide the area (interior, exterior, border) drop-down and associated sliders in one fell swoop, use this function
+Private Sub setSelectionAreaVisibility(ByVal newVisibility As Boolean)
+    
+    'If these controls are being hidden, it means that area cannot be changed for this selection type, so default to
+    ' Interior-type (which will also hide the border drop-down)
+    If (Not newVisibility) Then cmbSelType(0).ListIndex = 0
+    cmbSelType(0).Visible = newVisibility
+    
 End Sub
 
 'When a new tool is selected, we may need to initialize certain values.
