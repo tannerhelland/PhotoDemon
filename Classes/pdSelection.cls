@@ -88,6 +88,7 @@ Public Enum SelectionShape
     sLine = 2
     sPolygon = 3
     sLasso = 4
+    sWand = 5
     sRaster = 10
 End Enum
 
@@ -97,6 +98,7 @@ End Enum
     Const sLine = 2
     Const sPolygon = 3
     Const sLasso = 4
+    Const sWand = 5
     Const sRaster = 10
 #End If
 
