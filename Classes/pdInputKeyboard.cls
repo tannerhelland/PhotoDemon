@@ -18,12 +18,49 @@ Attribute VB_Exposed = False
 'Last updated: 30/September/14
 'Last update: separate keyboard tracking into its own class, as it requires a lot of extra work
 '
-'Description forthcoming once class is finalized...
+'As usual, VB has some unpleasant quirks when it comes to keyboard interactions.  For example, things like specifying
+' a Default control can cause Enter keypresses to become unreportable.  Keys like Tab or Arrows may not be returned
+' on certain controls.  Accelerators (via Alt in particular) can also not be captured reliably.
+'
+'To work around these issues, I use this pdInputKeyboard class.  This class uses dynamic keyboard hooking to reliably
+' capture and report any keypresses that occur while a given window has focus.  Hooking is initiated when an hWnd
+' receives focus, and it is released when focus is lost.  This all happens transparently, so the user need not worry
+' about anything except the following:
+'
+'1) Unlike pdInputMouse, this class only supports a single hWnd at a time.  This is by design, to get around some of
+'    the uglier complications of dynamic hooking.  If you need to track multiple hWnds, you will need multiple
+'    instances of this class.
+'
+'2) This class raises two events: KeyDown and KeyUp.  KeyUp corresponds to the physical release of a key.  KeyDown
+'    *does not* correspond to the physical press of a key.  It is also raised if a key is pressed and held.  The user
+'    cannot presently distinguish between physical presses and hold-to-repeat presses.
+'
+'3) To ensure that accelerators work properly, the KeyDown and KeyUp events supply a ByRef "markEventHandled" Boolean.
+'    *It is very important to make use of this parameter!*  If a keypress is NOT used by your function, you need to mark
+'    this variable as FALSE.  That will instruct this class to pass the keypress along to the next proc in line.  By
+'    default, the "markEventHandled" value is set to TRUE, on the assumption that the caller is making use of all
+'    key events, per #4...
+'
+'4) Rather than hook all keypresses, this class forces the caller to manually specify which keys it wants to intercept.
+'    This allows unused keypresses to pass through with minimal effort, but it is not ideal if you intend to make use of
+'    all (or nearly all) keys on the keyboard.  If many key events are wanted, you can remove the "check to see if key
+'    should be tracked" behavior in the hook proc, but be forewarned that this may have ugly consequences, particularly
+'    for accessibility purposes, where certain keys may be mapped to global functions that are not to be overridden.
+'
+'    tl;dr, Be careful about intercepting more keypress data than you actually require!
+'
+'5) Similar to VB's standard key events, Shift/Ctrl/Alt modifiers are reported as part of each event, as is the
+'    *VIRTUAL KEYCODE* of the pressed key.  Everything in this class works by virtual keycodes, which are listed here:
+'    http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
+'
+'    You will need to declare any relevant virtual keycodes within your own application.  For brevity's sake, I have not
+'    provided them in this class.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
+
 
 Option Explicit
 
