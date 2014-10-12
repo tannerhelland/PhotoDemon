@@ -434,6 +434,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
                 If toolbar_Tools.btsWandArea.ListIndex <> pdImages(formID).mainSelection.getWandSearchMode Then toolbar_Tools.btsWandArea.ListIndex = pdImages(formID).mainSelection.getWandSearchMode
                 If toolbar_Tools.btsWandMerge.ListIndex <> pdImages(formID).mainSelection.getWandSampleMerged Then toolbar_Tools.btsWandMerge.ListIndex = pdImages(formID).mainSelection.getWandSampleMerged
                 If toolbar_Tools.sltWandTolerance.Value <> pdImages(formID).mainSelection.getWandTolerance Then toolbar_Tools.sltWandTolerance.Value = pdImages(formID).mainSelection.getWandTolerance
+                If toolbar_Tools.cboWandCompare.ListIndex <> pdImages(formID).mainSelection.getWandCompareMethod Then toolbar_Tools.cboWandCompare.ListIndex = pdImages(formID).mainSelection.getWandCompareMethod
         
         End Select
         
@@ -1163,7 +1164,7 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
             pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.btsLassoRender.ListIndex, toolbar_Tools.sltSmoothStroke.Value, 0, 0, 0)
             
         Case sWand
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolbar_Tools.sltWandTolerance.Value, toolbar_Tools.btsWandMerge.ListIndex, toolbar_Tools.btsWandArea.ListIndex)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolbar_Tools.sltWandTolerance.Value, toolbar_Tools.btsWandMerge.ListIndex, toolbar_Tools.btsWandArea.ListIndex, toolbar_Tools.cboWandCompare.ListIndex)
         
     End Select
     

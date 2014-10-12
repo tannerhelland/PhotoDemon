@@ -43,11 +43,14 @@ Private m_Tolerance As Double
 Public Enum PD_FLOOD_COMPARE
     PDFC_COMPOSITE = 0
     PDFC_LUMINANCE = 1
-    PDFC_ALPHA = 2
+    PDFC_RED = 2
+    PDFC_GREEN = 3
+    PDFC_BLUE = 4
+    PDFC_ALPHA = 5
 End Enum
 
 #If False Then
-    Const PDFC_COMPOSITE = 0, PDFC_LUMINANCE = 1, PDFC_ALPHA = 2
+    Const PDFC_COMPOSITE = 0, PDFC_LUMINANCE = 1, PDFC_RED = 2, PDFC_GREEN = 3, PDFC_BLUE = 4, PDFC_ALPHA = 5
 #End If
 
 Private m_CompareMode As PD_FLOOD_COMPARE
@@ -161,8 +164,9 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     pushOntoStack m_InitPoint.x, m_InitPoint.y
     
     'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, QuickX As Long, xOffset As Long
+    Dim x As Long, y As Long, QuickX As Long, xOffset As Long, hasAlpha As Boolean
     xOffset = srcDIB.getDIBColorDepth \ 8
+    If srcDIB.getDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
     
     'Generate direct references to the source and destination DIB data
     Dim srcImageData() As Byte, dstImageData() As Byte
@@ -180,8 +184,8 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     Dim modifiedTolerance As Double
     
     'Populate our reference comparison values
-    Dim r As Long, g As Long, b As Long, a As Long
-    Dim refR As Long, refG As Long, refB As Long, refA As Long
+    Dim r As Long, g As Long, b As Long, a As Long, l As Long
+    Dim refR As Long, refG As Long, refB As Long, refA As Long, refL As Long
     
     Dim referenceValue As Double, thisValue As Double
     
@@ -191,6 +195,9 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     refR = srcImageData(QuickX + 2, y)
     refG = srcImageData(QuickX + 1, y)
     refB = srcImageData(QuickX, y)
+    If hasAlpha Then refA = srcImageData(QuickX + 3, y) Else refA = 0
+    
+    refL = 213 * refR + 715 * refG + 72 * refB
     
     'Calculate a reference tolerance value, which serves as the base for the flood fill
     Select Case m_CompareMode
@@ -200,9 +207,29 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
             'Composite results do not require a base value, as they are independently processed against the reference
             ' RGB values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
             ' by 3, to avoid the need for a divide function in the inner loop
-            modifiedTolerance = m_Tolerance * 3
+            If hasAlpha Then
+                modifiedTolerance = m_Tolerance * 4
+            Else
+                modifiedTolerance = m_Tolerance * 3
+            End If
         
         Case PDFC_LUMINANCE
+        
+            'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
+            ' tolerance range to [0, 1000] instead of [0, 255.0]
+            modifiedTolerance = m_Tolerance * 1000
+            
+        Case PDFC_RED
+            modifiedTolerance = m_Tolerance
+            
+        Case PDFC_GREEN
+            modifiedTolerance = m_Tolerance
+            
+        Case PDFC_BLUE
+            modifiedTolerance = m_Tolerance
+            
+        Case PDFC_ALPHA
+            modifiedTolerance = m_Tolerance
     
     End Select
     
@@ -220,15 +247,31 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         r = srcImageData(QuickX + 2, y)
         g = srcImageData(QuickX + 1, y)
         b = srcImageData(QuickX, y)
+        If hasAlpha Then a = srcImageData(QuickX + 3, y)
     
         'Compare this pixel against the reference
         Select Case m_CompareMode
                 
             Case PDFC_COMPOSITE
                 thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                If hasAlpha Then thisValue = thisValue + Abs(a - refA)
                 If thisValue <= modifiedTolerance Then isWithinTolerance = True
             
             Case PDFC_LUMINANCE
+                l = 213 * r + 715 * g + 72 * b
+                If Abs(l - refL) <= modifiedTolerance Then isWithinTolerance = True
+            
+            Case PDFC_RED
+                If Abs(r - refR) <= modifiedTolerance Then isWithinTolerance = True
+            
+            Case PDFC_GREEN
+                If Abs(g - refG) <= modifiedTolerance Then isWithinTolerance = True
+                
+            Case PDFC_BLUE
+                If Abs(b - refB) <= modifiedTolerance Then isWithinTolerance = True
+                
+            Case PDFC_ALPHA
+                If Abs(a - refA) <= modifiedTolerance Then isWithinTolerance = True
         
         End Select
         
@@ -263,14 +306,15 @@ End Function
 'Perform a full-image, non-contiguous flood fill.  Note that dstDIB is guaranteed to be properly initialized.
 Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
     
-    'Predetermine upper bounds for x/y checks
+     'Predetermine upper bounds for x/y checks
     Dim xBound As Long, yBound As Long
     xBound = srcDIB.getDIBWidth - 1
     yBound = srcDIB.getDIBHeight - 1
     
     'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, QuickXSrc As Long, QuickXDst As Long, xOffset As Long
+    Dim x As Long, y As Long, QuickX As Long, xOffset As Long, hasAlpha As Boolean
     xOffset = srcDIB.getDIBColorDepth \ 8
+    If srcDIB.getDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
     
     'Generate direct references to the source and destination DIB data
     Dim srcImageData() As Byte, dstImageData() As Byte
@@ -287,17 +331,20 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
     Dim modifiedTolerance As Double
     
     'Populate our reference comparison values
-    Dim r As Long, g As Long, b As Long, a As Long
-    Dim refR As Long, refG As Long, refB As Long, refA As Long
+    Dim r As Long, g As Long, b As Long, a As Long, l As Long
+    Dim refR As Long, refG As Long, refB As Long, refA As Long, refL As Long
     
     Dim referenceValue As Double, thisValue As Double
     
-    QuickXSrc = m_InitPoint.x * xOffset
+    QuickX = m_InitPoint.x * xOffset
     y = m_InitPoint.y
     
-    refR = srcImageData(QuickXSrc + 2, y)
-    refG = srcImageData(QuickXSrc + 1, y)
-    refB = srcImageData(QuickXSrc, y)
+    refR = srcImageData(QuickX + 2, y)
+    refG = srcImageData(QuickX + 1, y)
+    refB = srcImageData(QuickX, y)
+    If hasAlpha Then refA = srcImageData(QuickX + 3, y) Else refA = 0
+    
+    refL = (213 * refR + 715 * refG + 72 * refB)
     
     'Calculate a reference tolerance value, which serves as the base for the flood fill
     Select Case m_CompareMode
@@ -307,46 +354,74 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
             'Composite results do not require a base value, as they are independently processed against the reference
             ' RGB values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
             ' by 3, to avoid the need for a divide function in the inner loop
-            modifiedTolerance = m_Tolerance * 3
+            If hasAlpha Then
+                modifiedTolerance = m_Tolerance * 4
+            Else
+                modifiedTolerance = m_Tolerance * 3
+            End If
         
         Case PDFC_LUMINANCE
+        
+            'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
+            ' tolerance range to [0, 1000] instead of [0, 255.0]
+            modifiedTolerance = m_Tolerance * 1000
+            
+        Case PDFC_RED
+            modifiedTolerance = m_Tolerance
+            
+        Case PDFC_GREEN
+            modifiedTolerance = m_Tolerance
+            
+        Case PDFC_BLUE
+            modifiedTolerance = m_Tolerance
+            
+        Case PDFC_ALPHA
+            modifiedTolerance = m_Tolerance
     
     End Select
     
     'Start processing the image!
     For x = 0 To xBound
-        QuickXSrc = x * xOffset
-        QuickXDst = x * 3
+        QuickX = x * xOffset
     For y = 0 To yBound
     
         'Reset the tolerance check
         isWithinTolerance = False
         
         'Retrieve RGB/A values for this point
-        r = srcImageData(QuickXSrc + 2, y)
-        g = srcImageData(QuickXSrc + 1, y)
-        b = srcImageData(QuickXSrc, y)
-        
+        r = srcImageData(QuickX + 2, y)
+        g = srcImageData(QuickX + 1, y)
+        b = srcImageData(QuickX, y)
+        If hasAlpha Then a = srcImageData(QuickX + 3, y)
+    
         'Compare this pixel against the reference
         Select Case m_CompareMode
                 
             Case PDFC_COMPOSITE
                 thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                If hasAlpha Then thisValue = thisValue + Abs(a - refA)
                 If thisValue <= modifiedTolerance Then isWithinTolerance = True
             
             Case PDFC_LUMINANCE
+                l = 213 * r + 715 * g + 72 * b
+                If Abs(l - refL) <= modifiedTolerance Then isWithinTolerance = True
+            
+            Case PDFC_RED
+                If Abs(r - refR) <= modifiedTolerance Then isWithinTolerance = True
+            
+            Case PDFC_GREEN
+                If Abs(g - refG) <= modifiedTolerance Then isWithinTolerance = True
+                
+            Case PDFC_BLUE
+                If Abs(b - refB) <= modifiedTolerance Then isWithinTolerance = True
+                
+            Case PDFC_ALPHA
+                If Abs(a - refA) <= modifiedTolerance Then isWithinTolerance = True
         
         End Select
         
         'If this value is within the requested tolerance, mark it on the destination map
-        If isWithinTolerance Then
-        
-            dstImageData(QuickXDst, y) = 255
-            
-            'If antialiasing is active, mark this pixel as filled; this simplifies the AA process
-            If m_AntialiasingMode Then m_AlreadyChecked(x, y) = 2
-            
-        End If
+        If isWithinTolerance Then dstImageData(x * 3, y) = 255
         
     Next y
     Next x
