@@ -1877,7 +1877,7 @@ Private Sub createSelectionMask()
             'Erase our temporary objects
             Set tmpDIB = Nothing
             Set tmpLayer = Nothing
-            
+                        
         'Other selection types will be added in the future
         Case Else
     
@@ -2003,6 +2003,14 @@ Private Sub createSelectionMask()
                 'Magic wand requires manual bounds-finding
                 Case sWand
                     findNewBoundsManually True
+                    
+                    'If feathering is active, increase bounds accordingly
+                    If sSmooth = sFullyFeathered Then
+                        boundLeft = selLeft - featheringRadius
+                        boundTop = selTop - featheringRadius
+                        boundWidth = selWidth + featheringRadius * 2
+                        boundHeight = selHeight + featheringRadius * 2
+                    End If
                 
                 'Other shapes currently rely on manual bounds-checking, using the rendered mask as the guide
                 Case Else
