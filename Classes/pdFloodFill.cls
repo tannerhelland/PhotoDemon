@@ -43,10 +43,11 @@ Private m_Tolerance As Double
 Public Enum PD_FLOOD_COMPARE
     PDFC_COMPOSITE = 0
     PDFC_LUMINANCE = 1
+    PDFC_ALPHA = 2
 End Enum
 
 #If False Then
-    Const PDFC_COMPOSITE = 0, PDFC_LUMINANCE = 1
+    Const PDFC_COMPOSITE = 0, PDFC_LUMINANCE = 1, PDFC_ALPHA = 2
 #End If
 
 Private m_CompareMode As PD_FLOOD_COMPARE
@@ -261,7 +262,101 @@ End Function
 
 'Perform a full-image, non-contiguous flood fill.  Note that dstDIB is guaranteed to be properly initialized.
 Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
-
+    
+    'Predetermine upper bounds for x/y checks
+    Dim xBound As Long, yBound As Long
+    xBound = srcDIB.getDIBWidth - 1
+    yBound = srcDIB.getDIBHeight - 1
+    
+    'Make sure 24 and 32bpp sources are both handled correctly
+    Dim x As Long, y As Long, QuickXSrc As Long, QuickXDst As Long, xOffset As Long
+    xOffset = srcDIB.getDIBColorDepth \ 8
+    
+    'Generate direct references to the source and destination DIB data
+    Dim srcImageData() As Byte, dstImageData() As Byte
+    Dim srcSA As SAFEARRAY2D, dstSA As SAFEARRAY2D
+    
+    prepSafeArray srcSA, srcDIB
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
+    prepSafeArray dstSA, dstDIB
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'A number of local variables are used to help optimize the flood function
+    Dim isWithinTolerance As Boolean
+    Dim modifiedTolerance As Double
+    
+    'Populate our reference comparison values
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim refR As Long, refG As Long, refB As Long, refA As Long
+    
+    Dim referenceValue As Double, thisValue As Double
+    
+    QuickXSrc = m_InitPoint.x * xOffset
+    y = m_InitPoint.y
+    
+    refR = srcImageData(QuickXSrc + 2, y)
+    refG = srcImageData(QuickXSrc + 1, y)
+    refB = srcImageData(QuickXSrc, y)
+    
+    'Calculate a reference tolerance value, which serves as the base for the flood fill
+    Select Case m_CompareMode
+    
+        Case PDFC_COMPOSITE
+            
+            'Composite results do not require a base value, as they are independently processed against the reference
+            ' RGB values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
+            ' by 3, to avoid the need for a divide function in the inner loop
+            modifiedTolerance = m_Tolerance * 3
+        
+        Case PDFC_LUMINANCE
+    
+    End Select
+    
+    'Start processing the image!
+    For x = 0 To xBound
+        QuickXSrc = x * xOffset
+        QuickXDst = x * 3
+    For y = 0 To yBound
+    
+        'Reset the tolerance check
+        isWithinTolerance = False
+        
+        'Retrieve RGB/A values for this point
+        r = srcImageData(QuickXSrc + 2, y)
+        g = srcImageData(QuickXSrc + 1, y)
+        b = srcImageData(QuickXSrc, y)
+        
+        'Compare this pixel against the reference
+        Select Case m_CompareMode
+                
+            Case PDFC_COMPOSITE
+                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                If thisValue <= modifiedTolerance Then isWithinTolerance = True
+            
+            Case PDFC_LUMINANCE
+        
+        End Select
+        
+        'If this value is within the requested tolerance, mark it on the destination map
+        If isWithinTolerance Then
+        
+            dstImageData(QuickXDst, y) = 255
+            
+            'If antialiasing is active, mark this pixel as filled; this simplifies the AA process
+            If m_AntialiasingMode Then m_AlreadyChecked(x, y) = 2
+            
+        End If
+        
+    Next y
+    Next x
+        
+    'Release our array references
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    
+    floodFillGlobal = True
+    
 End Function
 
 'Stack helper functions
