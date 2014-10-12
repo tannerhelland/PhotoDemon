@@ -245,14 +245,18 @@ Private m_WandSampleMerged As Long
 Public Sub initFromParamString(ByVal paramString As String)
 
     Dim i As Long
-
+    
     'Before doing anything else, convert the paramString from its current "relative" coordinates to "absolute" coordinates based on
     ' the size of the parent image.
     paramString = translateParamStringToRelativeFormat(paramString, False)
-
-    'First, mark the mask as "not ready"
-    isMaskReady = False
-
+    
+    'While we're here, also make a backup of the current paramstring and mask state
+    Dim origMaskState As Boolean
+    origMaskState = isMaskReady
+    
+    Dim backupParamString As String
+    backupParamString = translateParamStringToRelativeFormat(getSelectionParamString, False)
+    
     'Start by creating a parameter parser to handle the parameter string.  This class will parse out individual parameters
     ' as specific data types upon request.
     Dim cParams As pdParamString
@@ -383,6 +387,11 @@ Public Sub initFromParamString(ByVal paramString As String)
         Case Else
     
     End Select
+    
+    'Setting selection parameters always forces a redraw of the selection mask, which is a performance-intensive operation.
+    ' To avoid that unless absolutely necessary, compare the pre-initialization param string to the one we were passed.
+    ' If they match, we don't need to regenerate the mask, because it would be identical to the current one.
+    If origMaskState And (StrComp(paramString, backupParamString, vbBinaryCompare) <> 0) Then isMaskReady = False
         
 End Sub
 
@@ -468,7 +477,7 @@ End Sub
 Public Sub requestSquare(ByVal requestChoice As Boolean, Optional ByVal forceSelectionRefresh As Boolean = False)
     
     isSquare = requestChoice
-    If (sShape <> sRaster) And (sShape <> sLasso) Then
+    If (sShape <> sRaster) And (sShape <> sLasso) And (sShape <> sPolygon) And (sShape <> sWand) Then
     
         isMaskReady = False
     
@@ -492,7 +501,7 @@ Public Sub requestNewMask()
         
         'Transformable selections are rendered using polygon geometry; as such, redrawing them requires invoking
         ' whatever polygon code we used previously.
-        If (sShape <> sRaster) And (sShape <> sWand) Then
+        If (sShape <> sRaster) Then
             createSelectionMask
             
         'Raster selections are simply bitmaps.  We will pad them to match the new image size, but other
@@ -932,6 +941,9 @@ Public Sub setInitialCoordinates(ByVal x As Double, y As Double)
     'The use of setInitialCoordinates means this is not a transformation
     transformModeActive = False
     
+    'If we're setting new initial coordinates, the mask is not (by definition) ready
+    isMaskReady = False
+    
     x1 = x
     y1 = y
     
@@ -994,6 +1006,9 @@ End Sub
 
 'Takes x and y coordinates (from a _MouseMove event, typically) and stores them internally
 Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
+    
+    Dim newMaskRequired As Boolean
+    newMaskRequired = True
     
     'Check for an active transformation mode.  (A transformation is something like resizing or moving an existing selection,
     ' versus drawing a new one from scratch.)
@@ -1172,8 +1187,12 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
             
             'Wand selections can have their point of interest moved, but they don't actually support "additional" coordinates
             Case sWand
-                x1 = x
-                y1 = y
+                If (x1 <> x) Or (y1 <> y) Then
+                    x1 = x
+                    y1 = y
+                Else
+                    newMaskRequired = False
+                End If
             
             Case Else
             
@@ -1182,7 +1201,7 @@ Public Sub setAdditionalCoordinates(ByVal x As Double, y As Double)
     End If
     
     'Update the bounding rect for the selection as a whole, based on the new coordinates
-    updateInternalCoords
+    updateInternalCoords newMaskRequired
     
 End Sub
 
@@ -1238,7 +1257,7 @@ End Sub
 'Whenever internal vector or coordinate values are changed, this sub needs to be called to update the left/right/width/height
 ' values accordingly.  Note that for some selection types - e.g. lasso - a full scan of all available coordinates must be performed,
 ' which can be performance-intensive if the shape is complex.  As such, try not to call this function any more than is necessary.
-Private Sub updateInternalCoords()
+Private Sub updateInternalCoords(Optional ByVal forciblyResetMask As Boolean = True)
 
     'This function only needs to be run if the selection is stored in vector format.  If it is not, a bounding rect
     ' will already be correctly set.
@@ -1248,7 +1267,7 @@ Private Sub updateInternalCoords()
         Dim selMaxX As Long, selMaxY As Long
     
         'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
-        isMaskReady = False
+        If forciblyResetMask Then isMaskReady = False
 
         'If a square (1:1 aspect ratio) selection has been requested, calculate new coordinates now.
         
@@ -1332,11 +1351,8 @@ Private Sub updateInternalCoords()
                 'If curvature is active, we'll use GDI+ to find our bounds more precisely
                 If isLockedIn And (sSmoothStroke > 0) Then fillBoundsUsingGDIPlus
             
-            'Wand selections have it pretty easy; just bounds-check x1 and y1
+            'Wand selections require manual bounds-checking
             Case sWand
-                selLeft = x1
-                selTop = y1
-                
                 If isLockedIn Then findNewBoundsManually True
                 
             Case Else
@@ -1378,8 +1394,12 @@ Public Function areAllCoordinatesInvalid() As Boolean
             If (selTop + selHeight <= 0) Then areAllCoordinatesInvalid = True
             If (selTop >= containingPDImage.Height) Then areAllCoordinatesInvalid = True
         
-        'Wand selections are pretty much always valid
+        'Wand selections are valid if the (x1, y1) coordinate pair falls inside the image
         Case sWand
+            If x1 < 0 Then areAllCoordinatesInvalid = True
+            If y1 < 0 Then areAllCoordinatesInvalid = True
+            If x1 >= containingPDImage.Width Then areAllCoordinatesInvalid = True
+            If y1 >= containingPDImage.Height Then areAllCoordinatesInvalid = True
                     
         'In the future, additional selection types can be handled here.
         Case Else
@@ -1483,15 +1503,13 @@ Public Sub updateViaTextBox()
     If Not isLockedIn Then Exit Sub
 
     rejectRefreshRequests = True
-
-    'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
-    isMaskReady = False
-
+    
     'Check all text box entries for validity, then update the corresponding selection values.
     Select Case sShape
     
         'Rectangles, ellipses, and lines all support movement via text box
         Case sRectangle, sCircle, sLine
+            isMaskReady = False
             If toolbar_Tools.tudSel(0).IsValid(False) Then selLeft = toolbar_Tools.tudSel(0)
             If toolbar_Tools.tudSel(1).IsValid(False) Then selTop = toolbar_Tools.tudSel(1)
             If toolbar_Tools.tudSel(2).IsValid(False) Then selWidth = toolbar_Tools.tudSel(2)
@@ -1537,7 +1555,7 @@ Public Sub lockIn()
     'For vector selections, update the internal coordinates one final time
     If (sShape <> sRaster) Then
         
-        updateInternalCoords
+        'updateInternalCoords
     
         'The final thing we need to check for is the width and height, which may be still be zero at this point.
         ' Due to the way outside filters and effects use selection bounding rects, we can't allow selections of size 0.
@@ -1571,8 +1589,12 @@ End Sub
 '     separate function to find the bounding rect.
 Private Sub createSelectionMask()
 
+    Debug.Print "(" & Timer & ") Creating mask now..."
+
     maskHasBeenCreated = True
     
+    If isMaskReady Then Debug.Print "Selection mask is marked as READY, but a new mask was requested.  FIX THIS!"
+        
     'If the current selection is raster-type, this function should not have been called!
     If sShape = sRaster Then
         Debug.Print "Mask redraw requested for raster-type selection - FIX THIS!"
@@ -1816,7 +1838,7 @@ Private Sub createSelectionMask()
             If m_WandSampleMerged = 0 Then
                 containingPDImage.getCompositedImage tmpDIB
             Else
-                tmpLayer.layerDIB.createFromExistingDIB containingPDImage.getActiveDIB
+                tmpLayer.CopyExistingLayer containingPDImage.getActiveLayer
                 tmpLayer.convertToNullPaddedLayer containingPDImage.Width, containingPDImage.Height
                 Set tmpDIB = tmpLayer.layerDIB
             End If
@@ -2700,7 +2722,10 @@ Public Function findNewBoundsManually(Optional ByVal overrideRasterState As Bool
     findNewBoundsManually = True
     
     'Make sure the mask is ready for processing
-    If (Not isMaskReady) Then createSelectionMask
+    If (Not isMaskReady) Then
+        Debug.Print "Creating new selection mask at the request of findNewBoundsManually()"
+        createSelectionMask
+    End If
     
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long
@@ -2752,6 +2777,12 @@ Public Function findNewBoundsManually(Optional ByVal overrideRasterState As Bool
         y = y + 1
     
     Loop While (Not boundFound)
+    
+    'If the selection mask is empty, abandon ship
+    If (Not findNewBoundsManually) Then
+        CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+        Exit Function
+    End If
     
     'Next, find the bottom bound
     boundFound = False

@@ -424,6 +424,16 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
                 
             Case sLasso
                 If toolbar_Tools.btsLassoRender.ListIndex <> pdImages(formID).mainSelection.getDrawModeDisplay Then toolbar_Tools.btsLassoRender.ListIndex = pdImages(formID).mainSelection.getDrawModeDisplay
+                If toolbar_Tools.sltSmoothStroke.Value <> pdImages(formID).mainSelection.getSmoothStroke Then toolbar_Tools.sltSmoothStroke.Value = pdImages(formID).mainSelection.getSmoothStroke
+                
+            Case sPolygon
+                If toolbar_Tools.btsLassoRender.ListIndex <> pdImages(formID).mainSelection.getDrawModeDisplay Then toolbar_Tools.btsLassoRender.ListIndex = pdImages(formID).mainSelection.getDrawModeDisplay
+                If toolbar_Tools.sltPolygonCurvature.Value <> pdImages(formID).mainSelection.getPolygonCurvature Then toolbar_Tools.sltPolygonCurvature.Value = pdImages(formID).mainSelection.getPolygonCurvature
+                
+            Case sWand
+                If toolbar_Tools.btsWandArea.ListIndex <> pdImages(formID).mainSelection.getWandSearchMode Then toolbar_Tools.btsWandArea.ListIndex = pdImages(formID).mainSelection.getWandSearchMode
+                If toolbar_Tools.btsWandMerge.ListIndex <> pdImages(formID).mainSelection.getWandSampleMerged Then toolbar_Tools.btsWandMerge.ListIndex = pdImages(formID).mainSelection.getWandSampleMerged
+                If toolbar_Tools.sltWandTolerance.Value <> pdImages(formID).mainSelection.getWandTolerance Then toolbar_Tools.sltWandTolerance.Value = pdImages(formID).mainSelection.getWandTolerance
         
         End Select
         
