@@ -429,6 +429,11 @@ Dim iconLoadAnImage As pdDIB
 ' accurate feedback on what a given action will affect.
 Private m_LayerAutoActivateIndex As Long
 
+'Selection tools need to know if a selection was active before mouse events start.  If it is, creation of an invalid new selection
+' will add "Remove Selection" to the Undo/Redo chain; however, if no selection was active, the working selection will simply
+' be erased.
+Private m_SelectionActiveBeforeMouseEvents As Boolean
+
 'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
 Public Sub setRedrawSuspension(ByVal newRedrawValue As Boolean)
     m_suspendRedraws = newRedrawValue
@@ -1098,7 +1103,10 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     
     'Note that the user has attempted to interact with the canvas.
     m_UserInteractedWithCanvas = True
-        
+    
+    'Note whether a selection is active when mouse interactions began
+    m_SelectionActiveBeforeMouseEvents = (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isLockedIn)
+    
     'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
     ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
     Dim imgX As Double, imgY As Double
@@ -1162,7 +1170,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
         
             'Standard selections
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
             
                 'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
                 If pdImages(g_CurrentImage).selectionActive Then
@@ -1250,6 +1258,11 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                     
                 End If
             
+            'Magic wand selections are easy.  They never transform - they only generate anew
+            Case SELECT_WAND
+                Selection_Handler.initSelectionByPoint imgX, imgY
+                RenderViewport pdImages(g_CurrentImage), Me
+                
             'In the future, other tools can be handled here
             Case Else
             
@@ -1323,7 +1336,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
         
             'Basic selection tools
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_WAND
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
     
                 'First, check to see if a selection is both active and transformable.
                 If pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sRaster) Then
@@ -1361,7 +1374,14 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 
                 'Force a redraw of the viewport
                 If hasMouseMoved > 1 Then RenderViewport pdImages(g_CurrentImage), Me
-                
+            
+            'Wand selections are easier than other selection types, because they don't support any special transforms
+            Case SELECT_WAND
+                If pdImages(g_CurrentImage).selectionActive Then
+                    pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+                    RenderViewport pdImages(g_CurrentImage), Me
+                End If
+            
         End Select
     
     'This else means the LEFT mouse button is NOT down
@@ -1452,7 +1472,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 Tool_Support.terminateGenericToolTracking
                 
             'Most selection tools
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO, SELECT_WAND
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
             
                 'If a selection was being drawn, lock it into place
                 If pdImages(g_CurrentImage).selectionActive Then
@@ -1462,7 +1482,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     If ((ClickEventAlsoFiring) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
                         
                         If (g_CurrentTool <> SELECT_WAND) Then
-                            Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                            Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
                         Else
                             Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                         End If
@@ -1481,7 +1501,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     
                         'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
                         If pdImages(g_CurrentImage).mainSelection.areAllCoordinatesInvalid Then
-                            Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                            Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
                         Else
                             
                             'Depending on the type of transformation that may or may not have been applied, call the appropriate processor function.
@@ -1549,7 +1569,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 
                     'Check to see if the selection is locked in.  If it is, we need to check for an "erase selection" click.
                     If pdImages(g_CurrentImage).mainSelection.getPolygonClosedState And ClickEventAlsoFiring And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1) Then
-                        Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                        Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
                     
                     Else
                         
@@ -1572,7 +1592,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                                 
                                     'If the user has clicked off the selection, we want to remove it.
                                     If ClickEventAlsoFiring Then
-                                        Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                                        Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
                                     
                                     'If they haven't clicked, this could simply indicate that they dragged a polygon point off the polygon
                                     ' and into some new region of the image.
@@ -1590,7 +1610,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                             
                             'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
                             If pdImages(g_CurrentImage).mainSelection.isLockedIn And pdImages(g_CurrentImage).mainSelection.areAllCoordinatesInvalid Then
-                                Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                                Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
                             End If
                             
                         Else
@@ -1613,6 +1633,32 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     'Force a redraw of the screen
                     RenderViewport pdImages(g_CurrentImage), Me
                 
+                Else
+                    'If the selection is not active, make sure it stays that way
+                    pdImages(g_CurrentImage).mainSelection.lockRelease
+                End If
+                
+            'Magic wand selections are much easier than other selection types
+            Case SELECT_WAND
+                
+                'If a selection was being drawn, lock it into place
+                If pdImages(g_CurrentImage).selectionActive Then
+                    
+                    'Supply the final coords to the selection engine
+                    pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
+                    
+                    'Check to see if all selection coordinates are invalid (e.g. off-image).  If they are, forget about this selection.
+                    If pdImages(g_CurrentImage).mainSelection.areAllCoordinatesInvalid Then
+                        Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
+                    
+                    'If the selection coordinates are valid, create it now.
+                    Else
+                        Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                    End If
+                    
+                    'Force a redraw of the screen
+                    RenderViewport pdImages(g_CurrentImage), Me
+                    
                 Else
                     'If the selection is not active, make sure it stays that way
                     pdImages(g_CurrentImage).mainSelection.lockRelease

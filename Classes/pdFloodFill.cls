@@ -119,6 +119,13 @@ Public Function initiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) 
     'Initialize the destination DIB
     dstDIB.createBlank srcDIB.getDIBWidth, srcDIB.getDIBHeight, 24, 0
     
+    'Make sure the passed x/y coords are valid.  If they aren't, exit now.
+    If (m_InitPoint.x < 0) Or (m_InitPoint.y < 0) Or (m_InitPoint.x >= srcDIB.getDIBWidth) Or (m_InitPoint.y >= srcDIB.getDIBHeight) Then
+        Debug.Print "Invalid flood fill location requested.  Abandoning flood fill now."
+        initiateFloodFill = False
+        Exit Function
+    End If
+    
     'Based on the specified search mode, call the appropriate flood function
     Select Case m_SearchMode
         
@@ -129,6 +136,8 @@ Public Function initiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) 
             floodFillGlobal srcDIB, dstDIB
         
     End Select
+    
+    initiateFloodFill = True
 
 End Function
 
@@ -238,9 +247,7 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
             If y < yBound Then If m_AlreadyChecked(x, y + 1) = 0 Then pushOntoStack x, y + 1
             
         End If
-        
-        'Debug.Print m_StackPosition
-        
+                
     'As long as there are more stack points to process, rinse and repeat
     Loop While m_StackPosition >= 0
     
