@@ -870,13 +870,13 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 End If
             
             'Selections
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
             
                 'Handle arrow keys first
                 If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
             
                     'If a selection is active, nudge it using the arrow keys
-                    If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isTransformable Then
+                    If pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sRaster) Then
                         
                         markEventHandled = True
                         
@@ -895,7 +895,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                             'Some selection types can be modified by simply updating the selection text boxes.  Others cannot.
                             
                             'Non-textbox-compatible selections are handled here
-                            If (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_LASSO) Then
+                            If (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_WAND) Then
                                 pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
                                 pdImages(g_CurrentImage).mainSelection.nudgeSelection hOffset, vOffset
                             
@@ -952,7 +952,7 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
             
             Case NAV_MOVE
             
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 
                 'Delete key: if a selection is active, erase the selected area
                 If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).selectionActive Then

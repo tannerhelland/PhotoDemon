@@ -1446,6 +1446,18 @@ Public Sub nudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal 
             'We also need to update the selection's bounding rect
             updateInternalCoords
             
+        Case sWand
+            x1 = x1 + hOffset
+            y1 = y1 + vOffset
+            
+            If x1 < 0 Then x1 = 0
+            If y1 < 0 Then y1 = 0
+            If x1 >= containingPDImage.Width Then x1 = containingPDImage.Width - 1
+            If y1 >= containingPDImage.Height Then y1 = containingPDImage.Height - 1
+            
+            'We also need to update the selection's bounding rect
+            updateInternalCoords
+            
     End Select
 
 End Sub
