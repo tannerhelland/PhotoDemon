@@ -632,6 +632,18 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             
             If gdipHitCheck Then findNearestSelectionCoordinates = 0 Else findNearestSelectionCoordinates = -1
         
+        Case sWand
+            closestPoint = -1
+            
+            srcImage.mainSelection.getSelectionCoordinates 1, xCoord, yCoord
+            firstDist = distanceTwoPoints(imgX, imgY, xCoord, yCoord)
+                        
+            If (firstDist <= minDistance) Then closestPoint = 0
+            
+            'Was a close point found? If yes, then return that value.
+            findNearestSelectionCoordinates = closestPoint
+            Exit Function
+        
         Case Else
             findNearestSelectionCoordinates = -1
             Exit Function
@@ -1139,6 +1151,9 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
             
         Case sLasso
             pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.btsLassoRender.ListIndex, toolbar_Tools.sltSmoothStroke.Value, 0, 0, 0)
+            
+        Case sWand
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionTypeFromCurrentTool(), toolbar_Tools.cmbSelType(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolbar_Tools.sltWandTolerance.Value, toolbar_Tools.btsWandMerge.ListIndex, toolbar_Tools.btsWandArea.ListIndex)
         
     End Select
     

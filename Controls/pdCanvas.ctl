@@ -1162,7 +1162,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
         
             'Standard selections
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
             
                 'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
                 If pdImages(g_CurrentImage).selectionActive Then
@@ -1323,7 +1323,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
         
             'Basic selection tools
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_WAND
     
                 'First, check to see if a selection is both active and transformable.
                 If pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.getSelectionShape <> sRaster) Then
@@ -1409,7 +1409,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 End If
                 
             'Selection tools
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
             
             Case Else
             
@@ -1452,7 +1452,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 Tool_Support.terminateGenericToolTracking
                 
             'Most selection tools
-            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO, SELECT_WAND
             
                 'If a selection was being drawn, lock it into place
                 If pdImages(g_CurrentImage).selectionActive Then
@@ -1461,7 +1461,11 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     ' point falls outside the selection, clear the selection from the image.
                     If ((ClickEventAlsoFiring) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
                         
-                        Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                        If (g_CurrentTool <> SELECT_WAND) Then
+                            Process "Remove selection", , , UNDO_SELECTION, g_CurrentTool
+                        Else
+                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                        End If
                     
                     'The mouse is being released after a significant move event, or on a point of interest to the current selection.
                     Else
@@ -1515,6 +1519,9 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                                             Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                             
                                     End Select
+                                    
+                                Case SELECT_WAND
+                                    Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
                             
                             End Select
                             
@@ -2274,6 +2281,22 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     
             End Select
             
+        Case SELECT_WAND
+        
+            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            
+                '-1: mouse is outside the lasso selection area
+                Case -1
+                    cMouseEvents.setSystemCursor IDC_ARROW
+                
+                '0: mouse is inside the lasso selection area.  As a convenience to the user, we don't update the cursor
+                '   if they're still in "drawing" mode - we only update it if the selection is complete.
+                Case Else
+                    cMouseEvents.setSystemCursor IDC_SIZEALL
+                    
+            End Select
+        
+        
         Case Else
             cMouseEvents.setSystemCursor IDC_ARROW
                     
