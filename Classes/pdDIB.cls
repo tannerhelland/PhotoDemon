@@ -1239,28 +1239,32 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
     'If the data is compressed, we need to retrieve two additional pieces of information: the original and compressed size
     Dim origDataSize As Long, compressedDataSize As Long
     
-    If toDecompress Then
+    If (fWidth > 0) And (fHeight > 0) Then
     
-        'If zLib is not enabled for some reason, abandon the load
-        If Not g_ZLibEnabled Then
-            Message "DIB data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue."
-            createFromFile = False
-            Exit Function
+        If toDecompress Then
+        
+            'If zLib is not enabled for some reason, abandon the load
+            If Not g_ZLibEnabled Then
+                Message "DIB data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue."
+                createFromFile = False
+                Exit Function
+            End If
+            
+            Get #fileNum, , origDataSize
+            Get #fileNum, , compressedDataSize
+            
+            'Pull the raw pixel data straight from the file
+            ReDim fileData(0 To compressedDataSize) As Byte
+            Get #fileNum, , fileData
+            
+        Else
+            
+            'Pull the raw pixel data straight from the file
+            ReDim fileData(0 To fArrayWidth - 1, 0 To fHeight - 1) As Byte
+            Get #fileNum, , fileData
+            
         End If
-        
-        Get #fileNum, , origDataSize
-        Get #fileNum, , compressedDataSize
-        
-        'Pull the raw pixel data straight from the file
-        ReDim fileData(0 To compressedDataSize) As Byte
-        Get #fileNum, , fileData
-        
-    Else
-        
-        'Pull the raw pixel data straight from the file
-        ReDim fileData(0 To fArrayWidth - 1, 0 To fHeight - 1) As Byte
-        Get #fileNum, , fileData
-        
+    
     End If
     
     'If we've made it this far, attempt to load pixel data. Start by erasing and re-initializing this object to the proper size.
@@ -1361,7 +1365,7 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
     If toCompress And Not g_ZLibEnabled Then Message "Compression requested, but zLib plugin is disabled or missing.  Data will not be compressed."
     
     'If compression has been requested, and zLib is available, apply compression now.
-    If toCompress And g_ZLibEnabled Then
+    If toCompress And g_ZLibEnabled And (dibWidth > 0) And (dibHeight > 0) Then
         
         'Convert the DIB to a 1D array
         Dim src1DImage() As Byte
