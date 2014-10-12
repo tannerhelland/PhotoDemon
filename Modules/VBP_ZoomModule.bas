@@ -71,14 +71,6 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     'Copy the current back buffer into the front buffer
     frontBuffer.createFromExistingDIB srcImage.backBuffer
     
-    'Check to see if a selection is active.
-    If srcImage.selectionActive Then
-    
-        'If it is, composite the selection against the front buffer
-        srcImage.mainSelection.renderCustom frontBuffer, srcImage, FormMain.mainCanvas(0), srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, toolbar_Tools.cmbSelRender(0).ListIndex, toolbar_Tools.csSelectionHighlight(0).Color
-    
-    End If
-        
     'If the user has allowed interface decorations, handle that next
     If g_InterfacePerformance <> PD_PERF_FASTEST Then
     
@@ -121,6 +113,14 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
             StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
         
         End If
+    
+    End If
+    
+    'Check to see if a selection is active.
+    If srcImage.selectionActive Then
+    
+        'If it is, composite the selection against the front buffer
+        srcImage.mainSelection.renderCustom frontBuffer, srcImage, FormMain.mainCanvas(0), srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, toolbar_Tools.cmbSelRender(0).ListIndex, toolbar_Tools.csSelectionHighlight(0).Color
     
     End If
     
