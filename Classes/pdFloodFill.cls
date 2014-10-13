@@ -521,7 +521,6 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
     CopyMemory ByVal VarPtrArray(fImageData()), VarPtr(fSA), 4
         
     'Populate our reference comparison values
-    Dim r As Long, g As Long, b As Long, a As Long
     Dim aaStrength As Long
     Dim yDownSafe As Boolean, yUpSafe As Boolean
     
@@ -530,6 +529,7 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
     
     'Start processing the image!
     For x = 0 To xBound
+        QuickX = x * 3
     For y = 0 To yBound
     
         'The floodfill map is used to calculate antialiasing.  If it contains a 1 at this location, it means this pixel
@@ -547,7 +547,7 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
             ' We calculate AA by adding a value of 2 for each filled pixel, and a value of 1 for each filled pixel,
             ' and dividing the total by 18.  This provides maximum AA coverage of 88.8%, for a pixel surrounded on all
             ' eight sides by filled pixels.  (Note that after some testing, I decided to always reduce the calculated
-            ' AA value by 20%.  This provides a softer AA effect, and hopefully more aesthetically pleasing.
+            ' AA value by 20%.  This provides a softer AA effect, and hopefully more aesthetically pleasing results.)
             
             'Check the three pixels to the left (conditionally)
             If x > 0 Then
@@ -569,7 +569,7 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
             
             'We know the floodfill map at this position is unfilled, so we don't even need to retrieve the value to
             ' calculate proper AA.
-            fImageData(x * 3, y) = aaStrength * constMultiplier
+            fImageData(QuickX, y) = aaStrength * constMultiplier
         
         End If
         

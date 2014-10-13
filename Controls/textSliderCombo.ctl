@@ -20,6 +20,24 @@ Begin VB.UserControl sliderTextCombo
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   400
    ToolboxBitmap   =   "textSliderCombo.ctx":0000
+   Begin PhotoDemon.textUpDown tudPrimary 
+      Height          =   420
+      Left            =   5040
+      TabIndex        =   1
+      Top             =   45
+      Width           =   960
+      _ExtentX        =   1693
+      _ExtentY        =   741
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -31,37 +49,10 @@ Begin VB.UserControl sliderTextCombo
       Left            =   120
       ScaleHeight     =   24
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   329
-      TabIndex        =   1
-      Top             =   60
-      Width           =   4935
-   End
-   Begin VB.TextBox txtPrimary 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   5160
+      ScaleWidth      =   321
       TabIndex        =   0
-      Text            =   "0"
       Top             =   60
-      Width           =   735
-   End
-   Begin VB.Shape shpError 
-      BorderColor     =   &H000000FF&
-      Height          =   465
-      Left            =   5100
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   855
+      Width           =   4815
    End
 End
 Attribute VB_Name = "sliderTextCombo"
@@ -73,8 +64,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / Slider custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 04/August/14
-'Last update: tie UC coloring into PD's central theme engine
+'Last updated: 13/October/14
+'Last update: replace text box with PD's text up/down control, which finally provides a way to fine-tune slider values
 '
 'Software like PhotoDemon requires a lot of UI elements.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -332,18 +323,7 @@ End Property
     
 'If the current text value is NOT valid, this will return FALSE
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
-    
-    Dim retVal As Boolean
-    retVal = Not shpError.Visible
-    
-    'If the current text value is not valid, highlight the problem and optionally display an error message box
-    If Not retVal Then
-        AutoSelectText txtPrimary
-        If showError Then IsTextEntryValid True
-    End If
-    
-    IsValid = retVal
-    
+    IsValid = tudPrimary.IsValid
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -356,9 +336,8 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     
     UserControl.Enabled = newValue
     
-    'Disable the text box
-    txtPrimary.Enabled = newValue
-    txtPrimary.Refresh
+    'Disable text entry
+    tudPrimary.Enabled = newValue
     
     'Redraw the slider; when disabled, the slider itself is not drawn (only the track behind it is)
     redrawSlider
@@ -472,7 +451,7 @@ End Function
 'When the font is updated, change the text box font to match.  (We also change the user control font, but this doesn't do anything... yet!)
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set txtPrimary.Font = UserControl.Font
+    Set tudPrimary.Font = UserControl.Font
 End Sub
 
 Public Property Get hWnd() As Long
@@ -503,20 +482,17 @@ Public Property Let Value(ByVal newValue As Double)
             'Normally, we want to make sure that the control's value has changed; otherwise, updating the text box causes unnecessary
             ' recursive refreshing.  However, we can't compare the text box value to the control value if the user has entered invalid
             ' input, so first make sure that the text box contains meaningful data.
-            If IsTextEntryValid(False) Then
+            If tudPrimary.IsValid(False) Then
                 
                 'The text box contains valid numerical data.  If it matches the current control value, skip the refresh step.
-                If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then
-                    txtPrimary.Text = getFormattedStringValue(controlVal)
-                    txtPrimary.Refresh
+                If StrComp(getFormattedStringValue(tudPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then
+                    tudPrimary.Value = controlVal
                 End If
             
             'The text box is currently in an error state.  Copy the new text into place without a duplication check.
             Else
             
-                If shpError.Visible Then shpError.Visible = False
-                txtPrimary.Text = getFormattedStringValue(controlVal)
-                txtPrimary.Refresh
+                tudPrimary.Value = controlVal
             
             End If
             
@@ -541,6 +517,7 @@ End Property
 Public Property Let Min(ByVal newValue As Double)
     
     controlMin = newValue
+    tudPrimary.Min = controlMin
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
@@ -563,6 +540,7 @@ End Property
 Public Property Let Max(ByVal newValue As Double)
     
     controlMax = newValue
+    tudPrimary.Max = controlMax
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
@@ -584,6 +562,7 @@ End Property
 
 Public Property Let SigDigits(ByVal newValue As Long)
     significantDigits = newValue
+    tudPrimary.SigDigits = significantDigits
     PropertyChanged "SigDigits"
 End Property
 
@@ -597,21 +576,12 @@ Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
     PropertyChanged "ForeColor"
 End Property
 
-Private Sub txtPrimary_GotFocus()
-    AutoSelectText txtPrimary
-End Sub
-
-Private Sub txtPrimary_KeyUp(KeyCode As Integer, Shift As Integer)
-    
-    If IsTextEntryValid() Then
-        If shpError.Visible Then shpError.Visible = False
+Private Sub tudPrimary_Change()
+    If tudPrimary.IsValid(False) Then
         textBoxInitiated = True
-        Me.Value = CDblCustom(txtPrimary)
+        Me.Value = tudPrimary.Value
         textBoxInitiated = False
-    Else
-        shpError.Visible = True
     End If
-    
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -744,12 +714,11 @@ End Sub
 Private Sub UserControl_Resize()
 
     'We want to keep the text box and scroll bar universally aligned.  Thus, I have hard-coded specific spacing values.
-    txtPrimary.Left = UserControl.ScaleWidth - fixDPI(56)
-    shpError.Left = txtPrimary.Left - fixDPI(4)
+    tudPrimary.Left = UserControl.ScaleWidth - tudPrimary.Width - fixDPI(2)
     
     'It's possible - but obviously not recommended - to shrink the control so much that the scroll bar is invisible.
     ' Please do not do this.
-    If txtPrimary.Left - fixDPI(15) > 0 Then picScroll.Width = txtPrimary.Left - fixDPI(15)         '15 = 8 (scroll bar's .Left) + 7 (distance between scroll bar and text box)
+    If tudPrimary.Left - fixDPI(10) > 0 Then picScroll.Width = tudPrimary.Left - fixDPI(10)
     
     'Update slider area width/height to match the new picScroll size
     m_SliderAreaWidth = picScroll.ScaleWidth
@@ -1167,39 +1136,41 @@ End Function
 ' numeric, and allow the user to display a warning message if necessary.
 Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = False) As Boolean
     
-    'Some locales use a comma as a decimal separator.  Check for this and replace as necessary.
-    Dim chkString As String
-    chkString = txtPrimary
+    IsTextEntryValid = tudPrimary.IsValid(displayErrorMsg)
     
-    'Remember the current cursor position as necessary
-    Dim cursorPos As Long
-    cursorPos = txtPrimary.SelStart
-    
-    'It may be possible for the user to enter consecutive ",." characters, which then cause the CDbl() below to fail.
-    ' Check for this and fix it as necessary.
-    If InStr(1, chkString, "..") Then
-        chkString = Replace(chkString, "..", ".")
-        txtPrimary = chkString
-        If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
-        txtPrimary.SelStart = cursorPos
-    End If
-    
-    'If our owner wants a message displayed on invalid input, raise one now.
-    If Not IsNumeric(chkString) Then
-        If displayErrorMsg Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary
-        IsTextEntryValid = False
-    Else
-        
-        Dim checkVal As Double
-        checkVal = CDblCustom(chkString)
-    
-        If (checkVal >= controlMin) And (checkVal <= controlMax) Then
-            IsTextEntryValid = True
-        Else
-            If displayErrorMsg Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary, getFormattedStringValue(controlMin), getFormattedStringValue(controlMax)
-            IsTextEntryValid = False
-        End If
-    End If
+'    'Some locales use a comma as a decimal separator.  Check for this and replace as necessary.
+'    Dim chkString As String
+'    chkString = txtPrimary
+'
+'    'Remember the current cursor position as necessary
+'    Dim cursorPos As Long
+'    cursorPos = txtPrimary.SelStart
+'
+'    'It may be possible for the user to enter consecutive ",." characters, which then cause the CDbl() below to fail.
+'    ' Check for this and fix it as necessary.
+'    If InStr(1, chkString, "..") Then
+'        chkString = Replace(chkString, "..", ".")
+'        txtPrimary = chkString
+'        If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
+'        txtPrimary.SelStart = cursorPos
+'    End If
+'
+'    'If our owner wants a message displayed on invalid input, raise one now.
+'    If Not IsNumeric(chkString) Then
+'        If displayErrorMsg Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary
+'        IsTextEntryValid = False
+'    Else
+'
+'        Dim checkVal As Double
+'        checkVal = CDblCustom(chkString)
+'
+'        If (checkVal >= controlMin) And (checkVal <= controlMax) Then
+'            IsTextEntryValid = True
+'        Else
+'            If displayErrorMsg Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary, getFormattedStringValue(controlMin), getFormattedStringValue(controlMax)
+'            IsTextEntryValid = False
+'        End If
+'    End If
     
 End Function
 
