@@ -15,10 +15,30 @@ Attribute VB_Exposed = False
 'PhotoDemon Flood Fill Engine
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 11/October/14
-'Last updated: 11/October/14
-'Last update: initial build
+'Last updated: 13/October/14
+'Last update: wrap up initial build
 '
-'Comments forthcoming...
+'This class supplies the flood fill algorithm for a number of different tools in PD (magic wand, bucket fill, etc).
+' The flood fill approach itself is pretty basic - a stack is used in place of recursion, and a global mapping array
+' is used to minimize the amount of pixel checks that take place.
+'
+'As a convenience to calling functions, this class exposes a number of options.  Fills can be contiguous (default)
+' or global, meaning the entire image is searched without regard to continuuity.  The comparison mode used between
+' pixels can also be specified; individual channels (including alpha), luminosity, or a full composite check of all
+' channels can be specified.  Finally, antialiasing can also be requested.  A custom AA solution is used for
+' contiguous fills, and it's extremely fast as we know in advance which pixels should be examined for AA.  For
+' global fills, PD's standard quickBlur function is used (as we don't have a continuity map available).
+'
+'To allow this class to be used by any external function, it simply requires a source and destination DIB.  The
+' source DIB can be 24 or 32bpp; both are handled fine.  The destination DIB will be forcibly recreated as 24bpp,
+' and - this is important - FILL DATA WILL BE STORED IN THE BLUE CHANNEL ONLY.  This increases function speed, as
+' we only need one destination array access when building the fill map.
+'
+'Similarly, how the caller uses the fill map is up to them.  In the case of magic wand selections, PD converts the
+' flood fill map to a selection map.  For bucket fill, it simply merges the requested fill type onto the image,
+' using the fill map as a guide.
+'
+'Like any array-based tool, this class will be slow inside the IDE.  Please use only when compiled if at all possible.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -140,6 +160,20 @@ Public Function initiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) 
             floodFillGlobal srcDIB, dstDIB
         
     End Select
+    
+    'If antialiasing was requested, apply it now.
+    If m_AntialiasingMode Then
+        
+        'For contiguous fill modes, we use a custom AA solution that provides better results.
+        If m_SearchMode = PDFS_CONTIGUOUS Then
+            floodFillCustomAA dstDIB
+        
+        'For global fill modes, a simple quick blur will do
+        Else
+            quickBlurDIB dstDIB, 1
+        End If
+        
+    End If
     
     initiateFloodFill = True
 
@@ -466,6 +500,88 @@ Private Sub popFromStack(ByRef x As Long, ByRef y As Long)
     m_StackPosition = m_StackPosition - 1
     
 End Sub
+
+'Apply a custom antialiasing solution to a DIB.  The DIB must contain the contents of a *contiguous* flood fill operation.
+' A global flood fill won't work, as it doesn't build a fill table.
+Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
+    
+    'Predetermine upper bounds for x/y checks
+    Dim xBound As Long, yBound As Long
+    xBound = floodFillDIB.getDIBWidth - 1
+    yBound = floodFillDIB.getDIBHeight - 1
+    
+    'Make sure 24 and 32bpp sources are both handled correctly
+    Dim x As Long, y As Long, QuickX As Long
+    
+    'Generate direct references to the source and destination DIB data
+    Dim fImageData() As Byte
+    Dim fSA As SAFEARRAY2D
+    
+    prepSafeArray fSA, floodFillDIB
+    CopyMemory ByVal VarPtrArray(fImageData()), VarPtr(fSA), 4
+        
+    'Populate our reference comparison values
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim aaStrength As Long
+    Dim yDownSafe As Boolean, yUpSafe As Boolean
+    
+    Dim constMultiplier As Double
+    constMultiplier = (255 / 18) * 0.8
+    
+    'Start processing the image!
+    For x = 0 To xBound
+    For y = 0 To yBound
+    
+        'The floodfill map is used to calculate antialiasing.  If it contains a 1 at this location, it means this pixel
+        ' was checked for the floodfill operation, but not actually filled.  That makes it a target for antialiasing.
+        If m_AlreadyChecked(x, y) = 1 Then
+        
+            aaStrength = 0
+            
+            'To simplify boundary checks, mark y safety in advance
+            yDownSafe = (y > 0)
+            yUpSafe = (y < yBound)
+            
+            'Check the eight surrounding pixels in the AA table.  If one was filled, its value will be 2.  If one was
+            ' checked but unfilled, its value will be 1.  If a pixel was never checked, its value will be zero.
+            ' We calculate AA by adding a value of 2 for each filled pixel, and a value of 1 for each filled pixel,
+            ' and dividing the total by 18.  This provides maximum AA coverage of 88.8%, for a pixel surrounded on all
+            ' eight sides by filled pixels.  (Note that after some testing, I decided to always reduce the calculated
+            ' AA value by 20%.  This provides a softer AA effect, and hopefully more aesthetically pleasing.
+            
+            'Check the three pixels to the left (conditionally)
+            If x > 0 Then
+                If yDownSafe Then aaStrength = aaStrength + m_AlreadyChecked(x - 1, y - 1)
+                aaStrength = aaStrength + m_AlreadyChecked(x - 1, y)
+                If yUpSafe Then aaStrength = aaStrength + m_AlreadyChecked(x - 1, y + 1)
+            End If
+            
+            'Check the pixels above and below
+            If yDownSafe Then aaStrength = aaStrength + m_AlreadyChecked(x, y - 1)
+            If yUpSafe Then aaStrength = aaStrength + m_AlreadyChecked(x, y + 1)
+            
+            'Check the pixels to the right (conditionally)
+            If x < xBound Then
+                If yDownSafe Then aaStrength = aaStrength + m_AlreadyChecked(x + 1, y - 1)
+                aaStrength = aaStrength + m_AlreadyChecked(x + 1, y)
+                If yUpSafe Then aaStrength = aaStrength + m_AlreadyChecked(x + 1, y + 1)
+            End If
+            
+            'We know the floodfill map at this position is unfilled, so we don't even need to retrieve the value to
+            ' calculate proper AA.
+            fImageData(x * 3, y) = aaStrength * constMultiplier
+        
+        End If
+        
+    Next y
+    Next x
+        
+    'Release our array references
+    CopyMemory ByVal VarPtrArray(fImageData), 0&, 4
+    
+    floodFillCustomAA = True
+
+End Function
 
 Private Sub Class_Initialize()
 
