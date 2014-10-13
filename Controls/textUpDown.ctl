@@ -7,7 +7,6 @@ Begin VB.UserControl textUpDown
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   1125
-   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -26,13 +25,13 @@ Begin VB.UserControl textUpDown
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   360
+      Height          =   375
       Left            =   720
-      ScaleHeight     =   24
+      ScaleHeight     =   25
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   17
       TabIndex        =   1
-      Top             =   15
+      Top             =   0
       Width           =   255
    End
    Begin VB.TextBox txtPrimary 
@@ -422,11 +421,11 @@ Private Sub UserControl_Resize()
     'Keep the text box and scroll bar nicely aligned, with a 1px border for the red "error" box
     If g_IsProgramCompiled And g_IsVistaOrLater And g_IsThemingEnabled Then
         picScroll.Width = fixDPI(19)
-        picScroll.Top = 0
-        picScroll.Height = UserControl.ScaleHeight
+        picScroll.Top = -1
+        picScroll.Height = UserControl.ScaleHeight + 1
     Else
         picScroll.Width = fixDPI(17)
-        picScroll.Top = fixDPI(1)
+        picScroll.Top = 0 'fixDPI(1)
         picScroll.Height = UserControl.ScaleHeight - fixDPI(2)
     End If
     
