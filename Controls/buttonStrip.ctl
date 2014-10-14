@@ -490,6 +490,7 @@ Private Sub UserControl_Initialize()
     
     m_MouseInsideUC = False
     m_FocusRectActive = -1
+    m_ButtonHoverIndex = -1
     
     'Prepare a font object for use
     Set mFont = New StdFont

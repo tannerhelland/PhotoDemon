@@ -8,7 +8,6 @@ Begin VB.Form toolbar_Tools
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   14205
-   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -1659,23 +1658,18 @@ Private Sub Form_Load()
         'Selection visual styles (currently lightbox or highlight)
         toolbar_Tools.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
         For i = 0 To toolbar_Tools.cmbSelRender.Count - 1
-            toolbar_Tools.cmbSelRender(i).AddItem "Lightbox", 0
-            toolbar_Tools.cmbSelRender(i).AddItem "Highlight", 1
+            toolbar_Tools.cmbSelRender(i).AddItem " Highlight", 0
+            toolbar_Tools.cmbSelRender(i).AddItem " Lightbox", 1
             toolbar_Tools.cmbSelRender(i).ListIndex = 0
         Next i
-        csSelectionHighlight(0).Color = RGB(112, 183, 255)
-        csSelectionHighlight(0).Visible = False
+        csSelectionHighlight(0).Color = RGB(255, 58, 72)
+        csSelectionHighlight(0).Visible = True
         
         'Selection smoothing (currently none, antialiased, fully feathered)
         toolbar_Tools.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
-        toolbar_Tools.cmbSelSmoothing(0).AddItem "None", 0
-        toolbar_Tools.cmbSelSmoothing(0).AddItem "Antialiased", 1
-        
-        'Previously, live feathering was disallowed on XP or Vista for performance reasons (GDI+ can't be used to blur
-        ' the selection mask, and our own code was too slow).  As of 17 Oct '13, I have reinstated live selection
-        ' feathering on these OSes using PD's very fast horizontal and vertical blur.  While not perfect, this should
-        ' still provide "good enough" performance for smaller images and/or slight feathering.
-        toolbar_Tools.cmbSelSmoothing(0).AddItem "Feathered", 2
+        toolbar_Tools.cmbSelSmoothing(0).AddItem " None", 0
+        toolbar_Tools.cmbSelSmoothing(0).AddItem " Antialiased", 1
+        toolbar_Tools.cmbSelSmoothing(0).AddItem " Feathered", 2
         toolbar_Tools.cmbSelSmoothing(0).ListIndex = 1
         
         'Selection types (currently interior, exterior, border)
@@ -1708,12 +1702,12 @@ Private Sub Form_Load()
         btsWandArea.ToolTipText = g_Language.TranslateMessage("Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuuity.")
         
         cboWandCompare.Clear
-        cboWandCompare.AddItem "composite", 0
-        cboWandCompare.AddItem "luminance", 1
-        cboWandCompare.AddItem "red", 2
-        cboWandCompare.AddItem "green", 3
-        cboWandCompare.AddItem "blue", 4
-        cboWandCompare.AddItem "alpha", 5
+        cboWandCompare.AddItem " Composite", 0
+        cboWandCompare.AddItem " Luminance", 1
+        cboWandCompare.AddItem " Red", 2
+        cboWandCompare.AddItem " Green", 3
+        cboWandCompare.AddItem " Blue", 4
+        cboWandCompare.AddItem " Alpha", 5
         cboWandCompare.ListIndex = 0
         cboWandCompare.ToolTipText = g_Language.TranslateMessage("This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.")
         
@@ -2010,7 +2004,12 @@ Public Sub resetToolButtonStates()
             
     End Select
     
-    'Display the current tool options panel, while hiding all inactive ones
+    'Display the current tool options panel, while hiding all inactive ones.  The On Error Resume statement is used to fix
+    ' trouble with the .SetFocus line, below.  That .SetFocus line is helpful for fixing some VB issues with controls embedded
+    ' on a picture box (specifically, combo boxes which do not drop-down properly unless a picture box or its child already
+    ' has focus).  Sometimes, VB will inexplicably fail to set focus, and it will raise an Error 5 to match; as this is not
+    ' a crucial error, just a VB quirk, I don't mind using OERN here.
+    On Error Resume Next
     For i = 0 To picTools.Count - 1
         If i = activeToolPanel Then
             If Not picTools(i).Visible Then
@@ -2045,9 +2044,9 @@ Private Sub setSelectionAreaOptions(ByVal borderAllowed As Boolean, Optional ByV
     
     'Populate the selection area drop-down
     toolbar_Tools.cmbSelType(0).Clear
-    toolbar_Tools.cmbSelType(0).AddItem "Interior", 0
-    toolbar_Tools.cmbSelType(0).AddItem "Exterior", 1
-    If borderAllowed Then toolbar_Tools.cmbSelType(0).AddItem "Border", 2
+    toolbar_Tools.cmbSelType(0).AddItem " Interior", 0
+    toolbar_Tools.cmbSelType(0).AddItem " Exterior", 1
+    If borderAllowed Then toolbar_Tools.cmbSelType(0).AddItem " Border", 2
     
     'Restore the correct list index
     If curListIndex < toolbar_Tools.cmbSelType(0).ListCount - 1 Then
