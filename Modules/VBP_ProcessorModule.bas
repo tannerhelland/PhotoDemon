@@ -116,6 +116,55 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         recordAction = LastProcess.Recorded
     End If
     
+    'If a selection sin active, certain functions (primarily transformations) will remove it before proceeding. This is typically
+    ' done by functions that resize or reorient the image in a way that makes the selection's shape irrelevant. Because PD requires
+    ' the selection mask and image size to remain in sync, errors may occur if selections persist after a size change - and this is
+    ' particularly relevant for the Undo/Redo engine, because it will crash if it attempts to load an Undo file of an image, and the
+    ' image size is not the same as the current selection assumes.
+    '
+    'Anyway, before moving deeper into the processor, we must check for actions that disallow selections, and prior to processing them,
+    ' initiate a Remove Selection process request.
+    If (Not showDialog) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    
+        'Only worry about this if a selection is actually active
+        If pdImages(g_CurrentImage).selectionActive And (createUndo <> UNDO_SELECTION) Then
+    
+            Dim removeSelectionInAdvance As Boolean
+            removeSelectionInAdvance = False
+            
+            'If this action reorients or resizes the image, mark the selection for removal
+            Select Case processID
+            
+                Case "Resize image", "Resize", "Content-aware image resize", "Canvas size"
+                    removeSelectionInAdvance = True
+                    
+                Case "Fit canvas to layer", "Fit canvas to all layers", "Trim empty borders"
+                    removeSelectionInAdvance = True
+                    
+                Case "Rotate image 90° clockwise", "Rotate 90° clockwise", "Rotate image 180°", "Rotate 180°"
+                    removeSelectionInAdvance = True
+                    
+                Case "Rotate image 90° counter-clockwise", "Rotate 90° counter-clockwise", "Arbitrary image rotation", "Arbitrary rotation"
+                    removeSelectionInAdvance = True
+                    
+                Case "Flip image vertically", "Flip vertically", "Flip image horizontally", "Flip horizontally", "Tile"
+                    removeSelectionInAdvance = True
+                    
+                Case Else
+                    removeSelectionInAdvance = False
+            
+            End Select
+            
+            'If selection removal is required, process the removal before proceeding with the original process request
+            If removeSelectionInAdvance Then
+                Process "Remove selection", , , UNDO_SELECTION
+                removeSelectionInAdvance = False
+            End If
+            
+        End If
+        
+    End If
+    
     'If the macro recorder is running and this action is marked as recordable, store it in our running stack of processor calls
     If (MacroStatus = MacroSTART) And recordAction Then
     
