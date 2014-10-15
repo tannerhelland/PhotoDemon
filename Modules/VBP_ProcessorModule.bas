@@ -161,6 +161,17 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 removeSelectionInAdvance = False
             End If
             
+            'We also need to catch another strange occurrence here.  PD's "Crop" command forcibly clears the selection upon completion.
+            ' This is done as a convenience, as post-crop, a selection is unlikely to be useful.  Unfortunately, this behavior wreaks
+            ' havoc on PD's Undo/Redo engine, because the Undo/Redo engine only saves image state *after* an action has completed.
+            ' So the image's state post-Crop is saved nicely, but pre-Crop it may not be, because the selection is removed out-of-process.
+            ' We also can't remove the selection prior to cropping, because we obviously need its data to process the crop!
+            
+            'Thus the need for this workaround.  Prior to applying a crop, we ask the Undo/Redo engine to forcibly change its previous
+            ' Undo record to an UNDO_EVERYTHING entry.  This will back up both the image and selection state prior to the crop, without
+            ' doing anything problematic like adding dummy entries to the Undo/Redo chain.
+            If processID = "Crop" Then pdImages(g_CurrentImage).undoManager.forceLastUndoDataToIncludeEverything
+            
         End If
         
     End If
@@ -215,7 +226,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'First, check for on-canvas modifications to the selection (e.g. feathering slider changes, etc)
         If Not pdImages(g_CurrentImage) Is Nothing Then
         
-            If pdImages(g_CurrentImage).selectionActive And (createUndo <> UNDO_SELECTION) Then
+            If pdImages(g_CurrentImage).selectionActive And (createUndo <> UNDO_SELECTION) And (createUndo <> UNDO_EVERYTHING) Then
             
                 'Ask the Undo engine to return the last selection param string it has on file
                 Dim lastSelParamString As String
@@ -1601,7 +1612,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         End If
     
     End If
-    
+        
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_NOTHING) Then
     

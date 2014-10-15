@@ -15,9 +15,8 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 19/May/14
-'Last update: finish work on diff-based Undo/Redo engine.  This is one of the toughest challenges we've ever
-'              tackled in PD, and I am *very* happy to have it done.
+'Last updated: 15/October/14
+'Last update: add new forceLastUndoDataToIncludeEverything() to work around some Crop tool issues.
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in RAM, allowing for a lone Undo step if necessary.  Eventually this was converted
@@ -256,6 +255,31 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     Debug.Print "Undo created successfully."
     
+End Sub
+
+'This (rather odd) function is required by the Crop tool.  Because the Crop tool forcibly removes the current selection - but only after
+' making use of it - it causes the Undo/Redo engine's selection tracking to fall out of sync.  To work around this without adding
+' unnecessary dummy entries to the Undo chain, the Crop command calls this function prior to processing.
+'
+'This function simply updates the previous Undo entry to include a full record of everything: the whole image, and any
+' active selections.  This ensures that if the user uses Undo to return to a pre-Crop state, everything is restored properly.
+' (Without this function, Undo-ing a crop action would cause the selection to be lost unless the user returned to the point when the
+' selection was first created.)
+Public Sub forceLastUndoDataToIncludeEverything()
+    
+    'Overwrite the previous action's Undo data with a full image backup.  Note that all the settings from the previous
+    ' action are retained; the only thing we're doing differently is specifying the Undo type as UNDO_EVERYTHING.
+    Saving.saveUndoData parentPDImage, generateUndoFilename(undoNum - 1), UNDO_EVERYTHING, -1
+    
+    'Update the stack entry at that point to reflect the UNDO_EVERYTHING usage
+    With undoStack(undoNum - 1)
+        .undoType = UNDO_EVERYTHING
+        .undoLayerID = -1
+    End With
+    
+    'Update the Undo XML header as well.
+    writeUndoDataToXML generateUndoHeaderFilename()
+        
 End Sub
 
 'This special command can be used to revert the image to its last saved state.  For images that have never been

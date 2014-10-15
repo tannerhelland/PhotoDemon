@@ -3320,11 +3320,8 @@ Private Sub MnuImage_Click(Index As Integer)
             
         'Crop to selection
         Case 9
-            Process "Crop", , , UNDO_IMAGE
+            Process "Crop", , , UNDO_EVERYTHING
             
-            'Deactivate the current selection, as it's no longer needed
-            Process "Remove selection", , , UNDO_SELECTION
-        
         'Trim empty borders
         Case 10
             Process "Trim empty borders", , , UNDO_IMAGEHEADER

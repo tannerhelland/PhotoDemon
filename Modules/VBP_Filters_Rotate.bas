@@ -383,7 +383,13 @@ Public Sub MenuCropToSelection()
     'Clear the selection mask array reference
     CopyMemory ByVal VarPtrArray(selData), 0&, 4
     Erase selData
-    
+        
+    'The selection is now going to be out of sync with the image.  Forcibly clear it.
+    pdImages(g_CurrentImage).mainSelection.lockRelease
+    pdImages(g_CurrentImage).selectionActive = False
+    pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
+    syncTextToCurrentSelection g_CurrentImage
+        
     'Update the viewport
     pdImages(g_CurrentImage).updateSize False, selectionWidth, selectionHeight
     DisplaySize pdImages(g_CurrentImage)
