@@ -1318,9 +1318,6 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     'Display the image coordinates under the mouse pointer
     displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
-    'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
-    
     'Check the left mouse button
     If lMouseDown Then
     
@@ -1386,6 +1383,9 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
     'This else means the LEFT mouse button is NOT down
     Else
+    
+        'Display a relevant cursor for the current action
+        setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
     
         Select Case g_CurrentTool
         
