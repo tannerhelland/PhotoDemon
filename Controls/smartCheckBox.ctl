@@ -654,17 +654,36 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the buffer to the screen
-    PaintUC
+    PaintUC True
 
 End Sub
 
-Private Sub PaintUC()
+Private Sub PaintUC(Optional ByVal forceRefresh As Boolean = False)
     
-    'Flip the buffer to the screen
-    BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    'See if an update is actually required
+    Dim updateRect As RECT
     
-    'Validate the rect to prevent further WM_PAINT messages
-    ValidateRect Me.hWnd, ByVal 0&
+    If forceRefresh Or (GetUpdateRect(Me.hWnd, updateRect, 0) <> 0) Then
+    
+        'On a forced refresh, we want to redraw the entire client area
+        If forceRefresh Then
+            With updateRect
+                .Left = 0
+                .Top = 0
+                .Right = UserControl.ScaleWidth
+                .Bottom = UserControl.ScaleHeight
+            End With
+        End If
+    
+        'Flip the relevant chunk of the buffer to the screen
+        With updateRect
+            BitBlt UserControl.hDC, .Left, .Top, .Right - .Left, .Bottom - .Top, m_BackBuffer.getDIBDC, .Left, .Top, vbSrcCopy
+        End With
+        
+        'Validate the rect to prevent further WM_PAINT messages
+        ValidateRect Me.hWnd, ByVal 0&
+        
+    End If
     
 End Sub
 

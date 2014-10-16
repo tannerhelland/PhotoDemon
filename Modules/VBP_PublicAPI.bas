@@ -141,3 +141,6 @@ Public Const HTBOTTOM As Long = 15
 'Sometimes it is necessary to realign the cursor, particularly while painting
 Public Declare Sub SetCursorPos Lib "user32" (ByVal newX As Long, ByVal newY As Long)
 Public Declare Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
+
+'Window painting
+Public Declare Function GetUpdateRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
