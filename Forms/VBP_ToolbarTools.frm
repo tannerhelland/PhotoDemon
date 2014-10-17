@@ -311,7 +311,7 @@ Begin VB.Form toolbar_Tools
          Top             =   390
          Width           =   2250
       End
-      Begin VB.ComboBox cmbSelType 
+      Begin VB.ComboBox cmbSelArea 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
          BeginProperty Font 
@@ -377,7 +377,6 @@ Begin VB.Form toolbar_Tools
             Strikethrough   =   0   'False
          EndProperty
          Max             =   1
-         SigDigits       =   2
       End
       Begin PhotoDemon.textUpDown tudSel 
          Height          =   405
@@ -1451,8 +1450,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tools Toolbox
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 03/October/13
-'Last updated: 26/June/14
-'Last update: add temperature and tint to the Quick Fix tool selection; minor UI adjustments
+'Last updated: 16/October/14
+'Last update: rework all selection interface code to use the new property dictionary functions
 '
 'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind the MDI model,
 ' and all toolbars were moved to their own forms.
@@ -1487,7 +1486,7 @@ Private Sub btsLassoRender_Click(ByVal buttonIndex As Long)
     
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setDrawModeDisplay buttonIndex
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_DRAWING_DISPLAY, buttonIndex
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
     
@@ -1497,7 +1496,7 @@ Private Sub btsWandArea_Click(ByVal buttonIndex As Long)
     
     'If a selection is already active, change its type to match the current option, then redraw it
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setWandSearchMode buttonIndex
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_WAND_SEARCH_MODE, buttonIndex
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
     
@@ -1507,7 +1506,7 @@ Private Sub btsWandMerge_Click(ByVal buttonIndex As Long)
 
     'If a selection is already active, change its type to match the current option, then redraw it
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setWandSampleMerged buttonIndex
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_WAND_SAMPLE_MERGED, buttonIndex
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 
@@ -1524,7 +1523,7 @@ Private Sub cboWandCompare_Click()
     
     'If a selection is already active, change its type to match the current option, then redraw it
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setWandCompareMethod cboWandCompare.ListIndex
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_WAND_COMPARE_METHOD, cboWandCompare.ListIndex
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
     
@@ -1673,7 +1672,7 @@ Private Sub Form_Load()
         toolbar_Tools.cmbSelSmoothing(0).ListIndex = 1
         
         'Selection types (currently interior, exterior, border)
-        toolbar_Tools.cmbSelType(0).ToolTipText = g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
+        toolbar_Tools.cmbSelArea(0).ToolTipText = g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
         setSelectionAreaOptions True, 0
         
         toolbar_Tools.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
@@ -1784,22 +1783,22 @@ Private Sub cmbSelSmoothing_Click(Index As Integer)
     
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setSmoothingType cmbSelSmoothing(Index).ListIndex
-        pdImages(g_CurrentImage).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_SMOOTHING, cmbSelSmoothing(Index).ListIndex
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_FEATHERING_RADIUS, sltSelectionFeathering.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
     
 End Sub
 
 'Change selection type (e.g. interior, exterior, bordered)
-Private Sub cmbSelType_Click(Index As Integer)
+Private Sub cmbSelArea_Click(Index As Integer)
 
     updateSelectionPanelLayout
     
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setSelectionType cmbSelType(Index).ListIndex
-        pdImages(g_CurrentImage).mainSelection.setBorderSize sltSelectionBorder.Value
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_AREA, cmbSelArea(Index).ListIndex
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_BORDER_WIDTH, sltSelectionBorder.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
     
@@ -1860,7 +1859,7 @@ Public Sub resetToolButtonStates()
     'Check the selection state before swapping tools.  If a selection is active, and the user is switching to the same
     ' tool used to create the current selection, we don't want to erase the current selection.  If they are switching
     ' to a *different* selection tool, however, then we *do* want to erase the current selection.
-    If selectionsAllowed(False) And (getRelevantToolFromSelectType() <> g_CurrentTool) Then pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
+    If selectionsAllowed(False) And (getRelevantToolFromSelectShape() <> g_CurrentTool) Then pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
     
     'If tools share the same panel, they may need to show or hide a few additional controls.  (For example,
     ' "corner rounding", which is needed for rectangular selections but not elliptical ones, despite the two
@@ -1869,7 +1868,7 @@ Public Sub resetToolButtonStates()
     
         'For rectangular selections, show the rounded corners option
         Case SELECT_RECT
-            setSelectionAreaOptions True
+            'setSelectionAreaOptions True
             setSelectionTUDVisibility True, True
             setSelectionAreaVisibility True
             toolbar_Tools.lblSelection(5).Visible = True
@@ -1886,7 +1885,7 @@ Public Sub resetToolButtonStates()
                     
         'For elliptical selections, hide the rounded corners option
         Case SELECT_CIRC
-            setSelectionAreaOptions True
+            'setSelectionAreaOptions True
             setSelectionTUDVisibility True, True
             setSelectionAreaVisibility True
             toolbar_Tools.lblSelection(5).Visible = False
@@ -1903,7 +1902,7 @@ Public Sub resetToolButtonStates()
             
         'Line selections also show the rounded corners slider, though they repurpose it for line width
         Case SELECT_LINE
-            setSelectionAreaOptions True
+            'setSelectionAreaOptions True
             setSelectionTUDVisibility True, True
             setSelectionAreaVisibility True
             toolbar_Tools.lblSelection(5).Visible = True
@@ -1920,7 +1919,7 @@ Public Sub resetToolButtonStates()
             
         'Polygon selections are most similar to lasso selections, below, but with an extra curvature parameter.
         Case SELECT_POLYGON
-            setSelectionAreaOptions True
+            'setSelectionAreaOptions True
             setSelectionTUDVisibility False, False
             setSelectionAreaVisibility True
             toolbar_Tools.lblSelection(5).Visible = True
@@ -1937,7 +1936,7 @@ Public Sub resetToolButtonStates()
             
         'Lasso selections do not need rounded corners or other options
         Case SELECT_LASSO
-            setSelectionAreaOptions True
+            'setSelectionAreaOptions True
             setSelectionTUDVisibility False, False
             setSelectionAreaVisibility True
             toolbar_Tools.lblSelection(5).Visible = False
@@ -1954,7 +1953,7 @@ Public Sub resetToolButtonStates()
             
         'Magic wand selections have the fewest available options
         Case SELECT_WAND
-            setSelectionAreaOptions False
+            'setSelectionAreaOptions False
             setSelectionTUDVisibility False, False
             setSelectionAreaVisibility False
             toolbar_Tools.lblSelection(5).Visible = False
@@ -2031,7 +2030,7 @@ End Sub
 Private Sub setSelectionAreaOptions(ByVal borderAllowed As Boolean, Optional ByVal forceIndex As Long = -1)
 
     'Before modifying anything, see if the box even needs to be changed.  If it doesn't, ignore this request.
-    If (borderAllowed And (toolbar_Tools.cmbSelType(0).ListCount = 3)) Or ((Not borderAllowed) And (toolbar_Tools.cmbSelType(0).ListCount = 2)) Then Exit Sub
+    If (borderAllowed And (toolbar_Tools.cmbSelArea(0).ListCount = 3)) Or ((Not borderAllowed) And (toolbar_Tools.cmbSelArea(0).ListCount = 2)) Then Exit Sub
 
     'Make a backup of the current selection area choice
     Dim curListIndex As Long
@@ -2039,20 +2038,20 @@ Private Sub setSelectionAreaOptions(ByVal borderAllowed As Boolean, Optional ByV
     If forceIndex >= 0 Then
         curListIndex = forceIndex
     Else
-        curListIndex = toolbar_Tools.cmbSelType(0).ListIndex
+        curListIndex = toolbar_Tools.cmbSelArea(0).ListIndex
     End If
     
     'Populate the selection area drop-down
-    toolbar_Tools.cmbSelType(0).Clear
-    toolbar_Tools.cmbSelType(0).AddItem " Interior", 0
-    toolbar_Tools.cmbSelType(0).AddItem " Exterior", 1
-    If borderAllowed Then toolbar_Tools.cmbSelType(0).AddItem " Border", 2
+    toolbar_Tools.cmbSelArea(0).Clear
+    toolbar_Tools.cmbSelArea(0).AddItem " Interior", 0
+    toolbar_Tools.cmbSelArea(0).AddItem " Exterior", 1
+    If borderAllowed Then toolbar_Tools.cmbSelArea(0).AddItem " Border", 2
     
     'Restore the correct list index
-    If curListIndex < toolbar_Tools.cmbSelType(0).ListCount - 1 Then
-        toolbar_Tools.cmbSelType(0).ListIndex = curListIndex
+    If curListIndex < toolbar_Tools.cmbSelArea(0).ListCount - 1 Then
+        toolbar_Tools.cmbSelArea(0).ListIndex = curListIndex
     Else
-        toolbar_Tools.cmbSelType(0).ListIndex = 0
+        toolbar_Tools.cmbSelArea(0).ListIndex = 0
     End If
     
     'Hide/display the border slider as relevant
@@ -2080,8 +2079,8 @@ Private Sub setSelectionAreaVisibility(ByVal newVisibility As Boolean)
     
     'If these controls are being hidden, it means that area cannot be changed for this selection type, so default to
     ' Interior-type (which will also hide the border drop-down)
-    If (Not newVisibility) Then cmbSelType(0).ListIndex = 0
-    cmbSelType(0).Visible = newVisibility
+    If (Not newVisibility) Then cmbSelArea(0).ListIndex = 0
+    cmbSelArea(0).Visible = newVisibility
     
 End Sub
 
@@ -2100,7 +2099,7 @@ Private Sub newToolSelected()
                 
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
-                If (g_CurrentTool = Selection_Handler.getRelevantToolFromSelectType()) Then
+                If (g_CurrentTool = Selection_Handler.getRelevantToolFromSelectShape()) Then
                     metaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
                 
                 'A selection is already active, and it doesn't match the current tool type!
@@ -2149,14 +2148,14 @@ End Sub
 
 Private Sub sltCornerRounding_Change()
     If selectionsAllowed(True) Then
-        pdImages(g_CurrentImage).mainSelection.setRoundedCornerAmount sltCornerRounding.Value
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_ROUNDED_CORNER_RADIUS, sltCornerRounding.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltPolygonCurvature_Change()
     If selectionsAllowed(True) Then
-        pdImages(g_CurrentImage).mainSelection.setPolygonCurvature sltPolygonCurvature.Value
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_POLYGON_CURVATURE, sltPolygonCurvature.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
@@ -2205,21 +2204,21 @@ End Sub
 
 Private Sub sltSelectionBorder_Change()
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setBorderSize sltSelectionBorder.Value
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_BORDER_WIDTH, sltSelectionBorder.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionFeathering_Change()
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setFeatheringRadius sltSelectionFeathering.Value
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_FEATHERING_RADIUS, sltSelectionFeathering.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionLineWidth_Change()
     If selectionsAllowed(True) Then
-        pdImages(g_CurrentImage).mainSelection.setSelectionLineWidth sltSelectionLineWidth.Value
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_LINE_WIDTH, sltSelectionLineWidth.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
@@ -2263,7 +2262,7 @@ Private Sub updateSelectionPanelLayout()
     End If
     
     'Display the border slider as necessary
-    If cmbSelType(0).ListIndex = sBorder Then
+    If cmbSelArea(0).ListIndex = sBorder Then
         sltSelectionBorder.Visible = True
     Else
         sltSelectionBorder.Visible = False
@@ -2273,14 +2272,14 @@ End Sub
 
 Private Sub sltSmoothStroke_Change()
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setSmoothStroke sltSmoothStroke.Value
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_SMOOTH_STROKE, sltSmoothStroke.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltWandTolerance_Change()
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setWandTolerance sltWandTolerance.Value
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_WAND_TOLERANCE, sltWandTolerance.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
