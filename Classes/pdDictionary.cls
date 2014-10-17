@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Dictionary Class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 16/October/14
-'Last updated: 16/October/14
-'Last update: initial build
+'Last updated: 17/October/14
+'Last update: wrap up initial build
 '
 'Per its name, this class provides a simple key/value approach to storing data.
 '
@@ -82,7 +82,7 @@ Public Function AddEntry(ByVal entryKey As String, ByVal entryData As Variant) A
         'If the key already exists in our collection, simply update it
         If keyFound >= 0 Then
         
-            m_DictEntries(keyFound).dItem = entryKey
+            m_DictEntries(keyFound).dItem = entryData
             AddEntry = entryKey
         
         'If the key does not exist in our collection, add it anew, resizing the dictionary as necessary
@@ -103,9 +103,14 @@ Public Function AddEntry(ByVal entryKey As String, ByVal entryData As Variant) A
     Else
         m_NumOfEntries = 1
         m_DictEntries(0).dKey = entryKey
-        m_DictEntries(1).dItem = entryData
+        m_DictEntries(0).dItem = entryData
         AddEntry = 0
     End If
+    
+    'Dim i As Long
+    For i = 0 To m_NumOfEntries - 1
+    Debug.Print "Entry: " & i & ", " & m_DictEntries(i).dKey & ":" & m_DictEntries(i).dItem
+    Next i
 
 End Function
 
@@ -134,7 +139,7 @@ Public Function getEntry_Long(ByVal entryKey As String, Optional ByVal defaultVa
     Else
         getEntry_Long = defaultValueIfMissing
     End If
-
+    
 End Function
 
 Public Function getEntry_Double(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Double = 0#) As Double
@@ -150,13 +155,34 @@ Public Function getEntry_Double(ByVal entryKey As String, Optional ByVal default
 
 End Function
 
-Public Function getEntry_String(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As String = "") As String
+Public Function getEntry_String(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As String = "", Optional ByVal assumeLocaleInvariantNumber As Boolean = False) As String
 
     Dim keyIndex As Long
     keyIndex = getIndexOfEntry(entryKey)
     
     If keyIndex >= 0 Then
-        getEntry_String = m_DictEntries(keyIndex).dItem
+        
+        'Some callers may use this function to return a numeric value as a String, e.g. prior to creating a param string.
+        ' They can use the assumeLocaleInvariantNumber parameter to notify us of this, and we will translate the key
+        ' at this point to a safe, locale-invariant string representation.
+        If assumeLocaleInvariantNumber Then
+        
+            'If the string representation of this key can be coerced into a numeric value, use a (rather ugly) series
+            ' of transforms to ensure that the string representation of the number *never* varies by locale.  This is
+            ' important as the original string may be locale-specific (especially if it originated from a text box),
+            ' but we only want to use locale-invariant versions internally.
+            Dim testString As String
+            testString = m_DictEntries(keyIndex).dItem
+            
+            If Text_Support.IsNumberLocaleUnaware(testString) Then
+                getEntry_String = Trim$(Str(Val(testString)))
+            Else
+                getEntry_String = testString
+            End If
+        
+        Else
+            getEntry_String = m_DictEntries(keyIndex).dItem
+        End If
     Else
         getEntry_String = defaultValueIfMissing
     End If

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 12/October/14
-'Last update: initial build of magic wand selections
+'Last updated: 16/October/14
+'Last update: move all shape-specific properties into a dictionary
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, line, polygon, and lasso selections are
 ' currently implemented, with magic wand set to be tackled in the coming weeks.
@@ -53,59 +53,29 @@ Option Explicit
 'Used when writing/reading selection data to/from a file
 Private Const SELECTION_IDENTIFIER As String * 4 = "PDsd"
 Private Const SELECTION_FILE_VERSION_2014 As Long = &H1002
-
-'SafeArray types for pointing VB arrays at arbitrary memory locations (in our case, bitmap data)
-Private Type SAFEARRAYBOUND
-    cElements As Long
-    lBound As Long
-End Type
-
-Private Type SAFEARRAY2D
-    cDims As Integer
-    fFeatures As Integer
-    cbElements As Long
-    cLocks As Long
-    pvData As Long
-    Bounds(1) As SAFEARRAYBOUND
-End Type
-
-'SafeArray API functions
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
-Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
-
-'Rectangle drawing
-Private Type RECT
-    Left As Long
-    Top As Long
-    Right As Long
-    Bottom As Long
-End Type
+Private Const SELECTION_FILE_VERSION_2014_2 As Long = &H1003
 
 'What shape does this selection have?
-Public Enum SelectionShape
-    sRectangle = 0
-    sCircle = 1
-    sLine = 2
-    sPolygon = 3
-    sLasso = 4
-    sWand = 5
-    sRaster = 10
+Public Enum PD_SELECTION_SHAPE
+    sRectangle = 1
+    sCircle = 2
+    sLine = 4
+    sPolygon = 8
+    sLasso = 16
+    sWand = 32
+    sRaster = 64
+    sAllNonRasterShapes = 128
 End Enum
 
 #If False Then
-    Const sRectangle = 0
-    Const sCircle = 1
-    Const sLine = 2
-    Const sPolygon = 3
-    Const sLasso = 4
-    Const sWand = 5
-    Const sRaster = 10
+    Const sRectangle = 1, sCircle = 2, sLine = 4, sPolygon = 8, sLasso = 16, sWand = 32, sRaster = 64, sAllNonRasterShapes = 128
 #End If
 
-Private sShape As SelectionShape
+Private sShape As PD_SELECTION_SHAPE
 
-'What type of selection is this?
-Public Enum SelectionType
+'What area does this selection encompass?  (Most selection shapes allow the user to change the selection state between interior, exterior,
+' and bordered on the fly.
+Public Enum PD_SELECTION_AREA
     sInterior = 0
     sExterior = 1
     sBorder = 2
@@ -115,10 +85,8 @@ End Enum
     Const sInterior = 0, sExterior = 1, sBorder = 2
 #End If
 
-Private sType As SelectionType
-
 'What kind of smoothing (feathering) will be applied to this selection?
-Public Enum SelectionSmoothing
+Public Enum PD_SELECTION_SMOOTHING
     sNone = 0
     sAntialiased = 1
     sFullyFeathered = 2
@@ -127,8 +95,6 @@ End Enum
 #If False Then
     Const sNone = 0, sAntialiased = 1, sFullyFeathered = 2
 #End If
-
-Private sSmooth As SelectionSmoothing
 
 'Is a special drawing display mode in use?
 Public Enum SelectionDrawingDisplay
@@ -139,8 +105,6 @@ End Enum
 #If False Then
     Const sNormalDisplay = 0, sOutlineOnlyDisplay = 1
 #End If
-
-Private sDrawingDisplay As SelectionDrawingDisplay
 
 'The coordinates of the current selection (if rectangular)
 Public x1 As Double, x2 As Double
@@ -194,19 +158,6 @@ Public isTransformable As Boolean
 'If the user holds "Shift" while moving the selection, it will be forced to a 1:1 aspect ratio.
 Private isSquare As Boolean
 
-'Rectangular selections can have rounded corners.  If this value is > 0, round the corners by that many pixels.
-Private roundedCorners As Long
-
-'Selections can be border-only.  This value specifies the border radius, which cannot be larger than (minimum dimension \ 2)
-Private borderSize As Long
-
-'Selections can have any amount of feathering.  Feathering is implemented identically to GIMP (http://docs.gimp.org/en/gimp-painting.html#gimp-concepts-selection),
-' specifically, feathering is implemented by applying a Gaussian blur to the selection mask with radius equal to the feathering size.
-Private featheringRadius As Long
-
-'Line selections have variable width.
-Private selectionLineWidth As Long
-
 'Lasso and polygon selections have a variable number of points.  As such, we have to track their contents dynamically.
 Private m_numOfLassoPoints As Long
 Private m_LassoPoints() As POINTFLOAT
@@ -219,29 +170,104 @@ Private m_PolygonPoints() As POINTFLOAT
 Private m_LassoPointsBackup() As POINTFLOAT
 Private m_PolygonPointsBackup() As POINTFLOAT
 
-'Lasso selections support rendering via both lines and curves.  If sSmoothStroke is 0, the lasso is rendered as a closed polygon.
-' Increasing smooth stroke values affect the tension of the cardinal spline used to enclose the region.
-Private sSmoothStroke As Double
-
-'Polygon selections also support a notion of curvature.  If sPolygonCurvature is 0, the polygon is rendered with straight sides.
-' Increasing the curvature value will increase the tension of the cardinal spline used to enclose the region.
-Private sPolygonCurvature As Double
-
 'When a polygon or lasso selection is closed, these values will be set to TRUE
 Private m_PolygonClosed As Boolean, m_LassoClosed As Boolean
 
-'Magic wand selections require a tolerance (threshold) value
-Private m_WandTolerance As Double
+'Each different selection shape has a number of properties specific to that shape.  Instead of storing these in open variables,
+' they are stored in a dictionary, and only created/accessed as necessary.
+Private m_PropertyDict As pdDictionary
 
-'Magic wand selections can be generated contiguously (default) or by scanning the whole image
-Private m_WandSearchMode As Long
+'When accessing properties, use the following enum.  The property dictionary automatically handles the interface between these
+' values and the dictionary itself.
+Public Enum PD_SELECTION_PROPERTY
+    SP_AREA = 0
+    SP_SMOOTHING = 1
+    SP_BORDER_WIDTH = 2
+    SP_FEATHERING_RADIUS = 3
+    SP_ROUNDED_CORNER_RADIUS = 4
+    SP_LINE_WIDTH = 5
+    SP_SMOOTH_STROKE = 6
+    SP_POLYGON_CURVATURE = 7
+    SP_WAND_TOLERANCE = 8
+    SP_WAND_SEARCH_MODE = 9
+    SP_WAND_SAMPLE_MERGED = 10
+    SP_WAND_COMPARE_METHOD = 11
+    SP_DRAWING_DISPLAY = 12
+End Enum
 
-'Magic wand selections can search the entire image (default) or only the active layer
-Private m_WandSampleMerged As Long
+#If False Then
+    Const SP_AREA = 0, SP_SMOOTHING = 1, SP_BORDER_WIDTH = 2, SP_FEATHERING_RADIUS = 3, SP_ROUNDED_CORNER_RADIUS = 4, SP_LINE_WIDTH = 5
+    Const SP_SMOOTH_STROKE = 6, SP_POLYGON_CURVATURE = 7, SP_WAND_TOLERANCE = 8, SP_WAND_SEARCH_MODE = 9, SP_WAND_SAMPLE_MERGED = 10
+    Const SP_WAND_COMPARE_METHOD = 11, SP_DRAWING_DISPLAY = 12
+#End If
 
-'Magic wand selections can use different criteria for their continuity search.  Specify those here.
-Private m_WandCompareMethod As Long
+'Selection properties can be retrieved via these functions.  Note that the default function returns a STRING; this is because properties are
+' frequently passed around via param string.  To retrieve a numeric value, use the _Long or _Double function variants.
+Public Function getSelectionProperty(ByVal PropertyName As PD_SELECTION_PROPERTY) As String
+    getSelectionProperty = m_PropertyDict.getEntry_String(PropertyName, "", True)
+End Function
 
+Public Function getSelectionProperty_Long(ByVal PropertyName As PD_SELECTION_PROPERTY, Optional ByVal defaultValueIfMissing As Long = 0) As Long
+    getSelectionProperty_Long = m_PropertyDict.getEntry_Long(PropertyName, defaultValueIfMissing)
+End Function
+
+Public Function getSelectionProperty_Double(ByVal PropertyName As PD_SELECTION_PROPERTY, Optional ByVal defaultValueIfMissing As Double = 0#) As Double
+    getSelectionProperty_Double = m_PropertyDict.getEntry_Double(PropertyName, defaultValueIfMissing)
+End Function
+
+'Selection properties can be set via this function
+Public Sub setSelectionProperty(ByVal PropertyName As PD_SELECTION_PROPERTY, ByVal propertyValue As Variant)
+
+    m_PropertyDict.AddEntry PropertyName, propertyValue
+    
+    'Some property changes require us to redraw the selection mask, because it will be different due to the new parameter.
+    ' To minimize the impact of property changes, we try to refresh the mask only if absolutely necessary.
+    Select Case PropertyName
+    
+        Case SP_AREA
+            If (sShape <> sRaster) Then isMaskReady = False
+        
+        Case SP_SMOOTHING
+            If (sShape <> sRaster) Then isMaskReady = False
+        
+        Case SP_BORDER_WIDTH
+            If (sShape <> sRaster) And (sShape <> sWand) Then isMaskReady = False
+        
+        Case SP_FEATHERING_RADIUS
+            If (sShape <> sRaster) Then isMaskReady = False
+        
+        Case SP_ROUNDED_CORNER_RADIUS
+            If (sShape = sRectangle) Then isMaskReady = False
+        
+        Case SP_LINE_WIDTH
+            If (sShape = sLine) Then isMaskReady = False
+        
+        Case SP_SMOOTH_STROKE
+            If (sShape = sLasso) Then isMaskReady = False
+        
+        Case SP_POLYGON_CURVATURE
+            If (sShape = sPolygon) Then isMaskReady = False
+        
+        Case SP_WAND_TOLERANCE
+            If (sShape = sWand) Then isMaskReady = False
+        
+        Case SP_WAND_SEARCH_MODE
+            If (sShape = sWand) Then isMaskReady = False
+        
+        Case SP_WAND_SAMPLE_MERGED
+            If (sShape = sWand) Then isMaskReady = False
+        
+        Case SP_WAND_COMPARE_METHOD
+            If (sShape = sWand) Then isMaskReady = False
+        
+        Case SP_DRAWING_DISPLAY
+            If (sShape = sLasso) Or (sShape = sPolygon) Then isMaskReady = False
+    
+    End Select
+    
+    Debug.Print isMaskReady
+
+End Sub
 
 'To save code elsewhere, a selection can be initialized by using a param string generated by a pdParamString object.  This condenses a huge
 ' list of variables into a single string.  This function is especially helpful when writing full selection data to/from file.
@@ -271,23 +297,23 @@ Public Sub initFromParamString(ByVal paramString As String)
     '01 - selection shape
     setSelectionShape cParams.GetLong(1)
     
-    '02 - selection type
-    setSelectionType cParams.GetLong(2)
+    '02 - selection area (interior, exterior, border)
+    setSelectionProperty SP_AREA, cParams.GetLong(2)
     
-    '03 - smoothing type
-    setSmoothingType cParams.GetLong(3)
+    '03 - smoothing type (none, AA, fully feathered)
+    setSelectionProperty SP_SMOOTHING, cParams.GetLong(3)
     
     '04 - feathering radius
-    setFeatheringRadius cParams.GetLong(4)
+    setSelectionProperty SP_FEATHERING_RADIUS, cParams.GetLong(4)
     
     '05 - border size
-    setBorderSize cParams.GetLong(5)
+    setSelectionProperty SP_BORDER_WIDTH, cParams.GetLong(5)
     
     '06 - rounded corner amount
-    setRoundedCornerAmount cParams.GetLong(6)
+    setSelectionProperty SP_ROUNDED_CORNER_RADIUS, cParams.GetLong(6)
     
     '07 - selection line width
-    setSelectionLineWidth cParams.GetLong(7)
+    setSelectionProperty SP_LINE_WIDTH, cParams.GetLong(7)
     
     '08 - left
     selLeft = cParams.GetLong(8)
@@ -318,10 +344,10 @@ Public Sub initFromParamString(ByVal paramString As String)
         Case sPolygon
         
             '12 - Draw mode display
-            setDrawModeDisplay cParams.GetLong(12)
+            setSelectionProperty SP_DRAWING_DISPLAY, cParams.GetLong(12)
             
             '13 - Polygon curvature
-            setPolygonCurvature cParams.GetDouble(13)
+            setSelectionProperty SP_POLYGON_CURVATURE, cParams.GetDouble(13)
             
             '14 - number of points in the polygon array
             m_numOfPolygonPoints = cParams.GetLong(14)
@@ -347,10 +373,10 @@ Public Sub initFromParamString(ByVal paramString As String)
         Case sLasso
             
             '12 - Draw mode display
-            setDrawModeDisplay cParams.GetLong(12)
+            setSelectionProperty SP_DRAWING_DISPLAY, cParams.GetLong(12)
             
             '13 - Smooth stroke
-            setSmoothStroke cParams.GetDouble(13)
+            setSelectionProperty SP_SMOOTH_STROKE, cParams.GetDouble(13)
             
             '14 - number of points in the lasso array
             m_numOfLassoPoints = cParams.GetLong(14)
@@ -378,16 +404,16 @@ Public Sub initFromParamString(ByVal paramString As String)
             y1 = cParams.GetLong(13)
             
             '14 - Tolerance
-            setWandTolerance cParams.GetDouble(14)
+            setSelectionProperty SP_WAND_TOLERANCE, cParams.GetDouble(14)
             
             '15 - Sample Merged
-            setWandSampleMerged cParams.GetLong(15)
+            setSelectionProperty SP_WAND_SAMPLE_MERGED, cParams.GetLong(15)
             
             '16 - Search Mode (contiguous or global)
-            setWandSearchMode cParams.GetLong(16)
+            setSelectionProperty SP_WAND_SEARCH_MODE, cParams.GetLong(16)
             
             '17 - Compare Mode (one of several values, e.g. "Luminance", "Red", etc
-            setWandCompareMethod cParams.GetLong(17)
+            setSelectionProperty SP_WAND_COMPARE_METHOD, cParams.GetLong(17)
             
         'Other types (e.g. raster selections) cannot be initiated this way, so we can ignore them.
         Case Else
@@ -396,7 +422,7 @@ Public Sub initFromParamString(ByVal paramString As String)
     
     'Setting selection parameters always forces a redraw of the selection mask, which is a performance-intensive operation.
     ' To avoid that unless absolutely necessary, compare the pre-initialization param string to the one we were passed.
-    ' If they match, we don't need to regenerate the mask, because it would be identical to the current one.
+    ' If they match, we don't need to regenerate the mask, because it would only be identical to the current one.
     If origMaskState And (StrComp(paramString, backupParamString, vbBinaryCompare) <> 0) Then isMaskReady = False
         
 End Sub
@@ -409,7 +435,7 @@ Public Function getSelectionParamString() As String
     Dim i As Long
     
     'All selection types store a preset list of standardized values
-    getSelectionParamString = buildParams(sShape, sType, sSmooth, featheringRadius, borderSize, roundedCorners, selectionLineWidth, selLeft, selTop, selWidth, selHeight)
+    getSelectionParamString = buildParams(sShape, getSelectionProperty(SP_AREA), getSelectionProperty(SP_SMOOTHING), getSelectionProperty(SP_FEATHERING_RADIUS), getSelectionProperty(SP_BORDER_WIDTH), getSelectionProperty(SP_ROUNDED_CORNER_RADIUS), getSelectionProperty(SP_LINE_WIDTH), selLeft, selTop, selWidth, selHeight)
     
     'After the preset values, each selection type can write its own coords, relevant to its particular shape
     Select Case sShape
@@ -422,7 +448,7 @@ Public Function getSelectionParamString() As String
         ' (TODO: use a string builder class for this, to improve performance)
         Case sPolygon
             
-            getSelectionParamString = getSelectionParamString & "|" & CStr(sDrawingDisplay) & "|" & Trim$(Str(sPolygonCurvature)) & "|" & CStr(m_numOfPolygonPoints)
+            getSelectionParamString = getSelectionParamString & "|" & getSelectionProperty(SP_DRAWING_DISPLAY) & "|" & getSelectionProperty(SP_POLYGON_CURVATURE) & "|" & CStr(m_numOfPolygonPoints)
             
             If m_numOfPolygonPoints > 0 Then
                 For i = 0 To m_numOfPolygonPoints - 1
@@ -434,7 +460,7 @@ Public Function getSelectionParamString() As String
         ' (TODO: use a string builder class for this, to improve performance)
         Case sLasso
             
-            getSelectionParamString = getSelectionParamString & "|" & CStr(sDrawingDisplay) & "|" & Trim$(Str(sSmoothStroke)) & "|" & CStr(m_numOfLassoPoints)
+            getSelectionParamString = getSelectionParamString & "|" & getSelectionProperty(SP_DRAWING_DISPLAY) & "|" & getSelectionProperty(SP_SMOOTH_STROKE) & "|" & CStr(m_numOfLassoPoints)
             
             If m_numOfLassoPoints > 0 Then
                 For i = 0 To m_numOfLassoPoints - 1
@@ -445,7 +471,7 @@ Public Function getSelectionParamString() As String
         'Wand selections only have a few extra params
         Case sWand
         
-            getSelectionParamString = getSelectionParamString & "|" & CStr(x1) & "|" & CStr(y1) & "|" & Trim$(Str(m_WandTolerance)) & "|" & CStr(m_WandSampleMerged) & "|" & CStr(m_WandSearchMode) & "|" & CStr(m_WandCompareMethod)
+            getSelectionParamString = getSelectionParamString & "|" & CStr(x1) & "|" & CStr(y1) & "|" & getSelectionProperty(SP_WAND_TOLERANCE) & "|" & getSelectionProperty(SP_WAND_SAMPLE_MERGED) & "|" & getSelectionProperty(SP_WAND_SEARCH_MODE) & "|" & getSelectionProperty(SP_WAND_COMPARE_METHOD)
             
         'Raster selections cannot be initiated this way!
         Case sRaster
@@ -461,19 +487,22 @@ End Function
 Public Sub selectAll()
 
     'Set basic information about this selection
-    setSelectionType sInterior
     setSelectionShape sRectangle
-    setFeatheringRadius 0
-    setSmoothingType sAntialiased
-    setRoundedCornerAmount 0
+    setSelectionProperty SP_AREA, sRectangle
+    setSelectionProperty SP_FEATHERING_RADIUS, 0
+    setSelectionProperty SP_SMOOTHING, sAntialiased
+    setSelectionProperty SP_ROUNDED_CORNER_RADIUS, 0
+    
     x1 = 0
     y1 = 0
     x2 = containingPDImage.Width
     y2 = containingPDImage.Height
+    
     selLeft = 0
     selTop = 0
     selWidth = containingPDImage.Width
     selHeight = containingPDImage.Height
+    
     isTransformable = True
     isMaskReady = False
     
@@ -520,26 +549,6 @@ Public Sub requestNewMask()
 
 End Sub
 
-'Get/set feathering radius
-Public Function getFeatheringRadius() As Long
-    getFeatheringRadius = featheringRadius
-End Function
-
-Public Sub setFeatheringRadius(ByVal newRadius As Long)
-    If (sShape <> sRaster) Then isMaskReady = False
-    featheringRadius = newRadius
-End Sub
-
-'Get/set the border size
-Public Function getBorderSize() As Long
-    getBorderSize = borderSize
-End Function
-
-Public Sub setBorderSize(ByVal newBorderSize As Long)
-    If (sShape <> sRaster) Then isMaskReady = False
-    borderSize = newBorderSize
-End Sub
-
 'Get/set a transformation type
 Public Function getTransformationType()
     If transformModeActive Then
@@ -570,11 +579,11 @@ Public Sub getSelectionCoordinates(ByVal numPoint As Long, ByRef xDst As Double,
 End Sub
 
 'Get/set a selection shape
-Public Function getSelectionShape() As SelectionShape
+Public Function getSelectionShape() As PD_SELECTION_SHAPE
     getSelectionShape = sShape
 End Function
 
-Public Sub setSelectionShape(ByVal selShape As SelectionShape)
+Public Sub setSelectionShape(ByVal selShape As PD_SELECTION_SHAPE)
     
     'Certain types of shapes are transformable.  Mark those now.
     Select Case selShape
@@ -595,64 +604,6 @@ Public Sub setSelectionShape(ByVal selShape As SelectionShape)
     
 End Sub
 
-'Get/set a selection type
-Public Function getSelectionType() As SelectionType
-    getSelectionType = sType
-End Function
-
-Public Sub setSelectionType(ByVal selType As SelectionType)
-    sType = selType
-End Sub
-
-'Get/set a smoothing type
-Public Function getSmoothingType() As SelectionSmoothing
-    getSmoothingType = sSmooth
-End Function
-
-Public Sub setSmoothingType(ByVal selSmooth As SelectionSmoothing)
-    If (sShape <> sRaster) Then isMaskReady = False
-    sSmooth = selSmooth
-End Sub
-
-'Change the amount of corner rounding for rectangular selections
-Public Function getRoundedCornerAmount() As Long
-    getRoundedCornerAmount = roundedCorners
-End Function
-
-Public Sub setRoundedCornerAmount(ByVal cornerRounding As Long)
-    If (sShape <> sRaster) Then isMaskReady = False
-    roundedCorners = cornerRounding
-End Sub
-
-'Get/set the line width of line selections
-Public Function getSelectionLineWidth() As Long
-    getSelectionLineWidth = selectionLineWidth
-End Function
-
-Public Sub setSelectionLineWidth(ByVal newLineWidth As Long)
-    If (sShape <> sRaster) Then isMaskReady = False
-    selectionLineWidth = newLineWidth
-End Sub
-
-'Get/set special drawing mode views.  Note that these are only relevant for certain selection types.
-Public Function getDrawModeDisplay() As SelectionDrawingDisplay
-    getDrawModeDisplay = sDrawingDisplay
-End Function
-
-Public Sub setDrawModeDisplay(ByVal newDisplayMode As SelectionDrawingDisplay)
-    sDrawingDisplay = newDisplayMode
-End Sub
-
-'Get/set polygon curvature tension (for polygon selections, obviously)
-Public Function getPolygonCurvature() As Double
-    getPolygonCurvature = sPolygonCurvature
-End Function
-
-Public Sub setPolygonCurvature(ByVal newCurvature As Double)
-    If (sShape <> sRaster) Then isMaskReady = False
-    sPolygonCurvature = newCurvature
-End Sub
-
 'Return the number of polygon points
 Public Function getNumOfPolygonPoints() As Long
     getNumOfPolygonPoints = m_numOfPolygonPoints
@@ -668,16 +619,6 @@ Friend Sub getPolygonPoints(ByRef ptFloatArray() As POINTFLOAT)
         ReDim ptFloatArray(0) As POINTFLOAT
     End If
     
-End Sub
-
-'Get/set smooth stroke mode.  Note that at present, this is only relevant for lasso selections.
-Public Function getSmoothStroke() As Double
-    getSmoothStroke = sSmoothStroke
-End Function
-
-Public Sub setSmoothStroke(ByVal newSmoothness As Double)
-    If (sShape <> sRaster) Then isMaskReady = False
-    sSmoothStroke = newSmoothness
 End Sub
 
 'For lasso selections, the canvas needs to know if the current lasso selection is open (e.g. still under construction) or closed.
@@ -698,50 +639,13 @@ Public Sub setPolygonClosedState(ByVal NewState As Boolean)
     m_PolygonClosed = NewState
 End Sub
 
-'Get/set various magic wand options
-Public Function getWandTolerance() As Double
-    getWandTolerance = m_WandTolerance
-End Function
-
-Public Sub setWandTolerance(ByVal newTolerance As Double)
-    If (sShape <> sRaster) Then isMaskReady = False
-    m_WandTolerance = newTolerance
-End Sub
-
-Public Function getWandSearchMode() As Long
-    getWandSearchMode = m_WandSearchMode
-End Function
-
-Public Sub setWandSearchMode(ByVal newMode As Long)
-    If (sShape <> sRaster) Then isMaskReady = False
-    m_WandSearchMode = newMode
-End Sub
-
-Public Function getWandSampleMerged() As Long
-    getWandSampleMerged = m_WandSampleMerged
-End Function
-
-Public Sub setWandSampleMerged(ByVal newMergedState As Long)
-    If (sShape <> sRaster) Then isMaskReady = False
-    m_WandSampleMerged = newMergedState
-End Sub
-
-Public Function getWandCompareMethod() As Long
-    getWandCompareMethod = m_WandCompareMethod
-End Function
-
-Public Sub setWandCompareMethod(ByVal newMethod As PD_FLOOD_COMPARE)
-    If (sShape <> sRaster) Then isMaskReady = False
-    m_WandCompareMethod = newMethod
-End Sub
-
 'For lasso and polygon selections, this function will return the current selecton region as a GDI+ region handle.  The mouse coordinate
 ' checker code uses this to see if the mouse cursor is currently within the bounds of the selection area.
 Public Function getGdipRegionForSelection() As Long
     If sShape = sPolygon Then
-        getGdipRegionForSelection = GDI_Plus.getGDIPlusRegionFromPoints(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), FillModeWinding, True, sPolygonCurvature)
+        getGdipRegionForSelection = GDI_Plus.getGDIPlusRegionFromPoints(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), FillModeWinding, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE))
     Else
-        getGdipRegionForSelection = GDI_Plus.getGDIPlusRegionFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), FillModeWinding, True, sSmoothStroke)
+        getGdipRegionForSelection = GDI_Plus.getGDIPlusRegionFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), FillModeWinding, True, getSelectionProperty_Double(SP_SMOOTH_STROKE))
     End If
 End Function
 
@@ -756,9 +660,9 @@ Public Sub fillBoundsUsingGDIPlus()
     Dim boundRect As RECTF
     
     If sShape = sPolygon Then
-        boundRect = GDI_Plus.getGDIPlusUnionFromPointsAndImage(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), containingPDImage, FillModeWinding, True, sPolygonCurvature)
+        boundRect = GDI_Plus.getGDIPlusUnionFromPointsAndImage(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), containingPDImage, FillModeWinding, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE))
     Else
-        boundRect = GDI_Plus.getGDIPlusUnionFromPointsAndImage(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), containingPDImage, FillModeWinding, True, sSmoothStroke)
+        boundRect = GDI_Plus.getGDIPlusUnionFromPointsAndImage(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), containingPDImage, FillModeWinding, True, getSelectionProperty_Double(SP_SMOOTH_STROKE))
     End If
     
     'The returned boundaries encompass the intersection of our containing image, and the selection region.
@@ -1337,7 +1241,7 @@ Private Sub updateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
                 selHeight = selMaxY - selTop
                 
                 'If curvature is active, we'll use GDI+ to find our bounds more precisely
-                If isLockedIn And (sPolygonCurvature > 0) Then fillBoundsUsingGDIPlus
+                If isLockedIn And (getSelectionProperty_Double(SP_POLYGON_CURVATURE) > 0) Then fillBoundsUsingGDIPlus
             
             'Like polygon selection, lasso selections require us to search all lasso points in order to construct
             ' a bounding rect.
@@ -1364,7 +1268,7 @@ Private Sub updateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
                 selHeight = selMaxY - selTop
                 
                 'If curvature is active, we'll use GDI+ to find our bounds more precisely
-                If isLockedIn And (sSmoothStroke > 0) Then fillBoundsUsingGDIPlus
+                If isLockedIn And (getSelectionProperty_Double(SP_SMOOTH_STROKE) > 0) Then fillBoundsUsingGDIPlus
             
             'Wand selections require manual bounds-checking
             Case sWand
@@ -1402,7 +1306,7 @@ Public Function areAllCoordinatesInvalid() As Boolean
         Case sPolygon, sLasso
         
             'If curvature is active, use GDI+ to update the current boundaries.
-            If ((sShape = sPolygon) And (sPolygonCurvature <> 0)) Or ((sShape = sLasso) And (sSmoothStroke <> 0)) Then fillBoundsUsingGDIPlus
+            If ((sShape = sPolygon) And (getSelectionProperty_Double(SP_POLYGON_CURVATURE) <> 0)) Or ((sShape = sLasso) And (getSelectionProperty_Double(SP_SMOOTH_STROKE) <> 0)) Then fillBoundsUsingGDIPlus
             
             If (selLeft + selWidth <= 0) Then areAllCoordinatesInvalid = True
             If (selLeft >= containingPDImage.Width) Then areAllCoordinatesInvalid = True
@@ -1617,9 +1521,13 @@ End Sub
 Private Sub createSelectionMask()
 
     Debug.Print "(" & Timer & ") Creating mask now..."
-
+    
+    'Note that a mask has been created for this image.  This is important for saving/loading selections, as a new mask must be generated
+    ' if one isn't already present.
+    ' TODO: see if we can move this to the end of the function without consequences.
     maskHasBeenCreated = True
     
+    'Debug msg: trying to minimize redundant mask creation requests
     If isMaskReady Then Debug.Print "Selection mask is marked as READY, but a new mask was requested.  FIX THIS!"
         
     'If the current selection is raster-type, this function should not have been called!
@@ -1632,7 +1540,7 @@ Private Sub createSelectionMask()
     Dim maskBackColor As Long, maskForeColor As Long
     
     'Interior and exterior selections are rendered using identical code; the only difference is the colors used
-    If sType = sExterior Then
+    If getSelectionProperty_Long(SP_AREA) = sExterior Then
         maskBackColor = RGB(255, 255, 255)
         maskForeColor = RGB(0, 0, 0)
     Else
@@ -1666,48 +1574,44 @@ Private Sub createSelectionMask()
         
     'For rounded corners, the smallest dimension (width or height) controls the maximum value of the curvature.
     ' Calculate that value in advance.
-    Dim minDimension As Long
+    Dim minDimension As Long, modifiedCornerVal As Long
     If selWidth < selHeight Then minDimension = selWidth Else minDimension = selHeight
+    
+    If (sShape = sRectangle) Then
         
-    Dim modifiedCornerVal As Long
-    If roundedCorners > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = roundedCorners
+        If getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS)
         
-    'Border selections require a bit of extra calculation, depending on the shape - basically, all bordered selections are created by
-    ' rendering a smaller version of the selection within itself.  In the case of rectangles and ellipses, we don't want the smaller
-    ' version to have negative values, so we check it in advance to make sure the border value is acceptable.
+    End If
+        
+    'When rendering rectangle and ellipse selections in BORDERED mode, we calculate some values in advance.  Basically, these shapes
+    ' handle border selections by rendering a smaller version of the selection shape within itself.  We never want the smaller copy
+    ' of the shape to have negative width or height, so we check its dimensions in advance to make sure the border value is acceptable.
+    ' If it isn't, we'll simply ignore it, and render the shape as a solid.
     Dim ignoreBorderValue As Boolean
+    Dim rectModifier As Long
+    
     ignoreBorderValue = False
     
-    Dim rectModifier As Long
-    rectModifier = borderSize
+    If (getSelectionProperty_Long(SP_AREA) = sBorder) And ((sShape = sRectangle) Or (sShape = sCircle)) Then
     
-    If sType = sBorder Then
-        
-        Select Case sShape
-            
-            Case sRectangle, sCircle
-                If rectModifier < 1 Then rectModifier = 1
-                If rectModifier > (minDimension \ 2) Then ignoreBorderValue = True
-                
-            Case Else
-            
-        End Select
+        rectModifier = getSelectionProperty_Long(SP_BORDER_WIDTH)
+        If rectModifier < 1 Then rectModifier = 1
+        If rectModifier > (minDimension \ 2) Then ignoreBorderValue = True
             
     End If
                 
     'The actual rendering of the selection will vary based on the current selection type (obviously).
+    ' TODO: move all rendering into a separate child class.  This is necessary for union/intersect/etc with multiple selections.
     Select Case sShape
     
-        'Squares and rectangles are easy - use FillRect to draw a white rectangle at the mask's location.  If corner rounding
-        ' has been specified, apply it using CreateRoundRectRgn.
         Case sRectangle
         
             'RECTANGLE SELECTION, NO ROUNDED CORNERS
-            ' (Note: rectangular selections ignore antialiasing, as there's no point)
-            If roundedCorners = 0 Then
+            ' (Note: rectangular selections ignore the current antialiasing setting, as there's no point)
+            If getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) = 0 Then
             
-                'Interior/exterior selections use identical rendering code.
-                If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
+                'Interior/exterior selections, and bordered selections with too large of a width use identical rendering code.
+                If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
                 
                     GDI_Plus.GDIPlusFillDIBRect selMask, selLeft, selTop, selWidth, selHeight, maskForeColor
                     
@@ -1727,21 +1631,22 @@ Private Sub createSelectionMask()
                 
                 'Interior/exterior selections use identical rendering code.  The only difference is the render color (whether the
                 ' rounded rect represents the selected or non-selected region, basically).
-                If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
+                If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
                     
                     'Use GDI+ for antialiasing, regular GDI for non-antialiased
-                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, (sSmooth > sNone) 'True
+                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                     
                 'Border selections are a bit different; we must draw two rounded rectangles - an exterior and an interior one.
                 Else
                     
                     'Draw the exterior rectangle
-                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, (sSmooth > sNone)
+                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, modifiedCornerVal, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                     
-                    'Next, draw the interior one.  Note that specialized handling is required to prevent the corner curvature from rendering incorrectly.
+                    'Next, draw the interior one.  Note that an additional check must be performed to prevent the corner curvature from rendering incorrectly.
+                    ' TODO: move this check into the rounded corner function itself, as it could be useful in other contexts
                     If (selWidth - (rectModifier * 2) - 1) < (selHeight - (rectModifier * 2) - 1) Then minDimension = (selWidth - (rectModifier * 2) - 1) Else minDimension = (selHeight - (rectModifier * 2) - 1)
-                    If roundedCorners > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = roundedCorners
-                    GDIPlusDrawRoundRect selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, modifiedCornerVal, maskBackColor, (sSmooth > sNone)
+                    If getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS)
+                    GDIPlusDrawRoundRect selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, modifiedCornerVal, maskBackColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                     
                 End If
                 
@@ -1751,66 +1656,69 @@ Private Sub createSelectionMask()
         Case sCircle
         
             'Interior/exterior selections use identical rendering code.
-            If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
+            If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
             
-                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth - 1, selHeight - 1, maskForeColor, (sSmooth > sNone)
+                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth - 1, selHeight - 1, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                 
             'Border selections are a bit different; we must draw two ellipses - an exterior and an interior one.
             Else
             
                 'Draw the exterior oval
-                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth, selHeight, maskForeColor, (sSmooth > sNone)
+                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth, selHeight, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                 
                 'Next, draw the interior one
-                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, (sSmooth > sNone)
+                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                         
             End If
             
         
         'Line selections
+        ' TODO: let the user specify line caps
         Case sLine
         
             'Interior/exterior line selections use identical rendering code.
-            If (sType = sInterior) Or (sType = sExterior) Or ignoreBorderValue Then
+            If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
             
-                GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, selectionLineWidth, (sSmooth > sNone), LineCapRound
+                GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, getSelectionProperty_Long(SP_LINE_WIDTH), (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                 
-            'Border selections are a bit different; we must draw two lines - an interior and an exterior one
+            'Border selections are a bit different; we must draw two lines - an interior and an exterior one.
+            ' TODO: GDI+ supplies a function that generates a new path, using the outline of an existing path as drawn with a specified pen.
+            '        That may be a more convenient way to render bordered line selections.  (GdipWidenPath FYI)
             Else
                 
                 'Draw the exterior line
-                GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, selectionLineWidth, (sSmooth > sNone), LineCapRound
+                GDIPlusDrawLineToDC selMask.getDIBDC, x1, y1, x2, y2, maskForeColor, 255, getSelectionProperty_Long(SP_LINE_WIDTH), (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                 
-                'Next, draw the interior one
+                'Next, draw the interior one.  Note that some additional calculations are required to
                 Dim xDiff As Double, yDiff As Double
                 xDiff = Abs(x1 - x2)
                 yDiff = Abs(y1 - y2)
                 Dim xModifier As Long, yModifier As Long
                 If xDiff > yDiff Then
                     If xDiff = 0 Then xDiff = 0.00001
-                    xModifier = borderSize
-                    yModifier = borderSize * (yDiff / xDiff)
+                    xModifier = getSelectionProperty_Long(SP_BORDER_WIDTH)
+                    yModifier = getSelectionProperty_Long(SP_BORDER_WIDTH) * (yDiff / xDiff)
                 Else
                     If yDiff = 0 Then yDiff = 0.00001
-                    xModifier = borderSize * (xDiff / yDiff)
-                    yModifier = borderSize
+                    xModifier = getSelectionProperty_Long(SP_BORDER_WIDTH) * (xDiff / yDiff)
+                    yModifier = getSelectionProperty_Long(SP_BORDER_WIDTH)
                 End If
                 
                 Dim newLineWidth As Double
-                newLineWidth = selectionLineWidth - borderSize
+                newLineWidth = getSelectionProperty_Long(SP_LINE_WIDTH) - getSelectionProperty_Long(SP_BORDER_WIDTH)
                 
                 If newLineWidth > 0 Then
                     If x1 = minX Then
                         If y1 = MinY Then
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (sSmooth > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                         Else
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (sSmooth > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                         End If
                     Else
                         If y1 = MinY Then
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (sSmooth > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                         Else
-                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (sSmooth > sNone), LineCapRound
+                            GDIPlusDrawLineToDC selMask.getDIBDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), LineCapRound
                         End If
                     End If
                 End If
@@ -1821,12 +1729,12 @@ Private Sub createSelectionMask()
         Case sPolygon
         
             'Interior/exterior lasso selections use identical rendering code.
-            If (sType = sInterior) Or (sType = sExterior) Then
-                GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), maskForeColor, 255, (sSmooth > sNone), True, sPolygonCurvature, FillModeWinding
+            If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Then
+                GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), True, getSelectionProperty_Double(SP_POLYGON_CURVATURE), FillModeWinding
                 
             'Border selections stroke the path instead of filling it
             Else
-                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (sSmooth > sNone), borderSize, LineCapFlat, True, sPolygonCurvature
+                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), getSelectionProperty_Long(SP_BORDER_WIDTH), LineCapFlat, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
             End If
         
         'Strangely enough, lasso selections are arguably the simplest selection type to render, as we simply close the lasso shape,
@@ -1834,12 +1742,12 @@ Private Sub createSelectionMask()
         Case sLasso
         
             'Interior/exterior lasso selections use identical rendering code.
-            If (sType = sInterior) Or (sType = sExterior) Then
-                GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (sSmooth > sNone), True, sSmoothStroke, FillModeWinding
+            If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Then
+                GDIPlusDrawFilledShapeToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), True, getSelectionProperty_Double(SP_SMOOTH_STROKE), FillModeWinding
                 
             'Border selections stroke the path instead of filling it
             Else
-                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (sSmooth > sNone), borderSize, LineCapFlat
+                GDI_Plus.GDIPlusStrokePathToDC selMask.getDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (getSelectionProperty_Long(SP_SMOOTHING) > sNone), getSelectionProperty_Long(SP_BORDER_WIDTH), LineCapFlat, True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
             End If
         
         'Wand selections use a custom class to perform a flood fill
@@ -1850,11 +1758,11 @@ Private Sub createSelectionMask()
             Set cFloodFill = New pdFloodFill
             
             'Set all initial parameters
-            cFloodFill.setAntialiasingMode (sSmooth > sNone)
+            cFloodFill.setAntialiasingMode (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
             cFloodFill.setInitialPoint x1, y1
-            cFloodFill.setTolerance m_WandTolerance
-            cFloodFill.setSearchMode m_WandSearchMode
-            cFloodFill.setCompareMode m_WandCompareMethod
+            cFloodFill.setTolerance getSelectionProperty_Double(SP_WAND_TOLERANCE)
+            cFloodFill.setSearchMode getSelectionProperty_Long(SP_WAND_SEARCH_MODE)
+            cFloodFill.setCompareMode getSelectionProperty_Long(SP_WAND_COMPARE_METHOD)
             
             'Based on the flood fill type (layer vs image), pass a different source layer to the flood fill class
             Dim tmpLayer As pdLayer
@@ -1863,7 +1771,7 @@ Private Sub createSelectionMask()
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
             
-            If m_WandSampleMerged = 0 Then
+            If getSelectionProperty_Long(SP_WAND_SAMPLE_MERGED) = 0 Then
                 containingPDImage.getCompositedImage tmpDIB
             Else
                 tmpLayer.CopyExistingLayer containingPDImage.getActiveLayer
@@ -1893,8 +1801,8 @@ Private Sub createSelectionMask()
     ' The viewport renderer uses the actual bounding rect to optimize its rendering of the selection effect, so it needs values that
     ' incorporate the full affected area, including any feathering or other modifications.
     
-    'As a rule, exterior selections enclose the entire image boundary, so we sort by sType first
-    Select Case sType
+    'As a rule, exterior selections enclose the entire image boundary, so we sort by getSelectionProperty_Long(SP_AREA) first
+    Select Case getSelectionProperty_Long(SP_AREA)
     
         'Exterior selections typically bound the entire image.  We could search for a smaller area, but at present the costs
         ' of this outweigh any potential benefits.
@@ -1912,11 +1820,11 @@ Private Sub createSelectionMask()
             
                 'Rectangle, ellipse, and lasso selections are easy; bounds have already been set by the width/height values
                 Case sRectangle, sCircle
-                    If sSmooth = sFullyFeathered Then
-                        boundLeft = selLeft - featheringRadius
-                        boundTop = selTop - featheringRadius
-                        boundWidth = selWidth + featheringRadius * 2
-                        boundHeight = selHeight + featheringRadius * 2
+                    If getSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered Then
+                        boundLeft = selLeft - getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+                        boundTop = selTop - getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+                        boundWidth = selWidth + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
+                        boundHeight = selHeight + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
                     Else
                         boundLeft = selLeft
                         boundTop = selTop
@@ -1927,39 +1835,41 @@ Private Sub createSelectionMask()
                 'Lines are a bit weirder.  Because the two points are not sorted by distance (e.g. x1 may be greater than x2), we have to check that now.
                 Case sLine
                 
-                    If sSmooth = sFullyFeathered Then
-                        boundLeft = minX - (selectionLineWidth / 2) - featheringRadius
-                        boundTop = MinY - (selectionLineWidth / 2) - featheringRadius
-                        boundWidth = (maxX - minX) + selectionLineWidth + featheringRadius * 2
-                        boundHeight = (MaxY - MinY) + selectionLineWidth + featheringRadius * 2
+                    If getSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered Then
+                        boundLeft = minX - (getSelectionProperty_Long(SP_LINE_WIDTH) / 2) - getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+                        boundTop = MinY - (getSelectionProperty_Long(SP_LINE_WIDTH) / 2) - getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+                        boundWidth = (maxX - minX) + getSelectionProperty_Long(SP_LINE_WIDTH) + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
+                        boundHeight = (MaxY - MinY) + getSelectionProperty_Long(SP_LINE_WIDTH) + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
                     Else
-                        boundLeft = minX - (selectionLineWidth / 2)
-                        boundTop = MinY - (selectionLineWidth / 2)
-                        boundWidth = (maxX - minX) + selectionLineWidth
-                        boundHeight = (MaxY - MinY) + selectionLineWidth
+                        boundLeft = minX - (getSelectionProperty_Long(SP_LINE_WIDTH) / 2)
+                        boundTop = MinY - (getSelectionProperty_Long(SP_LINE_WIDTH) / 2)
+                        boundWidth = (maxX - minX) + getSelectionProperty_Long(SP_LINE_WIDTH)
+                        boundHeight = (MaxY - MinY) + getSelectionProperty_Long(SP_LINE_WIDTH)
                     End If
                 
                 'Polygon selections support curvature via cardinal spline.  If active, we must manually calculate bounds,
                 ' because the spline may extend beyond the current coordinate collection.
                 Case sPolygon
                 
-                    'If (sPolygonCurvature <> 0) And m_PolygonClosed Then
+                    'GDI+ can manually calculate bounds for us.  These bounds are not guaranteed to be the smallest possible area,
+                    ' but they are guaranteed to enclose the entire path.
                     fillBoundsUsingGDIPlus
                     
-                    If sSmooth = sFullyFeathered Then
+                    'If feathering is active, we must manually increase the bounding area to account for the feathering radius.
+                    If getSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered Then
                     
                         'Because of the way GDI+ pens work, they will be centered on the stroked path.  This means that we must
                         ' factor the pen width into our boundary calculations.
-                        If sType = sBorder Then
-                            boundLeft = selLeft - featheringRadius - (borderSize \ 2)
-                            boundTop = selTop - featheringRadius - (borderSize \ 2)
-                            boundWidth = selWidth + featheringRadius * 2 + borderSize
-                            boundHeight = selHeight + featheringRadius * 2 + borderSize
+                        If getSelectionProperty_Long(SP_AREA) = sBorder Then
+                            boundLeft = selLeft - getSelectionProperty_Long(SP_FEATHERING_RADIUS) - (getSelectionProperty_Long(SP_BORDER_WIDTH) \ 2)
+                            boundTop = selTop - getSelectionProperty_Long(SP_FEATHERING_RADIUS) - (getSelectionProperty_Long(SP_BORDER_WIDTH) \ 2)
+                            boundWidth = selWidth + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2 + getSelectionProperty_Long(SP_BORDER_WIDTH)
+                            boundHeight = selHeight + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2 + getSelectionProperty_Long(SP_BORDER_WIDTH)
                         Else
-                            boundLeft = selLeft - featheringRadius
-                            boundTop = selTop - featheringRadius
-                            boundWidth = selWidth + featheringRadius * 2
-                            boundHeight = selHeight + featheringRadius * 2
+                            boundLeft = selLeft - getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+                            boundTop = selTop - getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+                            boundWidth = selWidth + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
+                            boundHeight = selHeight + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
                         End If
                         
                     Else
@@ -1974,23 +1884,25 @@ Private Sub createSelectionMask()
                 ' because the spline may extend beyond the drawn coordinates.
                 Case sLasso
                 
-                    'If (sSmoothStroke <> 0) And isLockedIn Then
+                    'GDI+ can manually calculate bounds for us.  These bounds are not guaranteed to be the smallest possible area,
+                    ' but they are guaranteed to enclose the entire path.
                     fillBoundsUsingGDIPlus
                     
-                    If sSmooth = sFullyFeathered Then
+                    'If feathering is active, we must manually increase the bounding area to account for the feathering radius.
+                    If getSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered Then
                     
                         'Because of the way GDI+ pens work, they will be centered on the stroked path.  This means that we must
                         ' factor the pen width into our boundary calculations.
-                        If sType = sBorder Then
-                            boundLeft = selLeft - featheringRadius - (borderSize \ 2)
-                            boundTop = selTop - featheringRadius - (borderSize \ 2)
-                            boundWidth = selWidth + featheringRadius * 2 + borderSize
-                            boundHeight = selHeight + featheringRadius * 2 + borderSize
+                        If getSelectionProperty_Long(SP_AREA) = sBorder Then
+                            boundLeft = selLeft - getSelectionProperty_Long(SP_FEATHERING_RADIUS) - (getSelectionProperty_Long(SP_BORDER_WIDTH) \ 2)
+                            boundTop = selTop - getSelectionProperty_Long(SP_FEATHERING_RADIUS) - (getSelectionProperty_Long(SP_BORDER_WIDTH) \ 2)
+                            boundWidth = selWidth + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2 + getSelectionProperty_Long(SP_BORDER_WIDTH)
+                            boundHeight = selHeight + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2 + getSelectionProperty_Long(SP_BORDER_WIDTH)
                         Else
-                            boundLeft = selLeft - featheringRadius
-                            boundTop = selTop - featheringRadius
-                            boundWidth = selWidth + featheringRadius * 2
-                            boundHeight = selHeight + featheringRadius * 2
+                            boundLeft = selLeft - getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+                            boundTop = selTop - getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+                            boundWidth = selWidth + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
+                            boundHeight = selHeight + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
                         End If
                         
                     Else
@@ -2005,11 +1917,11 @@ Private Sub createSelectionMask()
                     findNewBoundsManually True
                     
                     'If feathering is active, increase bounds accordingly
-                    If sSmooth = sFullyFeathered Then
-                        boundLeft = selLeft - featheringRadius
-                        boundTop = selTop - featheringRadius
-                        boundWidth = selWidth + featheringRadius * 2
-                        boundHeight = selHeight + featheringRadius * 2
+                    If getSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered Then
+                        boundLeft = selLeft - getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+                        boundTop = selTop - getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+                        boundWidth = selWidth + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
+                        boundHeight = selHeight + getSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
                     End If
                 
                 'Other shapes currently rely on manual bounds-checking, using the rendered mask as the guide
@@ -2025,8 +1937,9 @@ Private Sub createSelectionMask()
     ' points can actually lie anywhere on the canvas - even outside the image!
     fixBoundsToImageSize
     
-    'Finally, if the selection is locked and feathering has been requested, apply it now
-    If lockedIn And (sSmooth = sFullyFeathered) And (featheringRadius > 0) Then applyFeatheringToMask
+    'Finally, if the selection is locked and feathering has been requested, apply it now.
+    ' (We only apply feathering when locked-in, as the performance penalty is severe.)
+    If lockedIn And (getSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered) And (getSelectionProperty_Long(SP_FEATHERING_RADIUS) > 0) Then applyFeatheringToMask
     
 End Sub
 
@@ -2051,26 +1964,27 @@ End Sub
 
 'Apply feathering to the current selection mask.  If the user is on Win 7 or later, we do this via GDI+.  Otherwise we use
 ' our own internal blur functions (which are fast but lower quality).
+' TODO: replace this with QuickBlur
 Private Sub applyFeatheringToMask()
     
     'If GDI+ 1.1 exists, use it for a faster blur operation.
     If g_GDIPlusFXAvailable Then
-    
-        GDIPlusBlurDIB selMask, featheringRadius, boundLeft, boundTop, boundWidth, boundHeight
+        
+        GDIPlusBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS), boundLeft, boundTop, boundWidth, boundHeight
     
     'If GDI+ v1.0 is found, blurring is not supported, so fall back to PD's internal Gaussian blur function.
     Else
     
         'For exterior selections, the whole mask needs to be blurred.  No way around that.  But for interior and bordered selections,
         ' we can blur only the active area of the selection - saving precious time in the process.
-        If (sType = sExterior) Or ((boundLeft = 0) And (boundTop = 0) And (boundWidth = containingPDImage.Width - 1) And (boundHeight = containingPDImage.Height - 1)) Then
+        If (getSelectionProperty_Long(SP_AREA) = sExterior) Or ((boundLeft = 0) And (boundTop = 0) And (boundWidth = containingPDImage.Width - 1) And (boundHeight = containingPDImage.Height - 1)) Then
             
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
             tmpDIB.createFromExistingDIB selMask
         
             Message "Feathering selection..."
-            CreateApproximateGaussianBlurDIB featheringRadius, tmpDIB, selMask, 1, True
+            CreateApproximateGaussianBlurDIB getSelectionProperty_Long(SP_FEATHERING_RADIUS), tmpDIB, selMask, 1, True
             SetProgBarVal 0
             releaseProgressBar
             Message "Finished."
@@ -2090,7 +2004,7 @@ Private Sub applyFeatheringToMask()
             dstDIB.createBlank boundWidth, boundHeight, 24
             
             'Blur the selection
-            CreateApproximateGaussianBlurDIB featheringRadius, srcDIB, dstDIB, 1, True
+            CreateApproximateGaussianBlurDIB getSelectionProperty_Long(SP_FEATHERING_RADIUS), srcDIB, dstDIB, 1, True
             
             'Copy the blurred area back onto the selection mask
             BitBlt selMask.getDIBDC, boundLeft, boundTop, boundWidth, boundHeight, dstDIB.getDIBDC, 0, 0, vbSrcCopy
@@ -2110,6 +2024,7 @@ Private Sub applyFeatheringToMask()
 End Sub
 
 'While a selection tool is active, we draw transform nodes around it.  The viewport renderer invokes this function as necessary.
+' TODO: replace the radius and alpha values with a central interface node function (that also accounts for high-DPI considerations)
 Public Sub renderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
@@ -2193,6 +2108,7 @@ End Sub
 'Render the current selection mask using one of several methods.  Note that this code operates entirely independent of selection type.
 ' It only requires that valid selection boundaries be specified in advance, which it uses to accelerate the render process.
 ' (Also note that the renderColor default constant evaluates to RGB(112, 183, 255), but VB doesn't let us use RGB inside a function dec.)
+' TODO: allow light box translucency to be set by the user
 Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As SelectionRender, Optional ByVal renderColor As Long = 16758640)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
@@ -2202,13 +2118,13 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     If Not isMaskReady Then createSelectionMask
     
     'For lasso selections, is a special drawing mode active?  If it is, this function will be canceled in favor of a custom draw routine.
-    If (sShape = sLasso) And (sDrawingDisplay = sOutlineOnlyDisplay) Then
+    If (sShape = sLasso) And (getSelectionProperty_Long(SP_DRAWING_DISPLAY) = sOutlineOnlyDisplay) Then
         renderOutlineOnly dstDIB, srcImage, dstCanvas
         Exit Sub
     End If
     
     'For polygon selections, if the polygon is a) incomplete, or b) has a special drawing mode active, render an outline only.
-    If (sShape = sPolygon) And ((sDrawingDisplay = sOutlineOnlyDisplay) Or (Not m_PolygonClosed)) Then
+    If (sShape = sPolygon) And ((getSelectionProperty_Long(SP_DRAWING_DISPLAY) = sOutlineOnlyDisplay) Or (Not m_PolygonClosed)) Then
         renderOutlineOnly dstDIB, srcImage, dstCanvas
         Exit Sub
     End If
@@ -2359,6 +2275,7 @@ End Sub
 
 'Lasso and Polygon tools support the display of an outline (instead of normal highlight) during the draw phase.  It is assumed that the
 ' caller has verified whether this mode is what the user wants, PRIOR to calling this function.
+' TODO: allow all shapes (except possibly magic wand) to be rendered via outline only
 Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
 
     'To render the outline correctly, we must first translate all lasso (or polygon) points from the image coordinate space
@@ -2389,11 +2306,11 @@ Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
         
         'Use GDI+ to stroke the temporary path
         If sShape = sPolygon Then
-            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, RGB(0, 0, 0), 192, True, 2, , True, sPolygonCurvature
-            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, RGB(255, 255, 255), 192, True, 1, , True, sPolygonCurvature
+            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, RGB(0, 0, 0), 192, True, 2, , True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
+            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, RGB(255, 255, 255), 192, True, 1, , True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
         Else
-            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, RGB(0, 0, 0), 192, True, 2, , True, sSmoothStroke
-            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, RGB(255, 255, 255), 192, True, 1, , True, sSmoothStroke
+            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, RGB(0, 0, 0), 192, True, 2, , True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
+            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, RGB(255, 255, 255), 192, True, 1, , True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
         End If
         
     End If
@@ -2414,18 +2331,8 @@ Private Sub Class_Initialize()
     'Mark it as not transformable... yet
     isTransformable = False
     
-    'By default, don't round off the corners of rectangular selections
-    roundedCorners = 0
-    
-    'By default, selection lines have a width of 1
-    selectionLineWidth = 1
-    
-    'By default, the normal display mode is used for lasso and polygon selections
-    sDrawingDisplay = sNormalDisplay
-    
-    'No curvature for lasso or polygon selections
-    sPolygonCurvature = 0
-    sSmoothStroke = 0
+    'Prepare the property dictionary
+    Set m_PropertyDict = New pdDictionary
     
     'No lasso or polygon points yet
     m_numOfLassoPoints = 0
@@ -2434,7 +2341,7 @@ Private Sub Class_Initialize()
     m_numOfPolygonPoints = 0
     ReDim m_PolygonPoints(0) As POINTFLOAT
     
-    'Any polygon selections are not closed!
+    'Polygon selections are (obviously) not yet closed
     m_PolygonClosed = False
         
 End Sub
@@ -2592,7 +2499,7 @@ Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
         
         writeSelectionState = lockedIn
         writeTransformable = isTransformable
-        writeParamString = getSelectionParamString
+        writeParamString = getSelectionParamString()
         If (sShape = sRaster) Then writeDIB.createFromExistingDIB selMask
         
         Put #fileNum, , CLng(Len(writeParamString))
@@ -2731,6 +2638,8 @@ End Function
 '
 'If boundaries are successfully found, this function will return TRUE.  Otherwise, it will return FALSE, which effectively means the
 ' selection mask is blank.
+'
+'TODO: only check the blue channel, as the other channels are irrelevant
 Public Function findNewBoundsManually(Optional ByVal overrideRasterState As Boolean = False) As Boolean
 
     'Message "Finding new selection boundaries..."
