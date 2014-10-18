@@ -107,11 +107,6 @@ Public Function AddEntry(ByVal entryKey As String, ByVal entryData As Variant) A
         AddEntry = 0
     End If
     
-    'Dim i As Long
-    For i = 0 To m_NumOfEntries - 1
-    Debug.Print "Entry: " & i & ", " & m_DictEntries(i).dKey & ":" & m_DictEntries(i).dItem
-    Next i
-
 End Function
 
 'The following set of functions are used to retrieve type-specific copies of data in the dictionary.  If an entry cannot be
@@ -198,6 +193,19 @@ Public Function getEntry_String(ByVal entryKey As String, Optional ByVal default
         End If
     Else
         getEntry_String = defaultValueIfMissing
+    End If
+
+End Function
+
+Public Function getEntry_Variant(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Variant = 0) As Variant
+
+    Dim keyIndex As Long
+    keyIndex = getIndexOfEntry(entryKey)
+    
+    If keyIndex >= 0 Then
+        getEntry_Variant = m_DictEntries(keyIndex).dItem
+    Else
+        getEntry_Variant = defaultValueIfMissing
     End If
 
 End Function
