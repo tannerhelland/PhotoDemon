@@ -1570,7 +1570,7 @@ Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             End If
             
             'Draw a colored circle just within the bounds of the DIB
-            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibPadding, dibPadding, dibSize - dibPadding * 2, dibSize - dibPadding * 2, paintColor, True
+            GDI_Plus.GDIPlusFillEllipseToDC getRuntimeUIDIB.getDIBDC, dibPadding, dibPadding, dibSize - dibPadding * 2, dibSize - dibPadding * 2, paintColor, True
         
         'The RGB DIB is a triad of the individual RGB circles
         Case PDRUID_CHANNEL_RGB
@@ -1579,9 +1579,9 @@ Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             Dim circleSize As Long
             circleSize = (dibSize - dibPadding) * 0.55
             
-            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_BLUE), True, 210
-            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_GREEN), True, 210
-            GDI_Plus.GDIPlusDrawEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_RED), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_BLUE), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC getRuntimeUIDIB.getDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_GREEN), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_RED), True, 210
     
     End Select
     

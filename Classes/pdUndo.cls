@@ -344,7 +344,7 @@ Public Sub moveToSpecificUndoPoint(ByVal undoIndex As Long)
     If undoNum = undoMax Then redoState = False Else redoState = True
     
     'Select the relevant tool for this action, if one is provided
-    If getUndoTool > -1 Then toolbar_Tools.selectNewTool getUndoTool
+    If getUndoTool > -1 Then toolbar_File.selectNewTool getUndoTool
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     'debugUndo "Undo pointer moved by request to a specific location"
@@ -415,7 +415,7 @@ Public Sub restoreUndoData()
     
     'Select the relevant tool for this action, if we were supplied one previously
     If getUndoTool > -1 Then
-        toolbar_Tools.selectNewTool getUndoTool
+        toolbar_File.selectNewTool getUndoTool
     End If
     
     'With all prep work complete, we now need to figure out the most recent diff file that possesses data we need.  We handle
@@ -662,7 +662,7 @@ Public Sub RestoreRedoData()
     If undoNum = undoMax Then redoState = False Else redoState = True
     
     'Select the relevant tool for this action, if one is provided
-    If getUndoTool > -1 Then toolbar_Tools.selectNewTool getUndoTool
+    If getUndoTool > -1 Then toolbar_File.selectNewTool getUndoTool
     
     'The great thing about Redo is that it chronogically moves in the same direction as PD's Undo diff files.  So unlike
     ' Undo - which requires us to traverse the undo timeline in reverse, looking for a relevant diff file - we can simply

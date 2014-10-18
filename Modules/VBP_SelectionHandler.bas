@@ -399,7 +399,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
             
         Else
         
-            For i = 0 To toolbar_Tools.tudSel.Count - 1
+            For i = 0 To toolbar_Tools.tudSel.count - 1
                 If toolbar_Tools.tudSel(i).Value <> 0 Then toolbar_Tools.tudSel(i).Value = 0
             Next i
             
@@ -423,11 +423,9 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
                 If toolbar_Tools.sltSelectionLineWidth.Value <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_LINE_WIDTH) Then toolbar_Tools.sltSelectionLineWidth.Value = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_LINE_WIDTH)
                 
             Case sLasso
-                If toolbar_Tools.btsLassoRender.ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_DRAWING_DISPLAY) Then toolbar_Tools.btsLassoRender.ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_DRAWING_DISPLAY)
                 If toolbar_Tools.sltSmoothStroke.Value <> pdImages(formID).mainSelection.getSelectionProperty_Double(SP_SMOOTH_STROKE) Then toolbar_Tools.sltSmoothStroke.Value = pdImages(formID).mainSelection.getSelectionProperty_Double(SP_SMOOTH_STROKE)
                 
             Case sPolygon
-                If toolbar_Tools.btsLassoRender.ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_DRAWING_DISPLAY) Then toolbar_Tools.btsLassoRender.ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_DRAWING_DISPLAY)
                 If toolbar_Tools.sltPolygonCurvature.Value <> pdImages(formID).mainSelection.getSelectionProperty_Double(SP_POLYGON_CURVATURE) Then toolbar_Tools.sltPolygonCurvature.Value = pdImages(formID).mainSelection.getSelectionProperty_Double(SP_POLYGON_CURVATURE)
                 
             Case sWand
@@ -444,7 +442,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
         metaToggle tSelection, False
         metaToggle tSelectionTransform, False
-        For i = 0 To toolbar_Tools.tudSel.Count - 1
+        For i = 0 To toolbar_Tools.tudSel.count - 1
             If toolbar_Tools.tudSel(i).Value <> 0 Then toolbar_Tools.tudSel(i).Value = 0
         Next i
         
@@ -1159,10 +1157,10 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
             pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Tools.cmbSelArea(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
         
         Case sPolygon
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Tools.cmbSelArea(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.btsLassoRender.ListIndex, toolbar_Tools.sltPolygonCurvature.Value, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Tools.cmbSelArea(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.sltPolygonCurvature.Value, 0, 0, 0)
             
         Case sLasso
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Tools.cmbSelArea(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.btsLassoRender.ListIndex, toolbar_Tools.sltSmoothStroke.Value, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Tools.cmbSelArea(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.sltSmoothStroke.Value, 0, 0, 0)
             
         Case sWand
             pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Tools.cmbSelArea(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolbar_Tools.sltWandTolerance.Value, toolbar_Tools.btsWandMerge.ListIndex, toolbar_Tools.btsWandArea.ListIndex, toolbar_Tools.cboWandCompare.ListIndex)
@@ -1183,3 +1181,29 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
                         
 End Sub
 
+'Are selections currently allowed?  Program states like "no open images" prevent selections from ever being created, and individual
+' functions can use this function to determine it.  Passing TRUE for the transformableMatters param will add a check for an existing,
+' transformable-type selection (squares, etc) to the evaluation list.
+Public Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
+
+    If g_OpenImageCount > 0 Then
+        If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) And (Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests) Then
+            
+            If transformableMatters Then
+                If pdImages(g_CurrentImage).mainSelection.isTransformable Then
+                    selectionsAllowed = True
+                Else
+                    selectionsAllowed = False
+                End If
+            Else
+                selectionsAllowed = True
+            End If
+            
+        Else
+            selectionsAllowed = False
+        End If
+    Else
+        selectionsAllowed = False
+    End If
+    
+End Function

@@ -218,17 +218,17 @@ Private Const ImageLockModeUserInputBuf = &H4
 
 'GDI+ supports a variety of different linecaps.  Anchor caps will center the cap at the end of the line.
 Public Enum LineCap
-   LineCapFlat = 0
-   LineCapSquare = 1
-   LineCapRound = 2
-   LineCapTriangle = 3
-   LineCapNoAnchor = &H10
-   LineCapSquareAnchor = &H11
-   LineCapRoundAnchor = &H12
-   LineCapDiamondAnchor = &H13
-   LineCapArrowAnchor = &H14
-   LineCapCustom = &HFF
-   LineCapAnchorMask = &HF0
+    LineCapFlat = 0
+    LineCapSquare = 1
+    LineCapRound = 2
+    LineCapTriangle = 3
+    LineCapNoAnchor = &H10
+    LineCapSquareAnchor = &H11
+    LineCapRoundAnchor = &H12
+    LineCapDiamondAnchor = &H13
+    LineCapArrowAnchor = &H14
+    LineCapCustom = &HFF
+    LineCapAnchorMask = &HF0
 End Enum
 
 #If False Then
@@ -236,14 +236,29 @@ End Enum
     Const LineCapRoundAnchor = &H12, LineCapDiamondAnchor = &H13, LineCapArrowAnchor = &H14, LineCapCustom = &HFF, LineCapAnchorMask = &HF0
 #End If
 
-Public Enum DashStyle
-   DashStyleSolid = 0
-   DashStyleDash = 1
-   DashStyleDot = 2
-   DashStyleDashDot = 3
-   DashStyleDashDotDot = 4
-   DashStyleCustom = 5
+Public Enum LineJoin
+    LineJoinMiter = 0
+    LineJoinBevel = 1
+    LineJoinRound = 2
+    LineJoinMiterClipped = 3
 End Enum
+
+#If False Then
+    Const LineJoinMiter = 0, LineJoinBevel = 1, LineJoinRound = 2, LineJoinMiterClipped = 3
+#End If
+
+Public Enum DashStyle
+    DashStyleSolid = 0
+    DashStyleDash = 1
+    DashStyleDot = 2
+    DashStyleDashDot = 3
+    DashStyleDashDotDot = 4
+    DashStyleCustom = 5
+End Enum
+
+#If False Then
+    Const DashStyleSolid = 0, DashStyleDash = 1, DashStyleDot = 2, DashStyleDashDot = 3, DashStyleDashDotDot = 4, DashStyleCustom = 5
+#End If
 
 ' Dash cap constants
 Public Enum DashCap
@@ -372,6 +387,7 @@ Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal mGraphics As 
 Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal mBrush As Long) As Long
 Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal mColor As Long, ByRef mBrush As Long) As Long
 Private Declare Function GdipDrawLine Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
+Private Declare Function GdipDrawRectangle Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As Long
 Private Declare Function GdipDrawEllipse Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
 Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
 Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
@@ -445,7 +461,7 @@ Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Quality mode constants (only supported by certain functions!)
-Private Enum QualityMode
+Public Enum QualityMode
    QualityModeInvalid = -1
    QualityModeDefault = 0
    QualityModeLow = 1       'Best performance
@@ -453,7 +469,7 @@ Private Enum QualityMode
 End Enum
 
 'Instead of specifying certain smoothing modes, quality modes (see above) can be used instead.
-Private Enum SmoothingMode
+Public Enum SmoothingMode
    SmoothingModeInvalid = QualityModeInvalid
    SmoothingModeDefault = QualityModeDefault
    SmoothingModeHighSpeed = QualityModeLow
@@ -1005,11 +1021,8 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
     
     'Render the rectangle
-    GdipDrawLine iGraphics, iPen, rectLeft, rectTop, rectRight, rectTop
-    GdipDrawLine iGraphics, iPen, rectRight, rectTop, rectRight, rectBottom
-    GdipDrawLine iGraphics, iPen, rectRight, rectBottom, rectLeft, rectBottom
-    GdipDrawLine iGraphics, iPen, rectLeft, rectBottom, rectLeft, rectTop
-        
+    GdipDrawRectangle iGraphics, iPen, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop
+            
     'Release all created objects
     GdipDeletePen iPen
     GdipDeleteGraphics iGraphics
@@ -1038,7 +1051,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
 End Function
 
 'Use GDI+ to render a filled ellipse, with optional antialiasing
-Public Function GDIPlusDrawEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal eTransparency As Byte = 255) As Boolean
+Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal eTransparency As Byte = 255) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1055,6 +1068,31 @@ Public Function GDIPlusDrawEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, 
     'Release all created objects
     GdipDeleteBrush iBrush
     GdipDeleteGraphics iGraphics
+    
+    GDIPlusFillEllipseToDC = True
+
+End Function
+
+'Use GDI+ to render an ellipse outline, with optional antialiasing
+Public Function GDIPlusStrokeEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal eTransparency As Byte = 255, Optional ByVal strokeWidth As Single = 1#) As Boolean
+
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstDC, iGraphics
+    If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
+        
+    'Create a pen with matching attributes
+    Dim hPen As Long
+    GdipCreatePen1 fillQuadWithVBRGB(eColor, eTransparency), strokeWidth, UnitPixel, hPen
+    
+    'Render the ellipse
+    GdipDrawEllipse iGraphics, hPen, x1, y1, xWidth, yHeight
+    
+    'Release all created objects
+    GdipDeletePen hPen
+    GdipDeleteGraphics iGraphics
+
+    GDIPlusStrokeEllipseToDC = True
 
 End Function
 

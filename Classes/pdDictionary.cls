@@ -116,6 +116,19 @@ End Function
 
 'The following set of functions are used to retrieve type-specific copies of data in the dictionary.  If an entry cannot be
 ' located, the defaultValue param will be supplied instead.
+Public Function getEntry_Boolean(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Boolean = False) As Boolean
+
+    Dim keyIndex As Long
+    keyIndex = getIndexOfEntry(entryKey)
+    
+    If keyIndex >= 0 Then
+        getEntry_Boolean = CBool(m_DictEntries(keyIndex).dItem)
+    Else
+        getEntry_Boolean = defaultValueIfMissing
+    End If
+    
+End Function
+
 Public Function getEntry_Byte(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As Byte = 0) As Byte
 
     Dim keyIndex As Long

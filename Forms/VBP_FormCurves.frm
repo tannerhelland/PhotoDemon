@@ -1014,7 +1014,7 @@ Private Sub redrawPreviewBox()
     'NOTE: this function requires fillResultsArray() to have been called immediately prior.  Otherwise, the
     '       cResults array will not contain the entries necessary to generate a parameter list.
     For i = 1 To numOfNodes(m_curChannel)
-        GDIPlusDrawEllipseToDC picDraw.hDC, cNodes(m_curChannel, i).pX - (circRadius / 2), cNodes(m_curChannel, i).pY - (circRadius / 2), circRadius, circRadius, RGB(32, 32, 64), True
+        GDIPlusFillEllipseToDC picDraw.hDC, cNodes(m_curChannel, i).pX - (circRadius / 2), cNodes(m_curChannel, i).pY - (circRadius / 2), circRadius, circRadius, RGB(32, 32, 64), True
     Next i
     
     'Render a special highlight around the currently selected node
