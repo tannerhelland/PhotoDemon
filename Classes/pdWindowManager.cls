@@ -15,14 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 08/July/14
-'Last update: myriad window manager optimizations.  Now that I'm more familiar with the inner workings of Windows' handling
-'              of windows, I've been better able to make use of features like layered windows to improve performance, while
-'              also clearing out some old "be extra cautious" code from when floating image windows were supported.  I'd
-'              like to continue to trim down this class, but it should be noted that changes here have sweeping repercussions
-'              across OS version, theming, and many other factors outside my control - so changes need to be very carefully
-'              tested on as many PCs as possible, to make sure I haven't broken things that used to work.  (Note that custom
-'              window management features like "Aero Snap" are particularly problematic in this regard - so test carefully!)
+'Last updated: 18/July/14
+'Last update: give the options toolbox preference over the primary toolbox.  This makes the main window symmetrical.
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
 ' 2014, it became time to rewrite its window method once again - this time, to a tabbed interface in line with the major
@@ -764,8 +758,8 @@ Private Sub setWindowPosByAlignment(ByVal winIndex As Long, Optional ByVal suspe
     GetClientRect mainWindowHwnd, mainClientRect
         
     'PhotoDemon toolboxes have a sort of hierarchy in how they are arranged.  In order, the preference for sizing goes:
-    ' 1) File toolbox (on left)
-    ' 2) Tools toolbox (on bottom)
+    ' 1) Tool options toolbox (on bottom)
+    ' 2) Primary toolbox (on left)
     ' 3) Layers toolbox (on right)
     Dim i As Long, fileToolboxIndex As Long, toolsToolboxIndex As Long
     For i = 0 To numOfPDWindows - 1
@@ -773,9 +767,9 @@ Private Sub setWindowPosByAlignment(ByVal winIndex As Long, Optional ByVal suspe
         If pdWindows(i).optionalToolbarType = TOOLS_TOOLBOX Then toolsToolboxIndex = i
     Next i
     
-    'For the tools toolbox, add the width of the file toolbox to the x1 position
-    If (pdWindows(winIndex).optionalToolbarType = TOOLS_TOOLBOX) And (pdWindows(fileToolboxIndex).isVisible) Then
-        mainClientRect.x1 = mainClientRect.x1 + getClientWidth(toolbar_File.hWnd)
+    'For the file toolbox, add the height of the file toolbox to the y1 position
+    If (pdWindows(winIndex).optionalToolbarType = FILE_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
+        mainClientRect.y2 = mainClientRect.y2 - getClientHeight(toolbar_Tools.hWnd)
     End If
     
     'For the layers toolbox, subtract the height of the tools toolbox from the y2 position
@@ -839,8 +833,8 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
     GetClientRect mainWindowHwnd, curMainFormClient
         
     'PhotoDemon toolboxes have a sort of hierarchy in how they are arranged.  In order, the preference for sizing goes:
-    ' 1) File toolbox (on left)
-    ' 2) Tools toolbox (on bottom)
+    ' 1) Options toolbox (on bottom)
+    ' 2) Primary toolbox (on left)
     ' 3) Layers toolbox (on right)
     Dim i As Long, fileToolboxIndex As Long, toolsToolboxIndex As Long
     For i = 0 To numOfPDWindows - 1
@@ -848,10 +842,10 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
         If pdWindows(i).optionalToolbarType = TOOLS_TOOLBOX Then toolsToolboxIndex = i
     Next i
     
-    'For the tools toolbox, add the width of the file toolbox to the x1 position
-    If (pdWindows(winIndex).optionalToolbarType = TOOLS_TOOLBOX) And (pdWindows(fileToolboxIndex).isVisible) Then
-        clientWidth = clientWidth - getClientWidth(toolbar_File.hWnd)
-        curMainFormClient.x1 = curMainFormClient.x1 + getClientWidth(toolbar_File.hWnd)
+    'For the primary toolbox, subtract the height of the options toolbox from the y2 position
+    If (pdWindows(winIndex).optionalToolbarType = FILE_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
+        clientHeight = clientHeight - getClientHeight(toolbar_Tools.hWnd)
+        curMainFormClient.y2 = curMainFormClient.y2 - getClientHeight(toolbar_Tools.hWnd)
     End If
     
     'For the layers toolbox, subtract the height of the tools toolbox from the y2 position
@@ -1189,7 +1183,7 @@ Public Sub setFirstRunMainWindowPosition()
     Dim primaryMonitorIndex As Long
     
     Dim i As Long
-    For i = 1 To g_cMonitors.Monitors.Count
+    For i = 1 To g_cMonitors.Monitors.count
         If g_cMonitors.Monitors(i).isPrimary Then
             primaryMonitorIndex = i
             Exit For
