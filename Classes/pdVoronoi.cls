@@ -27,27 +27,27 @@ Attribute VB_Exposed = False
 ' point to each location.  When performed at a sufficiently detailed level (e.g. for each pixel in a grid), you are left
 ' with a puzzle-like appearance a la http://en.wikipedia.org/wiki/Voronoi_diagram#mediaviewer/File:Euclidean_Voronoi_Diagram.png
 '
-'For image processing, Voronoi noise is an especially helpful technique for image segmentation.  It's biggest issue is that
-' it is painfully slow - comparing each of many millions of pixels to thousands (or more) Voronoi points, searching for the
-' nearest one, is an exercise that will bring even modern PCs to a grinding halt.
+'For image processing, Voronoi noise is an especially helpful technique for image segmentation.  Its biggest issue is that
+' it is painfully slow - comparing each pixel in an image to thousands (or more) Voronoi points, until you find the nearest one,
+' is an unpleasant exercise that will bring even high-end PCs to a grinding halt.
 '
-'The way we circumvent this is by carefully partitioning our Voronoi points into a grid shape, then randomizing each point
-' within a predetermined radius only.  While this limits the exoticness of the resulting Voronoi diagram, it allows us to
-' search only a relevant neighborhood for each pixel, which allows us to process a photograph in several seconds instead of
-' several hours - a worthwhile improvement!
+'This class circumvents this is by carefully partitioning the initial array of Voronoi points into a rough grid, then randomizing
+' each point within a predetermined grid radius only.  While this limits the exoticness of the resulting Voronoi diagram, it allows
+' us to search only a relevant neighborhood for each pixel, which in turn makes processing a photograph-sized image a task that
+' takes several seconds instead of several hours - a worthwhile improvement!
 '
 'Three standard distance methods (cartesian, manhattan, and chebyshev) are provided.  Set the desired distance method using
-' the setDistanceMode function, and make sure to use it *before* calling the getNearestPointIndex function!
+' the setDistanceMode function, and make sure to set it *before* calling the getNearestPointIndex function!
 '
-'Some helper functions exist to aid with image-processing-specific tasks like cell shading, and these relying on the caching
-' of certain values within the heavily used getNearestPointIndex function.  If you don't need the data these caches provide,
-' feel free to comment out everything related to the vPointsMaxDistance() arrays.  It won't result in a huge speed gain, but
-' you'll save a bit of cache thrashing, which never hurts.
+'Some helper functions exist to aid with image-processing-specific tasks like cell shading, and these rely on the caching of
+' certain values within the heavily used getNearestPointIndex function.  If you don't need the data these caches provide, feel free
+' to comment out everything related to the vPointsMaxDistance() arrays.  It won't result in a huge speed gain, but you'll save a bit
+' of cache thrashing, which never hurts.
 '
-'Finally, many thanks to Robert Rayment, who did extensive profiling and research on Voronoi implementations before I even
-' began work on this class.  His comments were invaluable in determining the shape and style of this class.  FYI, Robert's
-' PaintRR project has a faster and simpler version of this routine worth checking out if PD's method seems like overkill!
-' Link here: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1
+'Finally, many thanks to Robert Rayment, who did extensive profiling and research on Voronoi implementations before I ever
+' began work on this class.  His comments were invaluable in determining the shape and style of this class's interface.
+' FYI, Robert's PaintRR project has a faster and simpler version of this routine worth checking out if PD's method seems like
+' overkill! Link here: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
