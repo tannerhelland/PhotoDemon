@@ -886,7 +886,7 @@ Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optio
             If getRGBAPixelFromLayer(i, curX, curY, tmpRGBA) Then
             
                 'A layer was identified beneath the mouse!  If the pixel is non-transparent, return this layer as the selected one.
-                If Not CBool(toolbar_Tools.chkIgnoreTransparent) Then
+                If Not CBool(toolbar_Options.chkIgnoreTransparent) Then
                     getLayerUnderMouse = i
                     Exit Function
                 Else

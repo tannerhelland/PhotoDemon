@@ -302,9 +302,9 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         syncInterfaceToCurrentImage
         
         'Redraw any/all toolbars as well
-        toolbar_File.requestMakeFormPretty
+        toolbar_Toolbox.requestMakeFormPretty
         toolbar_ImageTabs.requestMakeFormPretty
-        toolbar_Tools.requestMakeFormPretty
+        toolbar_Options.requestMakeFormPretty
         
     End If
         
@@ -440,8 +440,8 @@ Private Sub populateLanguageMenu()
 
     'Start by unloading all current language menu entries
     Dim i As Long
-    If FormMain.mnuLanguages.Count > 1 Then
-        For i = 0 To FormMain.mnuLanguages.Count - 1
+    If FormMain.mnuLanguages.count > 1 Then
+        For i = 0 To FormMain.mnuLanguages.count - 1
             Unload FormMain.mnuLanguages(i)
         Next i
     End If

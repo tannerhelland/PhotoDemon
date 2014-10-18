@@ -1,13 +1,13 @@
 VERSION 5.00
-Begin VB.Form toolbar_Tools 
+Begin VB.Form toolbar_Options 
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Tools"
-   ClientHeight    =   1440
+   ClientHeight    =   1455
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   18435
+   ClientWidth     =   15045
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -20,9 +20,9 @@ Begin VB.Form toolbar_Tools
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   96
+   ScaleHeight     =   97
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1229
+   ScaleWidth      =   1003
    ShowInTaskbar   =   0   'False
    Begin VB.PictureBox picTools 
       Appearance      =   0  'Flat
@@ -31,18 +31,18 @@ Begin VB.Form toolbar_Tools
       BorderStyle     =   0  'None
       ClipControls    =   0   'False
       ForeColor       =   &H80000008&
-      Height          =   1575
-      Index           =   0
+      Height          =   1455
+      Index           =   3
       Left            =   15
-      ScaleHeight     =   105
+      ScaleHeight     =   97
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   1230
-      TabIndex        =   0
+      TabIndex        =   23
       TabStop         =   0   'False
       Top             =   15
       Visible         =   0   'False
       Width           =   18450
-      Begin VB.ComboBox cboWandCompare 
+      Begin VB.ComboBox cboSelSmoothing 
          Appearance      =   0  'Flat
          CausesValidation=   0   'False
          BeginProperty Font 
@@ -56,104 +56,18 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Height          =   360
          ItemData        =   "VBP_ToolbarTools.frx":0000
-         Left            =   8790
+         Left            =   2760
          List            =   "VBP_ToolbarTools.frx":0002
          Style           =   2  'Dropdown List
-         TabIndex        =   47
-         ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
-         Top             =   840
-         Width           =   2445
-      End
-      Begin PhotoDemon.colorSelector csSelectionHighlight 
-         Height          =   375
-         Index           =   0
-         Left            =   120
-         TabIndex        =   40
-         Top             =   840
-         Width           =   2220
-         _ExtentX        =   3916
-         _ExtentY        =   661
-      End
-      Begin VB.ComboBox cmbSelRender 
-         Appearance      =   0  'Flat
-         CausesValidation=   0   'False
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   360
-         Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":0004
-         Left            =   120
-         List            =   "VBP_ToolbarTools.frx":0006
-         Style           =   2  'Dropdown List
-         TabIndex        =   17
-         TabStop         =   0   'False
-         Top             =   390
-         Width           =   2250
-      End
-      Begin VB.ComboBox cmbSelArea 
-         Appearance      =   0  'Flat
-         CausesValidation=   0   'False
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   360
-         Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":0008
-         Left            =   5460
-         List            =   "VBP_ToolbarTools.frx":000A
-         Style           =   2  'Dropdown List
-         TabIndex        =   2
-         ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
-         Top             =   390
-         Width           =   2445
-      End
-      Begin VB.ComboBox cmbSelSmoothing 
-         Appearance      =   0  'Flat
-         CausesValidation=   0   'False
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   360
-         Index           =   0
-         ItemData        =   "VBP_ToolbarTools.frx":000C
-         Left            =   2640
-         List            =   "VBP_ToolbarTools.frx":000E
-         Style           =   2  'Dropdown List
-         TabIndex        =   1
+         TabIndex        =   26
          ToolTipText     =   "Use this option to change the way selections blend with their surroundings."
          Top             =   390
          Width           =   2445
       End
-      Begin PhotoDemon.sliderTextCombo sltCornerRounding 
+      Begin VB.ComboBox cboSelRender 
+         Appearance      =   0  'Flat
          CausesValidation=   0   'False
-         Height          =   495
-         Left            =   8100
-         TabIndex        =   3
-         Top             =   345
-         Visible         =   0   'False
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   9.75
             Charset         =   0
@@ -162,120 +76,29 @@ Begin VB.Form toolbar_Tools
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Max             =   1
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   405
-         Index           =   0
-         Left            =   11520
-         TabIndex        =   4
+         Height          =   360
+         ItemData        =   "VBP_ToolbarTools.frx":0004
+         Left            =   120
+         List            =   "VBP_ToolbarTools.frx":0006
+         Style           =   2  'Dropdown List
+         TabIndex        =   25
          Top             =   390
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         Width           =   2445
       End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   405
-         Index           =   1
-         Left            =   11520
-         TabIndex        =   5
+      Begin PhotoDemon.colorSelector csSelectionHighlight 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   24
          Top             =   840
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   405
-         Index           =   2
-         Left            =   13080
-         TabIndex        =   6
-         Top             =   390
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.textUpDown tudSel 
-         Height          =   405
-         Index           =   3
-         Left            =   13080
-         TabIndex        =   7
-         Top             =   840
-         Width           =   1320
-         _ExtentX        =   2328
-         _ExtentY        =   714
-         Min             =   -30000
-         Max             =   30000
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
-         CausesValidation=   0   'False
-         Height          =   495
-         Left            =   5340
-         TabIndex        =   8
-         Top             =   840
-         Visible         =   0   'False
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Min             =   1
-         Max             =   10000
-         Value           =   1
+         Width           =   2445
+         _ExtentX        =   3916
+         _ExtentY        =   661
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
          CausesValidation=   0   'False
          Height          =   495
-         Left            =   2520
-         TabIndex        =   9
+         Left            =   2640
+         TabIndex        =   27
          Top             =   840
          Visible         =   0   'False
          Width           =   2670
@@ -292,268 +115,1156 @@ Begin VB.Form toolbar_Tools
          EndProperty
          Max             =   100
       End
-      Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
-         CausesValidation=   0   'False
-         Height          =   495
-         Left            =   8160
-         TabIndex        =   10
-         Top             =   345
-         Visible         =   0   'False
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Min             =   1
-         Max             =   10000
-         Value           =   10
-      End
-      Begin PhotoDemon.sliderTextCombo sltSmoothStroke 
-         CausesValidation=   0   'False
-         Height          =   495
-         Left            =   8160
-         TabIndex        =   41
-         Top             =   360
-         Visible         =   0   'False
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Max             =   1
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.sliderTextCombo sltPolygonCurvature 
-         CausesValidation=   0   'False
-         Height          =   495
-         Left            =   8040
-         TabIndex        =   42
-         Top             =   345
-         Visible         =   0   'False
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Max             =   1
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.buttonStrip btsWandMerge 
-         Height          =   825
-         Left            =   11520
-         TabIndex        =   43
-         Top             =   390
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   1455
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.sliderTextCombo sltWandTolerance 
-         CausesValidation=   0   'False
-         Height          =   495
-         Left            =   8640
-         TabIndex        =   44
-         Top             =   345
-         Visible         =   0   'False
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Max             =   255
-         SigDigits       =   1
-      End
-      Begin PhotoDemon.buttonStrip btsWandArea 
-         Height          =   825
-         Left            =   5460
-         TabIndex        =   45
-         Top             =   390
-         Width           =   2895
-         _ExtentX        =   4366
-         _ExtentY        =   1455
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblSelection 
+      Begin VB.PictureBox picSelectionSubcontainer 
          Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "tolerance"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   6
-         Left            =   8760
-         TabIndex        =   46
-         Top             =   60
-         Width           =   795
-      End
-      Begin VB.Label lblSelection 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "appearance"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   1470
          Index           =   0
-         Left            =   120
-         TabIndex        =   16
-         Top             =   60
-         Width           =   1005
+         Left            =   5340
+         ScaleHeight     =   98
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   665
+         TabIndex        =   30
+         Top             =   0
+         Width           =   9975
+         Begin VB.ComboBox cboSelArea 
+            Appearance      =   0  'Flat
+            CausesValidation=   0   'False
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   360
+            Index           =   0
+            ItemData        =   "VBP_ToolbarTools.frx":0008
+            Left            =   120
+            List            =   "VBP_ToolbarTools.frx":000A
+            Style           =   2  'Dropdown List
+            TabIndex        =   31
+            ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
+            Top             =   390
+            Width           =   2445
+         End
+         Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+            CausesValidation=   0   'False
+            Height          =   495
+            Index           =   0
+            Left            =   0
+            TabIndex        =   32
+            Top             =   840
+            Width           =   2670
+            _ExtentX        =   4710
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Min             =   1
+            Max             =   10000
+            Value           =   1
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   0
+            Left            =   2820
+            TabIndex        =   34
+            Top             =   375
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   1
+            Left            =   2820
+            TabIndex        =   35
+            Top             =   885
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   2
+            Left            =   4380
+            TabIndex        =   36
+            Top             =   375
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   3
+            Left            =   4380
+            TabIndex        =   37
+            Top             =   885
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.sliderTextCombo sltCornerRounding 
+            CausesValidation=   0   'False
+            Height          =   495
+            Left            =   5760
+            TabIndex        =   76
+            Top             =   345
+            Width           =   2670
+            _ExtentX        =   4710
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Max             =   1
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "corner rounding"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   5
+            Left            =   5880
+            TabIndex        =   77
+            Top             =   60
+            Width           =   1365
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "position (x, y)"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   1
+            Left            =   2820
+            TabIndex        =   39
+            Top             =   60
+            Width           =   1170
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "size (w, h)"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   2
+            Left            =   4380
+            TabIndex        =   38
+            Top             =   60
+            Width           =   915
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "area"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   4
+            Left            =   120
+            TabIndex        =   33
+            Top             =   60
+            Width           =   390
+         End
       End
-      Begin VB.Label lblSelection 
+      Begin VB.PictureBox picSelectionSubcontainer 
          Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "size (w, h)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   2
-         Left            =   13080
-         TabIndex        =   15
-         Top             =   60
-         Width           =   915
-      End
-      Begin VB.Label lblSelection 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "position (x, y)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
-         Index           =   1
-         Left            =   11520
-         TabIndex        =   14
-         Top             =   60
-         Width           =   1170
-      End
-      Begin VB.Label lblSelection 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "corner rounding"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   1470
          Index           =   5
-         Left            =   8220
-         TabIndex        =   13
-         Top             =   60
-         Width           =   1365
+         Left            =   5340
+         ScaleHeight     =   98
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   665
+         TabIndex        =   68
+         Top             =   0
+         Width           =   9975
+         Begin VB.ComboBox cboWandCompare 
+            Appearance      =   0  'Flat
+            CausesValidation=   0   'False
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   360
+            ItemData        =   "VBP_ToolbarTools.frx":000C
+            Left            =   3270
+            List            =   "VBP_ToolbarTools.frx":000E
+            Style           =   2  'Dropdown List
+            TabIndex        =   72
+            ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
+            Top             =   855
+            Width           =   2445
+         End
+         Begin PhotoDemon.buttonStrip btsWandArea 
+            Height          =   825
+            Left            =   120
+            TabIndex        =   70
+            Top             =   405
+            Width           =   2895
+            _ExtentX        =   4366
+            _ExtentY        =   1455
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.sliderTextCombo sltWandTolerance 
+            CausesValidation=   0   'False
+            Height          =   495
+            Left            =   3120
+            TabIndex        =   73
+            Top             =   360
+            Width           =   2670
+            _ExtentX        =   4710
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Max             =   255
+            SigDigits       =   1
+         End
+         Begin PhotoDemon.buttonStrip btsWandMerge 
+            Height          =   825
+            Left            =   6120
+            TabIndex        =   75
+            Top             =   405
+            Width           =   2895
+            _ExtentX        =   5106
+            _ExtentY        =   1455
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "sampling area"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   16
+            Left            =   6120
+            TabIndex        =   74
+            Top             =   60
+            Width           =   1215
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "tolerance"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   6
+            Left            =   3240
+            TabIndex        =   71
+            Top             =   60
+            Width           =   795
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "area"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   14
+            Left            =   120
+            TabIndex        =   69
+            Top             =   60
+            Width           =   390
+         End
       End
-      Begin VB.Label lblSelection 
+      Begin VB.PictureBox picSelectionSubcontainer 
          Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "area"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00606060&
-         Height          =   240
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   1470
          Index           =   4
-         Left            =   5460
-         TabIndex        =   12
-         Top             =   60
-         Width           =   390
+         Left            =   5340
+         ScaleHeight     =   98
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   665
+         TabIndex        =   64
+         Top             =   0
+         Width           =   9975
+         Begin VB.ComboBox cboSelArea 
+            Appearance      =   0  'Flat
+            CausesValidation=   0   'False
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   360
+            Index           =   4
+            ItemData        =   "VBP_ToolbarTools.frx":0010
+            Left            =   120
+            List            =   "VBP_ToolbarTools.frx":0012
+            Style           =   2  'Dropdown List
+            TabIndex        =   65
+            ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
+            Top             =   390
+            Width           =   2445
+         End
+         Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+            CausesValidation=   0   'False
+            Height          =   495
+            Index           =   4
+            Left            =   0
+            TabIndex        =   66
+            Top             =   840
+            Width           =   2670
+            _ExtentX        =   4710
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Min             =   1
+            Max             =   10000
+            Value           =   1
+         End
+         Begin PhotoDemon.sliderTextCombo sltSmoothStroke 
+            CausesValidation=   0   'False
+            Height          =   495
+            Left            =   2760
+            TabIndex        =   82
+            Top             =   360
+            Visible         =   0   'False
+            Width           =   2670
+            _ExtentX        =   4710
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Max             =   1
+            SigDigits       =   2
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "stroke smoothing"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   19
+            Left            =   2910
+            TabIndex        =   83
+            Top             =   60
+            Visible         =   0   'False
+            Width           =   1470
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "area"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   12
+            Left            =   120
+            TabIndex        =   67
+            Top             =   60
+            Width           =   390
+         End
+      End
+      Begin VB.PictureBox picSelectionSubcontainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   1470
+         Index           =   3
+         Left            =   5340
+         ScaleHeight     =   98
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   665
+         TabIndex        =   60
+         Top             =   0
+         Width           =   9975
+         Begin VB.ComboBox cboSelArea 
+            Appearance      =   0  'Flat
+            CausesValidation=   0   'False
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   360
+            Index           =   3
+            ItemData        =   "VBP_ToolbarTools.frx":0014
+            Left            =   120
+            List            =   "VBP_ToolbarTools.frx":0016
+            Style           =   2  'Dropdown List
+            TabIndex        =   61
+            ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
+            Top             =   390
+            Width           =   2445
+         End
+         Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+            CausesValidation=   0   'False
+            Height          =   495
+            Index           =   3
+            Left            =   0
+            TabIndex        =   62
+            Top             =   840
+            Width           =   2670
+            _ExtentX        =   4710
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Min             =   1
+            Max             =   10000
+            Value           =   1
+         End
+         Begin PhotoDemon.sliderTextCombo sltPolygonCurvature 
+            CausesValidation=   0   'False
+            Height          =   495
+            Left            =   2760
+            TabIndex        =   78
+            Top             =   360
+            Width           =   2670
+            _ExtentX        =   4710
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Max             =   1
+            SigDigits       =   2
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "curvature"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   17
+            Left            =   2910
+            TabIndex        =   79
+            Top             =   60
+            Width           =   810
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "area"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   15
+            Left            =   120
+            TabIndex        =   63
+            Top             =   60
+            Width           =   390
+         End
+      End
+      Begin VB.PictureBox picSelectionSubcontainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   1470
+         Index           =   2
+         Left            =   5340
+         ScaleHeight     =   98
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   665
+         TabIndex        =   50
+         Top             =   0
+         Width           =   9975
+         Begin VB.ComboBox cboSelArea 
+            Appearance      =   0  'Flat
+            CausesValidation=   0   'False
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   360
+            Index           =   2
+            ItemData        =   "VBP_ToolbarTools.frx":0018
+            Left            =   120
+            List            =   "VBP_ToolbarTools.frx":001A
+            Style           =   2  'Dropdown List
+            TabIndex        =   51
+            ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
+            Top             =   390
+            Width           =   2445
+         End
+         Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+            CausesValidation=   0   'False
+            Height          =   495
+            Index           =   2
+            Left            =   0
+            TabIndex        =   52
+            Top             =   840
+            Width           =   2670
+            _ExtentX        =   4710
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Min             =   1
+            Max             =   10000
+            Value           =   1
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   8
+            Left            =   2820
+            TabIndex        =   53
+            Top             =   375
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   9
+            Left            =   2820
+            TabIndex        =   54
+            Top             =   885
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   10
+            Left            =   4380
+            TabIndex        =   55
+            Top             =   375
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   11
+            Left            =   4380
+            TabIndex        =   56
+            Top             =   885
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
+            CausesValidation=   0   'False
+            Height          =   495
+            Left            =   5880
+            TabIndex        =   80
+            Top             =   360
+            Width           =   2670
+            _ExtentX        =   4710
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Min             =   1
+            Max             =   10000
+            Value           =   10
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "line width"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   18
+            Left            =   6000
+            TabIndex        =   81
+            Top             =   60
+            Width           =   825
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "area"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   11
+            Left            =   120
+            TabIndex        =   59
+            Top             =   60
+            Width           =   390
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "2nd point (x, y)"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   10
+            Left            =   4380
+            TabIndex        =   58
+            Top             =   60
+            Width           =   1305
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "1st point (x, y)"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   9
+            Left            =   2820
+            TabIndex        =   57
+            Top             =   60
+            Width           =   1245
+         End
+      End
+      Begin VB.PictureBox picSelectionSubcontainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   1470
+         Index           =   1
+         Left            =   5340
+         ScaleHeight     =   98
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   665
+         TabIndex        =   40
+         Top             =   0
+         Width           =   9975
+         Begin VB.ComboBox cboSelArea 
+            Appearance      =   0  'Flat
+            CausesValidation=   0   'False
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   360
+            Index           =   1
+            ItemData        =   "VBP_ToolbarTools.frx":001C
+            Left            =   120
+            List            =   "VBP_ToolbarTools.frx":001E
+            Style           =   2  'Dropdown List
+            TabIndex        =   41
+            ToolTipText     =   "This option controls the selection's area.  You can switch between the three settings without losing the current selection."
+            Top             =   390
+            Width           =   2445
+         End
+         Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
+            CausesValidation=   0   'False
+            Height          =   495
+            Index           =   1
+            Left            =   0
+            TabIndex        =   42
+            Top             =   840
+            Width           =   2670
+            _ExtentX        =   4710
+            _ExtentY        =   873
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Min             =   1
+            Max             =   10000
+            Value           =   1
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   4
+            Left            =   2820
+            TabIndex        =   43
+            Top             =   375
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   5
+            Left            =   2820
+            TabIndex        =   44
+            Top             =   885
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   6
+            Left            =   4380
+            TabIndex        =   45
+            Top             =   375
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin PhotoDemon.textUpDown tudSel 
+            Height          =   405
+            Index           =   7
+            Left            =   4380
+            TabIndex        =   46
+            Top             =   885
+            Width           =   1320
+            _ExtentX        =   2328
+            _ExtentY        =   714
+            Min             =   -30000
+            Max             =   30000
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "area"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   7
+            Left            =   120
+            TabIndex        =   49
+            Top             =   60
+            Width           =   390
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "size (w, h)"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   3
+            Left            =   4380
+            TabIndex        =   48
+            Top             =   60
+            Width           =   915
+         End
+         Begin VB.Label lblSelection 
+            Appearance      =   0  'Flat
+            AutoSize        =   -1  'True
+            BackColor       =   &H80000005&
+            BackStyle       =   0  'Transparent
+            Caption         =   "position (x, y)"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00606060&
+            Height          =   240
+            Index           =   0
+            Left            =   2820
+            TabIndex        =   47
+            Top             =   60
+            Width           =   1170
+         End
       End
       Begin VB.Label lblSelection 
          Appearance      =   0  'Flat
@@ -572,12 +1283,54 @@ Begin VB.Form toolbar_Tools
          EndProperty
          ForeColor       =   &H00606060&
          Height          =   240
-         Index           =   3
-         Left            =   2640
-         TabIndex        =   11
+         Index           =   13
+         Left            =   2760
+         TabIndex        =   29
          Top             =   60
          Width           =   885
       End
+      Begin VB.Label lblSelection 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "appearance"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00606060&
+         Height          =   240
+         Index           =   8
+         Left            =   120
+         TabIndex        =   28
+         Top             =   60
+         Width           =   1005
+      End
+   End
+   Begin VB.PictureBox picTools 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ClipControls    =   0   'False
+      ForeColor       =   &H80000008&
+      Height          =   1575
+      Index           =   0
+      Left            =   15
+      ScaleHeight     =   105
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   1230
+      TabIndex        =   0
+      TabStop         =   0   'False
+      Top             =   15
+      Visible         =   0   'False
+      Width           =   18450
    End
    Begin VB.PictureBox picTools 
       Appearance      =   0  'Flat
@@ -592,7 +1345,7 @@ Begin VB.Form toolbar_Tools
       ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   950
-      TabIndex        =   25
+      TabIndex        =   8
       Top             =   15
       Visible         =   0   'False
       Width           =   14250
@@ -601,7 +1354,7 @@ Begin VB.Form toolbar_Tools
          Height          =   495
          Index           =   0
          Left            =   1380
-         TabIndex        =   27
+         TabIndex        =   10
          Top             =   90
          Width           =   2670
          _ExtentX        =   4710
@@ -625,7 +1378,7 @@ Begin VB.Form toolbar_Tools
          Height          =   495
          Index           =   1
          Left            =   1380
-         TabIndex        =   28
+         TabIndex        =   11
          Top             =   705
          Width           =   2670
          _ExtentX        =   4710
@@ -647,7 +1400,7 @@ Begin VB.Form toolbar_Tools
          Height          =   495
          Index           =   2
          Left            =   5640
-         TabIndex        =   30
+         TabIndex        =   13
          Top             =   90
          Width           =   2670
          _ExtentX        =   4710
@@ -669,7 +1422,7 @@ Begin VB.Form toolbar_Tools
          Height          =   495
          Index           =   3
          Left            =   5640
-         TabIndex        =   32
+         TabIndex        =   15
          Top             =   705
          Width           =   2670
          _ExtentX        =   4710
@@ -690,7 +1443,7 @@ Begin VB.Form toolbar_Tools
          Height          =   570
          Index           =   0
          Left            =   13080
-         TabIndex        =   34
+         TabIndex        =   17
          Top             =   75
          Width           =   660
          _ExtentX        =   1164
@@ -708,7 +1461,7 @@ Begin VB.Form toolbar_Tools
          BackColor       =   -2147483643
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarTools.frx":0010
+         PictureNormal   =   "VBP_ToolbarTools.frx":0020
          PictureEffectOnDown=   0
          CaptionEffects  =   0
          ColorScheme     =   3
@@ -717,7 +1470,7 @@ Begin VB.Form toolbar_Tools
          Height          =   570
          Index           =   1
          Left            =   13080
-         TabIndex        =   35
+         TabIndex        =   18
          Top             =   705
          Width           =   660
          _ExtentX        =   1164
@@ -735,7 +1488,7 @@ Begin VB.Form toolbar_Tools
          BackColor       =   -2147483643
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarTools.frx":0D62
+         PictureNormal   =   "VBP_ToolbarTools.frx":0D72
          PictureEffectOnDown=   0
          CaptionEffects  =   0
          ColorScheme     =   3
@@ -745,7 +1498,7 @@ Begin VB.Form toolbar_Tools
          Height          =   495
          Index           =   4
          Left            =   9960
-         TabIndex        =   36
+         TabIndex        =   19
          Top             =   90
          Width           =   2670
          _ExtentX        =   4710
@@ -771,7 +1524,7 @@ Begin VB.Form toolbar_Tools
          Height          =   495
          Index           =   5
          Left            =   9960
-         TabIndex        =   37
+         TabIndex        =   20
          Top             =   705
          Width           =   2670
          _ExtentX        =   4710
@@ -812,7 +1565,7 @@ Begin VB.Form toolbar_Tools
          Height          =   240
          Index           =   7
          Left            =   8775
-         TabIndex        =   39
+         TabIndex        =   22
          Top             =   195
          Width           =   1140
       End
@@ -836,7 +1589,7 @@ Begin VB.Form toolbar_Tools
          Height          =   240
          Index           =   6
          Left            =   9570
-         TabIndex        =   38
+         TabIndex        =   21
          Top             =   810
          Width           =   345
       End
@@ -860,7 +1613,7 @@ Begin VB.Form toolbar_Tools
          Height          =   240
          Index           =   5
          Left            =   4800
-         TabIndex        =   33
+         TabIndex        =   16
          Top             =   810
          Width           =   795
       End
@@ -884,7 +1637,7 @@ Begin VB.Form toolbar_Tools
          Height          =   240
          Index           =   4
          Left            =   5010
-         TabIndex        =   31
+         TabIndex        =   14
          Top             =   195
          Width           =   585
       End
@@ -908,7 +1661,7 @@ Begin VB.Form toolbar_Tools
          Height          =   240
          Index           =   3
          Left            =   570
-         TabIndex        =   29
+         TabIndex        =   12
          Top             =   810
          Width           =   765
       End
@@ -932,7 +1685,7 @@ Begin VB.Form toolbar_Tools
          Height          =   240
          Index           =   2
          Left            =   480
-         TabIndex        =   26
+         TabIndex        =   9
          Top             =   195
          Width           =   855
       End
@@ -950,14 +1703,14 @@ Begin VB.Form toolbar_Tools
       ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   950
-      TabIndex        =   18
+      TabIndex        =   1
       Top             =   15
       Visible         =   0   'False
       Width           =   14250
       Begin PhotoDemon.smartCheckBox chkLayerBorder 
          Height          =   330
          Left            =   7080
-         TabIndex        =   20
+         TabIndex        =   3
          Top             =   360
          Width           =   6000
          _ExtentX        =   10583
@@ -976,7 +1729,7 @@ Begin VB.Form toolbar_Tools
       Begin PhotoDemon.smartCheckBox chkLayerNodes 
          Height          =   330
          Left            =   7080
-         TabIndex        =   21
+         TabIndex        =   4
          Top             =   780
          Width           =   6000
          _ExtentX        =   10583
@@ -995,7 +1748,7 @@ Begin VB.Form toolbar_Tools
       Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
          Height          =   330
          Left            =   120
-         TabIndex        =   23
+         TabIndex        =   6
          Top             =   360
          Width           =   6810
          _ExtentX        =   12012
@@ -1014,7 +1767,7 @@ Begin VB.Form toolbar_Tools
       Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
          Height          =   330
          Left            =   120
-         TabIndex        =   24
+         TabIndex        =   7
          Top             =   780
          Width           =   6810
          _ExtentX        =   12012
@@ -1049,7 +1802,7 @@ Begin VB.Form toolbar_Tools
          Height          =   240
          Index           =   1
          Left            =   120
-         TabIndex        =   22
+         TabIndex        =   5
          Top             =   60
          Width           =   1650
       End
@@ -1072,7 +1825,7 @@ Begin VB.Form toolbar_Tools
          Height          =   240
          Index           =   0
          Left            =   7080
-         TabIndex        =   19
+         TabIndex        =   2
          Top             =   60
          Width           =   1335
       End
@@ -1094,7 +1847,7 @@ Begin VB.Form toolbar_Tools
       Y2              =   2000
    End
 End
-Attribute VB_Name = "toolbar_Tools"
+Attribute VB_Name = "toolbar_Options"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -1146,6 +1899,46 @@ Private Sub btsWandMerge_Click(ByVal buttonIndex As Long)
     'If a selection is already active, change its type to match the current option, then redraw it
     If selectionsAllowed(False) Then
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_WAND_SAMPLE_MERGED, buttonIndex
+        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    End If
+
+End Sub
+
+Private Sub cboSelArea_Click(Index As Integer)
+
+    updateSelectionPanelLayout
+    
+    'If a selection is already active, change its type to match the current selection, then redraw it
+    If selectionsAllowed(False) Then
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_AREA, cboSelArea(Index).ListIndex
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_BORDER_WIDTH, sltSelectionBorder(Index).Value
+        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    End If
+    
+End Sub
+
+Private Sub cboSelRender_Click()
+
+    'Show or hide the color selector, as appropriate
+    If cboSelRender.ListIndex = SELECTION_RENDER_HIGHLIGHT Then
+        csSelectionHighlight.Visible = True
+    Else
+        csSelectionHighlight.Visible = False
+    End If
+    
+    'Redraw the viewport
+    If selectionsAllowed(False) Then RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
+Private Sub cboSelSmoothing_Click()
+
+    updateSelectionPanelLayout
+    
+    'If a selection is already active, change its type to match the current selection, then redraw it
+    If selectionsAllowed(False) Then
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_SMOOTHING, cboSelSmoothing.ListIndex
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_FEATHERING_RADIUS, sltSelectionFeathering.Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 
@@ -1203,7 +1996,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
         Case 0
             
             'Resetting does not affect the Undo/Redo chain, so simply reset all sliders, then redraw the screen
-            For i = 0 To sltQuickFix.count - 1
+            For i = 0 To sltQuickFix.Count - 1
                 
                 sltQuickFix(i).Value = 0
                 pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState i, 0
@@ -1221,7 +2014,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
                 
                 'Now we do something odd; we reset all sliders, then forcibly set an image checkpoint.  This prevents PD's internal
                 ' processor from auto-detecting the slider resets and applying *another* entry to the Undo/Redo chain.
-                For i = 0 To sltQuickFix.count - 1
+                For i = 0 To sltQuickFix.Count - 1
                     sltQuickFix(i).Value = 0
                 Next i
                 
@@ -1235,7 +2028,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
     End Select
     
     'After one of these buttons has been used, all quick-fix values will be reset - so we can disable the buttons accordingly.
-    For i = 0 To cmdQuickFix.count - 1
+    For i = 0 To cmdQuickFix.Count - 1
         If cmdQuickFix(i).Enabled Then cmdQuickFix(i).Enabled = False
     Next i
     
@@ -1247,7 +2040,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
 
 End Sub
 
-Private Sub csSelectionHighlight_ColorChanged(Index As Integer)
+Private Sub csSelectionHighlight_ColorChanged()
     
     'Redraw the viewport
     If selectionsAllowed(False) Then RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -1260,37 +2053,41 @@ Private Sub Form_Load()
         
     'INITIALIZE ALL TOOLS
     
+        'Selection visual styles (Highlight, Lightbox, or Outline)
+        toolbar_Options.cboSelRender.ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
+        toolbar_Options.cboSelRender.AddItem " Highlight", 0
+        toolbar_Options.cboSelRender.AddItem " Lightbox", 1
+        toolbar_Options.cboSelRender.AddItem " Outline", 2
+        toolbar_Options.cboSelRender.ListIndex = 0
         
-    
-        'Selection visual styles (currently lightbox or highlight)
-        toolbar_Tools.cmbSelRender(0).ToolTipText = g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
-        For i = 0 To toolbar_Tools.cmbSelRender.count - 1
-            toolbar_Tools.cmbSelRender(i).AddItem " Highlight", 0
-            toolbar_Tools.cmbSelRender(i).AddItem " Lightbox", 1
-            toolbar_Tools.cmbSelRender(i).AddItem " Outline", 2
-            toolbar_Tools.cmbSelRender(i).ListIndex = 0
-        Next i
-        csSelectionHighlight(0).Color = RGB(255, 58, 72)
-        csSelectionHighlight(0).Visible = True
+        csSelectionHighlight.Color = RGB(255, 58, 72)
+        csSelectionHighlight.Visible = True
         
         'Selection smoothing (currently none, antialiased, fully feathered)
-        toolbar_Tools.cmbSelSmoothing(0).ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
-        toolbar_Tools.cmbSelSmoothing(0).AddItem " None", 0
-        toolbar_Tools.cmbSelSmoothing(0).AddItem " Antialiased", 1
-        toolbar_Tools.cmbSelSmoothing(0).AddItem " Feathered", 2
-        toolbar_Tools.cmbSelSmoothing(0).ListIndex = 1
+        toolbar_Options.cboSelSmoothing.ToolTipText = g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
+        toolbar_Options.cboSelSmoothing.AddItem " None", 0
+        toolbar_Options.cboSelSmoothing.AddItem " Antialiased", 1
+        toolbar_Options.cboSelSmoothing.AddItem " Feathered", 2
+        toolbar_Options.cboSelSmoothing.ListIndex = 1
         
         'Selection types (currently interior, exterior, border)
-        toolbar_Tools.cmbSelArea(0).ToolTipText = g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
-        toolbar_File.setSelectionAreaOptions True, 0
+        For i = 0 To cboSelArea.Count - 1
+            toolbar_Options.cboSelArea(i).AddItem " Interior", 0
+            toolbar_Options.cboSelArea(i).AddItem " Exterior", 1
+            toolbar_Options.cboSelArea(i).AddItem " Border", 2
+            toolbar_Options.cboSelArea(i).ListIndex = 0
+            
+            toolbar_Options.cboSelArea(i).ToolTipText = g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
+            toolbar_Options.sltSelectionBorder(i).assignTooltip "This option adjusts the width of the selection border."
+        Next i
         
-        toolbar_Tools.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
-        toolbar_Tools.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
-        toolbar_Tools.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
-        toolbar_Tools.sltSelectionBorder.assignTooltip "This option adjusts the width of the selection border."
-        toolbar_Tools.sltPolygonCurvature.assignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
-        toolbar_Tools.sltSmoothStroke.assignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
-        toolbar_Tools.sltWandTolerance.assignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
+        toolbar_Options.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+        toolbar_Options.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
+        toolbar_Options.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
+                
+        toolbar_Options.sltPolygonCurvature.assignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
+        toolbar_Options.sltSmoothStroke.assignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
+        toolbar_Options.sltWandTolerance.assignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
         
         'Magic wand options
         btsWandMerge.AddItem "image", 0
@@ -1342,53 +2139,10 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     
     'Reset the selection coordinate boxes to 0
     Dim i As Long
-    For i = 0 To tudSel.count - 1
+    For i = 0 To tudSel.Count - 1
         tudSel(i) = 0
     Next i
 
-End Sub
-
-'When the selection render type is changed, we must redraw the viewport to match
-Private Sub cmbSelRender_Click(Index As Integer)
-    
-    'Show or hide the color selector, as appropriate
-    If cmbSelRender(Index).ListIndex = SELECTION_RENDER_HIGHLIGHT Then
-        csSelectionHighlight(Index).Visible = True
-    Else
-        csSelectionHighlight(Index).Visible = False
-    End If
-    
-    'Redraw the viewport
-    If selectionsAllowed(False) Then RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
-End Sub
-
-'Change selection smoothing (e.g. none, antialiased, fully feathered)
-Private Sub cmbSelSmoothing_Click(Index As Integer)
-    
-    updateSelectionPanelLayout
-    
-    'If a selection is already active, change its type to match the current selection, then redraw it
-    If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_SMOOTHING, cmbSelSmoothing(Index).ListIndex
-        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_FEATHERING_RADIUS, sltSelectionFeathering.Value
-        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    End If
-    
-End Sub
-
-'Change selection type (e.g. interior, exterior, bordered)
-Private Sub cmbSelArea_Click(Index As Integer)
-
-    updateSelectionPanelLayout
-    
-    'If a selection is already active, change its type to match the current selection, then redraw it
-    If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_AREA, cmbSelArea(Index).ListIndex
-        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_BORDER_WIDTH, sltSelectionBorder.Value
-        RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    End If
-    
 End Sub
 
 'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
@@ -1440,13 +2194,13 @@ Private Sub sltQuickFix_Change(Index As Integer)
         
         If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState Then
         
-            For i = 0 To cmdQuickFix.count - 1
+            For i = 0 To cmdQuickFix.Count - 1
                 If Not cmdQuickFix(i).Enabled Then cmdQuickFix(i).Enabled = True
             Next i
         
         Else
             
-            For i = 0 To cmdQuickFix.count - 1
+            For i = 0 To cmdQuickFix.Count - 1
                 If cmdQuickFix(i).Enabled Then cmdQuickFix(i).Enabled = False
             Next i
         
@@ -1462,9 +2216,9 @@ Private Sub sltQuickFix_Change(Index As Integer)
 
 End Sub
 
-Private Sub sltSelectionBorder_Change()
+Private Sub sltSelectionBorder_Change(Index As Integer)
     If selectionsAllowed(False) Then
-        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_BORDER_WIDTH, sltSelectionBorder.Value
+        pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_BORDER_WIDTH, sltSelectionBorder(Index).Value
         RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
@@ -1488,17 +2242,19 @@ End Sub
 Public Sub updateSelectionPanelLayout()
 
     'Display the feathering slider as necessary
-    If cmbSelSmoothing(0).ListIndex = sFullyFeathered Then
+    If cboSelSmoothing.ListIndex = sFullyFeathered Then
         sltSelectionFeathering.Visible = True
     Else
         sltSelectionFeathering.Visible = False
     End If
     
     'Display the border slider as necessary
-    If cmbSelArea(0).ListIndex = sBorder Then
-        sltSelectionBorder.Visible = True
-    Else
-        sltSelectionBorder.Visible = False
+    If (Selection_Handler.getSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (Selection_Handler.getSelectionSubPanelFromCurrentTool > 0) Then
+        If cboSelArea(Selection_Handler.getSelectionSubPanelFromCurrentTool).ListIndex = sBorder Then
+            sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Visible = True
+        Else
+            sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Visible = False
+        End If
     End If
     
 End Sub

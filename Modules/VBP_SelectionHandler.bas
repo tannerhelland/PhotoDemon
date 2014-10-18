@@ -375,6 +375,11 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
         pdImages(formID).mainSelection.rejectRefreshRequests = True
         
+        'Selection coordinate toolboxes appear on three different selection subpanels: rect, ellipse, and line.
+        ' To access their indicies properly, we must calculate an offset.
+        Dim subpanelOffset As Long
+        subpanelOffset = Selection_Handler.getSelectionSubPanelFromSelectionShape(pdImages(formID)) * 4
+        
         'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
         If pdImages(formID).mainSelection.isTransformable Then
             
@@ -383,56 +388,61 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
             
                 'Rectangular and elliptical selections display left, top, width and height
                 Case sRectangle, sCircle
-                    toolbar_Tools.tudSel(0).Value = pdImages(formID).mainSelection.selLeft
-                    toolbar_Tools.tudSel(1).Value = pdImages(formID).mainSelection.selTop
-                    toolbar_Tools.tudSel(2).Value = pdImages(formID).mainSelection.selWidth
-                    toolbar_Tools.tudSel(3).Value = pdImages(formID).mainSelection.selHeight
+                    toolbar_Options.tudSel(subpanelOffset + 0).Value = pdImages(formID).mainSelection.selLeft
+                    toolbar_Options.tudSel(subpanelOffset + 1).Value = pdImages(formID).mainSelection.selTop
+                    toolbar_Options.tudSel(subpanelOffset + 2).Value = pdImages(formID).mainSelection.selWidth
+                    toolbar_Options.tudSel(subpanelOffset + 3).Value = pdImages(formID).mainSelection.selHeight
                     
                 'Line selections display x1, y1, x2, y2
                 Case sLine
-                    toolbar_Tools.tudSel(0).Value = pdImages(formID).mainSelection.x1
-                    toolbar_Tools.tudSel(1).Value = pdImages(formID).mainSelection.y1
-                    toolbar_Tools.tudSel(2).Value = pdImages(formID).mainSelection.x2
-                    toolbar_Tools.tudSel(3).Value = pdImages(formID).mainSelection.y2
+                    toolbar_Options.tudSel(subpanelOffset + 0).Value = pdImages(formID).mainSelection.x1
+                    toolbar_Options.tudSel(subpanelOffset + 1).Value = pdImages(formID).mainSelection.y1
+                    toolbar_Options.tudSel(subpanelOffset + 2).Value = pdImages(formID).mainSelection.x2
+                    toolbar_Options.tudSel(subpanelOffset + 3).Value = pdImages(formID).mainSelection.y2
         
             End Select
             
         Else
         
-            For i = 0 To toolbar_Tools.tudSel.count - 1
-                If toolbar_Tools.tudSel(i).Value <> 0 Then toolbar_Tools.tudSel(i).Value = 0
+            For i = 0 To toolbar_Options.tudSel.Count - 1
+                If toolbar_Options.tudSel(i).Value <> 0 Then toolbar_Options.tudSel(i).Value = 0
             Next i
             
         End If
         
         'Next, sync all non-coordinate information
-        If toolbar_Tools.cmbSelArea(0).ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_AREA) Then toolbar_Tools.cmbSelArea(0).ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_AREA)
-        If toolbar_Tools.sltSelectionBorder.Value <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_BORDER_WIDTH) Then toolbar_Tools.sltSelectionBorder.Value = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_BORDER_WIDTH)
-        If toolbar_Tools.cmbSelSmoothing(0).ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_SMOOTHING) Then toolbar_Tools.cmbSelSmoothing(0).ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_SMOOTHING)
-        If toolbar_Tools.sltSelectionFeathering.Value <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_FEATHERING_RADIUS) Then toolbar_Tools.sltSelectionFeathering.Value = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_FEATHERING_RADIUS)
+        If (pdImages(formID).mainSelection.getSelectionShape <> sRaster) And (pdImages(formID).mainSelection.getSelectionShape <> sWand) Then
+            'If toolbar_Options.cboSelArea(Selection_Handler.getSelectionSubPanelFromCurrentTool()).ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_AREA) Then
+            toolbar_Options.cboSelArea(Selection_Handler.getSelectionSubPanelFromSelectionShape(pdImages(formID))).ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_AREA)
+            'If toolbar_Options.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool()).Value <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_BORDER_WIDTH) Then
+            toolbar_Options.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromSelectionShape(pdImages(formID))).Value = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_BORDER_WIDTH)
+        End If
+        
+        If toolbar_Options.cboSelSmoothing.ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_SMOOTHING) Then toolbar_Options.cboSelSmoothing.ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_SMOOTHING)
+        If toolbar_Options.sltSelectionFeathering.Value <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_FEATHERING_RADIUS) Then toolbar_Options.sltSelectionFeathering.Value = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_FEATHERING_RADIUS)
         
         'Finally, sync any shape-specific information
         Select Case pdImages(formID).mainSelection.getSelectionShape
         
             Case sRectangle
-                If toolbar_Tools.sltCornerRounding.Value <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) Then toolbar_Tools.sltCornerRounding.Value = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS)
+                If toolbar_Options.sltCornerRounding.Value <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) Then toolbar_Options.sltCornerRounding.Value = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS)
             
             Case sCircle
             
             Case sLine
-                If toolbar_Tools.sltSelectionLineWidth.Value <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_LINE_WIDTH) Then toolbar_Tools.sltSelectionLineWidth.Value = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_LINE_WIDTH)
+                If toolbar_Options.sltSelectionLineWidth.Value <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_LINE_WIDTH) Then toolbar_Options.sltSelectionLineWidth.Value = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_LINE_WIDTH)
                 
             Case sLasso
-                If toolbar_Tools.sltSmoothStroke.Value <> pdImages(formID).mainSelection.getSelectionProperty_Double(SP_SMOOTH_STROKE) Then toolbar_Tools.sltSmoothStroke.Value = pdImages(formID).mainSelection.getSelectionProperty_Double(SP_SMOOTH_STROKE)
+                If toolbar_Options.sltSmoothStroke.Value <> pdImages(formID).mainSelection.getSelectionProperty_Double(SP_SMOOTH_STROKE) Then toolbar_Options.sltSmoothStroke.Value = pdImages(formID).mainSelection.getSelectionProperty_Double(SP_SMOOTH_STROKE)
                 
             Case sPolygon
-                If toolbar_Tools.sltPolygonCurvature.Value <> pdImages(formID).mainSelection.getSelectionProperty_Double(SP_POLYGON_CURVATURE) Then toolbar_Tools.sltPolygonCurvature.Value = pdImages(formID).mainSelection.getSelectionProperty_Double(SP_POLYGON_CURVATURE)
+                If toolbar_Options.sltPolygonCurvature.Value <> pdImages(formID).mainSelection.getSelectionProperty_Double(SP_POLYGON_CURVATURE) Then toolbar_Options.sltPolygonCurvature.Value = pdImages(formID).mainSelection.getSelectionProperty_Double(SP_POLYGON_CURVATURE)
                 
             Case sWand
-                If toolbar_Tools.btsWandArea.ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_SEARCH_MODE) Then toolbar_Tools.btsWandArea.ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_SEARCH_MODE)
-                If toolbar_Tools.btsWandMerge.ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_SAMPLE_MERGED) Then toolbar_Tools.btsWandMerge.ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_SAMPLE_MERGED)
-                If toolbar_Tools.sltWandTolerance.Value <> pdImages(formID).mainSelection.getSelectionProperty_Double(SP_WAND_TOLERANCE) Then toolbar_Tools.sltWandTolerance.Value = pdImages(formID).mainSelection.getSelectionProperty_Double(SP_WAND_TOLERANCE)
-                If toolbar_Tools.cboWandCompare.ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_COMPARE_METHOD) Then toolbar_Tools.cboWandCompare.ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_COMPARE_METHOD)
+                If toolbar_Options.btsWandArea.ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_SEARCH_MODE) Then toolbar_Options.btsWandArea.ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_SEARCH_MODE)
+                If toolbar_Options.btsWandMerge.ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_SAMPLE_MERGED) Then toolbar_Options.btsWandMerge.ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_SAMPLE_MERGED)
+                If toolbar_Options.sltWandTolerance.Value <> pdImages(formID).mainSelection.getSelectionProperty_Double(SP_WAND_TOLERANCE) Then toolbar_Options.sltWandTolerance.Value = pdImages(formID).mainSelection.getSelectionProperty_Double(SP_WAND_TOLERANCE)
+                If toolbar_Options.cboWandCompare.ListIndex <> pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_COMPARE_METHOD) Then toolbar_Options.cboWandCompare.ListIndex = pdImages(formID).mainSelection.getSelectionProperty_Long(SP_WAND_COMPARE_METHOD)
         
         End Select
         
@@ -442,8 +452,8 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
         metaToggle tSelection, False
         metaToggle tSelectionTransform, False
-        For i = 0 To toolbar_Tools.tudSel.count - 1
-            If toolbar_Tools.tudSel(i).Value <> 0 Then toolbar_Tools.tudSel(i).Value = 0
+        For i = 0 To toolbar_Options.tudSel.Count - 1
+            If toolbar_Options.tudSel(i).Value <> 0 Then toolbar_Options.tudSel(i).Value = 0
         Next i
         
     End If
@@ -1101,6 +1111,9 @@ Public Function getSelectionShapeFromCurrentTool() As PD_SELECTION_SHAPE
             
         Case SELECT_WAND
             getSelectionShapeFromCurrentTool = sWand
+            
+        Case Else
+            getSelectionShapeFromCurrentTool = -1
     
     End Select
     
@@ -1132,13 +1145,80 @@ Public Function getRelevantToolFromSelectShape() As PDTools
                     
                 Case sWand
                     getRelevantToolFromSelectShape = SELECT_WAND
+                
+                Case Else
+                    getRelevantToolFromSelectShape = -1
             
             End Select
             
+        Else
+            getRelevantToolFromSelectShape = -1
         End If
             
+    Else
+        getRelevantToolFromSelectShape = -1
     End If
 
+End Function
+
+'All selection tools share the same main panel on the options toolbox, but they have different subpanels that contain their
+' specific parameters.  Use this function to correlate the two.
+Public Function getSelectionSubPanelFromCurrentTool() As Long
+
+    Select Case g_CurrentTool
+    
+        Case SELECT_RECT
+            getSelectionSubPanelFromCurrentTool = 0
+            
+        Case SELECT_CIRC
+            getSelectionSubPanelFromCurrentTool = 1
+        
+        Case SELECT_LINE
+            getSelectionSubPanelFromCurrentTool = 2
+            
+        Case SELECT_POLYGON
+            getSelectionSubPanelFromCurrentTool = 3
+            
+        Case SELECT_LASSO
+            getSelectionSubPanelFromCurrentTool = 4
+            
+        Case SELECT_WAND
+            getSelectionSubPanelFromCurrentTool = 5
+        
+        Case Else
+            getSelectionSubPanelFromCurrentTool = -1
+    
+    End Select
+    
+End Function
+
+Public Function getSelectionSubPanelFromSelectionShape(ByRef srcImage As pdImage) As Long
+
+    Select Case srcImage.mainSelection.getSelectionShape
+    
+        Case sRectangle
+            getSelectionSubPanelFromSelectionShape = 0
+            
+        Case sCircle
+            getSelectionSubPanelFromSelectionShape = 1
+        
+        Case sLine
+            getSelectionSubPanelFromSelectionShape = 2
+            
+        Case sPolygon
+            getSelectionSubPanelFromSelectionShape = 3
+            
+        Case sLasso
+            getSelectionSubPanelFromSelectionShape = 4
+            
+        Case sWand
+            getSelectionSubPanelFromSelectionShape = 5
+        
+        Case Else
+            getSelectionSubPanelFromSelectionShape = -1
+    
+    End Select
+    
 End Function
 
 'Selections can be initiated several different ways.  To cut down on duplicated code, all new selection instances are referred
@@ -1154,16 +1234,16 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     Select Case getSelectionShapeFromCurrentTool()
     
         Case sRectangle, sCircle, sLine
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Tools.cmbSelArea(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Options.cboSelArea(Selection_Handler.getSelectionSubPanelFromCurrentTool).ListIndex, toolbar_Options.cboSelSmoothing.ListIndex, toolbar_Options.sltSelectionFeathering.Value, toolbar_Options.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Value, toolbar_Options.sltCornerRounding.Value, toolbar_Options.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
         
         Case sPolygon
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Tools.cmbSelArea(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.sltPolygonCurvature.Value, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Options.cboSelArea(Selection_Handler.getSelectionSubPanelFromCurrentTool).ListIndex, toolbar_Options.cboSelSmoothing.ListIndex, toolbar_Options.sltSelectionFeathering.Value, toolbar_Options.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Value, toolbar_Options.sltCornerRounding.Value, toolbar_Options.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Options.sltPolygonCurvature.Value, 0, 0, 0)
             
         Case sLasso
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Tools.cmbSelArea(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Tools.sltSmoothStroke.Value, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Options.cboSelArea(Selection_Handler.getSelectionSubPanelFromCurrentTool).ListIndex, toolbar_Options.cboSelSmoothing.ListIndex, toolbar_Options.sltSelectionFeathering.Value, toolbar_Options.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Value, toolbar_Options.sltCornerRounding.Value, toolbar_Options.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolbar_Options.sltSmoothStroke.Value, 0, 0, 0)
             
         Case sWand
-            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Tools.cmbSelArea(0).ListIndex, toolbar_Tools.cmbSelSmoothing(0).ListIndex, toolbar_Tools.sltSelectionFeathering.Value, toolbar_Tools.sltSelectionBorder.Value, toolbar_Tools.sltCornerRounding.Value, toolbar_Tools.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolbar_Tools.sltWandTolerance.Value, toolbar_Tools.btsWandMerge.ListIndex, toolbar_Tools.btsWandArea.ListIndex, toolbar_Tools.cboWandCompare.ListIndex)
+            pdImages(g_CurrentImage).mainSelection.initFromParamString buildParams(getSelectionShapeFromCurrentTool(), toolbar_Options.cboSelArea(0).ListIndex, toolbar_Options.cboSelSmoothing.ListIndex, toolbar_Options.sltSelectionFeathering.Value, toolbar_Options.sltSelectionBorder(0).Value, toolbar_Options.sltCornerRounding.Value, toolbar_Options.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolbar_Options.sltWandTolerance.Value, toolbar_Options.btsWandMerge.ListIndex, toolbar_Options.btsWandArea.ListIndex, toolbar_Options.cboWandCompare.ListIndex)
         
     End Select
     

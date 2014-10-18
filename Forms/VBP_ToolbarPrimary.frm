@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form toolbar_File 
+Begin VB.Form toolbar_Toolbox 
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -7,7 +7,7 @@ Begin VB.Form toolbar_File
    ClientHeight    =   9810
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   2430
+   ClientWidth     =   2325
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -23,17 +23,17 @@ Begin VB.Form toolbar_File
    MinButton       =   0   'False
    ScaleHeight     =   654
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   162
+   ScaleWidth      =   155
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.jcbutton cmdOpen 
-      Height          =   615
+      Height          =   600
       Left            =   60
       TabIndex        =   0
-      Top             =   60
+      Top             =   300
       Width           =   720
-      _ExtentX        =   1640
-      _ExtentY        =   1085
+      _ExtentX        =   1270
+      _ExtentY        =   1058
       ButtonStyle     =   13
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -53,13 +53,13 @@ Begin VB.Form toolbar_File
       TooltipTitle    =   "Open"
    End
    Begin PhotoDemon.jcbutton cmdSave 
-      Height          =   615
+      Height          =   600
       Left            =   60
       TabIndex        =   1
-      Top             =   780
+      Top             =   960
       Width           =   720
-      _ExtentX        =   1640
-      _ExtentY        =   1085
+      _ExtentX        =   1270
+      _ExtentY        =   1058
       ButtonStyle     =   13
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -73,19 +73,19 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":1452
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":0D52
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Save"
    End
    Begin PhotoDemon.jcbutton cmdUndo 
-      Height          =   615
+      Height          =   600
       Left            =   60
       TabIndex        =   2
-      Top             =   1560
+      Top             =   1920
       Width           =   720
-      _ExtentX        =   1640
-      _ExtentY        =   1085
+      _ExtentX        =   1270
+      _ExtentY        =   1058
       ButtonStyle     =   13
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -99,20 +99,20 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":26B4
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":1AA4
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Undo"
       TooltipBackColor=   -2147483643
    End
    Begin PhotoDemon.jcbutton cmdRedo 
-      Height          =   615
+      Height          =   600
       Left            =   840
       TabIndex        =   3
-      Top             =   1560
+      Top             =   1920
       Width           =   720
-      _ExtentX        =   1640
-      _ExtentY        =   1085
+      _ExtentX        =   1270
+      _ExtentY        =   1058
       ButtonStyle     =   13
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -126,20 +126,20 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":3706
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":27F6
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Redo"
       TooltipBackColor=   -2147483643
    End
    Begin PhotoDemon.jcbutton cmdClose 
-      Height          =   615
+      Height          =   600
       Left            =   840
       TabIndex        =   4
-      Top             =   60
+      Top             =   300
       Width           =   720
-      _ExtentX        =   1640
-      _ExtentY        =   1085
+      _ExtentX        =   1270
+      _ExtentY        =   1058
       ButtonStyle     =   13
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -153,19 +153,19 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":4758
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":3548
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Close"
    End
    Begin PhotoDemon.jcbutton cmdSaveAs 
-      Height          =   615
+      Height          =   600
       Left            =   840
       TabIndex        =   5
-      Top             =   780
+      Top             =   960
       Width           =   720
-      _ExtentX        =   1640
-      _ExtentY        =   1085
+      _ExtentX        =   1270
+      _ExtentY        =   1058
       ButtonStyle     =   13
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -179,7 +179,7 @@ Begin VB.Form toolbar_File
       BackColor       =   15199212
       Caption         =   ""
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":57AA
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":429A
       DisabledPictureMode=   1
       CaptionEffects  =   0
       TooltipTitle    =   "Save as"
@@ -187,7 +187,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   0
-      Left            =   120
+      Left            =   60
       TabIndex        =   8
       Top             =   3000
       Width           =   720
@@ -207,7 +207,7 @@ Begin VB.Form toolbar_File
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":6A0C
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":4FEC
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -215,7 +215,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   1
-      Left            =   840
+      Left            =   780
       TabIndex        =   9
       Top             =   3000
       Width           =   720
@@ -235,7 +235,7 @@ Begin VB.Form toolbar_File
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":775E
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":5D3E
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -243,7 +243,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   8
-      Left            =   1590
+      Left            =   1530
       TabIndex        =   10
       Top             =   3000
       Width           =   720
@@ -263,7 +263,7 @@ Begin VB.Form toolbar_File
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":84B0
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":6A90
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -271,7 +271,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   2
-      Left            =   120
+      Left            =   60
       TabIndex        =   12
       Top             =   3960
       Width           =   720
@@ -291,7 +291,7 @@ Begin VB.Form toolbar_File
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":9202
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":77E2
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -299,7 +299,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   3
-      Left            =   840
+      Left            =   780
       TabIndex        =   13
       Top             =   3960
       Width           =   720
@@ -319,7 +319,7 @@ Begin VB.Form toolbar_File
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":9F54
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":8534
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -327,7 +327,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   4
-      Left            =   1560
+      Left            =   1530
       TabIndex        =   14
       Top             =   3960
       Width           =   720
@@ -347,7 +347,7 @@ Begin VB.Form toolbar_File
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":ACA6
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":9286
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -355,7 +355,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   5
-      Left            =   120
+      Left            =   60
       TabIndex        =   15
       Top             =   4560
       Width           =   720
@@ -375,7 +375,7 @@ Begin VB.Form toolbar_File
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":B9F8
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":9FD8
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -383,7 +383,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   6
-      Left            =   840
+      Left            =   780
       TabIndex        =   16
       Top             =   4560
       Width           =   720
@@ -403,7 +403,7 @@ Begin VB.Form toolbar_File
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":C74A
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":AD2A
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
@@ -411,7 +411,7 @@ Begin VB.Form toolbar_File
    Begin PhotoDemon.jcbutton cmdTools 
       Height          =   600
       Index           =   7
-      Left            =   1560
+      Left            =   1530
       TabIndex        =   17
       Top             =   4560
       Width           =   720
@@ -431,17 +431,63 @@ Begin VB.Form toolbar_File
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":D49C
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":BA7C
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
+   End
+   Begin VB.Label lblCategory 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "undo tools"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00606060&
+      Height          =   240
+      Index           =   3
+      Left            =   120
+      TabIndex        =   20
+      Top             =   1620
+      Width           =   885
+   End
+   Begin VB.Label lblCategory 
+      Appearance      =   0  'Flat
+      AutoSize        =   -1  'True
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      Caption         =   "file tools"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00606060&
+      Height          =   240
+      Index           =   2
+      Left            =   120
+      TabIndex        =   19
+      Top             =   30
+      Width           =   720
    End
    Begin VB.Label lblWarning 
       Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_ToolbarPrimary.frx":E1EE
+      Caption         =   $"VBP_ToolbarPrimary.frx":C7CE
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -452,7 +498,7 @@ Begin VB.Form toolbar_File
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H000000FF&
-      Height          =   2400
+      Height          =   3000
       Left            =   120
       TabIndex        =   18
       Top             =   6000
@@ -480,7 +526,7 @@ Begin VB.Form toolbar_File
       Index           =   1
       Left            =   120
       TabIndex        =   11
-      Top             =   3720
+      Top             =   3660
       Width           =   1215
    End
    Begin VB.Label lblCategory 
@@ -503,13 +549,13 @@ Begin VB.Form toolbar_File
       Index           =   0
       Left            =   120
       TabIndex        =   7
-      Top             =   2760
+      Top             =   2700
       Width           =   1785
    End
    Begin VB.Line lnSeparator 
       BorderColor     =   &H80000002&
       X1              =   8
-      X2              =   152
+      X2              =   148
       Y1              =   176
       Y2              =   176
    End
@@ -539,7 +585,7 @@ Begin VB.Form toolbar_File
       WordWrap        =   -1  'True
    End
 End
-Attribute VB_Name = "toolbar_File"
+Attribute VB_Name = "toolbar_Toolbox"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -548,8 +594,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Primary Toolbar
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 03/October/13
-'Last update: minor bug-fixes
+'Last updated: 18/October/18
+'Last update: start work on an all-new toolbox for the 6.6 release
 '
 'This form was initially integrated into the main MDI form.  In fall 2014, PhotoDemon left behind the MDI model,
 ' and all toolbars were moved to their own forms.
@@ -708,7 +754,7 @@ Public Sub resetToolButtonStates()
     
     'Start by depressing the selected button and raising all unselected ones
     Dim catID As Long
-    For catID = 0 To cmdTools.count - 1
+    For catID = 0 To cmdTools.Count - 1
         If catID = g_CurrentTool Then
             cmdTools(catID).Value = True
         Else
@@ -731,7 +777,7 @@ Public Sub resetToolButtonStates()
         
         'Rectangular, Elliptical, Line selections
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-            activeToolPanel = 0
+            activeToolPanel = 3
             
         '"Quick fix" tool(s)
         Case QUICK_FIX_LIGHTING
@@ -743,146 +789,44 @@ Public Sub resetToolButtonStates()
         
     End Select
     
+    'If a selection tool is active, we will also need activate a specific subpanel
+    Dim activeSelectionSubpanel As Long
+    If (getSelectionShapeFromCurrentTool > -1) Then
+    
+        activeSelectionSubpanel = Selection_Handler.getSelectionSubPanelFromCurrentTool
+        
+        For i = 0 To toolbar_Options.picSelectionSubcontainer.Count - 1
+            If i = activeSelectionSubpanel Then
+                toolbar_Options.picSelectionSubcontainer(i).Visible = True
+            Else
+                toolbar_Options.picSelectionSubcontainer(i).Visible = False
+            End If
+        Next i
+        
+    End If
+    
     'Check the selection state before swapping tools.  If a selection is active, and the user is switching to the same
     ' tool used to create the current selection, we don't want to erase the current selection.  If they are switching
     ' to a *different* selection tool, however, then we *do* want to erase the current selection.
-    If selectionsAllowed(False) And (getRelevantToolFromSelectShape() <> g_CurrentTool) Then pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
-    
-    'If tools share the same panel, they may need to show or hide a few additional controls.  (For example,
-    ' "corner rounding", which is needed for rectangular selections but not elliptical ones, despite the two
-    ' sharing the same tool panel.)  Do this before showing or hiding the tool panel.
-    Select Case g_CurrentTool
-    
-        'For rectangular selections, show the rounded corners option
-        Case SELECT_RECT
-            'setSelectionAreaOptions True
-            setSelectionTUDVisibility True, True
-            setSelectionAreaVisibility True
-            toolbar_Tools.lblSelection(5).Visible = True
-            toolbar_Tools.lblSelection(6).Visible = False
-            toolbar_Tools.sltCornerRounding.Visible = True
-            toolbar_Tools.sltSelectionLineWidth.Visible = False
-            toolbar_Tools.sltSmoothStroke.Visible = False
-            toolbar_Tools.sltPolygonCurvature.Visible = False
-            toolbar_Tools.btsWandMerge.Visible = False
-            toolbar_Tools.btsWandArea.Visible = False
-            toolbar_Tools.sltWandTolerance.Visible = False
-            toolbar_Tools.cboWandCompare.Visible = False
-                    
-        'For elliptical selections, hide the rounded corners option
-        Case SELECT_CIRC
-            'setSelectionAreaOptions True
-            setSelectionTUDVisibility True, True
-            setSelectionAreaVisibility True
-            toolbar_Tools.lblSelection(5).Visible = False
-            toolbar_Tools.lblSelection(6).Visible = False
-            toolbar_Tools.sltCornerRounding.Visible = False
-            toolbar_Tools.sltSelectionLineWidth.Visible = False
-            toolbar_Tools.sltSmoothStroke.Visible = False
-            toolbar_Tools.sltPolygonCurvature.Visible = False
-            toolbar_Tools.btsWandMerge.Visible = False
-            toolbar_Tools.btsWandArea.Visible = False
-            toolbar_Tools.sltWandTolerance.Visible = False
-            toolbar_Tools.cboWandCompare.Visible = False
-            
-        'Line selections also show the rounded corners slider, though they repurpose it for line width
-        Case SELECT_LINE
-            'setSelectionAreaOptions True
-            setSelectionTUDVisibility True, True
-            setSelectionAreaVisibility True
-            toolbar_Tools.lblSelection(5).Visible = True
-            toolbar_Tools.lblSelection(6).Visible = False
-            toolbar_Tools.sltCornerRounding.Visible = False
-            toolbar_Tools.sltSelectionLineWidth.Visible = True
-            toolbar_Tools.sltSmoothStroke.Visible = False
-            toolbar_Tools.sltPolygonCurvature.Visible = False
-            toolbar_Tools.btsWandMerge.Visible = False
-            toolbar_Tools.btsWandArea.Visible = False
-            toolbar_Tools.sltWandTolerance.Visible = False
-            toolbar_Tools.cboWandCompare.Visible = False
-            
-        'Polygon selections are most similar to lasso selections, below, but with an extra curvature parameter.
-        Case SELECT_POLYGON
-            'setSelectionAreaOptions True
-            setSelectionTUDVisibility False, False
-            setSelectionAreaVisibility True
-            toolbar_Tools.lblSelection(5).Visible = True
-            toolbar_Tools.lblSelection(6).Visible = False
-            toolbar_Tools.sltCornerRounding.Visible = False
-            toolbar_Tools.sltSelectionLineWidth.Visible = False
-            toolbar_Tools.sltSmoothStroke.Visible = False
-            toolbar_Tools.sltPolygonCurvature.Visible = True
-            toolbar_Tools.btsWandMerge.Visible = False
-            toolbar_Tools.btsWandArea.Visible = False
-            toolbar_Tools.sltWandTolerance.Visible = False
-            toolbar_Tools.cboWandCompare.Visible = False
-            
-        'Lasso selections do not need rounded corners or other options
-        Case SELECT_LASSO
-            'setSelectionAreaOptions True
-            setSelectionTUDVisibility False, False
-            setSelectionAreaVisibility True
-            toolbar_Tools.lblSelection(5).Visible = False
-            toolbar_Tools.lblSelection(6).Visible = False
-            toolbar_Tools.sltCornerRounding.Visible = False
-            toolbar_Tools.sltSelectionLineWidth.Visible = False
-            toolbar_Tools.sltSmoothStroke.Visible = False
-            toolbar_Tools.sltPolygonCurvature.Visible = False
-            toolbar_Tools.btsWandMerge.Visible = False
-            toolbar_Tools.btsWandArea.Visible = False
-            toolbar_Tools.sltWandTolerance.Visible = False
-            toolbar_Tools.cboWandCompare.Visible = False
-            
-        'Magic wand selections have the fewest available options
-        Case SELECT_WAND
-            'setSelectionAreaOptions False
-            setSelectionTUDVisibility False, False
-            setSelectionAreaVisibility False
-            toolbar_Tools.lblSelection(5).Visible = False
-            toolbar_Tools.lblSelection(6).Visible = True
-            toolbar_Tools.sltCornerRounding.Visible = False
-            toolbar_Tools.sltSelectionLineWidth.Visible = False
-            toolbar_Tools.sltSmoothStroke.Visible = False
-            toolbar_Tools.sltPolygonCurvature.Visible = False
-            toolbar_Tools.btsWandMerge.Visible = True
-            toolbar_Tools.btsWandArea.Visible = True
-            toolbar_Tools.sltWandTolerance.Visible = True
-            toolbar_Tools.cboWandCompare.Visible = True
+    If selectionsAllowed(False) And (getRelevantToolFromSelectShape() <> g_CurrentTool) And (getSelectionShapeFromCurrentTool > -1) Then
         
-    End Select
-    
-    'Even if tools share the same panel, they may name controls differently, or use different max/min values.
-    ' Check for this, and apply new text and max/min settings as necessary.
-    Select Case g_CurrentTool
-    
-        'Rectangular and elliptical selections use rectangular bounding boxes and potential corner rounding
-        Case SELECT_RECT, SELECT_CIRC
-            toolbar_Tools.lblSelection(1).Caption = g_Language.TranslateMessage("position (x, y)")
-            toolbar_Tools.lblSelection(2).Caption = g_Language.TranslateMessage("size (x, y)")
-            toolbar_Tools.lblSelection(5).Caption = g_Language.TranslateMessage("corner rounding")
+        'Switching between rectangle and circle selections is an exception to the usual rule; these are interchangeable.
+        If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle) Or _
+            (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sCircle) Then
             
-        'Line selections use two points, and the corner rounding slider gets repurposed as line width.
-        Case SELECT_LINE
-            toolbar_Tools.lblSelection(1).Caption = g_Language.TranslateMessage("1st point (x, y)")
-            toolbar_Tools.lblSelection(2).Caption = g_Language.TranslateMessage("2nd point (x, y)")
-            toolbar_Tools.lblSelection(5).Caption = g_Language.TranslateMessage("line width")
+            'Simply update the shape and redraw the viewport
+            pdImages(g_CurrentImage).mainSelection.setSelectionShape Selection_Handler.getSelectionShapeFromCurrentTool
+            syncTextToCurrentSelection g_CurrentImage
+            RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            
+        Else
+            Process "Remove selection", , , UNDO_SELECTION
+        End If
         
-        'Polygon selections are very similar to lasso selections, below
-        Case SELECT_POLYGON
-            toolbar_Tools.lblSelection(1).Caption = g_Language.TranslateMessage("drawing view")
-            toolbar_Tools.lblSelection(5).Caption = g_Language.TranslateMessage("curvature")
-        
-        'Lasso selections repurpose the position label for drawing options
-        Case SELECT_LASSO
-            toolbar_Tools.lblSelection(1).Caption = g_Language.TranslateMessage("drawing view")
-            toolbar_Tools.lblSelection(5).Caption = g_Language.TranslateMessage("stroke smoothing")
-            
-        'Lasso selections repurpose the position label for drawing options
-        Case SELECT_WAND
-            toolbar_Tools.lblSelection(1).Caption = g_Language.TranslateMessage("sampling area")
-            toolbar_Tools.lblSelection(5).Caption = g_Language.TranslateMessage("tolerance")
-            
-    End Select
+    End If
+    
+    'If the current tool is a selection tool, make sure the selection area box (interior/exterior/border) is enabled properly
+    If (getSelectionShapeFromCurrentTool > -1) Then toolbar_Options.updateSelectionPanelLayout
     
     'Display the current tool options panel, while hiding all inactive ones.  The On Error Resume statement is used to fix
     ' trouble with the .SetFocus line, below.  That .SetFocus line is helpful for fixing some VB issues with controls embedded
@@ -890,79 +834,21 @@ Public Sub resetToolButtonStates()
     ' has focus).  Sometimes, VB will inexplicably fail to set focus, and it will raise an Error 5 to match; as this is not
     ' a crucial error, just a VB quirk, I don't mind using OERN here.
     On Error Resume Next
-    For i = 0 To toolbar_Tools.picTools.count - 1
+    For i = 0 To toolbar_Options.picTools.Count - 1
         If i = activeToolPanel Then
-            If Not toolbar_Tools.picTools(i).Visible Then
-                toolbar_Tools.picTools(i).Visible = True
-                toolbar_Tools.picTools(i).Refresh
-                setArrowCursor toolbar_Tools.picTools(i)
+            If Not toolbar_Options.picTools(i).Visible Then
+                toolbar_Options.picTools(i).Visible = True
+                toolbar_Options.picTools(i).Refresh
+                setArrowCursor toolbar_Options.picTools(i)
             End If
-            If toolbar_Tools.Visible And toolbar_Tools.picTools(i).Visible Then toolbar_Tools.picTools(i).SetFocus
+            If toolbar_Options.Visible And toolbar_Options.picTools(i).Visible Then toolbar_Options.picTools(i).SetFocus
         Else
-            If toolbar_Tools.picTools(i).Visible Then toolbar_Tools.picTools(i).Visible = False
+            If toolbar_Options.picTools(i).Visible Then toolbar_Options.picTools(i).Visible = False
         End If
     Next i
     
     newToolSelected
         
-End Sub
-
-'Set selection area options.  Some selection types (e.g. lasso, polygon) do not allow the border type while drawing.
-Public Sub setSelectionAreaOptions(ByVal borderAllowed As Boolean, Optional ByVal forceIndex As Long = -1)
-
-    'Before modifying anything, see if the box even needs to be changed.  If it doesn't, ignore this request.
-    If (borderAllowed And (toolbar_Tools.cmbSelArea(0).ListCount = 3)) Or ((Not borderAllowed) And (toolbar_Tools.cmbSelArea(0).ListCount = 2)) Then Exit Sub
-
-    'Make a backup of the current selection area choice
-    Dim curListIndex As Long
-    
-    If forceIndex >= 0 Then
-        curListIndex = forceIndex
-    Else
-        curListIndex = toolbar_Tools.cmbSelArea(0).ListIndex
-    End If
-    
-    'Populate the selection area drop-down
-    toolbar_Tools.cmbSelArea(0).Clear
-    toolbar_Tools.cmbSelArea(0).AddItem " Interior", 0
-    toolbar_Tools.cmbSelArea(0).AddItem " Exterior", 1
-    If borderAllowed Then toolbar_Tools.cmbSelArea(0).AddItem " Border", 2
-    
-    'Restore the correct list index
-    If curListIndex < toolbar_Tools.cmbSelArea(0).ListCount - 1 Then
-        toolbar_Tools.cmbSelArea(0).ListIndex = curListIndex
-    Else
-        toolbar_Tools.cmbSelArea(0).ListIndex = 0
-    End If
-    
-    'Hide/display the border slider as relevant
-    If (Not borderAllowed) Or (curListIndex <> 2) Then toolbar_Tools.sltSelectionBorder.Visible = False
-
-End Sub
-
-'To show/hide the position and size text up/downs in one fell swoop, use this function
-Private Sub setSelectionTUDVisibility(ByVal newVisibilityPrimary As Boolean, ByVal newVisibilitySecondary As Boolean)
-
-    'Set the primary (position) text up/down visibility
-    toolbar_Tools.tudSel(0).Visible = newVisibilityPrimary
-    toolbar_Tools.tudSel(1).Visible = newVisibilityPrimary
-    
-    'Set the secondary (width/height) text up/down visibility, and also set the header label visibility.
-    ' (The primary header label is always visible; it's simply repurposed depending on the text box usage.)
-    toolbar_Tools.lblSelection(2).Visible = newVisibilitySecondary
-    toolbar_Tools.tudSel(2).Visible = newVisibilitySecondary
-    toolbar_Tools.tudSel(3).Visible = newVisibilitySecondary
-    
-End Sub
-
-'To show/hide the area (interior, exterior, border) drop-down and associated sliders in one fell swoop, use this function
-Private Sub setSelectionAreaVisibility(ByVal newVisibility As Boolean)
-    
-    'If these controls are being hidden, it means that area cannot be changed for this selection type, so default to
-    ' Interior-type (which will also hide the border drop-down)
-    If (Not newVisibility) Then toolbar_Tools.cmbSelArea(0).ListIndex = 0
-    toolbar_Tools.cmbSelArea(0).Visible = newVisibility
-    
 End Sub
 
 Private Sub cmdTools_Click(Index As Integer)

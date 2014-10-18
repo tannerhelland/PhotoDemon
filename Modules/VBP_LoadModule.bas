@@ -327,9 +327,9 @@ Public Sub LoadTheProgram()
     
     'Load all tool windows.  Even though they may not be visible (as the user can elect to hide them), we still want them loaded,
     ' so we can interact with them as necessary (e.g. "enable Undo button", etc).
-    Load toolbar_File
+    Load toolbar_Toolbox
     Load toolbar_ImageTabs
-    Load toolbar_Tools
+    Load toolbar_Options
     
     'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
     toggleWindowFloating TOOLBAR_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False), True, True
@@ -376,14 +376,14 @@ Public Sub LoadTheProgram()
     g_CanvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, g_CanvasBackground
     
     'Manually create multi-line tooltips for some command buttons
-    toolbar_File.cmdOpen.ToolTip = g_Language.TranslateMessage("Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)")
+    toolbar_Toolbox.cmdOpen.ToolTip = g_Language.TranslateMessage("Open one or more images for editing." & vbCrLf & vbCrLf & "(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)")
     If g_ConfirmClosingUnsaved Then
-        toolbar_File.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
+        toolbar_Toolbox.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
     Else
-        toolbar_File.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.")
+        toolbar_Toolbox.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.")
     End If
-    toolbar_File.cmdSave.ToolTip = g_Language.TranslateMessage("Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.")
-    toolbar_File.cmdSaveAs.ToolTip = g_Language.TranslateMessage("Save the current image to a new file.")
+    toolbar_Toolbox.cmdSave.ToolTip = g_Language.TranslateMessage("Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.")
+    toolbar_Toolbox.cmdSaveAs.ToolTip = g_Language.TranslateMessage("Save the current image to a new file.")
                         
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
     SetIcon FormMain.hWnd, "AAA", True
@@ -2430,7 +2430,7 @@ Public Sub DrawAccelerators()
 
     Dim i As Long
     
-    For i = 1 To FormMain.ctlAccelerator.Count
+    For i = 1 To FormMain.ctlAccelerator.count
         With FormMain.ctlAccelerator
             If .hasMenu(i) Then
                 .associatedMenu(i).Caption = .associatedMenu(i).Caption & vbTab & .stringRep(i)

@@ -395,7 +395,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     'If a paste operation was successful, switch the current tool to the layer move/resize tool, which is most likely needed after a
     ' new layer has been pasted.
     If pasteWasSuccessful Then
-        toolbar_File.selectNewTool NAV_MOVE
+        toolbar_Toolbox.selectNewTool NAV_MOVE
     Else
         pdMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
     End If

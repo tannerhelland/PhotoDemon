@@ -2808,7 +2808,7 @@ End Sub
 Private Sub cmdCategory_Click(Index As Integer)
     
     Dim catID As Long
-    For catID = 0 To cmdCategory.Count - 1
+    For catID = 0 To cmdCategory.count - 1
         If catID = Index Then
             picContainer(catID).Visible = True
             cmdCategory(catID).Value = True
@@ -2887,7 +2887,7 @@ Private Sub CmdOK_Click()
     
     'First, make note of the active panel, so we can default to that if the user returns to this dialog
     Dim i As Long
-    For i = 0 To cmdCategory.Count - 1
+    For i = 0 To cmdCategory.count - 1
         If cmdCategory(i).Value Then g_UserPreferences.SetPref_Long "Core", "Last Preferences Page", i
     Next i
     
@@ -2987,9 +2987,9 @@ Private Sub CmdOK_Click()
             g_UserPreferences.SetPref_Boolean "Saving", "Confirm Closing Unsaved", g_ConfirmClosingUnsaved
     
             If g_ConfirmClosingUnsaved Then
-                toolbar_File.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
+                toolbar_Toolbox.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
             Else
-                toolbar_File.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.")
+                toolbar_Toolbox.cmdClose.ToolTip = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.")
             End If
         'END prompt on unsaved images
     
@@ -3469,7 +3469,7 @@ Private Sub LoadAllPreferences()
             
             Dim monitorEntry As String
             
-            For i = 1 To g_cMonitors.Monitors.Count
+            For i = 1 To g_cMonitors.Monitors.count
                 monitorEntry = ""
                 
                 'Explicitly label the primary monitor
@@ -3681,11 +3681,11 @@ Private Sub Form_Load()
     
     'Hide all category panels (the proper one will be activated in a moment)
     Dim i As Long
-    For i = 0 To picContainer.Count - 1
+    For i = 0 To picContainer.count - 1
         picContainer(i).Visible = False
         cmdCategory(i).Value = False
     Next i
-    For i = 0 To picFileContainer.Count - 1
+    For i = 0 To picFileContainer.count - 1
         picFileContainer(i).Visible = False
     Next i
     
@@ -3704,11 +3704,11 @@ Private Sub Form_Load()
     
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.
-    For i = 0 To picContainer.Count - 1
+    For i = 0 To picContainer.count - 1
         setArrowCursor picContainer(i)
     Next i
     
-    For i = 0 To picFileContainer.Count - 1
+    For i = 0 To picFileContainer.count - 1
         setArrowCursor picFileContainer(i)
     Next i
     

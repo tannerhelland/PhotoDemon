@@ -120,7 +120,7 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     If srcImage.selectionActive Then
     
         'If it is, composite the selection against the front buffer
-        srcImage.mainSelection.renderCustom frontBuffer, srcImage, FormMain.mainCanvas(0), srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, toolbar_Tools.cmbSelRender(0).ListIndex, toolbar_Tools.csSelectionHighlight(0).Color
+        srcImage.mainSelection.renderCustom frontBuffer, srcImage, FormMain.mainCanvas(0), srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, toolbar_Options.cboSelRender.ListIndex, toolbar_Options.csSelectionHighlight.Color
     
     End If
     
@@ -158,7 +158,7 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
         Case NAV_MOVE
         
             'If the user has requested visible layer borders, draw them now
-            If CBool(toolbar_Tools.chkLayerBorder) Then
+            If CBool(toolbar_Options.chkLayerBorder) Then
                 
                 'Draw layer borders
                 Drawing.drawLayerBoundaries pdImages(g_CurrentImage).getActiveLayerIndex
@@ -166,7 +166,7 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
             End If
             
             'If the user has requested visible transformation nodes, draw them now
-            If CBool(toolbar_Tools.chkLayerNodes) Then
+            If CBool(toolbar_Options.chkLayerNodes) Then
                 
                 'Draw layer nodes
                 Drawing.drawLayerNodes pdImages(g_CurrentImage).getActiveLayerIndex
