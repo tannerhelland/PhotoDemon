@@ -1113,10 +1113,20 @@ Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, 
     xWidth = xWidth - 1
     yHeight = yHeight - 1
     
-    GdipAddPathArc rrPath, x1 + xWidth - rRadius, y1, rRadius, rRadius, 270, 90
-    GdipAddPathArc rrPath, x1 + xWidth - rRadius, y1 + yHeight - rRadius, rRadius, rRadius, 0, 90
-    GdipAddPathArc rrPath, x1, y1 + yHeight - rRadius, rRadius, rRadius, 90, 90
-    GdipAddPathArc rrPath, x1, y1, rRadius, rRadius, 180, 90
+    'Validate the radius twice before applying it.  The width and height curvature cannot be less than
+    ' 1/2 the width (or height) of the rect.
+    Dim xCurvature As Single, yCurvature As Single
+    xCurvature = rRadius
+    yCurvature = rRadius
+    
+    If xCurvature > xWidth Then xCurvature = xWidth
+    If yCurvature > yHeight Then yCurvature = yHeight
+    
+    'Add four arcs, which are auto-connected by the path engine, then close the figure
+    GdipAddPathArc rrPath, x1 + xWidth - xCurvature, y1, xCurvature, yCurvature, 270, 90
+    GdipAddPathArc rrPath, x1 + xWidth - xCurvature, y1 + yHeight - yCurvature, xCurvature, yCurvature, 0, 90
+    GdipAddPathArc rrPath, x1, y1 + yHeight - yCurvature, xCurvature, yCurvature, 90, 90
+    GdipAddPathArc rrPath, x1, y1, xCurvature, yCurvature, 180, 90
     GdipClosePathFigure rrPath
     
     'Create a solid fill brush

@@ -56,6 +56,8 @@ Private Declare Function GdipAddPathCurve2 Lib "gdiplus" (ByVal hPath As Long, B
 Private Declare Function GdipAddPathClosedCurve2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipAddPathLine2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Long
 Private Declare Function GdipAddPathPolygon Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Long
+Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal arcWidth As Single, ByVal arcHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
+Private Declare Function GdipClosePathFigure Lib "gdiplus" (ByVal hPath As Long) As Long
 
 'Drawing functions
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal hPath As Long) As Long
@@ -132,6 +134,26 @@ Friend Sub addRectangle_RectF(ByRef srcRect As RECTF)
     With srcRect
         GdipAddPathRectangle m_PathHandle, .Left, .Top, .Width, .Height
     End With
+End Sub
+
+Public Sub addRoundedRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, ByVal cornerRadius As Single)
+    
+    'Validate the radius twice before applying it.  The width and height curvature cannot be less than
+    ' 1/2 the width (or height) of the rect.
+    Dim xCurvature As Single, yCurvature As Single
+    xCurvature = cornerRadius
+    yCurvature = cornerRadius
+    
+    If xCurvature > rectWidth Then xCurvature = rectWidth
+    If yCurvature > rectHeight Then yCurvature = rectHeight
+    
+    'Add four arcs, which are auto-connected by the path engine, then close the figure
+    GdipAddPathArc m_PathHandle, x1 + rectWidth - xCurvature, y1, xCurvature, yCurvature, 270, 90
+    GdipAddPathArc m_PathHandle, x1 + rectWidth - xCurvature, y1 + rectHeight - yCurvature, xCurvature, yCurvature, 0, 90
+    GdipAddPathArc m_PathHandle, x1, y1 + rectHeight - yCurvature, xCurvature, yCurvature, 90, 90
+    GdipAddPathArc m_PathHandle, x1, y1, xCurvature, yCurvature, 180, 90
+    GdipClosePathFigure m_PathHandle
+    
 End Sub
 
 
