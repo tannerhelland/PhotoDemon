@@ -1906,7 +1906,11 @@ End Sub
 
 Private Sub cboSelArea_Click(Index As Integer)
 
-    updateSelectionPanelLayout
+    If cboSelArea(Index).ListIndex = sBorder Then
+        sltSelectionBorder(Index).Visible = True
+    Else
+        sltSelectionBorder(Index).Visible = False
+    End If
     
     'If a selection is already active, change its type to match the current selection, then redraw it
     If selectionsAllowed(False) Then
