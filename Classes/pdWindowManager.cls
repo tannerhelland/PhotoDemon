@@ -769,12 +769,12 @@ Private Sub setWindowPosByAlignment(ByVal winIndex As Long, Optional ByVal suspe
     
     'For the file toolbox, add the height of the file toolbox to the y1 position
     If (pdWindows(winIndex).optionalToolbarType = FILE_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
-        mainClientRect.y2 = mainClientRect.y2 - getClientHeight(toolbar_Tools.hWnd)
+        mainClientRect.y2 = mainClientRect.y2 - getClientHeight(toolbar_Options.hWnd)
     End If
     
     'For the layers toolbox, subtract the height of the tools toolbox from the y2 position
     If (pdWindows(winIndex).optionalToolbarType = LAYER_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
-        mainClientRect.y2 = mainClientRect.y2 - getClientHeight(toolbar_Tools.hWnd)
+        mainClientRect.y2 = mainClientRect.y2 - getClientHeight(toolbar_Options.hWnd)
     End If
     
     'At present, we assume that a window is either aligned top or bottom, right or left.  (e.g. it must be aligned to a corner)
@@ -844,14 +844,14 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
     
     'For the primary toolbox, subtract the height of the options toolbox from the y2 position
     If (pdWindows(winIndex).optionalToolbarType = FILE_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
-        clientHeight = clientHeight - getClientHeight(toolbar_Tools.hWnd)
-        curMainFormClient.y2 = curMainFormClient.y2 - getClientHeight(toolbar_Tools.hWnd)
+        clientHeight = clientHeight - getClientHeight(toolbar_Options.hWnd)
+        curMainFormClient.y2 = curMainFormClient.y2 - getClientHeight(toolbar_Options.hWnd)
     End If
     
     'For the layers toolbox, subtract the height of the tools toolbox from the y2 position
     If (pdWindows(winIndex).optionalToolbarType = LAYER_TOOLBOX) And (pdWindows(toolsToolboxIndex).isVisible) Then
-        clientHeight = clientHeight - getClientHeight(toolbar_Tools.hWnd)
-        curMainFormClient.y2 = curMainFormClient.y2 - getClientHeight(toolbar_Tools.hWnd)
+        clientHeight = clientHeight - getClientHeight(toolbar_Options.hWnd)
+        curMainFormClient.y2 = curMainFormClient.y2 - getClientHeight(toolbar_Options.hWnd)
     End If
     
     'Get this toolbar window's current location and size.  (We only care about size, as location will have already been set

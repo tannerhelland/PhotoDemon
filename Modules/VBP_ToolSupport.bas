@@ -279,7 +279,7 @@ Public Sub makeQuickFixesPermanent()
     
     'Reset the quick-fix settings stored inside the pdLayer object
     Dim i As Long
-    For i = 0 To toolbar_Tools.sltQuickFix.Count - 1
+    For i = 0 To toolbar_Options.sltQuickFix.count - 1
         pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState i, 0
     Next i
     

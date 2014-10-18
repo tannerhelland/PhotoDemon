@@ -479,7 +479,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         'Save (left-hand panel button AND menu item)
         Case tSave
             If FormMain.MnuFile(7).Enabled <> NewState Then
-                toolbar_File.cmdSave.Enabled = NewState
+                toolbar_Toolbox.cmdSave.Enabled = NewState
                 FormMain.MnuFile(7).Enabled = NewState
                 
                 'The File -> Revert menu is also tied to Save state (if the image has not been saved in its current state,
@@ -491,7 +491,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         'Save As (menu item only)
         Case tSaveAs
             If FormMain.MnuFile(8).Enabled <> NewState Then
-                toolbar_File.cmdSaveAs.Enabled = NewState
+                toolbar_Toolbox.cmdSaveAs.Enabled = NewState
                 FormMain.MnuFile(8).Enabled = NewState
             End If
             
@@ -500,23 +500,23 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             If FormMain.MnuFile(4).Enabled <> NewState Then
                 FormMain.MnuFile(4).Enabled = NewState
                 FormMain.MnuFile(5).Enabled = NewState
-                toolbar_File.cmdClose.Enabled = NewState
+                toolbar_Toolbox.cmdClose.Enabled = NewState
             End If
         
         'Undo (left-hand panel button AND menu item)
         Case tUndo
         
             If FormMain.MnuEdit(0).Enabled <> NewState Then
-                toolbar_File.cmdUndo.Enabled = NewState
+                toolbar_Toolbox.cmdUndo.Enabled = NewState
                 FormMain.MnuEdit(0).Enabled = NewState
             End If
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If NewState Then
-                toolbar_File.cmdUndo.ToolTip = g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID)
+                toolbar_Toolbox.cmdUndo.ToolTip = g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID)
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID) & vbTab & "Ctrl+Z"
             Else
-                toolbar_File.cmdUndo.ToolTip = ""
+                toolbar_Toolbox.cmdUndo.ToolTip = ""
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
             End If
             
@@ -526,16 +526,16 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         'Redo (left-hand panel button AND menu item)
         Case tRedo
             If FormMain.MnuEdit(1).Enabled <> NewState Then
-                toolbar_File.cmdRedo.Enabled = NewState
+                toolbar_Toolbox.cmdRedo.Enabled = NewState
                 FormMain.MnuEdit(1).Enabled = NewState
             End If
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If NewState Then
-                toolbar_File.cmdRedo.ToolTip = g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID)
+                toolbar_Toolbox.cmdRedo.ToolTip = g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID)
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID) & vbTab & "Ctrl+Y"
             Else
-                toolbar_File.cmdRedo.ToolTip = ""
+                toolbar_Toolbox.cmdRedo.ToolTip = ""
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
             End If
             
@@ -587,16 +587,16 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
             'If selections are not active, clear all the selection value textboxes
             If Not NewState Then
-                For i = 0 To toolbar_Tools.tudSel.Count - 1
-                    toolbar_Tools.tudSel(i).Value = 0
+                For i = 0 To toolbar_Options.tudSel.count - 1
+                    toolbar_Options.tudSel(i).Value = 0
                 Next i
             End If
             
             'Set selection text boxes to enable only when a selection is active.  Other selection controls can remain active
             ' even without a selection present; this allows the user to set certain parameters in advance, so when they actually
             ' draw a selection, it already has the attributes they want.
-            For i = 0 To toolbar_Tools.tudSel.Count - 1
-                toolbar_Tools.tudSel(i).Enabled = NewState
+            For i = 0 To toolbar_Options.tudSel.count - 1
+                toolbar_Options.tudSel(i).Enabled = NewState
             Next i
             
             'En/disable all selection menu items that rely on an existing selection to operate
@@ -629,9 +629,9 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         Case tSelectionTransform
         
             'Under certain circumstances, it is desirable to disable only the selection location boxes
-            For i = 0 To toolbar_Tools.tudSel.Count - 1
-                If (Not NewState) Then toolbar_Tools.tudSel(i).Value = 0
-                toolbar_Tools.tudSel(i).Enabled = NewState
+            For i = 0 To toolbar_Options.tudSel.count - 1
+                If (Not NewState) Then toolbar_Options.tudSel(i).Value = 0
+                toolbar_Options.tudSel(i).Enabled = NewState
             Next i
                 
         'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a separate fallback for
@@ -671,8 +671,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             If NewState Then
                 
                 'Start by enabling all non-destructive FX controls
-                For i = 0 To toolbar_Tools.sltQuickFix.Count - 1
-                    If Not toolbar_Tools.sltQuickFix(i).Enabled Then toolbar_Tools.sltQuickFix(i).Enabled = True
+                For i = 0 To toolbar_Options.sltQuickFix.count - 1
+                    If Not toolbar_Options.sltQuickFix(i).Enabled Then toolbar_Options.sltQuickFix(i).Enabled = True
                 Next i
                 
                 'Quick fix buttons are only relevant if the current image has some non-destructive events applied
@@ -680,14 +680,14 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
                 
                     If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState() Then
                         
-                        For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
-                            toolbar_Tools.cmdQuickFix(i).Enabled = True
+                        For i = 0 To toolbar_Options.cmdQuickFix.count - 1
+                            toolbar_Options.cmdQuickFix(i).Enabled = True
                         Next i
                         
                     Else
                         
-                        For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
-                            toolbar_Tools.cmdQuickFix(i).Enabled = False
+                        For i = 0 To toolbar_Options.cmdQuickFix.count - 1
+                            toolbar_Options.cmdQuickFix(i).Enabled = False
                         Next i
                         
                     End If
@@ -695,16 +695,16 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
                 End If
                 
                 'Disable automatic NDFX syncing, then update all sliders to match the current layer's values
-                With toolbar_Tools
+                With toolbar_Options
                     .setNDFXControlState False
                     
                     'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
                     If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
-                        For i = 0 To .sltQuickFix.Count - 1
+                        For i = 0 To .sltQuickFix.count - 1
                             .sltQuickFix(i) = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXValue(i)
                         Next i
                     Else
-                        For i = 0 To .sltQuickFix.Count - 1
+                        For i = 0 To .sltQuickFix.count - 1
                             .sltQuickFix(i) = 0
                         Next i
                     End If
@@ -715,12 +715,12 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             Else
                 
                 'Disable all non-destructive FX controls
-                For i = 0 To toolbar_Tools.sltQuickFix.Count - 1
-                    If toolbar_Tools.sltQuickFix(i).Enabled Then toolbar_Tools.sltQuickFix(i).Enabled = False
+                For i = 0 To toolbar_Options.sltQuickFix.count - 1
+                    If toolbar_Options.sltQuickFix(i).Enabled Then toolbar_Options.sltQuickFix(i).Enabled = False
                 Next i
                 
-                For i = 0 To toolbar_Tools.cmdQuickFix.Count - 1
-                    If toolbar_Tools.cmdQuickFix(i).Enabled Then toolbar_Tools.cmdQuickFix(i).Enabled = False
+                For i = 0 To toolbar_Options.cmdQuickFix.count - 1
+                    If toolbar_Options.cmdQuickFix(i).Enabled Then toolbar_Options.cmdQuickFix(i).Enabled = False
                 Next i
                 
             End If
@@ -954,7 +954,7 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
         Case FILE_TOOLBOX
             FormMain.MnuWindow(0).Checked = Not FormMain.MnuWindow(0).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show File Toolbox", FormMain.MnuWindow(0).Checked
-            g_WindowManager.setWindowVisibility toolbar_File.hWnd, FormMain.MnuWindow(0).Checked
+            g_WindowManager.setWindowVisibility toolbar_Toolbox.hWnd, FormMain.MnuWindow(0).Checked
             
         Case LAYER_TOOLBOX
             FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
@@ -964,7 +964,7 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
         Case TOOLS_TOOLBOX
             FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show Selections Toolbox", FormMain.MnuWindow(2).Checked
-            g_WindowManager.setWindowVisibility toolbar_Tools.hWnd, FormMain.MnuWindow(2).Checked
+            g_WindowManager.setWindowVisibility toolbar_Options.hWnd, FormMain.MnuWindow(2).Checked
     
     End Select
     
@@ -1316,15 +1316,22 @@ Public Sub DisplaySize(ByRef srcImage As pdImage)
     
     'Size is only displayed when it is changed, so if any controls have a maximum value linked to the size of the image,
     ' now is an excellent time to update them.
+    Dim limitingSize As Long
+    
     If srcImage.Width < srcImage.Height Then
-        toolbar_Tools.sltSelectionBorder.Max = srcImage.Width
-        toolbar_Tools.sltCornerRounding.Max = srcImage.Width
-        toolbar_Tools.sltSelectionLineWidth.Max = srcImage.Height
+        limitingSize = srcImage.Width
+        toolbar_Options.sltCornerRounding.Max = srcImage.Width
+        toolbar_Options.sltSelectionLineWidth.Max = srcImage.Height
     Else
-        toolbar_Tools.sltSelectionBorder.Max = srcImage.Height
-        toolbar_Tools.sltCornerRounding.Max = srcImage.Height
-        toolbar_Tools.sltSelectionLineWidth.Max = srcImage.Width
+        limitingSize = srcImage.Height
+        toolbar_Options.sltCornerRounding.Max = srcImage.Height
+        toolbar_Options.sltSelectionLineWidth.Max = srcImage.Width
     End If
+    
+    Dim i As Long
+    For i = 0 To toolbar_Options.sltSelectionBorder.count - 1
+        toolbar_Options.sltSelectionBorder(i).Max = limitingSize
+    Next i
     
 End Sub
 

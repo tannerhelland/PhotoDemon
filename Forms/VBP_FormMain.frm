@@ -2013,7 +2013,7 @@ Private Sub tmrAccelerators_Timer()
         Dim i As Integer
         For i = 0 To 9
             If ctlAccelerator.Key(m_AcceleratorIndex) = ("MRU_" & i) Then
-                If FormMain.mnuRecDocs.Count > i Then
+                If FormMain.mnuRecDocs.count > i Then
                     If FormMain.mnuRecDocs(i).Enabled Then
                         FormMain.mnuRecDocs_Click i
                     End If
@@ -2260,17 +2260,17 @@ Private Sub Form_Load()
     Me.Visible = True
     
     'Register all toolbox forms with the window manager
-    g_WindowManager.registerChildForm toolbar_File, TOOLBAR_WINDOW, 1, FILE_TOOLBOX
+    g_WindowManager.registerChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX
     g_WindowManager.registerChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , 200
-    g_WindowManager.registerChildForm toolbar_Tools, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
+    g_WindowManager.registerChildForm toolbar_Options, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
     
     g_WindowManager.registerChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , 32
     
     'Display the various toolboxes per the user's display settings
-    toolbar_File.Show vbModeless, Me
-    g_WindowManager.setWindowVisibility toolbar_File.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
-    toolbar_Tools.Show vbModeless, Me
-    g_WindowManager.setWindowVisibility toolbar_Tools.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
+    toolbar_Toolbox.Show vbModeless, Me
+    g_WindowManager.setWindowVisibility toolbar_Toolbox.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
+    toolbar_Options.Show vbModeless, Me
+    g_WindowManager.setWindowVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
     toolbar_Layers.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
     
@@ -3395,9 +3395,9 @@ Private Sub mnuLanguages_Click(Index As Integer)
     'Remove the existing translation from any visible windows
     Message "Removing existing translation..."
     g_Language.undoTranslations FormMain, True
-    g_Language.undoTranslations toolbar_File, True
+    g_Language.undoTranslations toolbar_Toolbox, True
     g_Language.undoTranslations toolbar_ImageTabs, True
-    g_Language.undoTranslations toolbar_Tools, True
+    g_Language.undoTranslations toolbar_Options, True
     
     'Apply the new translation
     Message "Applying new translation..."
