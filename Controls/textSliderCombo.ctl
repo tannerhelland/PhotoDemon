@@ -865,7 +865,7 @@ Private Sub redrawSlider()
     If Me.Enabled Then
     
         'Draw the background (interior fill) circle of the slider
-        GDI_Plus.GDIPlusDrawEllipseToDC tmpDIB.getDIBDC, relevantSliderPosX - (m_sliderDiameter \ 2), relevantSliderPosY - (m_sliderDiameter \ 2), m_sliderDiameter, m_sliderDiameter, sliderBackgroundColor, True
+        GDI_Plus.GDIPlusFillEllipseToDC tmpDIB.getDIBDC, relevantSliderPosX - (m_sliderDiameter \ 2), relevantSliderPosY - (m_sliderDiameter \ 2), m_sliderDiameter, m_sliderDiameter, sliderBackgroundColor, True
         
         'Draw the edge (exterior) circle around the slider
         GDI_Plus.GDIPlusDrawCircleToDC tmpDIB.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True

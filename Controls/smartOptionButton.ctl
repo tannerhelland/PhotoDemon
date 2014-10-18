@@ -617,7 +617,7 @@ Private Sub redrawBackBuffer()
     
     'If the option button is TRUE, draw a smaller, filled circle inside the border
     If m_Value Then
-        GDI_Plus.GDIPlusDrawEllipseToDC m_BackBuffer.getDIBDC, offsetX + 3, offsetY + 3, optCircleSize - 6, optCircleSize - 6, optButtonColorFill, True
+        GDI_Plus.GDIPlusFillEllipseToDC m_BackBuffer.getDIBDC, offsetX + 3, offsetY + 3, optCircleSize - 6, optCircleSize - 6, optButtonColorFill, True
     End If
     
     'Set the text color according to the mouse position, e.g. highlight the text if the mouse is over it
