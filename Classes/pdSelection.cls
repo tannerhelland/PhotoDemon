@@ -192,13 +192,15 @@ Public Enum PD_SELECTION_PROPERTY
     SP_WAND_SEARCH_MODE = 9
     SP_WAND_SAMPLE_MERGED = 10
     SP_WAND_COMPARE_METHOD = 11
-    SP_DRAWING_DISPLAY = 12
+    SP_ROUNDED_CORNER_MODIFIED = 12
+    SP_BORDER_WIDTH_MODIFIED = 13
+    SP_BORDER_WIDTH_IGNORE = 14
 End Enum
 
 #If False Then
     Const SP_AREA = 0, SP_SMOOTHING = 1, SP_BORDER_WIDTH = 2, SP_FEATHERING_RADIUS = 3, SP_ROUNDED_CORNER_RADIUS = 4, SP_LINE_WIDTH = 5
     Const SP_SMOOTH_STROKE = 6, SP_POLYGON_CURVATURE = 7, SP_WAND_TOLERANCE = 8, SP_WAND_SEARCH_MODE = 9, SP_WAND_SAMPLE_MERGED = 10
-    Const SP_WAND_COMPARE_METHOD = 11, SP_DRAWING_DISPLAY = 12
+    Const SP_WAND_COMPARE_METHOD = 11, SP_ROUNDED_CORNER_MODIFIED = 12, SP_BORDER_WIDTH_MODIFIED = 13, SP_BORDER_WIDTH_IGNORE = 14
 #End If
 
 'Selection properties can be retrieved via these functions.  Note that the default function returns a STRING; this is because properties are
@@ -213,6 +215,10 @@ End Function
 
 Public Function getSelectionProperty_Double(ByVal PropertyName As PD_SELECTION_PROPERTY, Optional ByVal defaultValueIfMissing As Double = 0#) As Double
     getSelectionProperty_Double = m_PropertyDict.getEntry_Double(PropertyName, defaultValueIfMissing)
+End Function
+
+Public Function getSelectionProperty_Boolean(ByVal PropertyName As PD_SELECTION_PROPERTY, Optional ByVal defaultValueIfMissing As Boolean = False) As Boolean
+    getSelectionProperty_Boolean = m_PropertyDict.getEntry_Boolean(PropertyName, defaultValueIfMissing)
 End Function
 
 'Selection properties can be set via this function
@@ -260,9 +266,6 @@ Public Sub setSelectionProperty(ByVal PropertyName As PD_SELECTION_PROPERTY, ByV
         Case SP_WAND_COMPARE_METHOD
             If (sShape = sWand) Then isMaskReady = False
         
-        Case SP_DRAWING_DISPLAY
-            If (sShape = sLasso) Or (sShape = sPolygon) Then isMaskReady = False
-    
     End Select
     
     Debug.Print isMaskReady
@@ -342,15 +345,12 @@ Public Sub initFromParamString(ByVal paramString As String)
         'Polygon selections have a variable number of parameters, based on the number of points in the polygon.
         ' Position (14) stores the number of points.
         Case sPolygon
-        
-            '12 - Draw mode display
-            setSelectionProperty SP_DRAWING_DISPLAY, cParams.GetLong(12)
             
-            '13 - Polygon curvature
-            setSelectionProperty SP_POLYGON_CURVATURE, cParams.GetDouble(13)
+            '12 - Polygon curvature
+            setSelectionProperty SP_POLYGON_CURVATURE, cParams.GetDouble(12)
             
-            '14 - number of points in the polygon array
-            m_numOfPolygonPoints = cParams.GetLong(14)
+            '13 - number of points in the polygon array
+            m_numOfPolygonPoints = cParams.GetLong(13)
             
             If m_numOfPolygonPoints > 0 Then
             
@@ -359,8 +359,8 @@ Public Sub initFromParamString(ByVal paramString As String)
                 'Retrieve all polygon points from the param string
                 If m_numOfPolygonPoints > 0 Then
                     For i = 0 To m_numOfPolygonPoints - 1
-                        m_PolygonPoints(i).x = cParams.GetDouble(15 + i * 2)
-                        m_PolygonPoints(i).y = cParams.GetDouble(16 + i * 2)
+                        m_PolygonPoints(i).x = cParams.GetDouble(14 + i * 2)
+                        m_PolygonPoints(i).y = cParams.GetDouble(15 + i * 2)
                     Next i
                 End If
                 
@@ -371,15 +371,12 @@ Public Sub initFromParamString(ByVal paramString As String)
         'Lasso/freehand selections have a variable number of parameters, based on the number of points in the lasso.
         ' Position (14) stores the number of points.
         Case sLasso
+                        
+            '12 - Smooth stroke
+            setSelectionProperty SP_SMOOTH_STROKE, cParams.GetDouble(12)
             
-            '12 - Draw mode display
-            setSelectionProperty SP_DRAWING_DISPLAY, cParams.GetLong(12)
-            
-            '13 - Smooth stroke
-            setSelectionProperty SP_SMOOTH_STROKE, cParams.GetDouble(13)
-            
-            '14 - number of points in the lasso array
-            m_numOfLassoPoints = cParams.GetLong(14)
+            '13 - number of points in the lasso array
+            m_numOfLassoPoints = cParams.GetLong(13)
             
             If m_numOfLassoPoints > 0 Then
             
@@ -388,8 +385,8 @@ Public Sub initFromParamString(ByVal paramString As String)
                 'Retrieve all remaining lasso points
                 If m_numOfLassoPoints > 0 Then
                     For i = 0 To m_numOfLassoPoints - 1
-                        m_LassoPoints(i).x = cParams.GetDouble(15 + i * 2)
-                        m_LassoPoints(i).y = cParams.GetDouble(16 + i * 2)
+                        m_LassoPoints(i).x = cParams.GetDouble(14 + i * 2)
+                        m_LassoPoints(i).y = cParams.GetDouble(15 + i * 2)
                     Next i
                 End If
                 
@@ -448,7 +445,7 @@ Public Function getSelectionParamString() As String
         ' (TODO: use a string builder class for this, to improve performance)
         Case sPolygon
             
-            getSelectionParamString = getSelectionParamString & "|" & getSelectionProperty(SP_DRAWING_DISPLAY) & "|" & getSelectionProperty(SP_POLYGON_CURVATURE) & "|" & CStr(m_numOfPolygonPoints)
+            getSelectionParamString = getSelectionParamString & "|" & getSelectionProperty(SP_POLYGON_CURVATURE) & "|" & CStr(m_numOfPolygonPoints)
             
             If m_numOfPolygonPoints > 0 Then
                 For i = 0 To m_numOfPolygonPoints - 1
@@ -460,7 +457,7 @@ Public Function getSelectionParamString() As String
         ' (TODO: use a string builder class for this, to improve performance)
         Case sLasso
             
-            getSelectionParamString = getSelectionParamString & "|" & getSelectionProperty(SP_DRAWING_DISPLAY) & "|" & getSelectionProperty(SP_SMOOTH_STROKE) & "|" & CStr(m_numOfLassoPoints)
+            getSelectionParamString = getSelectionParamString & "|" & getSelectionProperty(SP_SMOOTH_STROKE) & "|" & CStr(m_numOfLassoPoints)
             
             If m_numOfLassoPoints > 0 Then
                 For i = 0 To m_numOfLassoPoints - 1
@@ -1581,6 +1578,10 @@ Private Sub createSelectionMask()
         
         If getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) > minDimension Then modifiedCornerVal = minDimension Else modifiedCornerVal = getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS)
         
+        'Store this value in the property dictionary, because subsequent render functions may have need of it, and we don't want to
+        ' recalculate it if at all possible
+        setSelectionProperty SP_ROUNDED_CORNER_MODIFIED, modifiedCornerVal
+        
     End If
         
     'When rendering rectangle and ellipse selections in BORDERED mode, we calculate some values in advance.  Basically, these shapes
@@ -1658,16 +1659,16 @@ Private Sub createSelectionMask()
             'Interior/exterior selections use identical rendering code.
             If (getSelectionProperty_Long(SP_AREA) = sInterior) Or (getSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
             
-                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth - 1, selHeight - 1, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                GDIPlusFillEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth - 1, selHeight - 1, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                 
             'Border selections are a bit different; we must draw two ellipses - an exterior and an interior one.
             Else
             
                 'Draw the exterior oval
-                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth, selHeight, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                GDIPlusFillEllipseToDC selMask.getDIBDC, selLeft, selTop, selWidth, selHeight, maskForeColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                 
                 'Next, draw the interior one
-                GDIPlusDrawEllipseToDC selMask.getDIBDC, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                GDIPlusFillEllipseToDC selMask.getDIBDC, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
                         
             End If
             
@@ -2117,17 +2118,22 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     'Is the selection mask ready to be used?  If not, prepare it now.
     If Not isMaskReady Then createSelectionMask
     
-    'For lasso selections, is a special drawing mode active?  If it is, this function will be canceled in favor of a custom draw routine.
-    If (sShape = sLasso) And (getSelectionProperty_Long(SP_DRAWING_DISPLAY) = sOutlineOnlyDisplay) Then
+    'A few different criteria can cause us to abandon this function in favor of renderOutlineOnly (which, per its name,
+    ' renders the active selection as just an outline):
+    ' 1) The user has specified outline-only mode, and this is not a raster or magic wand selection.  (Those don't support outline mode at present.)
+    ' 2) A lasso selection is active but not locked-in (meaning it's still being drawn)
+    ' 3) A polygon selection is active but not locked-in (meaning it's still being drawn)
+    '
+    'If any of the above are true, we will reroute control to renderOutlineOnly
+    If ((renderType = SELECTION_RENDER_OUTLINE) And (sShape <> sWand) And (sShape <> sRaster)) Or _
+        ((sShape = sLasso) And (Not m_LassoClosed)) Or _
+        ((sShape = sPolygon) And (Not m_PolygonClosed)) Then
+        
         renderOutlineOnly dstDIB, srcImage, dstCanvas
         Exit Sub
+            
     End If
     
-    'For polygon selections, if the polygon is a) incomplete, or b) has a special drawing mode active, render an outline only.
-    If (sShape = sPolygon) And ((getSelectionProperty_Long(SP_DRAWING_DISPLAY) = sOutlineOnlyDisplay) Or (Not m_PolygonClosed)) Then
-        renderOutlineOnly dstDIB, srcImage, dstCanvas
-        Exit Sub
-    End If
     
     'Before rendering the selection, we need to convert the its coordinates from "image coordinates" to "viewport coordinates".
     ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on the screen,
@@ -2275,45 +2281,96 @@ End Sub
 
 'Lasso and Polygon tools support the display of an outline (instead of normal highlight) during the draw phase.  It is assumed that the
 ' caller has verified whether this mode is what the user wants, PRIOR to calling this function.
-' TODO: allow all shapes (except possibly magic wand) to be rendered via outline only
+' TODO: figure out how to render magic wand via outline??
+' TODO: figure out how to draw bordered selections.  This is easy for rects, ellipses, and lines, but polygon and lasso selections are
+'       much trickier.  GdipWidenPath doesn't work because it crosses itself on the inner loop, which makes for a messy, jumbled outline.
+'       We'd probably need a custom solution that removes inner loops - ugly project!
 Private Sub renderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
-
-    'To render the outline correctly, we must first translate all lasso (or polygon) points from the image coordinate space
-    ' to the viewport coordinate space.
+    
+    'To render an outline correctly, we must first translate all relevant points from the image coordinate space
+    ' to the viewport coordinate space.  The number of points required obviously varies by selection shape.
     Dim tmpViewportSpace() As POINTFLOAT
-    
     Dim numOfRenderPoints As Long
-    If sShape = sPolygon Then numOfRenderPoints = m_numOfPolygonPoints Else numOfRenderPoints = m_numOfLassoPoints
+
+    'Simple shapes (rectangles, ellipses), will use these dstLeft/Right/Top/Bottom values instead of a custom point array
+    Dim dstLeft As Double, dstRight As Double
+    Dim dstTop As Double, dstBottom As Double
     
-    If numOfRenderPoints > 0 Then
-    
-        ReDim tmpViewportSpace(0 To numOfRenderPoints - 1) As POINTFLOAT
-        Dim tmpX As Double, tmpY As Double
-        
-        Dim i As Long
-        
-        For i = 0 To numOfRenderPoints - 1
-            
-            If (sShape = sPolygon) Then
-                Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, tmpX, tmpY
-            Else
-                Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
-            End If
-            
-            tmpViewportSpace(i).x = tmpX
-            tmpViewportSpace(i).y = tmpY
-        Next i
-        
-        'Use GDI+ to stroke the temporary path
-        If sShape = sPolygon Then
-            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, RGB(0, 0, 0), 192, True, 2, , True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
-            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, RGB(255, 255, 255), 192, True, 1, , True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
-        Else
-            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, RGB(0, 0, 0), 192, True, 2, , True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
-            GDI_Plus.GDIPlusStrokePathToDC dstDIB.getDIBDC, numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, RGB(255, 255, 255), 192, True, 1, , True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
-        End If
-        
+    If (sShape = sRectangle) Or (sShape = sCircle) Then
+        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, selLeft, selTop, dstLeft, dstTop
+        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, selLeft + selWidth, selTop + selHeight, dstRight, dstBottom
+    ElseIf (sShape = sLine) Then
+        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, x1, y1, dstLeft, dstTop
+        Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, x2, y2, dstRight, dstBottom
     End If
+    
+    'New in version 6.6 is an awesome new path class, which makes the rendering steps much easier than they have historically been.
+    Dim pdPath As pdGraphicsPath
+    Set pdPath = New pdGraphicsPath
+    
+    Select Case sShape
+    
+        Case sRectangle
+            
+            'Add the selection rectangle to the path
+            pdPath.addRectangle_Absolute dstLeft, dstTop, dstRight, dstBottom
+            
+            'If the selection is bordered, widen it now
+            'If (getSelectionProperty_Long(SP_AREA) = sBorder) And (Not getSelectionProperty_Boolean(SP_BORDER_WIDTH_IGNORE)) Then
+            '    pdPath.convertPathToBorderType_Simple getSelectionProperty_Long(SP_BORDER_WIDTH)
+            'End If
+                        
+        Case sCircle
+        
+            'Add the ellipse to the path
+            pdPath.addEllipse_Absolute dstLeft, dstTop, dstRight, dstBottom
+                    
+        Case sLine
+        
+            'Add the line to the path
+            pdPath.addLine dstLeft, dstTop, dstRight, dstBottom
+            
+            'Widen the path to encompass only the border of the line
+            pdPath.convertPathToBorderType_Simple getSelectionProperty_Long(SP_LINE_WIDTH), LineCapRound
+            
+        'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used and the number of points
+        Case sPolygon, sLasso
+        
+            If sShape = sPolygon Then numOfRenderPoints = m_numOfPolygonPoints Else numOfRenderPoints = m_numOfLassoPoints
+            
+            If numOfRenderPoints > 0 Then
+            
+                'Convert the lasso or polygon array to viewport coordinate space
+                ReDim tmpViewportSpace(0 To numOfRenderPoints - 1) As POINTFLOAT
+                Dim tmpX As Double, tmpY As Double
+                
+                Dim i As Long
+                
+                For i = 0 To numOfRenderPoints - 1
+                    
+                    If (sShape = sPolygon) Then
+                        Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, tmpX, tmpY
+                    Else
+                        Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
+                    End If
+                    
+                    tmpViewportSpace(i).x = tmpX
+                    tmpViewportSpace(i).y = tmpY
+                Next i
+                
+                'Add the converted shape to the path object
+                If sShape = sPolygon Then
+                    pdPath.addPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, True, getSelectionProperty_Double(SP_POLYGON_CURVATURE)
+                Else
+                    pdPath.addPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, getSelectionProperty_Double(SP_SMOOTH_STROKE)
+                End If
+                
+            End If
+    
+    End Select
+    
+    'Draw the assembled path onto the canvas
+    pdPath.strokePathToDIB_UIStyle dstDIB
     
 End Sub
 
@@ -2559,10 +2616,10 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
             ' Every parameter past that point needs to be transformed in an x/y pattern.
             Case sLasso, sPolygon
             
-                If tmpParser.GetLong(14) > 0 Then
-                    For i = 0 To tmpParser.GetLong(14) - 1
-                        tmpParser.setNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) / CDbl(containingPDImage.Width)))
-                        tmpParser.setNewValueAtLocation 16 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(16 + i * 2)) / CDbl(containingPDImage.Height)))
+                If tmpParser.GetLong(13) > 0 Then
+                    For i = 0 To tmpParser.GetLong(13) - 1
+                        tmpParser.setNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) / CDbl(containingPDImage.Width)))
+                        tmpParser.setNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) / CDbl(containingPDImage.Height)))
                     Next i
                 End If
             
@@ -2601,10 +2658,10 @@ Private Function translateParamStringToRelativeFormat(ByVal paramString As Strin
             ' Every parameter past that point needs to be transformed in an x/y pattern.
             Case sLasso, sPolygon
             
-                If tmpParser.GetLong(14) > 0 Then
-                    For i = 0 To tmpParser.GetLong(14) - 1
-                        tmpParser.setNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) * CDbl(containingPDImage.Width)))
-                        tmpParser.setNewValueAtLocation 16 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(16 + i * 2)) * CDbl(containingPDImage.Height)))
+                If tmpParser.GetLong(13) > 0 Then
+                    For i = 0 To tmpParser.GetLong(13) - 1
+                        tmpParser.setNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) * CDbl(containingPDImage.Width)))
+                        tmpParser.setNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) * CDbl(containingPDImage.Height)))
                     Next i
                 End If
                 
