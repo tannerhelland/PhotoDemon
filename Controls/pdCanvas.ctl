@@ -22,6 +22,7 @@ Begin VB.UserControl pdCanvas
    ScaleHeight     =   513
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
+   ToolboxBitmap   =   "pdCanvas.ctx":0000
    Begin VB.PictureBox picProgressBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
@@ -102,9 +103,9 @@ Begin VB.UserControl pdCanvas
       Begin VB.ComboBox cmbSizeUnit 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":0000
+         ItemData        =   "pdCanvas.ctx":0312
          Left            =   3630
-         List            =   "pdCanvas.ctx":0002
+         List            =   "pdCanvas.ctx":0314
          Style           =   2  'Dropdown List
          TabIndex        =   11
          Top             =   15
@@ -131,7 +132,7 @@ Begin VB.UserControl pdCanvas
          BackColor       =   -2147483626
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":0004
+         PictureNormal   =   "pdCanvas.ctx":0316
          PictureAlign    =   7
          PictureEffectOnDown=   0
          CaptionEffects  =   0
@@ -141,9 +142,9 @@ Begin VB.UserControl pdCanvas
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":0856
+         ItemData        =   "pdCanvas.ctx":0B68
          Left            =   840
-         List            =   "pdCanvas.ctx":0858
+         List            =   "pdCanvas.ctx":0B6A
          Style           =   2  'Dropdown List
          TabIndex        =   8
          Top             =   15
@@ -170,7 +171,7 @@ Begin VB.UserControl pdCanvas
          BackColor       =   -2147483626
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":085A
+         PictureNormal   =   "pdCanvas.ctx":0B6C
          PictureAlign    =   0
          PictureEffectOnDown=   0
          CaptionEffects  =   0
@@ -198,7 +199,7 @@ Begin VB.UserControl pdCanvas
          BackColor       =   -2147483626
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":10AC
+         PictureNormal   =   "pdCanvas.ctx":13BE
          PictureAlign    =   7
          PictureEffectOnDown=   0
          CaptionEffects  =   0
@@ -226,7 +227,7 @@ Begin VB.UserControl pdCanvas
          BackColor       =   -2147483626
          Caption         =   ""
          HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":18FE
+         PictureNormal   =   "pdCanvas.ctx":1C10
          PictureAlign    =   7
          PictureEffectOnDown=   0
          CaptionEffects  =   0
@@ -903,12 +904,12 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                             Else
                             
                                 'Update the selection coordinate text boxes with the new offsets
-                                toolbar_Tools.tudSel(0).Value = toolbar_Tools.tudSel(0).Value + hOffset
-                                toolbar_Tools.tudSel(1).Value = toolbar_Tools.tudSel(1).Value + vOffset
+                                toolbar_Options.tudSel(0).Value = toolbar_Options.tudSel(0).Value + hOffset
+                                toolbar_Options.tudSel(1).Value = toolbar_Options.tudSel(1).Value + vOffset
                                 
                                 If g_CurrentTool = SELECT_LINE Then
-                                    toolbar_Tools.tudSel(2).Value = toolbar_Tools.tudSel(2).Value + hOffset
-                                    toolbar_Tools.tudSel(3).Value = toolbar_Tools.tudSel(3).Value + vOffset
+                                    toolbar_Options.tudSel(2).Value = toolbar_Options.tudSel(2).Value + hOffset
+                                    toolbar_Options.tudSel(3).Value = toolbar_Options.tudSel(3).Value + vOffset
                                 End If
                                 
                                 'Update the screen
@@ -1147,7 +1148,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             
                 'Prior to moving or transforming a layer, we need to check the state of the "auto-activate layer beneath mouse"
                 ' option; if it is set, check (and possibly modify) the active layer based on the mouse position.
-                If CBool(toolbar_Tools.chkAutoActivateLayer) Then
+                If CBool(toolbar_Options.chkAutoActivateLayer) Then
                 
                     Dim layerUnderMouse As Long
                     layerUnderMouse = Layer_Handler.getLayerUnderMouse(imgX, imgY, True)
@@ -1397,7 +1398,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             
                 'If the user has the "auto-activate layer beneath mouse" option set, report the current layer name in the
                 ' message bar; this is helpful for determining what layer will be affected by a given action.
-                If CBool(toolbar_Tools.chkAutoActivateLayer) Then
+                If CBool(toolbar_Options.chkAutoActivateLayer) Then
                 
                     Dim layerUnderMouse As Long
                     layerUnderMouse = Layer_Handler.getLayerUnderMouse(imgX, imgY, True)

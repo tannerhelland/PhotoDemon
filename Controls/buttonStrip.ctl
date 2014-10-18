@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin VB.UserControl buttonStrip 
    BackColor       =   &H00FFFFFF&
-   ClientHeight    =   3600
+   ClientHeight    =   765
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   4800
+   ClientWidth     =   2745
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -14,9 +14,10 @@ Begin VB.UserControl buttonStrip
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   ScaleHeight     =   240
+   ScaleHeight     =   51
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   320
+   ScaleWidth      =   183
+   ToolboxBitmap   =   "buttonStrip.ctx":0000
 End
 Attribute VB_Name = "buttonStrip"
 Attribute VB_GlobalNameSpace = False
