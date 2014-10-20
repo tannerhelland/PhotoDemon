@@ -169,6 +169,7 @@ Private Declare Function SetCapture Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
 
 'Set a new cursor for a given class
+Private Declare Function GetCursor Lib "user32" () As Long
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Private Declare Function GetClassLong Lib "user32" Alias "GetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
@@ -428,7 +429,7 @@ Public Sub setSystemCursor(Optional ByVal systemCursorType As SystemCursorConsta
     End If
     
     'Check for duplicate cursor requests, and ignore them as necessary
-    If m_CursorHandle <> tmpCursorHandle Then
+    If GetCursor() <> tmpCursorHandle Then
         
         m_CursorHandle = tmpCursorHandle
         applyCursorToHwnds False
