@@ -142,5 +142,14 @@ Public Const HTBOTTOM As Long = 15
 Public Declare Sub SetCursorPos Lib "user32" (ByVal newX As Long, ByVal newY As Long)
 Public Declare Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
 
-'Window painting
-Public Declare Function GetUpdateRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
+'This painting struct stores the data passed between BeginPaint and EndPaint
+Public Type PAINTSTRUCT
+    hDC As Long
+    fErase As Long
+    rcPaint As RECT
+    fRestore As Long
+    fIncUpdate  As Long
+    rgbReserved(0 To 31) As Byte
+End Type
+
+Public Declare Function GetUpdateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long

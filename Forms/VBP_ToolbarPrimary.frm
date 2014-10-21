@@ -1,6 +1,5 @@
 VERSION 5.00
 Begin VB.Form toolbar_Toolbox 
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "File"
@@ -26,6 +25,16 @@ Begin VB.Form toolbar_Toolbox
    ScaleWidth      =   155
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   0
+      Left            =   120
+      TabIndex        =   12
+      Top             =   3000
+      Width           =   720
+      _ExtentX        =   1085
+      _ExtentY        =   1085
+   End
    Begin PhotoDemon.jcbutton cmdOpen 
       Height          =   600
       Left            =   60
@@ -184,257 +193,85 @@ Begin VB.Form toolbar_Toolbox
       CaptionEffects  =   0
       TooltipTitle    =   "Save as"
    End
-   Begin PhotoDemon.jcbutton cmdTools 
-      Height          =   600
-      Index           =   0
-      Left            =   60
-      TabIndex        =   8
-      Top             =   3000
-      Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":4FEC
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
-   End
-   Begin PhotoDemon.jcbutton cmdTools 
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   1
-      Left            =   780
-      TabIndex        =   9
+      Left            =   840
+      TabIndex        =   13
       Top             =   3000
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":5D3E
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
    End
-   Begin PhotoDemon.jcbutton cmdTools 
-      Height          =   600
-      Index           =   8
-      Left            =   1530
-      TabIndex        =   10
-      Top             =   3000
-      Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":6A90
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
-   End
-   Begin PhotoDemon.jcbutton cmdTools 
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   2
-      Left            =   60
-      TabIndex        =   12
-      Top             =   3960
+      Left            =   1560
+      TabIndex        =   14
+      Top             =   3000
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":77E2
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
    End
-   Begin PhotoDemon.jcbutton cmdTools 
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   3
-      Left            =   780
-      TabIndex        =   13
+      Left            =   120
+      TabIndex        =   15
       Top             =   3960
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":8534
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
    End
-   Begin PhotoDemon.jcbutton cmdTools 
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   4
-      Left            =   1530
-      TabIndex        =   14
+      Left            =   840
+      TabIndex        =   16
       Top             =   3960
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":9286
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
    End
-   Begin PhotoDemon.jcbutton cmdTools 
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   5
-      Left            =   60
-      TabIndex        =   15
-      Top             =   4560
+      Left            =   1560
+      TabIndex        =   17
+      Top             =   3960
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":9FD8
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
    End
-   Begin PhotoDemon.jcbutton cmdTools 
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   6
-      Left            =   780
-      TabIndex        =   16
+      Left            =   120
+      TabIndex        =   18
       Top             =   4560
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":AD2A
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
    End
-   Begin PhotoDemon.jcbutton cmdTools 
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   7
-      Left            =   1530
-      TabIndex        =   17
+      Left            =   840
+      TabIndex        =   19
       Top             =   4560
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_ToolbarPrimary.frx":BA7C
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   8
+      Left            =   1560
+      TabIndex        =   20
+      Top             =   4560
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin VB.Label lblCategory 
       Appearance      =   0  'Flat
@@ -455,7 +292,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   3
       Left            =   120
-      TabIndex        =   20
+      TabIndex        =   11
       Top             =   1620
       Width           =   885
    End
@@ -478,7 +315,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   2
       Left            =   120
-      TabIndex        =   19
+      TabIndex        =   10
       Top             =   30
       Width           =   720
    End
@@ -487,7 +324,7 @@ Begin VB.Form toolbar_Toolbox
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_ToolbarPrimary.frx":C7CE
+      Caption         =   $"VBP_ToolbarPrimary.frx":4FEC
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -500,7 +337,7 @@ Begin VB.Form toolbar_Toolbox
       ForeColor       =   &H000000FF&
       Height          =   3000
       Left            =   120
-      TabIndex        =   18
+      TabIndex        =   9
       Top             =   6000
       UseMnemonic     =   0   'False
       Width           =   2160
@@ -525,7 +362,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   1
       Left            =   120
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   3660
       Width           =   1215
    End
@@ -640,17 +477,28 @@ End Sub
 
 Private Sub Form_Load()
     
+    'Initialize tool button images
+    cmdTools(NAV_DRAG).AssignImage "T_HAND"
+    cmdTools(NAV_MOVE).AssignImage "T_MOVE"
+    cmdTools(QUICK_FIX_LIGHTING).AssignImage "T_NDFX"
+    cmdTools(SELECT_RECT).AssignImage "T_SELRECT"
+    cmdTools(SELECT_CIRC).AssignImage "T_SELCIRCLE"
+    cmdTools(SELECT_LINE).AssignImage "T_SELLINE"
+    cmdTools(SELECT_POLYGON).AssignImage "T_SELPOLYGON"
+    cmdTools(SELECT_LASSO).AssignImage "T_SELLASSO"
+    cmdTools(SELECT_WAND).AssignImage "T_SELWAND"
+        
     'Initialize tool button tooltips
-    cmdTools(NAV_DRAG).ToolTip = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
-    cmdTools(NAV_MOVE).ToolTip = g_Language.TranslateMessage("Move and resize image layers")
-    cmdTools(SELECT_RECT).ToolTip = g_Language.TranslateMessage("Rectangular Selection")
-    cmdTools(SELECT_CIRC).ToolTip = g_Language.TranslateMessage("Elliptical (Oval) Selection")
-    cmdTools(SELECT_LINE).ToolTip = g_Language.TranslateMessage("Line Selection")
-    cmdTools(SELECT_POLYGON).ToolTip = g_Language.TranslateMessage("Polygon Selection")
-    cmdTools(SELECT_LASSO).ToolTip = g_Language.TranslateMessage("Lasso (Freehand) Selection")
-    cmdTools(SELECT_WAND).ToolTip = g_Language.TranslateMessage("Magic Wand Selection")
-    cmdTools(QUICK_FIX_LIGHTING).ToolTip = g_Language.TranslateMessage("Apply non-destructive lighting adjustments")
-    
+    cmdTools(NAV_DRAG).ToolTipText = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
+    cmdTools(NAV_MOVE).ToolTipText = g_Language.TranslateMessage("Move and resize image layers")
+    cmdTools(QUICK_FIX_LIGHTING).ToolTipText = g_Language.TranslateMessage("Apply non-destructive lighting adjustments")
+    cmdTools(SELECT_RECT).ToolTipText = g_Language.TranslateMessage("Rectangular Selection")
+    cmdTools(SELECT_CIRC).ToolTipText = g_Language.TranslateMessage("Elliptical (Oval) Selection")
+    cmdTools(SELECT_LINE).ToolTipText = g_Language.TranslateMessage("Line Selection")
+    cmdTools(SELECT_POLYGON).ToolTipText = g_Language.TranslateMessage("Polygon Selection")
+    cmdTools(SELECT_LASSO).ToolTipText = g_Language.TranslateMessage("Lasso (Freehand) Selection")
+    cmdTools(SELECT_WAND).ToolTipText = g_Language.TranslateMessage("Magic Wand Selection")
+        
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.setParentForm Me

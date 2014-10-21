@@ -336,10 +336,16 @@ PDLOGONOTEXT CUSTOM  MOVEABLE        LOADONCALL      6_4_no_overlay.jpg
 PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 
 //Tool toolbox icons
-//NOTE: these have since been replaced by jcButton controls
-//T_SELRECT    CUSTOM  MOVEABLE        LOADONCALL      toolbox_rect_select.png
-//T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_oval_select.png
-//T_SELLINE    CUSTOM  MOVEABLE        LOADONCALL      toolbox_line_select.png
+//
+T_HAND       CUSTOM  MOVEABLE        LOADONCALL      toolbox_hand_24.png
+T_MOVE       CUSTOM  MOVEABLE        LOADONCALL      toolbox_move_arrow_24.png
+T_NDFX       CUSTOM  MOVEABLE        LOADONCALL      toolbox_ndfx_24.png
+T_SELRECT    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_rect_24.png
+T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_circle_24.png
+T_SELLINE    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_line_24.png
+T_SELPOLYGON CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_polygon_24.png
+T_SELLASSO   CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_lasso_24.png
+T_SELWAND    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_wand_24.png
 
 //Layer toolbox (note that other layer toolbox entries are in the Layer Menu section, above
 EYE_OPEN     CUSTOM  MOVEABLE        LOADONCALL      eye.png
