@@ -1040,7 +1040,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                     newWinStyle = WS_CHILD Or WS_CLIPCHILDREN
                     If (Not isFirstLoad) And pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                     SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
-                    SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE 'Or WS_EX_LAYERED
+                    SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE Or WS_EX_COMPOSITED 'Or WS_EX_LAYERED
                     SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, pdWindows(winIndex).originalWidthClient, pdWindows(winIndex).originalHeightClient, SWP_NOMOVE Or SWP_FRAMECHANGED Or SWP_NOOWNERZORDER Or SWP_NOCOPYBITS
                     
                     'Specify the main window as the parent
@@ -1183,7 +1183,7 @@ Public Sub setFirstRunMainWindowPosition()
     Dim primaryMonitorIndex As Long
     
     Dim i As Long
-    For i = 1 To g_cMonitors.Monitors.count
+    For i = 1 To g_cMonitors.Monitors.Count
         If g_cMonitors.Monitors(i).isPrimary Then
             primaryMonitorIndex = i
             Exit For

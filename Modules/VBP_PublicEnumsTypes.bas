@@ -15,17 +15,19 @@ End Type
 Public Enum PDTools
     NAV_DRAG = 0
     NAV_MOVE = 1
-    SELECT_RECT = 2
-    SELECT_CIRC = 3
-    SELECT_LINE = 4
-    SELECT_POLYGON = 5
-    SELECT_LASSO = 6
-    SELECT_WAND = 7
-    QUICK_FIX_LIGHTING = 8
+    QUICK_FIX_LIGHTING = 2
+    SELECT_RECT = 3
+    SELECT_CIRC = 4
+    SELECT_LINE = 5
+    SELECT_POLYGON = 6
+    SELECT_LASSO = 7
+    SELECT_WAND = 8
 End Enum
 
 #If False Then
-    Const NAV_DRAG = 0, NAV_MOVE = 1, SELECT_RECT = 2, SELECT_CIRC = 3, SELECT_LINE = 4, SELECT_POLYGON = 5, SELECT_LASSO = 6, SELECT_WAND = 7, QUICK_FIX_LIGHTING = 8
+    Const NAV_DRAG = 0, NAV_MOVE = 1, QUICK_FIX_LIGHTING = 2
+    Const SELECT_RECT = 3, SELECT_CIRC = 4, SELECT_LINE = 5
+    Const SELECT_POLYGON = 6, SELECT_LASSO = 7, SELECT_WAND = 8
 #End If
 
 'How should the selection be rendered?
@@ -279,3 +281,4 @@ Public Type RECTF
     Width As Single
     Height As Single
 End Type
+

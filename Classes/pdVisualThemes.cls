@@ -43,6 +43,7 @@ Public Enum PD_THEME_COLOR
     'Accent color variations
     PDTC_ACCENT_DEFAULT
     PDTC_ACCENT_HIGHLIGHT
+    PDTC_ACCENT_ULTRALIGHT
     PDTC_ACCENT_SHADOW
     
     'Non-interactive variations (used to render control outlines, etc)
@@ -74,7 +75,7 @@ Public Enum PD_THEME_COLOR
 End Enum
 
 #If False Then
-    Private Const PDTC_ACCENT_DEFAULT = 0, PDTC_ACCENT_HIGHLIGHT = 0, PDTC_ACCENT_SHADOW = 0
+    Private Const PDTC_ACCENT_DEFAULT = 0, PDTC_ACCENT_HIGHLIGHT = 0, PDTC_ACCENT_ULTRALIGHT = 0, PDTC_ACCENT_SHADOW = 0
     Private Const PDTC_GRAY_DEFAULT = 0, PDTC_GRAY_HIGHLIGHT = 0, PDTC_GRAY_SHADOW = 0
     Private Const PDTC_BACKGROUND_DEFAULT = 0, PDTC_BACKGROUND_CANVAS = 0, PDTC_BACKGROUND_COMMANDBAR = 0
     Private Const PDTC_TEXT_DEFAULT = 0, PDTC_TEXT_HYPERLINK = 0, PDTC_TEXT_TITLE = 0, PDTC_TEXT_INVERT = 0
@@ -224,7 +225,11 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
             'Slider track, large contiguous blocks of color
             Case PDTC_ACCENT_HIGHLIGHT
                 getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3cafe6")
-                
+            
+            'Background on toolbox images (which can't afford to be as dark as the usual highlight value)
+            Case PDTC_ACCENT_ULTRALIGHT
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("d2f0fa")
+            
             'Small or heavily aliased items (e.g. check box check, radio button dot)
             Case PDTC_ACCENT_SHADOW
                 getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3270dc")
