@@ -2724,7 +2724,7 @@ End Function
 
 'Quickly modify RGB values by some constant factor.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmount As Double = 1#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmount As Long = 0, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Unpremultiply the source DIB, as necessary
     If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha False
@@ -2767,7 +2767,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     ReDim scaleLookup(0 To 255) As Byte
     
     For x = 0 To 255
-        r = x * scaleAmount
+        r = x + scaleAmount
         If r < 0 Then r = 0
         If r > 255 Then r = 255
         scaleLookup(x) = r

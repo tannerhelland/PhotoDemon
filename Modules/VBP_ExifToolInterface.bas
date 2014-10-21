@@ -256,6 +256,7 @@ Private Sub stopVerificationMode()
     'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
     If FileExist(tmpMetadataFilePath) Then Kill tmpMetadataFilePath
     
+    
 End Sub
 
 'When ExifTool has completed work on metadata, it will send "{ready}" to stdout.  We check for the presence of "{ready}" in

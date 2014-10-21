@@ -73,7 +73,7 @@ Private WithEvents cPainter As pdWindowPainter
 Attribute cPainter.VB_VarHelpID = -1
 
 'Current button state
-Private m_Buttonstate As Boolean
+Private m_ButtonState As Boolean
 
 'Button images.  (Since this control doesn't support text, you'd better make use of these!)
 Private btImage As pdDIB                'You must specify this image manually, at run-time.
@@ -95,9 +95,24 @@ Private m_FocusRectActive As Boolean
 'Current back color
 Private m_BackColor As OLE_COLOR
 
+'AutoToggle mode allows the button to operate as a normal button (e.g. no persistent value)
+Private m_AutoToggle As Boolean
+
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
 Private m_ToolString As String
+
+'This toolbox button control is designed to be used in a "radio button"-like system, where buttons exist in a group, and the
+' pressing of one results in the unpressing of any others.  For the rare circumstances where this behavior is undesirable
+' (e.g. the pdCanvas status bar, where some instances of this control serve as actual buttons), the AutoToggle property can
+' be set to TRUE.  This will cause the button to operate as a normal command button.
+Public Property Get AutoToggle() As Boolean
+    AutoToggle = m_AutoToggle
+End Property
+
+Public Property Let AutoToggle(ByVal newToggle As Boolean)
+    m_AutoToggle = newToggle
+End Property
 
 'BackColor is an important property for this control, as it may sit on other controls whose backcolor is not guaranteed in advance.
 ' So we can't rely on theming alone to determine this value.
@@ -132,10 +147,24 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
     'If space is pressed, and our value is not true, raise a click event.
     If (vkCode = VK_SPACE) Then
 
-        If m_FocusRectActive And Me.Enabled And (Not m_Buttonstate) Then
-            m_Buttonstate = True
+        If m_FocusRectActive And Me.Enabled And (Not m_ButtonState) Then
+            m_ButtonState = True
             redrawBackBuffer
             RaiseEvent Click
+        End If
+        
+    End If
+
+End Sub
+
+Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+
+    'If space was pressed, and AutoToggle is active, remove the button state and redraw it
+    If (vkCode = VK_SPACE) Then
+
+        If Me.Enabled And m_ButtonState Then
+            m_ButtonState = False
+            redrawBackBuffer
         End If
         
     End If
@@ -145,8 +174,8 @@ End Sub
 'To improve responsiveness, MouseDown is used instead of Click
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
-    If Me.Enabled And (Not m_Buttonstate) Then
-        m_Buttonstate = True
+    If Me.Enabled And (Not m_ButtonState) Then
+        m_ButtonState = True
         redrawBackBuffer
         RaiseEvent Click
     End If
@@ -183,6 +212,16 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    
+    'If toggle mode is active, remove the button's TRUE state and redraw it
+    If m_AutoToggle And m_ButtonState Then
+        m_ButtonState = False
+        redrawBackBuffer
+    End If
+    
+End Sub
+
 'hWnds aren't exposed by default
 Public Property Get hWnd() As Long
 Attribute hWnd.VB_UserMemId = -515
@@ -196,15 +235,16 @@ End Property
 
 'The most relevant part of this control is this Value property, which is important since this button operates as a toggle.
 Public Property Get Value() As Boolean
-    Value = m_Buttonstate
+    Value = m_ButtonState
 End Property
 
 Public Property Let Value(ByVal newValue As Boolean)
     
-    'Update our internal value tracker
-    If m_Buttonstate <> newValue Then
+    'Update our internal value tracker, but only if autotoggle is not active.  (Autotoggle causes the button to behave like
+    ' a normal button, so there's no concept of a persistent "value".)
+    If (m_ButtonState <> newValue) And (Not m_AutoToggle) Then
     
-        m_Buttonstate = newValue
+        m_ButtonState = newValue
         
         'Redraw the control to match the new state
         redrawBackBuffer
@@ -239,7 +279,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     'Finally, create a "glowy" hovered version of the DIB for hover state
     Set btImageHover = New pdDIB
     btImageHover.createFromExistingDIB btImage
-    ScaleDIBRGBValues btImageHover, 1.2, True
+    ScaleDIBRGBValues btImageHover, UC_HOVER_BRIGHTNESS, True
     
     'Request a control size update, which will also calculate a centered position for the new image
     updateControlSize
@@ -301,6 +341,7 @@ Private Sub UserControl_InitProperties()
     
     Value = False
     BackColor = vbWhite
+    AutoToggle = False
     
 End Sub
 
@@ -327,6 +368,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         m_BackColor = .ReadProperty("BackColor", vbWhite)
+        m_AutoToggle = .ReadProperty("AutoToggle", False)
     End With
 
 End Sub
@@ -383,6 +425,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     'Store all associated properties
     With PropBag
         .WriteProperty "BackColor", m_BackColor, vbWhite
+        .WriteProperty "AutoToggle", m_AutoToggle, False
     End With
     
 End Sub
@@ -417,7 +460,7 @@ Private Sub redrawBackBuffer()
     If Me.Enabled Then
     
         'Is the button pressed?
-        If m_Buttonstate Then
+        If m_ButtonState Then
             btnColorFill = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
             btnColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
             

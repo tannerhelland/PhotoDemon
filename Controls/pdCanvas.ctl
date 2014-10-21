@@ -100,6 +100,16 @@ Begin VB.UserControl pdCanvas
       TabStop         =   0   'False
       Top             =   7350
       Width           =   13290
+      Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
+         Height          =   345
+         Left            =   0
+         TabIndex        =   10
+         Top             =   0
+         Width           =   390
+         _ExtentX        =   688
+         _ExtentY        =   609
+         BackColor       =   -2147483626
+      End
       Begin VB.ComboBox cmbSizeUnit 
          CausesValidation=   0   'False
          Height          =   315
@@ -107,106 +117,44 @@ Begin VB.UserControl pdCanvas
          Left            =   3630
          List            =   "pdCanvas.ctx":0314
          Style           =   2  'Dropdown List
-         TabIndex        =   11
+         TabIndex        =   9
          Top             =   15
          Width           =   600
-      End
-      Begin PhotoDemon.jcbutton cmdZoomIn 
-         Height          =   345
-         Left            =   1980
-         TabIndex        =   9
-         Top             =   0
-         Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":0316
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom in"
-         ColorScheme     =   3
       End
       Begin VB.ComboBox cmbZoom 
          CausesValidation=   0   'False
          Height          =   315
-         ItemData        =   "pdCanvas.ctx":0B68
+         ItemData        =   "pdCanvas.ctx":0316
          Left            =   840
-         List            =   "pdCanvas.ctx":0B6A
+         List            =   "pdCanvas.ctx":0318
          Style           =   2  'Dropdown List
          TabIndex        =   8
          Top             =   15
          Width           =   1110
       End
-      Begin PhotoDemon.jcbutton cmdZoomOut 
+      Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
          Height          =   345
          Left            =   390
-         TabIndex        =   10
+         TabIndex        =   11
          Top             =   0
          Width           =   390
          _ExtentX        =   688
          _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":0B6C
-         PictureAlign    =   0
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Zoom out"
-         ColorScheme     =   3
+         AutoToggle      =   -1  'True
       End
-      Begin PhotoDemon.jcbutton cmdZoomFit 
+      Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
          Height          =   345
-         Left            =   0
+         Left            =   1980
          TabIndex        =   12
          Top             =   0
          Width           =   390
          _ExtentX        =   688
          _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":13BE
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Fit image on screen"
-         ColorScheme     =   3
+         AutoToggle      =   -1  'True
       End
-      Begin PhotoDemon.jcbutton cmdImgSize 
+      Begin PhotoDemon.pdButtonToolbox cmdImgSize 
          Height          =   345
          Left            =   2790
          TabIndex        =   13
@@ -214,25 +162,8 @@ Begin VB.UserControl pdCanvas
          Width           =   390
          _ExtentX        =   688
          _ExtentY        =   609
-         ButtonStyle     =   7
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          BackColor       =   -2147483626
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "pdCanvas.ctx":1C10
-         PictureAlign    =   7
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ToolTip         =   "Resize image"
-         ColorScheme     =   3
+         AutoToggle      =   -1  'True
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -741,6 +672,7 @@ End Sub
 
 Public Sub enableZoomFit(ByVal isEnabled As Boolean)
     cmdZoomFit.Enabled = isEnabled
+    cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.getZoomFitAllIndex)
 End Sub
 
 Public Function getZoomDropDownReference() As ComboBox
@@ -1040,6 +972,9 @@ Private Sub CmbZoom_Click()
         Else
             If Not cmdZoomOut.Enabled Then cmdZoomOut.Enabled = True
         End If
+        
+        'Highlight the "zoom fit" button while fit mode is active
+        cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.getZoomFitAllIndex)
         
         'Redraw the viewport (if allowed; some functions will prevent us from doing this, as they plan to request their own
         ' refresh after additional processing occurs)
@@ -1955,6 +1890,16 @@ Private Sub UserControl_Show()
 
     If g_UserModeFix Then
         
+        'Prep the command buttons
+        cmdZoomFit.AssignImage "SB_ZOOM_FIT"
+        cmdZoomFit.ToolTipText = g_Language.TranslateMessage("Fit the image on-screen")
+        cmdZoomIn.AssignImage "SB_ZOOM_IN"
+        cmdZoomIn.ToolTipText = g_Language.TranslateMessage("Zoom in")
+        cmdZoomOut.AssignImage "SB_ZOOM_OUT"
+        cmdZoomFit.ToolTipText = g_Language.TranslateMessage("Zoom out")
+        cmdImgSize.AssignImage "SB_IMG_SIZE"
+        cmdZoomFit.ToolTipText = g_Language.TranslateMessage("Resize image")
+                
         'Load various status bar icons from the resource file
         Set sbIconSize = New pdDIB
         Set sbIconCoords = New pdDIB
@@ -2103,7 +2048,7 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         cmdImgSize.Left = lineStatusBar(0).x1 + fixDPI(4)
         If (Not cmdImgSize.Visible) Then
             cmdImgSize.Visible = True
-            cmdImgSize.forceButtonRedraw
+            'cmdImgSize.forceButtonRedraw
         End If
         'sbIconSize.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconSize.getDIBWidth), fixDPI(sbIconSize.getDIBHeight)
         
