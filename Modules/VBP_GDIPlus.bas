@@ -460,6 +460,9 @@ Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As L
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
+'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
+Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
+
 'Quality mode constants (only supported by certain functions!)
 Public Enum QualityMode
    QualityModeInvalid = -1
@@ -1175,6 +1178,9 @@ End Function
 'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
 ' long and supplied alpha.  It's not a very efficient conversion, but I need it so infrequently that I don't really care.
 Private Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
+    
+    'The vbRGB constant may be an OLE color constant; if that happens, we want to convert it to a normal RGB quad.
+    vbRGB = TranslateColor(vbRGB)
     
     Dim dstQuad As RGBQUAD
     dstQuad.Red = ExtractR(vbRGB)
@@ -2195,4 +2201,12 @@ Private Function getFIFFromGUID(ByRef srcGUID As String) As Long
     End Select
     
 
+End Function
+
+'Translate an OLE color to an RGB Long
+Private Function TranslateColor(ByVal colorRef As Long) As Long
+    'OleTranslateColor returns -1 if it fails; if that happens, default to white
+    If OleTranslateColor(colorRef, 0, TranslateColor) Then
+        TranslateColor = RGB(255, 255, 255)
+    End If
 End Function

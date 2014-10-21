@@ -433,7 +433,7 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
         'Finally, create a "glowy" hovered version of the image
         Set .btImageHover = New pdDIB
         .btImageHover.createFromExistingDIB .btImage
-        ScaleDIBRGBValues .btImageHover, 1.2, True
+        ScaleDIBRGBValues .btImageHover, UC_HOVER_BRIGHTNESS, True
     
     End With
 

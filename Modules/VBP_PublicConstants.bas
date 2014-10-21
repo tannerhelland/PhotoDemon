@@ -97,6 +97,10 @@ Public Const FIF_PDI As Long = 100
 Public Const FIF_WMF As Long = 110
 Public Const FIF_EMF As Long = 111
 
+'When a UC with an image is hovered, we typically reflect this via some kind of "glow" state.  This constant controls
+' the amount of brightness added to the image during a hover state.
+Public Const UC_HOVER_BRIGHTNESS As Long = 50
+
 'Virtual key constants
 Public Const VK_LEFT As Long = &H25
 Public Const VK_UP As Long = &H26

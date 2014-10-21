@@ -584,8 +584,9 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     'Display a busy cursor
     If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
             
-    'One of the things we'll be doing in this routine is establishing an original color depth for this image. FreeImage will return
-    ' this automatically; GDI+ may not.  Use a tracking variable to determine if a manual color count needs to be performed.
+    'One of the things we'll be doing in this routine is establishing an original color depth for this image. FreeImage and GDI+ will
+    ' return this automatically; VB's LoadPicture will not.  We use a tracking variable to determine if a manual color count needs to
+    ' be performed.
     Dim mustCountColors As Boolean
     Dim colorCountCheck As Long
     
@@ -680,8 +681,8 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         imageHasMultiplePages = False
         numOfPages = 0
         
-        '...and reset the "need to check colors" variable.  If FreeImage is used, color depth of the source file is retrieved automatically.
-        ' If FreeImage is not used, we manually calculate a bit-depth for incoming images.
+        '...and reset the "need to check colors" variable.  If FreeImage or GDI+ is used, color depth of the source file is retrieved
+        ' automatically.  If another source is used, we manually calculate a bit-depth for incoming images.
         mustCountColors = False
         
     
@@ -811,7 +812,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 End If
                 
                 'Lie and say that the original file format of this image was JPEG.  We do this because tmp images are typically images
-                ' captured via non-traditional means (screenshot's, scans), and when the user tries to save the file, they should not
+                ' captured via non-traditional means (screenshots, scans), and when the user tries to save the file, they should not
                 ' be prompted to save it as a BMP.
                 targetImage.originalFileFormat = FIF_JPEG
                 mustCountColors = True
@@ -2430,7 +2431,7 @@ Public Sub DrawAccelerators()
 
     Dim i As Long
     
-    For i = 1 To FormMain.ctlAccelerator.count
+    For i = 1 To FormMain.ctlAccelerator.Count
         With FormMain.ctlAccelerator
             If .hasMenu(i) Then
                 .associatedMenu(i).Caption = .associatedMenu(i).Caption & vbTab & .stringRep(i)

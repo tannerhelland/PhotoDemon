@@ -336,7 +336,6 @@ PDLOGONOTEXT CUSTOM  MOVEABLE        LOADONCALL      6_4_no_overlay.jpg
 PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 
 //Tool toolbox icons
-//
 T_HAND       CUSTOM  MOVEABLE        LOADONCALL      toolbox_hand_24.png
 T_MOVE       CUSTOM  MOVEABLE        LOADONCALL      toolbox_move_arrow_24.png
 T_NDFX       CUSTOM  MOVEABLE        LOADONCALL      toolbox_ndfx_24.png
@@ -393,8 +392,11 @@ MARROWDOWNL  CUSTOM  MOVEABLE        LOADONCALL      arrow_225_medium.png
 NTFY_UNSAVED CUSTOM  MOVEABLE        LOADONCALL      asterisk.png
 
 //Status bar notifications
-SB_IMG_SIZE  CUSTOM  MOVEABLE        LOADONCALL      zoom_fit_best_oxygen.png
 SB_MOUSE_POS CUSTOM  MOVEABLE        LOADONCALL      snap_orthogonal_oxygen.png
+SB_ZOOM_IN   CUSTOM  MOVEABLE        LOADONCALL      zoom_in_16.png
+SB_ZOOM_OUT  CUSTOM  MOVEABLE        LOADONCALL      zoom_out_16.png
+SB_ZOOM_FIT  CUSTOM  MOVEABLE        LOADONCALL      zoom_fit_16.png
+SB_IMG_SIZE  CUSTOM  MOVEABLE        LOADONCALL      document_resize_16.png
 
 //Resize mode sample images
 RSZ_STRETCH  CUSTOM  MOVEABLE        LOADONCALL      resize_stretch.png
