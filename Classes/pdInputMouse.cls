@@ -429,7 +429,7 @@ Public Sub setSystemCursor(Optional ByVal systemCursorType As SystemCursorConsta
     End If
     
     'Check for duplicate cursor requests, and ignore them as necessary
-    If GetCursor() <> tmpCursorHandle Then
+    If (GetCursor() <> tmpCursorHandle) Then
         
         m_CursorHandle = tmpCursorHandle
         applyCursorToHwnds False
@@ -1230,7 +1230,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'While handling cursor duties, we must respond to WM_SETCURSOR events.
             Case WM_SETCURSOR
             
-                If m_TrackingData(PDIT_CURSOR, indexOfHwnd) And (Not m_OverrideSetCursorMessages) Then applyCursorToHwnds
+                If m_TrackingData(PDIT_CURSOR, indexOfHwnd) And (Not m_OverrideSetCursorMessages) Then
+                    applyCursorToHwnds
+                    bHandled = True
+                    lReturn = 1
+                End If
                 
         End Select
 

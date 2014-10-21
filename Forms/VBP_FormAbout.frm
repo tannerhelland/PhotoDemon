@@ -219,30 +219,34 @@ Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
         'If we are already in hover state, disregard this command
         If Not inHoverState Then
             
-            'Display a hand cursor
-            cMouseEvents.setSystemCursor IDC_HAND
-            
             'Slow the scrolling (to simplify clicking)
             tmrText.Interval = 50
+            
+            'Display a hand cursor
+            cMouseEvents.setSystemCursor IDC_HAND
             
             'Mark the new hover state
             inHoverState = True
             
+        Else
+            cMouseEvents.setSystemCursor IDC_HAND
         End If
         
     Else
         
         If inHoverState Then
         
-            'Restore an arrow cursor
-            cMouseEvents.setSystemCursor IDC_ARROW
-            
             'Return scrolling to normal speed
             tmrText.Interval = 17
+            
+            'Restore an arrow cursor
+            cMouseEvents.setSystemCursor IDC_ARROW
             
             'Mark the new hover state
             inHoverState = False
         
+        Else
+            If Not (cMouseEvents Is Nothing) Then cMouseEvents.setSystemCursor IDC_ARROW
         End If
         
     End If
@@ -279,11 +283,24 @@ Private Sub cmdSpeed_Click(Index As Integer)
     
 End Sub
 
+Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    If curHoveredCredit >= 0 Then OpenURL creditList(curHoveredCredit).URL
+End Sub
+
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     mouseX = -1
     mouseY = -1
     curHoveredCredit = -1
     updateHoverState False
+End Sub
+
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+        
+    mouseX = x
+    mouseY = y
+    
+    If Not tmrText.Enabled Then renderFullCreditList
+    
 End Sub
 
 Private Sub Form_Load()
@@ -305,7 +322,7 @@ Private Sub Form_Load()
     
     'Enable mouse subclassing for the main buffer box, which allows us to track when the mouse leaves
     Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
+    cMouseEvents.addInputTracker picBuffer.hWnd, True, True, , True
     cMouseEvents.setSystemCursor IDC_ARROW
 
     'Load the logo from the resource file
@@ -487,19 +504,6 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-Private Sub picBuffer_Click()
-    If curHoveredCredit >= 0 Then OpenURL creditList(curHoveredCredit).URL
-End Sub
-
-Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    mouseX = x
-    mouseY = y
-    
-    If Not tmrText.Enabled Then renderFullCreditList
-    
 End Sub
 
 'Scroll the credit list; nothing fancy here, just a basic credit scroller, using a modified version of the
