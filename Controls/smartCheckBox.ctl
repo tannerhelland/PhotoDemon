@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Checkbox control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 30/July/14
-'Last update: mirror changes from completed option button
+'Last updated: 20/October/14
+'Last update: move control to new flicker-free painting class
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -59,10 +59,9 @@ Option Explicit
 'This control really only needs one event raised - Click
 Public Event Click()
 
-'Subclassing is used to better optimize the control's painting; this also requires manual validation of the control rect.
-Private Const WM_PAINT As Long = &HF
-Private Const WM_ERASEBKGND As Long = &H14
-Private Declare Function ValidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As Any) As Long
+'Flicker-free window painter
+Private WithEvents cPainter As pdWindowPainter
+Attribute cPainter.VB_VarHelpID = -1
 
 'Retrieve the width and height of a string
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
@@ -102,9 +101,6 @@ Private curFont As pdFont
 'Mouse input handler
 Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
-
-'Subclasser for handling window messages
-Private cSubclass As cSelfSubHookCallback
 
 'An StdFont object is used to make IDE font choices persistent; note that we also need it to raise events,
 ' so we can track when it changes.
@@ -182,6 +178,15 @@ Public Property Set Font(mNewFont As StdFont)
     updateControlSize
     
 End Property
+
+'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
+' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
+Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+
+    'Flip the relevant chunk of the buffer to the screen
+    BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+    
+End Sub
 
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
@@ -319,9 +324,9 @@ Private Sub UserControl_Initialize()
         cMouseEvents.addInputTracker Me.hWnd, True, True, , True
         cMouseEvents.setSystemCursor IDC_HAND
         
-        Set cSubclass = New cSelfSubHookCallback
-        cSubclass.ssc_Subclass Me.hWnd, , , Me
-        cSubclass.ssc_AddMsg Me.hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
+        'Also start a flicker-free window painter
+        Set cPainter = New pdWindowPainter
+        cPainter.startPainter Me.hWnd
         
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
@@ -371,13 +376,11 @@ Private Sub UserControl_LostFocus()
 
 End Sub
 
-'Note: all drawing is done to a buffer DIB, which is flipped to the screen as the final rendering step.
-' Because I don't trust VB to forward all messages correctly, WM_PAINT is manually subclassed.  See the end of this module
-' for the actual painting function.
+'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
     
     'Provide minimal painting within the designer
-    If Not g_UserModeFix Then PaintUC
+    If Not g_UserModeFix Then redrawBackBuffer
     
 End Sub
 
@@ -654,37 +657,8 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the buffer to the screen
-    PaintUC True
+    If g_UserModeFix Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
-End Sub
-
-Private Sub PaintUC(Optional ByVal forceRefresh As Boolean = False)
-    
-    'See if an update is actually required
-    Dim updateRect As RECT
-    
-    If forceRefresh Or (GetUpdateRect(Me.hWnd, updateRect, 0) <> 0) Then
-    
-        'On a forced refresh, we want to redraw the entire client area
-        If forceRefresh Then
-            With updateRect
-                .Left = 0
-                .Top = 0
-                .Right = UserControl.ScaleWidth
-                .Bottom = UserControl.ScaleHeight
-            End With
-        End If
-    
-        'Flip the relevant chunk of the buffer to the screen
-        With updateRect
-            BitBlt UserControl.hDC, .Left, .Top, .Right - .Left, .Bottom - .Top, m_BackBuffer.getDIBDC, .Left, .Top, vbSrcCopy
-        End With
-        
-        'Validate the rect to prevent further WM_PAINT messages
-        ValidateRect Me.hWnd, ByVal 0&
-        
-    End If
-    
 End Sub
 
 'Estimate the size and offset of the checkbox and caption chunk of the control.  The function allows you to pass an arbitrary caption,
@@ -722,58 +696,5 @@ Private Function getCheckboxPlusCaptionWidth(Optional ByVal relevantCaption As S
     getCheckboxPlusCaptionWidth = offsetX * 2 + chkBoxSize + fixDPI(6) + captionWidth
 
 End Function
-
-'All events subclassed by this window are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
-
-
-    If uMsg = WM_PAINT Then
-        
-        'Mark the message as handled and exit
-        bHandled = True
-        lReturn = 0
-        
-        PaintUC
-        
-    ElseIf uMsg = WM_ERASEBKGND Then
-        
-        bHandled = True
-        lReturn = 1
-        
-    End If
-
-
-
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
-
 
 
