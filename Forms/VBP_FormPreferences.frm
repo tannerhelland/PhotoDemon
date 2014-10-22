@@ -2654,11 +2654,9 @@ Attribute VB_Exposed = False
 'Program Preferences Handler
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 04/September/13
-'Last update: huge code overhaul.  This dialog lacked any sort of code organization, which made it extremely difficult
-'             to manage.  I have now reorganized everything (including the preferences XML file itself) by category,
-'             including all load/save preference functions.  This should make it much easier to modify this dialog in
-'             the future.
+'Last updated: 22/October/14
+'Last update: add "batch" preference update mode, which suspends all file read/write operations for the duration of the mode.
+'              This dramatically improves performance when closing the Preferences dialog.
 '
 'Dialog for interfacing with the user's desired program preferences.  Handles reading/writing from/to the persistent
 ' XML file that actually stores all preferences.
@@ -2808,7 +2806,7 @@ End Sub
 Private Sub cmdCategory_Click(Index As Integer)
     
     Dim catID As Long
-    For catID = 0 To cmdCategory.count - 1
+    For catID = 0 To cmdCategory.Count - 1
         If catID = Index Then
             picContainer(catID).Visible = True
             cmdCategory(catID).Value = True
@@ -2884,10 +2882,20 @@ End Sub
 Private Sub CmdOK_Click()
     
     Message "Saving preferences..."
+    Me.Visible = False
+    
+    'After updates on 22 Oct 2014, the preference saving sequence should happen in a flash, but just in case,
+    ' we'll supply a bit of processing feedback.
+    FormMain.Enabled = False
+    SetProgBarMax 9
+    SetProgBarVal 1
+    
+    'Start batch preference edit mode
+    g_UserPreferences.startBatchPreferenceMode
     
     'First, make note of the active panel, so we can default to that if the user returns to this dialog
     Dim i As Long
-    For i = 0 To cmdCategory.count - 1
+    For i = 0 To cmdCategory.Count - 1
         If cmdCategory(i).Value Then g_UserPreferences.SetPref_Long "Core", "Last Preferences Page", i
     Next i
     
@@ -2959,6 +2967,8 @@ Private Sub CmdOK_Click()
     
     '***************************************************************************
     
+    SetProgBarVal 2
+    
     'BEGIN Loading preferences
     
         'START/END verifying incoming color depth
@@ -2979,6 +2989,8 @@ Private Sub CmdOK_Click()
     'END Loading preferences
     
     '***************************************************************************
+    
+    SetProgBarVal 3
     
     'BEGIN Saving preferences
     
@@ -3008,6 +3020,8 @@ Private Sub CmdOK_Click()
     'END Saving preferences
     
     '***************************************************************************
+    
+    SetProgBarVal 4
     
     'START File format preferences
     
@@ -3039,6 +3053,8 @@ Private Sub CmdOK_Click()
     
     '***************************************************************************
     
+    SetProgBarVal 5
+    
     'START Performance preferences
     
         'START/END color management performance
@@ -3064,6 +3080,8 @@ Private Sub CmdOK_Click()
     'END Performance preferences
     
     '***************************************************************************
+    
+    SetProgBarVal 6
     
     'START Color and Transparency preferences
 
@@ -3095,6 +3113,8 @@ Private Sub CmdOK_Click()
     
     '***************************************************************************
     
+    SetProgBarVal 7
+    
     'BEGIN Update preferences
     
         'START/END allowed to check for updates
@@ -3107,6 +3127,8 @@ Private Sub CmdOK_Click()
     
     '***************************************************************************
     
+    SetProgBarVal 8
+    
     'BEGIN Advanced preferences
     
         'START/END store the temporary path (but only if it's changed)
@@ -3115,6 +3137,9 @@ Private Sub CmdOK_Click()
     'END Advanced preferences
     
     '***************************************************************************
+    
+    'End batch preference edit mode, which will force a write-to-file operation
+    g_UserPreferences.endBatchPreferenceMode
     
     'All user preferences have now been written out to file
     
@@ -3128,7 +3153,11 @@ Private Sub CmdOK_Click()
     
     toolbar_ImageTabs.forceRedraw
     
-    Message "Finished."
+    SetProgBarVal 0
+    releaseProgressBar
+    FormMain.Enabled = True
+    
+    Message "Preferences updated."
         
     Unload Me
     
@@ -3159,6 +3188,9 @@ End Sub
 
 'Load all relevant values from the preferences file, and populate their corresponding controls with the user's current settings
 Private Sub LoadAllPreferences()
+    
+    'Start batch preference mode.  This will suspend any file read/write operations until the mode finishes.
+    g_UserPreferences.startBatchPreferenceMode
     
     'For the sake of order, we will load preferences by category.  (They can be loaded in any order without consequence,
     ' but there are MANY preferences, so maintaining some kind of order is helpful.)
@@ -3469,7 +3501,7 @@ Private Sub LoadAllPreferences()
             
             Dim monitorEntry As String
             
-            For i = 1 To g_cMonitors.Monitors.count
+            For i = 1 To g_cMonitors.Monitors.Count
                 monitorEntry = ""
                 
                 'Explicitly label the primary monitor
@@ -3589,6 +3621,9 @@ Private Sub LoadAllPreferences()
     
     '***************************************************************************
     
+    'End batch preference mode
+    g_UserPreferences.endBatchPreferenceMode
+    
     'All preference controls are now initialized with the matching value stored in the preferences file
     
     
@@ -3681,11 +3716,11 @@ Private Sub Form_Load()
     
     'Hide all category panels (the proper one will be activated in a moment)
     Dim i As Long
-    For i = 0 To picContainer.count - 1
+    For i = 0 To picContainer.Count - 1
         picContainer(i).Visible = False
         cmdCategory(i).Value = False
     Next i
-    For i = 0 To picFileContainer.count - 1
+    For i = 0 To picFileContainer.Count - 1
         picFileContainer(i).Visible = False
     Next i
     
@@ -3704,11 +3739,11 @@ Private Sub Form_Load()
     
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.
-    For i = 0 To picContainer.count - 1
+    For i = 0 To picContainer.Count - 1
         setArrowCursor picContainer(i)
     Next i
     
-    For i = 0 To picFileContainer.count - 1
+    For i = 0 To picFileContainer.Count - 1
         setArrowCursor picFileContainer(i)
     Next i
     
