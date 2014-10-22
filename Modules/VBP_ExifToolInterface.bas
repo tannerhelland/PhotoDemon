@@ -522,10 +522,13 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Regardless of the type of metadata copy we're performing, we need to alter or remove some tags because their
     ' original values are no longer relevant.
-    cmdParams = cmdParams & "--Orientation" & vbCrLf
+    'cmdParams = cmdParams & "--Orientation" & vbCrLf
+    cmdParams = cmdParams & "-Orientation=Horizontal" & vbCrLf
     cmdParams = cmdParams & "--IFD2:ImageWidth" & vbCrLf & "--IFD2:ImageHeight" & vbCrLf
-    cmdParams = cmdParams & "-ImageWidth=" & srcPDImage.Width & vbCrLf & "-ExifIFD:ExifImageWidth=" & srcPDImage.Width & vbCrLf
-    cmdParams = cmdParams & "-ImageHeight=" & srcPDImage.Height & vbCrLf & "-ExifIFD:ExifImageHeight=" & srcPDImage.Height & vbCrLf
+    cmdParams = cmdParams & "-ImageWidth=" & srcPDImage.Width & vbCrLf
+    cmdParams = cmdParams & "-ImageHeight=" & srcPDImage.Height & vbCrLf
+    cmdParams = cmdParams & "-ExifIFD:ExifImageWidth=" & srcPDImage.Width & vbCrLf
+    cmdParams = cmdParams & "-ExifIFD:ExifImageHeight=" & srcPDImage.Height & vbCrLf
     cmdParams = cmdParams & "-XResolution=" & srcPDImage.getDPI() & vbCrLf & "-YResolution=" & srcPDImage.getDPI() & vbCrLf
     cmdParams = cmdParams & "-ResolutionUnit=inches" & vbCrLf
     cmdParams = cmdParams & " -ColorSpace=sRGB" & vbCrLf
