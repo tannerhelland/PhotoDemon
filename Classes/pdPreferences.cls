@@ -82,6 +82,34 @@ Private SelectionPath As String
 Private PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
 Private DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps are placed here.
 
+'XML engine for reading/writing preference values from file
+Private xmlEngine As pdXML
+
+'To improve performance when saving many preferences at once (as we do when closing the Preferences dialog), this class can be placed in
+' "batch preference mode".  While active, a single XML class instance will be persistently used to handle all preference updates, and
+' when the mode is released, all updates will be dumped to file.
+Private m_BatchModeActive As Boolean
+
+'Initialize batch preference mode.  This is used by the preferences dialog to allow us to write a whole swath of preferences in one fell swoop,
+' without writing the updates out to file after each updated.
+' NOTE!  You must remember to deactivate this mode when finished; otherwise, preferences may not get written out to file for that session.
+Public Sub startBatchPreferenceMode()
+
+    m_BatchModeActive = True
+
+    'Initialize an XML object
+    Set xmlEngine = New pdXML
+    xmlEngine.loadXMLFile PreferencesPath
+
+End Sub
+
+'When you have finished updating multiple preferences, use this function to terminate batch mode.  The updated XML file will be
+' immediately written to file.
+Public Sub endBatchPreferenceMode()
+    m_BatchModeActive = False
+    xmlEngine.writeXMLToFile PreferencesPath
+End Sub
+
 'Get the current Debug path
 Public Function getDebugPath() As String
     getDebugPath = DebugPath
@@ -244,7 +272,11 @@ Public Sub loadUserSettings()
         
     'If no preferences file exists, build a default one
     If Not FileExist(PreferencesPath) Then createNewPreferencesFile
-            
+    
+    'Start batch processing mode for preferences, which is much faster (as we don't have to go out to the hard drive
+    ' for each preference access).
+    startBatchPreferenceMode
+    
     'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
     ' the system temp path.)
     TempPath = GetPref_String("Paths", "TempFiles", "")
@@ -294,6 +326,9 @@ Public Sub loadUserSettings()
     
     'Set the number of open image windows to 0
     g_OpenImageCount = 0
+    
+    'Terminate batch preference mode before exiting
+    endBatchPreferenceMode
         
 End Sub
 
@@ -322,7 +357,6 @@ Private Sub createNewPreferencesFile()
     End If
     
     'Create a pdXML class, which will help us assemble the preferences file (in XML format, obviously)
-    Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
     xmlEngine.prepareNewXML "User Preferences"
     xmlEngine.writeBlankLine
@@ -589,9 +623,10 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
     strVariableName = Replace$(strVariableName, " ", "")
     
     'Create an XML object and load the XML settings file
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    xmlEngine.loadXMLFile PreferencesPath
+    If Not m_BatchModeActive Then
+        Set xmlEngine = New pdXML
+        xmlEngine.loadXMLFile PreferencesPath
+    End If
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
     If xmlEngine.isPDDataType("User Preferences") And xmlEngine.validateLoadedXMLData("Paths") Then
@@ -611,9 +646,10 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
     strVariableName = Replace$(strVariableName, " ", "")
     
     'Create an XML object and load the XML settings file
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    xmlEngine.loadXMLFile PreferencesPath
+    If Not m_BatchModeActive Then
+        Set xmlEngine = New pdXML
+        xmlEngine.loadXMLFile PreferencesPath
+    End If
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
     If xmlEngine.isPDDataType("User Preferences") And xmlEngine.validateLoadedXMLData("Paths") Then
@@ -621,7 +657,7 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
         'Update the requested tag, and if it does not exist, write it out as a new tag at the end of the specified section
         If xmlEngine.updateTag(strVariableName, strValue, strSectionHeader) Then
             WritePreference = True
-            xmlEngine.writeXMLToFile PreferencesPath
+            If Not m_BatchModeActive Then xmlEngine.writeXMLToFile PreferencesPath
         Else
             
             'Update tag will fail if the requested preferences section doesn't exist (which may happen after the user upgrades from
@@ -632,7 +668,7 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
                 'Try the write again
                 If xmlEngine.updateTag(strVariableName, strValue, strSectionHeader) Then
                     WritePreference = True
-                    xmlEngine.writeXMLToFile PreferencesPath
+                    If Not m_BatchModeActive Then xmlEngine.writeXMLToFile PreferencesPath
                 Else
                     WritePreference = False
                 End If

@@ -1916,6 +1916,7 @@ Private Sub CmdOK_Click()
     Me.Visible = False
     
     'Remember the current container the user is viewing
+    g_UserPreferences.startBatchPreferenceMode
     g_UserPreferences.SetPref_Long "Plugins", "Last Plugin Preferences Page", lstPlugins.ListIndex
     
     'Save all plugin-specific settings to the preferences file
@@ -1975,6 +1976,9 @@ Private Sub CmdOK_Click()
         g_ImageFormats.generateInputFormats
         g_ImageFormats.generateOutputFormats
     End If
+    
+    'End batch preference update mode, which will force a write-to-file operation
+    g_UserPreferences.endBatchPreferenceMode
     
     Message "Plugin options saved."
     
@@ -2070,7 +2074,10 @@ End Sub
 
 'When the dialog is first launched, use this to populate the dialog with any settings the user may have modified
 Private Sub LoadAllPluginSettings()
-
+    
+    'Start batch preference processing mode.
+    g_UserPreferences.startBatchPreferenceMode
+    
     'Now, check version numbers of each plugin.  This is more complicated than it needs to be, on account of
     ' each plugin having its own unique mechanism for version-checking, but I have wrapped these various functions
     ' inside fairly standard wrapper calls.
@@ -2102,6 +2109,9 @@ Private Sub LoadAllPluginSettings()
         
         'Performance vs speed
         sltPNGQuantSpeed.Value = g_UserPreferences.GetPref_Long("Plugins", "PNGQuant Performance", 3)
+        
+    'End batch preference mode
+    g_UserPreferences.endBatchPreferenceMode
         
 End Sub
 
