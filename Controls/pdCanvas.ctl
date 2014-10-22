@@ -366,6 +366,18 @@ Private m_LayerAutoActivateIndex As Long
 ' be erased.
 Private m_SelectionActiveBeforeMouseEvents As Boolean
 
+'Because this control is loaded so early in the program's load process, it is initialized before the translation engine.  To make sure
+' that non-English speakers have functional tooltips, this sub is called after the translation engine has loaded.
+Public Sub createTooltips()
+    
+    'Assign tooltips to any relevant controls
+    cmdZoomFit.ToolTipText = g_Language.TranslateMessage("Fit the image on-screen")
+    cmdZoomIn.ToolTipText = g_Language.TranslateMessage("Zoom in")
+    cmdZoomOut.ToolTipText = g_Language.TranslateMessage("Zoom out")
+    cmdImgSize.ToolTipText = g_Language.TranslateMessage("Resize image")
+    
+End Sub
+
 'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
 Public Sub setRedrawSuspension(ByVal newRedrawValue As Boolean)
     m_suspendRedraws = newRedrawValue
@@ -1892,13 +1904,10 @@ Private Sub UserControl_Show()
         
         'Prep the command buttons
         cmdZoomFit.AssignImage "SB_ZOOM_FIT"
-        cmdZoomFit.ToolTipText = g_Language.TranslateMessage("Fit the image on-screen")
         cmdZoomIn.AssignImage "SB_ZOOM_IN"
-        cmdZoomIn.ToolTipText = g_Language.TranslateMessage("Zoom in")
         cmdZoomOut.AssignImage "SB_ZOOM_OUT"
-        cmdZoomFit.ToolTipText = g_Language.TranslateMessage("Zoom out")
         cmdImgSize.AssignImage "SB_IMG_SIZE"
-        cmdZoomFit.ToolTipText = g_Language.TranslateMessage("Resize image")
+        
                 
         'Load various status bar icons from the resource file
         Set sbIconSize = New pdDIB
@@ -1913,7 +1922,7 @@ Private Sub UserControl_Show()
         'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
         ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
         On Error GoTo CanvasShowError
-        
+                
         'Now comes a bit of an odd case.  This control's _Show event happens very early in the load process due to it being
         ' present on FormMain.  Because of that, the global interface font value may not be loaded yet.  To avoid problems
         ' from this, we will just load Segoe UI by default, and if that fails (as it may on XP), the labels will retain

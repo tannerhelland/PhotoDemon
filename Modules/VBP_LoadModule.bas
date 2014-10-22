@@ -384,7 +384,9 @@ Public Sub LoadTheProgram()
     End If
     toolbar_Toolbox.cmdSave.ToolTip = g_Language.TranslateMessage("Save the current image." & vbCrLf & vbCrLf & "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.")
     toolbar_Toolbox.cmdSaveAs.ToolTip = g_Language.TranslateMessage("Save the current image to a new file.")
-                        
+    
+    FormMain.mainCanvas(0).createTooltips
+    
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
     SetIcon FormMain.hWnd, "AAA", True
     
