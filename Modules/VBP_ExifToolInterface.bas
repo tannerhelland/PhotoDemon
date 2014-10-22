@@ -3,9 +3,11 @@ Attribute VB_Name = "Plugin_ExifTool_Interface"
 'ExifTool Plugin Interface
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 24/May/13
-'Last updated: 13/June/14
-'Last update: solve asynchronicity problems once and for all (by using a combination of black magic and pixie dust,
-'              in case you were curious...)
+'Last updated: 22/October/14
+'Last update: many technical improvements to metadata writing.  Formats that support only XMP or Exif will now have
+'              as many tags as humanly possible converted to the relevant format.  Unconverted tags will be ignored.
+'              When writing new tags, the preferred metadata format for a given image format will be preferentially
+'              used (e.g. XMP for PNG files, Exif for JPEGs, etc).
 '
 'Module for handling all ExifTool interfacing.  This module is pointless without the accompanying ExifTool plugin,
 ' which can be found in the App/PhotoDemon/Plugins subdirectory as "exiftool.exe".  The ExifTool plugin is
@@ -501,6 +503,36 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
         End If
     End If
     
+    'See if the output file format supports metadata.  If it doesn't, exit now.
+    ' (Note that we return TRUE despite not writing any metadata - this lets the caller know that there were no errors.)
+    Dim outputMetadataFormat As PD_METADATA_FORMAT
+    outputMetadataFormat = g_ImageFormats.getIdealMetadataFormatFromFIF(srcPDImage.currentFileFormat)
+    
+    If outputMetadataFormat = PDMF_NONE Then
+        Message "This file format does not support metadata.  Metadata processing skipped."
+        writeMetadata = True
+        Exit Function
+    End If
+    
+    'The preferred metadata format affects many of the requests sent to ExifTool.  Tag write requests are typically prefixed by
+    ' the preferred tag group.  This string represents that group.
+    Dim tagGroupPrefix As String
+    Select Case outputMetadataFormat
+    
+        Case PDMF_EXIF
+            tagGroupPrefix = "exif:"
+        
+        Case PDMF_XMP
+            tagGroupPrefix = "xmp:"
+            
+        Case PDMF_IPTC
+            tagGroupPrefix = "iptc:"
+        
+        Case Else
+            tagGroupPrefix = ""
+            
+    End Select
+    
     'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
     ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
     Dim Quotes As String
@@ -517,23 +549,21 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'Overwrite the original destination file, but only if the metadata was embedded succesfully
     cmdParams = cmdParams & "-overwrite_original" & vbCrLf
     
-    'Copy all tags
-    cmdParams = cmdParams & "-tagsfromfile" & vbCrLf & srcMetadataFile & vbCrLf & dstImageFile & vbCrLf
+    'Copy all tags.  It is important to do this first, because ExifTool applies operations in a left-to-right order - so we must
+    ' start by copying all tags, then applying manual updates as necessary.
+    cmdParams = cmdParams & "-tagsfromfile" & vbCrLf & srcMetadataFile & vbCrLf
+    cmdParams = cmdParams & dstImageFile & vbCrLf
+    
+    'On some files, we prefer to use XMP over Exif.  This command instructs ExifTool to convert Exif tags to XMP tags where possible.
+    If outputMetadataFormat = PDMF_XMP Then
+        cmdParams = cmdParams & "-xmp:all<all" & vbCrLf
+    End If
     
     'Regardless of the type of metadata copy we're performing, we need to alter or remove some tags because their
     ' original values are no longer relevant.
-    'cmdParams = cmdParams & "--Orientation" & vbCrLf
-    cmdParams = cmdParams & "-Orientation=Horizontal" & vbCrLf
     cmdParams = cmdParams & "--IFD2:ImageWidth" & vbCrLf & "--IFD2:ImageHeight" & vbCrLf
-    cmdParams = cmdParams & "-ImageWidth=" & srcPDImage.Width & vbCrLf
-    cmdParams = cmdParams & "-ImageHeight=" & srcPDImage.Height & vbCrLf
-    cmdParams = cmdParams & "-ExifIFD:ExifImageWidth=" & srcPDImage.Width & vbCrLf
-    cmdParams = cmdParams & "-ExifIFD:ExifImageHeight=" & srcPDImage.Height & vbCrLf
-    cmdParams = cmdParams & "-XResolution=" & srcPDImage.getDPI() & vbCrLf & "-YResolution=" & srcPDImage.getDPI() & vbCrLf
-    cmdParams = cmdParams & "-ResolutionUnit=inches" & vbCrLf
-    cmdParams = cmdParams & " -ColorSpace=sRGB" & vbCrLf
     cmdParams = cmdParams & "--Padding" & vbCrLf
-    
+            
     'Remove YCbCr subsampling data from the tags, as we may be using a different system than the previous save, and this information
     ' is not useful anyway - the JPEG header contains a copy of the subsampling data for the decoder, and that's sufficient!
     cmdParams = cmdParams & "--YCbCrSubSampling" & vbCrLf
@@ -547,6 +577,23 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     ' JFIF header, so we don't want those extra Exif tags included.
     cmdParams = cmdParams & "-IFD1:all=" & vbCrLf
     
+    'Now, we want to add a number of tags depending on the output format, and other considerations.
+    cmdParams = cmdParams & "-" & tagGroupPrefix & "Orientation=Horizontal" & vbCrLf
+    cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageWidth=" & srcPDImage.Width & vbCrLf
+    cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageHeight=" & srcPDImage.Height & vbCrLf
+    
+    If outputMetadataFormat = PDMF_XMP Then
+        cmdParams = cmdParams & "-xmp-exif:ExifImageWidth=" & srcPDImage.Width & vbCrLf
+        cmdParams = cmdParams & "-xmp-exif:ExifImageHeight=" & srcPDImage.Height & vbCrLf
+    Else
+        cmdParams = cmdParams & "-ExifIFD:ExifImageWidth=" & srcPDImage.Width & vbCrLf
+        cmdParams = cmdParams & "-ExifIFD:ExifImageHeight=" & srcPDImage.Height & vbCrLf
+    End If
+    
+    cmdParams = cmdParams & "-" & tagGroupPrefix & "XResolution=" & srcPDImage.getDPI() & vbCrLf & "-YResolution=" & srcPDImage.getDPI() & vbCrLf
+    cmdParams = cmdParams & "-" & tagGroupPrefix & "ResolutionUnit=inches" & vbCrLf
+    cmdParams = cmdParams & "-" & tagGroupPrefix & "ColorSpace=sRGB" & vbCrLf
+    
     'If we were asked to remove GPS data, do so now
     If removeGPS Then cmdParams = cmdParams & "-gps:all=" & vbCrLf
     
@@ -557,7 +604,13 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'ExifTool will always note itself as the XMP toolkit unless we specifically tell it not to; when "privacy mode" is active,
     ' do not list any toolkit at all.
     If removeGPS Then cmdParams = cmdParams & "-XMPToolkit=" & vbCrLf
-    
+        
+    'If the output format does not support Exif whatsoever, we can ask ExifTool to forcibly remove any remaining Exif tags.
+    ' (This includes any tags it was unable to convert to XMP or IPTC format.)
+    If Not g_ImageFormats.isExifAllowedForFIF(srcPDImage.currentFileFormat) Then
+        cmdParams = cmdParams & "-exif:all=" & vbCrLf
+    End If
+        
     'Finally, add the special command "-execute" which tells ExifTool to start operations
     cmdParams = cmdParams & "-execute" & vbCrLf
     
