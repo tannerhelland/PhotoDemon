@@ -15,8 +15,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Format Manager
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 29/September/14
-'Last update: add import support for WMF and EMF metafiles
+'Last updated: 22/October/14
+'Last update: new function(s) for determining proper metadata format for a given image format.  These are used to instruct
+'              ExifTool to convert as many tags as possible to the most acceptable metadata format for a given image format,
+'              something especially relevant when converting between formats like JPEG and PNG.
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
@@ -245,7 +247,7 @@ Public Sub generateInputFormats()
     End If
     
     'Only allow PDI (PhotoDemon's native file format) loading if the zLib dll has been properly detected
-    If g_ZLibEnabled Then addInputFormat "PDI - PhotoDemon Image", "*.pdi", 100
+    If g_ZLibEnabled Then addInputFormat "PDI - PhotoDemon Image", "*.pdi", FIF_PDI
         
     If FreeImageEnabled Then
         addInputFormat "PGM - Portable Graymap", "*.pgm", FIF_PGM
@@ -350,7 +352,7 @@ Public Sub generateOutputFormats()
         
     If FreeImageEnabled Then addOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", FIF_JXR
         
-    If g_ZLibEnabled Then addOutputFormat "PDI - PhotoDemon Image", "pdi", 100
+    If g_ZLibEnabled Then addOutputFormat "PDI - PhotoDemon Image", "pdi", FIF_PDI
     
     If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "PNG - Portable Network Graphic", "png", FIF_PNG
         
@@ -476,10 +478,10 @@ Public Function getExtensionFromFIF(ByVal srcFIF As Long) As String
             getExtensionFromFIF = "psd"
         Case FIF_RAS
             getExtensionFromFIF = "ras"
+        'RAW is an interesting case; because PD can write HDR images, which support nearly all features of all major RAW formats,
+        ' we use HDR as the default extension for RAW-type images.
         Case FIF_RAW
             getExtensionFromFIF = "hdr"
-        'Case FIF_RAW
-            'getExtensionFromFIF = "raw"
         Case FIF_SGI
             getExtensionFromFIF = "sgi"
         Case FIF_TARGA
@@ -887,3 +889,94 @@ Public Function getClosestColorDepth(ByVal outputFIF As Long, ByVal desiredColor
     
 End Function
 
+'Given an output FIF, return the ideal metadata format for that image format.
+Friend Function getIdealMetadataFormatFromFIF(ByVal outputFIF As Long) As PD_METADATA_FORMAT
+
+    Select Case outputFIF
+    
+        Case FIF_BMP
+            getIdealMetadataFormatFromFIF = PDMF_NONE
+        
+        Case FIF_GIF
+            getIdealMetadataFormatFromFIF = PDMF_XMP
+        
+        Case FIF_JP2
+            getIdealMetadataFormatFromFIF = PDMF_XMP
+        
+        Case FIF_JPEG
+            getIdealMetadataFormatFromFIF = PDMF_EXIF
+        
+        Case FIF_JXR
+            getIdealMetadataFormatFromFIF = PDMF_EXIF
+        
+        Case FIF_PDI
+            getIdealMetadataFormatFromFIF = PDMF_EXIF
+        
+        Case FIF_PNG
+            getIdealMetadataFormatFromFIF = PDMF_XMP
+        
+        Case FIF_PPM
+            getIdealMetadataFormatFromFIF = PDMF_NONE
+        
+        Case FIF_TARGA
+            getIdealMetadataFormatFromFIF = PDMF_NONE
+        
+        Case FIF_TIFF
+            getIdealMetadataFormatFromFIF = PDMF_EXIF
+        
+        Case FIF_WEBP
+            getIdealMetadataFormatFromFIF = PDMF_XMP
+        
+        Case Else
+            getIdealMetadataFormatFromFIF = PDMF_NONE
+        
+    End Select
+    
+End Function
+
+'Given an output FIF, return a BOOLEAN specifying whether Exif metadata is allowed for that image format.
+' (Technically, ExifTool can write non-standard Exif chunks for formats like PNG and JPEG-2000, but PD prefers not to do this.
+'  If an Exif tag can't be converted to a corresponding XMP tag, it should simply be removed from the new file.)
+Public Function isExifAllowedForFIF(ByVal outputFIF As Long) As Boolean
+
+    Select Case outputFIF
+    
+        Case FIF_BMP
+            isExifAllowedForFIF = False
+        
+        Case FIF_GIF
+            isExifAllowedForFIF = False
+        
+        Case FIF_JP2
+            isExifAllowedForFIF = False
+        
+        Case FIF_JPEG
+            isExifAllowedForFIF = True
+        
+        Case FIF_JXR
+            isExifAllowedForFIF = True
+        
+        Case FIF_PDI
+            isExifAllowedForFIF = True
+        
+        Case FIF_PNG
+            isExifAllowedForFIF = False
+        
+        Case FIF_PPM
+            isExifAllowedForFIF = False
+        
+        Case FIF_TARGA
+            isExifAllowedForFIF = False
+        
+        Case FIF_TIFF
+            isExifAllowedForFIF = True
+        
+        Case FIF_WEBP
+            isExifAllowedForFIF = False
+        
+        Case Else
+            isExifAllowedForFIF = False
+        
+    End Select
+    
+End Function

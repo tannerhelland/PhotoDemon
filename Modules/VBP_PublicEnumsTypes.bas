@@ -282,3 +282,15 @@ Public Type RECTF
     Height As Single
 End Type
 
+'Metadata formats.  These are important when writing metadata to a file that is being saved to a different format
+' from its original state (e.g. JPEG to PNG, which requires complicated metadata conversions).
+Public Enum PD_METADATA_FORMAT
+    PDMF_NONE = 0
+    PDMF_EXIF = 1
+    PDMF_IPTC = 2
+    PDMF_XMP = 3
+End Enum
+
+#If False Then
+    Private Const PDMF_NONE = 0, PDMF_EXIF = 1, PDMF_IPTC = 2, PDMF_XMP = 3
+#End If
