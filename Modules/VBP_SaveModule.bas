@@ -684,7 +684,7 @@ End Function
 '    the header represents a larger portion of the file.
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal writeMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal writeMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal secondPassDataCompression As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -701,7 +701,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
-    pdiWriter.prepareNewPackage srcPDImage.getNumOfLayers + 1, PD_IMAGE_IDENTIFIER
+    pdiWriter.prepareNewPackage srcPDImage.getNumOfLayers + 1, PD_IMAGE_IDENTIFIER, srcPDImage.estimateRAMUsage
         
     'The first node we'll add is the pdImage header, in XML format.
     Dim nodeIndex As Long
@@ -754,7 +754,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
-    SavePhotoDemonImage = pdiWriter.writePackageToFile(PDIPath)
+    SavePhotoDemonImage = pdiWriter.writePackageToFile(PDIPath, secondPassDirectoryCompression, secondPassDataCompression)
     
     If Not suppressMessages Then Message "%1 save complete.", sFileType
     
@@ -784,7 +784,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
-    pdiWriter.prepareNewPackage 1, PD_LAYER_IDENTIFIER
+    pdiWriter.prepareNewPackage 1, PD_LAYER_IDENTIFIER, srcLayer.estimateRAMUsage
         
     'The first (and only) node we'll add is the specific pdLayer header and DIB data.
     ' To help us reconstruct the node later, we also note the current layer's ID (stored as the node ID)

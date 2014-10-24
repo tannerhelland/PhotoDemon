@@ -195,13 +195,25 @@ Public Function CurrentBytes() As Byte()
     
 End Function
 
-Public Sub OpenBuf()
+'Added by Tanner: return a pointer to the first position in the array.
+Public Function CurrentBytesPointer() As Long
+    CurrentBytesPointer = VarPtr(Buffer(0))
+End Function
+
+'Open a new buffer.
+' Added by Tanner: allow the caller to specify a starting buffer size.  This can be helpful if we have some idea
+'  of the buffer's size in advance, as we avoid the need for costly ReDim Preserve statements.
+Public Sub OpenBuf(Optional ByVal startingBufferSize As Long = 0)
 
     If mOpen Then
         Err.Raise &H8004C302, TypeName(Me), "Already open"
     Else
         mOpen = True
-        ReDim Buffer(0 To mChunkSize - 1) As Byte
+        If startingBufferSize <= 0 Then
+            ReDim Buffer(0 To mChunkSize - 1) As Byte
+        Else
+            ReDim Buffer(0 To startingBufferSize - 1) As Byte
+        End If
     End If
     
 End Sub
