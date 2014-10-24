@@ -4,7 +4,7 @@ Begin VB.Form FormMetadata
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Browse image metadata"
-   ClientHeight    =   7140
+   ClientHeight    =   7845
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   12015
@@ -20,22 +20,21 @@ Begin VB.Form FormMetadata
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   476
+   ScaleHeight     =   523
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.smartCheckBox chkFriendlyNames 
-      Height          =   360
-      Left            =   3240
-      TabIndex        =   6
-      Top             =   5760
-      Width           =   4050
-      _ExtentX        =   7144
-      _ExtentY        =   635
-      Caption         =   "use readable names"
+   Begin PhotoDemon.buttonStrip btsGroup 
+      Height          =   615
+      Left            =   120
+      TabIndex        =   5
+      Top             =   540
+      Width           =   11730
+      _ExtentX        =   20690
+      _ExtentY        =   1085
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   11.25
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -44,30 +43,30 @@ Begin VB.Form FormMetadata
       EndProperty
    End
    Begin VB.VScrollBar vsMetadata 
-      Height          =   5340
+      Height          =   5115
       LargeChange     =   32
-      Left            =   11430
-      TabIndex        =   5
-      Top             =   240
+      Left            =   6615
+      TabIndex        =   4
+      Top             =   1740
       Width           =   330
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5295
-      Left            =   3360
-      ScaleHeight     =   353
+      ForeColor       =   &H00404040&
+      Height          =   5115
+      Left            =   120
+      ScaleHeight     =   339
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   537
-      TabIndex        =   4
-      Top             =   240
-      Visible         =   0   'False
-      Width           =   8055
+      ScaleWidth      =   431
+      TabIndex        =   3
+      Top             =   1740
+      Width           =   6495
    End
-   Begin VB.ListBox lstMetadata 
+   Begin VB.CommandButton CmdCancel 
+      Cancel          =   -1  'True
+      Caption         =   "&Cancel"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -77,42 +76,101 @@ Begin VB.Form FormMetadata
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   5340
-      IntegralHeight  =   0   'False
-      Left            =   240
-      TabIndex        =   3
-      Top             =   240
-      Width           =   2895
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
       Height          =   495
-      Left            =   10380
+      Left            =   10500
       TabIndex        =   1
-      Top             =   6510
+      Top             =   7230
       Width           =   1365
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   495
-      Left            =   8880
+      Left            =   9000
       TabIndex        =   0
-      Top             =   6510
+      Top             =   7230
       Width           =   1365
    End
-   Begin PhotoDemon.smartCheckBox chkFriendlyValues 
-      Height          =   360
-      Left            =   7320
-      TabIndex        =   7
-      Top             =   5760
-      Width           =   4050
-      _ExtentX        =   7144
-      _ExtentY        =   635
-      Caption         =   "use readable values"
+   Begin PhotoDemon.buttonStrip btsTechnical 
+      Height          =   495
+      Index           =   0
+      Left            =   7440
+      TabIndex        =   10
+      Top             =   2160
+      Width           =   3810
+      _ExtentX        =   20690
+      _ExtentY        =   1085
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.buttonStrip btsTechnical 
+      Height          =   495
+      Index           =   1
+      Left            =   7440
+      TabIndex        =   11
+      Top             =   3240
+      Width           =   3810
+      _ExtentX        =   6720
+      _ExtentY        =   873
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Line Line1 
+      BorderColor     =   &H8000000D&
+      X1              =   476
+      X2              =   476
+      Y1              =   88
+      Y2              =   464
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "metadata options:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   4
+      Left            =   7320
+      TabIndex        =   12
+      Top             =   1320
+      Width           =   1920
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "tag values:"
+      BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
          Charset         =   0
@@ -121,12 +179,82 @@ Begin VB.Form FormMetadata
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   270
+      Index           =   3
+      Left            =   7440
+      TabIndex        =   9
+      Top             =   2820
+      Width           =   1080
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "tag names:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   270
+      Index           =   2
+      Left            =   7440
+      TabIndex        =   8
+      Top             =   1740
+      Width           =   1125
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "tags in this category:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   1
+      Left            =   120
+      TabIndex        =   7
+      Top             =   1320
+      Width           =   2220
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "metadata groups in this image:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   0
+      Left            =   120
+      TabIndex        =   6
+      Top             =   120
+      Width           =   3315
    End
    Begin VB.Label lblBackground 
       Height          =   855
-      Left            =   -120
+      Left            =   0
       TabIndex        =   2
-      Top             =   6360
+      Top             =   7080
       Width           =   12255
    End
 End
@@ -176,25 +304,57 @@ Private allTags() As mdItem
 Private curTagCount() As Long
 
 'Height of each metadata content block
-Private Const BLOCKHEIGHT As Long = 64
+Private Const BLOCKHEIGHT As Long = 54
 
 'An outside class provides access to mousewheel events for scrolling the filter view
 Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 
+'The back buffer onto which the metadata list is rendered
+Private m_BackBuffer As pdDIB
+
+'Font objects for rendering
+Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
+
+'Additional rendering values
+Private m_SeparatorColor As OLE_COLOR
+
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'Because we technically have two scrollable controls on this page, we must differentiate between the two when a mousewheel event is fired.
-' By default, Windows will not pass scrollwheel events to the parent form (per my testing?) when a list box on that form has focus.  If
-' the left list box is clicked, this value will be set to TRUE.  If the mouse leaves the list box, we automatically set this to FALSE.
-Private mouseOverMetadataCategoryBox As Boolean
-
-Private Sub chkFriendlyNames_Click()
+'When a new metadata category is selected, redraw all the metadata text currently on screen
+Private Sub btsGroup_Click(ByVal buttonIndex As Long)
+    
+    Dim curCategory As Long
+    curCategory = buttonIndex
+    
+    If mdCategories(curCategory).Count = 1 Then
+        lblTitle(1).Caption = g_Language.TranslateMessage("1 tag in this category:")
+    Else
+        lblTitle(1).Caption = g_Language.TranslateMessage("%1 tags in this category:", mdCategories(curCategory).Count)
+    End If
+    
+    'First, determine if the vertical scrollbar needs to be visible or not
+    Dim maxMDSize As Long
+    maxMDSize = fixDPIFloat(BLOCKHEIGHT) * mdCategories(curCategory).Count
+    
+    vsMetadata.Value = 0
+    If maxMDSize < picBuffer.Height Then
+        vsMetadata.Visible = False
+    Else
+        vsMetadata.Visible = True
+        vsMetadata.Max = maxMDSize - picBuffer.Height
+    End If
+    
     redrawMetadataList
+        
 End Sub
 
-Private Sub chkFriendlyValues_Click()
+Private Sub btsGroup_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    cMouseEvents_MouseWheelVertical Button, Shift, x, y, scrollAmount
+End Sub
+
+Private Sub btsTechnical_Click(Index As Integer, ByVal buttonIndex As Long)
     redrawMetadataList
 End Sub
 
@@ -245,9 +405,6 @@ Private Sub Form_Activate()
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
     
-    'Realign the bottom check boxes
-    chkFriendlyValues.Left = chkFriendlyNames.Left + chkFriendlyNames.Width + fixDPI(24)
-    
 End Sub
 
 'LOAD dialog
@@ -260,7 +417,27 @@ Private Sub Form_Load()
     cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
     cMouseEvents.addInputTracker Me.hWnd
     cMouseEvents.setSystemCursor IDC_ARROW
-        
+    
+    'Prepare all rendering objects
+    Set m_BackBuffer = New pdDIB
+    m_BackBuffer.createBlank picBuffer.ScaleWidth, picBuffer.ScaleHeight, 24
+    
+    m_SeparatorColor = vbActiveTitleBar
+    
+    Set m_TitleFont = New pdFont
+    m_TitleFont.setFontColor RGB(64, 64, 64)
+    m_TitleFont.setFontBold True
+    m_TitleFont.setFontSize 10
+    m_TitleFont.createFontObject
+    m_TitleFont.setTextAlignment vbLeftJustify
+    
+    Set m_DescriptionFont = New pdFont
+    m_DescriptionFont.setFontColor RGB(92, 92, 92)
+    m_DescriptionFont.setFontBold False
+    m_DescriptionFont.setFontSize 10
+    m_DescriptionFont.createFontObject
+    m_DescriptionFont.setTextAlignment vbLeftJustify
+    
     'Make the invisible buffer's font match the rest of PD
     picBuffer.FontName = g_InterfaceFont
         
@@ -304,10 +481,17 @@ Private Sub Form_Load()
     'We can now populate the left-side list box with the categories we found.  While doing this, find
     ' the category with the highest tag count.
     highestCategoryCount = 0
-    lstMetadata.Clear
+    
+    'Prior to adding category names, set a relevant button strip font according to the number of metadata groups.
+    ' If an image has a ton of groups (10+ is not unheard of), reduce font size.
+    If numOfCategories > 5 Then
+        btsGroup.Font.Size = 10
+    Else
+        btsGroup.Font.Size = 12
+    End If
     
     For i = 0 To numOfCategories - 1
-        lstMetadata.AddItem mdCategories(i).Name & " (" & mdCategories(i).Count & ")", i
+        btsGroup.AddItem mdCategories(i).Name, i
         If mdCategories(i).Count > highestCategoryCount Then highestCategoryCount = mdCategories(i).Count
     Next i
     
@@ -336,21 +520,18 @@ Private Sub Form_Load()
         
     Next i
     
-    'Set the height of the picture box buffer to be the same as the category list box
-    picBuffer.Height = lstMetadata.Height
+    'Populate the simple/technical switches at the bottom
+    btsTechnical(0).AddItem "simple", 0
+    btsTechnical(0).AddItem "technical", 1
+    btsTechnical(0).ListIndex = 0
     
-    lstMetadata.ListIndex = 0
+    btsTechnical(1).AddItem "simple", 0
+    btsTechnical(1).AddItem "technical", 1
+    btsTechnical(1).ListIndex = 0
     
-End Sub
-
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    'When the mouse enters the form area, set focus to the vertical scroll bar, so we can automatically mousewheel it (instead of the
-    ' left listbox)
-    If mouseOverMetadataCategoryBox Then
-        mouseOverMetadataCategoryBox = False
-        If vsMetadata.Visible Then vsMetadata.SetFocus
-    End If
+    'Select the first group by default
+    btsGroup.ListIndex = 0
+    btsGroup_Click 0
     
 End Sub
 
@@ -363,83 +544,63 @@ Private Sub Form_Unload(Cancel As Integer)
 
 End Sub
 
-'When a new metadata category is selected, redraw all the metadata text currently on screen
-Private Sub lstMetadata_Click()
-    
-    Dim curCategory As Long
-    curCategory = lstMetadata.ListIndex
-        
-    'First, determine if the vertical scrollbar needs to be visible or not
-    Dim maxMDSize As Long
-    maxMDSize = fixDPIFloat(BLOCKHEIGHT) * mdCategories(curCategory).Count
-    
-    vsMetadata.Value = 0
-    If maxMDSize < picBuffer.Height Then
-        vsMetadata.Visible = False
-    Else
-        vsMetadata.Visible = True
-        vsMetadata.Max = maxMDSize - picBuffer.Height
-    End If
-    
-    redrawMetadataList
-    
-End Sub
-
 'Redraw the full metadata list
 Private Sub redrawMetadataList()
 
     Dim curCategory As Long
-    curCategory = lstMetadata.ListIndex
-
-    picBuffer.Picture = LoadPicture("")
+    curCategory = btsGroup.ListIndex
         
     Dim scrollOffset As Long
     scrollOffset = vsMetadata.Value
-        
+    
+    'Clear the back buffer
+    GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, vbWhite, 255
+    
+    'Render each block in turn
     Dim i As Long
     For i = 0 To mdCategories(curCategory).Count - 1
         renderMDBlock curCategory, i, fixDPI(8), fixDPI(i * BLOCKHEIGHT) - scrollOffset - fixDPI(2)
     Next i
     
-    'Copy the buffer to the main form
+    'Copy the buffer to the target picture box
+    BitBlt picBuffer.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     picBuffer.Picture = picBuffer.Image
-    Me.PaintPicture picBuffer.Picture, lstMetadata.Width + lstMetadata.Left * 2, lstMetadata.Top, picBuffer.ScaleWidth, picBuffer.ScaleHeight, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight
-
+    
 End Sub
 
 'Render the given metadata index onto the background picture box at the specified offset
 Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
-    If ((offsetY + BLOCKHEIGHT) > 0) And (offsetY < picBuffer.Height) Then
-
+    If ((offsetY + BLOCKHEIGHT) > 0) And (offsetY < m_BackBuffer.getDIBHeight) Then
+        
+        offsetY = offsetY + fixDPI(9)
+        
         Dim thisTag As mdItem
         thisTag = allTags(blockCategory, blockIndex)
-    
-        Dim primaryColor As Long, secondaryColor As Long, tertiaryColor As Long
-        primaryColor = RGB(64, 64, 64)
-        secondaryColor = RGB(92, 92, 92)
-        tertiaryColor = vbActiveTitleBar
-    
+        
         Dim linePadding As Long
         linePadding = fixDPI(4)
     
         Dim mHeight As Single
-        Dim drawString As String
+        Dim drawString As String, numericalPrefix As String
         
-        If CBool(chkFriendlyNames.Value) Then
+        numericalPrefix = CStr(blockIndex + 1) & " - "
+        
+        If (btsTechnical(0).ListIndex = 0) Then
             drawString = thisTag.Description
         Else
             drawString = thisTag.FullGroupAndName
         End If
     
         'Start with the simplest field: the tag title (readable form)
-        drawTextOnObject picBuffer, Str(blockIndex + 1) & " - " & drawString, offsetX + 0, offsetY + 0, 12, primaryColor, True, False
+        m_TitleFont.attachToDC m_BackBuffer.getDIBDC
+        m_TitleFont.fastRenderText offsetX + 0, offsetY + 0, numericalPrefix & drawString
                 
         'Below the tag title, add the human-friendly description
-        mHeight = picBuffer.TextHeight(drawString) + linePadding
+        mHeight = m_TitleFont.getHeightOfString(drawString) + linePadding
         
-        If CBool(chkFriendlyValues.Value) Then
+        If (btsTechnical(1).ListIndex = 0) Then
             drawString = thisTag.Value
         Else
             If Len(thisTag.ActualValue) > 0 Then
@@ -449,26 +610,18 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
             End If
         End If
         
-        drawTextOnObject picBuffer, drawString, offsetX + fixDPI(4), offsetY + mHeight, 11, secondaryColor, False
+        m_DescriptionFont.attachToDC m_BackBuffer.getDIBDC
+        m_DescriptionFont.fastRenderTextWithClipping offsetX + m_TitleFont.getWidthOfString(numericalPrefix), offsetY + mHeight, m_BackBuffer.getDIBWidth - offsetX - fixDPI(17), m_DescriptionFont.getHeightOfString(drawString), drawString
         
         'Draw a divider line near the bottom of the metadata block
         Dim lineY As Long
         If blockIndex < mdCategories(blockCategory).Count - 1 Then
-            lineY = offsetY + fixDPI(BLOCKHEIGHT - 8)
-            picBuffer.Line (fixDPI(4), lineY)-(picBuffer.ScaleWidth - fixDPI(8), lineY), tertiaryColor
+            lineY = offsetY + fixDPI(BLOCKHEIGHT - 7)
+            GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, fixDPI(4), lineY, m_BackBuffer.getDIBWidth - fixDPI(4), lineY, m_SeparatorColor
         End If
         
     End If
 
-End Sub
-
-'To solve the problem of "two mouse-scrollable lists on one dialog), we track the mouse's location and handle scroll events accordingly.
-Private Sub lstMetadata_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    mouseOverMetadataCategoryBox = True
-End Sub
-
-Private Sub picBuffer_Click()
-    picBuffer.SetFocus
 End Sub
 
 'When the scrollbar is moved, redraw the metadata list
