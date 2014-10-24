@@ -448,7 +448,7 @@ Private Sub Class_Initialize()
     ReleaseDC 0, TmpDC
     
     'When the class is initialized, set up a default PhotoDemon font.  Face is automatically set per
-    ' the current OS, so external function do not need to set this manually.
+    ' the current OS, so external functions do not need to set this manually.
     With currentLogFont
         .lfHeight = convertFontSize(11)
         .lfWidth = 0        'This will automatically set the width based on the height

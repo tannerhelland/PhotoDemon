@@ -57,6 +57,10 @@ Option Explicit
 'This control really only needs one event raised - Click
 Public Event Click(ByVal buttonIndex As Long)
 
+'These events are provided as a convenience, for hosts who may want to reroute mousewheel events to some other control.
+' (In PD, the metadata browser does this.)
+Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+
 'Flicker-free window painter
 Private WithEvents cPainter As pdWindowPainter
 Attribute cPainter.VB_VarHelpID = -1
@@ -239,6 +243,10 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
 
 End Sub
 
+Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    RaiseEvent MouseWheelVertical(Button, Shift, x, y, scrollAmount)
+End Sub
+
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
 Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
@@ -250,6 +258,7 @@ End Sub
 
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
+    updateAgainstCurrentTheme
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
@@ -730,9 +739,12 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
     
-    Me.Font.Name = g_InterfaceFont
-    curFont.setFontFace g_InterfaceFont
-    curFont.createFontObject
+    If g_UserModeFix Then
+        Me.Font.Name = g_InterfaceFont
+        curFont.setFontFace g_InterfaceFont
+        curFont.setFontSize mFont.Size
+        curFont.createFontObject
+    End If
     
     'Redraw the control to match
     updateControlSize
