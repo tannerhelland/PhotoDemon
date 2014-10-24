@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" Interface (e.g. Zip-like archive handler)
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 22/July/14
-'Last update: start implementing relevant flags for various chunks
+'Last updated: 24/October/14
+'Last update: add support for second-pass directory chunk and data chunk compression
 'Dependencies: clsBasicBuffer class by dilettante (used to read/write byte array buffers more easily)
 '
 'This class provides an interface for creating and reading "pdPackage" files.  pdPackages are zip-like archive files
@@ -25,51 +25,54 @@ Attribute VB_Exposed = False
 'Though I have created pdPackages specifically for use with PhotoDemon, this class should be easily usable by others
 ' with only minor modifications.  Note that an explicit path to an STDCALL (sometimes called WAPI) variant of zlib.dll
 ' is required, with the expected filename of "zlibwapi.dll".  If your STDCALL copy is called "zLib.dll", you must
-' rewrite the few zLib-specific API declarations at the top of the class to match.
+' rewrite the zLib API declarations at the top of the class to match.
 '
 'While pdPackages have many similarities to ZIP files, THEY ARE NOT ACTUAL ZIP FILES, and this class cannot read or
 ' write actual ZIP files.  pdPackages are, by design, much simpler than ZIP files, and their structure and layout
-' plays much more nicely with VB's inherent limitations.
+' plays better with VB's inherent limitations.
 '
 'Key pdPackage features include:
 '
-' 1) Data agnosticism, e.g. everything is treated as byte arrays, so store whatever data you'd like.
+' 1) Data agnosticism, e.g. everything is treated as byte arrays, so you can store whatever data you'd like.
 ' 2) Front-loaded header.  ZIP files place the header at the tail of the archive, but pdPackages place the header
-'     at the head.  This is not ideal for files that must be repeatedly edited, but it allows for much faster archive
-'     reading and writing, especially when accessing only a single file (as we do in PhotoDemon).
+'     at the head.  This is not ideal for files that must be repeatedly edited, but it allows for much faster header
+'     retrieval and parsing, which is a common use-case in PD.
 ' 3) Fixed-width directory entries.  This allows the entire archive directory to be read in a single operation,
 '     rather than manually parsing variable-width directory entries until all have been located.
-' 4) Support for zLib compression on a per-node basis.
+' 4) Support for zLib compression on a per-node basis, or for the entire directory and/or data chunks after they have
+'     been assembled (so-called "second pass" compression).
 ' 5) Support for checksum (Adler32) validation of each individual node.
 ' 6) Support for two data entries per node, typically a header chunk and an actual data chunk.  These two structs
-'     don't need to be used (one or the other or neither is just fine), but I find it very helpful to be store two pieces of
-'     data per node (typically so I can read key header data from a node without extracting the full data contents, which
-'     in the case of image data, tend to be enormous).
-' 7) Per-node compression approach, meaning you can extract a single file without having to decompress the entire archive,
-'     and you can customize compression for each node in the package (e.g. not everything has to be compressed).
+'     don't need to be used (one or the other or neither is just fine), but I find it very helpful to provide a simple
+'     interface for storing two pieces of data per node; as an example, PD uses this feature to read key header data from
+'     a layer node without extracting the full layer DIB contents (which tend to be enormous).
+' 7) Per-node access system, including compression, so that you can easily extract a single node without having to
+'     decompress the entire archive.  Also, this allows you to use different checksum and compression settings for each
+'     node (e.g. not everything has to be compressed and/or checksummed - only the bits you find relevant).
 '
 'Here are a few things to note if you want to use this class in your own projects:
 '
-' 1) At present, pdPackage files are not easily editable.  Once one is created, it cannot easily have nodes added or erased.
-'     There's nothing in the spec that prevents this, but I just haven't written edit functions because I have no reason to
-'     do so in PhotoDemon.
+' 1) At present, pdPackage files are not easily editable.  Once created, there is no interface for adding new nodes,
+'     erasing existing nodes, or modifying any of the pdPackage settings (compression, etc).  There's nothing in the format
+'     design that prevents these actions, but I haven't written edit functions because I have no reason to do so in PhotoDemon.
 '
-' 2) As noted above, zLib is required for compression.  The spec has been written so that you can easily add your own
-'     compression (or encryption) functions if you want, and of course you don't have to compress nodes if you don't want to.
-'     That said, if you want to use the class without zLib, but you intend to work with PDI files coming from software that
-'     *does support compression*, make use of the getPackageFlag() function and the accompanying PDP_FLAG_ZLIB_REQUIRED flag
-'     to detect files that your version will not be able to process.
+' 2) As noted above, zLib is required for compression.  pdPackages are designed in a way that makes it easy to use any
+'     compression (or other modification functions, e.g. encryption) functions of your choosing, or to ignore compression
+'     entirely if you don't require it.  That said, if you want to use the class without zLib, but you intend to work with
+'     pdPackage files from other sources (that may use compression), you need to make use of the getPackageFlag() function and
+'     the accompanying PDP_FLAG_ZLIB_REQUIRED flag, to detect files that your software will not be able to process.
 '
 ' 3) Up to 2GB of data is theoretically supported, but you won't be able to reach that amount from within VB.  For
-'     performance reasons, this pdPackager class creates the full archive in RAM before writing it to file.  This makes it
-'     very fast, but ill-suited to extraordinarily large archive sizes.  (This is by design; sorry!)
+'     performance reasons, this class creates the full archive in RAM before writing it to file.  This makes it very fast,
+'     but ill-suited to extraordinarily large archive sizes.  (This is by design; sorry!)
 '
-' 4) When reading pdPackage files, the full file contents will be cached in memory.  Do not reload the pdPackage file unless
-'     you absolutely have to!  Once it is cached, you can access individual nodes without reloading the entire file.
+' 4) When reading pdPackage files, the full original file contents will be cached in memory.  This allows you to load an
+'     archive, then delete the original file without penalty.  Similarly, if you need access to an archive for an extended
+'     period of time, this allows you to load it just once, then perform any operations from the in-memory copy alone.
 '
 ' 5) This class has clsBasicBuffer as a dependency.  Thank you to dilettante for this minimal buffer class, which greatly
 '     simplifies the process of reading/writing byte streams.  Note that I have modified the required clsBasicBuffer class
-'     to operate directly on pointers (as its much faster when working with large data chunks), so you cannot drop in
+'     to operate directly on pointers (as it's much faster when working with large data chunks), so you cannot drop in
 '     dilettante's original class and expect it to work.  You *must* use the modified version that comes with PhotoDemon.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -80,33 +83,54 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This constant should be updated whenever the core assembly/disassembly code is modified.  This value is embedded in all
-' pdPackage files written by this class, as a failsafe against potential ABI breakage in the future.  The lowest expected
-' value for this constant is 64, representative of PhotoDemon 6.4, when the format was first implemented.
-Private Const THIS_PDPACKAGE_VERSION As Long = 64
+' pdPackage files written by this class, as a failsafe against potential ABI breakage in the future.
+' - The lowest expected value for this constant is 64, representative of PhotoDemon 6.4, when the format was first implemented.
+' - The current expected value is 65.  65 slightly modifies the format of the directory chunk, by using a straight byte array
+'   instead of the actual UDT struct used in previous versions (which VB custom-formats).  This was a necessary change prior to
+'   enabling second-pass compression of the directory and data chunks.
+' - Both v64 and v65 packages are supported by this class, but it will only write v65 packages.
+Private Const THIS_PDPACKAGE_VERSION As Long = 65
+Private Const OLD_PDPACKAGE_VERSION_SUMMER_2014 As Long = 64
 
-'The first four bytes of a valid pdPackage file must always be &H4B504450 ("PDPK" in ASCII, if viewed in a text editor - note the little-endian declaration here)
+'The first four bytes of a valid pdPackage file must always be &H4B504450 ("PDPK" in ASCII, if viewed in a text editor
+' - note the little-endian declaration here).
 Private Const PDP_UNIVERSAL_IDENTIFIER As Long = &H4B504450
 
-'Each pdPackage file has a short file header.  This header is separate from the node directory, and contains all information
+'Each pdPackage file has a short file header.  This header is separate from the directory chunk, and it contains all information
 ' necessary to prepare a node directory array.
 Private Type PDP_HEADER
     PDP_ID As Long                          'pdPackage Identifier; must always be &H4B504450 ("PDPK" in ASCII)
-    PDP_SubID As Long                       'pdPackage sub-identifier.  This can be used by callers to define a specific type of pdPackage.  (PD uses this to denote PDI files.)
-    PDP_Version As Long                     'Version number of the pdPackage class used to write this file.
-    NodeCount As Long                       'Number of data nodes in this package, 1-based (e.g. if there is one node in the archive, this value will be 1).
-    NodeStructSize As Long                  'Size of an individual node struct.  This can be used as a failsafe check against the PDP_Version, above.
+    
+    PDP_SubID As Long                       'pdPackage sub-identifier.  This can be used by callers to define a specific type of pdPackage.
+                                            ' (For example, PD uses this to denote PDI files specifically.)  This value has no intrinsic meaning.
+    PDP_Version As Long                     'Version number of the pdPackage class used to write this file.  All parsing behavior is based on this value,
+                                            ' and it is automatically set according to the THIS_PDPACKAGE_VERSION constant at the top of this class.
+    NodeCount As Long                       'Number of data nodes in this package, 1-based (e.g. if there is one node in the archive, this value will
+                                            ' be set to 1).  Cannot currently be zero, FYI.
+    NodeStructSize As Long                  'Size of an individual node struct.  This can be used as a failsafe check against PDP_Version, above.
+                                            ' Note that as of PDP version 65, this must be calculated using LenB() instead of Len().
     DirectoryChunkSize As Long              'Size of the full node directory structure, including all node directory entries.
-    DirectoryFlags(0 To 3) As Long          'User-defined flags for the directory chunk.  These are unused at present, but could eventually be used to note directory compression, encryption, etc.
-    DataChunkSize As Long                   'Size of the data chunk of the archive.  This could be inferred by calculating EOF - (End of Directory), but it's easier to simply note it here.
-    DataFlags(0 To 3) As Long               'User-defined flags for the data chunk.  These are unused at present, but could eventually be used to note a second compression pass over the full data chunk, encryption, etc.
+    
+    DirectoryFlags(0 To 2) As Long          'User-defined flags for the directory chunk.  See the PDP_FLAGS enum for details.
+    
+    DirectoryChunkSizeCompressed As Long    'If compression has been applied to the directory chunk, this value will be non-zero.  Use this to decompress
+                                            ' the directory prior to copying it into the directory array.
+    DataChunkSize As Long                   'Size of the data chunk of the archive.  This could be inferred by calculating EOF - (End of Directory Chunk),
+                                            ' but it's easier to simply note it right inside the header.
+    DataFlags(0 To 2) As Long               'User-defined flags for the data chunk.  See the PDP_FLAGS enum for details.
+    
+    DataChunkSizeCompressed As Long         'If compression has been applied to the data chunk, this value will be non-zero.  Use this to decompress
+                                            ' the data chnk prior to copying it into the buffer class.
     Reserved As Long                        'Reserved for future use; no relevance at present.
+    
 End Type
 
 'The number of flags PD supports is relatively thin at present.  This is by design, as I don't want to use them for trivial shit.
 ' Note that in an effort to keep flags as simple as possible, they are referred to by bit ordinal position [0, 31] rather than raw hex value.
-' Also note that at present, the same flags are used for both directory, data, and individual node structs.
+' Also note that at present, the same flags are used for all possible flag locations (directory, data, and individual nodes).  Future flags
+' don't have to be used this way, but at present, each location shares enough properties to warrant use of the same flag values.
 
-'Flags can be stored in the directory and data chunks, as well as individual nodes.  When checking flags (e.g. after a load operation),
+'FYI: flags can be stored in the directory and data chunks, as well as individual nodes.  When checking flags (e.g. after a load operation),
 ' the caller can specify which flag location they want checked.
 Public Enum PDP_FLAG_LOCATION
     PDP_LOCATION_ANY = -1
@@ -128,15 +152,15 @@ End Enum
     Private Const PDP_FLAG_ZLIB_REQUIRED = 0
 #End If
 
-'Immediately following the PDP_HEADER is the directory chunk, which is comprised of NodeCount individual PDP_NODE structs.
-' These structs are small and flexible, and *they have a fixed size*, meaning they can be read into a fixed-width array
-' in a single pass.
+'Immediately following the PDP_HEADER is the directory chunk, which is comprised of FilerHeader.NodeCount individual
+' PDP_NODE structs.  These structs are small and flexible, and *they have a fixed size*, meaning they can be read into
+' a fixed-width array in a single pass.
 Private Type PDP_NODE
 
-    NodeName As String * 32                 '32 double-byte characters are allotted for each node name
+    NodeName As String * 32                 'Name of the node, as a standard VB String (DBCS)
     NodeID As Long                          'Alternatively, calling functions can specify an optional 4-byte numerical ID.  Nodes can be read by 32-char name or 4-byte ID.
     OptionalNodeType As Long                'Calling functions can also assign each node a TYPE if they want; this value has no meaning to the pdPackager class.
-    NodeFlags(0 To 3) As Long               '16 bytes of node-specific flags are allowed.  At present, these are unused.
+    NodeFlags(0 To 3) As Long               '16 bytes of node-specific flags are allowed.  At present, these are mostly unused.
     
     'One of the unique features of pdPackages is that each node is allotted two entries in the data chunk.  These entries don't have
     ' to be used; in fact, neither has to be used, but they can be helpful for reading node-specific information without having to
@@ -145,17 +169,17 @@ Private Type PDP_NODE
     '  relative path locations for each file in the package!)
     NodeHeaderOffset As Long                'Absolute offset of this node's header in the data chunk, STARTING FROM THE START OF THE DATA CHUNK, not the start of the file!
     NodeHeaderPackedSize As Long            'Packed size of this node's header.  (This is the size the node's header array occupies in the pdPackage data chunk.)
-    NodeHeaderOriginalSize As Long          'Original size of this node's header.  (If this value is the same as NodeHeaderCompSize, the node header was stored uncompressed.)
+    NodeHeaderOriginalSize As Long          'Original size of this node's header.  (If this value is the same as NodeHeaderPackedSize, the node header was stored uncompressed.)
     NodeHeaderAdler32 As Long               'Adler32 checksum of the UNCOMPRESSED header bytes.  This can be used to verify the correctness of the data post-decompression.
     
     NodeDataOffset As Long                  'Absolute offset of this node's data in the data chunk, STARTING FROM THE START OF THE DATA CHUNK, not the start of the file!
     NodeDataPackedSize As Long              'Packed size of this node's data.  (This is the size the node's data array occupies in the pdPackage data chunk.)
-    NodeDataOriginalSize As Long            'Original size of this node's data.  (If this value is the same as NodeHeaderCompSize, the node data was stored uncompressed.)
+    NodeDataOriginalSize As Long            'Original size of this node's data.  (If this value is the same as NodeHeaderPackedSize, the node data was stored uncompressed.)
     NodeDataAdler32 As Long                 'Adler32 checksum of the UNCOMPRESSED data bytes.  This can be used to verify the correctness of the data post-decompression.
     
 End Type
 
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
 
 'zLib compression and checksum validation
 Private Declare Function compress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
@@ -171,10 +195,10 @@ Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal 
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 
 'If zLib has been successfully initialized, this will be set to TRUE.  If we initialized the DLL within this class, we will also
-' have a zLibToken value that must be freed at termination time.
+' have a zLibToken value; this value must be used at termination time to free our zLib library handle.
 Private m_ZLibAvailable As Boolean, m_ZLibToken As Long
 
-'When writing new pdPackage files, these variables will hold the package contents as they are being assembled in memory.
+'When writing new pdPackage files, these variables will hold the package's contents as they are being assembled.
 Private m_FileHeader As PDP_HEADER
 Private m_NodeDirectory() As PDP_NODE
 Private m_NumOfNodes As Long
@@ -201,7 +225,9 @@ Private m_DataBuffer As clsBasicBuffer
 'Before creating a pdPackage file, you must call this function once.  It preps all internal structures in anticipation of
 ' data loading.  If you know the number of data nodes you will be writing, you can mention it in advance, which makes the
 ' directory assembly process much faster (because we don't have to ReDim Preserve the directory when we run out of space).
-Public Sub prepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional ByVal optPackageID As Long = 0)
+' Similarly, if you have some notion of how large the data chunk will be, you can supply it in advance.  There is generally
+' no penalty to over-estimating space, as the buffer will be trimmed before writing it out to file.
+Public Sub prepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional ByVal optPackageID As Long = 0, Optional ByVal estimatedDataChunkSize As Long = 0)
 
     'Reset all module-level storage structs related to writing a new pdPackage file
     
@@ -217,21 +243,23 @@ Public Sub prepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional
         ' a failsafe against things like mismatched PDP version numbers.  It also makes it easier for external load functions
         ' to know how to size the directory structure array.
         Dim tmpNode As PDP_NODE
-        .NodeStructSize = Len(tmpNode)
+        .NodeStructSize = LenB(tmpNode)
         
         'DirectoryChunkSize can be assumed from the numOfDataNodes, but note that it will be verified again before the data is
         ' actually written out to file.
         .DirectoryChunkSize = .NodeStructSize * numOfDataNodes
+        .DirectoryChunkSizeCompressed = 0
         
         'DirectoryFlags() and DataFlags() are set by separate functions.  For now, assume a value of 0 for all flags.
         Dim i As Long
-        For i = 0 To 3
+        For i = 0 To UBound(.DirectoryFlags)
             .DirectoryFlags(i) = 0
             .DataFlags(i) = 0
         Next i
         
         'DataChunkSize will remain unknown until all nodes have been added.
         .DataChunkSize = 0
+        .DataChunkSizeCompressed = 0
         
         '4 bytes are reserved at the end as a "just in case".  For now, they should always be 0.
         .Reserved = 0
@@ -245,18 +273,21 @@ Public Sub prepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional
         
     'Prepare the data buffer.  Note that chunk size is largely irrelevant for our purposes; when handed a byte array that exceeds
     ' the size of the default chunk size, the buffer class is smart enough to extend the buffer by the size of that byte array.
+    ' If writing a lot of small data, however, the chunk size becomes important; try to make it large enough that you will only
+    ' require a handful of ReDim Preserve statements throughout the pdPackage assembly process.
     Set m_DataBuffer = New clsBasicBuffer
     m_DataBuffer.ChunkSize = 32768
-    m_DataBuffer.OpenBuf
+    m_DataBuffer.OpenBuf estimatedDataChunkSize
 
 End Sub
 
 'Add a new node to this pdPackage instance.  Note that this function DOES NOT actually add the node's data arrays to the main
 ' data buffer - those are done in a subsequent step, by the user, as necessary.  (It's a little pesky to separate node additions
-' into multiple steps, but this allows for much more fine-grained control over node addition, without overwhelming this function
-' with a monstrous list of parameters.
+' into multiple steps, but this allows for more fine-grained control over node addition, without overwhelming any function with
+' a monstrous list of parameters.)
 '
-'This function returns the index of the added node, which external functions can then use to supply this node's actual data arrays.
+'Importantly, this function returns the index of the added node, which external functions must then use to supply this node's
+' actual data arrays.
 Public Function addNode(Optional ByVal thisNodeName As String = "", Optional ByVal thisNodeID As Long = 0, Optional ByVal thisNodeType As Long = 0) As Long
 
     'Increment our active node count
@@ -291,19 +322,20 @@ Public Function addNode(Optional ByVal thisNodeName As String = "", Optional ByV
     
 End Function
 
-'Add data for a given node.  Three required params, three optional params.  The function will return TRUE if successful.
+'Add data for a given node.  Four required params, three optional params.  The function will return TRUE if successful.
 '
-' The three required params are:
-' 1) Index of the node for which data is being supplied
-' 2) Destination array for this data.  Remember that each node in a pdPackage supports TWO data arrays, which can be
-'    used however the caller pleases.  (Typically, one is used for header data, while the other is used for binary data.)
-' 3) Reference to a byte array containing the data the caller wants written.  This class doesn't care how the byte array is
-'    created or what it contains, with the exception that it CANNOT BE FIXED WIDTH.
+' The four required params are:
+' 1) Index of the target node.  This is the value returned by addNode(), above.
+' 2) Destination chunk for this data.  Remember that each node in a pdPackage supports TWO possible data arrays, which can be
+'    utilized however the caller pleases.  (Typically, one is used for lightweight header data, while the other is used for
+'    heavy content data.)
+' 3, 4) Pointer and size of the byte array containing the data the caller wants written.  This class doesn't care how the
+'    pointer is obtained or assembled, so long as the SIZE IS BYTE-ACCURATE.
 '
 ' The three optional params are:
 ' 1) Whether to compress the data before writing it.  If zLib is unavailable, this param has no meaning, as data will always
 '    be written without compression.
-' 2) Compresson level.  Per the zLib spec, this is a value from 0 (uncompressed) to 9 (best possible compression).  Note that
+' 2) Compression level.  Per the zLib spec, this is a value from 0 (uncompressed) to 9 (best possible compression).  Note that
 '    a value of -1 means "use default compression level", and a value of 1 means "compress the data, but do it as quickly as
 '    possible".  I don't recommend requesting compression, then using compression level 0 - that would be stupid!
 ' 3) Whether to calculate a checksum for the uncompressed data bytes.  This is completely optional.  If a checksum is found in
@@ -318,7 +350,7 @@ Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         Exit Function
     End If
     
-    'If compression is being used, update the "zLib required" flag for both the file as a whole, and this node
+    'If compression is requested, update the "zLib required" flag for both the file as a whole, and this specific node.
     If compressData Then
     
         'Overall data chunk flag
@@ -344,7 +376,7 @@ Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     End If
     
     'If we are not using compression, we can write the node data as-is.  Note that header or data doesn't matter here,
-    ' because the data is simply added to the pdPackages data chunk.  Order is irrelevant.
+    ' because the data is simply added to the pdPackages data chunk.  Order of writing is irrelevant.
     If (Not compressData) Or (Not m_ZLibAvailable) Then
     
         m_DataBuffer.WriteBytesFromPointer dataPointer, dataLength
@@ -355,54 +387,33 @@ Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
             m_NodeDirectory(nodeIndex).NodeDataPackedSize = dataLength
         End If
         
-    'Data compression was requested.  We now have a bit of extra work to do.
+    'Data compression was requested, meaning we have a bit of extra work to do.
     Else
-    
-        'Start by preparing an array to receive the zLib-compressed data.  The zLib creators recommend a buffer 1% larger than
-        ' the input buffer, plus 12 extra bytes for a header.  This is the "worst possible scenario" for zLib compression.
+        
         Dim compressedData() As Byte
-        Dim OriginalSize As Long, compressedSize As Long
-        OriginalSize = dataLength
-        compressedSize = OriginalSize + (OriginalSize * 0.01) + 12
-        ReDim compressedData(0 To compressedSize - 1) As Byte
+        Dim compressedSize As Long
         
-        'Request compression from zLib.  It'll take care of the rest.
-        Dim zLibResult As Long
-        If compressionLevel >= 0 Then
-            zLibResult = compress2(compressedData(0), compressedSize, ByVal dataPointer, dataLength, compressionLevel)
-        Else
-            zLibResult = compress(compressedData(0), compressedSize, ByVal dataPointer, dataLength)
-        End If
-        
-        'Make sure zLib compressed the data successfully.
-        If zLibResult = 0 Then
-        
-            'zLib was successful.  Add the compressed data stream to the data buffer.
-            m_DataBuffer.WriteBytesFromPointer VarPtr(compressedData(0)), compressedSize
-        
-            If useHeaderBuffer Then
-                m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = compressedSize
-            Else
-                m_NodeDirectory(nodeIndex).NodeDataPackedSize = compressedSize
-            End If
+        'copyPtrToArray will return TRUE if the data was compressed; FALSE if it was not.  There is no error state for the function.
+        If copyPtrToArray(dataPointer, dataLength, compressedData, compressedSize, True, compressionLevel, False) Then
             
             'For fun, supply some debug info on the compression.
-            Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(OriginalSize)))), "#0.00") & "% smaller (" & OriginalSize & " to " & compressedSize & " bytes)."
+            Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
             
-        'zLib failed.  Write the original, uncompressed data to file instead.
         Else
             
-            m_DataBuffer.WriteBytesFromPointer dataPointer, dataLength
-        
-            If useHeaderBuffer Then
-                m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = dataLength
-            Else
-                m_NodeDirectory(nodeIndex).NodeDataPackedSize = dataLength
-            End If
-            
             'Something went horribly wrong.  Write the uncompressed original data to the buffer, and provide a debug warning.
-            Debug.Print "zLib compression failed; returned error code was #" & zLibResult & ".  Writing original uncompressed data to buffer instead..."
+            Debug.Print "zLib compression failed; writing original uncompressed data to buffer instead..."
         
+        End If
+        
+        'Copy the contents of the compressedData() array into the buffer; note that even if zLib failed, copyPtrToArray will fill compressedData()
+        ' with an uncompressed copy of the source bytes (and compressedSize with the source buffer size), so we can use the same code regardless.
+        m_DataBuffer.WriteBytesFromPointer VarPtr(compressedData(0)), compressedSize
+        
+        If useHeaderBuffer Then
+            m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = compressedSize
+        Else
+            m_NodeDirectory(nodeIndex).NodeDataPackedSize = compressedSize
         End If
         
     End If
@@ -450,10 +461,10 @@ End Function
 'When all nodes have been successfully added, the user can finally write out their data to file.  This function will return TRUE
 ' if successful, FALSE if unsuccessful.  (Note that it assumes the caller has done some basic validation on the file path, like
 ' obtaining permission from the user to overwrite an existing file.)
-Public Function writePackageToFile(ByVal dstFilename As String) As Boolean
+Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal secondPassDataCompression As Boolean = False) As Boolean
     
     'Start by updating the file header.  Most of this will have been done when the class was initialized, but some values
-    ' wouldn't have been known until all nodes were added.
+    ' can't be set until all nodes have been added.
     With m_FileHeader
     
         'Update the final node count
@@ -468,9 +479,32 @@ Public Function writePackageToFile(ByVal dstFilename As String) As Boolean
         
     End With
     
-    'If the node directory was being dynamically resized during the write process, it may contain blank entries at the tail end.
-    ' Resize it to its exact final size now.
-    If UBound(m_NodeDirectory) > m_NumOfNodes - 1 Then ReDim Preserve m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
+    'Before writing the file, we have a few other potential header items we need to construct.
+    
+    'Create the node directory byte array now.  (VB writes UDTs to file in a non-standard, non-obvious way, so we need to do this
+    ' regardless of second-pass directory compression.)
+    Dim rawDirectoryBuffer() As Byte, rawDataBuffer() As Byte
+    Dim preCompressionBuffer() As Byte
+    Dim originalSize As Long, compressedSize As Long
+    originalSize = m_FileHeader.DirectoryChunkSize
+    
+    'Use the copyPtrToArray function to copy the contents of m_NodeDirectory into rawDirectoryBuffer().  The function will return TRUE
+    ' if it compresses the data; false, otherwise.
+    If copyPtrToArray(VarPtr(m_NodeDirectory(0)), originalSize, rawDirectoryBuffer, compressedSize, secondPassDirectoryCompression, , True) Then
+        m_FileHeader.DirectoryChunkSizeCompressed = compressedSize
+        setBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DirectoryFlags(0)
+    Else
+        m_FileHeader.DirectoryChunkSizeCompressed = 0
+    End If
+    
+    'Repeat the above steps for the data chunk
+    originalSize = m_FileHeader.DataChunkSize
+    If copyPtrToArray(m_DataBuffer.CurrentBytesPointer, originalSize, rawDataBuffer, compressedSize, secondPassDataCompression, , True) Then
+        m_FileHeader.DataChunkSizeCompressed = compressedSize
+        setBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
+    Else
+        m_FileHeader.DataChunkSizeCompressed = 0
+    End If
     
     'Kill the destination file if it already exists
     If FileExist(dstFilename) Then Kill dstFilename
@@ -486,11 +520,11 @@ Public Function writePackageToFile(ByVal dstFilename As String) As Boolean
         'Header
         Put #fileNum, 1, m_FileHeader
         
-        'Node directory
-        Put #fileNum, , m_NodeDirectory
+        'Directory chunk
+        Put #fileNum, , rawDirectoryBuffer
         
-        'Data buffer
-        Put #fileNum, , m_DataBuffer.CurrentBytes
+        'Data chunk
+        Put #fileNum, , rawDataBuffer
         
     Close #fileNum
     
@@ -499,6 +533,72 @@ Public Function writePackageToFile(ByVal dstFilename As String) As Boolean
     
     'TODO!  Add basic error handling.
 
+End Function
+
+'Copy one array into another, with variable compression.  This is used in many places throughout this class; basically any action that
+' potentially supports compression should use this function to transfer data between arrays, even when compression is not in use.
+' (This function will abstract away all the messy CopyMemory bits, keeping the rest of the class clean.)
+'
+'If compression *is* in use, this function will use zLib to compress the array accordingly, and it will fill the passed dstSize Long
+' with the size (1-based) of the compressed array.  Explicit size values are required for both source and destination arrays, which
+' allows both the caller and this function to avoid the need for precisely dimensioned arrays.  (Any time we can skip an unnecessary
+' ReDim Preserve, we save ourselves precious processing time.)
+'
+'This function is designed to be error-proof.  If something goes wrong during the compression stage, it will do a straight copy from
+' the source to the destination.  Similarly, if the compressed size is larger than the uncompressed size, it will also return an
+' uncompressed copy of the data.  The returned BOOLEAN reports whether or not compression was actually used, NOT whether or not the
+' function was successful.  (It is assumed the function is always successful, because if zLib fails, the default uncompressed
+' array will still be returned, and the caller can proceed normally with that data.)
+Private Function copyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
+
+    'If compression is active, extra steps are (obviously) required.
+    If useCompression Then
+    
+        'Start by preparing the destination array to receive the zLib-compressed data.  The zLib creators recommend a buffer 1% larger than
+        ' the input buffer, plus 12 extra bytes for a header.  This is the "worst possible scenario" for zLib compression (e.g. if the
+        ' input buffer is 100% uncompressable.)
+        dstSize = srcSize + (srcSize * 0.01) + 12
+        ReDim dstArray(0 To dstSize - 1) As Byte
+        
+        'Request compression from zLib.
+        Dim zLibResult As Long
+        If compressionLevel >= 0 Then
+            zLibResult = compress2(dstArray(0), dstSize, ByVal srcPointer, srcSize, compressionLevel)
+        Else
+            zLibResult = compress(dstArray(0), dstSize, ByVal srcPointer, srcSize)
+        End If
+        
+        'Make sure zLib compressed the data successfully.
+        If zLibResult = 0 Then
+        
+            'ReDim the destination array, if requested
+            If trimDestinationArray Then ReDim Preserve dstArray(0 To dstSize - 1) As Byte
+            copyPtrToArray = True
+        
+        'zLib failed; write an uncompressed directory instead.
+        Else
+        
+            dstSize = srcSize
+            ReDim dstArray(0 To dstSize - 1) As Byte
+            CopyMemory VarPtr(dstArray(0)), srcPointer, srcSize
+            copyPtrToArray = False
+        
+        End If
+        
+    Else
+    
+        dstSize = srcSize
+        ReDim dstArray(0 To dstSize - 1) As Byte
+        CopyMemory VarPtr(dstArray(0)), srcPointer, srcSize
+        copyPtrToArray = False
+    
+    End If
+    
+End Function
+
+'This wrapper for copyPtrToArray, above, that allows the user to specify an array reference instead of a pointer
+Private Function copyArray(ByRef srcArray() As Byte, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
+    copyArray = copyPtrToArray(VarPtr(srcArray(0)), srcSize, dstArray, dstSize, useCompression, compressionLevel, trimDestinationArray)
 End Function
 
 'Load a pdPackage file into memory.  A few things to note:
@@ -519,7 +619,9 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     On Error GoTo StopPackageFileRead
 
     Dim fileNum As Integer
-
+    Dim rawBuffer() As Byte, tmpCompressionBuffer() As Byte
+    Dim zLibResult As Long
+    
     'Before doing anything else, make sure the file exists
     If Not FileExist(srcFilename) Then
         Debug.Print "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
@@ -554,28 +656,112 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         'If both the file signature and the sub-type check out, load the full file header now.
         Get #fileNum, 1, m_FileHeader
         
-        'As yet another failsafe, make sure the header's node struct size is correct.  If it isn't, exit now.
-        Dim tmpNode As PDP_NODE
-        If m_FileHeader.NodeStructSize <> Len(tmpNode) Then
-            Message "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
-            GoTo StopPackageFileRead
+        'Check the PDP version.  If it's older than the current version, loading will be handled by one of the legacy load functions.
+        If m_FileHeader.PDP_Version < THIS_PDPACKAGE_VERSION Then
+            
+            pdpCheck = loadLegacyPDPackage(fileNum)
+            If Not pdpCheck Then
+                Message "Legacy file format could not be decoded."
+                GoTo StopPackageFileRead
+            End If
+        
+        'This is the current PDP version.  Continue the normal loading process.
+        Else
+            
+            'Make sure the struct size is correct; if it isn't, all subsequent parsing will fail.
+            Dim tmpNode As PDP_NODE
+            If m_FileHeader.NodeStructSize <> LenB(tmpNode) Then
+                Message "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+                GoTo StopPackageFileRead
+            End If
+            
+            'Next, it's time to retrieve the directory.  The size of the directory varies, based on whether it received second-pass compression.
+            If m_FileHeader.DirectoryChunkSizeCompressed = 0 Then
+            
+                'No compression applied, so we can retrieve the node directory as-is.
+                ReDim rawBuffer(0 To m_FileHeader.DirectoryChunkSize - 1) As Byte
+                Get #fileNum, , rawBuffer
+                
+            Else
+            
+                'Second-pass compression was applied.  Make sure zLib is available.  (If it isn't, the user is screwed.)
+                If m_ZLibAvailable Then
+                
+                    'Resize the destination buffer to the original size of the data
+                    ReDim rawBuffer(0 To m_FileHeader.DirectoryChunkSize - 1) As Byte
+                    
+                    'Resize the source buffer to the compressed directory size, and retrieve the compressed directory.
+                    ReDim tmpCompressionBuffer(0 To m_FileHeader.DirectoryChunkSizeCompressed - 1) As Byte
+                    Get #fileNum, , tmpCompressionBuffer
+                    
+                    'Use zLib to decompress the data
+                    zLibResult = uncompress(rawBuffer(0), m_FileHeader.DirectoryChunkSize, tmpCompressionBuffer(0), m_FileHeader.DirectoryChunkSizeCompressed)
+                    
+                    If zLibResult <> 0 Then
+                        
+                        Message "Directory is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                        GoTo StopPackageFileRead
+                    
+                    End If
+                    
+                Else
+                
+                    Message "Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+                    GoTo StopPackageFileRead
+                
+                End If
+            
+            End If
+            
+            'Use information from the file header to prepare the directory array, then copy the raw buffer into it.
+            m_NumOfNodes = m_FileHeader.NodeCount
+            ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
+            CopyMemory VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSize
+            
+            'Now, retrieve the data chunk, and apply the same decompression test that we did for the directory chunk.
+            If m_FileHeader.DataChunkSizeCompressed = 0 Then
+            
+                'No compression applied, so we can retrieve the node directory as-is.
+                ReDim rawBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
+                Get #fileNum, , rawBuffer
+                
+            Else
+            
+                'Second-pass compression was applied.  Make sure zLib is available.  (If it isn't, the user is screwed.)
+                If m_ZLibAvailable Then
+                
+                    'Resize the destination buffer to the original size of the data
+                    ReDim rawBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
+                    
+                    'Resize the source buffer to the compressed directory size, and retrieve the compressed directory.
+                    ReDim tmpCompressionBuffer(0 To m_FileHeader.DataChunkSizeCompressed - 1) As Byte
+                    Get #fileNum, , tmpCompressionBuffer
+                    
+                    'Use zLib to decompress the data
+                    zLibResult = uncompress(rawBuffer(0), m_FileHeader.DataChunkSize, tmpCompressionBuffer(0), m_FileHeader.DataChunkSizeCompressed)
+                    
+                    If zLibResult <> 0 Then
+                        
+                        Message "Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                        GoTo StopPackageFileRead
+                    
+                    End If
+                    
+                Else
+                
+                    Message "Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+                    GoTo StopPackageFileRead
+                
+                End If
+            
+            End If
+            
+            'Pass the data chunk to the m_DataBuffer class (which we'll use for further parsing).
+            Set m_DataBuffer = New clsBasicBuffer
+            m_DataBuffer.OpenBuf
+            m_DataBuffer.WriteBytes rawBuffer
+            
         End If
-        
-        'Use information from the file header to prepare the directory array.
-        m_NumOfNodes = m_FileHeader.NodeCount
-        ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
-        
-        'Retrieve the node directory
-        Get #fileNum, , m_NodeDirectory
-        
-        'Finally, retrieve the data chunk, and pass it to the m_DataBuffer class (which we'll use for further parsing).
-        Dim rawDataBuffer() As Byte
-        ReDim rawDataBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
-        Get #fileNum, , rawDataBuffer
-        
-        Set m_DataBuffer = New clsBasicBuffer
-        m_DataBuffer.OpenBuf
-        m_DataBuffer.WriteBytes rawDataBuffer
         
     'And that's all, folks!  Close the file and exit.
     Close #fileNum
@@ -589,6 +775,57 @@ StopPackageFileRead:
     If fileNum <> 0 Then Close #fileNum
     readPackageFromFile = False
     Exit Function
+
+End Function
+
+'Any PDPackage versions prior to the current version (THIS_PDPACKAGE_VERSION) are loaded via this function, after the file header
+' has been parsed.  That means that the filePointer passed to this function already points to the byte IMMEDIATELY FOLLOWING the header.
+Private Function loadLegacyPDPackage(ByRef fileNum As Integer) As Boolean
+
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Legacy pdPackage format detected.  Attempting decoding now..."
+    #End If
+
+    'Separate handling based on the file header, which has already been stored to m_FileHeader
+    Select Case m_FileHeader.PDP_Version
+    
+        'The original pdPackage format is very simple.  I had not intended to replace it, but at the time I created it, I didn't
+        ' realize that VB stored UDTs to file in a non-standard, non-obvious way that differs from their in-memory representation.
+        Case OLD_PDPACKAGE_VERSION_SUMMER_2014
+            
+            'Make sure the struct size matches; if it doesn't, all subsequent parsing will fail
+            Dim tmpNode As PDP_NODE
+            If m_FileHeader.NodeStructSize = Len(tmpNode) Then
+                
+                'Use information from the file header to prepare the directory array.
+                m_NumOfNodes = m_FileHeader.NodeCount
+                ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
+                
+                'Retrieve the node directory
+                Get #fileNum, , m_NodeDirectory
+                
+                'Finally, retrieve the data chunk, and pass it to the m_DataBuffer class (which we'll use for further parsing).
+                Dim rawDataBuffer() As Byte
+                ReDim rawDataBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
+                Get #fileNum, , rawDataBuffer
+                
+                Set m_DataBuffer = New clsBasicBuffer
+                m_DataBuffer.OpenBuf
+                m_DataBuffer.WriteBytes rawDataBuffer
+                
+                'We do not close the file here; that is handled by the caller, which may have additional validation steps to perform.
+                loadLegacyPDPackage = True
+                
+            'Struct size mismatch - file is probably not PDI type.
+            Else
+                Message "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+                loadLegacyPDPackage = False
+            End If
+            
+        Case Else
+            loadLegacyPDPackage = False
+        
+    End Select
 
 End Function
 
@@ -735,7 +972,7 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             
         Else
         
-            Message "File node is compressed, but zLib dll is missing.  Decompression is impossible, abandoning load."
+            Message "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
             getNodeDataByIndex = False
             Exit Function
         
