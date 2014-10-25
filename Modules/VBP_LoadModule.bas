@@ -432,15 +432,17 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Preparing program menus..."
     
-    'If inside the IDE, disable the "Effects" -> "Test" menu
-    If g_IsProgramCompiled Then
-        FormMain.MnuTest.Visible = False
-        'FormMain.MnuEffectExperimental.Visible = False
-    Else
+    'In debug modes, certain developer and experimental options can be enabled.
+    If PD_BUILD_QUALITY <> PD_PRODUCTION Then
         FormMain.MnuTest.Visible = True
-        'FormMain.MnuEffectExperimental.Visible = True
+        FormMain.mnuTool(7).Visible = True
+        FormMain.mnuTool(8).Visible = True
+    Else
+        FormMain.MnuTest.Visible = False
+        FormMain.mnuTool(7).Visible = False
+        FormMain.mnuTool(8).Visible = False
     End If
-    
+        
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
     LoadAccelerators
             

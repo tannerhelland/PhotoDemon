@@ -1323,6 +1323,18 @@ Begin VB.Form FormMain
          Caption         =   "Plugin manager"
          Index           =   6
       End
+      Begin VB.Menu mnuTool 
+         Caption         =   "-"
+         Index           =   7
+      End
+      Begin VB.Menu mnuTool 
+         Caption         =   "PD Developer Tools"
+         Index           =   8
+         Begin VB.Menu mnuDevelopers 
+            Caption         =   "Theme editor..."
+            Index           =   0
+         End
+      End
    End
    Begin VB.Menu MnuWindowTop 
       Caption         =   "&Window"
@@ -2013,7 +2025,7 @@ Private Sub tmrAccelerators_Timer()
         Dim i As Integer
         For i = 0 To 9
             If ctlAccelerator.Key(m_AcceleratorIndex) = ("MRU_" & i) Then
-                If FormMain.mnuRecDocs.count > i Then
+                If FormMain.mnuRecDocs.Count > i Then
                     If FormMain.mnuRecDocs(i).Enabled Then
                         FormMain.mnuRecDocs_Click i
                     End If
