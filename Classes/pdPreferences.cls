@@ -70,6 +70,7 @@ Private Const S_OK = 0
 Private ProgramPath As String
 Private AppPath As String
 Private DataPath As String
+Private ThemePath As String
 
 'Within the /App and /Data folders are additional subfolders, whose purposes should be obvious from their titles
 Private MacroPath As String
@@ -80,7 +81,10 @@ Private LanguagePath As String
 Private UserLanguagePath As String
 Private SelectionPath As String
 Private PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
-Private DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps are placed here.
+Private DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps
+                                    ' are automatically placed here.
+Private UserThemePath As String     '6.6 nightly builds added support for themes.  PD will extract its default themes into the /App/ Themes folder,
+                                    ' but perhaps at some point in the future, others could add their own custom themes into this /Data/ folder.
 
 'XML engine for reading/writing preference values from file
 Private xmlEngine As pdXML
@@ -109,6 +113,15 @@ Public Sub endBatchPreferenceMode()
     m_BatchModeActive = False
     xmlEngine.writeXMLToFile PreferencesPath
 End Sub
+
+'Get the current Theme path.  Note that there are /App (program default) and /Data (userland) variants of this folder.
+Public Function getThemePath(Optional ByVal getUserThemePathInstead As Boolean = False) As String
+    If getUserThemePathInstead Then
+        getThemePath = UserThemePath
+    Else
+        getThemePath = ThemePath
+    End If
+End Function
 
 'Get the current Debug path
 Public Function getDebugPath() As String
@@ -211,7 +224,11 @@ Public Sub initializePaths()
     'Within the App\PhotoDemon\ folder, create a folder for any available OFFICIAL translations.  (User translations go in the Data folder.)
     LanguagePath = AppPath & "Languages\"
     If Not DirectoryExist(LanguagePath) Then MkDir LanguagePath
-        
+    
+    'Within the App\PhotoDemon\ folder, create a folder for any available OFFICIAL themes.  (User themes go in the Data folder.)
+    ThemePath = AppPath & "Themes\"
+    If Not DirectoryExist(ThemePath) Then MkDir ThemePath
+    
     'Create a "Data" path based off the ProgramPath - this is where the preferences file and any other user-specific files
     ' (saved filters, macros) will be stored.  Also, make sure the directory exists; if it doesn't, create it.
     DataPath = ProgramPath & "Data\"
@@ -235,6 +252,9 @@ Public Sub initializePaths()
         
     DebugPath = DataPath & "Debug\"
     If Not DirectoryExist(DebugPath) Then MkDir DebugPath
+    
+    UserThemePath = DataPath & "Themes\"
+    If Not DirectoryExist(UserThemePath) Then MkDir UserThemePath
     
     'The user preferences file is also located in the \Data subdirectory
     PreferencesPath = DataPath & PROGRAMNAME & "_settings.xml"
