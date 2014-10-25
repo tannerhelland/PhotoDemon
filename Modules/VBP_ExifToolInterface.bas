@@ -174,6 +174,11 @@ Private verificationString As String
 Private databaseModeActive As Boolean
 Private databaseString As String
 
+'As of 6.6 alpha, technical metadata reports can now be generated for a given file.  While this mode is active, we do not
+' want to immediately delete the report; use this boolean to check for that particular state.
+Private technicalReportModeActive As Boolean
+Private technicalReportSrcImage As String
+
 'Prior to writing out a file's metadata, we must cache the information we want written in a temp file.  (ExifTool requires
 ' a source file when writing metadata out to file; the alternative is to manually request the writing of each tag in turn,
 ' but if we do this, we lose many built-in utilities like automatically removing duplicate tags, and reassigning invalid
@@ -253,11 +258,39 @@ End Sub
 Private Sub stopVerificationMode()
     
     verificationModeActive = False
-    verificationString = ""
     
-    'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
-    If FileExist(tmpMetadataFilePath) Then Kill tmpMetadataFilePath
+    If Not technicalReportModeActive Then
     
+        verificationString = ""
+        
+        'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
+        If FileExist(tmpMetadataFilePath) Then Kill tmpMetadataFilePath
+        
+    Else
+    
+        'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata report
+        verificationString = Replace$(verificationString, "{ready}", "")
+        
+        'Write the completed technical report out to a temp file
+        Dim tmpFilename As String
+        tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & getFilenameWithoutExtension(technicalReportSrcImage) & ".html"
+        'MsgBox tmpFilename
+        If FileExist(tmpFilename) Then Kill tmpFilename
+        Dim fileNum As Integer
+        fileNum = FreeFile
+        
+        Open tmpFilename For Output As #fileNum
+            Print #fileNum, verificationString
+        Close #fileNum
+        
+        'Shell the default HTML viewer for the user
+        verificationString = ""
+        ShellExecute FormMain.hWnd, "open", tmpFilename, "", "", 0
+        
+        technicalReportSrcImage = ""
+        technicalReportModeActive = False
+        
+    End If
     
 End Sub
 
@@ -453,6 +486,48 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     'Ask the user control to start processing this image's metadata.  It will handle things from here.
     FormMain.shellPipeMain.SendData cmdParams
     
+End Function
+
+'ExifTool has a lot of great facilities for analyzing image metadata.  Technical users in particular might want to take advantage
+' of ExifTool's "htmldump" facility, which provides a detailed hex report of all metadata in a file.  This function can be used
+' to generate such a report, but note that it only works for images that exist on disk (obviously).
+Public Function createTechnicalMetadataReport(ByRef srcImage As pdImage) As Boolean
+
+    'Start by checking for an existing copy of the XML database.  If it already exists, no need to recreate it.
+    If FileExist(srcImage.locationOnDisk) Then
+    
+        Dim cmdParams As String
+        cmdParams = ""
+        
+        'Add the htmldump command
+        cmdParams = cmdParams & "-htmldump" & vbCrLf
+        
+        'Add -u, which will also report unknown tags
+        cmdParams = cmdParams & "-u" & vbCrLf
+                
+        'Add the source image to the list
+        technicalReportSrcImage = srcImage.locationOnDisk
+        cmdParams = cmdParams & srcImage.locationOnDisk & vbCrLf
+        
+        'Finally, add the special command "-execute" which tells ExifTool to start operations
+        cmdParams = cmdParams & "-execute" & vbCrLf
+        
+        'Activate verification mode.  This will asynchronously wait for the metadata to be written out to file, and when it
+        ' has finished, it will erase our temp file.
+        technicalReportModeActive = True
+        startVerificationMode
+        
+        'Ask the user control to start processing this image's metadata.  It will handle things from here.
+        FormMain.shellPipeMain.SendData cmdParams
+        
+        createTechnicalMetadataReport = True
+    
+    Else
+    
+        createTechnicalMetadataReport = False
+    
+    End If
+
 End Function
 
 'If the user wants to edit an image's metadata, we need to know which tags are writeable and which are not.  Also, it's helpful to

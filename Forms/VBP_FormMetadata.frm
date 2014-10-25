@@ -24,6 +24,23 @@ Begin VB.Form FormMetadata
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
+   Begin VB.CommandButton cmdTechnicalReport 
+      Caption         =   "Generate full metadata report (HTML)..."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   735
+      Left            =   7440
+      TabIndex        =   13
+      Top             =   4380
+      Width           =   4410
+   End
    Begin PhotoDemon.buttonStrip btsGroup 
       Height          =   615
       Left            =   120
@@ -106,7 +123,7 @@ Begin VB.Form FormMetadata
       Left            =   7440
       TabIndex        =   10
       Top             =   2160
-      Width           =   3810
+      Width           =   4410
       _ExtentX        =   20690
       _ExtentY        =   1085
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -125,7 +142,7 @@ Begin VB.Form FormMetadata
       Left            =   7440
       TabIndex        =   11
       Top             =   3240
-      Width           =   3810
+      Width           =   4410
       _ExtentX        =   6720
       _ExtentY        =   873
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -137,6 +154,39 @@ Begin VB.Form FormMetadata
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "advanced:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   270
+      Index           =   5
+      Left            =   7440
+      TabIndex        =   15
+      Top             =   3960
+      Width           =   1020
+   End
+   Begin VB.Label lblExifTool 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BackStyle       =   0  'Transparent
+      ForeColor       =   &H80000008&
+      Height          =   735
+      Left            =   7320
+      TabIndex        =   14
+      Top             =   6120
+      Width           =   4575
+      WordWrap        =   -1  'True
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
@@ -368,6 +418,10 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
+Private Sub cmdTechnicalReport_Click()
+    Plugin_ExifTool_Interface.createTechnicalMetadataReport pdImages(g_CurrentImage)
+End Sub
+
 Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
@@ -533,6 +587,16 @@ Private Sub Form_Load()
     btsGroup.ListIndex = 0
     btsGroup_Click 0
     
+    'Technical metadata reports are only available for images that exist on disk
+    If Len(pdImages(g_CurrentImage).locationOnDisk) > 0 Then
+        cmdTechnicalReport.Visible = True
+    Else
+        cmdTechnicalReport.Visible = False
+    End If
+    
+    'Give ExifTool credit for its amazing work!
+    lblExifTool.Caption = g_Language.TranslateMessage("All metadata information is supplied by the ExifTool plugin.  You can learn more about ExifTool at http://www.sno.phy.queensu.ca/~phil/exiftool/")
+    
 End Sub
 
 'UNLOAD form
@@ -615,10 +679,10 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         
         'Draw a divider line near the bottom of the metadata block
         Dim lineY As Long
-        If blockIndex < mdCategories(blockCategory).Count - 1 Then
+        'If blockIndex < mdCategories(blockCategory).Count - 1 Then
             lineY = offsetY + fixDPI(BLOCKHEIGHT - 7)
             GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, fixDPI(4), lineY, m_BackBuffer.getDIBWidth - fixDPI(4), lineY, m_SeparatorColor
-        End If
+        'End If
         
     End If
 
