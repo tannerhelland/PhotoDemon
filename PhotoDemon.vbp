@@ -240,6 +240,7 @@ Class=pdGraphicsPath; Classes\pdGraphicsPath.cls
 UserControl=Controls\pdButtonToolbox.ctl
 Class=pdWindowPainter; Classes\pdWindowPainter.cls
 ResFile32="Resources\PD_icons.RES"
+Form=Forms\VBP_FormThemeEditor.frm
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""
