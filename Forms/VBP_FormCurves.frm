@@ -884,7 +884,7 @@ Private Sub Form_Load()
         .setFontBold True
         .setFontSize 10
         .createFontObject
-        .setTextAlignment vbAlignLeft
+        .setTextAlignment vbLeftJustify
     End With
     
     'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
