@@ -342,7 +342,7 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -406,22 +406,22 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     Dim xOffset As Double, yOffset As Double
     
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Grab the current pixel values
-        newR = srcImageData(QuickVal + 2, Y)
-        newG = srcImageData(QuickVal + 1, Y)
-        newB = srcImageData(QuickVal, Y)
-        If qvDepth = 4 Then newA = srcImageData(QuickVal + 3, Y)
+        newR = srcImageData(QuickVal + 2, y)
+        newG = srcImageData(QuickVal + 1, y)
+        newB = srcImageData(QuickVal, y)
+        If qvDepth = 4 Then newA = srcImageData(QuickVal + 3, y)
         
         'Iterate through each fragment in turn, adding together their values as we go
         For n = 0 To numPoints
         
             'Calculate an offset for this fragment.
-            xOffset = X - xOffsetLookup(n)
-            yOffset = Y - yOffsetLookup(n)
+            xOffset = x - xOffsetLookup(n)
+            yOffset = y - yOffsetLookup(n)
                         
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             fSupport.getColorsFromSource r, g, b, a, xOffset, yOffset, srcImageData
@@ -439,24 +439,24 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
         newG = newG \ numPointsCalc
         newB = newB \ numPointsCalc
                 
-        dstImageData(QuickVal + 2, Y) = newR
-        dstImageData(QuickVal + 1, Y) = newG
-        dstImageData(QuickVal, Y) = newB
+        dstImageData(QuickVal + 2, y) = newR
+        dstImageData(QuickVal + 1, y) = newG
+        dstImageData(QuickVal, y) = newB
         
         'If the image has an alpha channel, repeat the calculation there too
         If qvDepth = 4 Then
             newA = newA \ numPointsCalc
-            dstImageData(QuickVal + 3, Y) = newA
+            dstImageData(QuickVal + 3, y) = newA
         End If
         
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4

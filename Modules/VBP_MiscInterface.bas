@@ -587,7 +587,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
             'If selections are not active, clear all the selection value textboxes
             If Not NewState Then
-                For i = 0 To toolbar_Options.tudSel.count - 1
+                For i = 0 To toolbar_Options.tudSel.Count - 1
                     toolbar_Options.tudSel(i).Value = 0
                 Next i
             End If
@@ -595,7 +595,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             'Set selection text boxes to enable only when a selection is active.  Other selection controls can remain active
             ' even without a selection present; this allows the user to set certain parameters in advance, so when they actually
             ' draw a selection, it already has the attributes they want.
-            For i = 0 To toolbar_Options.tudSel.count - 1
+            For i = 0 To toolbar_Options.tudSel.Count - 1
                 toolbar_Options.tudSel(i).Enabled = NewState
             Next i
             
@@ -629,7 +629,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         Case tSelectionTransform
         
             'Under certain circumstances, it is desirable to disable only the selection location boxes
-            For i = 0 To toolbar_Options.tudSel.count - 1
+            For i = 0 To toolbar_Options.tudSel.Count - 1
                 If (Not NewState) Then toolbar_Options.tudSel(i).Value = 0
                 toolbar_Options.tudSel(i).Enabled = NewState
             Next i
@@ -671,7 +671,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             If NewState Then
                 
                 'Start by enabling all non-destructive FX controls
-                For i = 0 To toolbar_Options.sltQuickFix.count - 1
+                For i = 0 To toolbar_Options.sltQuickFix.Count - 1
                     If Not toolbar_Options.sltQuickFix(i).Enabled Then toolbar_Options.sltQuickFix(i).Enabled = True
                 Next i
                 
@@ -680,13 +680,13 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
                 
                     If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState() Then
                         
-                        For i = 0 To toolbar_Options.cmdQuickFix.count - 1
+                        For i = 0 To toolbar_Options.cmdQuickFix.Count - 1
                             toolbar_Options.cmdQuickFix(i).Enabled = True
                         Next i
                         
                     Else
                         
-                        For i = 0 To toolbar_Options.cmdQuickFix.count - 1
+                        For i = 0 To toolbar_Options.cmdQuickFix.Count - 1
                             toolbar_Options.cmdQuickFix(i).Enabled = False
                         Next i
                         
@@ -700,11 +700,11 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
                     
                     'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
                     If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
-                        For i = 0 To .sltQuickFix.count - 1
+                        For i = 0 To .sltQuickFix.Count - 1
                             .sltQuickFix(i) = pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXValue(i)
                         Next i
                     Else
-                        For i = 0 To .sltQuickFix.count - 1
+                        For i = 0 To .sltQuickFix.Count - 1
                             .sltQuickFix(i) = 0
                         Next i
                     End If
@@ -715,11 +715,11 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             Else
                 
                 'Disable all non-destructive FX controls
-                For i = 0 To toolbar_Options.sltQuickFix.count - 1
+                For i = 0 To toolbar_Options.sltQuickFix.Count - 1
                     If toolbar_Options.sltQuickFix(i).Enabled Then toolbar_Options.sltQuickFix(i).Enabled = False
                 Next i
                 
-                For i = 0 To toolbar_Options.cmdQuickFix.count - 1
+                For i = 0 To toolbar_Options.cmdQuickFix.Count - 1
                     If toolbar_Options.cmdQuickFix(i).Enabled Then toolbar_Options.cmdQuickFix(i).Enabled = False
                 Next i
                 
@@ -1329,7 +1329,7 @@ Public Sub DisplaySize(ByRef srcImage As pdImage)
     End If
     
     Dim i As Long
-    For i = 0 To toolbar_Options.sltSelectionBorder.count - 1
+    For i = 0 To toolbar_Options.sltSelectionBorder.Count - 1
         toolbar_Options.sltSelectionBorder(i).Max = limitingSize
     Next i
     
