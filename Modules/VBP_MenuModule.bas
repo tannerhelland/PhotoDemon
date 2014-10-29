@@ -373,10 +373,12 @@ Public Sub MenuCloseAll()
     Dim i As Long
     For i = 0 To g_NumOfImagesLoaded
     
-        Message "Unloading image %1 of %2", i + 1, g_NumOfImagesLoaded + 1
+        Message "Unloading image %1 of %2", i, g_NumOfImagesLoaded
     
         If Not (pdImages(i) Is Nothing) Then
-            If pdImages(i).IsActive Then fullPDImageUnload i, False
+            If pdImages(i).IsActive Then
+                fullPDImageUnload i, False
+            End If
         End If
         
         'If the user presses "cancel" at some point in the unload chain, obey their request immediately
