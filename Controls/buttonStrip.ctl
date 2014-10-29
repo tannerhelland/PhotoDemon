@@ -107,9 +107,6 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 Private WithEvents cKeyEvents As pdInputKeyboard
 Attribute cKeyEvents.VB_VarHelpID = -1
 
-'Subclasser for handling window messages
-Private cSubclass As cSelfSubHookCallback
-
 'An StdFont object is used to make IDE font choices persistent; note that we also need it to raise events,
 ' so we can track when it changes.
 Private WithEvents mFont As StdFont
