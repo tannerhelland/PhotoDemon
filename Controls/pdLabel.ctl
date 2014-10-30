@@ -29,8 +29,10 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Label control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 28/October/14
-'Last updated: 28/October/14
-'Last update: wrap up initial build
+'Last updated: 30/October/14
+'Last update: autosize control vertically when "fit to UC area" layout is in use; this is necessary to cover both
+'              Tahoma (on XP) and Segoe UI (Vista+) system fonts, which differ slightly in their metrics, particularly
+'              their descents.
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -385,6 +387,35 @@ Private Sub updateControlSize()
                 stringWidth = curFont.getWidthOfString(m_Caption)
                 
             Loop
+            
+            'If the font is at normal size, there is a small chance that the label will not be tall enough (vertically)
+            ' to hold it.  This is due to rendering differences between Tahoma (on XP) and Segoe UI (on Vista+).  As such,
+            ' perform a failsafe check on the label's height, and increase it as necessary.
+            stringHeight = curFont.getHeightOfString(m_Caption)
+            
+            If (stringHeight > m_BackBuffer.getDIBHeight) Then
+                
+                m_InternalResizeState = True
+                
+                'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
+                ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
+                ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
+                If g_UserModeFix Then
+                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, m_BackBuffer.getDIBWidth, stringHeight, 1
+                Else
+                    UserControl.Width = ScaleX(m_BackBuffer.getDIBWidth, vbPixels, vbTwips)
+                    UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
+                End If
+                
+                'Recreate the backbuffer
+                curFont.releaseFromDC
+                m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+                curFont.attachToDC m_BackBuffer.getDIBDC
+                
+                'Restore normal resize behavior
+                m_InternalResizeState = False
+                
+            End If
             
             'm_FontSize will now contain the final size of the control's font, and curFont has been updated accordingly.
             ' Proceed with rendering the control.
