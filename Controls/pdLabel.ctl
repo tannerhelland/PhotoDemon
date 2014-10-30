@@ -119,6 +119,12 @@ Private m_InternalResizeState As Boolean
 ' paint event is actually required.
 Private m_BufferDirty As Boolean
 
+'Normally, we let this control automatically determine backcolor according to the current theme.  However, in some rare cases
+' (like the pdCanvas status bar), it is useful to override the automatic BackColor with a custom one.  Two variables are used
+' for this: a BackColor property (which is normally ignored), and a boolean flag property "UseCustomBackColor".
+Private m_BackColor As OLE_COLOR
+Private m_UseCustomBackColor As Boolean
+
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
 Private m_ToolString As String
@@ -131,6 +137,17 @@ End Property
 Public Property Let Alignment(ByVal newAlignment As AlignmentConstants)
     m_Alignment = newAlignment
     If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
+End Property
+
+Public Property Get BackColor() As OLE_COLOR
+    BackColor = m_BackColor
+End Property
+
+Public Property Let BackColor(ByVal newColor As OLE_COLOR)
+    If m_BackColor <> newColor Then
+        m_BackColor = newColor
+        If m_UseCustomBackColor Then m_BufferDirty = True
+    End If
 End Property
 
 'Caption is handled just like VB's internal label caption property.  It is valid at design-time, and any translation,
@@ -199,6 +216,17 @@ End Property
 Public Property Let Layout(ByVal newLayout As PD_LABEL_LAYOUT)
     m_Layout = newLayout
     If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
+End Property
+
+Public Property Get UseCustomBackColor() As Boolean
+    UseCustomBackColor = m_UseCustomBackColor
+End Property
+
+Public Property Let UseCustomBackColor(ByVal newSetting As Boolean)
+    If newSetting <> m_UseCustomBackColor Then
+        m_UseCustomBackColor = newSetting
+        m_BufferDirty = True
+    End If
 End Property
 
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
@@ -273,6 +301,9 @@ Private Sub UserControl_InitProperties()
     Caption = "caption"
     Layout = AutoFitCaption
     
+    BackColor = vbWindowBackground
+    UseCustomBackColor = False
+    
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -289,9 +320,11 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         Alignment = .ReadProperty("Alignment", vbLeftJustify)
+        BackColor = .ReadProperty("BackColor", vbWindowBackground)
         Caption = .ReadProperty("Caption", "caption")
         Layout = .ReadProperty("Layout", AutoFitCaption)
         Set Font = .ReadProperty("Font", Ambient.Font)
+        UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
     End With
 
 End Sub
@@ -535,9 +568,11 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     'Store all associated properties
     With PropBag
         .WriteProperty "Alignment", m_Alignment, vbLeftJustify
+        .WriteProperty "BackColor", m_BackColor, vbWindowBackground
         .WriteProperty "Caption", m_Caption, "caption"
         .WriteProperty "Layout", m_Layout, AutoFitCaption
         .WriteProperty "Font", mFont, "Tahoma"
+        .WriteProperty "UseCustomBackColor", m_UseCustomBackColor, False
     End With
     
 End Sub
@@ -563,7 +598,11 @@ Private Sub redrawBackBuffer()
     
     'Start by erasing the back buffer
     If g_UserModeFix Then
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+        If m_UseCustomBackColor Then
+            GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor, 255
+        Else
+            GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+        End If
     Else
         m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
         curFont.attachToDC m_BackBuffer.getDIBDC
