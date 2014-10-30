@@ -33,7 +33,7 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   886
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   7095
       Visible         =   0   'False
       Width           =   13290
@@ -65,7 +65,7 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   361
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   17
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   480
       Visible         =   0   'False
       Width           =   255
@@ -79,7 +79,7 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   361
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   5880
       Visible         =   0   'False
       Width           =   5415
@@ -100,10 +100,31 @@ Begin VB.UserControl pdCanvas
       TabStop         =   0   'False
       Top             =   7350
       Width           =   13290
+      Begin PhotoDemon.pdLabel lblImgSize 
+         Height          =   210
+         Left            =   3240
+         Top             =   60
+         Width           =   345
+         _ExtentX        =   609
+         _ExtentY        =   370
+         BackColor       =   -2147483626
+         Caption         =   "size:"
+         Layout          =   2
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         UseCustomBackColor=   -1  'True
+      End
       Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
          Height          =   345
          Left            =   0
-         TabIndex        =   10
+         TabIndex        =   7
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -117,7 +138,7 @@ Begin VB.UserControl pdCanvas
          Left            =   3630
          List            =   "pdCanvas.ctx":0314
          Style           =   2  'Dropdown List
-         TabIndex        =   9
+         TabIndex        =   6
          Top             =   15
          Width           =   600
       End
@@ -128,14 +149,14 @@ Begin VB.UserControl pdCanvas
          Left            =   840
          List            =   "pdCanvas.ctx":0318
          Style           =   2  'Dropdown List
-         TabIndex        =   8
+         TabIndex        =   5
          Top             =   15
          Width           =   1110
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
          Height          =   345
          Left            =   390
-         TabIndex        =   11
+         TabIndex        =   8
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -146,7 +167,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
          Height          =   345
          Left            =   1980
-         TabIndex        =   12
+         TabIndex        =   9
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -157,13 +178,55 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdImgSize 
          Height          =   345
          Left            =   2790
-         TabIndex        =   13
+         TabIndex        =   10
          Top             =   0
          Width           =   390
          _ExtentX        =   688
          _ExtentY        =   609
          BackColor       =   -2147483626
          AutoToggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblCoordinates 
+         Height          =   210
+         Left            =   5160
+         Top             =   60
+         Width           =   345
+         _ExtentX        =   609
+         _ExtentY        =   370
+         BackColor       =   -2147483626
+         Caption         =   "size:"
+         Layout          =   2
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         UseCustomBackColor=   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblMessages 
+         Height          =   210
+         Left            =   6360
+         Top             =   60
+         Width           =   6825
+         _ExtentX        =   12039
+         _ExtentY        =   370
+         Alignment       =   1
+         BackColor       =   -2147483626
+         Caption         =   "(messages will appear here at run-time)"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         UseCustomBackColor=   -1  'True
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -173,28 +236,6 @@ Begin VB.UserControl pdCanvas
          Y1              =   1
          Y2              =   22
       End
-      Begin VB.Label lblImgSize 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "size:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   210
-         Left            =   3270
-         TabIndex        =   4
-         Top             =   60
-         Width           =   345
-      End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
          Index           =   1
@@ -203,27 +244,6 @@ Begin VB.UserControl pdCanvas
          Y1              =   1
          Y2              =   22
       End
-      Begin VB.Label lblCoordinates 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000016&
-         Caption         =   "(X, Y)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   210
-         Left            =   5100
-         TabIndex        =   3
-         Top             =   60
-         Width           =   525
-      End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
          Index           =   2
@@ -231,28 +251,6 @@ Begin VB.UserControl pdCanvas
          X2              =   402
          Y1              =   1
          Y2              =   22
-      End
-      Begin VB.Label lblMessages 
-         Alignment       =   1  'Right Justify
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "(messages will appear here at run-time)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   300
-         Left            =   9810
-         TabIndex        =   2
-         Top             =   60
-         Width           =   3255
       End
    End
 End
@@ -607,19 +605,18 @@ Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
             End Select
             
             lblImgSize.Caption = sizeString
+            lblImgSize.updateAgainstCurrentTheme
             drawStatusBarIcons True
             
         End If
         
     End If
-    
-    lblImgSize.Refresh
-    
+        
 End Sub
 
 Public Sub displayCanvasMessage(ByRef cMessage As String)
     lblMessages.Caption = cMessage
-    lblMessages.Refresh
+    lblMessages.requestRefresh
 End Sub
 
 'Display the current mouse coordinates
@@ -631,18 +628,19 @@ Public Sub displayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
     'When coordinates are displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
     Else
         lblCoordinates.Caption = "(" & xCoord & "," & yCoord & ")"
-        
     End If
     
+    'Normally, the custom label control will not repaint until Windows requests it, but because we require its true size in order
+    ' to reflow the status bar, we must request an immediate update.
+    lblCoordinates.updateAgainstCurrentTheme
+    
     'Align the right-hand line control with the newly captioned label
-    lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.Width + fixDPI(10)
+    lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + fixDPI(10)
     lineStatusBar(2).x2 = lineStatusBar(2).x1
     
     'Make the message area shrink to match the new coordinate display size
     fixChromeLayout
-    
-    lblCoordinates.Refresh
-    
+        
 End Sub
 
 Public Sub requestBufferSync()
@@ -1878,7 +1876,9 @@ Private Sub UserControl_Resize()
     'Align the canvas picture box to fill the available area
     alignCanvasPictureBox
     
-    fixChromeLayout
+    'If the control is resizing, the mouse cannot feasibly be over the image - so clear the coordinate box.  Note that this will
+    ' also realign all chrome elements, so we don't need a manual fixChromeLayout call here.
+    displayCanvasCoordinates 0, 0, False
     
 End Sub
 
@@ -1931,9 +1931,10 @@ Private Sub UserControl_Show()
         'Convert all labels to the current interface font
         If Len(g_InterfaceFont) = 0 Then g_InterfaceFont = "Segoe UI"
         
-        lblCoordinates.FontName = g_InterfaceFont
-        lblImgSize.FontName = g_InterfaceFont
-        lblMessages.FontName = g_InterfaceFont
+        lblCoordinates.Font.Name = g_InterfaceFont
+        lblImgSize.Font.Name = g_InterfaceFont
+        'lblImgSize.updateAgainstCurrentTheme
+        lblMessages.Font.Name = g_InterfaceFont
         
 CanvasShowError:
         
@@ -1960,7 +1961,7 @@ Public Sub fixChromeLayout()
     
     'Move the message label into position (right-aligned, with a slight margin)
     Dim newLeft As Long
-    newLeft = lineStatusBar(2).x1 + fixDPI(13)
+    newLeft = lineStatusBar(2).x1 + fixDPI(7)
     If lblMessages.Left <> newLeft Then lblMessages.Left = newLeft
     
     'If the message label will overflow other elements of the status bar, shrink it as necessary
@@ -2055,11 +2056,7 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         
         'Start with the "image size" button
         cmdImgSize.Left = lineStatusBar(0).x1 + fixDPI(4)
-        If (Not cmdImgSize.Visible) Then
-            cmdImgSize.Visible = True
-            'cmdImgSize.forceButtonRedraw
-        End If
-        'sbIconSize.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconSize.getDIBWidth), fixDPI(sbIconSize.getDIBHeight)
+        If (Not cmdImgSize.Visible) Then cmdImgSize.Visible = True
         
         'After the "image size" icon comes the actual image size label.  Its position is determined by the image resize button width,
         ' plus a 4px buffer on either size (contingent on DPI)
@@ -2068,7 +2065,7 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         'The image size label is autosized.  Move the "size unit" combo box next to it, and the next vertical line
         ' separator just past it.
         If (Not cmbSizeUnit.Visible) Then cmbSizeUnit.Visible = True
-        cmbSizeUnit.Left = lblImgSize.Left + lblImgSize.Width + fixDPI(10)
+        cmbSizeUnit.Left = lblImgSize.Left + lblImgSize.PixelWidth + fixDPI(10)
         
         If (Not lineStatusBar(1).Visible) Then lineStatusBar(1).Visible = True
         lineStatusBar(1).x1 = cmbSizeUnit.Left + cmbSizeUnit.Width + fixDPI(10)
@@ -2081,7 +2078,7 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         lblCoordinates.Left = lineStatusBar(1).x1 + fixDPI(14) + fixDPI(16)
         
         If (Not lineStatusBar(2).Visible) Then lineStatusBar(2).Visible = True
-        lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.Width + fixDPI(10)
+        lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + fixDPI(10)
         lineStatusBar(2).x2 = lineStatusBar(2).x1
         
         'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself

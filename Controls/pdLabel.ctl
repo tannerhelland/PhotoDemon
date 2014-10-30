@@ -30,9 +30,7 @@ Attribute VB_Exposed = False
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 28/October/14
 'Last updated: 30/October/14
-'Last update: autosize control vertically when "fit to UC area" layout is in use; this is necessary to cover both
-'              Tahoma (on XP) and Segoe UI (Vista+) system fonts, which differ slightly in their metrics, particularly
-'              their descents.
+'Last update: many rendering improvements to cater to the odd requirements of the main canvas UC's status bar
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -124,6 +122,11 @@ Private m_BufferDirty As Boolean
 ' for this: a BackColor property (which is normally ignored), and a boolean flag property "UseCustomBackColor".
 Private m_BackColor As OLE_COLOR
 Private m_UseCustomBackColor As Boolean
+
+'On certain layouts, this control will try to shrink the caption to fit within the control.  If it cannot physically do it
+' (because we run out of font sizes), this failure state will be set to TRUE.  When that happens, ellipses will be added to
+' the control caption.
+Private m_FitFailure As Boolean
 
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
@@ -470,6 +473,13 @@ Private Sub updateControlSize()
                 
             End If
             
+            'If the caption still does not fit within the available area, set the failure state to TRUE.
+            If stringWidth > m_BackBuffer.getDIBWidth Then
+                m_FitFailure = True
+            Else
+                m_FitFailure = False
+            End If
+            
             'm_FontSize will now contain the final size of the control's font, and curFont has been updated accordingly.
             ' Proceed with rendering the control.
             
@@ -657,7 +667,12 @@ Private Sub redrawBackBuffer()
     Select Case m_Layout
     
         Case AutoFitCaption, AutoSizeControl
-            curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption, False
+            
+            If (m_Layout = AutoFitCaption) And m_FitFailure Then
+                curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption, True
+            Else
+                curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption, False
+            End If
             
         Case AutoFitCaptionPlusWordWrap, AutoSizeControlPlusWordWrap
             curFont.fastRenderMultilineTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption
