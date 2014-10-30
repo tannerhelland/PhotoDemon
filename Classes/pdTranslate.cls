@@ -305,6 +305,7 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         toolbar_Toolbox.requestMakeFormPretty
         toolbar_ImageTabs.requestMakeFormPretty
         toolbar_Options.requestMakeFormPretty
+        toolbar_Layers.requestMakeFormPretty
         
     End If
         
@@ -440,8 +441,8 @@ Private Sub populateLanguageMenu()
 
     'Start by unloading all current language menu entries
     Dim i As Long
-    If FormMain.mnuLanguages.count > 1 Then
-        For i = 0 To FormMain.mnuLanguages.count - 1
+    If FormMain.mnuLanguages.Count > 1 Then
+        For i = 0 To FormMain.mnuLanguages.Count - 1
             Unload FormMain.mnuLanguages(i)
         Next i
     End If
@@ -764,7 +765,7 @@ Public Sub undoTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As
     For Each eControl In srcForm.Controls
     
         'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Then
+        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Or (TypeOf eControl Is pdLabel) Then
             If (Trim(eControl.Caption) <> "") And (Not IsNumeric(eControl.Caption)) Then g_Language.restoreObjectCaption eControl
             
             If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = RestoreMessage(eControl.ToolTipText)
@@ -832,7 +833,7 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         'The goal is to apply translations to any object with a non-blank, non-numeric caption property
         
         'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Then
+        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Or (TypeOf eControl Is pdLabel) Then
             
             'TESTING ONLY
             'If srcForm.Name <> "FormMain" Then MsgBox eControl.Caption

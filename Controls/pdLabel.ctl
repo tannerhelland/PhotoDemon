@@ -18,6 +18,7 @@ Begin VB.UserControl pdLabel
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
+   ToolboxBitmap   =   "pdLabel.ctx":0000
 End
 Attribute VB_Name = "pdLabel"
 Attribute VB_GlobalNameSpace = False
@@ -29,7 +30,7 @@ Attribute VB_Exposed = False
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 28/October/14
 'Last updated: 28/October/14
-'Last update: initial build
+'Last update: wrap up initial build
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -417,29 +418,26 @@ Private Sub updateControlSize()
         Case AutoSizeControl
         
             'Because we will likely be resizing the control as part of our calculation, we must disable the
-            ' resize event's default behavior, which is calling this updateControlSize function.
+            ' resize event's default behavior (calling this updateControlSize function).
             m_InternalResizeState = True
         
             'Measure the font relative to the current control size
             stringWidth = curFont.getWidthOfString(m_Caption)
             stringHeight = curFont.getHeightOfString(m_Caption)
             
-            Debug.Print stringHeight, m_BackBuffer.getDIBHeight, UserControl.ScaleHeight
-            
             'We must make the back buffer fit the control's caption precisely.  stringWidth should be accurate;
             ' however, antialiasing may require us to add an additional pixel to the caption, in the event
             ' that ClearType is in use.
             If (stringWidth <> m_BackBuffer.getDIBWidth) Or (stringHeight <> m_BackBuffer.getDIBHeight) Then
                 
-                'Resize the user control.
-                ' For inexplicable reasons, setting the .Width and .Height properties works for .Width, but not for .Height.
-                ' Aaarrrggghhh.  Fortunately, we can work around this rather easily by using MoveWindow and forcing a repaint
-                ' (which VB presumably captures and uses to update its internal properties).
+                'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
+                ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
+                ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
                 If g_UserModeFix Then
                     MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, stringWidth, stringHeight, 1
                 Else
-                    UserControl.Width = ScaleX(stringWidth, vbPixels, vbTwips) 'ScaleX(stringWidth, vbPixels, vbTwips)
-                    UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips) 'ScaleY(stringHeight, vbPixels, vbTwips)
+                    UserControl.Width = ScaleX(stringWidth, vbPixels, vbTwips)
+                    UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
                 End If
                 
                 'Recreate the backbuffer
@@ -456,22 +454,25 @@ Private Sub updateControlSize()
         Case AutoSizeControlPlusWordWrap
         
             'Because we will likely be resizing the control as part of our calculation, we must disable the
-            ' resize event's default behavior, which is calling this updateControlSize function.
+            ' resize event's default behavior (calling this updateControlSize function).
             m_InternalResizeState = True
         
             'Measure the font relative to the current control size
-            stringHeight = curFont.getHeightOfString(m_Caption)
+            stringHeight = curFont.getHeightOfWordwrapString(m_Caption, m_BackBuffer.getDIBWidth)
             
             'We must make the back buffer fit the control's caption precisely.  stringWidth should be accurate;
-            ' however, antialiasing may require us to add two pixels on either side of the caption, in the event
+            ' however, antialiasing may require us to add an additional pixel to the caption, in the event
             ' that ClearType is in use.
-            If stringHeight > m_BackBuffer.getDIBHeight Then
+            If (stringHeight <> m_BackBuffer.getDIBHeight) Then
                 
-                'Resize the user control.
-                ' IMPORTANT NOTE!  This resize event assumes that the parent's ScaleMode is always set to 3-Pixels.
-                ' If the parent's ScaleMode is set to Twips or any other value, this statement will fail.
-                ' (Why not make it work with other ScaleModes?  Because PD uses pixels everywhere by default.)
-                UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
+                'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
+                ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
+                ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
+                If g_UserModeFix Then
+                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, m_BackBuffer.getDIBWidth, stringHeight, 1
+                Else
+                    UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
+                End If
                 
                 'Recreate the backbuffer
                 curFont.releaseFromDC
@@ -485,21 +486,15 @@ Private Sub updateControlSize()
             
     End Select
     
-    'If the label's caption alignment is RIGHT, we must move the LEFT property by a proportional amount to any size changes.
-    If (m_Alignment = vbRightJustify) And (origWidth <> m_BackBuffer.getDIBWidth) Then
+    'If the label's caption alignment is RIGHT, and AUTOSIZE is active, we must move the LEFT property by a proportional amount
+    ' to any size changes.
+    If (m_Alignment = vbRightJustify) And (origWidth <> m_BackBuffer.getDIBWidth) And (m_Layout = AutoFitCaption) Then
         m_InternalResizeState = True
-        
-        'Resizing works differently at run-time than it does at design-time.
-        'If g_UserModeFix Then
-            UserControl.Extender.Left = UserControl.Extender.Left - (m_BackBuffer.getDIBWidth - origWidth)
-        'Else
-        '    UserControl.Extender.Left = ScaleX(ScaleX(UserControl.Extender.Left, vbTwips, vbPixels) - (m_BackBuffer.getDIBWidth - origWidth), vbTwips, vbPixels)
-        'End If
-        
+        UserControl.Extender.Left = UserControl.Extender.Left - (m_BackBuffer.getDIBWidth - origWidth)
         m_InternalResizeState = False
     End If
     
-    'With all size metrics taken care of, we can now paint the back buffer
+    'With all size metrics handled, we can now paint the back buffer
     redrawBackBuffer
             
 End Sub
@@ -551,25 +546,20 @@ Private Sub redrawBackBuffer()
     Else
         fontColor = g_Themer.getThemeColor(PDTC_DISABLED)
     End If
-                
-    'Paint the caption
+    
+    'Pass all font settings to the font renderer
     curFont.setFontColor fontColor
     curFont.setTextAlignment m_Alignment
     
+    'Paint the caption
     Select Case m_Layout
     
-        Case AutoFitCaption
+        Case AutoFitCaption, AutoSizeControl
             curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption, False
             
-        Case AutoFitCaptionPlusWordWrap
+        Case AutoFitCaptionPlusWordWrap, AutoSizeControlPlusWordWrap
             curFont.fastRenderMultilineTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption
         
-        Case AutoSizeControl
-            curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption, False
-            
-        Case AutoSizeControlPlusWordWrap
-            curFont.fastRenderMultilineTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption
-    
     End Select
     
     'Paint the buffer to the screen
@@ -577,3 +567,7 @@ Private Sub redrawBackBuffer()
 
 End Sub
 
+'Post-translation, we can request an immediate refresh
+Public Sub requestRefresh()
+    cPainter.requestRepaint
+End Sub
