@@ -158,8 +158,10 @@ Attribute Caption.VB_UserMemId = -518
 End Property
 
 Public Property Let Caption(ByRef newCaption As String)
-    m_Caption = newCaption
-    If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
+    If StrComp(newCaption, m_Caption, vbBinaryCompare) <> 0 Then
+        m_Caption = newCaption
+        If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
+    End If
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -216,6 +218,16 @@ End Property
 Public Property Let Layout(ByVal newLayout As PD_LABEL_LAYOUT)
     m_Layout = newLayout
     If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
+End Property
+
+'Because there can be a delay between window resize events and VB processing the related message (and updating its internal properties),
+' owner windows may wish to access these read-only properties, which will return the actual control size at any given time.
+Public Property Get PixelWidth() As Long
+    If Not (m_BackBuffer Is Nothing) Then PixelWidth = m_BackBuffer.getDIBWidth Else PixelWidth = 0
+End Property
+
+Public Property Get PixelHeight() As Long
+    If Not (m_BackBuffer Is Nothing) Then PixelHeight = m_BackBuffer.getDIBHeight Else PixelHeight = 0
 End Property
 
 Public Property Get UseCustomBackColor() As Boolean
@@ -369,7 +381,15 @@ Private Sub updateControlSize()
     
     'Reset our back buffer, and reassign the font to it.
     If (m_BackBuffer Is Nothing) Then Set m_BackBuffer = New pdDIB
-    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+    
+    'If the label caption was previously blank, and the label is set to "autosize", the user control may have dimensions (0, 0).
+    ' If this happens, creating the back buffer will fail, so we must manually create a (1, 1) buffer, which will then become
+    ' properly sized in subsequent render steps.
+    If (UserControl.ScaleWidth = 0) Or (UserControl.ScaleHeight = 0) Then
+        m_BackBuffer.createBlank 1, 1, 24
+    Else
+        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+    End If
     
     'Depending on the layout in use (e.g. autosize vs non-autosize), we may need to reposition the user control.
     ' Right-aligned labels in particular must have their .Left property modified, any time the .Width property is modified.
@@ -581,20 +601,32 @@ End Sub
 Public Sub updateAgainstCurrentTheme()
     
     If g_UserModeFix Then
-        Me.Font.Name = g_InterfaceFont
-        curFont.setFontFace g_InterfaceFont
+        
+        If (Len(g_InterfaceFont) > 0) Then
+            Me.Font.Name = g_InterfaceFont
+            curFont.setFontFace g_InterfaceFont
+        End If
+        
         curFont.setFontSize mFont.Size
         curFont.createFontObject
+        
+        'Force an immediate repaint
+        updateControlSize
+                
     End If
-    
-    'Mark the back buffer as dirty, so it can be recreated at the next _Paint request
-    If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
     
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
 Private Sub redrawBackBuffer()
+    
+    'During initialization, this function may be called, but various needed drawing elements may not yet exist.
+    ' If this happens, ignore repaint requests, obviously.
+    If (m_BackBuffer Is Nothing) Or (g_Themer Is Nothing) Then
+        m_BufferDirty = True
+        Exit Sub
+    End If
     
     'Start by erasing the back buffer
     If g_UserModeFix Then
