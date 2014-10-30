@@ -25,11 +25,30 @@ Begin VB.Form toolbar_Toolbox
    ScaleWidth      =   155
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdLabel lblCategories 
+      Height          =   240
+      Index           =   0
+      Left            =   120
+      Top             =   30
+      Width           =   2175
+      _ExtentX        =   450
+      _ExtentY        =   423
+      Caption         =   "file"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
       Index           =   0
       Left            =   120
-      TabIndex        =   12
+      TabIndex        =   8
       Top             =   3000
       Width           =   720
       _ExtentX        =   1085
@@ -197,7 +216,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   1
       Left            =   840
-      TabIndex        =   13
+      TabIndex        =   9
       Top             =   3000
       Width           =   720
       _ExtentX        =   1270
@@ -207,7 +226,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   2
       Left            =   1560
-      TabIndex        =   14
+      TabIndex        =   10
       Top             =   3000
       Width           =   720
       _ExtentX        =   1270
@@ -217,7 +236,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   3
       Left            =   120
-      TabIndex        =   15
+      TabIndex        =   11
       Top             =   3960
       Width           =   720
       _ExtentX        =   1270
@@ -227,7 +246,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   4
       Left            =   840
-      TabIndex        =   16
+      TabIndex        =   12
       Top             =   3960
       Width           =   720
       _ExtentX        =   1270
@@ -237,7 +256,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   5
       Left            =   1560
-      TabIndex        =   17
+      TabIndex        =   13
       Top             =   3960
       Width           =   720
       _ExtentX        =   1270
@@ -247,7 +266,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   6
       Left            =   120
-      TabIndex        =   18
+      TabIndex        =   14
       Top             =   4560
       Width           =   720
       _ExtentX        =   1270
@@ -257,7 +276,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   7
       Left            =   840
-      TabIndex        =   19
+      TabIndex        =   15
       Top             =   4560
       Width           =   720
       _ExtentX        =   1270
@@ -267,42 +286,22 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   8
       Left            =   1560
-      TabIndex        =   20
+      TabIndex        =   16
       Top             =   4560
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
    End
-   Begin VB.Label lblCategory 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "undo tools"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00606060&
+   Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
-      Index           =   3
+      Index           =   1
       Left            =   120
-      TabIndex        =   11
       Top             =   1620
-      Width           =   885
-   End
-   Begin VB.Label lblCategory 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "file tools"
-      BeginProperty Font 
+      Width           =   2175
+      _ExtentX        =   3836
+      _ExtentY        =   423
+      Caption         =   "undo"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   0
@@ -311,13 +310,44 @@ Begin VB.Form toolbar_Toolbox
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00606060&
+   End
+   Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
       Index           =   2
       Left            =   120
-      TabIndex        =   10
-      Top             =   30
-      Width           =   720
+      Top             =   2700
+      Width           =   2175
+      _ExtentX        =   3836
+      _ExtentY        =   423
+      Caption         =   "non-destructive"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin PhotoDemon.pdLabel lblCategories 
+      Height          =   240
+      Index           =   3
+      Left            =   120
+      Top             =   3660
+      Width           =   2175
+      _ExtentX        =   3836
+      _ExtentY        =   423
+      Caption         =   "selection"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblWarning 
       Alignment       =   2  'Center
@@ -337,57 +367,11 @@ Begin VB.Form toolbar_Toolbox
       ForeColor       =   &H000000FF&
       Height          =   3000
       Left            =   120
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   6000
       UseMnemonic     =   0   'False
       Width           =   2160
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblCategory 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "selection tools"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00606060&
-      Height          =   240
-      Index           =   1
-      Left            =   120
-      TabIndex        =   8
-      Top             =   3660
-      Width           =   1215
-   End
-   Begin VB.Label lblCategory 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "non-destructive tools"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00606060&
-      Height          =   240
-      Index           =   0
-      Left            =   120
-      TabIndex        =   7
-      Top             =   2700
-      Width           =   1785
    End
    Begin VB.Line lnSeparator 
       BorderColor     =   &H80000002&
