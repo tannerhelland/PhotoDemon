@@ -989,7 +989,11 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         
     'The back color may or may not be a system color, so translate it just in case
     If (BackColor <> vbWhite) Then BackColor = TranslateColor(BackColor)
-        
+    
+    'Force the DIB to have a size of at least 1x1
+    If iWidth <= 0 Then iWidth = 1
+    If iHeight <= 0 Then iHeight = 1
+    
     'Remember the requested color depth, width, and height
     dibColorDepth = colorDepth
     dibWidth = iWidth
