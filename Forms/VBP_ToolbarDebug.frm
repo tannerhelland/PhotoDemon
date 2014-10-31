@@ -2,12 +2,12 @@ VERSION 5.00
 Begin VB.Form toolbar_Debug 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
+   BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Debug"
    ClientHeight    =   1080
-   ClientLeft      =   45
-   ClientTop       =   315
-   ClientWidth     =   2775
+   ClientLeft      =   120
+   ClientTop       =   390
+   ClientWidth     =   3525
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9
@@ -22,7 +22,7 @@ Begin VB.Form toolbar_Debug
    MinButton       =   0   'False
    ScaleHeight     =   54
    ScaleMode       =   2  'Point
-   ScaleWidth      =   138.75
+   ScaleWidth      =   176.25
    ShowInTaskbar   =   0   'False
    Begin VB.Timer tmrDebug 
       Interval        =   1000
@@ -34,8 +34,8 @@ Begin VB.Form toolbar_Debug
       Index           =   0
       Left            =   75
       Top             =   75
-      Width           =   2565
-      _ExtentX        =   4524
+      Width           =   1600
+      _ExtentX        =   2831
       _ExtentY        =   370
       ForeColor       =   32768
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -53,9 +53,9 @@ Begin VB.Form toolbar_Debug
       Height          =   195
       Index           =   1
       Left            =   75
-      Top             =   375
-      Width           =   2565
-      _ExtentX        =   4524
+      Top             =   345
+      Width           =   1600
+      _ExtentX        =   2831
       _ExtentY        =   370
       ForeColor       =   192
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -73,9 +73,69 @@ Begin VB.Form toolbar_Debug
       Height          =   195
       Index           =   2
       Left            =   75
-      Top             =   675
-      Width           =   2565
-      _ExtentX        =   4524
+      Top             =   620
+      Width           =   1600
+      _ExtentX        =   2831
+      _ExtentY        =   370
+      ForeColor       =   12582912
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      UseCustomForeColor=   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblDIB 
+      Height          =   195
+      Index           =   3
+      Left            =   1800
+      Top             =   75
+      Width           =   1600
+      _ExtentX        =   2831
+      _ExtentY        =   370
+      ForeColor       =   32768
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      UseCustomForeColor=   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblDIB 
+      Height          =   195
+      Index           =   4
+      Left            =   1800
+      Top             =   345
+      Width           =   1600
+      _ExtentX        =   2831
+      _ExtentY        =   370
+      ForeColor       =   192
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      UseCustomForeColor=   -1  'True
+   End
+   Begin PhotoDemon.pdLabel lblDIB 
+      Height          =   195
+      Index           =   5
+      Left            =   1800
+      Top             =   620
+      Width           =   1600
+      _ExtentX        =   2831
       _ExtentY        =   370
       ForeColor       =   12582912
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -137,7 +197,11 @@ End Sub
 Private Sub tmrDebug_Timer()
 
     lblDIB(0).Caption = "DIBs created: " & g_DIBsCreated
-    lblDIB(1).Caption = "DIBs destroyed: " & g_DIBsDestroyed
+    lblDIB(1).Caption = "DIBs erased: " & g_DIBsDestroyed
     lblDIB(2).Caption = "DIBs active: " & CStr(g_DIBsCreated - g_DIBsDestroyed)
+        
+    lblDIB(3).Caption = "Fonts created: " & g_FontsCreated
+    lblDIB(4).Caption = "Fonts erased: " & g_FontsDestroyed
+    lblDIB(5).Caption = "Fonts active: " & CStr(g_FontsCreated - g_FontsDestroyed)
         
 End Sub

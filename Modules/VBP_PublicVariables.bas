@@ -261,3 +261,7 @@ Public g_FreeImageErrorMessages() As String
 ' ridiculous amounts of DIBs, I can start focusing my optimization efforts more precisely!
 Public g_DIBsCreated As Long
 Public g_DIBsDestroyed As Long
+
+'During debug mode, we also track the number of fonts created via pdFont
+Public g_FontsCreated As Long
+Public g_FontsDestroyed As Long
