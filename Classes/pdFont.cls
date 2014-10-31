@@ -359,8 +359,10 @@ End Sub
 Public Sub attachToDC(ByVal targetDC As Long)
     
     'Set the font
-    oldFont = SelectObject(targetDC, curFont)
-    curDC = targetDC
+    If targetDC <> curDC Then
+        oldFont = SelectObject(targetDC, curFont)
+        curDC = targetDC
+    End If
     
     'Set other font parameters
     SetTextColor targetDC, fontColor
@@ -373,21 +375,26 @@ End Sub
 
 'If we want to detach this font from its current DC, use this call
 Public Sub releaseFromDC()
-    If curDC <> 0 Then SelectObject curDC, oldFont
+    If curDC <> 0 Then
+        SelectObject curDC, oldFont
+        curDC = 0
+    End If
 End Sub
 
 'Create the font object on-demand
 Public Function createFontObject() As Boolean
 
     'If a font has already been created, delete it now
-    If curFont <> 0 Then
-        SelectObject curDC, oldFont
-        DeleteObject curFont
-    End If
+    deleteCurrentFont
     
     curFont = CreateFontIndirect(currentLogFont)
     
     If curFont = 0 Then createFontObject = False Else createFontObject = True
+    
+    'Inside debug mode, increase a global font counter.  This is extremely helpful for finding font leaks
+    #If DEBUGMODE = 1 Then
+        If createFontObject Then g_FontsCreated = g_FontsCreated + 1
+    #End If
 
 End Function
 
@@ -524,10 +531,26 @@ End Sub
 
 Private Sub Class_Terminate()
 
+    'Free any remaining font resources
+    deleteCurrentFont
+    
+End Sub
+
+Private Sub deleteCurrentFont()
+    
     'If a font was created, delete it now
     If curFont <> 0 Then
         If curDC <> 0 Then SelectObject curDC, oldFont
-        DeleteObject curFont
+        
+        #If DEBUGMODE = 1 Then
+            If DeleteObject(curFont) = 0 Then
+                Debug.Print "WARNING! Could not delete font resource - is it selected into a DC??"
+            Else
+                g_FontsDestroyed = g_FontsDestroyed + 1
+            End If
+        #Else
+            DeleteObject curFont
+        #End If
     End If
     
 End Sub
