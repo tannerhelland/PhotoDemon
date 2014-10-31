@@ -169,6 +169,11 @@ Private fontColor As Long
 'This LOGFONT object stores all current settings for the font
 Private currentLogFont As LOGFONT
 
+'Certain settings have to be modified before placing them inside a LOGFONT struct.  We store local copies of these values in VB-friendly formats,
+' which simplies the process of checking these properties prior to replacing them.
+Private m_origFontFace As String
+Private m_origFontSize As Single
+
 'This function draws horizontally and vertically centered text onto the attached DC, and it does it without modifying any of the current
 ' font settings (including alignment).  It is designed for one-off renderings of centered text.
 Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidth As Long = -1, Optional ByVal customHeight As Long = -1)
@@ -415,7 +420,12 @@ Public Sub setFontColor(ByVal newColor As Long)
     
 End Sub
 
+Public Function getFontFace() As String
+    getFontFace = m_origFontFace
+End Function
+
 Public Sub setFontFace(ByVal newFace As String)
+    m_origFontFace = newFace
     currentLogFont.lfFaceName = newFace & Chr(0)
 End Sub
 
@@ -423,7 +433,12 @@ Public Sub setFontItalic(ByVal newItalic As Boolean)
     currentLogFont.lfItalic = -1 * newItalic
 End Sub
 
+Public Function getFontSize() As Single
+    getFontSize = m_origFontSize
+End Function
+
 Public Sub setFontSize(ByVal newFontSize As Single)
+    m_origFontSize = newFontSize
     currentLogFont.lfHeight = convertFontSize(newFontSize)
 End Sub
 
