@@ -255,3 +255,9 @@ Public pdDebug As pdDebugger
 'If FreeImage throws an error, the error string(s) will be stored here.  Make sure to clear it after reading to prevent future
 ' functions from mistakenly displaying the same message!
 Public g_FreeImageErrorMessages() As String
+
+'As part of an improved memory efficiency initiative in v6.6, these global variables are used (during debug mode only!)
+' to track how many DIBs PD creates and destroys via pdDIB objects.  If I find that certain functions or behaviors produce
+' ridiculous amounts of DIBs, I can start focusing my optimization efforts more precisely!
+Public g_DIBsCreated As Long
+Public g_DIBsDestroyed As Long

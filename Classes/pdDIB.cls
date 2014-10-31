@@ -1061,6 +1061,11 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         
     End If
     
+    'Inside debugging mode, increment a global DIB counter.
+    #If DEBUGMODE = 1 Then
+        If (dibDC <> 0) Then g_DIBsCreated = g_DIBsCreated + 1
+    #End If
+    
     'Return success contingent on whether we have a DIB pointer or not
     createBlank = (dibHandle <> 0)
     
@@ -1071,11 +1076,19 @@ Public Function eraseDIB()
 
     'If we have image data, clear it out
     If dibDC <> 0 Then
+        
         If dibHandle <> 0 Then
             SelectObject dibDC, dibHandleOriginal
             DeleteObject dibHandle
         End If
+        
         DeleteDC dibDC
+        
+        'Inside debugging mode, decrement a global DIB counter
+        #If DEBUGMODE = 1 Then
+            g_DIBsDestroyed = g_DIBsDestroyed + 1
+        #End If
+        
     End If
 
     'Reset all associated DIB section variables
@@ -1087,7 +1100,7 @@ Public Function eraseDIB()
     'Reset DIB size
     dibWidth = 0
     dibHeight = 0
-
+    
 End Function
 
 'INITIALIZE class
