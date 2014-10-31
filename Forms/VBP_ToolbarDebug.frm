@@ -36,17 +36,9 @@ Begin VB.Form toolbar_Debug
       Top             =   75
       Width           =   1600
       _ExtentX        =   2831
-      _ExtentY        =   370
+      _ExtentY        =   503
+      FontSize        =   8
       ForeColor       =   32768
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       UseCustomForeColor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblDIB 
@@ -56,17 +48,9 @@ Begin VB.Form toolbar_Debug
       Top             =   345
       Width           =   1600
       _ExtentX        =   2831
-      _ExtentY        =   370
+      _ExtentY        =   503
+      FontSize        =   8
       ForeColor       =   192
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       UseCustomForeColor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblDIB 
@@ -76,17 +60,9 @@ Begin VB.Form toolbar_Debug
       Top             =   620
       Width           =   1600
       _ExtentX        =   2831
-      _ExtentY        =   370
+      _ExtentY        =   503
+      FontSize        =   8
       ForeColor       =   12582912
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       UseCustomForeColor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblDIB 
@@ -96,17 +72,9 @@ Begin VB.Form toolbar_Debug
       Top             =   75
       Width           =   1600
       _ExtentX        =   2831
-      _ExtentY        =   370
+      _ExtentY        =   503
+      FontSize        =   8
       ForeColor       =   32768
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       UseCustomForeColor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblDIB 
@@ -116,17 +84,9 @@ Begin VB.Form toolbar_Debug
       Top             =   345
       Width           =   1600
       _ExtentX        =   2831
-      _ExtentY        =   370
+      _ExtentY        =   503
+      FontSize        =   8
       ForeColor       =   192
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       UseCustomForeColor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblDIB 
@@ -136,17 +96,9 @@ Begin VB.Form toolbar_Debug
       Top             =   620
       Width           =   1600
       _ExtentX        =   2831
-      _ExtentY        =   370
+      _ExtentY        =   503
+      FontSize        =   8
       ForeColor       =   12582912
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       UseCustomForeColor=   -1  'True
    End
 End

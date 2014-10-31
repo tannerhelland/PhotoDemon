@@ -109,16 +109,8 @@ Begin VB.UserControl pdCanvas
          _ExtentY        =   370
          BackColor       =   -2147483626
          Caption         =   "size:"
+         FontSize        =   9
          Layout          =   2
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
@@ -195,16 +187,8 @@ Begin VB.UserControl pdCanvas
          _ExtentY        =   370
          BackColor       =   -2147483626
          Caption         =   "size:"
+         FontSize        =   9
          Layout          =   2
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdLabel lblMessages 
@@ -213,19 +197,11 @@ Begin VB.UserControl pdCanvas
          Top             =   60
          Width           =   6825
          _ExtentX        =   12039
-         _ExtentY        =   370
+         _ExtentY        =   503
          Alignment       =   1
          BackColor       =   -2147483626
          Caption         =   "(messages will appear here at run-time)"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         FontSize        =   9
          UseCustomBackColor=   -1  'True
       End
       Begin VB.Line lineStatusBar 
@@ -632,7 +608,7 @@ Public Sub displayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
     
     'Normally, the custom label control will not repaint until Windows requests it, but because we require its true size in order
     ' to reflow the status bar, we must request an immediate update.
-    lblCoordinates.updateAgainstCurrentTheme
+    'lblCoordinates.updateAgainstCurrentTheme
     
     'Align the right-hand line control with the newly captioned label
     lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + fixDPI(10)
@@ -1931,10 +1907,9 @@ Private Sub UserControl_Show()
         'Convert all labels to the current interface font
         If Len(g_InterfaceFont) = 0 Then g_InterfaceFont = "Segoe UI"
         
-        lblCoordinates.Font.Name = g_InterfaceFont
-        lblImgSize.Font.Name = g_InterfaceFont
-        'lblImgSize.updateAgainstCurrentTheme
-        lblMessages.Font.Name = g_InterfaceFont
+        lblCoordinates.updateAgainstCurrentTheme
+        lblImgSize.updateAgainstCurrentTheme
+        lblMessages.updateAgainstCurrentTheme
         
 CanvasShowError:
         
