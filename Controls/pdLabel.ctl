@@ -81,15 +81,15 @@ Attribute cPainter.VB_VarHelpID = -1
 'pdFont handles all text rendering duties.
 Private curFont As pdFont
 
-'An StdFont object is used to make IDE font choices persistent; note that we also need it to raise events,
-' so we can track when it changes.
-Private WithEvents mFont As StdFont
-Attribute mFont.VB_VarHelpID = -1
+'Rather than use an StdFont container (which requires VB to create redundant font objects), we track font properties manually,
+' via dedicated properties.
+Private m_FontBold As Boolean
+Private m_FontItalic As Boolean
+Private m_FontSize As Single
 
 'If a label caption is too long, and auto-fit layout has been specified, we must dynamically shrink the label's font size
-' until an acceptable value is reached.  For that reason, we cannot rely on mFont.Size, because that is a property;
-' instead we will use this value, which is updated against mFont as necessary.
-Private m_FontSize As Long
+' until an acceptable value is reached.  This variable represents the *currently in-use font size*, not the font size property.
+Private m_CurFontSize As Long
 
 'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_Caption
 ' is the ENGLISH CAPTION ONLY.  A translated caption, if one exists, will be stored in m_TranslatedCaption, after PD's
@@ -187,35 +187,37 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     
 End Property
 
-'Font handling is a bit specialized for user controls; see http://msdn.microsoft.com/en-us/library/aa261313%28v=vs.60%29.aspx
-Public Property Get Font() As StdFont
-Attribute Font.VB_UserMemId = -512
-    Set Font = mFont
+Public Property Get FontBold() As Boolean
+    FontBold = m_FontBold
 End Property
 
-Public Property Set Font(mNewFont As StdFont)
-    
-    With mFont
-        .Bold = mNewFont.Bold
-        .Italic = mNewFont.Italic
-        .Name = mNewFont.Name
-        .Size = mNewFont.Size
-    End With
-    
-    'Mirror all settings to our internal curFont object, then recreate it
-    If Not curFont Is Nothing Then
-        curFont.setFontBold mFont.Bold
-        curFont.setFontFace mFont.Name
-        curFont.setFontItalic mFont.Italic
-        curFont.setFontSize mFont.Size
-        curFont.createFontObject
+Public Property Let FontBold(ByVal newBoldSetting As Boolean)
+    If newBoldSetting <> m_FontBold Then
+        m_FontBold = newBoldSetting
+        refreshFont
     End If
-    
-    PropertyChanged "Font"
-    
-    'Mark the back buffer as dirty, so that it can be recreated at the next _Paint request
-    If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
-    
+End Property
+
+Public Property Get FontItalic() As Boolean
+    FontItalic = m_FontItalic
+End Property
+
+Public Property Let FontItalic(ByVal newItalicSetting As Boolean)
+    If newItalicSetting <> m_FontItalic Then
+        m_FontItalic = newItalicSetting
+        refreshFont
+    End If
+End Property
+
+Public Property Get FontSize() As Single
+    FontSize = m_FontSize
+End Property
+
+Public Property Let FontSize(ByVal newSize As Single)
+    If newSize <> m_FontSize Then
+        m_FontSize = newSize
+        refreshFont
+    End If
 End Property
 
 Public Property Get ForeColor() As OLE_COLOR
@@ -286,9 +288,47 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
         
 End Sub
 
-Private Sub mFont_FontChanged(ByVal PropertyName As String)
-    Set UserControl.Font = mFont
-    updateAgainstCurrentTheme
+'When the font used for the label changes in some way, it can be recreated (refreshed) using this function.  Note that font
+' creation is expensive, so it's worthwhile to avoid this step as much as possible.
+Private Sub refreshFont()
+
+    Debug.Print "refresh font requested"
+
+    Dim fontRefreshRequired As Boolean
+    fontRefreshRequired = curFont.hasFontBeenCreated
+    
+    'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be refreshed in a final step.
+    
+    'Font face is always set automatically, to match the current program-wide font
+    If (Len(g_InterfaceFont) > 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
+        fontRefreshRequired = True
+        curFont.setFontFace g_InterfaceFont
+    End If
+    
+    'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
+    ' parity using an Int() conversion, as GDI only supports integer font sizes.
+    If Int(m_FontSize) <> Int(curFont.getFontSize) Then
+        fontRefreshRequired = True
+        curFont.setFontSize m_FontSize
+    End If
+    
+    'Bold and italic are the simplest settings to handle
+    If m_FontBold <> curFont.getFontBold Then
+        fontRefreshRequired = True
+        curFont.setFontBold m_FontBold
+    End If
+    
+    If m_FontItalic <> curFont.getFontItalic Then
+        fontRefreshRequired = True
+        curFont.setFontItalic m_FontItalic
+    End If
+    
+    'Request a new font
+    If fontRefreshRequired Then curFont.createFontObject
+    
+    'Also, the back buffer needs to be rebuilt to reflect the new font metrics
+    updateControlSize
+
 End Sub
 
 'hWnds aren't exposed by default
@@ -315,16 +355,12 @@ Private Sub UserControl_Initialize()
         'Start a flicker-free window painter
         Set cPainter = New pdWindowPainter
         cPainter.startPainter Me.hWnd
-        
+                
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
         Set g_Themer = New pdVisualThemes
     End If
-    
-    'Prepare a font object for use
-    Set mFont = New StdFont
-    Set UserControl.Font = mFont
-    
+        
     'Note that we are not currently responsible for any resize events
     m_InternalResizeState = False
     
@@ -338,10 +374,7 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    
-    Set mFont = UserControl.Font
-    mFont_FontChanged ("")
-    
+        
     Alignment = vbLeftJustify
     Caption = "caption"
     Layout = AutoFitCaption
@@ -351,6 +384,10 @@ Private Sub UserControl_InitProperties()
     
     ForeColor = RGB(96, 96, 96)
     UseCustomForeColor = False
+    
+    m_FontBold = False
+    m_FontItalic = False
+    m_FontSize = 10
     
 End Sub
 
@@ -370,6 +407,9 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Alignment = .ReadProperty("Alignment", vbLeftJustify)
         BackColor = .ReadProperty("BackColor", vbWindowBackground)
         Caption = .ReadProperty("Caption", "caption")
+        FontBold = .ReadProperty("FontBold", False)
+        FontItalic = .ReadProperty("FontItalic", False)
+        FontSize = .ReadProperty("FontSize", 10)
         ForeColor = .ReadProperty("ForeColor", RGB(96, 96, 96))
         Layout = .ReadProperty("Layout", AutoFitCaption)
         Set Font = .ReadProperty("Font", Ambient.Font)
@@ -442,10 +482,10 @@ Private Sub updateControlSize()
     ' without first selecting the GDI font into a DC, so it's a catch-22.  Thus we create the back buffer automatically,
     ' and resize as necessary.
     
-    'Start by setting the current font size to match the default mFont font size value.
-    m_FontSize = mFont.Size
-    If m_FontSize <> curFont.getFontSize Then
-        curFont.setFontSize m_FontSize
+    'Start by setting the current font size to match the font size property value.
+    m_CurFontSize = m_FontSize
+    If m_CurFontSize <> Int(curFont.getFontSize) Then
+        curFont.setFontSize m_CurFontSize
         curFont.createFontObject
     End If
     curFont.attachToDC m_BackBuffer.getDIBDC
@@ -466,13 +506,14 @@ Private Sub updateControlSize()
             stringWidth = curFont.getWidthOfString(m_Caption)
             
             'If the string does not fit within the control size, shrink the font accordingly.
-            Do While (stringWidth > origWidth) And (m_FontSize >= 8)
+            Do While (stringWidth > origWidth) And (m_CurFontSize >= 8)
                 
                 'Shrink the font size
-                m_FontSize = m_FontSize - 1
+                m_CurFontSize = m_CurFontSize - 1
                 
                 'Recreate the font
-                curFont.setFontSize m_FontSize
+                curFont.releaseFromDC
+                curFont.setFontSize m_CurFontSize
                 curFont.createFontObject
                 curFont.attachToDC m_BackBuffer.getDIBDC
                 
@@ -538,13 +579,14 @@ Private Sub updateControlSize()
             stringHeight = curFont.getHeightOfWordwrapString(m_Caption, origWidth)
             
             'If the string does not fit within the control size, shrink the font accordingly.
-            Do While (stringHeight > origHeight) And (m_FontSize >= 8)
+            Do While (stringHeight > origHeight) And (m_CurFontSize >= 8)
                 
                 'Shrink the font size
-                m_FontSize = m_FontSize - 1
+                m_CurFontSize = m_CurFontSize - 1
                 
                 'Recreate the font
-                curFont.setFontSize m_FontSize
+                curFont.releaseFromDC
+                curFont.setFontSize m_CurFontSize
                 curFont.createFontObject
                 curFont.attachToDC m_BackBuffer.getDIBDC
                 
@@ -650,9 +692,11 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Alignment", m_Alignment, vbLeftJustify
         .WriteProperty "BackColor", m_BackColor, vbWindowBackground
         .WriteProperty "Caption", m_Caption, "caption"
+        .WriteProperty "FontBold", m_FontBold, False
+        .WriteProperty "FontItalic", m_FontItalic, False
+        .WriteProperty "FontSize", m_FontSize, 10
         .WriteProperty "ForeColor", m_ForeColor, RGB(96, 96, 96)
         .WriteProperty "Layout", m_Layout, AutoFitCaption
-        .WriteProperty "Font", mFont, "Tahoma"
         .WriteProperty "UseCustomBackColor", m_UseCustomBackColor, False
         .WriteProperty "UseCustomForeColor", m_UseCustomForeColor, False
     End With
@@ -664,21 +708,8 @@ Public Sub updateAgainstCurrentTheme()
     
     If g_UserModeFix Then
         
-        Dim fontRefreshRequired As Boolean
-        fontRefreshRequired = False
-        
-        If (Len(g_InterfaceFont) > 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
-            fontRefreshRequired = True
-            Me.Font.Name = g_InterfaceFont
-            curFont.setFontFace g_InterfaceFont
-        End If
-        
-        If Int(mFont.Size) <> Int(curFont.getFontSize) Then
-            fontRefreshRequired = True
-            curFont.setFontSize mFont.Size
-        End If
-        
-        If fontRefreshRequired Then curFont.createFontObject
+        'Update the current font, as necessary
+        refreshFont
         
         'Force an immediate repaint
         updateControlSize

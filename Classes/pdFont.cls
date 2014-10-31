@@ -173,6 +173,8 @@ Private currentLogFont As LOGFONT
 ' which simplies the process of checking these properties prior to replacing them.
 Private m_origFontFace As String
 Private m_origFontSize As Single
+Private m_origFontBold As Boolean
+Private m_origFontItalic As Boolean
 
 'This function draws horizontally and vertically centered text onto the attached DC, and it does it without modifying any of the current
 ' font settings (including alignment).  It is designed for one-off renderings of centered text.
@@ -403,7 +405,12 @@ Public Function createFontObject() As Boolean
 
 End Function
 
+Public Function getFontBold() As Boolean
+    getFontBold = m_origFontBold
+End Function
+
 Public Sub setFontBold(ByVal newBold As Boolean)
+    m_origFontBold = newBold
     If newBold Then
         currentLogFont.lfWeight = FW_BOLD
     Else
@@ -415,7 +422,7 @@ Public Sub setFontColor(ByVal newColor As Long)
     
     fontColor = newColor
     
-    'If we are currently selected into a DC, update the color immediately; otherwise, the color will be applied upon selection
+    'If we are currently selected into a DC, update the color immediately; otherwise, the color will be applied upon DC selection
     If curDC <> 0 Then SetTextColor curDC, fontColor
     
 End Sub
@@ -429,7 +436,12 @@ Public Sub setFontFace(ByVal newFace As String)
     currentLogFont.lfFaceName = newFace & Chr(0)
 End Sub
 
+Public Function getFontItalic() As Boolean
+    getFontItalic = m_origFontItalic
+End Function
+
 Public Sub setFontItalic(ByVal newItalic As Boolean)
+    m_origFontItalic = newItalic
     currentLogFont.lfItalic = -1 * newItalic
 End Sub
 
@@ -533,11 +545,20 @@ Private Sub Class_Initialize()
         .lfClipPrecision = 0
         .lfQuality = CLEARTYPE_QUALITY
         .lfPitchAndFamily = 0
-        .lfFaceName = g_InterfaceFont & Chr(0)
+        If g_UserModeFix Then
+            m_origFontFace = g_InterfaceFont
+        Else
+            m_origFontFace = "Tahoma"
+        End If
+        .lfFaceName = m_origFontFace & Chr(0)
     End With
     
     curFont = 0
     curDC = 0
+        
+    m_origFontBold = False
+    m_origFontItalic = False
+    m_origFontSize = 11
     
     fontColor = 0
     curTextAlignment = TA_LEFT
@@ -550,6 +571,14 @@ Private Sub Class_Terminate()
     deleteCurrentFont
     
 End Sub
+
+Public Function hasFontBeenCreated() As Boolean
+    hasFontBeenCreated = (curFont <> 0)
+End Function
+
+Public Function getAttachedDC() As Long
+    getAttachedDC = curDC
+End Function
 
 Private Sub deleteCurrentFont()
     
