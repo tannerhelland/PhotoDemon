@@ -141,8 +141,8 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 
-Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
-Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 
@@ -381,7 +381,7 @@ Public Function createFontObject() As Boolean
 
     'If a font has already been created, delete it now
     If curFont <> 0 Then
-        If curDC <> 0 Then SelectObject curDC, oldFont
+        SelectObject curDC, oldFont
         DeleteObject curFont
     End If
     
@@ -457,7 +457,7 @@ Public Function getWidthOfString(ByVal srcString As String) As Long
         Debug.Print "Can't return string width, as pdFont has not been selected into a DC!"
     Else
         GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-        getWidthOfString = txtSize.X
+        getWidthOfString = txtSize.x
     End If
 End Function
 
@@ -467,7 +467,7 @@ Public Function getHeightOfString(ByVal srcString As String) As Long
         Debug.Print "Can't return string height, as pdFont has not been selected into a DC!"
     Else
         GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-        getHeightOfString = txtSize.Y
+        getHeightOfString = txtSize.y
     End If
 End Function
 
