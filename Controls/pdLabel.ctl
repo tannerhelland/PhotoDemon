@@ -444,8 +444,10 @@ Private Sub updateControlSize()
     
     'Start by setting the current font size to match the default mFont font size value.
     m_FontSize = mFont.Size
-    curFont.setFontSize m_FontSize
-    curFont.createFontObject
+    If m_FontSize <> curFont.getFontSize Then
+        curFont.setFontSize m_FontSize
+        curFont.createFontObject
+    End If
     curFont.attachToDC m_BackBuffer.getDIBDC
     
     'Different layout styles will modify the control's behavior based on the width (normal labels) or height
@@ -662,13 +664,21 @@ Public Sub updateAgainstCurrentTheme()
     
     If g_UserModeFix Then
         
-        If (Len(g_InterfaceFont) > 0) Then
+        Dim fontRefreshRequired As Boolean
+        fontRefreshRequired = False
+        
+        If (Len(g_InterfaceFont) > 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
+            fontRefreshRequired = True
             Me.Font.Name = g_InterfaceFont
             curFont.setFontFace g_InterfaceFont
         End If
         
-        curFont.setFontSize mFont.Size
-        curFont.createFontObject
+        If Int(mFont.Size) <> Int(curFont.getFontSize) Then
+            fontRefreshRequired = True
+            curFont.setFontSize mFont.Size
+        End If
+        
+        If fontRefreshRequired Then curFont.createFontObject
         
         'Force an immediate repaint
         updateControlSize
