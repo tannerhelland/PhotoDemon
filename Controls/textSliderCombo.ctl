@@ -40,7 +40,6 @@ Begin VB.UserControl sliderTextCombo
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       FillStyle       =   0  'Solid
@@ -64,8 +63,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / Slider custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 13/October/14
-'Last update: replace text box with PD's text up/down control, which finally provides a way to fine-tune slider values
+'Last updated: 31/October/14
+'Last update: drop AutoRedraw and move to our own flicker-free rendering solution
 '
 'Software like PhotoDemon requires a lot of UI elements.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -73,7 +72,7 @@ Attribute VB_Exposed = False
 '
 'Historically, I accomplished this by providing a scroll bar and text box for every parameter in the program.
 ' This got the job done, but it had a number of limitations - such as requiring an enormous amount of time if
-' changes ever needed to be made, and custom code being required in every form to handle text / scroll synching.
+' changes ever needed to be made, and custom code being required in every form to handle text / scroll syncing.
 '
 'In April 2013, it was brought to my attention that some locales (e.g. Italy) use a comma instead of a decimal
 ' for float values.  Rather than go through and add custom support for this to every damn form, I finally did
@@ -85,11 +84,12 @@ Attribute VB_Exposed = False
 ' while helping prepare PD for full theming support.
 '
 'Anyway, as of today, this control handles the following things automatically:
-' 1) Synching of text and scroll/slide values
+' 1) Syncing of text and scroll/slide values
 ' 2) Validation of text entries, including a function for external validation requests
 ' 3) Locale handling (like the aforementioned comma/decimal replacement in some countries)
 ' 4) A single "Change" event that fires for either scroll or text changes, and only if a text change is valid
 ' 5) Support for integer or floating-point values via the "SigDigits" property
+' 6) Several different drawing modes, including support for 2- or 3-point gradients
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -101,6 +101,10 @@ Option Explicit
 'This object provides a single raised event:
 ' - Change (which triggers when either the scrollbar or text box is modified in any way)
 Public Event Change()
+
+'Flicker-free window painter
+Private WithEvents cPainter As pdWindowPainter
+Attribute cPainter.VB_VarHelpID = -1
 
 'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
 Private Type RECT
@@ -200,6 +204,13 @@ Private customNotchValue As Double
 
 'Internal gradient DIB.  This is recreated as necessary to reflect the gradient colors and positions.
 Private m_GradientDIB As pdDIB
+
+'Full slider DIB, with gradient, outline, notch (if any).  The only thing missing is the slider knob, which is added to the
+' final buffer in a separate step (as it is the most likely to require changes!)
+Private m_SliderBackgroundDIB As pdDIB
+
+'Final back buffer DIB, with the entire slider composited atop it
+Private m_BackBuffer As pdDIB
 
 'Notch positioning technique.  If CUSTOM is set, make sure to supply a custom value to match!
 Public Property Get NotchPosition() As SLIDER_NOTCH_POSITION
@@ -405,7 +416,10 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 
         'Calculate a new control value relative to the current mouse position
         Value = (controlMax - controlMin) * (((x + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
-            
+        
+        'Force an immediate redraw (instead of waiting for WM_PAINT to process)
+        BitBlt picScroll.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+        
     'If the LMB is not down, modify the cursor according to its position relative to the slider
     Else
     
@@ -447,6 +461,12 @@ Private Function isMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
     End If
 
 End Function
+
+'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
+' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
+Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+    BitBlt picScroll.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+End Sub
 
 'When the font is updated, change the text box font to match.  (We also change the user control font, but this doesn't do anything... yet!)
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
@@ -499,7 +519,7 @@ Public Property Let Value(ByVal newValue As Double)
         End If
                 
         'Redraw the slider to reflect the new value
-        redrawSlider
+        drawSliderKnob
         
         'Mark the value property as being changed, and raise the corresponding event.
         PropertyChanged "Value"
@@ -586,16 +606,19 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    'When compiled, manifest-themed controls need to be further subclassed so they can have transparent backgrounds.
-    'If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.requestContainerSubclass UserControl.hWnd
-    
     'When not in design mode, initialize a tracker for mouse and keyboard events
     If g_UserModeFix Then
         
+        'Start a flicker-free window painter
+        Set cPainter = New pdWindowPainter
+        cPainter.startPainter picScroll.hWnd
+        
+        'Set up mouse events
         Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker picScroll.hWnd, True, True, , True
         cMouseEvents.setSystemCursor IDC_HAND
         
+        'Set up keyboard events
         Set cKeyEvents = New pdInputKeyboard
         cKeyEvents.createKeyboardTracker "Slider/Text UC", picScroll.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
         
@@ -614,11 +637,15 @@ Private Sub UserControl_Initialize()
     
     'Forecolor tracking may be supported in the future, but for now it's irrelevant
     origForecolor = ForeColor
-        
+    
     'Prepare a font object for use
     Set mFont = New StdFont
     Set UserControl.Font = mFont
     
+    'Initialize the back buffer and background DIB
+    Set m_SliderBackgroundDIB = New pdDIB
+    Set m_BackBuffer = New pdDIB
+        
 End Sub
 
 'Initialize control properties for the first time
@@ -671,6 +698,13 @@ Private Sub UserControl_InitProperties()
     
     NotchValueCustom = 0
     customNotchValue = 0
+    
+End Sub
+
+Private Sub UserControl_Paint()
+
+    'Provide minimal painting within the designer
+    If Not g_UserModeFix Then redrawSlider
     
 End Sub
 
@@ -740,7 +774,7 @@ Private Sub UserControl_Show()
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360) Then redrawInternalGradientDIB
-    
+        
     redrawSlider
         
 End Sub
@@ -773,35 +807,45 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     
 End Sub
 
-'Render a custom slider to the slider area picture box
+'Render a custom slider to the slider area picture box.  Note that the background gradient, if any, should already have been created
+' in a separate redrawInternalGradientDIB request.
 Private Sub redrawSlider()
 
-    'All drawing is done to a temporary DIB, which is flipped to the screen as the final rendering step
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
+    'Drawing is done in several stages.  The bulk of the slider is rendered to a persistent slider-only DIB, which contains everything
+    ' but the knob.  The knob is rendered in a separate step, as it is the most common update required, and we can shortcut by not
+    ' redrawing the entire slider on every update.
     
-    tmpDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 32, 0
+    'Initialize the background DIB, as necessary
+    If (m_SliderBackgroundDIB.getDIBWidth <> m_SliderAreaWidth) Or (m_SliderBackgroundDIB.getDIBHeight <> m_SliderAreaHeight) Then
+        m_SliderBackgroundDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, RGB(255, 255, 255)
+    End If
     
+    If g_UserModeFix Then
+        GDI_Plus.GDIPlusFillDIBRect m_SliderBackgroundDIB, 0, 0, m_SliderBackgroundDIB.getDIBWidth, m_SliderBackgroundDIB.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+    Else
+        m_SliderBackgroundDIB.createBlank m_SliderBackgroundDIB.getDIBWidth, m_SliderBackgroundDIB.getDIBHeight, 24, RGB(255, 255, 255)
+    End If
+    
+    'Initialize the back buffer as well
+    If (m_BackBuffer.getDIBWidth <> m_SliderAreaWidth) Or (m_BackBuffer.getDIBHeight <> m_SliderAreaHeight) Then
+        m_BackBuffer.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, 0
+    End If
+        
     'There are a few components to the slider:
     ' 1) The track that sits behind the slider.  It has two relevant parameters: a radius, and a color.  Its width is automatically
     '     calculated relevant to the width of the control as a whole.
-    ' 2) The slider that sits atop the track.  It has two relevant parameters: a radius, a fill color, and an edge color.  Its width
-    '     is constant from a programmatic standpoint, though it does get updated at run-time to account for screen DPI.
+    ' 2) The slider knob that sits atop the track.  It has two relevant parameters: a radius, a fill color, and an edge color.
+    '     Its width is constant from a programmatic standpoint, though it does get updated at run-time to account for screen DPI.
     
-    'Set colors first.  In the future, these will be handled via a theming engine (so PD can support light-on-dark or dark-on-light
-    ' themes, etc), but for now, set them manually.
+    'Pull relevant colors from the global themer object
     Dim trackColor As Long, sliderBackgroundColor As Long, sliderEdgeColor As Long
-    trackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)       'RGB(177, 186, 194)
-    sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)         'RGB(255, 255, 255)
-    sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)     'RGB(60, 175, 230)
+    trackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+    sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+    sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
     
     'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
     Dim relevantSliderPosX As Single, relevantSliderPosY As Single
     getSliderCoordinates relevantSliderPosX, relevantSliderPosY
-    
-    'Additional draw variables utilized by multiple render styles
-    Dim customX As Single, customY As Single
-    Dim relevantMin As Single
     
     'Draw the background track according to the current SliderTrackStyle property.
     If Me.Enabled Then
@@ -815,26 +859,13 @@ Private Sub redrawSlider()
             Case DefaultStyle
             
                 'Start by drawing the default background track
-                GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+                GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
                 
-                'Next, determine a minimum value for the control, using the formula provided:
-                ' 1) If 0 is a valid control value, use 0.
-                ' 2) If 0 is not a valid control value, use the control minimum.
-                If (0 >= controlMin) And (0 <= controlMax) Then
-                    relevantMin = 0
-                Else
-                    relevantMin = controlMin
-                End If
-                
-                'Convert our newly calculated relevant min value into an actual pixel position on the track
-                getCustomValueCoordinates relevantMin, customX, customY
-                
-                'Draw a highlighted line between the slider position and our calculated relevant minimum
-                GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, customX, customY, relevantSliderPosX, customY, sliderEdgeColor, 255, m_trackDiameter + 1, True, LineCapRound
+                'Filling the track to the notch position happens in the drawSliderKnob function.
                 
             'No-frills slider: plain gray background (boooring - use only if absolutely necessary)
             Case NoFrills
-                GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+                GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
             
             Case GradientTwoPoint, GradientThreePoint, HueSpectrum360
             
@@ -842,45 +873,24 @@ Private Sub redrawSlider()
                 If m_GradientDIB Is Nothing Then redrawInternalGradientDIB
                 
                 'Draw a stock trackline onto the target DIB.  This will serve as the border of the gradient track area.
-                GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+                GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
                 
                 'Next, draw the gradient effect DIB to the location where we'd normally draw the track line.  Alpha has already been
                 ' calculated for the gradient DIB, so it will sit precisely inside the trackline drawn above, giving the track a
                 ' sharp 1px border.
-                m_GradientDIB.alphaBlendToDC tmpDIB.getDIBDC, 255, getTrackMinPos - (m_trackDiameter \ 2), 0
+                m_GradientDIB.alphaBlendToDC m_SliderBackgroundDIB.getDIBDC, 255, getTrackMinPos - (m_trackDiameter \ 2), 0
                 
             Case CustomOwnerDrawn
         
         End Select
         
         'Before carrying on, draw a slight notch above and below the slider track, using the value specified by the associated property
-        drawNotchToDIB tmpDIB, trackColor
+        drawNotchToDIB m_SliderBackgroundDIB, trackColor
         
     'Control is disabled; draw a plain track in the background, but no notch or other frills
     Else
-        GDI_Plus.GDIPlusDrawLineToDC tmpDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
+        GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
     End If
-        
-    'The slider itself is only drawn if the control is enabled; otherwise, we do not display it at all.
-    If Me.Enabled Then
-    
-        'Draw the background (interior fill) circle of the slider
-        GDI_Plus.GDIPlusFillEllipseToDC tmpDIB.getDIBDC, relevantSliderPosX - (m_sliderDiameter \ 2), relevantSliderPosY - (m_sliderDiameter \ 2), m_sliderDiameter, m_sliderDiameter, sliderBackgroundColor, True
-        
-        'Draw the edge (exterior) circle around the slider
-        GDI_Plus.GDIPlusDrawCircleToDC tmpDIB.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
-        
-    End If
-        
-    'Composite the slider buffer against the specified background color.  In the future, the background color will be set by PD's theming engine,
-    ' but for now it is hard-coded against the standard "window background" color.
-    Dim backDIB As pdDIB
-    Set backDIB = New pdDIB
-    backDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-    tmpDIB.alphaBlendToDC backDIB.getDIBDC, 255
-        
-    'Flip the fully composited scroller image onto the owner picture box
-    BitBlt picScroll.hDC, 0, 0, m_SliderAreaWidth, m_SliderAreaHeight, backDIB.getDIBDC, 0, 0, vbSrcCopy
     
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
     If Not g_UserModeFix Then
@@ -899,15 +909,72 @@ Private Sub redrawSlider()
         
         UserControl.Picture = UserControl.Image
         UserControl.Refresh
-
+    
     End If
     
-    picScroll.Picture = picScroll.Image
-    picScroll.Refresh
-    
-    Set backDIB = Nothing
-    Set tmpDIB = Nothing
+    'The slider background is now ready for action.  As a final step, pass control to the knob renderer function.
+    drawSliderKnob
+        
+End Sub
 
+'Composite the knob atop the final slider background, and keep the entire thing inside a persitent back buffer.
+Private Sub drawSliderKnob()
+
+    'Copy the background DIB into the back buffer
+    BitBlt m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_SliderBackgroundDIB.getDIBDC, 0, 0, vbSrcCopy
+    
+    'The slider itself is only drawn if the control is enabled; otherwise, we do not display it at all.
+    If Me.Enabled Then
+        
+        'Retrieve colors from the global themer object
+        Dim sliderBackgroundColor As Long, sliderEdgeColor As Long
+        sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+        
+        'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
+        Dim relevantSliderPosX As Single, relevantSliderPosY As Single
+        getSliderCoordinates relevantSliderPosX, relevantSliderPosY
+        
+        'Additional draw variables are required for the "default" draw style, which fills the slider track to match the current
+        ' knob position.
+        Dim customX As Single, customY As Single
+        Dim relevantMin As Single
+        
+        If curSliderStyle = DefaultStyle Then
+        
+            'Determine a minimum value for the control, using the formula provided:
+            ' 1) If 0 is a valid control value, use 0.
+            ' 2) If 0 is not a valid control value, use the control minimum.
+            If (0 >= controlMin) And (0 <= controlMax) Then
+                relevantMin = 0
+            Else
+                relevantMin = controlMin
+            End If
+            
+            'Convert our newly calculated relevant min value into an actual pixel position on the track
+            getCustomValueCoordinates relevantMin, customX, customY
+            
+            'Draw a highlighted line between the slider position and our calculated relevant minimum
+            GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, customX, customY, relevantSliderPosX, customY, sliderEdgeColor, 255, m_trackDiameter + 1, True, LineCapRound
+            
+        End If
+        
+        'Draw the background (interior fill) circle of the slider
+        GDI_Plus.GDIPlusFillEllipseToDC m_BackBuffer.getDIBDC, relevantSliderPosX - (m_sliderDiameter \ 2), relevantSliderPosY - (m_sliderDiameter \ 2), m_sliderDiameter, m_sliderDiameter, sliderBackgroundColor, True
+        
+        'Draw the edge (exterior) circle around the slider
+        GDI_Plus.GDIPlusDrawCircleToDC m_BackBuffer.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
+        
+    End If
+    
+    'Paint the buffer to the screen
+    If g_UserModeFix Then cPainter.requestRepaint Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    
+End Sub
+
+'Post-translation, we can request an immediate refresh
+Public Sub requestRefresh()
+    cPainter.requestRepaint
 End Sub
 
 'Render a slight notch at the specified position on the specified DIB.  Note that this sub WILL automatically convert a custom notch
@@ -1040,7 +1107,7 @@ Private Sub redrawInternalGradientDIB()
     
     'Next, on custom gradients, we need to fill in the DIB just past the gradient on either side; this makes the gradient's
     ' termination point fall directly on the  maximum slider position (instead of the edge of the DIB, which would be
-    ' incorrect sa we need some padding for the rounded edge of the track area).  Note that hue gradients automatically
+    ' incorrect as we need some padding for the rounded edge of the track area).  Note that hue gradients automatically
     ' handle this step during the DIB creation phase.
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then
     
@@ -1133,48 +1200,13 @@ Private Function getFormattedStringValue(ByVal srcValue As Double) As String
 End Function
 
 'Check a passed value against a min and max value to see if it is valid.  Additionally, make sure the value is
-' numeric, and allow the user to display a warning message if necessary.
+' numeric, and allow the user to display a warning message if necessary.  (As of v6.6, all validation is off-loaded
+' to the embedded text up/down control.)
 Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = False) As Boolean
-    
     IsTextEntryValid = tudPrimary.IsValid(displayErrorMsg)
-    
-'    'Some locales use a comma as a decimal separator.  Check for this and replace as necessary.
-'    Dim chkString As String
-'    chkString = txtPrimary
-'
-'    'Remember the current cursor position as necessary
-'    Dim cursorPos As Long
-'    cursorPos = txtPrimary.SelStart
-'
-'    'It may be possible for the user to enter consecutive ",." characters, which then cause the CDbl() below to fail.
-'    ' Check for this and fix it as necessary.
-'    If InStr(1, chkString, "..") Then
-'        chkString = Replace(chkString, "..", ".")
-'        txtPrimary = chkString
-'        If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
-'        txtPrimary.SelStart = cursorPos
-'    End If
-'
-'    'If our owner wants a message displayed on invalid input, raise one now.
-'    If Not IsNumeric(chkString) Then
-'        If displayErrorMsg Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary
-'        IsTextEntryValid = False
-'    Else
-'
-'        Dim checkVal As Double
-'        checkVal = CDblCustom(chkString)
-'
-'        If (checkVal >= controlMin) And (checkVal <= controlMax) Then
-'            IsTextEntryValid = True
-'        Else
-'            If displayErrorMsg Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary, getFormattedStringValue(controlMin), getFormattedStringValue(controlMax)
-'            IsTextEntryValid = False
-'        End If
-'    End If
-    
 End Function
 
-'Retrieve the current coordinates of the slider.  Note that the x/y pair returned are the slider's *center point*.
+'Retrieve the current coordinates of the slider.  Note that the x/y pair returned references the slider's *center point*.
 Private Sub getSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Single)
     
     'This dumb catch exists for when sliders are first loaded, and their max/min may both be zero.  This causes a divide-by-zero
