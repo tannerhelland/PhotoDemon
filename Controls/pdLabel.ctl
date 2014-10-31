@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.UserControl pdLabel 
    BackColor       =   &H80000005&
    CanGetFocus     =   0   'False
-   ClientHeight    =   3600
+   ClientHeight    =   450
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   4800
+   ClientWidth     =   1395
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -15,9 +15,9 @@ Begin VB.UserControl pdLabel
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   ScaleHeight     =   240
+   ScaleHeight     =   30
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   320
+   ScaleWidth      =   93
    ToolboxBitmap   =   "pdLabel.ctx":0000
 End
 Attribute VB_Name = "pdLabel"
@@ -117,11 +117,14 @@ Private m_InternalResizeState As Boolean
 ' paint event is actually required.
 Private m_BufferDirty As Boolean
 
-'Normally, we let this control automatically determine backcolor according to the current theme.  However, in some rare cases
-' (like the pdCanvas status bar), it is useful to override the automatic BackColor with a custom one.  Two variables are used
-' for this: a BackColor property (which is normally ignored), and a boolean flag property "UseCustomBackColor".
+'Normally, we let this control automatically determine its colors according to the current theme.  However, in some rare cases
+' (like the pdCanvas status bar), we may want to override the automatic BackColor with a custom one.  Two variables are used
+' for this: a BackColor/ForeColor property (which is normally ignored), and a boolean flag property "UseCustomBack/ForeColor".
 Private m_BackColor As OLE_COLOR
 Private m_UseCustomBackColor As Boolean
+
+Private m_ForeColor As OLE_COLOR
+Private m_UseCustomForeColor As Boolean
 
 'On certain layouts, this control will try to shrink the caption to fit within the control.  If it cannot physically do it
 ' (because we run out of font sizes), this failure state will be set to TRUE.  When that happens, ellipses will be added to
@@ -163,7 +166,8 @@ End Property
 Public Property Let Caption(ByRef newCaption As String)
     If StrComp(newCaption, m_Caption, vbBinaryCompare) <> 0 Then
         m_Caption = newCaption
-        If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
+        'If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
+        updateControlSize
     End If
 End Property
 
@@ -214,6 +218,17 @@ Public Property Set Font(mNewFont As StdFont)
     
 End Property
 
+Public Property Get ForeColor() As OLE_COLOR
+    ForeColor = m_ForeColor
+End Property
+
+Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
+    If m_ForeColor <> newColor Then
+        m_ForeColor = newColor
+        If m_UseCustomForeColor Then m_BufferDirty = True
+    End If
+End Property
+
 Public Property Get Layout() As PD_LABEL_LAYOUT
     Layout = m_Layout
 End Property
@@ -244,16 +259,31 @@ Public Property Let UseCustomBackColor(ByVal newSetting As Boolean)
     End If
 End Property
 
+Public Property Get UseCustomForeColor() As Boolean
+    UseCustomForeColor = m_UseCustomForeColor
+End Property
+
+Public Property Let UseCustomForeColor(ByVal newSetting As Boolean)
+    If newSetting <> m_UseCustomForeColor Then
+        m_UseCustomForeColor = newSetting
+        m_BufferDirty = True
+    End If
+End Property
+
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
 Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
 
     'Recreate the buffer as necessary
-    If m_BufferDirty Then updateControlSize
-
-    'Flip the relevant chunk of the buffer to the screen
-    BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+    If (Not m_InternalResizeState) Then
+        
+        If m_BufferDirty Then updateControlSize
+        
+        'Flip the relevant chunk of the buffer to the screen
+        BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
     
+    End If
+        
 End Sub
 
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
@@ -319,6 +349,9 @@ Private Sub UserControl_InitProperties()
     BackColor = vbWindowBackground
     UseCustomBackColor = False
     
+    ForeColor = RGB(96, 96, 96)
+    UseCustomForeColor = False
+    
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -337,16 +370,18 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Alignment = .ReadProperty("Alignment", vbLeftJustify)
         BackColor = .ReadProperty("BackColor", vbWindowBackground)
         Caption = .ReadProperty("Caption", "caption")
+        ForeColor = .ReadProperty("ForeColor", RGB(96, 96, 96))
         Layout = .ReadProperty("Layout", AutoFitCaption)
         Set Font = .ReadProperty("Font", Ambient.Font)
         UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
+        UseCustomForeColor = .ReadProperty("UseCustomForeColor", False)
     End With
 
 End Sub
 
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    If (Not m_InternalResizeState) Then m_BufferDirty = True
+    If (Not m_InternalResizeState) Then updateControlSize
 End Sub
 
 Private Sub UserControl_Show()
@@ -388,10 +423,10 @@ Private Sub updateControlSize()
     'If the label caption was previously blank, and the label is set to "autosize", the user control may have dimensions (0, 0).
     ' If this happens, creating the back buffer will fail, so we must manually create a (1, 1) buffer, which will then become
     ' properly sized in subsequent render steps.
-    If (UserControl.ScaleWidth = 0) Or (UserControl.ScaleHeight = 0) Then
+    If (UserControl.ScaleWidth = 0) Or (UserControl.ScaleHeight = 0) Or (m_BackBuffer.getDIBWidth = 0) Then
         m_BackBuffer.createBlank 1, 1, 24
-    Else
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+    'Else
+        'm_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
     End If
     
     'Depending on the layout in use (e.g. autosize vs non-autosize), we may need to reposition the user control.
@@ -429,7 +464,7 @@ Private Sub updateControlSize()
             stringWidth = curFont.getWidthOfString(m_Caption)
             
             'If the string does not fit within the control size, shrink the font accordingly.
-            Do While (stringWidth > m_BackBuffer.getDIBWidth) And (m_FontSize >= 8)
+            Do While (stringWidth > origWidth) And (m_FontSize >= 8)
                 
                 'Shrink the font size
                 m_FontSize = m_FontSize - 1
@@ -449,7 +484,7 @@ Private Sub updateControlSize()
             ' perform a failsafe check on the label's height, and increase it as necessary.
             stringHeight = curFont.getHeightOfString(m_Caption)
             
-            If (stringHeight > m_BackBuffer.getDIBHeight) Then
+            If (stringHeight > origHeight) Then
                 
                 m_InternalResizeState = True
                 
@@ -457,24 +492,35 @@ Private Sub updateControlSize()
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
                 If g_UserModeFix Then
-                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, m_BackBuffer.getDIBWidth, stringHeight, 1
+                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 0
                 Else
-                    UserControl.Width = ScaleX(m_BackBuffer.getDIBWidth, vbPixels, vbTwips)
+                    UserControl.Width = ScaleX(origWidth, vbPixels, vbTwips)
                     UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
                 End If
                 
                 'Recreate the backbuffer
-                curFont.releaseFromDC
-                m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
-                curFont.attachToDC m_BackBuffer.getDIBDC
+                If (UserControl.ScaleWidth <> m_BackBuffer.getDIBWidth) Or (UserControl.ScaleHeight <> m_BackBuffer.getDIBHeight) Then
+                    curFont.releaseFromDC
+                    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+                    curFont.attachToDC m_BackBuffer.getDIBDC
+                End If
                 
                 'Restore normal resize behavior
                 m_InternalResizeState = False
                 
+            Else
+            
+                'Create the backbuffer if it hasn't been created before
+                If (UserControl.ScaleWidth <> m_BackBuffer.getDIBWidth) Or (UserControl.ScaleHeight > m_BackBuffer.getDIBHeight) Then
+                    curFont.releaseFromDC
+                    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+                    curFont.attachToDC m_BackBuffer.getDIBDC
+                End If
+                
             End If
             
             'If the caption still does not fit within the available area, set the failure state to TRUE.
-            If stringWidth > m_BackBuffer.getDIBWidth Then
+            If stringWidth > UserControl.ScaleWidth Then
                 m_FitFailure = True
             Else
                 m_FitFailure = False
@@ -487,10 +533,10 @@ Private Sub updateControlSize()
         Case AutoFitCaptionPlusWordWrap
             
             'Measure the font relative to the current control size
-            stringHeight = curFont.getHeightOfWordwrapString(m_Caption, m_BackBuffer.getDIBWidth)
+            stringHeight = curFont.getHeightOfWordwrapString(m_Caption, origWidth)
             
             'If the string does not fit within the control size, shrink the font accordingly.
-            Do While (stringHeight > m_BackBuffer.getDIBHeight) And (m_FontSize >= 8)
+            Do While (stringHeight > origHeight) And (m_FontSize >= 8)
                 
                 'Shrink the font size
                 m_FontSize = m_FontSize - 1
@@ -501,7 +547,7 @@ Private Sub updateControlSize()
                 curFont.attachToDC m_BackBuffer.getDIBDC
                 
                 'Measure the new size
-                stringWidth = curFont.getHeightOfWordwrapString(m_Caption, m_BackBuffer.getDIBWidth)
+                stringWidth = curFont.getHeightOfWordwrapString(m_Caption, origWidth)
                 
             Loop
             
@@ -535,9 +581,11 @@ Private Sub updateControlSize()
                 End If
                 
                 'Recreate the backbuffer
-                curFont.releaseFromDC
-                m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
-                curFont.attachToDC m_BackBuffer.getDIBDC
+                If (stringWidth <> m_BackBuffer.getDIBWidth) Or (stringHeight <> m_BackBuffer.getDIBHeight) Then
+                    curFont.releaseFromDC
+                    m_BackBuffer.createBlank stringWidth, stringHeight, 24
+                    curFont.attachToDC m_BackBuffer.getDIBDC
+                End If
                 
             End If
             
@@ -600,9 +648,11 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Alignment", m_Alignment, vbLeftJustify
         .WriteProperty "BackColor", m_BackColor, vbWindowBackground
         .WriteProperty "Caption", m_Caption, "caption"
+        .WriteProperty "ForeColor", m_ForeColor, RGB(96, 96, 96)
         .WriteProperty "Layout", m_Layout, AutoFitCaption
         .WriteProperty "Font", mFont, "Tahoma"
         .WriteProperty "UseCustomBackColor", m_UseCustomBackColor, False
+        .WriteProperty "UseCustomForeColor", m_UseCustomForeColor, False
     End With
     
 End Sub
@@ -654,7 +704,11 @@ Private Sub redrawBackBuffer()
     Dim fontColor As Long
     
     If Me.Enabled Then
-        fontColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+        If m_UseCustomForeColor Then
+            fontColor = m_ForeColor
+        Else
+            fontColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+        End If
     Else
         fontColor = g_Themer.getThemeColor(PDTC_DISABLED)
     End If
@@ -680,7 +734,7 @@ Private Sub redrawBackBuffer()
     End Select
     
     'Paint the buffer to the screen
-    If g_UserModeFix Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_UserModeFix Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 
