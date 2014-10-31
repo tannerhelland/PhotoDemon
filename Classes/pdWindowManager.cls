@@ -210,10 +210,11 @@ Public Enum pdWindowType
     TOOLBAR_WINDOW = 1
     IMAGE_WINDOW = 2
     IMAGE_TABSTRIP = 3
+    GENERIC_FLOATING_WINDOW = 4
 End Enum
 
 #If False Then
-    Private Const MAIN_WINDOW = 0, TOOLBAR_WINDOW = 1, IMAGE_WINDOW = 2, IMAGE_TABSTRIP = 3
+    Private Const MAIN_WINDOW = 0, TOOLBAR_WINDOW = 1, IMAGE_WINDOW = 2, IMAGE_TABSTRIP = 3, GENERIC_FLOATING_WINDOW = 4
 #End If
 
 Public Enum pdToolbarType
@@ -221,10 +222,13 @@ Public Enum pdToolbarType
     FILE_TOOLBOX = 1
     LAYER_TOOLBOX = 2
     TOOLS_TOOLBOX = 3
+    
+    'Note that the debug toolbox is never exposed in production builds!
+    DEBUG_TOOLBOX = 4
 End Enum
 
 #If False Then
-    Private Const NOT_A_TOOLBAR = 0, FILE_TOOLBOX = 1, LAYER_TOOLBOX = 2, TOOLS_TOOLBOX = 3
+    Private Const NOT_A_TOOLBAR = 0, FILE_TOOLBOX = 1, LAYER_TOOLBOX = 2, TOOLS_TOOLBOX = 3, DEBUG_TOOLBOX = 4
 #End If
 
 Private Enum renderedBorderStyle
@@ -1384,10 +1388,10 @@ Public Function saveAllWindowLocations() As Boolean
                 
                 'Alignment; this is only used by the image tabstrip at present, but may be enabled for other windows
                 ' in the future.
-                xmlEngine.updateTag "alignLeft", Str(.alignmentOptions.alignLeft), "windowEntry", "id", .windowName
-                xmlEngine.updateTag "alignTop", Str(.alignmentOptions.alignTop), "windowEntry", "id", .windowName
-                xmlEngine.updateTag "alignRight", Str(.alignmentOptions.alignRight), "windowEntry", "id", .windowName
-                xmlEngine.updateTag "alignBottom", Str(.alignmentOptions.alignBottom), "windowEntry", "id", .windowName
+                xmlEngine.updateTag "alignLeft", Trim$(Str(.alignmentOptions.alignLeft)), "windowEntry", "id", .windowName
+                xmlEngine.updateTag "alignTop", Trim$(Str(.alignmentOptions.alignTop)), "windowEntry", "id", .windowName
+                xmlEngine.updateTag "alignRight", Trim$(Str(.alignmentOptions.alignRight)), "windowEntry", "id", .windowName
+                xmlEngine.updateTag "alignBottom", Trim$(Str(.alignmentOptions.alignBottom)), "windowEntry", "id", .windowName
                 
             End With
         
@@ -1886,6 +1890,9 @@ Private Sub moveWindowToLastKnownLocation(ByVal windowIndex As Long, ByRef mainF
     
         Case TOOLBAR_WINDOW
             If toolbarsFloating Then MoveWindow pdWindows(windowIndex).hWnd, mainFormRect.x1 + pdWindows(windowIndex).offsetX, mainFormRect.y1 + pdWindows(windowIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(windowIndex).isVisible, 1, 0)
+            
+        Case GENERIC_FLOATING_WINDOW
+            MoveWindow pdWindows(windowIndex).hWnd, mainFormRect.x1 + pdWindows(windowIndex).offsetX, mainFormRect.y1 + pdWindows(windowIndex).offsetY, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, 1 'IIf(pdWindows(windowIndex).isVisible, 1, 0)
             
     End Select
     
