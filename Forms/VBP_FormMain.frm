@@ -67,8 +67,8 @@ Begin VB.Form FormMain
       _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
-      Left            =   960
-      Top             =   360
+      Left            =   120
+      Top             =   3360
       _ExtentX        =   635
       _ExtentY        =   635
       ErrAsOut        =   0   'False
@@ -1328,11 +1328,19 @@ Begin VB.Form FormMain
          Index           =   7
       End
       Begin VB.Menu mnuTool 
-         Caption         =   "PD Developer Tools"
+         Caption         =   "PD developer tools"
          Index           =   8
-         Begin VB.Menu mnuDevelopers 
-            Caption         =   "Theme editor..."
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Debug window"
             Index           =   0
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "-"
+            Index           =   1
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Theme editor..."
+            Index           =   2
          End
       End
    End
@@ -1677,8 +1685,17 @@ Private Sub mnuDevelopers_Click(Index As Integer)
 
     Select Case Index
     
-        'Theme editor
+        'Debug window
         Case 0
+            #If DEBUGMODE = 1 Then
+                toggleToolbarVisibility DEBUG_TOOLBOX
+            #End If
+        
+        '(separator)
+        Case 1
+        
+        'Theme Editor
+        Case 2
     
     End Select
 
@@ -2287,8 +2304,12 @@ Private Sub Form_Load()
     g_WindowManager.registerChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX
     g_WindowManager.registerChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , 200
     g_WindowManager.registerChildForm toolbar_Options, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
-    
     g_WindowManager.registerChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , 32
+    
+    'The debug window can optionally be displayed, but only in nightly builds
+    #If DEBUGMODE = 1 Then
+        g_WindowManager.registerChildForm toolbar_Debug, GENERIC_FLOATING_WINDOW, 4, DEBUG_TOOLBOX
+    #End If
     
     'Display the various toolboxes per the user's display settings
     toolbar_Toolbox.Show vbModeless, Me
@@ -2301,6 +2322,12 @@ Private Sub Form_Load()
     'We only display the image tab manager now if the user loaded two or more images from the command line
     toolbar_ImageTabs.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, IIf(g_OpenImageCount > 1, True, False)
+    
+    'The debug window is only shown in nightly builds, and even then, it's only shown if explicitly requested
+    #If DEBUGMODE = 1 Then
+        toolbar_Debug.Show vbModeless, Me
+        g_WindowManager.setWindowVisibility toolbar_Debug.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
+    #End If
     
     'Synchronize the main canvas layout
     refreshAllCanvases

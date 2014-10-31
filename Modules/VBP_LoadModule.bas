@@ -339,6 +339,10 @@ Public Sub LoadTheProgram()
     FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
     FormMain.MnuWindow(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
     
+    #If DEBUGMODE = 1 Then
+        FormMain.MnuDevelopers(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
+    #End If
+    
     'Retrieve two additional settings for the image tabstrip menu: when to display the image tabstrip...
     toggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True, True
     

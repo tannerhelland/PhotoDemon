@@ -965,6 +965,11 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
             FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show Selections Toolbox", FormMain.MnuWindow(2).Checked
             g_WindowManager.setWindowVisibility toolbar_Options.hWnd, FormMain.MnuWindow(2).Checked
+            
+        Case DEBUG_TOOLBOX
+            FormMain.mnuDevelopers(0).Checked = Not FormMain.mnuDevelopers(0).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Show Debug Window", FormMain.mnuDevelopers(0).Checked
+            g_WindowManager.setWindowVisibility toolbar_Debug.hWnd, FormMain.mnuDevelopers(0).Checked
     
     End Select
     
