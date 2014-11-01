@@ -33,20 +33,28 @@ Begin VB.UserControl smartResize
       TabIndex        =   10
       Top             =   180
       Width           =   630
-      _extentx        =   1111
-      _extenty        =   1111
-      buttonstyle     =   7
-      font            =   "smartResize.ctx":0312
-      backcolor       =   -2147483643
-      caption         =   ""
-      value           =   -1  'True
-      handpointer     =   -1  'True
-      picturenormal   =   "smartResize.ctx":033A
-      picturedown     =   "smartResize.ctx":178C
-      pictureeffectondown=   0
-      captioneffects  =   0
-      mode            =   1
-      colorscheme     =   3
+      _ExtentX        =   1111
+      _ExtentY        =   1111
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      Value           =   -1  'True
+      HandPointer     =   -1  'True
+      PictureNormal   =   "smartResize.ctx":0312
+      PictureDown     =   "smartResize.ctx":1764
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin VB.ComboBox cmbHeightUnit 
       Height          =   360
@@ -70,12 +78,11 @@ Begin VB.UserControl smartResize
       TabIndex        =   0
       Top             =   0
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   767
-      font            =   "smartResize.ctx":2BDE
-      min             =   1
-      max             =   32767
-      value           =   1
+      _ExtentX        =   2117
+      _ExtentY        =   767
+      Min             =   1
+      Max             =   32767
+      Value           =   1
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   435
@@ -83,12 +90,11 @@ Begin VB.UserControl smartResize
       TabIndex        =   1
       Top             =   600
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   767
-      font            =   "smartResize.ctx":2C06
-      min             =   1
-      max             =   32767
-      value           =   1
+      _ExtentX        =   2117
+      _ExtentY        =   767
+      Min             =   1
+      Max             =   32767
+      Value           =   1
    End
    Begin PhotoDemon.textUpDown tudResolution 
       Height          =   435
@@ -96,12 +102,11 @@ Begin VB.UserControl smartResize
       TabIndex        =   12
       Top             =   1200
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   767
-      font            =   "smartResize.ctx":2C2E
-      min             =   1
-      max             =   32767
-      value           =   1
+      _ExtentX        =   2117
+      _ExtentY        =   767
+      Min             =   1
+      Max             =   32767
+      Value           =   1
    End
    Begin VB.Label lblResolution 
       Alignment       =   1  'Right Justify
@@ -420,15 +425,15 @@ Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
     
     Set lblWidth.Font = UserControl.Font
-    Set tudWidth.Font = UserControl.Font
+    tudWidth.FontSize = UserControl.Font.Size
     Set cmbWidthUnit.Font = UserControl.Font
     
     Set lblHeight.Font = UserControl.Font
-    Set tudHeight.Font = UserControl.Font
+    tudHeight.FontSize = UserControl.Font.Size
     Set cmbHeightUnit.Font = UserControl.Font
     
     Set lblResolution.Font = UserControl.Font
-    Set tudResolution.Font = UserControl.Font
+    tudResolution.FontSize = UserControl.Font.Size
     Set cmbResolution.Font = UserControl.Font
     
     Set lblAspectRatio(0).Font = UserControl.Font

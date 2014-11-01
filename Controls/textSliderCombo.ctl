@@ -28,15 +28,6 @@ Begin VB.UserControl sliderTextCombo
       Width           =   960
       _ExtentX        =   1693
       _ExtentY        =   741
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -116,10 +107,6 @@ End Type
 
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
 
-'This control supports font setting for the text box
-Private WithEvents mFont As StdFont
-Attribute mFont.VB_VarHelpID = -1
-
 'Forecolor handling is not currently handled, but it may be in the future
 Private origForecolor As Long
 
@@ -132,6 +119,10 @@ Private controlVal As Double, controlMin As Double, controlMax As Double
 
 'The number of significant digits for this control.  0 means integer values.
 Private significantDigits As Long
+
+'Font size is the only variable parameter as far as fonts are concerned.  (Font face is set automatically, by the
+' updateAgainstCurrentTheme function.)
+Private m_FontSize As Single
 
 'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
 Private textBoxInitiated As Boolean
@@ -212,40 +203,16 @@ Private m_SliderBackgroundDIB As pdDIB
 'Final back buffer DIB, with the entire slider composited atop it
 Private m_BackBuffer As pdDIB
 
-'Notch positioning technique.  If CUSTOM is set, make sure to supply a custom value to match!
-Public Property Get NotchPosition() As SLIDER_NOTCH_POSITION
-    NotchPosition = curNotchPosition
+Public Property Get FontSize() As Single
+    FontSize = m_FontSize
 End Property
 
-Public Property Let NotchPosition(ByVal newPosition As SLIDER_NOTCH_POSITION)
-    
-    'Store the new position
-    curNotchPosition = newPosition
-    
-    'Redraw the control
-    redrawSlider
-    
-    'Raise the property changed event
-    PropertyChanged "NotchPosition"
-    
-End Property
-
-'Custom notch value.  This value is only used if NotchPosition = CustomPosition.
-Public Property Get NotchValueCustom() As Double
-    NotchValueCustom = customNotchValue
-End Property
-
-Public Property Let NotchValueCustom(ByVal newValue As Double)
-    
-    'Store the new position
-    customNotchValue = newValue
-    
-    'Redraw the control
-    redrawSlider
-    
-    'Raise the property changed event
-    PropertyChanged "NotchValueCustom"
-    
+Public Property Let FontSize(ByVal newSize As Single)
+    If m_FontSize <> newSize Then
+        m_FontSize = newSize
+        tudPrimary.FontSize = m_FontSize
+        PropertyChanged "FontSize"
+    End If
 End Property
 
 'Gradient colors.  For the two-color gradient style, only colors Left and Right are relevant.  Color Middle is used for the
@@ -315,6 +282,42 @@ Public Property Let GradientMiddleValue(ByVal newValue As Double)
     
 End Property
 
+'Notch positioning technique.  If CUSTOM is set, make sure to supply a custom value to match!
+Public Property Get NotchPosition() As SLIDER_NOTCH_POSITION
+    NotchPosition = curNotchPosition
+End Property
+
+Public Property Let NotchPosition(ByVal newPosition As SLIDER_NOTCH_POSITION)
+    
+    'Store the new position
+    curNotchPosition = newPosition
+    
+    'Redraw the control
+    redrawSlider
+    
+    'Raise the property changed event
+    PropertyChanged "NotchPosition"
+    
+End Property
+
+'Custom notch value.  This value is only used if NotchPosition = CustomPosition.
+Public Property Get NotchValueCustom() As Double
+    NotchValueCustom = customNotchValue
+End Property
+
+Public Property Let NotchValueCustom(ByVal newValue As Double)
+    
+    'Store the new position
+    customNotchValue = newValue
+    
+    'Redraw the control
+    redrawSlider
+    
+    'Raise the property changed event
+    PropertyChanged "NotchValueCustom"
+    
+End Property
+
 Public Property Get SliderTrackStyle() As SLIDER_TRACK_STYLE
     SliderTrackStyle = curSliderStyle
 End Property
@@ -332,7 +335,7 @@ Public Property Let SliderTrackStyle(ByVal newStyle As SLIDER_TRACK_STYLE)
     
 End Property
     
-'If the current text value is NOT valid, this will return FALSE
+'If the current text value is NOT valid, this will return FALSE.  Note that this property is read-only.
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
     IsValid = tudPrimary.IsValid
 End Property
@@ -355,23 +358,6 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     
     PropertyChanged "Enabled"
     
-End Property
-
-'Font handling is a bit specialized for user controls; see http://msdn.microsoft.com/en-us/library/aa261313%28v=vs.60%29.aspx
-Public Property Get Font() As StdFont
-Attribute Font.VB_ProcData.VB_Invoke_Property = "StandardFont;Font"
-Attribute Font.VB_UserMemId = -512
-    Set Font = mFont
-End Property
-
-Public Property Set Font(mNewFont As StdFont)
-    With mFont
-        .Bold = mNewFont.Bold
-        .Italic = mNewFont.Italic
-        .Name = mNewFont.Name
-        .Size = mNewFont.Size
-    End With
-    PropertyChanged "Font"
 End Property
 
 'Arrow keys can be used to "nudge" the control value in single-unit increments.
@@ -466,12 +452,6 @@ End Function
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
 Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
     BitBlt picScroll.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
-End Sub
-
-'When the font is updated, change the text box font to match.  (We also change the user control font, but this doesn't do anything... yet!)
-Private Sub mFont_FontChanged(ByVal PropertyName As String)
-    Set UserControl.Font = mFont
-    Set tudPrimary.Font = UserControl.Font
 End Sub
 
 Public Property Get hWnd() As Long
@@ -638,9 +618,8 @@ Private Sub UserControl_Initialize()
     'Forecolor tracking may be supported in the future, but for now it's irrelevant
     origForecolor = ForeColor
     
-    'Prepare a font object for use
-    Set mFont = New StdFont
-    Set UserControl.Font = mFont
+    '10 is the default font size for sliders in PD
+    m_FontSize = 10
     
     'Initialize the back buffer and background DIB
     Set m_SliderBackgroundDIB = New pdDIB
@@ -654,10 +633,8 @@ Private Sub UserControl_InitProperties()
     'Reset all controls to their default state.  For each public property, matching internal tracker variables are also updated;
     ' this is not necessary, but it's helpful for reminding me of the names of the internal tracker variables relevant to their
     ' connected property.
-    Set mFont = UserControl.Font
-    mFont.Name = "Tahoma"
-    mFont.Size = 10
-    mFont_FontChanged ("")
+    FontSize = 10
+    m_FontSize = 10
     
     ForeColor = &H404040
     origForecolor = ForeColor
@@ -712,7 +689,7 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
-        Set Font = .ReadProperty("Font", Ambient.Font)
+        FontSize = .ReadProperty("FontSize", 10)
         ForeColor = .ReadProperty("ForeColor", &H404040)
         Min = .ReadProperty("Min", 0)
         Max = .ReadProperty("Max", 10)
@@ -790,7 +767,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
     'Store all associated properties
     With PropBag
-        .WriteProperty "Font", mFont, "Tahoma"
+        .WriteProperty "FontSize", m_FontSize, 10
         .WriteProperty "ForeColor", ForeColor, &H404040
         .WriteProperty "Min", controlMin, 0
         .WriteProperty "Max", controlMax, 10
@@ -1267,5 +1244,15 @@ Public Sub sizeDIBToTrackArea(ByRef targetDIB As pdDIB)
     
     Set targetDIB = New pdDIB
     targetDIB.createBlank (getTrackMaxPos - getTrackMinPos) + m_trackDiameter, m_SliderAreaHeight, 32, ConvertSystemColor(vbWindowBackground), 255
+    
+End Sub
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub updateAgainstCurrentTheme()
+    
+    tudPrimary.updateAgainstCurrentTheme
+    
+    'Redraw the control to match any updated settings
+    redrawSlider
     
 End Sub

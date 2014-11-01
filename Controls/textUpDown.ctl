@@ -106,8 +106,8 @@ Option Explicit
 'This object can raise a Change (which triggers when the Value property is changed by ANY means)
 Public Event Change()
 
-Private WithEvents mFont As StdFont
-Attribute mFont.VB_VarHelpID = -1
+'The only exposed font setting is size.  All other settings are handled automatically, by the themer.
+Private m_FontSize As Single
 
 Private origForecolor As Long
 
@@ -157,31 +157,23 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
 End Property
 
-'Font handling is a bit specialized for user controls; see http://msdn.microsoft.com/en-us/library/aa261313%28v=vs.60%29.aspx
-Public Property Get Font() As StdFont
-Attribute Font.VB_ProcData.VB_Invoke_Property = "StandardFont;Font"
-Attribute Font.VB_UserMemId = -512
-    Set Font = mFont
+Public Property Get FontSize() As Single
+Attribute FontSize.VB_ProcData.VB_Invoke_Property = "StandardFont;Font"
+Attribute FontSize.VB_UserMemId = -512
+    FontSize = m_FontSize
 End Property
 
-Public Property Set Font(mNewFont As StdFont)
-    With mFont
-        .Bold = mNewFont.Bold
-        .Italic = mNewFont.Italic
-        .Name = mNewFont.Name
-        .Size = mNewFont.Size
-    End With
-    PropertyChanged "Font"
+Public Property Let FontSize(ByVal newSize As Single)
+    If m_FontSize <> newSize Then
+        m_FontSize = newSize
+        txtPrimary.FontSize = m_FontSize
+        PropertyChanged "FontSize"
+    End If
 End Property
 
 Private Sub vsPrimary_Scroll()
     If Not textBoxInitiated Then copyValToTextBox -1 * vsPrimary.Value
     Value = -1 * (vsPrimary.Value / (10 ^ significantDigits))
-End Sub
-
-Private Sub mFont_FontChanged(ByVal PropertyName As String)
-    Set UserControl.Font = mFont
-    Set txtPrimary.Font = UserControl.Font
 End Sub
 
 Public Property Get hWnd() As Long
@@ -369,9 +361,9 @@ Private Sub UserControl_Initialize()
     
     origForecolor = ForeColor
         
-    'Prepare a font object for use
-    Set mFont = New StdFont
-    Set UserControl.Font = mFont
+    'Prepare a default font size
+    m_FontSize = 10
+    txtPrimary.FontSize = m_FontSize
     
     'Prepare an API scroll bar
     If g_UserModeFix Then
@@ -382,38 +374,38 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
-    Set mFont = UserControl.Font
-    mFont.Name = "Tahoma"
-    mFont.Size = 10
-    mFont_FontChanged ("")
+    
+    FontSize = 10
+    m_FontSize = 10
+    
     ForeColor = &H404040
     origForecolor = ForeColor
+    
     Value = 0
     controlVal = 0
+    
     Min = 0
     controlMin = 0
+    
     Max = 10
     controlMax = 10
+    
     SigDigits = 0
     significantDigits = 0
+    
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
-        Set Font = .ReadProperty("Font", Ambient.Font)
+        FontSize = .ReadProperty("FontSize", 10)
         ForeColor = .ReadProperty("ForeColor", &H404040)
         Min = .ReadProperty("Min", 0)
         Max = .ReadProperty("Max", 10)
         SigDigits = .ReadProperty("SigDigits", 0)
         Value = .ReadProperty("Value", 0)
     End With
-    
-    controlMin = Min
-    controlMax = Max
-    controlVal = Value
-    significantDigits = SigDigits
-    
+        
 End Sub
 
 Private Sub UserControl_Resize()
@@ -486,7 +478,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Max", controlMax, 10
         .WriteProperty "SigDigits", significantDigits, 0
         .WriteProperty "Value", controlVal, 0
-        .WriteProperty "Font", mFont, "Tahoma"
+        .WriteProperty "FontSize", m_FontSize, 10
         .WriteProperty "ForeColor", ForeColor, &H404040
     End With
     
@@ -572,3 +564,12 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     End If
     
 End Function
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub updateAgainstCurrentTheme()
+    
+    txtPrimary.FontName = g_InterfaceFont
+    
+    'In the future, additional drawing instructions can be added here.
+    
+End Sub
