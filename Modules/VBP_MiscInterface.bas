@@ -967,9 +967,9 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
             g_WindowManager.setWindowVisibility toolbar_Options.hWnd, FormMain.MnuWindow(2).Checked
             
         Case DEBUG_TOOLBOX
-            FormMain.mnuDevelopers(0).Checked = Not FormMain.mnuDevelopers(0).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Show Debug Window", FormMain.mnuDevelopers(0).Checked
-            g_WindowManager.setWindowVisibility toolbar_Debug.hWnd, FormMain.mnuDevelopers(0).Checked
+            FormMain.MnuDevelopers(0).Checked = Not FormMain.MnuDevelopers(0).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Show Debug Window", FormMain.MnuDevelopers(0).Checked
+            g_WindowManager.setWindowVisibility toolbar_Debug.hWnd, FormMain.MnuDevelopers(0).Checked
     
     End Select
     
@@ -1132,11 +1132,11 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
             eControl.FontName = g_InterfaceFont
         End If
         
-        If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is commandBar) Or (TypeOf eControl Is smartResize)) Then
+        If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is commandBar) Or (TypeOf eControl Is smartResize)) Then
             eControl.Font.Name = g_InterfaceFont
         End If
         
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Then
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then
             eControl.updateAgainstCurrentTheme
         End If
                         
