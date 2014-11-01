@@ -596,12 +596,17 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         mHeight = firstFont.getHeightOfString(drawString) + linePadding
         drawString = creditList(blockIndex).URL
         
+        'Detach the first font from the DC
+        firstFont.releaseFromDC
+        
         If isHovered Then
             highlightFont.attachToDC backDIB.getDIBDC
             highlightFont.fastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
+            highlightFont.releaseFromDC
         Else
             secondFont.attachToDC backDIB.getDIBDC
             secondFont.fastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
+            secondFont.releaseFromDC
         End If
         
         'If the user's mouse is over the current block, highlight the block
