@@ -308,15 +308,9 @@ End Sub
 'A roughly identical function to fastRenderText, above, but with a constraining rect and expansion to multiple lines as necessary
 Public Sub fastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String)
     
-    'IMPORTANT NOTE!  Per MSDN, the following caveat is made regarding the source string pointer:
-    '  "A pointer to the string that specifies the text to be drawn. If the nCount parameter is -1, the string must
-    '   be null-terminated.  If uFormat includes DT_MODIFYSTRING, the function could add up to four additional characters
-    '   to this string. The buffer containing the string should be large enough to accommodate these extra characters."
-    '
-    'Because the string may be modified to fit within the clipping boundaries, we need to extend the string array by four chars.
+    'Multiline text does not need ellipses, so this function is actually simpler than its single-line counterpart
     Dim srcStringLen As Long
     srcStringLen = Len(srcString)
-    srcString = srcString & ChrW(0) & ChrW(0) & ChrW(0) & ChrW(0)
     
     Dim tmpRect As RECT
     tmpRect.Left = dstX
@@ -332,13 +326,13 @@ Public Sub fastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As
     Select Case curTextAlignment
         
         Case TA_LEFT
-            DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORDBREAK Or DT_MODIFYSTRING Or DT_END_ELLIPSIS Or DT_LEFT
+            DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORDBREAK Or DT_LEFT Or DT_TOP
             
         Case TA_RIGHT
-            DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORDBREAK Or DT_MODIFYSTRING Or DT_END_ELLIPSIS Or DT_RIGHT
+            DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORDBREAK Or DT_RIGHT Or DT_TOP
             
         Case TA_CENTER
-            DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORDBREAK Or DT_MODIFYSTRING Or DT_END_ELLIPSIS Or DT_CENTER
+            DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORDBREAK Or DT_CENTER Or DT_TOP
         
     End Select
     
@@ -515,7 +509,7 @@ Public Function getHeightOfWordwrapString(ByVal srcString As String, ByVal strWi
     tmpRect.Bottom = 0
     tmpRect.Right = strWidth - 1
     
-    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
+    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
     
     getHeightOfWordwrapString = tmpRect.Bottom
 

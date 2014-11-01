@@ -291,13 +291,11 @@ End Sub
 'When the font used for the label changes in some way, it can be recreated (refreshed) using this function.  Note that font
 ' creation is expensive, so it's worthwhile to avoid this step as much as possible.
 Private Sub refreshFont()
-
-    Debug.Print "refresh font requested"
-
+    
     Dim fontRefreshRequired As Boolean
     fontRefreshRequired = curFont.hasFontBeenCreated
     
-    'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be refreshed in a final step.
+    'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
     
     'Font face is always set automatically, to match the current program-wide font
     If (Len(g_InterfaceFont) > 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
@@ -323,7 +321,7 @@ Private Sub refreshFont()
         curFont.setFontItalic m_FontItalic
     End If
     
-    'Request a new font
+    'Request a new font, if one or more settings have changed
     If fontRefreshRequired Then curFont.createFontObject
     
     'Also, the back buffer needs to be rebuilt to reflect the new font metrics
@@ -591,12 +589,16 @@ Private Sub updateControlSize()
                 curFont.attachToDC m_BackBuffer.getDIBDC
                 
                 'Measure the new size
-                stringWidth = curFont.getHeightOfWordwrapString(m_Caption, origWidth)
+                stringHeight = curFont.getHeightOfWordwrapString(m_Caption, origWidth)
                 
             Loop
             
-            'm_FontSize will now contain the final size of the control's font, and curFont has been updated accordingly.
-            ' Proceed with rendering the control.
+            'Create the backbuffer if it hasn't been created before
+            If (UserControl.ScaleWidth <> m_BackBuffer.getDIBWidth) Or (UserControl.ScaleHeight > m_BackBuffer.getDIBHeight) Then
+                curFont.releaseFromDC
+                m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+                curFont.attachToDC m_BackBuffer.getDIBDC
+            End If
             
         'Resize the control horizontally to fit the caption, with no changes made to current font size.
         Case AutoSizeControl
@@ -655,7 +657,7 @@ Private Sub updateControlSize()
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
                 If g_UserModeFix Then
-                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, m_BackBuffer.getDIBWidth, stringHeight, 1
+                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 1
                 Else
                     UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
                 End If

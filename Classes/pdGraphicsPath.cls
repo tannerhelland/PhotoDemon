@@ -263,7 +263,7 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB)
     'Antialiasing is always used.  Note that this is relevant even for shapes like rectangles, in order
     ' to split the 2px line across 3 pixels.
     
-    'Obtain a GDI+ handle to the imgae
+    'Obtain a GDI+ handle to the image
     Dim hGraphics As Long
     GdipCreateFromHDC dstDIB.getDIBDC, hGraphics
     
