@@ -24,6 +24,15 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   686
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdTextBox pdTextBox1 
+      Height          =   1215
+      Left            =   120
+      TabIndex        =   1
+      Top             =   1080
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   2143
+   End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True

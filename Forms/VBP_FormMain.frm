@@ -1696,6 +1696,7 @@ Private Sub mnuDevelopers_Click(Index As Integer)
         
         'Theme Editor
         Case 2
+            showPDDialog vbModal, FormThemeEditor
     
     End Select
 
