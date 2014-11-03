@@ -574,6 +574,10 @@ Public Function getAttachedDC() As Long
     getAttachedDC = curDC
 End Function
 
+Public Function getFontHandle() As Long
+    getFontHandle = curFont
+End Function
+
 Private Sub deleteCurrentFont()
     
     'If a font was created, delete it now
