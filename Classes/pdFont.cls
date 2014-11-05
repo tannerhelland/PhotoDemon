@@ -60,8 +60,15 @@ End Type
 Private Const LOGPIXELSX = 88
 Private Const LOGPIXELSY = 90
 
-'We only deal with ANSI characters at present
+'Previously we only suppored an ANSI charset, but now we want to default to the system value
 Private Const ANSI_CHARSET = 0
+Private Const DEFAULT_CHARSET = 1
+
+'Pitch and family constants
+Private Const DEFAULT_PITCH = 0
+Private Const FIXED_PITCH = 1
+Private Const VARIABLE_PITCH = 2
+'TODO - list the family constants, which are OR'D with the above values
 
 'Constants for font weight (bold)
 Private Const FW_DONTCARE As Long = 0
@@ -534,7 +541,7 @@ Private Sub Class_Initialize()
         .lfItalic = False
         .lfUnderline = False
         .lfStrikeOut = False
-        .lfCharSet = ANSI_CHARSET
+        .lfCharSet = DEFAULT_CHARSET
         .lfOutPrecision = 0
         .lfClipPrecision = 0
         .lfQuality = CLEARTYPE_QUALITY

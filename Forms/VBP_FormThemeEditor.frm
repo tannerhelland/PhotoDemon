@@ -24,36 +24,26 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   686
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdTextBox pdTextBox1 
-      Height          =   1215
+   Begin PhotoDemon.pdLabel pdLabelTitle 
+      Height          =   285
+      Index           =   0
       Left            =   120
-      TabIndex        =   1
-      Top             =   1080
+      Top             =   120
+      Width           =   3030
+      _ExtentX        =   5345
+      _ExtentY        =   503
+      Caption         =   "Unicode text box for testing:"
+      FontSize        =   12
+      Layout          =   2
+   End
+   Begin PhotoDemon.pdTextBox pdTextBox1 
+      Height          =   2175
+      Left            =   240
+      TabIndex        =   0
+      Top             =   480
       Width           =   5655
       _ExtentX        =   9975
-      _ExtentY        =   2143
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "current theme path:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   120
-      TabIndex        =   0
-      Top             =   120
-      Width           =   2115
+      _ExtentY        =   3836
    End
 End
 Attribute VB_Name = "FormThemeEditor"
