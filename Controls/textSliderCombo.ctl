@@ -602,9 +602,6 @@ Private Sub UserControl_Initialize()
         Set cKeyEvents = New pdInputKeyboard
         cKeyEvents.createKeyboardTracker "Slider/Text UC", picScroll.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
         
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    Else
-        Set g_Themer = New pdVisualThemes
     End If
     
     'Update the control-level track and slider diameters to reflect current screen DPI
@@ -756,13 +753,6 @@ Private Sub UserControl_Show()
         
 End Sub
 
-Private Sub UserControl_Terminate()
-    
-    'When the control is terminated, release the subclassing used for transparent backgrounds
-    'If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.releaseContainerSubclass UserControl.hWnd
-    
-End Sub
-
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
     'Store all associated properties
@@ -816,9 +806,11 @@ Private Sub redrawSlider()
     
     'Pull relevant colors from the global themer object
     Dim trackColor As Long, sliderBackgroundColor As Long, sliderEdgeColor As Long
-    trackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-    sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-    sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+    If g_UserModeFix Then
+        trackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+        sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+    End If
     
     'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
     Dim relevantSliderPosX As Single, relevantSliderPosY As Single
@@ -905,8 +897,10 @@ Private Sub drawSliderKnob()
         
         'Retrieve colors from the global themer object
         Dim sliderBackgroundColor As Long, sliderEdgeColor As Long
-        sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-        sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+        If g_UserModeFix Then
+            sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+        End If
         
         'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
         Dim relevantSliderPosX As Single, relevantSliderPosY As Single

@@ -222,7 +222,7 @@ Public Type Guid
 End Type
 
 Private Declare Function CoCreateGuid Lib "ole32" (ByRef pGuid As Guid) As Long
-Private Declare Function StringFromGUID2 Lib "ole32" (ByRef rGuid As Any, ByVal lpstrClsId As Long, ByVal cbMax As Long) As Long
+Private Declare Function StringFromGUID2 Lib "ole32" (ByRef rguid As Any, ByVal lpstrClsId As Long, ByVal cbMax As Long) As Long
 
 'Windows constants for retrieving a unique temporary filename
 Private Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long

@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl pdTextBox 
+   Appearance      =   0  'Flat
    BackColor       =   &H0080FF80&
    ClientHeight    =   975
    ClientLeft      =   0
@@ -27,8 +28,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Text Box control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 03/November/14
-'Last updated: 03/November/14
-'Last update: initial build
+'Last updated: 05/November/14
+'Last update: continued work on initial build
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -42,7 +43,14 @@ Attribute VB_Exposed = False
 ' 1) Unlike other PD custom controls, this one is simply a wrapper to a system text box.
 ' 2) The idea with this control was not to expose all text box properties, but simply those most relevant to PD.
 ' 3) Focus is the real nightmare for this control, and as you will see, some complicated tricks are required to work
-'    around VB's handling of tabstops in particular.
+'    around VB's handling of tabstops in particular.  (Focus is still on my to-do list!)
+' 4) To allow use of arrow keys and other control keys, this control must hook the keyboard.  (If it does not, VB will
+'    eat control keypresses, because it doesn't know about windows created via the API!)  A byproduct of this is that
+'    accelerators flat-out WILL NOT WORK while this control has focus.  I haven't yet settled on a good way to handle
+'    this; what I may end up doing is manually forwarding any key combinations that use Alt to the default window
+'    handler, but I'm not sure this will help.  TODO!
+' 5) Dynamic hooking can occasionally cause trouble in the IDE, particularly when used with break points.  It should
+'    be fine once compiled.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -121,7 +129,7 @@ Private Const ES_WANTRETURN = &H1000
 'Updating the font is done via WM_SETFONT
 Private Const WM_SETFONT = &H30
 
-'Many APIs are required for this control
+'Window creation/destruction APIs
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (ByVal dwExStyle As Long, ByVal lpClassName As Long, ByVal lpWindowName As Long, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 
@@ -151,14 +159,31 @@ End Type
 ' return values, we simply declare one at a module level.
 Private Declare Function GetKeyboardState Lib "user32" (ByRef pbKeyState As Byte) As Long
 Private m_keyStateData(0 To 255) As Byte
+Private m_OverrideDoubleCheck As Boolean
 
 Private Declare Function ToUnicode Lib "user32" (ByVal uVirtKey As Long, ByVal uScanCode As Long, lpKeyState As Byte, ByVal pwszBuff As Long, ByVal cchBuff As Long, ByVal wFlags As Long) As Long
+Private Declare Function MapVirtualKey Lib "user32" Alias "MapVirtualKeyW" (ByVal uCode As Long, ByVal uMapType As Long) As Long
+Private Declare Function PostMessage Lib "user32" Alias "PostMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
 Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageW" (lpMsg As winMsg) As Long
 Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageW" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function timeGetTime Lib "winmm" () As Long
 
+Private Const MAPVK_VK_TO_VSC As Long = &H0
 Private Const WM_KEYDOWN As Long = &H100
+Private Const WM_KEYUP As Long = &H101
 Private Const WM_CHAR As Long = &H102
+Private Const WM_UNICHAR As Long = &H109
+Private Const WM_SETFOCUS As Long = &H7
+Private Const WM_KILLFOCUS As Long = &H8
 Private cSubclass As cSelfSubHookCallback
+
+'To avoid the need for special handling of system keys, we'll re-post WM_KEYDOWN messages that don't contain Unicode chars.
+' (This allows things like arrow keys and accelerators to pass through untouched.)
+Private m_UnicodeCheckFailed As Boolean
+
+'Dynamic hooking requires us to track focus events with care.  When focus is lost, we must relinquish control of the keyboard.
+' This value will be set to TRUE if the tracked object currently has focus.
+Private m_HasFocus As Boolean
 
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
@@ -279,7 +304,7 @@ Private Function createEditBox() As Boolean
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsEditControl As Long
     flagsWinStyle = WS_VISIBLE Or WS_CHILD
     flagsWinStyleExtended = 0
-    flagsEditControl = ES_AUTOHSCROLL 'Or ES_NOHIDESEL
+    flagsEditControl = ES_AUTOHSCROLL Or ES_AUTOVSCROLL Or ES_MULTILINE 'Or ES_NOHIDESEL
     
     m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
         0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
@@ -288,7 +313,7 @@ Private Function createEditBox() As Boolean
     If g_UserModeFix Then
         If Not cSubclass Is Nothing Then
             cSubclass.ssc_Subclass m_EditBoxHwnd, 0, 1, Me, True, True, True
-            cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN
+            cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS
         Else
             Debug.Print "subclasser could not be initialized for text box!"
         End If
@@ -306,7 +331,7 @@ End Function
 Private Function destroyEditBox() As Boolean
 
     If m_EditBoxHwnd <> 0 Then
-        cSubclass.ssc_UnSubclass m_EditBoxHwnd
+        If Not cSubclass Is Nothing Then cSubclass.ssc_UnSubclass m_EditBoxHwnd
         DestroyWindow m_EditBoxHwnd
     End If
     
@@ -384,6 +409,116 @@ Public Sub updateAgainstCurrentTheme()
     
 End Sub
 
+'Given a virtual keycode, return TRUE if the keycode is a command key that must be manually forwarded to an edit box.  Command keys include
+' arrow keys at present, but in the future, additional keys can be added to this list.
+'
+'NOTE FOR OUTSIDE USERS!  These key constants are declared publicly in PD, because they are used many places.  You can find virtual keycode
+' declarations in the Public_Constants module, or at this MSDN link:
+' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
+Private Function doesVirtualKeyRequireSpecialHandling(ByVal vKey As Long) As Boolean
+    
+    Select Case vKey
+    
+        Case VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
+            doesVirtualKeyRequireSpecialHandling = True
+        
+        Case Else
+            doesVirtualKeyRequireSpecialHandling = False
+    
+    End Select
+    
+End Function
+
+'This routine MUST BE KEPT as the next-to-last routine for this form. Its ordinal position determines its ability to hook properly.
+Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal lHookType As eHookType, ByRef lParamUser As Long)
+'*************************************************************************************************
+' http://msdn2.microsoft.com/en-us/library/ms644990.aspx
+'* bBefore    - Indicates whether the callback is before or after the next hook in chain.
+'* bHandled   - In a before next hook in chain callback, setting bHandled to True will prevent the
+'*              message being passed to the next hook in chain and (if set to do so).
+'* lReturn    - Return value. For Before messages, set per the MSDN documentation for the hook type
+'* nCode      - A code the hook procedure uses to determine how to process the message
+'* wParam     - Message related data, hook type specific
+'* lParam     - Message related data, hook type specific
+'* lHookType  - Type of hook calling this callback
+'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
+'*************************************************************************************************
+    
+    
+    If lHookType = WH_KEYBOARD Then
+    
+        bHandled = False
+        
+        'MSDN states that negative codes must be passed to the next hook, without processing
+        ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
+        If nCode >= 0 Then
+        
+            'Before proceeding, cache the status of all 256 keyboard keys.  This is important for non-Latin keyboards, which can
+            ' produce Unicode characters in a variety of ways.  (For example, by holding down multiple keys at once.)  If we end
+            ' up forwarding a key event to the default WM_KEYDOWN handler, it will need this information in order to parse any
+            ' IME input.
+            GetKeyboardState m_keyStateData(0)
+            
+            'Bit 31 of lParam is 0 if a key is being pressed, and 1 if it is being released.  We use this to raise
+            ' separate KeyDown and KeyUp events, as necessary.
+            If lParam < 0 Then
+            
+                'IDE and compiled programs display very different behavior when keyhooking, due to the extra wndProcs used
+                ' by VB's IDE to catch debugging actions.  To cut down on IDE problems, I'm using two separate code paths
+                ' here, but the compiled one is the one you'll want to pay attention to, as the uncompiled one simply
+                ' ties into the edit box's subclassed wndProc directly.
+                If g_IsProgramCompiled Then
+                    
+                    'The default key handler works just fine for character keys.  However, dialog keys (e.g. arrow keys) get eaten
+                    ' by VB, so we must manually catch them in this hook, and forward them direct to the edit control.
+                    If doesVirtualKeyRequireSpecialHandling(wParam) Then
+                    
+                        'WM_KEYUP requires that certain bits be set.  See http://msdn.microsoft.com/en-us/library/windows/desktop/ms646281%28v=vs.85%29.aspx
+                        If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
+                            SendMessage m_EditBoxHwnd, WM_KEYUP, wParam, ByVal (lParam And &HDFFFFF81 Or &HC0000000)
+                            bHandled = True
+                        End If
+                    
+                    End If
+                    
+                Else
+                    myWndProc True, bHandled, lReturn, m_EditBoxHwnd, WM_KEYUP, wParam, ByVal (lParam And &HDFFFFF81 Or &HC0000000), 0
+                End If
+                
+            Else
+            
+                If g_IsProgramCompiled Then
+                    
+                    'The default key handler works just fine for character keys.  However, dialog keys (e.g. arrow keys) get eaten
+                    ' by VB, so we must manually catch them in this hook, and forward them direct to the edit control.
+                    If doesVirtualKeyRequireSpecialHandling(wParam) Then
+                    
+                        'WM_KEYDOWN requires that certain bits be set.  See http://msdn.microsoft.com/en-us/library/windows/desktop/ms646280%28v=vs.85%29.aspx
+                        SendMessage m_EditBoxHwnd, WM_KEYDOWN, wParam, ByVal (lParam And &H51111111)
+                        bHandled = True
+                        
+                    End If
+                    
+                Else
+                    myWndProc True, bHandled, lReturn, m_EditBoxHwnd, WM_KEYDOWN, wParam, ByVal (lParam And &H51111111), 0
+                End If
+            End If
+            
+        End If
+                
+        'Per MSDN, return the value of CallNextHookEx, contingent on whether or not we handled the keypress internally.
+        ' Note that if we do not manually handle a keypress, this behavior allows the default keyhandler to deal with
+        ' the pressed keys (and raise its own WM_CHAR events, etc).
+        If (Not bHandled) Then
+            lReturn = CallNextHookEx(0, nCode, wParam, ByVal lParam)
+        Else
+            lReturn = 1
+        End If
+            
+    End If
+    
+End Sub
+
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
                       ByRef bHandled As Boolean, _
@@ -411,7 +546,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '*************************************************************************************************
     
     'Now comes a really messy bit of VB-specific garbage.
-    
+    '
     'Normally, a Unicode window (e.g. one created with CreateWindowW/ExW) automatically receives Unicode window messages.
     ' Keycodes are an exception to this, because they use a unique message chain that also involves the parent window
     ' of the Unicode window - and in the case of VB, that parent window's message pump is *not* Unicode-aware, so it
@@ -424,91 +559,161 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     ' parent window must be involved in the translation step, because it is most likely the window with an accelerator table (as
     ' would be used for menu shortcuts, among other things).  So a child window can't avoid its parent window being involved in
     ' key event handling.
-    
+    '
     'Anyway, the moral of the story is that we have to do a shitload of extra work to bypass the default message translator.
-    ' Without this, IME entry methods (easily tested via the Windows on-screen keyboard and a language like Kazakh) result in
+    ' Without this, IME entry methods (easily tested via the Windows on-screen keyboard and some non-Latin language) result in
     ' ???? chars, despite use of a Unicode window - and that ultimately defeats the whole point of a Unicode text box, no?
+    Select Case uMsg
     
-    'Manually dispatch WM_KEYDOWN messages
-    If uMsg = WM_KEYDOWN Then
-        
-        'Start by retrieving a full copy of the WM_KEYDOWN message contents, and also removing the WM_KEYDOWN message from the stack.
-        Dim tmpMsg As winMsg
-        If PeekMessage(tmpMsg, m_EditBoxHwnd, 0, 0, 1) <> 0 Then
+        'Manually dispatch WM_KEYDOWN messages
+        Case WM_KEYDOWN
             
-            'Note that PeekMessage, above, should never fail since we are literally calling it from within the wndProc - but better safe
-            ' than sorry, right??
+            'Because we will be dispatching our own WM_CHAR messages with any processed Unicode characters, we must manually
+            ' assemble a full window message.  All messages will be sent to the API edit box we've created, so we can set its
+            ' hWnd just once, at the start of the dispatch loop.
+            Dim tmpMsg As winMsg
+            tmpMsg.hWnd = m_EditBoxHwnd
+            tmpMsg.sysMsg = WM_CHAR
             
-            'Next, we need to retrieve the status of all 256 keyboard keys.  This is important for non-Latin keyboards, which can
-            ' produce Unicode characters in a variety of ways.  (For example, by holding down multiple keys at once.)
-            If GetKeyboardState(m_keyStateData(0)) <> 0 Then
+            'Normally, we would next retrieve the status of all 256 keyboard keys.  However, our hook proc, above, has already
+            ' done this for us.  The results are cached inside m_keyStateData().
             
-                'Next, we need to prepare a string buffer to receive the Unicode translation of the current virtual key.
-                ' This is tricky because ToUnicode/Ex do not specify a max buffer size they may write.  Michael Kaplan's
-                ' definitive article series on this topic (dead link on MSDN; I found it here: http://www.siao2.com/2006/03/23/558674.aspx)
-                ' uses a 10-char buffer.  That should be sufficient for our purposes as well.
-                Dim tmpString As String
-                tmpString = String$(10, vbNullChar)
-                
-                'Perform a Unicode translation using the pressed virtual key (wParam) and the buffer of all current key states
-                Dim unicodeResult As Long
-                unicodeResult = ToUnicode(wParam, 0, m_keyStateData(0), StrPtr(tmpString), Len(tmpString), 0)
-                
-                'ToUnicode has four possible return values:
-                ' -1: the char is an accent or diacritic.  If possible, it has been translated to a standalone spacing version
-                '     (always a UTF-16 entry point), and placed in the output buffer.  For our purposes, we'll just retrieve the
-                '     UTF-16 entry point and call it good.
-                ' 0: function failed
-                ' 1: success; a single Unicode character was written to the buffer
-                ' 2+: success; multiple Unicode characters were written to the buffer, typically when a matching ligature was
-                '    not found for a relevant multi-glyph input.  This is a valid return, and all specified characters should
-                '    be sent to the text box, if possible.
-                If unicodeResult = -1 Then unicodeResult = 2
-                                
-                'IMPORTANT!  The string buffer can contain more values than the return value specified, so it's important to
-                ' shrink the buffer using the *return value*, and *not the buffer's actual contents*.
-                Select Case unicodeResult
-                
-                    'Dead character, meaning a single UTF-16 entry point.  This case was forcibly forwarded to type 2,
-                    ' above, so this case will never raise - I just include it here for reference.
-                    Case -1
-                    
-                    'Failure; no Unicode result
-                    Case 0
-                    
-                    '1 to 4 chars
-                    Case 1 To 4
-                    
-                        'Retrieve the relevant portion of the string
-                        tmpString = Left$(tmpString, unicodeResult)
+            'Next, we need to prepare a string buffer to receive the Unicode translation of the current virtual key.
+            ' This is tricky because ToUnicode/Ex do not specify a max buffer size they may write.  Michael Kaplan's
+            ' definitive article series on this topic (dead link on MSDN; I found it here: http://www.siao2.com/2006/03/23/558674.aspx)
+            ' uses a 10-char buffer.  That should be sufficient for our purposes as well.
+            Dim tmpString As String
+            tmpString = String$(10, vbNullChar)
+            
+            'Perform a Unicode translation using the pressed virtual key (wParam) and the buffer of all current key states.
+            Dim unicodeResult As Long
+            unicodeResult = ToUnicode(wParam, MapVirtualKey(wParam, MAPVK_VK_TO_VSC), m_keyStateData(0), StrPtr(tmpString), Len(tmpString), 0)
+            
+            'I have not yet sorted out the handling of dead keys, so ignore this m_OverrideDoubleCheck branch for now.
+            If Not m_OverrideDoubleCheck Then
+                unicodeResult = ToUnicode(wParam, MapVirtualKey(wParam, MAPVK_VK_TO_VSC), m_keyStateData(0), StrPtr(tmpString), Len(tmpString), 0)
+            Else
+                m_OverrideDoubleCheck = False
+            End If
                         
-                        'This is the problematic part.  For single character strings, AscW should work just fine.  However, I'm not sure
-                        ' what to do for longer buffers.
-                        ' TODO: investigate http://www.cyberactivex.com/UnicodeTutorialVb.htm#SurrogatePairs as a possible solution
-                        tmpMsg.wParam = CLng(AscW(tmpString))
+            'ToUnicode has four possible return values:
+            ' -1: the char is an accent or diacritic.  If possible, it has been translated to a standalone spacing version
+            '     (always a UTF-16 entry point), and placed in the output buffer.  Generally speaking, we don't want to treat
+            '     this as an actual character until we receive the *next* character input.  This allows us to properly assemble
+            '     mixed characters (for example `a should map to à, while `c maps to just `c - but we can't know how to use a
+            '     dead key until the next keypress is received).  This behavior is affected by the current keyboard layout.
+            '
+            ' 0: function failed.  This is not a bad thing; many East Asian IMEs will merge multiple keypresses into a single
+            '    character, so the preceding keypresses will not return anything.
+            '
+            ' 1: success.  A single Unicode character was written to the buffer.
+            
+            ' 2+: also success.  Multiple Unicode characters were written to the buffer, typically when a matching ligature was
+            '    not found for a relevant multi-glyph input.  This is a valid return, and all characters in the buffer should
+            '    be sent to the text box.  IMPORTANT NOTE: the string buffer can contain more values than the return value specifies,
+            '    so it's important to handle the buffer using *this return value*, and *not the buffer's actual contents*.
+            
+            'We will now proceed to parse the results of ToUnicode, using its return value as our guide.
+            Select Case unicodeResult
+            
+                'Dead character, meaning an accent or other diacritic that will (possibly) be merged with the next keypress to form
+                ' a single accented character.
+                '
+                'This case is extremely problematic, and there is no good consensus on how to handle it.  To quote Hans Passant
+                ' (http://stackoverflow.com/questions/6226374/tounicodeex-skip-keyboard-buffer):
+                ' "Dead keys are an unsolved problem."
+                '
+                'I'm hoping to solve this problem eventually, but for now, it does not work reliably.
+                Case -1
+                
+                    Message "deadchar: " & Trim$(tmpString), "DONOTLOG"
+                    m_OverrideDoubleCheck = True
+                    
+                    'Possible solutions include:
+                    ' - forcibly flushing the key buffer by using repeated ToUnicode calls
+                    ' - caching the dead VK value, and re-inserting it on a subsequent step as necessary
+                    '
+                    
+                'Failure; no Unicode result.  This can happen if an IME is still assembling characters, and no action
+                ' is required on our part.
+                Case 0
+                    
+                '1+ chars
+                Case 1 To 10
+                    
+                    Message "unicode translation succeeded: " & unicodeResult, "DONOTLOG"
+                    
+                    'Send each processed Unicode character in turn, using DispatchMessage to completely bypass VB's
+                    ' default handler.  This prevents forcible down-conversion to ANSI.
+                    Dim i As Long, tmpLong As Long
+                    For i = 1 To unicodeResult
                         
-                        'Convert the message type to WM_CHAR
-                        tmpMsg.sysMsg = WM_CHAR
+                        'Retrieve the unsigned Int value of this string char
+                        CopyMemory tmpLong, ByVal StrPtr(tmpString) + ((i - 1) * 2), 2
                         
-                        'Dispatch the message
+                        'Assemble a new window message, passing the retrieved string char as the wParam
+                        tmpMsg.wParam = tmpLong
+                        tmpMsg.lParam = lParam
+                        tmpMsg.msgTime = GetTickCount()
+                        
+                        'Dispatch the message directly, bypassing TranslateMessage entirely.  NOTE!  This prevents accelerators
+                        ' from working while the text box has focus, but I do not currently know a better way around this.  A custom
+                        ' accelerator solution for PD would work fine, but we would need to do our own mapping from inside this proc.
                         DispatchMessage tmpMsg
                         
-                        'Note that the message was handled successfully
-                        bHandled = True
-                        lReturn = 0
+                    Next i
                     
-                    Case Else
-                        Debug.Print "Excessively large Unicode buffer value returned: " & unicodeResult
+                    'Remove the WM_KEYDOWN message from the queue, to prevent other handlers from getting it.
+                    PeekMessage tmpMsg, m_EditBoxHwnd, 0, 0, 1
                     
-                End Select
+                    'Note that the message was handled successfully
+                    bHandled = True
+                    lReturn = 0
                 
+                'This case should never fire
+                Case Else
+                    Debug.Print "Excessively large Unicode buffer value returned: " & unicodeResult
+                
+            End Select
+            
+        'When the control receives focus, initialize a keyboard hook.  This prevents accelerators from working, but it is the
+        ' only way to bypass VB's internal message translator, which will forcibly convert certain Unicode chars to ANSI.
+        Case WM_SETFOCUS
+        
+            'Check for an existing hook
+            If Not m_HasFocus Then
+            
+                'No hook exists.  Hook the control now.
+                'Debug.Print "Installing keyboard hook for API edit box due to WM_SETFOCUS"
+                cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_EditBoxHwnd, 2, Me, , True
+                
+                'Note that this window is now active
+                m_HasFocus = True
+                
+            Else
+                Debug.Print "API edit box just gained focus, but a keyboard hook is already installed??"
+            End If
+        
+        Case WM_KILLFOCUS
+        
+            'Check for an existing hook
+            If m_HasFocus Then
+                
+                'A hook exists.  Uninstall it now.
+                'Debug.Print "Uninstalling keyboard hook for API edit box due to WM_KILLFOCUS"
+                cSubclass.shk_UnHook WH_KEYBOARD
+                    
+                'Note that this window is now considered inactive
+                m_HasFocus = False
+                
+            Else
+                Debug.Print "API edit box just lost focus, but no keyboard hook was ever installed??"
             End If
             
-        Else
-            Debug.Print "peek message failed"
-        End If
-        
-    End If
+        'Other messages??
+        Case Else
+    
+    End Select
 
 
 
@@ -519,5 +724,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '   add this warning banner to the last routine in your class
 ' *************************************************************
 End Sub
+
 
 
