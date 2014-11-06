@@ -68,7 +68,12 @@ Private Const DEFAULT_CHARSET = 1
 Private Const DEFAULT_PITCH = 0
 Private Const FIXED_PITCH = 1
 Private Const VARIABLE_PITCH = 2
-'TODO - list the family constants, which are OR'D with the above values
+Private Const FF_DONTCARE = 0    'Any family works
+Private Const FF_ROMAN = 16      'Variable stroke width + serifs
+Private Const FF_SWISS = 32      'Variable stroke width + sans-serif
+Private Const FF_MODERN = 48     'Constant stroke width + serif AND sans-serif
+Private Const FF_SCRIPT = 64
+Private Const FF_DECORATIVE = 80
 
 'Constants for font weight (bold)
 Private Const FW_DONTCARE As Long = 0
@@ -86,6 +91,11 @@ Private Const FW_EXTRABOLD As Long = 800
 Private Const FW_ULTRABOLD As Long = 800
 Private Const FW_HEAVY As Long = 900
 Private Const FW_BLACK As Long = 900
+
+'Font precision
+Private Const OUT_DEFAULT_PRECIS As Long = 0
+Private Const OUT_CHARACTER_PRECIS As Long = 2
+Private Const OUT_DEVICE_PRECIS As Long = 5
 
 'Font quality
 Private Const DEFAULT_QUALITY As Long = 0
@@ -533,19 +543,30 @@ Private Sub Class_Initialize()
     'When the class is initialized, set up a default PhotoDemon font.  Face is automatically set per
     ' the current OS, so external functions do not need to set this manually.
     With currentLogFont
+    
         .lfHeight = convertFontSize(11)
         .lfWidth = 0        'This will automatically set the width based on the height
+        
         .lfEscapement = 0   'Used for rotation; not utilized at present
         .lfOrientation = 0  'An additional rotation parameter; not utilized at present
+        
         .lfWeight = FW_REGULAR
+        
         .lfItalic = False
         .lfUnderline = False
         .lfStrikeOut = False
+        
         .lfCharSet = DEFAULT_CHARSET
+        
         .lfOutPrecision = 0
         .lfClipPrecision = 0
         .lfQuality = CLEARTYPE_QUALITY
-        .lfPitchAndFamily = 0
+        
+        'Ideally, we should allow the caller to specify pitch and family requests.  I may add this in the future.
+        ' For PD's purposes, however, we want to fallback to a variable width, non-serifed font if (for some reason)
+        ' Segoe and Tahoma aren't available on the target machine.
+        .lfPitchAndFamily = VARIABLE_PITCH Or FF_SWISS
+        
         If g_UserModeFix Then
             m_origFontFace = g_InterfaceFont
         Else
