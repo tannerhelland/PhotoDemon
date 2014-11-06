@@ -24,6 +24,42 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   686
    ShowInTaskbar   =   0   'False
+   Begin VB.CommandButton cmdTextBoxTesting 
+      Caption         =   "resize control"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Index           =   1
+      Left            =   3480
+      TabIndex        =   2
+      Top             =   4320
+      Width           =   3015
+   End
+   Begin VB.CommandButton cmdTextBoxTesting 
+      Caption         =   "toggle visibility"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Index           =   0
+      Left            =   240
+      TabIndex        =   1
+      Top             =   4320
+      Width           =   3015
+   End
    Begin PhotoDemon.pdLabel pdLabelTitle 
       Height          =   285
       Index           =   0
@@ -40,10 +76,22 @@ Begin VB.Form FormThemeEditor
       Height          =   2175
       Left            =   240
       TabIndex        =   0
-      Top             =   480
+      Top             =   600
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   3836
+   End
+   Begin PhotoDemon.pdLabel pdLabelTitle 
+      Height          =   285
+      Index           =   1
+      Left            =   120
+      Top             =   3840
+      Width           =   2580
+      _ExtentX        =   4551
+      _ExtentY        =   503
+      Caption         =   "text box testing options:"
+      FontSize        =   12
+      Layout          =   2
    End
 End
 Attribute VB_Name = "FormThemeEditor"
@@ -53,3 +101,19 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+Private Sub cmdTextBoxTesting_Click(Index As Integer)
+    
+    Select Case Index
+        
+        '0 - toggle visibility
+        Case 0
+            pdTextBox1.Visible = Not pdTextBox1.Visible
+            
+        '1 - resize text box
+        Case 1
+            Randomize Timer
+            pdTextBox1.Move pdTextBox1.Left, pdTextBox1.Top, pdTextBox1.Width + ((Rnd * 10) - 5), pdTextBox1.Height + ((Rnd * 10) - 5)
+        
+    End Select
+    
+End Sub

@@ -129,9 +129,30 @@ Private Const ES_WANTRETURN = &H1000
 'Updating the font is done via WM_SETFONT
 Private Const WM_SETFONT = &H30
 
-'Window creation/destruction APIs
+'These constants can be used as the second parameter of the ShowWindow API function
+Private Enum showWindowOptions
+    SW_HIDE = 0
+    SW_SHOWNORMAL = 1
+    SW_SHOWMINIMIZED = 2
+    SW_SHOWMAXIMIZED = 3
+    SW_SHOWNOACTIVATE = 4
+    SW_SHOW = 5
+    SW_MINIMIZE = 6
+    SW_SHOWMINNOACTIVE = 7
+    SW_SHOWNA = 8
+    SW_RESTORE = 9
+    SW_SHOWDEFAULT = 10
+    SW_FORCEMINIMIZE = 11
+End Enum
+
+#If False Then
+    Private Const SW_HIDE = 0, SW_SHOWNORMAL = 1, SW_SHOWMINIMIZED = 2, SW_SHOWMAXIMIZED = 3, SW_SHOWNOACTIVATE = 4, SW_SHOW = 5, SW_MINIMIZE = 6, SW_SHOWMINNOACTIVE = 7, SW_SHOWNA = 8, SW_RESTORE = 9, SW_SHOWDEFAULT = 10, SW_FORCEMINIMIZE = 11
+#End If
+
+'System window handling APIs
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (ByVal dwExStyle As Long, ByVal lpClassName As Long, ByVal lpWindowName As Long, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
 
 'Handle to the system edit box wrapped by this control
 Private m_EditBoxHwnd As Long
@@ -255,11 +276,8 @@ Public Property Let FontSize(ByVal newSize As Single)
 End Property
 
 'When the user control is hidden, we must hide the edit box window as well
-' TODO!
 Private Sub UserControl_Hide()
-    
-    
-    
+    If m_EditBoxHwnd <> 0 Then ShowWindow m_EditBoxHwnd, SW_HIDE
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -305,12 +323,15 @@ Private Sub UserControl_Show()
 
     'If we have not yet created the edit box, do so now
     If m_EditBoxHwnd = 0 Then
+        
+        If Not createEditBox() Then
+            Debug.Print "Edit box could not be created!"
+        End If
     
-        If Not createEditBox() Then Debug.Print "Edit box could not be created!"
-    
-    'The edit box has already been created, so we just need to show it
+    'The edit box has already been created, so we just need to show it.  Note that we explicitly set flags to NOT activate
+    ' the window, as we don't want it stealing focus.
     Else
-    
+        If m_EditBoxHwnd <> 0 Then ShowWindow m_EditBoxHwnd, SW_SHOWNA
     End If
     
     'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
