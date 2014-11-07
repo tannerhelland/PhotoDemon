@@ -2280,7 +2280,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         ' Thus, you have literally no way to track whether the option is used, except to track window focus.
                         ' Because Show Desktop causes visual corruption of child windows, we must force a redraw of all open
                         ' toolboxes; do this by manually sending a "restore" command to the main PD window.
-                        SendMessageA mainWindowHwnd, WM_SYSCOMMAND, SC_RESTORE, ByVal 0&
+                        SendMessage mainWindowHwnd, WM_SYSCOMMAND, SC_RESTORE, ByVal 0&
                         
                         'Manually refresh the main window.  (Note that curWinRect doesn't matter here.)
                         requestWindowRedraw mainWindowIndex, curWinRect

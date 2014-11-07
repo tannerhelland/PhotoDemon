@@ -7,7 +7,7 @@ Begin VB.Form FormThemeEditor
    ClientHeight    =   7050
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   10290
+   ClientWidth     =   10605
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -22,10 +22,79 @@ Begin VB.Form FormThemeEditor
    MinButton       =   0   'False
    ScaleHeight     =   470
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   686
+   ScaleWidth      =   707
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdTextBoxTesting 
-      Caption         =   "resize control"
+      Caption         =   "toggle multiline"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Index           =   3
+      Left            =   2400
+      TabIndex        =   5
+      Top             =   5040
+      Width           =   2055
+   End
+   Begin VB.CommandButton cmdTextBoxTesting 
+      Caption         =   "append random chars"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Index           =   2
+      Left            =   240
+      TabIndex        =   4
+      Top             =   5040
+      Width           =   2055
+   End
+   Begin VB.Timer Timer1 
+      Interval        =   1000
+      Left            =   7440
+      Top             =   2880
+   End
+   Begin PhotoDemon.pdLabel pdLabelVerify 
+      Height          =   1695
+      Left            =   4800
+      Top             =   4200
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   2990
+      Caption         =   ""
+      FontSize        =   9
+      Layout          =   1
+   End
+   Begin VB.CommandButton cmdTextBoxFake 
+      Caption         =   "useless command button with TabIndex 0. (UC is TabIndex 1.)"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Left            =   240
+      TabIndex        =   0
+      Top             =   6000
+      Width           =   6135
+   End
+   Begin VB.CommandButton cmdTextBoxTesting 
+      Caption         =   "resize edit box"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -37,10 +106,10 @@ Begin VB.Form FormThemeEditor
       EndProperty
       Height          =   615
       Index           =   1
-      Left            =   3480
-      TabIndex        =   2
+      Left            =   2400
+      TabIndex        =   3
       Top             =   4320
-      Width           =   3015
+      Width           =   2055
    End
    Begin VB.CommandButton cmdTextBoxTesting 
       Caption         =   "toggle visibility"
@@ -56,9 +125,9 @@ Begin VB.Form FormThemeEditor
       Height          =   615
       Index           =   0
       Left            =   240
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   4320
-      Width           =   3015
+      Width           =   2055
    End
    Begin PhotoDemon.pdLabel pdLabelTitle 
       Height          =   285
@@ -75,7 +144,7 @@ Begin VB.Form FormThemeEditor
    Begin PhotoDemon.pdTextBox pdTextBox1 
       Height          =   2175
       Left            =   240
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   600
       Width           =   5655
       _ExtentX        =   9975
@@ -93,6 +162,18 @@ Begin VB.Form FormThemeEditor
       FontSize        =   12
       Layout          =   2
    End
+   Begin PhotoDemon.pdLabel pdLabelTitle 
+      Height          =   285
+      Index           =   2
+      Left            =   4800
+      Top             =   3840
+      Width           =   5715
+      _ExtentX        =   6059
+      _ExtentY        =   503
+      Caption         =   "Unicode label for testing output:"
+      FontSize        =   12
+      Layout          =   2
+   End
 End
 Attribute VB_Name = "FormThemeEditor"
 Attribute VB_GlobalNameSpace = False
@@ -100,6 +181,10 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+
+Private Sub cmdTextBoxFake_GotFocus()
+    Debug.Print "Focus set to TabStop item " & cmdTextBoxFake.TabIndex
+End Sub
 
 Private Sub cmdTextBoxTesting_Click(Index As Integer)
     
@@ -113,7 +198,35 @@ Private Sub cmdTextBoxTesting_Click(Index As Integer)
         Case 1
             Randomize Timer
             pdTextBox1.Move pdTextBox1.Left, pdTextBox1.Top, pdTextBox1.Width + ((Rnd * 10) - 5), pdTextBox1.Height + ((Rnd * 10) - 5)
+            
+        '2 - set random chars
+        Case 2
+            Dim tmpString As String
+            tmpString = pdTextBox1.Text
+            
+            Dim i As Long
+            For i = 0 To 40
+                tmpString = tmpString & ChrW(Rnd * 2000)
+            Next i
+            
+            pdTextBox1.Text = tmpString
+            
+        '3 - toggle multiline
+        Case 3
+            pdTextBox1.Multiline = Not pdTextBox1.Multiline
         
     End Select
     
+End Sub
+
+Private Sub cmdTextBoxTesting_GotFocus(Index As Integer)
+    Debug.Print "Focus set to TabStop item " & cmdTextBoxTesting(Index).TabIndex
+End Sub
+
+Private Sub pdTextBox1_GotFocus()
+    Debug.Print "Focus set to UC - TabStop item " & pdTextBox1.TabIndex
+End Sub
+
+Private Sub Timer1_Timer()
+    pdLabelVerify.Caption = pdTextBox1.Text
 End Sub

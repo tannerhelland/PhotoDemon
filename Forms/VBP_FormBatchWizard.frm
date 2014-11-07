@@ -862,15 +862,6 @@ Begin VB.Form FormBatchWizard
             Width           =   8055
             _ExtentX        =   14208
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Max             =   255
             Value           =   127
             NotchPosition   =   2
@@ -1172,15 +1163,6 @@ Begin VB.Form FormBatchWizard
             Width           =   7935
             _ExtentX        =   13996
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Min             =   1
             Max             =   256
             Value           =   16
@@ -1426,15 +1408,6 @@ Begin VB.Form FormBatchWizard
             Width           =   5895
             _ExtentX        =   10398
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Min             =   1
             Max             =   99
             Value           =   90
@@ -2142,8 +2115,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'API to add a horizontal scroll bar as necessary - see http://support.microsoft.com/default.aspx?scid=kb%3Ben-us%3B192184
-Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+'API constant to add a horizontal scroll bar as necessary - see http://support.microsoft.com/default.aspx?scid=kb%3Ben-us%3B192184
 Private Const LB_SETHORIZONTALEXTENT = &H194
 
 'Used to render images onto command buttons at run-time
@@ -3316,8 +3288,7 @@ Private Sub fixHorizontalListBoxScrolling(ByRef srcListBox As ListBox, Optional 
         If lenText > maxWidth Then maxWidth = lenText
     Next i
     
-    SendMessageA srcListBox.hWnd, LB_SETHORIZONTALEXTENT, maxWidth + lenModifier, 0
-    'SendMessageA srcListBox.hWnd, WM_SETREDRAW, 1, 0
+    SendMessage srcListBox.hWnd, LB_SETHORIZONTALEXTENT, maxWidth + lenModifier, 0
     LockWindowUpdate 0
     
 End Sub

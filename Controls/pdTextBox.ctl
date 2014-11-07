@@ -28,7 +28,7 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Text Box control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 03/November/14
-'Last updated: 05/November/14
+'Last updated: 07/November/14
 'Last update: continued work on initial build
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
@@ -59,6 +59,10 @@ Attribute VB_Exposed = False
 
 
 Option Explicit
+
+'By design, this textbox raises fewer events than a standard text box
+Public Event Change()
+
 
 'Window styles
 Private Enum enWindowStyles
@@ -153,6 +157,11 @@ End Enum
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (ByVal dwExStyle As Long, ByVal lpClassName As Long, ByVal lpWindowName As Long, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
+Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
+
+'Getting/setting window data
+Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpStringPointer As Long, ByVal nMaxCount As Long) As Long
+Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As Long) As Long
 
 'Handle to the system edit box wrapped by this control
 Private m_EditBoxHwnd As Long
@@ -164,6 +173,11 @@ Private curFont As pdFont
 'Rather than use an StdFont container (which requires VB to create redundant font objects), we track font properties manually,
 ' via dedicated properties.
 Private m_FontSize As Single
+
+'The following property changes require creation/destruction of the text box.  PD will automatically backup the edit box's text
+' prior to recreating it, but note that text cannot be non-destructively saved when toggling the multiline property if linefeed
+' characters are in use!
+Private m_Multiline As Boolean
 
 'Custom subclassing is required for IME support
 Private Type winMsg
@@ -199,6 +213,7 @@ Private Const WM_KEYUP As Long = &H101
 Private Const WM_CHAR As Long = &H102
 Private Const WM_SETFOCUS As Long = &H7
 Private Const WM_KILLFOCUS As Long = &H8
+Private Const WM_SETTEXT As Long = &HC
 Private cSubclass As cSelfSubHookCallback
 
 'Now, for a rather lengthy explanation on these next variables, and why they're necessary.
@@ -237,7 +252,7 @@ Private cSubclass As cSelfSubHookCallback
 ' subsequent keypress, all that dead key information is artificially inserted into the key buffer, then ToUnicode is used to analyze
 ' this artificially constructed buffer.
 '
-'This is not pretty in any way, but the code is quite concise, and this is a resolution that thousands of other angry programmers
+'This is not pretty in any way, but the code is concise, and this is a resolution that thousands of other angry programmers
 ' were unable to locate - so I'm counting myself lucky and not obsessing over the inelegance of it.
 '
 'Anyway, these module-level variables are used to cache dead key values until they are actually needed.
@@ -275,6 +290,67 @@ Public Property Let FontSize(ByVal newSize As Single)
     End If
 End Property
 
+Public Property Get Multiline() As Boolean
+    Multiline = m_Multiline
+End Property
+
+Public Property Let Multiline(ByVal NewState As Boolean)
+    
+    If NewState <> m_Multiline Then
+        m_Multiline = NewState
+        
+        'Changing the multiline property requires a full recreation of the edit box (e.g. it cannot be changed via window message alone).
+        ' Also, note that the createEditBox function will automatically handle the backup/restoration of any text currently in the edit box.
+        createEditBox
+        
+        PropertyChanged "Multiline"
+        
+    End If
+    
+End Property
+
+'For performance reasons, the current control's text is not stored persistently.  It is retrieved, as needed, using an on-demand model.
+Public Property Get Text() As String
+    
+    'Retrieve the length of the edit box's current string.  Note that this is not necessarily the *actual* length.  Instead, it is an
+    ' interop-friendly measurement that represents the maximum possible size of the buffer, when accounting for mixed ANSI and Unicode
+    ' strings (among other things).
+    Dim bufLength As Long
+    bufLength = GetWindowTextLength(m_EditBoxHwnd) + 1
+    
+    'Note that there is a disconnect here.  GetWindowTextLength returns the length, in characters, of of the string to be returned.
+    ' It does NOT include a +1 for the null terminator (which is implicit in VB strings, but relevant when preparing a buffer).
+    ' This is why we append a +1, above.
+    
+    'Prepare a string buffer at that size
+    Text = Space$(bufLength)
+    
+    'Retrieve the window's text.  Note that the retrieval function will return that actual length of the buffer (not counting the null
+    ' terminator).  On the off chance that the actual length differs from the buffer we were initially given, trim the string to match.
+    Dim actualBufLength As Long
+    actualBufLength = GetWindowText(m_EditBoxHwnd, StrPtr(Text), bufLength)
+    
+    If actualBufLength <> bufLength Then Text = Left$(Text, actualBufLength)
+    
+End Property
+
+Public Property Let Text(ByRef newString As String)
+
+    'Unfortunately, we cannot use SetWindowText here.  SetWindowText does not expand tab characters in a string,
+    ' so our only option is to manually send a WM_SETTEXT message to the text box.
+    SendMessage m_EditBoxHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newString)
+
+End Property
+
+'When the control receives focus, forcibly forward focus to the edit window
+Private Sub UserControl_GotFocus()
+    If m_EditBoxHwnd <> 0 Then
+        SetForegroundWindow m_EditBoxHwnd
+    Else
+        Debug.Print "WARNING! Text box UC received focus, but Edit box has not been created!  FIX THIS."
+    End If
+End Sub
+
 'When the user control is hidden, we must hide the edit box window as well
 Private Sub UserControl_Hide()
     If m_EditBoxHwnd <> 0 Then ShowWindow m_EditBoxHwnd, SW_HIDE
@@ -297,12 +373,14 @@ End Sub
 
 Private Sub UserControl_InitProperties()
     FontSize = 10
+    Multiline = False
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         FontSize = .ReadProperty("FontSize", 10)
+        Multiline = .ReadProperty("Multiline", False)
     End With
 
 End Sub
@@ -361,14 +439,22 @@ End Sub
 ' automate the process of destroying an existing window (if any) and recreating it anew.
 Private Function createEditBox() As Boolean
 
-    'If the edit box already exists, kill it
+    'If the edit box already exists, copy its text, then kill it
+    Dim curText As String
+    If m_EditBoxHwnd <> 0 Then curText = Text
     destroyEditBox
     
     'Figure out which flags to use, based on the control's properties
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsEditControl As Long
     flagsWinStyle = WS_VISIBLE Or WS_CHILD
     flagsWinStyleExtended = 0
-    flagsEditControl = ES_AUTOHSCROLL Or ES_AUTOVSCROLL Or ES_MULTILINE 'Or ES_NOHIDESEL
+    
+    If m_Multiline Then
+        flagsWinStyle = flagsWinStyle Or WS_VSCROLL
+        flagsEditControl = flagsEditControl Or ES_MULTILINE Or ES_WANTRETURN Or ES_AUTOVSCROLL
+    Else
+        flagsEditControl = flagsEditControl Or ES_AUTOHSCROLL
+    End If
     
     m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
         0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
@@ -382,21 +468,30 @@ Private Function createEditBox() As Boolean
             Debug.Print "subclasser could not be initialized for text box!"
         End If
     End If
-        
     
     'Assign the default font to the edit box
     refreshFont True
+    
+    'If the edit box had text before we killed it, restore that text now
+    If Len(curText) > 0 Then Text = curText
     
     'Return TRUE if successful
     createEditBox = (m_EditBoxHwnd <> 0)
 
 End Function
 
+'If an edit box currently exists, this function will destroy it.
 Private Function destroyEditBox() As Boolean
 
     If m_EditBoxHwnd <> 0 Then
-        If Not cSubclass Is Nothing Then cSubclass.ssc_UnSubclass m_EditBoxHwnd
+        
+        If Not cSubclass Is Nothing Then
+            cSubclass.ssc_UnSubclass m_EditBoxHwnd
+            cSubclass.shk_TerminateHooks
+        End If
+        
         DestroyWindow m_EditBoxHwnd
+        
     End If
     
     destroyEditBox = True
@@ -454,6 +549,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     'Store all associated properties
     With PropBag
         .WriteProperty "FontSize", m_FontSize, 10
+        .WriteProperty "Multiline", m_Multiline, False
     End With
     
 End Sub
