@@ -32,7 +32,6 @@ Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Lo
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 
 'Constant used to determine window owner.
 Private Const GWL_HWNDPARENT = (-8)
@@ -216,8 +215,8 @@ Public Function EnumWindowsProc(ByVal hWnd As Long, ByVal lParam As Long) As Lon
                     If nRet Then
                     
                         WindowText = Left$(WindowText, nRet)
-                        nRet = SendMessage(lParam, LB_ADDSTRING, 0, ByVal WindowText)
-                        Call SendMessage(lParam, LB_SETITEMDATA, nRet, ByVal hWnd)
+                        nRet = SendMessageA(lParam, LB_ADDSTRING, ByVal 0&, ByVal WindowText)
+                        Call SendMessageA(lParam, LB_SETITEMDATA, nRet, ByVal hWnd)
                     
                     End If
                     

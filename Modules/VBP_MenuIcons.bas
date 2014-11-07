@@ -32,9 +32,6 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
-'API call for manually setting a 32-bit icon to a form (as opposed to Form.Icon = ...)
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-
 'API needed for converting PNG data to icon or cursor format
 Private Declare Sub CreateStreamOnHGlobal Lib "ole32" (ByRef hGlobal As Any, ByVal fDeleteOnRelease As Long, ByRef ppstm As Any)
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal Stream As Any, ByRef mImage As Long) As Long
@@ -731,10 +728,7 @@ Public Sub createCustomFormIcon(ByRef srcImage As pdImage)
         hIcon16 = getIconFromDIB(thumbDIB, 16)
         addIconToList hIcon16
         srcImage.curFormIcon16 = hIcon16
-
-        'Apply the 16x16 icon to the title bar of the specified form
-        'SendMessageLong imgForm.hWnd, &H80, 0, hIcon16
-
+        
     End If
 
 End Sub
