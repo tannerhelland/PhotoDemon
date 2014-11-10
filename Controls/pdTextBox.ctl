@@ -158,6 +158,7 @@ Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (By
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
+Private Declare Function SetFocus Lib "user32" (ByVal hndWindow As Long) As Long
 
 'Getting/setting window data
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpStringPointer As Long, ByVal nMaxCount As Long) As Long
@@ -205,16 +206,29 @@ Private Declare Function MapVirtualKey Lib "user32" Alias "MapVirtualKeyW" (ByVa
 Private Const PM_REMOVE As Long = &H1
 Private Const WM_KEYFIRST As Long = &H100
 Private Const WM_KEYLAST As Long = &H108
+Private Declare Function PostMessage Lib "user32" Alias "PostMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageW" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageW" (lpMsg As winMsg) As Long
 
+'Alt-key state can be tracked a number of different ways, but I find GetAsyncKeyState to be the easiest.
+Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
+
 Private Const WM_KEYDOWN As Long = &H100
+Private Const WM_SYSKEYDOWN As Long = &H104
 Private Const WM_KEYUP As Long = &H101
 Private Const WM_CHAR As Long = &H102
+Private Const WM_UNICHAR As Long = &H109
+Private Const UNICODE_NOCHAR As Long = &HFFFF&
 Private Const WM_SETFOCUS As Long = &H7
 Private Const WM_KILLFOCUS As Long = &H8
 Private Const WM_SETTEXT As Long = &HC
+Private Const WM_COMMAND As Long = &H111
+Private Const WM_NEXTDLGCTL As Long = &H28
 Private cSubclass As cSelfSubHookCallback
+
+Private Const VK_SHIFT As Long = &H10
+Private Const VK_CONTROL As Long = &H11
+Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_MENU in MSDN documentation!
 
 'Now, for a rather lengthy explanation on these next variables, and why they're necessary.
 '
@@ -260,9 +274,25 @@ Private m_DeadCharVal As Long
 Private m_DeadCharScanCode As Long
 Private m_DeadCharKeyStateData(0 To 255) As Byte
 
+'Alt+number keycode entry has to be handled manually, if the keycode exceeds FFFF.
+Private m_AltKeyMode As Boolean
+Private assembledVirtualKeyString As String
+
 'Dynamic hooking requires us to track focus events with care.  When focus is lost, we must relinquish control of the keyboard.
-' This value will be set to TRUE if the tracked object currently has focus.
+' This value will be set to TRUE if the API edit box currently has focus.
 Private m_HasFocus As Boolean
+
+'Because our API edit box is not tied into VB's default tab stop handling, we must jump through some hoops to forward focus correctly.
+' Our hook proc will capture the Tab key that causes focus to enter the control, and mistakenly assume it is a Tab keypress from
+' *within* the control.  To prevent this from happening, we enforce a slight time delay from when our hook procedure begins, to when
+' we capture Tab keypresses.  This prevents faulty Tab-key handling.
+Private m_TimeAtFocusEnter As Long
+
+' We do this by manually tracking Tab key usage, and when it is hit, forwarding focus to the underlying user control, then using a
+' WM_COMMAND message to request a focus update from the parent window.  Because the user control defaults to forwarding focus to the
+' API edit box, we must set this override prior to initating Tab key behavior - otherwise, we'll get stuck in an endless focus loop!
+' Private m_WeAreForwardingFocus As Boolean
+' Private m_skipFocusCheck As Boolean
 
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
@@ -344,11 +374,15 @@ End Property
 
 'When the control receives focus, forcibly forward focus to the edit window
 Private Sub UserControl_GotFocus()
+    
+    'The user control itself should never have focus.  Forward it to the API edit box.
     If m_EditBoxHwnd <> 0 Then
         SetForegroundWindow m_EditBoxHwnd
+        SetFocus m_EditBoxHwnd
     Else
         Debug.Print "WARNING! Text box UC received focus, but Edit box has not been created!  FIX THIS."
     End If
+    
 End Sub
 
 'When the user control is hidden, we must hide the edit box window as well
@@ -463,7 +497,7 @@ Private Function createEditBox() As Boolean
     If g_UserModeFix Then
         If Not cSubclass Is Nothing Then
             cSubclass.ssc_Subclass m_EditBoxHwnd, 0, 1, Me, True, True, True
-            cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS
+            cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_CHAR, WM_UNICHAR, WM_SYSKEYDOWN
         Else
             Debug.Print "subclasser could not be initialized for text box!"
         End If
@@ -521,6 +555,7 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
     If (Len(g_InterfaceFont) > 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
         fontRefreshRequired = True
         curFont.setFontFace g_InterfaceFont
+        'curFont.setFontFace "SimSun-ExtB"
     End If
     
     'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
@@ -569,6 +604,167 @@ Public Sub updateAgainstCurrentTheme()
     
 End Sub
 
+'If an object of type Control is capable of receiving focus, this will return TRUE.
+Private Function isControlFocusable(ByRef ctl As Control) As Boolean
+
+    If Not (TypeOf ctl Is Timer) And Not (TypeOf ctl Is Line) And Not (TypeOf ctl Is pdLabel) And Not (TypeOf ctl Is Frame) And Not (TypeOf ctl Is Shape) And Not (TypeOf ctl Is Image) And Not (TypeOf ctl Is vbalHookControl) And Not (TypeOf ctl Is ShellPipe) And Not (TypeOf ctl Is bluDownload) Then
+        isControlFocusable = True
+    Else
+        isControlFocusable = False
+    End If
+
+End Function
+
+'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
+' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB forms.
+' I'm honestly not sure whether VB even uses that message, or whether it uses some internal mechanism for focus tracking; the latter
+' might explain why a manual approach like this seems to be necessary for us as well.
+Private Sub forwardFocusManually(ByVal focusDirectionForward As Boolean)
+
+    'If the user has deactivated tab support, or we are invisible/disabled, ignore this completely
+    If UserControl.Extender.TabStop And UserControl.Extender.Visible And UserControl.Enabled Then
+        
+        'Iterate through all controls in the container, looking for the next TabStop index
+        Dim myIndex As Long
+        myIndex = UserControl.Extender.TabIndex
+        
+        Dim newIndex As Long
+        Const MAX_INDEX As Long = 99999
+        
+        'Forward and back focus checks require different search strategies
+        If focusDirectionForward Then
+            newIndex = MAX_INDEX
+        Else
+            newIndex = myIndex
+        End If
+        
+        'Some controls may not have a TabStop property.  That's okay - just keep iterating if it happens.
+        On Error GoTo NextControlCheck
+        
+        Dim ctl As Control, targetControl As Control
+        For Each ctl In Parent.Controls
+            
+            'Hypothetically, our error handler should remove the need for this kind of check.  That said, I prefer to handle the
+            ' non-focusable objects like this, although this requires any outside user to complete the list with their own potentially
+            ' non-focusable controls.  Not ideal, but I don't know a good way (short of error handling) to see whether a VB object
+            ' is focusable.
+            If isControlFocusable(ctl) Then
+            
+                'Ignore controls whose TabStop property is False, who are not visible, or who are disabled
+                If ctl.TabStop And ctl.Visible And ctl.Enabled Then
+                        
+                    If focusDirectionForward Then
+                    
+                        'Check the tab index of this control.  We're looking for the lowest tab index that is also larger than our tab index.
+                        If (ctl.TabIndex > myIndex) And (ctl.TabIndex < newIndex) Then
+                            newIndex = ctl.TabIndex
+                            Set targetControl = ctl
+                        End If
+                        
+                    Else
+                    
+                        'Check the tab index of this control.  We're looking for the highest tab index that is also larger than our tab index.
+                        If (ctl.TabIndex > newIndex) Then
+                            newIndex = ctl.TabIndex
+                            Set targetControl = ctl
+                        End If
+                    
+                    End If
+    
+                End If
+                
+            End If
+            
+NextControlCheck:
+        Next
+        
+        'When moving focus forward, we now have one of two possibilites:
+        ' 1) NewIndex represents the tab index of a valid control whose index is higher than us.
+        ' 2) NewIndex is still MAX_INDEX, because no control with a valid tab index was found.
+        
+        'When moving focus backward, we also have two possibilities:
+        ' 1) NewIndex represents the tab index of a valid control whose index is higher than us.  (Required if Shift+Tab will push the
+        '     TabIndex below 0.)
+        ' 2) NewIndex is still MY_INDEX, because no control with a valid tab index was found.
+        
+        'Handle case 2 now.
+        If (focusDirectionForward And (newIndex = MAX_INDEX)) Or (Not focusDirectionForward) Then
+            
+            If focusDirectionForward Then
+                newIndex = myIndex
+            Else
+                newIndex = -1
+            End If
+            
+            'Some controls may not have a TabStop property.  That's okay - just keep iterating if it happens.
+            On Error GoTo NextControlCheck2
+            
+            'If our control is last in line for tabstops, we need to now find the LOWEST tab index to forward focus to.
+            For Each ctl In Parent.Controls
+                
+                'Hypothetically, our error handler should remove the need for this kind of check.  That said, I prefer to handle the
+                ' non-focusable objects like this, although this requires any outside user to complete the list with their own potentially
+                ' non-focusable controls.  Not ideal, but I don't know a good way (short of error handling) to see whether a VB object
+                ' is focusable.
+                If isControlFocusable(ctl) Then
+                
+                    'Ignore controls whose TabStop property is False, who are not visible, or who are disabled
+                    If ctl.TabStop And ctl.Visible And ctl.Enabled Then
+                            
+                        If focusDirectionForward Then
+                        
+                            'Check the tab index of this control.  We're looking for the lowest valid tab index.
+                            If (ctl.TabIndex < myIndex) And (ctl.TabIndex < newIndex) Then
+                                newIndex = ctl.TabIndex
+                                Set targetControl = ctl
+                            End If
+                            
+                        Else
+                        
+                            'Check the tab index of this control.  We're looking for the lowest valid tab index, if one exists.
+                            If (ctl.TabIndex < myIndex) And (ctl.TabIndex > newIndex) Then
+                                newIndex = ctl.TabIndex
+                                Set targetControl = ctl
+                            End If
+                        
+                        End If
+                        
+                    End If
+                    
+                End If
+                
+NextControlCheck2:
+            Next
+        
+        End If
+        
+        If (Not focusDirectionForward) Then
+            If newIndex = -1 Then newIndex = myIndex
+        End If
+        
+        'Regardless of focus direction, we once again have one of two possibilites.
+        ' 1) NewIndex represents the tab index of the next valid control in VB's tab order.
+        ' 2) NewIndex = our index, because no control with a valid tab index was found.
+        
+        Debug.Print "Tab index of target: " & newIndex
+        
+        'SetFocus can fail under a variety of circumstances, so error handling is still required
+        On Error GoTo NoFocusRecipient
+        
+        'Ignore the second case completely, as tab should have no effect
+        If newIndex <> UserControl.Extender.TabIndex Then
+        
+            Debug.Print "Attempting to set focus to " & targetControl.Name
+            targetControl.SetFocus
+        
+NoFocusRecipient:
+        
+        End If
+        
+    End If
+
+End Sub
+
 'Given a virtual keycode, return TRUE if the keycode is a command key that must be manually forwarded to an edit box.  Command keys include
 ' arrow keys at present, but in the future, additional keys can be added to this list.
 '
@@ -581,12 +777,15 @@ Private Function doesVirtualKeyRequireSpecialHandling(ByVal vKey As Long) As Boo
     
         Case VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
             doesVirtualKeyRequireSpecialHandling = True
+            
+        Case VK_TAB
+            doesVirtualKeyRequireSpecialHandling = True
         
         Case Else
             doesVirtualKeyRequireSpecialHandling = False
     
     End Select
-    
+        
 End Function
 
 'This routine MUST BE KEPT as the next-to-last routine for this form. Its ordinal position determines its ability to hook properly.
@@ -612,7 +811,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         'MSDN states that negative codes must be passed to the next hook, without processing
         ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
         If nCode >= 0 Then
-        
+            
             'Before proceeding, cache the status of all 256 keyboard keys.  This is important for non-Latin keyboards, which can
             ' produce Unicode characters in a variety of ways.  (For example, by holding down multiple keys at once.)  If we end
             ' up forwarding a key event to the default WM_KEYDOWN handler, it will need this information in order to parse any
@@ -626,11 +825,37 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                 'The default key handler works just fine for character keys.  However, dialog keys (e.g. arrow keys) get eaten
                 ' by VB, so we must manually catch them in this hook, and forward them direct to the edit control.
                 If doesVirtualKeyRequireSpecialHandling(wParam) Then
-                
-                    'WM_KEYUP requires that certain bits be set.  See http://msdn.microsoft.com/en-us/library/windows/desktop/ms646281%28v=vs.85%29.aspx
+                    
+                    'Key up events will be raised twice; once in a transitionary stage, and once again in a final stage.
+                    ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
                     If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
-                        SendMessage m_EditBoxHwnd, WM_KEYUP, wParam, ByVal (lParam And &HDFFFFF81 Or &HC0000000)
-                        bHandled = True
+                    
+                        'On a single-line control, the tab key should be used to redirect focus to a new window.
+                        If (wParam = VK_TAB) And m_HasFocus And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
+                        
+                            'Multiline edit boxes accept tab keypresses.  Single line ones do not, so interpret TAB as a
+                            ' request to forward (or reverse) focus
+                            If (Not m_Multiline) Then
+                            
+                                Debug.Print "Tab key intercepted"
+                                
+                                bHandled = True
+                                
+                                'Forward focus to the next control
+                                forwardFocusManually isVirtualKeyDown(VK_SHIFT)
+                                
+                            End If
+                        
+                        'Non-tab keys that require special handling are text-dependent keys (e.g. arrow keys).  Simply forward these
+                        ' directly to the edit box, and it will take care of the rest.
+                        Else
+                    
+                            'WM_KEYUP requires that certain lParam bits be set.  See http://msdn.microsoft.com/en-us/library/windows/desktop/ms646281%28v=vs.85%29.aspx
+                            SendMessage m_EditBoxHwnd, WM_KEYUP, wParam, ByVal (lParam And &HDFFFFF81 Or &HC0000000)
+                            bHandled = True
+                            
+                        End If
+                        
                     End If
                 
                 End If
@@ -663,6 +888,11 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
     End If
     
 End Sub
+
+'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
+Private Function isVirtualKeyDown(ByVal vKey As Long) As Boolean
+    isVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
+End Function
 
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
@@ -710,8 +940,39 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     ' ???? chars, despite use of a Unicode window - and that ultimately defeats the whole point of a Unicode text box, no?
     Select Case uMsg
         
-        'Manually dispatch WM_KEYDOWN messages
-        Case WM_KEYDOWN
+        Case WM_CHAR
+            Debug.Print "WM_CHAR: " & wParam & "," & lParam
+        
+        'WM_UNICHAR messages are never sent by Windows.  However, third-party IMEs may send them.  Before allowing WM_UNICHAR
+        ' messages to pass, Windows will first probe a window by sending the UNICODE_NOCHAR value.  If a window responds with 1
+        ' (instead of 0, as DefWindowProc does), Windows will allow WM_UNICHAR messages to pass.
+        Case WM_UNICHAR
+            If wParam = UNICODE_NOCHAR Then
+                bHandled = True
+                lReturn = 1
+            End If
+            Debug.Print "UNICODE char received: " & wParam & "," & lParam
+        
+        Case WM_SYSKEYDOWN
+        
+            'If we're not tracking sys key messages, start now
+            If Not m_AltKeyMode Then
+                m_AltKeyMode = True
+                assembledVirtualKeyString = ""
+            
+            'If we're already tracking sys key messages, continue assembling numeric keypresses
+            Else
+            
+                'TODO!  Also, this can probably be moved to the code block below.
+            
+            End If
+        
+        'Manually dispatch WM_KEYDOWN messages.  Why also trap WM_SYSKEYDOWN here?  Because Alt+ key combinations do not pass
+        ' through via WM_KEYDOWN.  As such, if we want to trap Alt+ keycode entries, we have to do it manually by trapping
+        ' WM_SYSKEYDOWN, and tracking the virtual key numbers the hard way.
+        Case WM_KEYDOWN, WM_SYSKEYDOWN
+            
+            'Alt key handling: TODO!
             
             'Because we will be dispatching our own WM_CHAR messages with any processed Unicode characters, we must manually
             ' assemble a full window message.  All messages will be sent to the API edit box we've created, so we can mark the
@@ -772,7 +1033,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 m_DeadCharVal = 0
                 
             End If
-                                    
+            
+            Debug.Print "Unicode result: " & unicodeResult
+            
             'ToUnicode has four possible return values:
             ' -1: the char is an accent or diacritic.  If possible, it has been translated to a standalone spacing version
             '     (always a UTF-16 entry point), and placed in the output buffer.  Generally speaking, we don't want to treat
@@ -806,8 +1069,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' is required on our part.
                 Case 0
                     
+                    
                 '1 or more chars were successfully processed and returned.
                 Case 1 To Len(tmpString)
+                    
+                    'Debug.Print unicodeResult & ":" & tmpString
                     
                     'Send each processed Unicode character in turn, using DispatchMessage to completely bypass VB's
                     ' default handler.  This prevents forcible down-conversion to ANSI.
@@ -851,9 +1117,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'Check for an existing hook
             If Not m_HasFocus Then
             
+                'Note the time.  This is used to prevent keypresses occurring immediately prior to the hook, from being
+                ' caught within our hook proc!
+                m_TimeAtFocusEnter = GetTickCount
+                
                 'No hook exists.  Hook the control now.
                 'Debug.Print "Installing keyboard hook for API edit box due to WM_SETFOCUS"
-                cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_EditBoxHwnd, 2, Me, , True
+                cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_AFTER, m_EditBoxHwnd, 2, Me, , True
                 
                 'Note that this window is now active
                 m_HasFocus = True
