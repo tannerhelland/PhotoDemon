@@ -227,6 +227,10 @@ Private Sub pdTextBox1_GotFocus()
     Debug.Print "Focus set to UC - TabStop item " & pdTextBox1.TabIndex
 End Sub
 
+Private Sub pdTextBox1_LostFocus()
+    Debug.Print "Focus lost from UC - TabStop item " & pdTextBox1.TabIndex
+End Sub
+
 Private Sub Timer1_Timer()
     pdLabelVerify.Caption = pdTextBox1.Text
 End Sub
