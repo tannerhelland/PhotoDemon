@@ -126,3 +126,14 @@ Public Const VK_SPACE As Long = &H20
 Public Const VK_INSERT As Long = &H2D
 Public Const VK_DELETE As Long = &H2E
 Public Const VK_ESCAPE As Long = &H1B
+
+Public Const VK_0 As Long = &H30
+Public Const VK_1 As Long = &H31
+Public Const VK_2 As Long = &H32
+Public Const VK_3 As Long = &H33
+Public Const VK_4 As Long = &H34
+Public Const VK_5 As Long = &H35
+Public Const VK_6 As Long = &H36
+Public Const VK_7 As Long = &H37
+Public Const VK_8 As Long = &H38
+Public Const VK_9 As Long = &H39
