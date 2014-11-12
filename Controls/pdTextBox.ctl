@@ -1418,10 +1418,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
             End Select
         
-        'When an edit box is first initialized, it is sometimes not hooked correctly.  I don't know why.  As such, I've added this
-        ' failsafe activation check, just in case WM_SETFOCUS does not arrive.
+        'On mouse activation, the previous VB window/control that had focus will not be redrawn to reflect its lost focus state.
+        ' (Presumably, this is because VB handles focus internally, rather than using standard window messages for it.)  To avoid
+        ' the appearance of two controls simultaneously having focus, we re-set focus to the underlying user control, which forces
+        ' VB to redraw the lost focus state of any previous controls.
         Case WM_MOUSEACTIVATE
-            InstallHookConditional
+            UserControl.SetFocus
             
         'When the control receives focus, initialize a keyboard hook.  This prevents accelerators from working, but it is the
         ' only way to bypass VB's internal message translator, which will forcibly convert certain Unicode chars to ANSI.
