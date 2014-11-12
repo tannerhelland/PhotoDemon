@@ -49,7 +49,7 @@ Attribute VB_Exposed = False
 ' 1) Unlike other PD custom controls, this one is simply a wrapper to a system text box.
 ' 2) The idea with this control was not to expose all text box properties, but simply those most relevant to PD.
 ' 3) Focus is the real nightmare for this control, and as you will see, some complicated tricks are required to work
-'    around VB's handling of tabstops in particular.  (Focus is still on my to-do list!)
+'    around VB's handling of tabstops in particular.
 ' 4) To allow use of arrow keys and other control keys, this control must hook the keyboard.  (If it does not, VB will
 '    eat control keypresses, because it doesn't know about windows created via the API!)  A byproduct of this is that
 '    accelerators flat-out WILL NOT WORK while this control has focus.  I haven't yet settled on a good way to handle
@@ -67,7 +67,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'By design, this textbox raises fewer events than a standard text box
-Public Event Change()
+'Public Event Change()
 
 
 'Window styles
@@ -169,6 +169,7 @@ Private Declare Function SetFocus Lib "user32" (ByVal hndWindow As Long) As Long
 'Getting/setting window data
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpStringPointer As Long, ByVal nMaxCount As Long) As Long
 Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As Long) As Long
+Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 
 'Handle to the system edit box wrapped by this control
 Private m_EditBoxHwnd As Long
@@ -232,6 +233,7 @@ Private Const WM_COMMAND As Long = &H111
 Private Const WM_NEXTDLGCTL As Long = &H28
 Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_MOUSEACTIVATE As Long = &H21
+Private Const WM_CTLCOLOREDIT As Long = &H133
 Private cSubclass As cSelfSubHookCallback
 
 Private Const VK_SHIFT As Long = &H10
@@ -297,11 +299,21 @@ Private m_HasFocus As Boolean
 Private m_TimeAtFocusEnter As Long
 Private m_FocusDirection As Long
 
-' We do this by manually tracking Tab key usage, and when it is hit, forwarding focus to the underlying user control, then using a
-' WM_COMMAND message to request a focus update from the parent window.  Because the user control defaults to forwarding focus to the
-' API edit box, we must set this override prior to initating Tab key behavior - otherwise, we'll get stuck in an endless focus loop!
-' Private m_WeAreForwardingFocus As Boolean
-' Private m_skipFocusCheck As Boolean
+'Persistent back buffer, which we manage internally
+Private m_BackBuffer As pdDIB
+
+'Flicker-free window painter
+Private WithEvents cPainter As pdWindowPainter
+Attribute cPainter.VB_VarHelpID = -1
+
+'If the user resizes a label, the control's back buffer needs to be redrawn.  If we resize the label as part of an internal
+' AutoSize calculation, however, we will already be in the midst of resizing the backbuffer - so we override the behavior
+' of the UserControl_Resize event, using this variable.
+Private m_InternalResizeState As Boolean
+
+'The system handles drawing of the edit box.  This persistent brush handle is returned to the relevant window message,
+' and WAPI uses it to draw the edit box background.
+Private m_EditBoxBrush As Long
 
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
@@ -397,6 +409,17 @@ Public Property Let Text(ByRef newString As String)
 
 End Property
 
+'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
+' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
+Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+    
+    Debug.Print m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight
+    
+    'Flip the relevant chunk of the buffer to the screen
+    BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+        
+End Sub
+
 Private Sub tmrFocus_Timer()
     
     'Forward focus to the next control
@@ -433,11 +456,26 @@ Private Sub UserControl_Initialize()
     Set curFont = New pdFont
     m_FontSize = 10
     
-    'Create an initial font object
-    refreshFont
+    'Note that we are not currently responsible for any resize events
+    m_InternalResizeState = False
     
     'At run-time, initialize a subclasser
     If g_UserModeFix Then Set cSubclass = New cSelfSubHookCallback
+    
+    'When not in design mode, initialize a tracker for mouse events
+    If g_UserModeFix Then
+        
+        'Start a flicker-free window painter
+        Set cPainter = New pdWindowPainter
+        cPainter.startPainter Me.hWnd
+                
+    'In design mode, initialize a base theming class, so our paint function doesn't fail
+    Else
+        Set g_Themer = New pdVisualThemes
+    End If
+    
+    'Create an initial font object
+    refreshFont
     
 End Sub
 
@@ -460,15 +498,35 @@ End Sub
 ' for theming purposes, so we don't want multiple functions calculating their own window rect.
 Private Sub UserControl_Resize()
 
-    If m_EditBoxHwnd <> 0 Then
-        MoveWindow m_EditBoxHwnd, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, 1
+    'Ignore resize events generated internally (e.g. sizing a text box to the current font)
+    If Not m_InternalResizeState Then
+    
+        'Reposition the edit text box
+        If m_EditBoxHwnd <> 0 Then
+            
+            'Retrieve the edit box's window rect, which is generated relative to the underlying DC
+            Dim tmpRect As winRect
+            getEditBoxRect tmpRect
+            
+            With tmpRect
+                MoveWindow m_EditBoxHwnd, .x1, .y1, .x2, .y2, 1
+            End With
+            
+        End If
+        
+        'Redraw the control background
+        updateControlSize
+        
     End If
 
 End Sub
 
 'Show the control and the edit box.  (This is the first place the edit box is typically created, as well.)
 Private Sub UserControl_Show()
-
+    
+    'Redraw the control
+    'updateControlSize
+    
     'If we have not yet created the edit box, do so now
     If m_EditBoxHwnd = 0 Then
         
@@ -503,6 +561,30 @@ Private Sub UserControl_Show()
 
 End Sub
 
+Private Sub getEditBoxRect(ByRef targetRect As winRect)
+
+    With targetRect
+        .x1 = 2
+        .y1 = 2
+        .x2 = UserControl.ScaleWidth - 4
+        .y2 = UserControl.ScaleHeight - 4
+    End With
+
+End Sub
+
+'Create a brush for drawing the box background
+Private Sub createEditBoxBrush()
+
+    If m_EditBoxBrush <> 0 Then DeleteObject m_EditBoxBrush
+    
+    If g_UserModeFix Then
+        m_EditBoxBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT))
+    Else
+        m_EditBoxBrush = CreateSolidBrush(RGB(0, 255, 0))
+    End If
+
+End Sub
+
 'As the wrapped system edit box may need to be recreated when certain properties are changed, this function is used to
 ' automate the process of destroying an existing window (if any) and recreating it anew.
 Private Function createEditBox() As Boolean
@@ -511,6 +593,9 @@ Private Function createEditBox() As Boolean
     Dim curText As String
     If m_EditBoxHwnd <> 0 Then curText = Text
     destroyEditBox
+    
+    'Create a brush for drawing the box background
+    createEditBoxBrush
     
     'Figure out which flags to use, based on the control's properties
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsEditControl As Long
@@ -525,14 +610,27 @@ Private Function createEditBox() As Boolean
         flagsEditControl = flagsEditControl Or ES_AUTOHSCROLL
     End If
     
-    m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
-        0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
+    'Retrieve the edit box's window rect, which is generated relative to the underlying DC
+    Dim tmpRect As winRect
+    getEditBoxRect tmpRect
+    
+    With tmpRect
+        m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
+        .x1, .y1, .x2, .y2, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
+    End With
     
     'Assign a subclasser to enable IME support
     If g_UserModeFix Then
         If Not (cSubclass Is Nothing) Then
+            
+            'Subclass the edit box
             cSubclass.ssc_Subclass m_EditBoxHwnd, 0, 1, Me, True, True, True
             cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_CHAR, WM_UNICHAR, WM_MOUSEACTIVATE
+            
+            'Subclass the user control as well.  This is necessary for handling the WM_CTLCOLOREDIT message
+            cSubclass.ssc_Subclass UserControl.hWnd, 0, 1, Me, True, True, False
+            cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT
+            
         End If
     End If
     
@@ -566,6 +664,9 @@ Private Function destroyEditBox() As Boolean
 End Function
 
 Private Sub UserControl_Terminate()
+    
+    'Release the edit box background brush
+    If m_EditBoxBrush <> 0 Then DeleteObject m_EditBoxBrush
     
     'Destroy the edit box, as necessary
     destroyEditBox
@@ -607,7 +708,7 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
     End If
     
     'Also, the back buffer needs to be rebuilt to reflect the new font metrics
-    'updateControlSize
+    updateControlSize
 
 End Sub
 
@@ -626,14 +727,72 @@ Public Sub updateAgainstCurrentTheme()
     
     If g_UserModeFix Then
         
+        'Create a brush for drawing the box background
+        createEditBoxBrush
+        
         'Update the current font, as necessary
         refreshFont
         
         'Force an immediate repaint
-        'updateControlSize
+        updateControlSize
                 
     End If
     
+End Sub
+
+'When the control is resized, several things need to happen:
+' 1) We need to forward the resize request to the API edit window
+' 2) We need to resize the button's back buffer, then redraw it
+Private Sub updateControlSize()
+
+    'Reset our back buffer, and reassign the font to it
+    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
+    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+    
+    'Redraw the back buffer
+    redrawBackBuffer
+
+End Sub
+
+'After the back buffer has been correctly sized and positioned, this function handles the actual painting.  Similarly, for state changes
+' that don't require a resize (e.g. gain/lose focus), this function should be used.
+Private Sub redrawBackBuffer()
+
+    Debug.Print "redrawing back buffer now"
+    
+    'Start by erasing the back buffer
+    If g_UserModeFix Then
+    
+        'Fill color changes depending on enablement
+        Dim editBoxBackgroundColor As Long
+        
+        If Me.Enabled Then
+            editBoxBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        Else
+            editBoxBackgroundColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+        End If
+        
+        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, editBoxBackgroundColor, 255
+        
+    Else
+        m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
+    End If
+    
+    'The edit box has a 1px border, whose color changes depending on focus
+    Dim editBoxBorderColor As Long
+    
+    If m_HasFocus Then
+        editBoxBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+    Else
+        editBoxBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+    End If
+    
+    'Draw the border
+    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, editBoxBorderColor
+    
+    'Paint the buffer to the screen
+    If g_UserModeFix Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+
 End Sub
 
 'If an object of type Control is capable of receiving focus, this will return TRUE.
@@ -854,6 +1013,9 @@ Private Sub InstallHookConditional()
         
         'No hook exists.  Hook the control now.
         cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_EditBoxHwnd, 2, Me, , True
+        
+        'Redraw the control to reflect focus state
+        redrawBackBuffer
     
     End If
 
@@ -869,6 +1031,9 @@ Private Sub RemoveHookConditional()
         
         'A hook exists.  Uninstall it now.
         cSubclass.shk_UnHook WH_KEYBOARD
+        
+        'Redraw the control to reflect focus state
+        redrawBackBuffer
         
     End If
 
@@ -1089,6 +1254,21 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     ' Without this, IME entry methods (easily tested via the Windows on-screen keyboard and some non-Latin language) result in
     ' ???? chars, despite use of a Unicode window - and that ultimately defeats the whole point of a Unicode text box, no?
     Select Case uMsg
+        
+        'The parent receives this message, prior to the edit box being drawn.  The parent can use this to assign text and
+        ' background colors to the edit box.
+        Case WM_CTLCOLOREDIT
+            
+            'We can set the text color directly, using the API
+            If g_UserModeFix Then
+                SetTextColor wParam, g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
+            Else
+                SetTextColor wParam, RGB(0, 0, 128)
+            End If
+            
+            'We return the background brush
+            bHandled = True
+            lReturn = m_EditBoxBrush
         
         Case WM_CHAR
             'Debug.Print "WM_CHAR: " & wParam & "," & lParam
