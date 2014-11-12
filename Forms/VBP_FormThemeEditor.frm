@@ -60,11 +60,6 @@ Begin VB.Form FormThemeEditor
       Top             =   5040
       Width           =   2055
    End
-   Begin VB.Timer Timer1 
-      Interval        =   1000
-      Left            =   7440
-      Top             =   2880
-   End
    Begin PhotoDemon.pdLabel pdLabelVerify 
       Height          =   1695
       Left            =   4800
@@ -223,14 +218,14 @@ Private Sub cmdTextBoxTesting_GotFocus(Index As Integer)
     Debug.Print "Focus set to TabStop item " & cmdTextBoxTesting(Index).TabIndex
 End Sub
 
+Private Sub pdTextBox1_Change()
+    pdLabelVerify.Caption = pdTextBox1.Text
+End Sub
+
 Private Sub pdTextBox1_GotFocus()
     Debug.Print "Focus set to UC - TabStop item " & pdTextBox1.TabIndex
 End Sub
 
 Private Sub pdTextBox1_LostFocus()
     Debug.Print "Focus lost from UC - TabStop item " & pdTextBox1.TabIndex
-End Sub
-
-Private Sub Timer1_Timer()
-    pdLabelVerify.Caption = pdTextBox1.Text
 End Sub

@@ -67,7 +67,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'By design, this textbox raises fewer events than a standard text box
-'Public Event Change()
+Public Event Change()
 
 
 'Window styles
@@ -234,11 +234,18 @@ Private Const WM_NEXTDLGCTL As Long = &H28
 Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_MOUSEACTIVATE As Long = &H21
 Private Const WM_CTLCOLOREDIT As Long = &H133
-Private cSubclass As cSelfSubHookCallback
+Private Const EN_UPDATE As Long = &H400
 
 Private Const VK_SHIFT As Long = &H10
 Private Const VK_CONTROL As Long = &H11
 Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_MENU in MSDN documentation!
+
+'Obviously, we're going to be doing a lot of subclassing inside this control.
+Private cSubclass As cSelfSubHookCallback
+
+'Unlike the edit box, which may be recreated multiple times as properties change, we only need to subclass the parent window once.
+' After it has been subclassed, this will be set to TRUE.
+Private m_ParentHasBeenSubclassed As Boolean
 
 'Now, for a rather lengthy explanation on these next variables, and why they're necessary.
 '
@@ -413,8 +420,6 @@ End Property
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
 Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
     
-    Debug.Print m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight
-    
     'Flip the relevant chunk of the buffer to the screen
     BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
         
@@ -438,8 +443,6 @@ Private Sub UserControl_GotFocus()
     If m_EditBoxHwnd <> 0 Then
         SetForegroundWindow m_EditBoxHwnd
         SetFocus m_EditBoxHwnd
-    Else
-        Debug.Print "WARNING! Text box UC received focus, but Edit box has not been created!  FIX THIS."
     End If
     
 End Sub
@@ -627,9 +630,12 @@ Private Function createEditBox() As Boolean
             cSubclass.ssc_Subclass m_EditBoxHwnd, 0, 1, Me, True, True, True
             cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_CHAR, WM_UNICHAR, WM_MOUSEACTIVATE
             
-            'Subclass the user control as well.  This is necessary for handling the WM_CTLCOLOREDIT message
-            cSubclass.ssc_Subclass UserControl.hWnd, 0, 1, Me, True, True, False
-            cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT
+            'Subclass the user control as well.  This is necessary for handling update messages from the edit box
+            If Not m_ParentHasBeenSubclassed Then
+                cSubclass.ssc_Subclass UserControl.hWnd, 0, 1, Me, True, True, False
+                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_COMMAND
+                m_ParentHasBeenSubclassed = True
+            End If
             
         End If
     End If
@@ -757,8 +763,6 @@ End Sub
 'After the back buffer has been correctly sized and positioned, this function handles the actual painting.  Similarly, for state changes
 ' that don't require a resize (e.g. gain/lose focus), this function should be used.
 Private Sub redrawBackBuffer()
-
-    Debug.Print "redrawing back buffer now"
     
     'Start by erasing the back buffer
     If g_UserModeFix Then
@@ -1255,6 +1259,16 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     ' ???? chars, despite use of a Unicode window - and that ultimately defeats the whole point of a Unicode text box, no?
     Select Case uMsg
         
+        'The parent receives this message for all kinds of things; we subclass it to track when the edit box's contents have changed.
+        ' (And when we don't handle the message, it is *very important* that we forward it correctly!
+        Case WM_COMMAND
+        
+            'Check for the EN_UPDATE flag; if present, raise the CHANGE event
+            If (wParam \ &H10000) = EN_UPDATE Then
+                RaiseEvent Change
+                bHandled = True
+            End If
+        
         'The parent receives this message, prior to the edit box being drawn.  The parent can use this to assign text and
         ' background colors to the edit box.
         Case WM_CTLCOLOREDIT
@@ -1419,9 +1433,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             End Select
         
         'On mouse activation, the previous VB window/control that had focus will not be redrawn to reflect its lost focus state.
-        ' (Presumably, this is because VB handles focus internally, rather than using standard window messages for it.)  To avoid
-        ' the appearance of two controls simultaneously having focus, we re-set focus to the underlying user control, which forces
-        ' VB to redraw the lost focus state of any previous controls.
+        ' (Presumably, this is because VB handles focus internally, rather than using standard window messages.)  To avoid the
+        ' appearance of two controls simultaneously having focus, we re-set focus to the underlying user control, which forces
+        ' VB to redraw the lost focus state of whatever control previously had focus.
         Case WM_MOUSEACTIVATE
             UserControl.SetFocus
             
