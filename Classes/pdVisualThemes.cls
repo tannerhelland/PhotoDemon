@@ -35,7 +35,7 @@ Private Const WM_PAINT As Long = &HF&
 'I have no idea what colors will actually be used in the final theme format; these are just placeholders for now,
 ' to enable centralized coloration of a few UCs.  The end goal is to provide the smallest possible subset of colors
 ' necessary to render PD's various UI elements.
-Private Const numThemeColors As Long = 21
+Private Const numThemeColors As Long = 22
 
 Public Enum PD_THEME_COLOR
     
@@ -57,6 +57,7 @@ Public Enum PD_THEME_COLOR
     
     'Text variations
     PDTC_TEXT_DEFAULT
+    PDTC_TEXT_EDITBOX
     PDTC_TEXT_HYPERLINK
     PDTC_TEXT_TITLE
     PDTC_TEXT_INVERT
@@ -77,7 +78,7 @@ End Enum
     Private Const PDTC_ACCENT_DEFAULT = 0, PDTC_ACCENT_HIGHLIGHT = 0, PDTC_ACCENT_ULTRALIGHT = 0, PDTC_ACCENT_SHADOW = 0
     Private Const PDTC_GRAY_DEFAULT = 0, PDTC_GRAY_HIGHLIGHT = 0, PDTC_GRAY_SHADOW = 0
     Private Const PDTC_BACKGROUND_DEFAULT = 0, PDTC_BACKGROUND_CANVAS = 0, PDTC_BACKGROUND_COMMANDBAR = 0
-    Private Const PDTC_TEXT_DEFAULT = 0, PDTC_TEXT_HYPERLINK = 0, PDTC_TEXT_TITLE = 0, PDTC_TEXT_INVERT = 0
+    Private Const PDTC_TEXT_DEFAULT = 0, PDTC_TEXT_EDITBOX = 0, PDTC_TEXT_HYPERLINK = 0, PDTC_TEXT_TITLE = 0, PDTC_TEXT_INVERT = 0
     Private Const PDTC_DISABLED = 0, PDTC_OK_GREEN = 0, PDTC_CANCEL_RED = 0, PDTC_FOCUS_RECT = 0
     Private Const PDTC_CHANNEL_RED = 0, PDTC_CHANNEL_GREEN = 0, PDTC_CHANNEL_BLUE = 0
 #End If
@@ -253,6 +254,9 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
             'Text variations
             Case PDTC_TEXT_DEFAULT
                 getDefaultPDColor = Color_Functions.getRGBLongFromHex("#404040")
+                
+            Case PDTC_TEXT_EDITBOX
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#202020")
                 
             Case PDTC_TEXT_HYPERLINK
                 getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3170c0")
