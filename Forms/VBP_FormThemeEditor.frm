@@ -4,7 +4,7 @@ Begin VB.Form FormThemeEditor
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Theme editor"
-   ClientHeight    =   7050
+   ClientHeight    =   7185
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   10605
@@ -20,10 +20,28 @@ Begin VB.Form FormThemeEditor
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   470
+   ScaleHeight     =   479
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   707
    ShowInTaskbar   =   0   'False
+   Begin VB.CommandButton cmdTextBoxTesting 
+      Caption         =   "select all"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Index           =   4
+      Left            =   240
+      TabIndex        =   6
+      Top             =   5760
+      Width           =   2055
+   End
    Begin VB.CommandButton cmdTextBoxTesting 
       Caption         =   "toggle multiline"
       BeginProperty Font 
@@ -85,7 +103,7 @@ Begin VB.Form FormThemeEditor
       Height          =   615
       Left            =   240
       TabIndex        =   0
-      Top             =   6000
+      Top             =   6480
       Width           =   6135
    End
    Begin VB.CommandButton cmdTextBoxTesting 
@@ -137,13 +155,14 @@ Begin VB.Form FormThemeEditor
       Layout          =   2
    End
    Begin PhotoDemon.pdTextBox pdTextBox1 
-      Height          =   2175
+      Height          =   3255
       Left            =   240
       TabIndex        =   1
-      Top             =   600
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   3836
+      Top             =   480
+      Width           =   9975
+      _ExtentX        =   17595
+      _ExtentY        =   5741
+      Multiline       =   -1  'True
    End
    Begin PhotoDemon.pdLabel pdLabelTitle 
       Height          =   285
@@ -209,6 +228,10 @@ Private Sub cmdTextBoxTesting_Click(Index As Integer)
         '3 - toggle multiline
         Case 3
             pdTextBox1.Multiline = Not pdTextBox1.Multiline
+            
+        '4 - select all
+        Case 4
+            pdTextBox1.SelectAll
         
     End Select
     
