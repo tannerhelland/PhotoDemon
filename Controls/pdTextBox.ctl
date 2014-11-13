@@ -416,6 +416,9 @@ Public Property Let Text(ByRef newString As String)
     'Unfortunately, we cannot use SetWindowText here.  SetWindowText does not expand tab characters in a string,
     ' so our only option is to manually send a WM_SETTEXT message to the text box.
     SendMessage m_EditBoxHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newString)
+    
+    'Note that updating text this way will not raise an EN_UPDATE message for the parent.  As such, we must raise a Change event manually.
+    RaiseEvent Change
 
 End Property
 
