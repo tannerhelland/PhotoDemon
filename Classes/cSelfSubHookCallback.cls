@@ -799,6 +799,7 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
                 zData(IDX_BTABLE, z_ScMem) = 0              ' want no more Before messages
                 
                 ' when zTerminate is called this thunk's memory will be released
+                
                 'ADDED BY TANNER: let the debugger know that the hook is still technically active!
                 Debug.Print "cSelfSubHookCallback couldn't release hook immediately, as another hook is stil active.  Will retry on next _Terminate event."
                 
@@ -814,6 +815,16 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
     End Select
 
 End Sub
+
+Public Function isHookingActive() As Boolean
+
+    If (z_hkFunk Is Nothing) Then
+        isHookingActive = False
+    Else
+        isHookingActive = True
+    End If
+
+End Function
 
 Private Sub zTerminateThunks(ByVal vType As eThunkType)
 
