@@ -18,6 +18,12 @@ Begin VB.UserControl pdTextBox
    ScaleHeight     =   65
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   201
+   Begin VB.Timer tmrHookRelease 
+      Enabled         =   0   'False
+      Interval        =   100
+      Left            =   600
+      Top             =   240
+   End
    Begin VB.Timer tmrFocus 
       Enabled         =   0   'False
       Interval        =   50
@@ -325,6 +331,14 @@ Private m_InternalResizeState As Boolean
 ' and WAPI uses it to draw the edit box background.
 Private m_EditBoxBrush As Long
 
+'While inside the hook event, this will be set to TRUE.  Because we raise events directly from the hook, we sometimes need to postpone
+' crucial actions (like releasing the hook) until the hook proc has exited.
+Private m_InHookNow As Boolean
+
+'If the user attempts to set the Text property before the edit box is created (e.g. when the control is invisible), we will back up the
+' text to this string.  When the edit box is created, this text will be automatically placed inside the control.
+Private m_TextBackup As String
+
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
 Private m_ToolString As String
@@ -389,25 +403,32 @@ End Property
 Public Property Get Text() As String
 Attribute Text.VB_UserMemId = -517
     
-    'Retrieve the length of the edit box's current string.  Note that this is not necessarily the *actual* length.  Instead, it is an
-    ' interop-friendly measurement that represents the maximum possible size of the buffer, when accounting for mixed ANSI and Unicode
-    ' strings (among other things).
-    Dim bufLength As Long
-    bufLength = GetWindowTextLength(m_EditBoxHwnd) + 1
+    'Make sure the text box has been initialized
+    If m_EditBoxHwnd <> 0 Then
     
-    'Note that there is a disconnect here.  GetWindowTextLength returns the length, in characters, of of the string to be returned.
-    ' It does NOT include a +1 for the null terminator (which is implicit in VB strings, but relevant when preparing a buffer).
-    ' This is why we append a +1, above.
-    
-    'Prepare a string buffer at that size
-    Text = Space$(bufLength)
-    
-    'Retrieve the window's text.  Note that the retrieval function will return that actual length of the buffer (not counting the null
-    ' terminator).  On the off chance that the actual length differs from the buffer we were initially given, trim the string to match.
-    Dim actualBufLength As Long
-    actualBufLength = GetWindowText(m_EditBoxHwnd, StrPtr(Text), bufLength)
-    
-    If actualBufLength <> bufLength Then Text = Left$(Text, actualBufLength)
+        'Retrieve the length of the edit box's current string.  Note that this is not necessarily the *actual* length.  Instead, it is an
+        ' interop-friendly measurement that represents the maximum possible size of the buffer, when accounting for mixed ANSI and Unicode
+        ' strings (among other things).
+        Dim bufLength As Long
+        bufLength = GetWindowTextLength(m_EditBoxHwnd) + 1
+        
+        'Note that there is a disconnect here.  GetWindowTextLength returns the length, in characters, of of the string to be returned.
+        ' It does NOT include a +1 for the null terminator (which is implicit in VB strings, but relevant when preparing a buffer).
+        ' This is why we append a +1, above.
+        
+        'Prepare a string buffer at that size
+        Text = Space$(bufLength)
+        
+        'Retrieve the window's text.  Note that the retrieval function will return that actual length of the buffer (not counting the null
+        ' terminator).  On the off chance that the actual length differs from the buffer we were initially given, trim the string to match.
+        Dim actualBufLength As Long
+        actualBufLength = GetWindowText(m_EditBoxHwnd, StrPtr(Text), bufLength)
+        
+        If actualBufLength <> bufLength Then Text = Left$(Text, actualBufLength)
+        
+    Else
+        Text = m_TextBackup
+    End If
     
 End Property
 
@@ -415,7 +436,11 @@ Public Property Let Text(ByRef newString As String)
 
     'Unfortunately, we cannot use SetWindowText here.  SetWindowText does not expand tab characters in a string,
     ' so our only option is to manually send a WM_SETTEXT message to the text box.
-    SendMessage m_EditBoxHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newString)
+    If m_EditBoxHwnd <> 0 Then
+        SendMessage m_EditBoxHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newString)
+    Else
+        m_TextBackup = newString
+    End If
     
     'Note that updating text this way will not raise an EN_UPDATE message for the parent.  As such, we must raise a Change event manually.
     RaiseEvent Change
@@ -448,6 +473,18 @@ Private Sub tmrFocus_Timer()
     
     'After forwarding focus, disable the hook and deactivate this timer
     tmrFocus.Enabled = False
+    
+End Sub
+
+Private Sub tmrHookRelease_Timer()
+
+    'If a hook is active, this timer will repeatedly try to kill it.  Do not enable it until you are certain the hook needs to be released.
+    ' (This is used as a failsafe if we cannot immediately release the hook when focus is lost, for example if we are currently inside an
+    '  external event, as happens in the Layer toolbox, which hides the active text box inside the KeyPress event.)
+    If (m_EditBoxHwnd <> 0) And (Not m_InHookNow) Then
+        RemoveHookConditional
+        tmrHookRelease.Enabled = False
+    End If
     
 End Sub
 
@@ -609,7 +646,11 @@ Private Function createEditBox() As Boolean
 
     'If the edit box already exists, copy its text, then kill it
     Dim curText As String
-    If m_EditBoxHwnd <> 0 Then curText = Text
+    If m_EditBoxHwnd <> 0 Then
+        curText = Text
+    Else
+        curText = m_TextBackup
+    End If
     destroyEditBox
     
     'Create a brush for drawing the box background
@@ -1096,7 +1137,7 @@ Private Sub RemoveHookConditional()
         redrawBackBuffer
         
     End If
-
+    
 End Sub
 
 'This routine MUST BE KEPT as the next-to-last routine for this form. Its ordinal position determines its ability to hook properly.
@@ -1114,6 +1155,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
 '* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
 '*************************************************************************************************
     
+    m_InHookNow = True
     
     If lHookType = WH_KEYBOARD Then
     
@@ -1133,21 +1175,21 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             ' separate KeyDown and KeyUp events, as necessary.
             If lParam < 0 Then
                 
-                'The default key handler works just fine for character keys.  However, dialog keys (e.g. arrow keys) get eaten
-                ' by VB, so we must manually catch them in this hook, and forward them direct to the edit control.
-                If doesVirtualKeyRequireSpecialHandling(wParam) Then
-                    
-                    'Key up events will be raised twice; once in a transitionary stage, and once again in a final stage.
-                    ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
-                    If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
+                'Raise a KeyUp event.  The caller can deny further handling by setting the appropriate param to TRUE.
+                bHandled = False
+                RaiseEvent KeyPress(wParam, bHandled)
+                
+                'If the user didn't forcibly override further key handling, proceed with default proc behavior
+                If Not bHandled Then
+                
+                    'The default key handler works just fine for character keys.  However, dialog keys (e.g. arrow keys) get eaten
+                    ' by VB, so we must manually catch them in this hook, and forward them direct to the edit control.
+                    If doesVirtualKeyRequireSpecialHandling(wParam) Then
                         
-                        'Raise a KeyUp event.  The caller can deny further handling by setting the appropriate param to TRUE.
-                        bHandled = False
-                        RaiseEvent KeyPress(wParam, bHandled)
-                        
-                        'If the user didn't forcibly override further key handling, proceed with default proc behavior
-                        If Not bHandled Then
-                        
+                        'Key up events will be raised twice; once in a transitionary stage, and once again in a final stage.
+                        ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
+                        If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
+                            
                             'On a single-line control, the tab key should be used to redirect focus to a new window.
                             If (wParam = VK_TAB) Then
                                 
@@ -1160,7 +1202,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                                     
                                     'Enable a timer, which will forward focus after a slight delay.  The slight delay gives us time to
                                     ' exit the hook proc and terminate the hook, after which focus will forward normally.
-                                    tmrFocus.Enabled = True
+                                    ' tmrFocus.Enabled = True
                                     
                                     bHandled = True
                                     
@@ -1177,69 +1219,69 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                             End If
                             
                         End If
-                        
+                    
                     End If
                 
-                End If
-                
-                'Another special case we must handle here in the hook is Alt+ key presses
-                'If we're not tracking sys key messages, start now
-                If m_AltKeyMode And ((lParam And 1) <> 0) And ((lParam And 3) = 1) And (lParam < 0) Then
-                    
-                    'See if the Alt key is being released.  If it is, submit the retrieved character code.
-                    If wParam = VK_ALT Then
+                    'Another special case we must handle here in the hook is Alt+ key presses
+                    'If we're not tracking sys key messages, start now
+                    If m_AltKeyMode And ((lParam And 1) <> 0) And ((lParam And 3) = 1) And (lParam < 0) Then
                         
-                        m_AltKeyMode = False
-                        
-                        'If the Alt+keycode is larger than an Int, submit it manually.
-                        Dim charAsLong As Long
-                        
-                        If Len(assembledVirtualKeyString) > 0 Then
-                            charAsLong = CLng(assembledVirtualKeyString)
-                            If charAsLong And &HFFFF0000 <> 0 Then
+                        'See if the Alt key is being released.  If it is, submit the retrieved character code.
+                        If wParam = VK_ALT Then
                             
-                                'Convert it into two chars.  The code for this is rather involved; see http://en.wikipedia.org/wiki/UTF-16#Code_points_U.2B010000_to_U.2B10FFFF
-                                ' for details.
-                                charAsLong = charAsLong - &H10000
-                                
-                                Dim charHiWord As Long, charLoWord As Long
-                                charHiWord = ((charAsLong \ 1024) And &H7FF) + &HD800&
-                                charLoWord = (charAsLong And &H3FF) + &HDC00&
-                                
-                                'Send those chars to the edit box
-                                Dim tmpMsg As winMsg
-                                tmpMsg.hWnd = m_EditBoxHwnd
-                                tmpMsg.sysMsg = WM_CHAR
-                                tmpMsg.wParam = charHiWord
-                                tmpMsg.lParam = lParam
-                                tmpMsg.msgTime = GetTickCount()
-                                DispatchMessage tmpMsg
-                                
-                                tmpMsg.wParam = charLoWord
-                                tmpMsg.msgTime = GetTickCount()
-                                DispatchMessage tmpMsg
+                            m_AltKeyMode = False
                             
+                            'If the Alt+keycode is larger than an Int, submit it manually.
+                            Dim charAsLong As Long
+                            
+                            If Len(assembledVirtualKeyString) > 0 Then
+                                charAsLong = CLng(assembledVirtualKeyString)
+                                If charAsLong And &HFFFF0000 <> 0 Then
+                                
+                                    'Convert it into two chars.  The code for this is rather involved; see http://en.wikipedia.org/wiki/UTF-16#Code_points_U.2B010000_to_U.2B10FFFF
+                                    ' for details.
+                                    charAsLong = charAsLong - &H10000
+                                    
+                                    Dim charHiWord As Long, charLoWord As Long
+                                    charHiWord = ((charAsLong \ 1024) And &H7FF) + &HD800&
+                                    charLoWord = (charAsLong And &H3FF) + &HDC00&
+                                    
+                                    'Send those chars to the edit box
+                                    Dim tmpMsg As winMsg
+                                    tmpMsg.hWnd = m_EditBoxHwnd
+                                    tmpMsg.sysMsg = WM_CHAR
+                                    tmpMsg.wParam = charHiWord
+                                    tmpMsg.lParam = lParam
+                                    tmpMsg.msgTime = GetTickCount()
+                                    DispatchMessage tmpMsg
+                                    
+                                    tmpMsg.wParam = charLoWord
+                                    tmpMsg.msgTime = GetTickCount()
+                                    DispatchMessage tmpMsg
+                                
+                                End If
                             End If
-                        End If
-                        
-                        assembledVirtualKeyString = ""
-                        bHandled = True
-                        
-                    'If we're already tracking sys key messages, continue assembling numeric keypresses
-                    Else
-                    
-                        'Make sure the keypress is numeric.  If it is, continue assembling a virtual string.
-                        Dim numCheck As Long
-                        If isVirtualKeyNumeric(wParam, numCheck) Then
-                            assembledVirtualKeyString = assembledVirtualKeyString & CStr(numCheck)
+                            
+                            assembledVirtualKeyString = ""
+                            bHandled = True
+                            
+                        'If we're already tracking sys key messages, continue assembling numeric keypresses
                         Else
-                            If Len(assembledVirtualKeyString) > 0 Then assembledVirtualKeyString = ""
+                        
+                            'Make sure the keypress is numeric.  If it is, continue assembling a virtual string.
+                            Dim numCheck As Long
+                            If isVirtualKeyNumeric(wParam, numCheck) Then
+                                assembledVirtualKeyString = assembledVirtualKeyString & CStr(numCheck)
+                            Else
+                                If Len(assembledVirtualKeyString) > 0 Then assembledVirtualKeyString = ""
+                            End If
+                            
+                            bHandled = True
+                            
                         End If
-                        
-                        bHandled = True
-                        
-                    End If
                 
+                    End If
+                    
                 End If
                 
             Else
@@ -1275,6 +1317,8 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         End If
             
     End If
+    
+    m_InHookNow = False
     
 End Sub
 
@@ -1510,7 +1554,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             InstallHookConditional
             
         Case WM_KILLFOCUS
-            RemoveHookConditional
+            If m_InHookNow Then
+                tmrHookRelease.Enabled = True
+            Else
+                RemoveHookConditional
+            End If
             
         'Other messages??
         Case Else
