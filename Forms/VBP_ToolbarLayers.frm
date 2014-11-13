@@ -1532,9 +1532,7 @@ Private Sub sltLayerOpacity_Change()
 End Sub
 
 Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As Boolean)
-
-    Debug.Print vKey & "," & VK_RETURN
-
+    
     'When the Enter key is pressed, commit the changed layer name and hide the text box
     If vKey = VK_RETURN Then
         

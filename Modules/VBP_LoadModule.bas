@@ -1664,8 +1664,13 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         
         If pdiReader.getNodeDataByIndex(0, True, retBytes, sourceIsUndoFile) Then
         
-            'Convert the received bytes into a string
-            retString = StrConv(retBytes, vbUnicode)
+            'Copy the received bytes into a string
+            If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+                retString = Space$((UBound(retBytes) + 1) \ 2)
+                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+            Else
+                retString = StrConv(retBytes, vbUnicode)
+            End If
             
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
             dstImage.readExternalData retString, True, sourceIsUndoFile
@@ -1685,8 +1690,13 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             'First, retrieve the layer's header
             If pdiReader.getNodeDataByIndex(i + 1, True, retBytes, sourceIsUndoFile) Then
             
-                'Convert the received bytes into a string
-                retString = StrConv(retBytes, vbUnicode)
+                'Copy the received bytes into a string
+                If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+                    retString = Space$((UBound(retBytes) + 1) \ 2)
+                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                Else
+                    retString = StrConv(retBytes, vbUnicode)
+                End If
                 
                 'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
                 If Not dstImage.getLayerByIndex(i).CreateNewImageLayerFromXML(retString) Then
@@ -1715,8 +1725,13 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
         If pdiReader.getNodeDataByName("pdMetadata_Raw", True, retBytes, sourceIsUndoFile) Then
         
-            'Convert the received bytes into a string
-            retString = StrConv(retBytes, vbUnicode)
+            'Copy the received bytes into a string
+            If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+                retString = Space$((UBound(retBytes) + 1) \ 2)
+                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+            Else
+                retString = StrConv(retBytes, vbUnicode)
+            End If
             
             'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
             ' internal metadata struct.
@@ -1793,8 +1808,13 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
         
         If pdiReader.getNodeDataByIndex(0, True, retBytes, True) Then
         
-            'Convert the received bytes into a string
-            retString = StrConv(retBytes, vbUnicode)
+            'Copy the received bytes into a string
+            If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+                retString = Space$((UBound(retBytes) + 1) \ 2)
+                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+            Else
+                retString = StrConv(retBytes, vbUnicode)
+            End If
             
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
             dstImage.readExternalData retString, True, True, True
@@ -1829,8 +1849,13 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
             'Now that the node is in place, we can retrieve its header.
             If pdiReader.getNodeDataByIndex(i + 1, True, retBytes, True) Then
             
-                'Convert the received bytes into a string
-                retString = StrConv(retBytes, vbUnicode)
+                'Copy the received bytes into a string
+                If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
+                    retString = Space$((UBound(retBytes) + 1) \ 2)
+                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                Else
+                    retString = StrConv(retBytes, vbUnicode)
+                End If
                 
                 'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
                 If Not dstImage.getLayerByIndex(i).CreateNewImageLayerFromXML(retString, , True) Then
@@ -1906,8 +1931,9 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
         
         If pdiReader.getNodeDataByID(targetLayerID, True, retBytes, True) Then
         
-            'Convert the received bytes into a string
-            retString = StrConv(retBytes, vbUnicode)
+            'Copy the received bytes into a string
+            retString = Space$((UBound(retBytes) + 1) \ 2)
+            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
             
             'Pass the string to the target layer, which will read the XML data and initialize itself accordingly.
             ' Note that we also pass along the loadHeaderOnly flag, which will instruct the layer to erase its current
@@ -1995,8 +2021,9 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
         
         If pdiReader.getNodeDataByIndex(0, True, retBytes, True) Then
         
-            'Convert the received bytes into a string
-            retString = StrConv(retBytes, vbUnicode)
+            'Copy the received bytes into a string
+            retString = Space$((UBound(retBytes) + 1) \ 2)
+            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
             
             'Pass the string to the target layer, which will read the XML data and initialize itself accordingly.
             ' Note that we pass the loadHeaderOnly request to this function; if this is a header-only load, the target
