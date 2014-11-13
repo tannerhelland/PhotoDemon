@@ -89,7 +89,8 @@ Option Explicit
 '   instead of the actual UDT struct used in previous versions (which VB custom-formats).  This was a necessary change prior to
 '   enabling second-pass compression of the directory and data chunks.
 ' - Both v64 and v65 packages are supported by this class, but it will only write v65 packages.
-Private Const THIS_PDPACKAGE_VERSION As Long = 65
+Private Const THIS_PDPACKAGE_VERSION As Long = 66
+Private Const OLD_PDPACKAGE_VERSION_AUTUMN_2014 As Long = 65
 Private Const OLD_PDPACKAGE_VERSION_SUMMER_2014 As Long = 64
 
 'The first four bytes of a valid pdPackage file must always be &H4B504450 ("PDPK" in ASCII, if viewed in a text editor
@@ -448,13 +449,11 @@ End Function
 
 'Thin wrapper for addNodeDataFromPointer, above, but allows the user to supply a string.
 Public Function addNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
-
-    'Prepare a temporary array to hold the string
-    Dim tmpStringCopy() As Byte
-    tmpStringCopy = StrConv(srcDataString, vbFromUnicode)
     
-    'Forward the byte array to the actual addNodeData function, and return its result.
-    addNodeDataFromString = addNodeDataFromPointer(nodeIndex, useHeaderBuffer, VarPtr(tmpStringCopy(0)), UBound(tmpStringCopy) + 1, compressData, compressionLevel, requestChecksum)
+    'Forward the string pointer to the actual addNodeData function, and return its result.
+    If Len(srcDataString) > 0 Then
+        addNodeDataFromString = addNodeDataFromPointer(nodeIndex, useHeaderBuffer, StrPtr(srcDataString), Len(srcDataString) * 2, compressData, compressionLevel, requestChecksum)
+    End If
 
 End Function
 
@@ -827,6 +826,11 @@ Private Function loadLegacyPDPackage(ByRef fileNum As Integer) As Boolean
         
     End Select
 
+End Function
+
+'Returns the version of a loaded pdPackage.  Return value is meaningless if no package is loaded.
+Public Function getPDPackageVersion() As Long
+    getPDPackageVersion = m_FileHeader.PDP_Version
 End Function
 
 'Returns the current number of nodes in the package.  This is primarily designed to be used right after loading a pdPackage file;

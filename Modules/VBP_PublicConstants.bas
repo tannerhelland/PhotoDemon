@@ -137,3 +137,7 @@ Public Const VK_6 As Long = &H36
 Public Const VK_7 As Long = &H37
 Public Const VK_8 As Long = &H38
 Public Const VK_9 As Long = &H39
+
+'Old PDI files were not Unicode friendly.  When loading PDI files, we use this constant to determine whether
+' ANSI or Unicode string behavior should be used.
+Public Const PDPACKAGE_UNICODE_FRIENDLY_VERSION As Long = 66
