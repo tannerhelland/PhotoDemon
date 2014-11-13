@@ -68,6 +68,7 @@ Option Explicit
 
 'By design, this textbox raises fewer events than a standard text box
 Public Event Change()
+Public Event KeyPress(ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
 
 
 'Window styles
@@ -234,7 +235,9 @@ Private Const WM_NEXTDLGCTL As Long = &H28
 Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_MOUSEACTIVATE As Long = &H21
 Private Const WM_CTLCOLOREDIT As Long = &H133
+
 Private Const EN_UPDATE As Long = &H400
+Private Const EM_SETSEL As Long = &HB1
 
 Private Const VK_SHIFT As Long = &H10
 Private Const VK_CONTROL As Long = &H11
@@ -415,6 +418,15 @@ Public Property Let Text(ByRef newString As String)
     SendMessage m_EditBoxHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newString)
 
 End Property
+
+'External functions can call this to fully select the text box's contents
+Public Sub SelectAll()
+
+    If m_EditBoxHwnd <> 0 Then
+        SendMessage m_EditBoxHwnd, EM_SETSEL, ByVal 0&, ByVal -1&
+    End If
+
+End Sub
 
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
@@ -608,9 +620,49 @@ Private Function createEditBox() As Boolean
     
     If m_Multiline Then
         flagsWinStyle = flagsWinStyle Or WS_VSCROLL
-        flagsEditControl = flagsEditControl Or ES_MULTILINE Or ES_WANTRETURN Or ES_AUTOVSCROLL
+        flagsEditControl = flagsEditControl Or ES_MULTILINE Or ES_WANTRETURN Or ES_AUTOVSCROLL Or ES_NOHIDESEL
     Else
-        flagsEditControl = flagsEditControl Or ES_AUTOHSCROLL
+        flagsEditControl = flagsEditControl Or ES_AUTOHSCROLL Or ES_NOHIDESEL
+    End If
+    
+    'Multiline text boxes can have any height.  Single-line text boxes cannot; they are forced to an ideal height,
+    ' using the current font as our guide.  We check for this here, prior to creating the edit box, as we can't easily
+    ' access our font object once we assign it to the edit box.
+    If Not m_Multiline Then
+        If Not (curFont Is Nothing) Then
+            
+            'Create a temporary DC
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createBlank 1, 1, 24
+            
+            'Select the current font into that DC
+            curFont.attachToDC tmpDIB.getDIBDC
+            
+            'Determine a standard string height
+            Dim idealHeight As Long
+            idealHeight = curFont.getHeightOfString("abc123")
+            
+            'Resize the user control accordingly; the formula for height is the string height + 5px of borders.
+            ' (5px = 2px on top, 3px on bottom.)  User control width is not changed.
+            m_InternalResizeState = True
+            
+            'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
+            ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
+            ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
+            If g_UserModeFix Then
+                MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, UserControl.ScaleWidth, idealHeight + 5, 1
+            Else
+                UserControl.Height = ScaleY(idealHeight + 5, vbPixels, vbTwips)
+            End If
+            
+            m_InternalResizeState = False
+            
+            'Remove the font and release our temporary DIB
+            curFont.releaseFromDC
+            Set tmpDIB = Nothing
+            
+        End If
     End If
     
     'Retrieve the edit box's window rect, which is generated relative to the underlying DC
@@ -706,16 +758,17 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
         
     'Request a new font, if one or more settings have changed
     If fontRefreshRequired Or forceRefresh Then
+        
         curFont.createFontObject
         
         'Whenever the font is recreated, we need to reassign it to the text box.  This is done via the WM_SETFONT message.
         If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, curFont.getFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
-        
+            
+        'Also, the back buffer needs to be rebuilt to reflect the new font metrics
+        updateControlSize
+            
     End If
     
-    'Also, the back buffer needs to be rebuilt to reflect the new font metrics
-    updateControlSize
-
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -754,7 +807,7 @@ Private Sub updateControlSize()
     'Reset our back buffer, and reassign the font to it
     If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
     m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
-    
+        
     'Redraw the back buffer
     redrawBackBuffer
 
@@ -1076,7 +1129,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             'Bit 31 of lParam is 0 if a key is being pressed, and 1 if it is being released.  We use this to raise
             ' separate KeyDown and KeyUp events, as necessary.
             If lParam < 0 Then
-            
+                
                 'The default key handler works just fine for character keys.  However, dialog keys (e.g. arrow keys) get eaten
                 ' by VB, so we must manually catch them in this hook, and forward them direct to the edit control.
                 If doesVirtualKeyRequireSpecialHandling(wParam) Then
@@ -1084,32 +1137,41 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                     'Key up events will be raised twice; once in a transitionary stage, and once again in a final stage.
                     ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
                     If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
-                    
-                        'On a single-line control, the tab key should be used to redirect focus to a new window.
-                        If (wParam = VK_TAB) Then
+                        
+                        'Raise a KeyUp event.  The caller can deny further handling by setting the appropriate param to TRUE.
+                        bHandled = False
+                        RaiseEvent KeyPress(wParam, bHandled)
+                        
+                        'If the user didn't forcibly override further key handling, proceed with default proc behavior
+                        If Not bHandled Then
+                        
+                            'On a single-line control, the tab key should be used to redirect focus to a new window.
+                            If (wParam = VK_TAB) Then
+                                
+                                'Multiline edit boxes accept tab keypresses.  Single line ones do not, so interpret TAB as a
+                                ' request to forward (or reverse) focus.
+                                If (Not m_Multiline) And m_HasFocus And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
+                                    
+                                    'Set a module-level shift state, and a flag that tells the hook to deactivate after it eats this keypress.
+                                    If isVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
+                                    
+                                    'Enable a timer, which will forward focus after a slight delay.  The slight delay gives us time to
+                                    ' exit the hook proc and terminate the hook, after which focus will forward normally.
+                                    tmrFocus.Enabled = True
+                                    
+                                    bHandled = True
+                                    
+                                End If
                             
-                            'Multiline edit boxes accept tab keypresses.  Single line ones do not, so interpret TAB as a
-                            ' request to forward (or reverse) focus.
-                            If (Not m_Multiline) And m_HasFocus And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
-                                
-                                'Set a module-level shift state, and a flag that tells the hook to deactivate after it eats this keypress.
-                                If isVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
-                                
-                                'Enable a timer, which will forward focus after a slight delay.  The slight delay gives us time to
-                                ' exit the hook proc and terminate the hook, after which focus will forward normally.
-                                tmrFocus.Enabled = True
-                                
+                            'Non-tab keys that require special handling are text-dependent keys (e.g. arrow keys).  Simply forward these
+                            ' directly to the edit box, and it will take care of the rest.
+                            Else
+                        
+                                'WM_KEYUP requires that certain lParam bits be set.  See http://msdn.microsoft.com/en-us/library/windows/desktop/ms646281%28v=vs.85%29.aspx
+                                SendMessage m_EditBoxHwnd, WM_KEYUP, wParam, ByVal (lParam And &HDFFFFF81 Or &HC0000000)
                                 bHandled = True
                                 
                             End If
-                        
-                        'Non-tab keys that require special handling are text-dependent keys (e.g. arrow keys).  Simply forward these
-                        ' directly to the edit box, and it will take care of the rest.
-                        Else
-                    
-                            'WM_KEYUP requires that certain lParam bits be set.  See http://msdn.microsoft.com/en-us/library/windows/desktop/ms646281%28v=vs.85%29.aspx
-                            SendMessage m_EditBoxHwnd, WM_KEYUP, wParam, ByVal (lParam And &HDFFFFF81 Or &HC0000000)
-                            bHandled = True
                             
                         End If
                         
