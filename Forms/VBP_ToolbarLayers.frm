@@ -26,6 +26,16 @@ Begin VB.Form toolbar_Layers
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdTextBox txtLayerName 
+      Height          =   315
+      Left            =   120
+      TabIndex        =   9
+      Top             =   6360
+      Visible         =   0   'False
+      Width           =   3255
+      _ExtentX        =   5741
+      _ExtentY        =   556
+   End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
       Index           =   0
@@ -33,27 +43,9 @@ Begin VB.Form toolbar_Layers
       Top             =   240
       Width           =   885
       _ExtentX        =   1561
-      _ExtentY        =   476
+      _ExtentY        =   503
       Alignment       =   1
       Caption         =   "opacity:"
-   End
-   Begin VB.TextBox txtLayerName 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   285
-      Left            =   120
-      TabIndex        =   9
-      TabStop         =   0   'False
-      Top             =   6360
-      Visible         =   0   'False
-      Width           =   3015
    End
    Begin VB.ComboBox cboBlendMode 
       Appearance      =   0  'Flat
@@ -236,15 +228,6 @@ Begin VB.Form toolbar_Layers
       Width           =   2760
       _ExtentX        =   4868
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   100
       Value           =   100
       NotchPosition   =   2
@@ -257,7 +240,7 @@ Begin VB.Form toolbar_Layers
       Top             =   720
       Width           =   885
       _ExtentX        =   1561
-      _ExtentY        =   476
+      _ExtentY        =   503
       Alignment       =   1
       Caption         =   "blend:"
    End
@@ -691,7 +674,9 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
         
         'Fill the text box with the current layer name, and select it
         txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerName
-        AutoSelectText txtLayerName
+        txtLayerName.SelectAll
+        
+        txtLayerName.SetFocus
     
     Else
     
@@ -1546,14 +1531,15 @@ Private Sub sltLayerOpacity_Change()
 
 End Sub
 
-Private Sub txtLayerName_KeyPress(KeyAscii As Integer)
+Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As Boolean)
 
-    'KeyAscii 13 = Enter key; when this happens, commit the changed layer name and hide the text box
-    If KeyAscii = 13 Then
+    Debug.Print vKey & "," & VK_RETURN
+
+    'When the Enter key is pressed, commit the changed layer name and hide the text box
+    If vKey = VK_RETURN Then
         
-        'Prevent beeps
-        KeyAscii = 0
-                
+        preventFurtherHandling = True
+        
         'Set the active layer name, then hide the text box
         pdImages(g_CurrentImage).getActiveLayer.setLayerName txtLayerName.Text
         txtLayerName.Text = ""
@@ -1569,7 +1555,7 @@ Private Sub txtLayerName_KeyPress(KeyAscii As Integer)
         picLayers.SetFocus
         
     End If
-    
+
 End Sub
 
 'If the text box loses focus mid-edit, hide it and discard any changes
