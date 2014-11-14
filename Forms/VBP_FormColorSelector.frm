@@ -25,10 +25,20 @@ Begin VB.Form dialog_ColorSelector
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdTextBox txtHex 
+      Height          =   315
+      Left            =   6480
+      TabIndex        =   38
+      Top             =   3735
+      Width           =   1455
+      _ExtentX        =   2566
+      _ExtentY        =   556
+      Text            =   "abcdef"
+   End
    Begin PhotoDemon.jcbutton cmdCapture 
       Height          =   600
       Left            =   10320
-      TabIndex        =   38
+      TabIndex        =   37
       Top             =   3720
       Width           =   1095
       _ExtentX        =   1931
@@ -61,7 +71,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   37
+      TabIndex        =   36
       Top             =   4560
       Width           =   495
    End
@@ -76,7 +86,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   36
+      TabIndex        =   35
       Top             =   4560
       Width           =   495
    End
@@ -91,7 +101,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   35
+      TabIndex        =   34
       Top             =   4560
       Width           =   495
    End
@@ -106,7 +116,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   34
+      TabIndex        =   33
       Top             =   4560
       Width           =   495
    End
@@ -121,7 +131,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   33
+      TabIndex        =   32
       Top             =   4560
       Width           =   495
    End
@@ -136,7 +146,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   32
+      TabIndex        =   31
       Top             =   4560
       Width           =   495
    End
@@ -151,7 +161,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   31
+      TabIndex        =   30
       Top             =   4560
       Width           =   495
    End
@@ -166,26 +176,9 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   30
+      TabIndex        =   29
       Top             =   4560
       Width           =   495
-   End
-   Begin VB.TextBox txtHex 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   360
-      Left            =   6480
-      TabIndex        =   28
-      Text            =   "abcdef"
-      Top             =   3720
-      Width           =   1455
    End
    Begin VB.PictureBox picSampleHSV 
       Appearance      =   0  'Flat
@@ -379,15 +372,6 @@ Begin VB.Form dialog_ColorSelector
       _ExtentX        =   1931
       _ExtentY        =   714
       Max             =   255
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudRGB 
       Height          =   405
@@ -399,15 +383,6 @@ Begin VB.Form dialog_ColorSelector
       _ExtentX        =   1931
       _ExtentY        =   714
       Max             =   255
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudRGB 
       Height          =   405
@@ -419,15 +394,6 @@ Begin VB.Form dialog_ColorSelector
       _ExtentX        =   1931
       _ExtentY        =   714
       Max             =   255
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   405
@@ -439,15 +405,6 @@ Begin VB.Form dialog_ColorSelector
       _ExtentX        =   1931
       _ExtentY        =   714
       Max             =   359
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   405
@@ -459,15 +416,6 @@ Begin VB.Form dialog_ColorSelector
       _ExtentX        =   1931
       _ExtentY        =   714
       Max             =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   405
@@ -479,15 +427,6 @@ Begin VB.Form dialog_ColorSelector
       _ExtentX        =   1931
       _ExtentY        =   714
       Max             =   100
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblColor 
       Alignment       =   1  'Right Justify
@@ -508,7 +447,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   600
       Index           =   9
       Left            =   5085
-      TabIndex        =   29
+      TabIndex        =   28
       Top             =   4680
       Width           =   1305
       WordWrap        =   -1  'True
