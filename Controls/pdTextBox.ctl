@@ -1573,7 +1573,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         ' appearance of two controls simultaneously having focus, we re-set focus to the underlying user control, which forces
         ' VB to redraw the lost focus state of whatever control previously had focus.
         Case WM_MOUSEACTIVATE
-            UserControl.SetFocus
+            If Not m_HasFocus Then UserControl.SetFocus
             
         'When the control receives focus, initialize a keyboard hook.  This prevents accelerators from working, but it is the
         ' only way to bypass VB's internal message translator, which will forcibly convert certain Unicode chars to ANSI.
