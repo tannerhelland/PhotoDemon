@@ -25,6 +25,16 @@ Begin VB.Form FormNewLayer
    ScaleWidth      =   642
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdTextBox txtLayerName 
+      Height          =   345
+      Left            =   480
+      TabIndex        =   11
+      Top             =   480
+      Width           =   8895
+      _ExtentX        =   15690
+      _ExtentY        =   609
+      FontSize        =   11
+   End
    Begin VB.ComboBox cboPosition 
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
@@ -40,25 +50,8 @@ Begin VB.Form FormNewLayer
       Height          =   330
       Left            =   480
       Style           =   2  'Dropdown List
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   4200
-      Width           =   8895
-   End
-   Begin VB.TextBox txtLayerName 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   390
-      Left            =   480
-      TabIndex        =   2
-      Text            =   "(enter name here)"
-      Top             =   600
       Width           =   8895
    End
    Begin PhotoDemon.commandBar cmdBar 
@@ -85,7 +78,7 @@ Begin VB.Form FormNewLayer
       Height          =   330
       Index           =   0
       Left            =   480
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1560
       Width           =   8820
       _ExtentX        =   2434
@@ -107,7 +100,7 @@ Begin VB.Form FormNewLayer
       Height          =   330
       Index           =   1
       Left            =   480
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   1920
       Width           =   8820
       _ExtentX        =   1455
@@ -128,7 +121,7 @@ Begin VB.Form FormNewLayer
       Height          =   330
       Index           =   2
       Left            =   480
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   2280
       Width           =   8820
       _ExtentX        =   1508
@@ -149,7 +142,7 @@ Begin VB.Form FormNewLayer
       Height          =   330
       Index           =   3
       Left            =   480
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   2640
       Width           =   8820
       _ExtentX        =   2752
@@ -168,7 +161,7 @@ Begin VB.Form FormNewLayer
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   615
       Left            =   840
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   3000
       Width           =   8535
       _ExtentX        =   15055
@@ -178,11 +171,11 @@ Begin VB.Form FormNewLayer
    Begin PhotoDemon.smartCheckBox chkAutoSelectLayer 
       Height          =   300
       Left            =   480
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   4680
       Width           =   8820
       _ExtentX        =   6059
-      _ExtentY        =   529
+      _ExtentY        =   582
       Caption         =   "make the new layer the active layer"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -211,7 +204,7 @@ Begin VB.Form FormNewLayer
       Height          =   285
       Index           =   2
       Left            =   240
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   3840
       Width           =   930
    End
@@ -232,7 +225,7 @@ Begin VB.Form FormNewLayer
       Height          =   285
       Index           =   1
       Left            =   240
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   1200
       Width           =   1335
    End
@@ -317,8 +310,4 @@ Private Sub Form_Load()
     cboPosition.AddItem "bottom of layer stack"
     cboPosition.ListIndex = 0
 
-End Sub
-
-Private Sub txtLayerName_GotFocus()
-    AutoSelectText txtLayerName
 End Sub
