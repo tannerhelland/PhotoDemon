@@ -37,7 +37,7 @@ Begin VB.Form FormPreferences
       EndProperty
       Height          =   495
       Left            =   2910
-      TabIndex        =   80
+      TabIndex        =   79
       Top             =   6990
       Width           =   2580
    End
@@ -246,7 +246,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   1
       Left            =   120
-      TabIndex        =   26
+      TabIndex        =   25
       Top             =   960
       Width           =   2520
       _ExtentX        =   4445
@@ -279,7 +279,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   2
       Left            =   120
-      TabIndex        =   39
+      TabIndex        =   38
       Top             =   1800
       Width           =   2520
       _ExtentX        =   4445
@@ -312,7 +312,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   3
       Left            =   120
-      TabIndex        =   41
+      TabIndex        =   40
       Top             =   2640
       Width           =   2520
       _ExtentX        =   4445
@@ -356,11 +356,32 @@ Begin VB.Form FormPreferences
       TabIndex        =   16
       Top             =   240
       Width           =   8295
+      Begin PhotoDemon.pdTextBox txtHardware 
+         Height          =   2235
+         Left            =   240
+         TabIndex        =   129
+         Top             =   2040
+         Width           =   7335
+         _ExtentX        =   12938
+         _ExtentY        =   3942
+         FontSize        =   9
+         Multiline       =   -1  'True
+      End
+      Begin PhotoDemon.pdTextBox txtTempPath 
+         Height          =   315
+         Left            =   240
+         TabIndex        =   128
+         Top             =   510
+         Width           =   7335
+         _ExtentX        =   12938
+         _ExtentY        =   556
+         Text            =   "automatically generated at run-time"
+      End
       Begin PhotoDemon.jcbutton cmdCopyReportClipboard 
          Height          =   525
          Left            =   7680
-         TabIndex        =   112
-         Top             =   3210
+         TabIndex        =   109
+         Top             =   3720
          Width           =   525
          _ExtentX        =   873
          _ExtentY        =   873
@@ -381,45 +402,6 @@ Begin VB.Form FormPreferences
          PictureEffectOnDown=   0
          CaptionEffects  =   0
          TooltipBackColor=   0
-      End
-      Begin VB.TextBox txtHardware 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   2175
-         Left            =   240
-         Locked          =   -1  'True
-         MultiLine       =   -1  'True
-         ScrollBars      =   2  'Vertical
-         TabIndex        =   111
-         Top             =   1560
-         Width           =   7335
-      End
-      Begin VB.TextBox TxtTempPath 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   375
-         Left            =   240
-         Locked          =   -1  'True
-         TabIndex        =   18
-         Text            =   "automatically generated at run-time"
-         ToolTipText     =   "Folder used for temporary files"
-         Top             =   480
-         Width           =   7335
       End
       Begin VB.CommandButton cmdTmpPath 
          Caption         =   "..."
@@ -456,8 +438,8 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   6
          Left            =   0
-         TabIndex        =   110
-         Top             =   1080
+         TabIndex        =   108
+         Top             =   1560
          Width           =   3120
       End
       Begin VB.Label lblMemoryUsageMax 
@@ -475,8 +457,8 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00804040&
          Height          =   480
          Left            =   240
-         TabIndex        =   57
-         Top             =   4830
+         TabIndex        =   56
+         Top             =   5430
          Width           =   7965
          WordWrap        =   -1  'True
       End
@@ -495,8 +477,8 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00804040&
          Height          =   480
          Left            =   240
-         TabIndex        =   56
-         Top             =   4320
+         TabIndex        =   55
+         Top             =   4920
          Width           =   7965
          WordWrap        =   -1  'True
       End
@@ -517,8 +499,8 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   5
          Left            =   0
-         TabIndex        =   55
-         Top             =   3960
+         TabIndex        =   54
+         Top             =   4560
          Width           =   2130
       End
       Begin VB.Label lblRuntimeSettings 
@@ -538,7 +520,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   38
+         TabIndex        =   37
          Top             =   0
          Width           =   2385
       End
@@ -554,10 +536,10 @@ Begin VB.Form FormPreferences
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H000000FF&
-         Height          =   495
+         Height          =   510
          Left            =   240
-         TabIndex        =   25
-         Top             =   2040
+         TabIndex        =   24
+         Top             =   900
          Width           =   7695
          WordWrap        =   -1  'True
       End
@@ -580,7 +562,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkPromptPluginDownload 
          Height          =   330
          Left            =   240
-         TabIndex        =   82
+         TabIndex        =   81
          Top             =   1080
          Width           =   7920
          _ExtentX        =   13970
@@ -599,7 +581,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkProgramUpdates 
          Height          =   330
          Left            =   240
-         TabIndex        =   81
+         TabIndex        =   80
          Top             =   480
          Width           =   7920
          _ExtentX        =   13970
@@ -674,7 +656,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.textUpDown tudRecentFiles 
          Height          =   420
          Left            =   3900
-         TabIndex        =   100
+         TabIndex        =   99
          Top             =   4245
          Width           =   1335
          _ExtentX        =   2355
@@ -682,20 +664,11 @@ Begin VB.Form FormPreferences
          Min             =   1
          Max             =   32
          Value           =   10
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.colorSelector csCanvasColor 
          Height          =   435
          Left            =   6960
-         TabIndex        =   95
+         TabIndex        =   94
          Top             =   780
          Width           =   1215
          _ExtentX        =   2143
@@ -715,7 +688,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   33
+         TabIndex        =   32
          Top             =   3720
          Width           =   8055
       End
@@ -733,7 +706,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   30
+         TabIndex        =   29
          ToolTipText     =   "Image windows tend to be large, so feel free to display each image's full location in the image window title bars."
          Top             =   2250
          Width           =   8055
@@ -772,7 +745,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   99
+         TabIndex        =   98
          Top             =   4320
          Width           =   3480
       End
@@ -793,7 +766,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   13
          Left            =   0
-         TabIndex        =   98
+         TabIndex        =   97
          Top             =   2880
          Width           =   1515
       End
@@ -813,7 +786,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   34
+         TabIndex        =   33
          Top             =   3360
          Width           =   3315
       End
@@ -834,7 +807,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   4
          Left            =   0
-         TabIndex        =   32
+         TabIndex        =   31
          Top             =   1440
          Width           =   870
       End
@@ -854,7 +827,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   31
+         TabIndex        =   30
          Top             =   1890
          Width           =   2730
       End
@@ -912,9 +885,19 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   19
+      TabIndex        =   18
       Top             =   240
       Width           =   8295
+      Begin PhotoDemon.pdTextBox txtColorProfilePath 
+         Height          =   315
+         Left            =   780
+         TabIndex        =   130
+         Top             =   2790
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   556
+         Text            =   "(none)"
+      End
       Begin VB.CommandButton cmdColorProfilePath 
          Caption         =   "..."
          BeginProperty Font 
@@ -928,28 +911,9 @@ Begin VB.Form FormPreferences
          EndProperty
          Height          =   375
          Left            =   7380
-         TabIndex        =   109
+         TabIndex        =   107
          Top             =   2760
          Width           =   810
-      End
-      Begin VB.TextBox txtColorProfilePath 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   375
-         Left            =   780
-         Locked          =   -1  'True
-         TabIndex        =   108
-         Text            =   "(none)"
-         Top             =   2760
-         Width           =   6525
       End
       Begin VB.ComboBox cmbMonitors 
          BeginProperty Font 
@@ -965,7 +929,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   780
          Style           =   2  'Dropdown List
-         TabIndex        =   106
+         TabIndex        =   105
          Top             =   1950
          Width           =   7440
       End
@@ -973,7 +937,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   0
          Left            =   240
-         TabIndex        =   103
+         TabIndex        =   102
          Top             =   840
          Width           =   7920
          _ExtentX        =   13970
@@ -993,7 +957,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.colorSelector csAlphaOne 
          Height          =   435
          Left            =   6240
-         TabIndex        =   96
+         TabIndex        =   95
          Top             =   4230
          Width           =   945
          _ExtentX        =   1667
@@ -1002,7 +966,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkValidateAlpha 
          Height          =   330
          Left            =   240
-         TabIndex        =   83
+         TabIndex        =   82
          Top             =   5760
          Width           =   7920
          _ExtentX        =   13970
@@ -1032,7 +996,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   5250
          Width           =   5895
       End
@@ -1050,14 +1014,14 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   4260
          Width           =   5895
       End
       Begin PhotoDemon.colorSelector csAlphaTwo 
          Height          =   435
          Left            =   7320
-         TabIndex        =   97
+         TabIndex        =   96
          Top             =   4230
          Width           =   945
          _ExtentX        =   1667
@@ -1067,7 +1031,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   1
          Left            =   240
-         TabIndex        =   104
+         TabIndex        =   103
          Top             =   1200
          Width           =   7920
          _ExtentX        =   13970
@@ -1100,7 +1064,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   2
          Left            =   780
-         TabIndex        =   107
+         TabIndex        =   106
          Top             =   2430
          Width           =   2880
       End
@@ -1121,7 +1085,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   1
          Left            =   780
-         TabIndex        =   105
+         TabIndex        =   104
          Top             =   1590
          Width           =   1635
       End
@@ -1142,7 +1106,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   0
          Left            =   240
-         TabIndex        =   102
+         TabIndex        =   101
          Top             =   480
          Width           =   3285
       End
@@ -1163,7 +1127,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   0
          Left            =   0
-         TabIndex        =   101
+         TabIndex        =   100
          Top             =   0
          Width           =   1980
       End
@@ -1183,7 +1147,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   24
+         TabIndex        =   23
          Top             =   4860
          Width           =   2790
       End
@@ -1203,7 +1167,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   3870
          Width           =   2970
       End
@@ -1224,7 +1188,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   20
+         TabIndex        =   19
          Top             =   3420
          Width           =   2805
       End
@@ -1242,7 +1206,7 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   433
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   42
+      TabIndex        =   41
       Top             =   240
       Width           =   8295
       Begin VB.ComboBox cmbFiletype 
@@ -1259,7 +1223,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   600
          Style           =   2  'Dropdown List
-         TabIndex        =   67
+         TabIndex        =   66
          Top             =   960
          Width           =   7395
       End
@@ -1274,13 +1238,13 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   71
+         TabIndex        =   70
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkPNGBackground 
             Height          =   330
             Left            =   360
-            TabIndex        =   86
+            TabIndex        =   85
             Top             =   2520
             Width           =   7500
             _ExtentX        =   13229
@@ -1299,7 +1263,7 @@ Begin VB.Form FormPreferences
          Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
             Height          =   330
             Left            =   360
-            TabIndex        =   85
+            TabIndex        =   84
             Top             =   2040
             Width           =   7500
             _ExtentX        =   13229
@@ -1319,7 +1283,7 @@ Begin VB.Form FormPreferences
             Height          =   330
             Left            =   360
             Max             =   9
-            TabIndex        =   73
+            TabIndex        =   72
             Top             =   1080
             Value           =   9
             Width           =   7095
@@ -1342,7 +1306,7 @@ Begin VB.Form FormPreferences
             Height          =   195
             Index           =   1
             Left            =   5625
-            TabIndex        =   76
+            TabIndex        =   75
             Top             =   1560
             Width           =   1590
          End
@@ -1363,7 +1327,7 @@ Begin VB.Form FormPreferences
             Height          =   195
             Index           =   0
             Left            =   600
-            TabIndex        =   75
+            TabIndex        =   74
             Top             =   1560
             Width           =   1110
          End
@@ -1384,7 +1348,7 @@ Begin VB.Form FormPreferences
             Height          =   240
             Index           =   1
             Left            =   360
-            TabIndex        =   74
+            TabIndex        =   73
             Top             =   720
             Width           =   4725
          End
@@ -1405,7 +1369,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   20
             Left            =   120
-            TabIndex        =   72
+            TabIndex        =   71
             Top             =   120
             Width           =   4290
          End
@@ -1421,13 +1385,13 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   77
+         TabIndex        =   76
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkTGARLE 
             Height          =   330
             Left            =   360
-            TabIndex        =   87
+            TabIndex        =   86
             Top             =   600
             Width           =   7500
             _ExtentX        =   13229
@@ -1460,7 +1424,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   21
             Left            =   120
-            TabIndex        =   78
+            TabIndex        =   77
             Top             =   120
             Width           =   2700
          End
@@ -1476,13 +1440,13 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   69
+         TabIndex        =   68
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkBMPRLE 
             Height          =   330
             Left            =   360
-            TabIndex        =   88
+            TabIndex        =   87
             Top             =   600
             Width           =   7500
             _ExtentX        =   13229
@@ -1515,7 +1479,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   19
             Left            =   120
-            TabIndex        =   70
+            TabIndex        =   69
             Top             =   120
             Width           =   2295
          End
@@ -1531,13 +1495,13 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   61
+         TabIndex        =   60
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
             Height          =   330
             Left            =   360
-            TabIndex        =   84
+            TabIndex        =   83
             Top             =   1560
             Width           =   7500
             _ExtentX        =   13229
@@ -1567,7 +1531,7 @@ Begin VB.Form FormPreferences
             Height          =   360
             Left            =   360
             Style           =   2  'Dropdown List
-            TabIndex        =   62
+            TabIndex        =   61
             Top             =   960
             Width           =   7335
          End
@@ -1588,7 +1552,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   7
             Left            =   120
-            TabIndex        =   65
+            TabIndex        =   64
             Top             =   120
             Width           =   4395
          End
@@ -1609,7 +1573,7 @@ Begin VB.Form FormPreferences
             Height          =   240
             Index           =   0
             Left            =   360
-            TabIndex        =   63
+            TabIndex        =   62
             Top             =   645
             Width           =   3135
          End
@@ -1625,7 +1589,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   257
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   58
+         TabIndex        =   57
          Top             =   1680
          Width           =   7935
          Begin VB.ComboBox cmbPPMFormat 
@@ -1642,7 +1606,7 @@ Begin VB.Form FormPreferences
             Height          =   360
             Left            =   480
             Style           =   2  'Dropdown List
-            TabIndex        =   59
+            TabIndex        =   58
             Top             =   960
             Width           =   7335
          End
@@ -1663,7 +1627,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   12
             Left            =   120
-            TabIndex        =   66
+            TabIndex        =   65
             Top             =   120
             Width           =   3285
          End
@@ -1683,7 +1647,7 @@ Begin VB.Form FormPreferences
             ForeColor       =   &H00404040&
             Height          =   240
             Left            =   240
-            TabIndex        =   60
+            TabIndex        =   59
             Top             =   600
             Width           =   1950
          End
@@ -1693,7 +1657,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   495
          Left            =   600
-         TabIndex        =   68
+         TabIndex        =   67
          Top             =   5520
          Width           =   7455
       End
@@ -1721,7 +1685,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   18
          Left            =   360
-         TabIndex        =   64
+         TabIndex        =   63
          Top             =   480
          Width           =   2520
       End
@@ -1742,7 +1706,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   9
          Left            =   0
-         TabIndex        =   43
+         TabIndex        =   42
          Top             =   0
          Width           =   1950
       End
@@ -1759,13 +1723,13 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   40
+      TabIndex        =   39
       Top             =   240
       Width           =   8295
       Begin PhotoDemon.smartCheckBox chkConfirmUnsaved 
          Height          =   330
          Left            =   240
-         TabIndex        =   94
+         TabIndex        =   93
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
@@ -1795,7 +1759,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   90
+         TabIndex        =   89
          Top             =   5925
          Width           =   7980
       End
@@ -1813,7 +1777,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   52
+         TabIndex        =   51
          Top             =   1740
          Width           =   7980
       End
@@ -1831,7 +1795,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   49
+         TabIndex        =   48
          Top             =   4530
          Width           =   7980
       End
@@ -1849,7 +1813,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   44
+         TabIndex        =   43
          Top             =   3135
          Width           =   7980
       End
@@ -1870,7 +1834,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   3
          Left            =   240
-         TabIndex        =   91
+         TabIndex        =   90
          Top             =   4140
          Width           =   4785
       End
@@ -1891,7 +1855,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   89
+         TabIndex        =   88
          Top             =   3690
          Width           =   4065
       End
@@ -1912,7 +1876,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   0
          Left            =   240
-         TabIndex        =   54
+         TabIndex        =   53
          Top             =   1350
          Width           =   2145
       End
@@ -1933,7 +1897,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   17
          Left            =   0
-         TabIndex        =   53
+         TabIndex        =   52
          Top             =   930
          Width           =   2985
       End
@@ -1954,7 +1918,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   16
          Left            =   0
-         TabIndex        =   51
+         TabIndex        =   50
          Top             =   5085
          Width           =   4320
       End
@@ -1975,7 +1939,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   2
          Left            =   240
-         TabIndex        =   50
+         TabIndex        =   49
          Top             =   5535
          Width           =   1830
       End
@@ -1996,7 +1960,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   11
          Left            =   0
-         TabIndex        =   47
+         TabIndex        =   46
          Top             =   0
          Width           =   2505
       End
@@ -2017,7 +1981,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   1
          Left            =   240
-         TabIndex        =   46
+         TabIndex        =   45
          Top             =   2730
          Width           =   6585
       End
@@ -2038,7 +2002,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   10
          Left            =   0
-         TabIndex        =   45
+         TabIndex        =   44
          Top             =   2310
          Width           =   3285
       End
@@ -2055,7 +2019,7 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   431
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   27
+      TabIndex        =   26
       Top             =   240
       Width           =   8295
       Begin VB.ComboBox cmbLargeImages 
@@ -2072,14 +2036,14 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   28
+         TabIndex        =   27
          Top             =   3600
          Width           =   7920
       End
       Begin PhotoDemon.smartCheckBox chkInitialColorDepth 
          Height          =   330
          Left            =   240
-         TabIndex        =   92
+         TabIndex        =   91
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
@@ -2098,7 +2062,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkToneMapping 
          Height          =   330
          Left            =   240
-         TabIndex        =   93
+         TabIndex        =   92
          Top             =   1320
          Width           =   7920
          _ExtentX        =   13970
@@ -2117,7 +2081,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkLoadingOrientation 
          Height          =   330
          Left            =   240
-         TabIndex        =   126
+         TabIndex        =   123
          Top             =   2280
          Width           =   7920
          _ExtentX        =   13970
@@ -2150,7 +2114,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   3
          Left            =   60
-         TabIndex        =   127
+         TabIndex        =   124
          Top             =   1920
          Width           =   1140
       End
@@ -2171,7 +2135,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   15
          Left            =   60
-         TabIndex        =   48
+         TabIndex        =   47
          Top             =   0
          Width           =   1200
       End
@@ -2189,7 +2153,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   375
          Left            =   120
-         TabIndex        =   37
+         TabIndex        =   36
          Top             =   6000
          Width           =   8055
       End
@@ -2210,7 +2174,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   6
          Left            =   60
-         TabIndex        =   36
+         TabIndex        =   35
          Top             =   960
          Width           =   3675
       End
@@ -2231,7 +2195,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   5
          Left            =   60
-         TabIndex        =   35
+         TabIndex        =   34
          Top             =   2880
          Width           =   585
       End
@@ -2251,7 +2215,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   29
+         TabIndex        =   28
          Top             =   3240
          Width           =   4845
       End
@@ -2288,7 +2252,7 @@ Begin VB.Form FormPreferences
          Left            =   180
          List            =   "VBP_FormPreferences.frx":A3E4
          Style           =   2  'Dropdown List
-         TabIndex        =   128
+         TabIndex        =   125
          Top             =   720
          Width           =   7920
       End
@@ -2309,7 +2273,7 @@ Begin VB.Form FormPreferences
          Left            =   180
          List            =   "VBP_FormPreferences.frx":A3E8
          Style           =   2  'Dropdown List
-         TabIndex        =   123
+         TabIndex        =   120
          Top             =   1980
          Width           =   7920
       End
@@ -2330,7 +2294,7 @@ Begin VB.Form FormPreferences
          Left            =   180
          List            =   "VBP_FormPreferences.frx":A3EC
          Style           =   2  'Dropdown List
-         TabIndex        =   115
+         TabIndex        =   112
          Top             =   3240
          Width           =   7920
       End
@@ -2351,27 +2315,18 @@ Begin VB.Form FormPreferences
          Left            =   180
          List            =   "VBP_FormPreferences.frx":A3F0
          Style           =   2  'Dropdown List
-         TabIndex        =   113
+         TabIndex        =   110
          Top             =   4470
          Width           =   7920
       End
       Begin PhotoDemon.sliderTextCombo sltUndoCompression 
          Height          =   495
          Left            =   240
-         TabIndex        =   122
+         TabIndex        =   119
          Top             =   5730
          Width           =   7980
          _ExtentX        =   14076
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Max             =   9
          SliderTrackStyle=   1
          NotchPosition   =   2
@@ -2393,7 +2348,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   4
          Left            =   0
-         TabIndex        =   130
+         TabIndex        =   127
          Top             =   0
          Width           =   1980
       End
@@ -2414,7 +2369,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   4
          Left            =   180
-         TabIndex        =   129
+         TabIndex        =   126
          Top             =   390
          Width           =   2580
       End
@@ -2435,7 +2390,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   3
          Left            =   180
-         TabIndex        =   125
+         TabIndex        =   122
          Top             =   1650
          Width           =   3150
       End
@@ -2456,7 +2411,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   3
          Left            =   0
-         TabIndex        =   124
+         TabIndex        =   121
          Top             =   1260
          Width           =   900
       End
@@ -2477,7 +2432,7 @@ Begin VB.Form FormPreferences
          Height          =   195
          Index           =   3
          Left            =   360
-         TabIndex        =   121
+         TabIndex        =   118
          Top             =   6210
          Width           =   1785
       End
@@ -2499,7 +2454,7 @@ Begin VB.Form FormPreferences
          Height          =   195
          Index           =   2
          Left            =   4980
-         TabIndex        =   120
+         TabIndex        =   117
          Top             =   6210
          Width           =   2295
       End
@@ -2520,7 +2475,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   2
          Left            =   240
-         TabIndex        =   119
+         TabIndex        =   116
          Top             =   5370
          Width           =   4110
       End
@@ -2541,7 +2496,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   118
+         TabIndex        =   115
          Top             =   4980
          Width           =   1110
       End
@@ -2562,7 +2517,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   117
+         TabIndex        =   114
          Top             =   2520
          Width           =   1170
       End
@@ -2583,7 +2538,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   1
          Left            =   180
-         TabIndex        =   116
+         TabIndex        =   113
          Top             =   2910
          Width           =   4530
       End
@@ -2604,7 +2559,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   0
          Left            =   180
-         TabIndex        =   114
+         TabIndex        =   111
          Top             =   4140
          Width           =   2985
       End
@@ -2640,7 +2595,7 @@ Begin VB.Form FormPreferences
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   79
+      TabIndex        =   78
       Top             =   6840
       Width           =   12135
    End
@@ -3132,7 +3087,7 @@ Private Sub CmdOK_Click()
     'BEGIN Advanced preferences
     
         'START/END store the temporary path (but only if it's changed)
-            If LCase(TxtTempPath) <> LCase(g_UserPreferences.GetTempPath) Then g_UserPreferences.setTempPath TxtTempPath
+            If LCase(txtTempPath) <> LCase(g_UserPreferences.GetTempPath) Then g_UserPreferences.setTempPath txtTempPath
     
     'END Advanced preferences
     
@@ -3183,7 +3138,7 @@ End Sub
 Private Sub CmdTmpPath_Click()
     Dim tString As String
     tString = BrowseForFolder(Me.hWnd)
-    If Len(tString) > 0 Then TxtTempPath.Text = FixPath(tString)
+    If Len(tString) > 0 Then txtTempPath.Text = FixPath(tString)
 End Sub
 
 'Load all relevant values from the preferences file, and populate their corresponding controls with the user's current settings
@@ -3601,7 +3556,7 @@ Private Sub LoadAllPreferences()
     'START Advanced preferences
             
         'Display the current temporary file path
-            TxtTempPath.Text = g_UserPreferences.GetTempPath
+            txtTempPath.Text = g_UserPreferences.GetTempPath
     
         'Display what we know about this PC's hardware acceleration capabilities
             txtHardware = getDeviceCapsString()
@@ -3755,7 +3710,7 @@ End Sub
 
 'If the selected temp folder doesn't have write access, warn the user
 Private Sub TxtTempPath_Change()
-    If Not DirectoryExist(TxtTempPath.Text) Then
+    If Not DirectoryExist(txtTempPath.Text) Then
         lblTempPathWarning.Caption = g_Language.TranslateMessage("WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.")
         lblTempPathWarning.Visible = True
     Else
