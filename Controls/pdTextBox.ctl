@@ -444,8 +444,19 @@ Public Property Let Text(ByRef newString As String)
         m_TextBackup = newString
     End If
     
-    'Note that updating text this way will not raise an EN_UPDATE message for the parent.  As such, we must raise a Change event manually.
-    RaiseEvent Change
+    'We now fork our behavior according to IDE vs run-time.  PropertyChanged events are slow and unnecessary at run-time, while raising
+    ' events is unnecessary in the IDE.
+    If g_UserModeFix Then
+    
+        'Note that updating text this way will not raise an EN_UPDATE message for the parent.  As such, we must raise a Change event manually.
+        RaiseEvent Change
+        
+    Else
+    
+        m_TextBackup = newString
+        PropertyChanged "Text"
+    
+    End If
 
 End Property
 
@@ -528,7 +539,9 @@ Private Sub UserControl_Initialize()
                 
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
+        
         Set g_Themer = New pdVisualThemes
+        
     End If
     
     'Create an initial font object
@@ -539,6 +552,7 @@ End Sub
 Private Sub UserControl_InitProperties()
     FontSize = 10
     Multiline = False
+    Text = ""
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -546,6 +560,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         FontSize = .ReadProperty("FontSize", 10)
         Multiline = .ReadProperty("Multiline", False)
+        Text = .ReadProperty("Text", "")
     End With
 
 End Sub
@@ -823,6 +838,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "FontSize", m_FontSize, 10
         .WriteProperty "Multiline", m_Multiline, False
+        .WriteProperty "Text", m_TextBackup, ""
     End With
     
 End Sub
