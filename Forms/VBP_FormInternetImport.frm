@@ -23,6 +23,16 @@ Begin VB.Form FormInternetImport
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   670
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdTextBox txtURL 
+      Height          =   315
+      Left            =   240
+      TabIndex        =   5
+      Top             =   840
+      Width           =   9615
+      _ExtentX        =   16960
+      _ExtentY        =   556
+      Text            =   "http://"
+   End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
       Default         =   -1  'True
@@ -41,24 +51,6 @@ Begin VB.Form FormInternetImport
       Top             =   1710
       Width           =   1365
    End
-   Begin VB.TextBox txtURL 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   240
-      TabIndex        =   2
-      Text            =   "http://"
-      Top             =   720
-      Width           =   9615
-   End
    Begin VB.Label lblCopyrightWarning 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -67,14 +59,14 @@ Begin VB.Form FormInternetImport
       ForeColor       =   &H00808080&
       Height          =   615
       Left            =   240
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1725
       Width           =   6735
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   1560
       Width           =   10095
    End
@@ -94,7 +86,7 @@ Begin VB.Form FormInternetImport
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   360
       Width           =   6090
    End
@@ -357,7 +349,7 @@ Private Sub CmdOK_Click()
     
     If (Left$(fullURL, 7) <> "http://") And (Left$(fullURL, 6) <> "ftp://") Then
         pdMsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://"".", vbApplicationModal + vbOKOnly + vbExclamation, "Invalid URL"
-        AutoSelectText txtURL
+        txtURL.SelectAll
         Exit Sub
     End If
     
@@ -375,7 +367,8 @@ End Sub
 
 'When the form is activated, automatically select the text box for the user.  This makes a quick Ctrl+V possible.
 Private Sub Form_Activate()
-    AutoSelectText txtURL
+    txtURL.SelectAll
+    txtURL.SetFocus
 End Sub
 
 'LOAD form
