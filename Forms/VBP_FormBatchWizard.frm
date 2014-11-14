@@ -393,7 +393,7 @@ Begin VB.Form FormBatchWizard
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   111
+      TabIndex        =   106
       Top             =   720
       Width           =   11775
       Begin VB.PictureBox picBatchProgress 
@@ -406,7 +406,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   25
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   753
-         TabIndex        =   112
+         TabIndex        =   107
          Top             =   3360
          Width           =   11295
       End
@@ -428,7 +428,7 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   &H80000008&
          Height          =   645
          Left            =   285
-         TabIndex        =   113
+         TabIndex        =   108
          Top             =   2640
          Width           =   11205
          WordWrap        =   -1  'True
@@ -445,14 +445,52 @@ Begin VB.Form FormBatchWizard
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   32
+      TabIndex        =   31
       Top             =   720
       Width           =   11775
+      Begin PhotoDemon.pdTextBox txtRenameRemove 
+         Height          =   315
+         Left            =   840
+         TabIndex        =   113
+         Top             =   4560
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   556
+      End
+      Begin PhotoDemon.pdTextBox txtAppendBack 
+         Height          =   315
+         Left            =   6120
+         TabIndex        =   112
+         Top             =   3480
+         Width           =   4575
+         _ExtentX        =   8070
+         _ExtentY        =   556
+      End
+      Begin PhotoDemon.pdTextBox txtAppendFront 
+         Height          =   315
+         Left            =   840
+         TabIndex        =   111
+         Top             =   3480
+         Width           =   4335
+         _ExtentX        =   7646
+         _ExtentY        =   556
+         Text            =   "NEW_"
+      End
+      Begin PhotoDemon.pdTextBox txtOutputPath 
+         Height          =   315
+         Left            =   480
+         TabIndex        =   110
+         Top             =   600
+         Width           =   7455
+         _ExtentX        =   13150
+         _ExtentY        =   556
+         Text            =   "C:\"
+      End
       Begin PhotoDemon.smartOptionButton optCase 
          Height          =   330
          Index           =   0
          Left            =   840
-         TabIndex        =   50
+         TabIndex        =   45
          Top             =   5640
          Width           =   2250
          _ExtentX        =   3969
@@ -469,62 +507,10 @@ Begin VB.Form FormBatchWizard
             Strikethrough   =   0   'False
          EndProperty
       End
-      Begin VB.TextBox txtRenameRemove 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   840
-         TabIndex        =   48
-         Top             =   4560
-         Width           =   6420
-      End
-      Begin VB.TextBox txtAppendBack 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   6120
-         TabIndex        =   47
-         Top             =   3480
-         Width           =   4260
-      End
-      Begin VB.TextBox txtAppendFront 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   840
-         TabIndex        =   46
-         Text            =   "NEW_"
-         Top             =   3480
-         Width           =   4260
-      End
       Begin PhotoDemon.smartCheckBox chkRenamePrefix 
          Height          =   330
          Left            =   480
-         TabIndex        =   43
+         TabIndex        =   41
          Top             =   3000
          Width           =   4650
          _ExtentX        =   8202
@@ -555,7 +541,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Left            =   480
          Style           =   2  'Dropdown List
-         TabIndex        =   42
+         TabIndex        =   40
          Top             =   1800
          Width           =   7455
       End
@@ -563,32 +549,14 @@ Begin VB.Form FormBatchWizard
          Caption         =   "Select destination folder..."
          Height          =   525
          Left            =   8280
-         TabIndex        =   39
+         TabIndex        =   37
          Top             =   480
          Width           =   3135
-      End
-      Begin VB.TextBox txtOutputPath 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   315
-         Left            =   480
-         TabIndex        =   38
-         Text            =   "C:\"
-         Top             =   600
-         Width           =   7455
       End
       Begin PhotoDemon.smartCheckBox chkRenameSuffix 
          Height          =   330
          Left            =   5760
-         TabIndex        =   44
+         TabIndex        =   42
          Top             =   3000
          Width           =   4650
          _ExtentX        =   8202
@@ -608,7 +576,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.smartCheckBox chkRenameRemove 
          Height          =   330
          Left            =   480
-         TabIndex        =   45
+         TabIndex        =   43
          Top             =   4080
          Width           =   6780
          _ExtentX        =   11959
@@ -628,7 +596,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.smartCheckBox chkRenameCase 
          Height          =   330
          Left            =   480
-         TabIndex        =   49
+         TabIndex        =   44
          Top             =   5160
          Width           =   11205
          _ExtentX        =   19764
@@ -649,7 +617,7 @@ Begin VB.Form FormBatchWizard
          Height          =   330
          Index           =   1
          Left            =   3240
-         TabIndex        =   51
+         TabIndex        =   46
          Top             =   5640
          Width           =   2625
          _ExtentX        =   4630
@@ -668,7 +636,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.smartCheckBox chkRenameSpaces 
          Height          =   330
          Left            =   480
-         TabIndex        =   52
+         TabIndex        =   47
          Top             =   6240
          Width           =   11205
          _ExtentX        =   19764
@@ -688,8 +656,8 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.smartCheckBox chkRenameCaseSensitive 
          Height          =   330
          Left            =   7560
-         TabIndex        =   53
-         Top             =   4575
+         TabIndex        =   48
+         Top             =   4560
          Width           =   4125
          _ExtentX        =   7276
          _ExtentY        =   582
@@ -721,7 +689,7 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   &H00404040&
          Height          =   285
          Left            =   120
-         TabIndex        =   41
+         TabIndex        =   39
          Top             =   1320
          Width           =   6795
       End
@@ -741,7 +709,7 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   &H00404040&
          Height          =   285
          Left            =   120
-         TabIndex        =   40
+         TabIndex        =   38
          Top             =   2520
          Width           =   2760
       End
@@ -761,7 +729,7 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   &H00404040&
          Height          =   285
          Left            =   120
-         TabIndex        =   37
+         TabIndex        =   36
          Top             =   120
          Width           =   3030
       End
@@ -794,7 +762,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Left            =   720
          Style           =   2  'Dropdown List
-         TabIndex        =   36
+         TabIndex        =   35
          Top             =   1920
          Width           =   7335
       End
@@ -802,7 +770,7 @@ Begin VB.Form FormBatchWizard
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   33
+         TabIndex        =   32
          Top             =   120
          Width           =   10515
          _ExtentX        =   18547
@@ -823,7 +791,7 @@ Begin VB.Form FormBatchWizard
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   34
+         TabIndex        =   33
          Top             =   1320
          Width           =   10515
          _ExtentX        =   18547
@@ -850,14 +818,14 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   737
-         TabIndex        =   87
+         TabIndex        =   82
          Tag             =   "GIF - Graphics Interchange Format"
          Top             =   2520
          Width           =   11055
          Begin PhotoDemon.sliderTextCombo sltThreshold 
             Height          =   495
             Left            =   360
-            TabIndex        =   100
+            TabIndex        =   95
             Top             =   1080
             Width           =   8055
             _ExtentX        =   14208
@@ -881,7 +849,7 @@ Begin VB.Form FormBatchWizard
             ForeColor       =   &H00404040&
             Height          =   1920
             Left            =   480
-            TabIndex        =   92
+            TabIndex        =   87
             Top             =   2280
             Width           =   9015
             WordWrap        =   -1  'True
@@ -903,7 +871,7 @@ Begin VB.Form FormBatchWizard
             Height          =   285
             Index           =   1
             Left            =   120
-            TabIndex        =   91
+            TabIndex        =   86
             Top             =   120
             Width           =   1230
          End
@@ -924,7 +892,7 @@ Begin VB.Form FormBatchWizard
             Height          =   240
             Index           =   1
             Left            =   360
-            TabIndex        =   90
+            TabIndex        =   85
             Top             =   720
             Width           =   6270
          End
@@ -945,7 +913,7 @@ Begin VB.Form FormBatchWizard
             Height          =   195
             Index           =   0
             Left            =   720
-            TabIndex        =   89
+            TabIndex        =   84
             Top             =   1680
             Width           =   1230
          End
@@ -965,7 +933,7 @@ Begin VB.Form FormBatchWizard
             ForeColor       =   &H00404040&
             Height          =   195
             Left            =   5520
-            TabIndex        =   88
+            TabIndex        =   83
             Top             =   1680
             Width           =   1710
          End
@@ -981,7 +949,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   737
-         TabIndex        =   59
+         TabIndex        =   54
          Tag             =   "PPM - Portable Pixel Map"
          Top             =   2520
          Width           =   11055
@@ -999,7 +967,7 @@ Begin VB.Form FormBatchWizard
             Height          =   360
             Left            =   480
             Style           =   2  'Dropdown List
-            TabIndex        =   60
+            TabIndex        =   55
             Top             =   960
             Width           =   6975
          End
@@ -1019,7 +987,7 @@ Begin VB.Form FormBatchWizard
             ForeColor       =   &H00404040&
             Height          =   240
             Left            =   240
-            TabIndex        =   62
+            TabIndex        =   57
             Top             =   600
             Width           =   1950
          End
@@ -1040,7 +1008,7 @@ Begin VB.Form FormBatchWizard
             Height          =   285
             Index           =   12
             Left            =   120
-            TabIndex        =   61
+            TabIndex        =   56
             Top             =   120
             Width           =   1305
          End
@@ -1056,7 +1024,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   721
-         TabIndex        =   54
+         TabIndex        =   49
          Tag             =   "TIFF - Tagged Image File Format"
          Top             =   2520
          Width           =   10815
@@ -1074,14 +1042,14 @@ Begin VB.Form FormBatchWizard
             Height          =   360
             Left            =   360
             Style           =   2  'Dropdown List
-            TabIndex        =   56
+            TabIndex        =   51
             Top             =   960
             Width           =   7095
          End
          Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
             Height          =   330
             Left            =   360
-            TabIndex        =   55
+            TabIndex        =   50
             Top             =   1560
             Width           =   7125
             _ExtentX        =   12568
@@ -1114,7 +1082,7 @@ Begin VB.Form FormBatchWizard
             Height          =   240
             Index           =   0
             Left            =   360
-            TabIndex        =   58
+            TabIndex        =   53
             Top             =   645
             Width           =   3135
          End
@@ -1135,7 +1103,7 @@ Begin VB.Form FormBatchWizard
             Height          =   285
             Index           =   7
             Left            =   120
-            TabIndex        =   57
+            TabIndex        =   52
             Top             =   120
             Width           =   1335
          End
@@ -1151,14 +1119,14 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   705
-         TabIndex        =   93
+         TabIndex        =   88
          Tag             =   "JP2 - JPEG 2000"
          Top             =   2520
          Width           =   10575
          Begin PhotoDemon.sliderTextCombo sltJP2Quality 
             Height          =   495
             Left            =   480
-            TabIndex        =   101
+            TabIndex        =   96
             Top             =   1650
             Width           =   7935
             _ExtentX        =   13996
@@ -1182,7 +1150,7 @@ Begin VB.Form FormBatchWizard
             Height          =   360
             Left            =   600
             Style           =   2  'Dropdown List
-            TabIndex        =   95
+            TabIndex        =   90
             Top             =   1110
             Width           =   6855
          End
@@ -1203,7 +1171,7 @@ Begin VB.Form FormBatchWizard
             Height          =   240
             Index           =   2
             Left            =   360
-            TabIndex        =   98
+            TabIndex        =   93
             Top             =   720
             Width           =   2190
          End
@@ -1225,7 +1193,7 @@ Begin VB.Form FormBatchWizard
             Height          =   195
             Index           =   1
             Left            =   5730
-            TabIndex        =   97
+            TabIndex        =   92
             Top             =   2160
             Width           =   1470
          End
@@ -1245,7 +1213,7 @@ Begin VB.Form FormBatchWizard
             ForeColor       =   &H00404040&
             Height          =   195
             Left            =   840
-            TabIndex        =   96
+            TabIndex        =   91
             Top             =   2160
             Width           =   1545
          End
@@ -1266,7 +1234,7 @@ Begin VB.Form FormBatchWizard
             Height          =   285
             Index           =   2
             Left            =   120
-            TabIndex        =   94
+            TabIndex        =   89
             Top             =   120
             Width           =   2025
          End
@@ -1282,14 +1250,14 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   705
-         TabIndex        =   74
+         TabIndex        =   69
          Tag             =   "BMP - Windows Bitmap"
          Top             =   2520
          Width           =   10575
          Begin PhotoDemon.smartCheckBox chkBMPRLE 
             Height          =   330
             Left            =   360
-            TabIndex        =   75
+            TabIndex        =   70
             Top             =   600
             Width           =   7095
             _ExtentX        =   12515
@@ -1323,7 +1291,7 @@ Begin VB.Form FormBatchWizard
             Height          =   285
             Index           =   19
             Left            =   120
-            TabIndex        =   76
+            TabIndex        =   71
             Top             =   120
             Width           =   1305
          End
@@ -1339,14 +1307,14 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   313
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   713
-         TabIndex        =   71
+         TabIndex        =   66
          Tag             =   "TGA - Truevision (TARGA)"
          Top             =   2520
          Width           =   10695
          Begin PhotoDemon.smartCheckBox chkTGARLE 
             Height          =   330
             Left            =   360
-            TabIndex        =   72
+            TabIndex        =   67
             Top             =   600
             Width           =   7125
             _ExtentX        =   12568
@@ -1379,7 +1347,7 @@ Begin VB.Form FormBatchWizard
             Height          =   285
             Index           =   21
             Left            =   120
-            TabIndex        =   73
+            TabIndex        =   68
             Top             =   120
             Width           =   1335
          End
@@ -1395,7 +1363,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   729
-         TabIndex        =   77
+         TabIndex        =   72
          TabStop         =   0   'False
          Tag             =   "JPG - Joint Photographic Experts Group"
          Top             =   2520
@@ -1403,7 +1371,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.sliderTextCombo sltQuality 
             Height          =   495
             Left            =   2640
-            TabIndex        =   99
+            TabIndex        =   94
             Top             =   945
             Width           =   5895
             _ExtentX        =   10398
@@ -1427,7 +1395,7 @@ Begin VB.Form FormBatchWizard
             Height          =   360
             Left            =   840
             Style           =   2  'Dropdown List
-            TabIndex        =   86
+            TabIndex        =   81
             ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
             Top             =   3840
             Width           =   6735
@@ -1446,14 +1414,14 @@ Begin VB.Form FormBatchWizard
             Height          =   360
             Left            =   480
             Style           =   2  'Dropdown List
-            TabIndex        =   80
+            TabIndex        =   75
             Top             =   990
             Width           =   2055
          End
          Begin PhotoDemon.smartCheckBox chkOptimize 
             Height          =   330
             Left            =   480
-            TabIndex        =   79
+            TabIndex        =   74
             Top             =   1920
             Width           =   7050
             _ExtentX        =   12435
@@ -1472,7 +1440,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.smartCheckBox chkThumbnail 
             Height          =   330
             Left            =   480
-            TabIndex        =   81
+            TabIndex        =   76
             Top             =   2400
             Width           =   7050
             _ExtentX        =   12435
@@ -1492,7 +1460,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.smartCheckBox chkProgressive 
             Height          =   330
             Left            =   480
-            TabIndex        =   82
+            TabIndex        =   77
             Top             =   2880
             Width           =   7050
             _ExtentX        =   12435
@@ -1512,7 +1480,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.smartCheckBox chkSubsample 
             Height          =   330
             Left            =   480
-            TabIndex        =   83
+            TabIndex        =   78
             Top             =   3360
             Width           =   7050
             _ExtentX        =   12435
@@ -1546,7 +1514,7 @@ Begin VB.Form FormBatchWizard
             Height          =   240
             Index           =   0
             Left            =   240
-            TabIndex        =   85
+            TabIndex        =   80
             Top             =   600
             Width           =   1215
          End
@@ -1566,7 +1534,7 @@ Begin VB.Form FormBatchWizard
             ForeColor       =   &H00404040&
             Height          =   240
             Left            =   240
-            TabIndex        =   84
+            TabIndex        =   79
             Top             =   1560
             Width           =   2070
          End
@@ -1587,7 +1555,7 @@ Begin VB.Form FormBatchWizard
             Height          =   285
             Index           =   0
             Left            =   120
-            TabIndex        =   78
+            TabIndex        =   73
             Top             =   120
             Width           =   1395
          End
@@ -1603,7 +1571,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   729
-         TabIndex        =   63
+         TabIndex        =   58
          TabStop         =   0   'False
          Tag             =   "PNG - Portable Network Graphic"
          Top             =   2520
@@ -1612,7 +1580,7 @@ Begin VB.Form FormBatchWizard
             Height          =   330
             Left            =   360
             Max             =   9
-            TabIndex        =   66
+            TabIndex        =   61
             Top             =   1080
             Value           =   9
             Width           =   7095
@@ -1620,7 +1588,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.smartCheckBox chkPNGBackground 
             Height          =   330
             Left            =   360
-            TabIndex        =   64
+            TabIndex        =   59
             Top             =   2520
             Width           =   7125
             _ExtentX        =   12568
@@ -1639,7 +1607,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
             Height          =   330
             Left            =   360
-            TabIndex        =   65
+            TabIndex        =   60
             Top             =   2040
             Width           =   7125
             _ExtentX        =   12568
@@ -1673,7 +1641,7 @@ Begin VB.Form FormBatchWizard
             Height          =   285
             Index           =   20
             Left            =   120
-            TabIndex        =   70
+            TabIndex        =   65
             Top             =   120
             Width           =   1320
          End
@@ -1694,7 +1662,7 @@ Begin VB.Form FormBatchWizard
             Height          =   240
             Index           =   1
             Left            =   360
-            TabIndex        =   69
+            TabIndex        =   64
             Top             =   720
             Width           =   4725
          End
@@ -1715,7 +1683,7 @@ Begin VB.Form FormBatchWizard
             Height          =   195
             Index           =   0
             Left            =   600
-            TabIndex        =   68
+            TabIndex        =   63
             Top             =   1560
             Width           =   1110
          End
@@ -1737,7 +1705,7 @@ Begin VB.Form FormBatchWizard
             Height          =   195
             Index           =   1
             Left            =   5625
-            TabIndex        =   67
+            TabIndex        =   62
             Top             =   1560
             Width           =   1590
          End
@@ -1756,7 +1724,7 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   &H00404040&
          Height          =   600
          Left            =   720
-         TabIndex        =   35
+         TabIndex        =   34
          Top             =   540
          Width           =   10980
          WordWrap        =   -1  'True
@@ -1776,6 +1744,16 @@ Begin VB.Form FormBatchWizard
       TabIndex        =   9
       Top             =   720
       Width           =   11775
+      Begin PhotoDemon.pdTextBox txtMacro 
+         Height          =   315
+         Left            =   1080
+         TabIndex        =   114
+         Top             =   6720
+         Width           =   7335
+         _ExtentX        =   12938
+         _ExtentY        =   556
+         Text            =   "no macro selected"
+      End
       Begin VB.PictureBox picResizeDemo 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -1787,7 +1765,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   50
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   191
-         TabIndex        =   109
+         TabIndex        =   104
          Top             =   5385
          Width           =   2865
       End
@@ -1805,7 +1783,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Left            =   3390
          Style           =   2  'Dropdown List
-         TabIndex        =   105
+         TabIndex        =   100
          Top             =   5460
          Width           =   4095
       End
@@ -1813,34 +1791,15 @@ Begin VB.Form FormBatchWizard
          Caption         =   "Select macro..."
          Height          =   525
          Left            =   8640
-         TabIndex        =   31
+         TabIndex        =   30
          Top             =   6600
          Width           =   3015
-      End
-      Begin VB.TextBox txtMacro 
-         Enabled         =   0   'False
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   315
-         Left            =   1080
-         TabIndex        =   30
-         Text            =   "no macro selected"
-         Top             =   6720
-         Width           =   7335
       End
       Begin PhotoDemon.smartCheckBox chkActions 
          Height          =   300
          Index           =   2
          Left            =   600
-         TabIndex        =   102
+         TabIndex        =   97
          Top             =   6150
          Width           =   10020
          _ExtentX        =   17674
@@ -1861,7 +1820,7 @@ Begin VB.Form FormBatchWizard
          Height          =   300
          Index           =   1
          Left            =   600
-         TabIndex        =   103
+         TabIndex        =   98
          Top             =   2040
          Width           =   10020
          _ExtentX        =   17674
@@ -1882,7 +1841,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Index           =   0
          Left            =   120
-         TabIndex        =   106
+         TabIndex        =   101
          Top             =   120
          Width           =   10500
          _ExtentX        =   18521
@@ -1903,7 +1862,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Index           =   1
          Left            =   120
-         TabIndex        =   107
+         TabIndex        =   102
          Top             =   1080
          Width           =   10500
          _ExtentX        =   18521
@@ -1923,7 +1882,7 @@ Begin VB.Form FormBatchWizard
          Height          =   300
          Index           =   0
          Left            =   600
-         TabIndex        =   110
+         TabIndex        =   105
          Top             =   1560
          Width           =   10020
          _ExtentX        =   17674
@@ -1943,7 +1902,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.smartResize ucResize 
          Height          =   2850
          Left            =   1080
-         TabIndex        =   114
+         TabIndex        =   109
          Top             =   2520
          Width           =   8775
          _ExtentX        =   15478
@@ -1976,7 +1935,7 @@ Begin VB.Form FormBatchWizard
          Height          =   240
          Index           =   1
          Left            =   600
-         TabIndex        =   108
+         TabIndex        =   103
          Top             =   540
          Width           =   6615
       End
@@ -1999,7 +1958,7 @@ Begin VB.Form FormBatchWizard
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   1875
-         TabIndex        =   104
+         TabIndex        =   99
          Top             =   5520
          Width           =   1425
       End
@@ -2464,7 +2423,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                 'If the user wants us to apply a macro, ensure that the macro text box has a macro file specified
                 If CBool(chkActions(2)) And ((txtMacro.Text = "no macro selected") Or (txtMacro.Text = "")) Then
                     pdMsgBox "You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.", vbExclamation + vbOKOnly + vbApplicationModal, "No macro file selected"
-                    AutoSelectText txtMacro
+                    txtMacro.SelectAll
                     Exit Sub
                 End If
                 
@@ -2584,7 +2543,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                     MkDir txtOutputPath
                 Else
                     pdMsgBox "PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.", vbExclamation + vbOKOnly + vbApplicationModal, "Folder access unavailable"
-                    AutoSelectText txtOutputPath
+                    txtOutputPath.SelectAll
                     Exit Sub
                 End If
             End If
