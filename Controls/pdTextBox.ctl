@@ -401,7 +401,9 @@ End Property
 
 'For performance reasons, the current control's text is not stored persistently.  It is retrieved, as needed, using an on-demand model.
 Public Property Get Text() As String
-Attribute Text.VB_UserMemId = -517
+Attribute Text.VB_ProcData.VB_Invoke_Property = ";Text"
+Attribute Text.VB_UserMemId = 0
+Attribute Text.VB_MemberFlags = "200"
     
     'Make sure the text box has been initialized
     If m_EditBoxHwnd <> 0 Then
@@ -1394,6 +1396,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             lReturn = m_EditBoxBrush
         
         Case WM_CHAR
+            'On a single-line text box, pressing Enter will cause a ding.  (It's insane that this is the default behavior.)
+            ' To prevent this, we capture return presses, and forcibly terminate them.  If the user wants to do something with
+            ' Enter keypresses on these controls, they will have already handled the key event in the hook proc, above.
+            If (Not m_Multiline) And (wParam = VK_RETURN) Then
+                bHandled = True
+                lReturn = 0
+            End If
+            
             'Debug.Print "WM_CHAR: " & wParam & "," & lParam
         
         'WM_UNICHAR messages are never sent by Windows.  However, third-party IMEs may send them.  Before allowing WM_UNICHAR
