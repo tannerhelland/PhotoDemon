@@ -105,8 +105,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 08/June/14
-'Last update: trim prepended spaces from control values generated via Str()
+'Last updated: 14/November/14
+'Last update: add preset support for the new pdTextBox control
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -398,7 +398,7 @@ Private Sub cmdRandomize_Click()
                 End If
             
             'Text boxes are set to a random value between -10 and 10
-            Case "TextBox"
+            Case "TextBox", "pdTextBox"
                 eControl.Text = Str(-10 + Int(Rnd * 21))
         
         End Select
@@ -670,7 +670,7 @@ Private Sub cmdReset_Click()
                 End If
             
             'Text boxes are set to 0
-            Case "TextBox"
+            Case "TextBox", "pdTextBox"
                 eControl.Text = "0"
         
         End Select
@@ -983,7 +983,7 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
                 'Make sure the combo box is not the preset box on this control!
                 If (eControl.hWnd <> cmbPreset.hWnd) Then controlValue = Str(eControl.ListIndex)
                 
-            Case "TextBox"
+            Case "TextBox", "pdTextBox"
                 controlValue = eControl.Text
                 
             'PhotoDemon's new resize control is a special case.  Because it uses multiple properties (despite being
@@ -1134,7 +1134,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                         If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1
                     End If
                     
-                Case "TextBox"
+                Case "TextBox", "pdTextBox"
                     eControl.Text = controlValue
                     
                 'PD's "smart resize" control has some special needs, on account of using multiple value properties
