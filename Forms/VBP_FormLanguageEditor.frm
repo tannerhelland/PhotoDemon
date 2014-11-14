@@ -93,15 +93,35 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   25
+      TabIndex        =   17
       TabStop         =   0   'False
       Top             =   720
       Width           =   11775
+      Begin PhotoDemon.pdTextBox txtTranslation 
+         Height          =   2325
+         Left            =   5040
+         TabIndex        =   39
+         Top             =   3120
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   3519
+         Multiline       =   -1  'True
+      End
+      Begin PhotoDemon.pdTextBox txtOriginal 
+         Height          =   2355
+         Left            =   5040
+         TabIndex        =   38
+         Top             =   360
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   3519
+         Multiline       =   -1  'True
+      End
       Begin VB.CommandButton cmdAutoTranslate 
          Caption         =   "Initiate auto-translation of all missing phrases"
          Height          =   615
          Left            =   240
-         TabIndex        =   45
+         TabIndex        =   37
          Top             =   6600
          Width           =   4455
       End
@@ -109,14 +129,14 @@ Begin VB.Form FormLanguageEditor
          Caption         =   "Save this translation and proceed to the next phrase"
          Height          =   615
          Left            =   5040
-         TabIndex        =   18
+         TabIndex        =   11
          Top             =   6600
          Width           =   6615
       End
       Begin PhotoDemon.smartCheckBox chkGoogleTranslate 
          Height          =   330
          Left            =   5040
-         TabIndex        =   16
+         TabIndex        =   9
          Top             =   5520
          Width           =   6600
          _ExtentX        =   11642
@@ -131,44 +151,6 @@ Begin VB.Form FormLanguageEditor
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-      End
-      Begin VB.TextBox txtTranslation 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   2295
-         Left            =   5040
-         MultiLine       =   -1  'True
-         ScrollBars      =   2  'Vertical
-         TabIndex        =   15
-         Top             =   3120
-         Width           =   6615
-      End
-      Begin VB.TextBox txtOriginal 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   2295
-         Left            =   5040
-         Locked          =   -1  'True
-         MultiLine       =   -1  'True
-         ScrollBars      =   2  'Vertical
-         TabIndex        =   19
-         TabStop         =   0   'False
-         Top             =   360
-         Width           =   6615
       End
       Begin VB.ComboBox cmbPhraseFilter 
          BackColor       =   &H00FFFFFF&
@@ -185,7 +167,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   14
+         TabIndex        =   8
          Top             =   5985
          Width           =   4500
       End
@@ -202,14 +184,14 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   &H00404040&
          Height          =   5100
          Left            =   240
-         TabIndex        =   13
+         TabIndex        =   7
          Top             =   360
          Width           =   4500
       End
       Begin PhotoDemon.smartCheckBox chkShortcut 
          Height          =   330
          Left            =   5040
-         TabIndex        =   17
+         TabIndex        =   10
          Top             =   6000
          Width           =   6600
          _ExtentX        =   11642
@@ -241,7 +223,7 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   &H00404040&
          Height          =   285
          Left            =   4920
-         TabIndex        =   39
+         TabIndex        =   31
          Top             =   2760
          Width           =   1905
       End
@@ -262,7 +244,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   9
          Left            =   4920
-         TabIndex        =   38
+         TabIndex        =   30
          Top             =   0
          Width           =   1665
       End
@@ -283,7 +265,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   27
+         TabIndex        =   19
          Top             =   5625
          Width           =   1995
       End
@@ -303,7 +285,7 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   &H00404040&
          Height          =   285
          Left            =   0
-         TabIndex        =   26
+         TabIndex        =   18
          Top             =   0
          Width           =   2835
       End
@@ -319,7 +301,7 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   23
+      TabIndex        =   15
       TabStop         =   0   'False
       Top             =   720
       Width           =   11775
@@ -408,7 +390,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   0
          Left            =   840
-         TabIndex        =   24
+         TabIndex        =   16
          Top             =   1080
          Width           =   3540
       End
@@ -424,7 +406,7 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   35
+      TabIndex        =   27
       TabStop         =   0   'False
       Top             =   720
       Width           =   11775
@@ -438,7 +420,7 @@ Begin VB.Form FormLanguageEditor
          ScaleHeight     =   33
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   785
-         TabIndex        =   37
+         TabIndex        =   29
          TabStop         =   0   'False
          Top             =   3000
          Width           =   11775
@@ -459,7 +441,7 @@ Begin VB.Form FormLanguageEditor
          ForeColor       =   &H00404040&
          Height          =   405
          Left            =   0
-         TabIndex        =   36
+         TabIndex        =   28
          Top             =   2400
          Width           =   11760
       End
@@ -475,115 +457,77 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   28
+      TabIndex        =   20
       TabStop         =   0   'False
       Top             =   720
       Width           =   11775
-      Begin VB.TextBox txtLangAuthor 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   390
-         Left            =   240
-         TabIndex        =   12
-         Text            =   "enter your name here"
-         Top             =   5160
-         Width           =   11415
-      End
-      Begin VB.TextBox txtLangStatus 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   390
-         Left            =   240
-         TabIndex        =   10
-         Text            =   "incomplete"
-         Top             =   3240
-         Width           =   2895
-      End
-      Begin VB.TextBox txtLangVersion 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   390
-         Left            =   240
-         TabIndex        =   11
-         Text            =   "1.0.0"
-         Top             =   4200
-         Width           =   2895
-      End
-      Begin VB.TextBox txtLangName 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   390
-         Left            =   240
-         TabIndex        =   9
-         Text            =   "English (US)"
-         Top             =   2280
-         Width           =   2895
-      End
-      Begin VB.TextBox txtLangID 
-         Alignment       =   2  'Center
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   390
+      Begin PhotoDemon.pdTextBox txtLangID 
+         Height          =   345
          Index           =   1
          Left            =   240
-         TabIndex        =   8
+         TabIndex        =   41
+         Top             =   1335
+         Width           =   630
+         _ExtentX        =   1111
+         _ExtentY        =   609
+         FontSize        =   11
          Text            =   "US"
-         Top             =   1320
-         Width           =   615
       End
-      Begin VB.TextBox txtLangID 
-         Alignment       =   2  'Center
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   390
+      Begin PhotoDemon.pdTextBox txtLangID 
+         Height          =   345
          Index           =   0
          Left            =   240
-         TabIndex        =   7
+         TabIndex        =   40
+         Top             =   375
+         Width           =   630
+         _ExtentX        =   1111
+         _ExtentY        =   609
+         FontSize        =   11
          Text            =   "en"
-         Top             =   360
-         Width           =   615
+      End
+      Begin PhotoDemon.pdTextBox txtLangName 
+         Height          =   345
+         Left            =   240
+         TabIndex        =   42
+         Top             =   2295
+         Width           =   2910
+         _ExtentX        =   5133
+         _ExtentY        =   609
+         FontSize        =   11
+         Text            =   "English (US)"
+      End
+      Begin PhotoDemon.pdTextBox txtLangStatus 
+         Height          =   345
+         Left            =   240
+         TabIndex        =   43
+         Top             =   3255
+         Width           =   2910
+         _ExtentX        =   5133
+         _ExtentY        =   609
+         FontSize        =   11
+         Text            =   "incomplete"
+      End
+      Begin PhotoDemon.pdTextBox txtLangVersion 
+         Height          =   345
+         Left            =   240
+         TabIndex        =   44
+         Top             =   4215
+         Width           =   2910
+         _ExtentX        =   5133
+         _ExtentY        =   609
+         FontSize        =   11
+         Text            =   "1.0.0"
+      End
+      Begin PhotoDemon.pdTextBox txtLangAuthor 
+         Height          =   345
+         Left            =   240
+         TabIndex        =   45
+         Top             =   5190
+         Width           =   11415
+         _ExtentX        =   20135
+         _ExtentY        =   609
+         FontSize        =   11
+         Text            =   "enter your name here"
       End
       Begin VB.Label lblSubheader 
          AutoSize        =   -1  'True
@@ -602,7 +546,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   240
          Index           =   4
          Left            =   3360
-         TabIndex        =   44
+         TabIndex        =   36
          Top             =   4290
          Width           =   4620
       End
@@ -623,7 +567,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   240
          Index           =   3
          Left            =   3360
-         TabIndex        =   43
+         TabIndex        =   35
          Top             =   3330
          Width           =   5910
       End
@@ -644,7 +588,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   240
          Index           =   2
          Left            =   3360
-         TabIndex        =   42
+         TabIndex        =   34
          Top             =   2370
          Width           =   7995
       End
@@ -665,7 +609,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   240
          Index           =   1
          Left            =   1080
-         TabIndex        =   41
+         TabIndex        =   33
          Top             =   1410
          Width           =   7245
       End
@@ -686,7 +630,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   240
          Index           =   0
          Left            =   1080
-         TabIndex        =   40
+         TabIndex        =   32
          Top             =   435
          Width           =   6570
       End
@@ -707,7 +651,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   8
          Left            =   0
-         TabIndex        =   34
+         TabIndex        =   26
          Top             =   4800
          Width           =   1635
       End
@@ -728,7 +672,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   4
          Left            =   0
-         TabIndex        =   33
+         TabIndex        =   25
          Top             =   2880
          Width           =   1800
       End
@@ -749,7 +693,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   3
          Left            =   0
-         TabIndex        =   32
+         TabIndex        =   24
          Top             =   3840
          Width           =   1950
       End
@@ -770,7 +714,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   7
          Left            =   0
-         TabIndex        =   31
+         TabIndex        =   23
          Top             =   1920
          Width           =   1620
       End
@@ -791,7 +735,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   6
          Left            =   0
-         TabIndex        =   30
+         TabIndex        =   22
          Top             =   960
          Width           =   1125
       End
@@ -812,7 +756,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   285
          Index           =   5
          Left            =   0
-         TabIndex        =   29
+         TabIndex        =   21
          Top             =   0
          Width           =   1290
       End
@@ -829,7 +773,7 @@ Begin VB.Form FormLanguageEditor
       EndProperty
       Height          =   855
       Left            =   -240
-      TabIndex        =   22
+      TabIndex        =   14
       Top             =   8235
       Width           =   17415
    End
@@ -848,7 +792,7 @@ Begin VB.Form FormLanguageEditor
       ForeColor       =   &H00404040&
       Height          =   7320
       Left            =   120
-      TabIndex        =   21
+      TabIndex        =   13
       Top             =   780
       Width           =   3135
       WordWrap        =   -1  'True
@@ -877,7 +821,7 @@ Begin VB.Form FormLanguageEditor
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   120
-      TabIndex        =   20
+      TabIndex        =   12
       Top             =   120
       Width           =   3555
    End
