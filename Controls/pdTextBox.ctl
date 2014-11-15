@@ -323,9 +323,9 @@ Private m_BackBuffer As pdDIB
 Private WithEvents cPainter As pdWindowPainter
 Attribute cPainter.VB_VarHelpID = -1
 
-'If the user resizes a label, the control's back buffer needs to be redrawn.  If we resize the label as part of an internal
-' AutoSize calculation, however, we will already be in the midst of resizing the backbuffer - so we override the behavior
-' of the UserControl_Resize event, using this variable.
+'If the user resizes an edit box, the control's back buffer needs to be redrawn.  If we resize the edit box as part of an internal
+' AutoSize calculation, however, we will already be in the midst of resizing the backbuffer - so we override the behavior of the
+' UserControl_Resize event, using this variable.
 Private m_InternalResizeState As Boolean
 
 'The system handles drawing of the edit box.  This persistent brush handle is returned to the relevant window message,
@@ -567,8 +567,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 'When the user control is resized, the text box must be resized to match
-' TODO: use a single helper function for calculating the edit box window rect.  We may want to draw our own border around the text box,
-' for theming purposes, so we don't want multiple functions calculating their own window rect.
 Private Sub UserControl_Resize()
 
     'Ignore resize events generated internally (e.g. sizing a text box to the current font)
@@ -1390,27 +1388,37 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'The parent receives this message for all kinds of things; we subclass it to track when the edit box's contents have changed.
         ' (And when we don't handle the message, it is *very important* that we forward it correctly!
         Case WM_COMMAND
-        
-            'Check for the EN_UPDATE flag; if present, raise the CHANGE event
-            If (wParam \ &H10000) = EN_UPDATE Then
-                RaiseEvent Change
-                bHandled = True
+            
+            'Make sure the command is relative to *our* edit box, and not another one
+            If lParam = m_EditBoxHwnd Then
+            
+                'Check for the EN_UPDATE flag; if present, raise the CHANGE event
+                If (wParam \ &H10000) = EN_UPDATE Then
+                    RaiseEvent Change
+                    bHandled = True
+                End If
+                
             End If
         
         'The parent receives this message, prior to the edit box being drawn.  The parent can use this to assign text and
         ' background colors to the edit box.
         Case WM_CTLCOLOREDIT
             
-            'We can set the text color directly, using the API
-            If g_UserModeFix Then
-                SetTextColor wParam, g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
-            Else
-                SetTextColor wParam, RGB(0, 0, 128)
-            End If
+            'Make sure the command is relative to *our* edit box, and not another one
+            If lParam = m_EditBoxHwnd Then
             
-            'We return the background brush
-            bHandled = True
-            lReturn = m_EditBoxBrush
+                'We can set the text color directly, using the API
+                If g_UserModeFix Then
+                    SetTextColor wParam, g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
+                Else
+                    SetTextColor wParam, RGB(0, 0, 128)
+                End If
+                
+                'We return the background brush
+                bHandled = True
+                lReturn = m_EditBoxBrush
+                
+            End If
         
         Case WM_CHAR
             'On a single-line text box, pressing Enter will cause a ding.  (It's insane that this is the default behavior.)
