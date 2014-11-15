@@ -674,14 +674,12 @@ End Function
 ' TODO:
 '  - Add support for storing a PNG copy of the fully composited image, preferably in the data chunk of the first node.
 '  - Figure out a good way to store metadata; the problem is not so much storing the metadata itself, but storing any user edits.
-'    I have postponed this until I get metadata editing working more fully.
+'    I have postponed this until I get metadata editing working more fully.  (NOTE: metadata is now stored correctly, but the
+'    user edit aspect remains to be dealt with.)
 '  - User-settable options for compression.  Some users may prefer extremely tight compression, at a trade-off of slower
 '    image saves.  Similarly, compressing layers in PNG format instead of as a blind zLib stream would probably yield better
-'    results (at a trade-off to performance).
-'  - An option for compressing both the directory, and the completed data stream.  This would all take place in the pdPackage
-'    class, and the directory would be decompressed automatically at load-time, so calling functions wouldn't need to worry
-'    about catering to that class.  This could be helpful for further shrinking file size, especially for small images where
-'    the header represents a larger portion of the file.
+'    results (at a trade-off to performance).  (NOTE: these features are now supported by the function, but they are not currently
+'    exposed to the user.)
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
 Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal writeMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal secondPassDataCompression As Boolean = False) As Boolean
@@ -754,6 +752,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
+    Debug.Print secondPassDirectoryCompression
     SavePhotoDemonImage = pdiWriter.writePackageToFile(PDIPath, secondPassDirectoryCompression, secondPassDataCompression)
     
     If Not suppressMessages Then Message "%1 save complete.", sFileType
