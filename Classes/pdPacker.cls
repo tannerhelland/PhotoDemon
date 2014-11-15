@@ -84,11 +84,12 @@ Option Explicit
 
 'This constant should be updated whenever the core assembly/disassembly code is modified.  This value is embedded in all
 ' pdPackage files written by this class, as a failsafe against potential ABI breakage in the future.
-' - The lowest expected value for this constant is 64, representative of PhotoDemon 6.4, when the format was first implemented.
-' - The current expected value is 65.  65 slightly modifies the format of the directory chunk, by using a straight byte array
-'   instead of the actual UDT struct used in previous versions (which VB custom-formats).  This was a necessary change prior to
-'   enabling second-pass compression of the directory and data chunks.
-' - Both v64 and v65 packages are supported by this class, but it will only write v65 packages.
+' - The current expected value is 66.  Version 66 added Unicode-friendly string handling, rather than the old StrConv methods.
+' - Version 65 slightly modified the format of the directory chunk, by using a straight byte array instead of the actual UDT struct
+'   used in previous versions (which VB custom-formats).  This was a necessary change prior to enabling second-pass compression of
+'   the directory and data chunks.
+' - The lowest expected value for this constant is 64, representative of PhotoDemon 6.4, when the PDI format was first implemented.
+' - v64, 65, and 66 packages are still supported by this class, but it will only write v66 packages.
 Private Const THIS_PDPACKAGE_VERSION As Long = 66
 Private Const OLD_PDPACKAGE_VERSION_AUTUMN_2014 As Long = 65
 Private Const OLD_PDPACKAGE_VERSION_SUMMER_2014 As Long = 64

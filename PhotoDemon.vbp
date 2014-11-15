@@ -243,6 +243,7 @@ Form=Forms\VBP_FormThemeEditor.frm
 UserControl=Controls\pdLabel.ctl
 Form=Forms\VBP_ToolbarDebug.frm
 UserControl=Controls\pdTextBox.ctl
+UserControl=Controls\pdComboBox.ctl
 ResFile32="Resources\PD_icons.RES"
 IconForm="FormMain"
 Startup="Sub Main"
