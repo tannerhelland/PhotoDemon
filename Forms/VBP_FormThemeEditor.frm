@@ -24,6 +24,15 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   707
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdComboBox pdComboBox1 
+      Height          =   315
+      Left            =   4800
+      TabIndex        =   7
+      Top             =   6000
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   556
+   End
    Begin VB.CommandButton cmdTextBoxTesting 
       Caption         =   "select all"
       BeginProperty Font 
