@@ -25,13 +25,13 @@ Begin VB.Form FormThemeEditor
    ScaleWidth      =   707
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdComboBox pdComboBox1 
-      Height          =   315
+      Height          =   360
       Left            =   4800
       TabIndex        =   7
       Top             =   6000
       Width           =   5655
       _ExtentX        =   9975
-      _ExtentY        =   556
+      _ExtentY        =   635
    End
    Begin VB.CommandButton cmdTextBoxTesting 
       Caption         =   "select all"
@@ -248,6 +248,13 @@ End Sub
 
 Private Sub cmdTextBoxTesting_GotFocus(Index As Integer)
     Debug.Print "Focus set to TabStop item " & cmdTextBoxTesting(Index).TabIndex
+End Sub
+
+Private Sub Form_Activate()
+    pdComboBox1.AddItem "1", 0
+    pdComboBox1.AddItem "2", 1
+    pdComboBox1.AddItem "3", 2
+    pdComboBox1.ListIndex = 1
 End Sub
 
 Private Sub pdTextBox1_Change()
