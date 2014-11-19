@@ -1173,10 +1173,9 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
 '*************************************************************************************************
     
     m_InHookNow = True
-    
-    If lHookType = WH_KEYBOARD Then
-    
-        bHandled = False
+    bHandled = False
+        
+    If (lHookType = WH_KEYBOARD) And m_HasFocus Then
         
         'MSDN states that negative codes must be passed to the next hook, without processing
         ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
@@ -1212,14 +1211,14 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                                 
                                 'Multiline edit boxes accept tab keypresses.  Single line ones do not, so interpret TAB as a
                                 ' request to forward (or reverse) focus.
-                                If (Not m_Multiline) And m_HasFocus And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
+                                If (Not m_Multiline) And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
                                     
                                     'Set a module-level shift state, and a flag that tells the hook to deactivate after it eats this keypress.
                                     If isVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
                                     
                                     'Enable a timer, which will forward focus after a slight delay.  The slight delay gives us time to
                                     ' exit the hook proc and terminate the hook, after which focus will forward normally.
-                                    ' tmrFocus.Enabled = True
+                                    tmrFocus.Enabled = True
                                     
                                     bHandled = True
                                     
@@ -1323,16 +1322,16 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             End If
             
         End If
-                
-        'Per MSDN, return the value of CallNextHookEx, contingent on whether or not we handled the keypress internally.
-        ' Note that if we do not manually handle a keypress, this behavior allows the default keyhandler to deal with
-        ' the pressed keys (and raise its own WM_CHAR events, etc).
-        If (Not bHandled) Then
-            lReturn = CallNextHookEx(0, nCode, wParam, ByVal lParam)
-        Else
-            lReturn = 1
-        End If
             
+    End If
+    
+    'Per MSDN, return the value of CallNextHookEx, contingent on whether or not we handled the keypress internally.
+    ' Note that if we do not manually handle a keypress, this behavior allows the default keyhandler to deal with
+    ' the pressed keys (and raise its own WM_CHAR events, etc).
+    If (Not bHandled) Then
+        lReturn = CallNextHookEx(0, nCode, wParam, ByVal lParam)
+    Else
+        lReturn = 1
     End If
     
     m_InHookNow = False
