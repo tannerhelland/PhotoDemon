@@ -6,6 +6,7 @@ Begin VB.UserControl pdComboBox
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   3015
+   ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -129,8 +130,6 @@ End Enum
     Private Const WS_EX_OVERLAPPEDWINDOW = (WS_EX_WINDOWEDGE Or WS_EX_CLIENTEDGE), WS_EX_PALETTEWINDOW = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
 #End If
 
-Private Const CBS_DROPDOWNLIST As Long = &H3
-
 'Updating the font is done via WM_SETFONT
 Private Const WM_SETFONT = &H30
 
@@ -157,6 +156,7 @@ End Enum
 'System window handling APIs
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (ByVal dwExStyle As Long, ByVal lpClassName As Long, ByVal lpWindowName As Long, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal hndWindow As Long) As Long
@@ -194,6 +194,7 @@ Private Const WM_NEXTDLGCTL As Long = &H28
 Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_MOUSEACTIVATE As Long = &H21
 Private Const WM_CTLCOLOREDIT As Long = &H133
+Private Const WM_SIZE As Long = &H5
 
 Private Const VK_SHIFT As Long = &H10
 Private Const VK_CONTROL As Long = &H11
@@ -217,13 +218,6 @@ Private m_HasFocus As Boolean
 Private m_TimeAtFocusEnter As Long
 Private m_FocusDirection As Long
 
-'Persistent back buffer, which we manage internally
-Private m_BackBuffer As pdDIB
-
-'Flicker-free window painter
-Private WithEvents cPainter As pdWindowPainter
-Attribute cPainter.VB_VarHelpID = -1
-
 'If the user resizes a combo box, the control's back buffer needs to be redrawn.  If we resize the combo box as part of an internal
 ' AutoSize calculation, however, we will already be in the midst of resizing the backbuffer - so we override the behavior of the
 ' UserControl_Resize event, using this variable.
@@ -245,6 +239,91 @@ Private m_InHookNow As Boolean
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
 Private m_ToolString As String
+
+'Combo box interaction functions
+Private Const CB_ADDSTRING As Long = &H143
+Private Const CB_INSERTSTRING As Long = &H14A
+Private Const CB_RESETCONTENT As Long = &H14B
+Private Const CB_GETCOUNT As Long = &H146
+Private Const CB_GETCURSEL As Long = &H147
+Private Const CB_SETCURSEL As Long = &H14E
+
+Private Const CBN_DROPDOWN As Long = 7
+
+Private Const CBS_SIMPLE As Long = &H1
+Private Const CBS_DROPDOWN As Long = &H2
+Private Const CBS_DROPDOWNLIST As Long = &H3
+Private Const CBS_NOINTEGRALHEIGHT As Long = &H400
+Private Const CBS_AUTOHSCROLL As Long = &H40
+
+'Basic combo box interaction functions
+
+'Add an item to the combo box
+Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -1)
+    
+    'Make sure the combo box exists
+    If (m_ComboBoxHwnd <> 0) Then
+    
+        'If no index is specified, let the default combo box handler decide order; otherwise, request the placement we were given.
+        If (itemIndex = -1) Then
+            SendMessage m_ComboBoxHwnd, CB_ADDSTRING, 0, ByVal StrPtr(srcItem)
+            
+            'Set the combo box to always display the full list amount in the drop-down; this is only applicable if a manifest is present,
+            ' so it will have no effect in the IDE.
+            If g_IsProgramCompiled Then SendMessage m_ComboBoxHwnd, CB_SETMINVISIBLE, SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&), ByVal 0&
+        
+        Else
+            SendMessage m_ComboBoxHwnd, CB_INSERTSTRING, itemIndex, ByVal StrPtr(srcItem)
+        End If
+        
+    End If
+    
+End Sub
+
+'Clear all entries from the combo box
+Public Sub Clear()
+    SendMessage m_ComboBoxHwnd, CB_RESETCONTENT, 0, ByVal 0&
+End Sub
+
+'Number of items currently in the combo box list
+Public Function ListCount() As Long
+    
+    'We do not track ListCount persistently.  It is requested on-demand from the combo box.
+    If m_ComboBoxHwnd <> 0 Then
+        ListCount = SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&)
+    End If
+    
+End Function
+
+'Get/set the currently active item.
+' NB: unlike the default VB combo box, we do not raise an error if an invalid index is requested.
+Public Property Get ListIndex() As Long
+    
+    'We do not track ListIndex persistently.  It is requested on-demand from the combo box.
+    If m_ComboBoxHwnd <> 0 Then
+        ListIndex = SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&)
+    End If
+    
+End Property
+
+Public Property Let ListIndex(ByVal newIndex As Long)
+
+    If m_ComboBoxHwnd <> 0 Then
+        
+        'See if new ListIndex is different from the current ListIndex.  (We can skip the assignment step if they match.)
+        If newIndex <> SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&) Then
+            
+            'Request the new list index
+            SendMessage m_ComboBoxHwnd, CB_SETCURSEL, newIndex, ByVal 0&
+            
+            'Notify the user of the change
+            RaiseEvent Click
+            
+        End If
+        
+    End If
+    
+End Property
 
 'hWnds aren't exposed by default
 Public Property Get hWnd() As Long
@@ -282,15 +361,6 @@ Public Property Let FontSize(ByVal newSize As Single)
         refreshFont
     End If
 End Property
-
-'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
-' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
-Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-    
-    'Flip the relevant chunk of the buffer to the screen
-    BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
-        
-End Sub
 
 Private Sub tmrFocus_Timer()
     
@@ -346,11 +416,7 @@ Private Sub UserControl_Initialize()
     
     'When not in design mode, initialize a tracker for mouse events
     If g_UserModeFix Then
-        
-        'Start a flicker-free window painter
-        Set cPainter = New pdWindowPainter
-        cPainter.startPainter Me.hWnd
-                
+                        
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
         
@@ -375,45 +441,14 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
 End Sub
 
-'When the user control is resized, the API box must be resized to match
-Private Sub UserControl_Resize()
-
-    'Ignore resize events generated internally (e.g. sizing a text box to the current font)
-    If Not m_InternalResizeState Then
-    
-        'Reposition the edit text box
-        If m_ComboBoxHwnd <> 0 Then
-            
-            'Retrieve the edit box's window rect, which is generated relative to the underlying DC
-            Dim tmpRect As winRect
-            getComboBoxRect tmpRect
-            
-            With tmpRect
-                MoveWindow m_ComboBoxHwnd, .x1, .y1, .x2, .y2, 1
-            End With
-            
-        End If
-        
-        'Redraw the control background
-        updateControlSize
-        
-    End If
-
-End Sub
-
 'Show the control and the combo box.  (This is the first place the combo box is typically created, as well.)
 Private Sub UserControl_Show()
-    
-    'Redraw the control
-    'updateControlSize
-    
-    'If we have not yet created the combo box, do so now
+        
+    'If we have not yet created the combo box, do so now.
     If m_ComboBoxHwnd = 0 Then
         
         createComboBox
         
-        'TODO!  Populate any string added via .AddItem, before the control was actually initialized
-    
     'The combo box has already been created, so we just need to show it.  Note that we explicitly set flags to NOT activate
     ' the window, as we don't want it stealing focus.
     Else
@@ -447,10 +482,10 @@ End Sub
 Private Sub getComboBoxRect(ByRef targetRect As winRect)
 
     With targetRect
-        .x1 = 2
-        .y1 = 2
-        .x2 = UserControl.ScaleWidth - 4
-        .y2 = UserControl.ScaleHeight - 4
+        .x1 = 0
+        .y1 = 0
+        .x2 = UserControl.ScaleWidth
+        .y2 = UserControl.ScaleHeight
     End With
 
 End Sub
@@ -481,11 +516,11 @@ Private Function createComboBox() As Boolean
     
     'Figure out which flags to use, based on the control's properties
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsComboControl As Long
-    flagsWinStyle = WS_VISIBLE Or WS_CHILD
+    flagsWinStyle = WS_VISIBLE Or WS_CHILD Or WS_VSCROLL Or WS_HSCROLL
     flagsWinStyleExtended = 0
     flagsComboControl = CBS_DROPDOWNLIST
     
-    'TODO: Comob boxes should ignore any height values set from the IDE; instead, they should be forced to an ideal height,
+    'The underlying user control should ignore any height values set from the IDE; instead, it should be forced to an ideal height,
     ' using the current font as our guide.  We check for this here, prior to creating the combo box, as we can't easily
     ' access our font object once we assign it to the combo box.
     If Not (curFont Is Nothing) Then
@@ -506,13 +541,13 @@ Private Function createComboBox() As Boolean
         ' (5px = 2px on top, 3px on bottom.)  User control width is not changed.
         m_InternalResizeState = True
         
-        'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
+        'If it's design-time, resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
         ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
         ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
         If g_UserModeFix Then
-            MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, UserControl.ScaleWidth, idealHeight + 5, 1
+            MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, UserControl.ScaleWidth, idealHeight + 6, 1
         Else
-            UserControl.Height = ScaleY(idealHeight + 5, vbPixels, vbTwips)
+            UserControl.Height = ScaleY(idealHeight + 8, vbPixels, vbTwips)
         End If
         
         m_InternalResizeState = False
@@ -527,9 +562,11 @@ Private Function createComboBox() As Boolean
     Dim tmpRect As winRect
     getComboBoxRect tmpRect
     
+    'Creating a combo box window is a little different from other windows, because the drop-down height must be factored into the initial
+    ' size calculation.  (Note the .y2 * 32 statement, below; the 16 value is completely arbitrary, and is used as an upper bound only.)
     With tmpRect
         m_ComboBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("COMBOBOX"), ByVal StrPtr(""), flagsWinStyle Or flagsComboControl, _
-        .x1, .y1, .x2, .y2, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
+        .x1, .y1, .x2, .y2 * 32, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
     End With
     
     'Assign a subclasser to enable proper tab and arrow key support
@@ -538,7 +575,7 @@ Private Function createComboBox() As Boolean
             
             'Subclass the combo box
             cSubclass.ssc_Subclass m_ComboBoxHwnd, 0, 1, Me, True, True, True
-            cSubclass.ssc_AddMsg m_ComboBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_MOUSEACTIVATE
+            cSubclass.ssc_AddMsg m_ComboBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_MOUSEACTIVATE, WM_SIZE
             
             'Subclass the user control as well.  This is necessary for handling update messages from the edit box
             If Not m_ParentHasBeenSubclassed Then
@@ -622,7 +659,7 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
         If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, WM_SETFONT, curFont.getFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
             
         'Also, the back buffer needs to be rebuilt to reflect the new font metrics
-        updateControlSize
+        ' TODO??
             
     End If
     
@@ -649,63 +686,10 @@ Public Sub updateAgainstCurrentTheme()
         refreshFont
         
         'Force an immediate repaint
-        updateControlSize
+        ' TODO!!
                 
     End If
     
-End Sub
-
-'When the control is resized, several things need to happen:
-' 1) We need to forward the resize request to the API edit window
-' 2) We need to resize the button's back buffer, then redraw it
-Private Sub updateControlSize()
-
-    'Reset our back buffer, and reassign the font to it
-    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
-    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
-        
-    'Redraw the back buffer
-    redrawBackBuffer
-
-End Sub
-
-'After the back buffer has been correctly sized and positioned, this function handles the actual painting.  Similarly, for state changes
-' that don't require a resize (e.g. gain/lose focus), this function should be used.
-Private Sub redrawBackBuffer()
-    
-    'Start by erasing the back buffer
-    If g_UserModeFix Then
-    
-        'Fill color changes depending on enablement
-        Dim comboBoxBackgroundColor As Long
-        
-        If Me.Enabled Then
-            comboBoxBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-        Else
-            comboBoxBackgroundColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-        End If
-        
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, comboBoxBackgroundColor, 255
-        
-    Else
-        m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
-    End If
-    
-    'The edit box has a 1px border, whose color changes depending on focus
-    Dim comboBoxBorderColor As Long
-    
-    If m_HasFocus Then
-        comboBoxBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-    Else
-        comboBoxBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-    End If
-    
-    'Draw the border
-    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, comboBoxBorderColor
-    
-    'Paint the buffer to the screen
-    If g_UserModeFix Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-
 End Sub
 
 'If an object of type Control is capable of receiving focus, this will return TRUE.
@@ -908,10 +892,7 @@ Private Sub InstallHookConditional()
         
         'No hook exists.  Hook the control now.
         cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_ComboBoxHwnd, 2, Me, , True
-        
-        'Redraw the control to reflect focus state
-        redrawBackBuffer
-    
+            
     End If
 
 End Sub
@@ -926,10 +907,7 @@ Private Sub RemoveHookConditional()
         
         'A hook exists.  Uninstall it now.
         cSubclass.shk_UnHook WH_KEYBOARD
-        
-        'Redraw the control to reflect focus state
-        redrawBackBuffer
-        
+                
     End If
     
 End Sub
@@ -950,10 +928,9 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
 '*************************************************************************************************
     
     m_InHookNow = True
-    
-    If lHookType = WH_KEYBOARD Then
-    
-        bHandled = False
+    bHandled = False
+        
+    If (lHookType = WH_KEYBOARD) And m_HasFocus Then
         
         'MSDN states that negative codes must be passed to the next hook, without processing
         ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
@@ -972,14 +949,14 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                     If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
                         
                         'Tab key is used to redirect focus to a new window.
-                        If (wParam = VK_TAB) And m_HasFocus And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
+                        If (wParam = VK_TAB) And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
                                 
                             'Set a module-level shift state, and a flag that tells the hook to deactivate after it eats this keypress.
                             If isVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
                                 
                             'Enable a timer, which will forward focus after a slight delay.  The slight delay gives us time to
                             ' exit the hook proc and terminate the hook, after which focus will forward normally.
-                            ' tmrFocus.Enabled = True
+                            tmrFocus.Enabled = True
                             
                             bHandled = True
                             
@@ -1012,16 +989,16 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             End If
             
         End If
-                
-        'Per MSDN, return the value of CallNextHookEx, contingent on whether or not we handled the keypress internally.
-        ' Note that if we do not manually handle a keypress, this behavior allows the default keyhandler to deal with
-        ' the pressed keys (and raise its own WM_CHAR events, etc).
-        If (Not bHandled) Then
-            lReturn = CallNextHookEx(0, nCode, wParam, ByVal lParam)
-        Else
-            lReturn = 1
-        End If
             
+    End If
+    
+    'Per MSDN, return the value of CallNextHookEx, contingent on whether or not we handled the keypress internally.
+    ' Note that if we do not manually handle a keypress, this behavior allows the default keyhandler to deal with
+    ' the pressed keys (and raise its own WM_CHAR events, etc).
+    If (Not bHandled) Then
+        lReturn = CallNextHookEx(0, nCode, wParam, ByVal lParam)
+    Else
+        lReturn = 1
     End If
     
     m_InHookNow = False
@@ -1111,6 +1088,27 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             Else
                 RemoveHookConditional
             End If
+            
+        'Resize messages must be handled manually for the combo box, as we need to dynamically sync the resize state of both parent and child window
+        Case WM_SIZE
+                        
+            'Disable VB resize handling
+            m_InternalResizeState = True
+            
+            'Get the window rect of the combo box
+            Dim comboRect As winRect
+            GetWindowRect lng_hWnd, comboRect
+                        
+            'Resize the user control, as necessary
+            With UserControl
+            
+                If (comboRect.y2 - comboRect.y1) <> .ScaleHeight Or (comboRect.x2 - comboRect.x1) <> .ScaleWidth Then
+                    .Size .ScaleX((comboRect.x2 - comboRect.x1), vbPixels, vbTwips), .ScaleY((comboRect.y2 - comboRect.y1), vbPixels, vbTwips)
+                End If
+            
+            End With
+            
+            m_InternalResizeState = False
             
         'Other messages??
         Case Else
