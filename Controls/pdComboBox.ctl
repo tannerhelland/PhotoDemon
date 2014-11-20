@@ -156,6 +156,7 @@ End Enum
 'System window handling APIs
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (ByVal dwExStyle As Long, ByVal lpClassName As Long, ByVal lpWindowName As Long, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
@@ -247,6 +248,7 @@ Private Const CB_RESETCONTENT As Long = &H14B
 Private Const CB_GETCOUNT As Long = &H146
 Private Const CB_GETCURSEL As Long = &H147
 Private Const CB_SETCURSEL As Long = &H14E
+Private Const CB_GETITEMHEIGHT As Long = &H154
 
 Private Const CBN_DROPDOWN As Long = 7
 
@@ -267,15 +269,29 @@ Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -
         'If no index is specified, let the default combo box handler decide order; otherwise, request the placement we were given.
         If (itemIndex = -1) Then
             SendMessage m_ComboBoxHwnd, CB_ADDSTRING, 0, ByVal StrPtr(srcItem)
-            
-            'Set the combo box to always display the full list amount in the drop-down; this is only applicable if a manifest is present,
-            ' so it will have no effect in the IDE.
-            If g_IsProgramCompiled Then SendMessage m_ComboBoxHwnd, CB_SETMINVISIBLE, SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&), ByVal 0&
-        
         Else
             SendMessage m_ComboBoxHwnd, CB_INSERTSTRING, itemIndex, ByVal StrPtr(srcItem)
         End If
         
+        'Set the combo box to always display the full list amount in the drop-down; this is only applicable if a manifest is present,
+        ' so it will have no effect in the IDE.
+        If g_IsProgramCompiled Then
+            SendMessage m_ComboBoxHwnd, CB_SETMINVISIBLE, SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&), ByVal 0&
+        
+        'If a manifest is not present, we can achieve the same thing by manually setting the window size to match the number of
+        ' entries in the combo box.
+        Else
+        
+            'Rather than forcing combo boxes to a predetermined size, we dynamically adjust their size as items are added.
+            ' To do this, we must start by getting the window rect of the current combo box.
+            Dim comboRect As winRect
+            GetClientRect Me.hWnd, comboRect
+            
+            'Next, resize the combo box to match the number of items currently in the box.
+            MoveWindow m_ComboBoxHwnd, comboRect.x1, comboRect.y1, comboRect.x2 - comboRect.x1, (comboRect.y2 - comboRect.y1) + ((SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&) + 1) * SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, 0, ByVal 0&)), 1
+            
+        End If
+            
     End If
     
 End Sub
@@ -563,10 +579,10 @@ Private Function createComboBox() As Boolean
     getComboBoxRect tmpRect
     
     'Creating a combo box window is a little different from other windows, because the drop-down height must be factored into the initial
-    ' size calculation.  (Note the .y2 * 32 statement, below; the 16 value is completely arbitrary, and is used as an upper bound only.)
+    ' size calculation.  We start at zero, then increase the combo box size as additional items are added.
     With tmpRect
         m_ComboBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("COMBOBOX"), ByVal StrPtr(""), flagsWinStyle Or flagsComboControl, _
-        .x1, .y1, .x2, .y2 * 32, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
+        .x1, .y1, .x2, .y2, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
     End With
     
     'Assign a subclasser to enable proper tab and arrow key support
@@ -1097,7 +1113,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
             'Get the window rect of the combo box
             Dim comboRect As winRect
-            GetWindowRect lng_hWnd, comboRect
+            GetWindowRect m_ComboBoxHwnd, comboRect
                         
             'Resize the user control, as necessary
             With UserControl
