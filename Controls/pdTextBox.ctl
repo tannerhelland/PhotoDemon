@@ -362,9 +362,14 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
+Public Property Let Enabled(ByVal NewValue As Boolean)
     
-    UserControl.Enabled = newValue
+    If m_EditBoxHwnd <> 0 Then EnableWindow m_EditBoxHwnd, IIf(NewValue, 1, 0)
+    UserControl.Enabled = NewValue
+    
+    'Redraw the window to match
+    If g_UserModeFix Then redrawBackBuffer
+    
     PropertyChanged "Enabled"
     
 End Property
@@ -551,6 +556,7 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
+    Enabled = True
     FontSize = 10
     Multiline = False
     Text = ""
@@ -559,6 +565,7 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
+        Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
         Multiline = .ReadProperty("Multiline", False)
         Text = .ReadProperty("Text", "")
@@ -734,6 +741,9 @@ Private Function createEditBox() As Boolean
         .x1, .y1, .x2, .y2, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
     End With
     
+    'Enable the window per the current UserControl's extender setting
+    EnableWindow m_EditBoxHwnd, IIf(Me.Enabled, 1, 0)
+    
     'Assign a subclasser to enable IME support
     If g_UserModeFix Then
         If Not (cSubclass Is Nothing) Then
@@ -835,6 +845,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
     'Store all associated properties
     With PropBag
+        .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", m_FontSize, 10
         .WriteProperty "Multiline", m_Multiline, False
         .WriteProperty "Text", m_TextBackup, ""
