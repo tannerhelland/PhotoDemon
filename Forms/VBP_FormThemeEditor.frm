@@ -4,7 +4,7 @@ Begin VB.Form FormThemeEditor
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Theme editor"
-   ClientHeight    =   7185
+   ClientHeight    =   7365
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   10605
@@ -20,7 +20,7 @@ Begin VB.Form FormThemeEditor
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   479
+   ScaleHeight     =   491
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   707
    ShowInTaskbar   =   0   'False
@@ -30,8 +30,8 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   7
       Top             =   6000
       Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   635
+      _extentx        =   9975
+      _extenty        =   635
    End
    Begin VB.CommandButton cmdTextBoxTesting 
       Caption         =   "select all"
@@ -92,14 +92,14 @@ Begin VB.Form FormThemeEditor
       Left            =   4800
       Top             =   4200
       Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   2990
-      Caption         =   ""
-      FontSize        =   9
-      Layout          =   1
+      _extentx        =   9975
+      _extenty        =   2990
+      caption         =   ""
+      fontsize        =   9
+      layout          =   1
    End
    Begin VB.CommandButton cmdTextBoxFake 
-      Caption         =   "useless command button with TabIndex 0. (UC is TabIndex 1.)"
+      Caption         =   "useless command button with TabIndex 0"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -113,7 +113,7 @@ Begin VB.Form FormThemeEditor
       Left            =   240
       TabIndex        =   0
       Top             =   6480
-      Width           =   6135
+      Width           =   4215
    End
    Begin VB.CommandButton cmdTextBoxTesting 
       Caption         =   "resize edit box"
@@ -157,21 +157,21 @@ Begin VB.Form FormThemeEditor
       Left            =   120
       Top             =   120
       Width           =   3030
-      _ExtentX        =   5345
-      _ExtentY        =   503
-      Caption         =   "Unicode text box for testing:"
-      FontSize        =   12
-      Layout          =   2
+      _extentx        =   5345
+      _extenty        =   503
+      caption         =   "Unicode text box for testing:"
+      fontsize        =   12
+      layout          =   2
    End
    Begin PhotoDemon.pdTextBox pdTextBox1 
-      Height          =   3255
+      Height          =   2055
       Left            =   240
       TabIndex        =   1
       Top             =   480
       Width           =   9975
-      _ExtentX        =   17595
-      _ExtentY        =   5741
-      Multiline       =   -1  'True
+      _extentx        =   17595
+      _extenty        =   5741
+      multiline       =   -1  'True
    End
    Begin PhotoDemon.pdLabel pdLabelTitle 
       Height          =   285
@@ -179,11 +179,11 @@ Begin VB.Form FormThemeEditor
       Left            =   120
       Top             =   3840
       Width           =   2580
-      _ExtentX        =   4551
-      _ExtentY        =   503
-      Caption         =   "text box testing options:"
-      FontSize        =   12
-      Layout          =   2
+      _extentx        =   4551
+      _extenty        =   503
+      caption         =   "text box testing options:"
+      fontsize        =   12
+      layout          =   2
    End
    Begin PhotoDemon.pdLabel pdLabelTitle 
       Height          =   285
@@ -191,11 +191,61 @@ Begin VB.Form FormThemeEditor
       Left            =   4800
       Top             =   3840
       Width           =   5715
-      _ExtentX        =   6059
-      _ExtentY        =   503
-      Caption         =   "Unicode label for testing output:"
-      FontSize        =   12
-      Layout          =   2
+      _extentx        =   6059
+      _extenty        =   503
+      caption         =   "Unicode label for testing output:"
+      fontsize        =   12
+      layout          =   2
+   End
+   Begin PhotoDemon.pdTextBox pdTextBox2 
+      Height          =   315
+      Index           =   0
+      Left            =   240
+      TabIndex        =   8
+      Top             =   2640
+      Width           =   9975
+      _extentx        =   17595
+      _extenty        =   556
+   End
+   Begin PhotoDemon.pdTextBox pdTextBox2 
+      Height          =   315
+      Index           =   1
+      Left            =   240
+      TabIndex        =   9
+      Top             =   3000
+      Width           =   9975
+      _extentx        =   17595
+      _extenty        =   556
+   End
+   Begin PhotoDemon.pdTextBox pdTextBox2 
+      Height          =   315
+      Index           =   2
+      Left            =   240
+      TabIndex        =   10
+      Top             =   3360
+      Width           =   9975
+      _extentx        =   17595
+      _extenty        =   556
+   End
+   Begin PhotoDemon.pdComboBox pdComboBox2 
+      Height          =   360
+      Index           =   0
+      Left            =   4800
+      TabIndex        =   11
+      Top             =   6480
+      Width           =   5655
+      _extentx        =   9975
+      _extenty        =   635
+   End
+   Begin PhotoDemon.pdComboBox pdComboBox2 
+      Height          =   360
+      Index           =   1
+      Left            =   4800
+      TabIndex        =   12
+      Top             =   6960
+      Width           =   5655
+      _extentx        =   9975
+      _extenty        =   635
    End
 End
 Attribute VB_Name = "FormThemeEditor"
