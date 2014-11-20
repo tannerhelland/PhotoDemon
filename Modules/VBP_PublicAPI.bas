@@ -65,6 +65,7 @@ Public Const CB_SHOWDROPDOWN As Long = &H14F
 Public Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 Public Declare Function ReleaseCapture Lib "user32" () As Long
 Public Declare Function MonitorFromWindow Lib "user32" (ByVal myHwnd As Long, ByVal dwFlags As Long) As Long
+Public Declare Function EnableWindow Lib "user32" (ByVal hWnd As Long, ByVal bEnable As Long) As Long
 
 'NOTE!  By 6.6's release, I hope to remove the need for this A equivalent.  Search to see which functions make use of it.
 Public Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long

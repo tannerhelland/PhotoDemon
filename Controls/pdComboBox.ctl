@@ -232,10 +232,17 @@ Private m_ComboBoxBrush As Long
 ' crucial actions (like releasing the hook) until the hook proc has exited.
 Private m_InHookNow As Boolean
 
-'If the user attempts to set the Text property before the edit box is created (e.g. when the control is invisible), we will back up the
-' text to this string.  When the edit box is created, this text will be automatically placed inside the control.
-' TODO: determine if this is actually necessary
-' Private m_TextBackup As String
+'If the user attempts to add items to the combo box before it is created (e.g. when the control is invisible), we will back up the
+' items to this string.  When the combo box is created, this list will be automatically be added to the control.
+
+Private Type backupComboEntry
+    entryIndex As Long
+    entryString As String
+End Type
+
+Private m_BackupEntries() As backupComboEntry
+Private m_NumBackupEntries As Long
+Private m_BackupListIndex As Long
 
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
@@ -292,13 +299,31 @@ Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -
             
         End If
             
+    'If the combo box does not exist, make a backup of the added item.  We will add these items in their original order once the combo box
+    ' has been successfully created.
+    Else
+    
+        'Resize the backup array as necessary
+        If m_NumBackupEntries = 0 Then ReDim m_BackupEntries(0 To 15) As backupComboEntry
+        If m_NumBackupEntries > UBound(m_BackupEntries) Then ReDim Preserve m_BackupEntries(0 To m_NumBackupEntries * 2 - 1) As backupComboEntry
+            
+        'Add this item to the backup array
+        m_BackupEntries(m_NumBackupEntries).entryIndex = itemIndex
+        m_BackupEntries(m_NumBackupEntries).entryString = srcItem
+        m_NumBackupEntries = m_NumBackupEntries + 1
+        
     End If
     
 End Sub
 
 'Clear all entries from the combo box
 Public Sub Clear()
-    SendMessage m_ComboBoxHwnd, CB_RESETCONTENT, 0, ByVal 0&
+    If m_ComboBoxHwnd <> 0 Then
+        SendMessage m_ComboBoxHwnd, CB_RESETCONTENT, 0, ByVal 0&
+    Else
+        m_NumBackupEntries = 0
+        ReDim m_BackupEntries(0) As backupComboEntry
+    End If
 End Sub
 
 'Number of items currently in the combo box list
@@ -337,6 +362,9 @@ Public Property Let ListIndex(ByVal newIndex As Long)
             
         End If
         
+    'If the combo box doesn't exist yet, maek a backup of any ListIndex requests
+    Else
+        m_BackupListIndex = newIndex
     End If
     
 End Property
@@ -359,9 +387,10 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
+Public Property Let Enabled(ByVal NewValue As Boolean)
     
-    UserControl.Enabled = newValue
+    If m_ComboBoxHwnd <> 0 Then EnableWindow m_ComboBoxHwnd, IIf(NewValue, 1, 0)
+    UserControl.Enabled = NewValue
     PropertyChanged "Enabled"
     
 End Property
@@ -446,12 +475,14 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
+    Enabled = True
     FontSize = 10
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
+        Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
     End With
 
@@ -459,7 +490,7 @@ End Sub
 
 'Show the control and the combo box.  (This is the first place the combo box is typically created, as well.)
 Private Sub UserControl_Show()
-        
+    
     'If we have not yet created the combo box, do so now.
     If m_ComboBoxHwnd = 0 Then
         
@@ -522,7 +553,9 @@ End Sub
 'As the wrapped system combo box may need to be recreated when certain properties are changed, this function is used to
 ' automate the process of destroying an existing window (if any) and recreating it anew.
 Private Function createComboBox() As Boolean
-
+    
+    Debug.Print "Creating combo box " & UserControl.Name & " now..."
+    
     'If the combo box already exists, kill it
     ' TODO: do we ever actually need to do this, or can we get away with a single creation??
     destroyComboBox
@@ -585,6 +618,9 @@ Private Function createComboBox() As Boolean
         .x1, .y1, .x2, .y2, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
     End With
     
+    'Enable the window per the current UserControl's extender setting
+    EnableWindow m_ComboBoxHwnd, IIf(Me.Enabled, 1, 0)
+    
     'Assign a subclasser to enable proper tab and arrow key support
     If g_UserModeFix Then
         If Not (cSubclass Is Nothing) Then
@@ -606,7 +642,23 @@ Private Function createComboBox() As Boolean
     'Assign the default font to the combo box
     refreshFont True
     
-    'TODO?? If the combo box had entries before we killed it, restore those entries now?
+    'If we backed up previous combo box entries at some point, we must restore those entries now.
+    If m_NumBackupEntries > 0 Then
+        
+        Debug.Print "adding backup items now..."
+        
+        Dim i As Long
+        For i = 0 To m_NumBackupEntries - 1
+            Me.AddItem m_BackupEntries(i).entryString, m_BackupEntries(i).entryIndex
+        Next i
+        
+        m_NumBackupEntries = 0
+        ReDim m_BackupEntries(0) As backupComboEntry
+        
+        'Also set a list index, if any.  (If none were specifed, the first entry in the list wil be selected.)
+        Me.ListIndex = m_BackupListIndex
+        
+    End If
         
     'Return TRUE if successful
     createComboBox = (m_ComboBoxHwnd <> 0)
@@ -685,6 +737,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
     'Store all associated properties
     With PropBag
+        .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", m_FontSize, 10
     End With
     
