@@ -467,7 +467,7 @@ Public Property Let Text(ByRef newString As String)
 End Property
 
 'External functions can call this to fully select the text box's contents
-Public Sub SelectAll()
+Public Sub selectAll()
 
     If m_EditBoxHwnd <> 0 Then
         SendMessage m_EditBoxHwnd, EM_SETSEL, ByVal 0&, ByVal -1&
@@ -1258,34 +1258,44 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                             
                             m_AltKeyMode = False
                             
-                            'If the Alt+keycode is larger than an Int, submit it manually.
-                            Dim charAsLong As Long
+                            'Make sure the typed code is not longer than 10 chars (the limit for a Long)
+                            If Len(assembledVirtualKeyString) > 0 And Len(assembledVirtualKeyString) <= 10 Then
                             
-                            If Len(assembledVirtualKeyString) > 0 Then
-                                charAsLong = CLng(assembledVirtualKeyString)
-                                If charAsLong And &HFFFF0000 <> 0 Then
+                                'If the Alt+keycode is larger than an Int, we must submit it manually.
+                                Dim charAsLong As Long
+                            
+                                'For better range checking, first copy the value into a Currency-type integer
+                                Dim testRange As Currency
+                                testRange = CCur(assembledVirtualKeyString)
                                 
-                                    'Convert it into two chars.  The code for this is rather involved; see http://en.wikipedia.org/wiki/UTF-16#Code_points_U.2B010000_to_U.2B10FFFF
-                                    ' for details.
-                                    charAsLong = charAsLong - &H10000
-                                    
-                                    Dim charHiWord As Long, charLoWord As Long
-                                    charHiWord = ((charAsLong \ 1024) And &H7FF) + &HD800&
-                                    charLoWord = (charAsLong And &H3FF) + &HDC00&
-                                    
-                                    'Send those chars to the edit box
-                                    Dim tmpMsg As winMsg
-                                    tmpMsg.hWnd = m_EditBoxHwnd
-                                    tmpMsg.sysMsg = WM_CHAR
-                                    tmpMsg.wParam = charHiWord
-                                    tmpMsg.lParam = lParam
-                                    tmpMsg.msgTime = GetTickCount()
-                                    DispatchMessage tmpMsg
-                                    
-                                    tmpMsg.wParam = charLoWord
-                                    tmpMsg.msgTime = GetTickCount()
-                                    DispatchMessage tmpMsg
+                                'Perform a second check, to make sure the value fits within a VB long.
+                                If testRange <= LONG_MAX Then
                                 
+                                    charAsLong = CLng(assembledVirtualKeyString)
+                                    If charAsLong And &HFFFF0000 <> 0 Then
+                                    
+                                        'Convert it into two chars.  The code for this is rather involved; see http://en.wikipedia.org/wiki/UTF-16#Code_points_U.2B010000_to_U.2B10FFFF
+                                        ' for details.
+                                        charAsLong = charAsLong - &H10000
+                                        
+                                        Dim charHiWord As Long, charLoWord As Long
+                                        charHiWord = ((charAsLong \ 1024) And &H7FF) + &HD800&
+                                        charLoWord = (charAsLong And &H3FF) + &HDC00&
+                                        
+                                        'Send those chars to the edit box
+                                        Dim tmpMsg As winMsg
+                                        tmpMsg.hWnd = m_EditBoxHwnd
+                                        tmpMsg.sysMsg = WM_CHAR
+                                        tmpMsg.wParam = charHiWord
+                                        tmpMsg.lParam = lParam
+                                        tmpMsg.msgTime = GetTickCount()
+                                        DispatchMessage tmpMsg
+                                        
+                                        tmpMsg.wParam = charLoWord
+                                        tmpMsg.msgTime = GetTickCount()
+                                        DispatchMessage tmpMsg
+                                    
+                                    End If
                                 End If
                             End If
                             
