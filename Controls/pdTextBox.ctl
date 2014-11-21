@@ -1444,7 +1444,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'On a single-line text box, pressing Enter will cause a ding.  (It's insane that this is the default behavior.)
             ' To prevent this, we capture return presses, and forcibly terminate them.  If the user wants to do something with
             ' Enter keypresses on these controls, they will have already handled the key event in the hook proc, above.
-            If (Not m_Multiline) And (wParam = VK_RETURN) Then
+            If (Not m_Multiline) And ((wParam = VK_RETURN) Or (wParam = VK_TAB)) Then
                 bHandled = True
                 lReturn = 0
             End If
