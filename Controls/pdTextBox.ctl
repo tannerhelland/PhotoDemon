@@ -21,12 +21,6 @@ Begin VB.UserControl pdTextBox
    ToolboxBitmap   =   "pdTextBox.ctx":0000
    Begin VB.Timer tmrHookRelease 
       Enabled         =   0   'False
-      Interval        =   100
-      Left            =   600
-      Top             =   240
-   End
-   Begin VB.Timer tmrFocus 
-      Enabled         =   0   'False
       Interval        =   50
       Left            =   120
       Top             =   240
@@ -41,8 +35,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Text Box control
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 03/November/14
-'Last updated: 07/November/14
-'Last update: continued work on initial build
+'Last updated: 21/November/14
+'Last update: incorporate many fixes from Zhu JY's testing
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -482,17 +476,6 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     'Flip the relevant chunk of the buffer to the screen
     BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
         
-End Sub
-
-Private Sub tmrFocus_Timer()
-    
-    'Forward focus to the next control
-    forwardFocusManually (m_FocusDirection = 1)
-    m_FocusDirection = 0
-    
-    'After forwarding focus, disable the hook and deactivate this timer
-    tmrFocus.Enabled = False
-    
 End Sub
 
 Private Sub tmrHookRelease_Timer()
@@ -1227,9 +1210,9 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                                     'Set a module-level shift state, and a flag that tells the hook to deactivate after it eats this keypress.
                                     If isVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
                                     
-                                    'Enable a timer, which will forward focus after a slight delay.  The slight delay gives us time to
-                                    ' exit the hook proc and terminate the hook, after which focus will forward normally.
-                                    tmrFocus.Enabled = True
+                                    'Forward focus to the next control
+                                    forwardFocusManually (m_FocusDirection = 1)
+                                    m_FocusDirection = 0
                                     
                                     bHandled = True
                                     
