@@ -1200,33 +1200,12 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                         ' To prevent double-raising of KeyUp events, we check the transitionary state before proceeding
                         If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
                             
-                            'On a single-line control, the tab key should be used to redirect focus to a new window.
-                            If (wParam = VK_TAB) Then
-                                
-                                'Multiline edit boxes accept tab keypresses.  Single line ones do not, so interpret TAB as a
-                                ' request to forward (or reverse) focus.
-                                If (Not m_Multiline) And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
-                                    
-                                    'Set a module-level shift state, and a flag that tells the hook to deactivate after it eats this keypress.
-                                    If isVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
-                                    
-                                    'Forward focus to the next control
-                                    forwardFocusManually (m_FocusDirection = 1)
-                                    m_FocusDirection = 0
-                                    
-                                    bHandled = True
-                                    
-                                End If
-                            
                             'Non-tab keys that require special handling are text-dependent keys (e.g. arrow keys).  Simply forward these
                             ' directly to the edit box, and it will take care of the rest.
-                            Else
-                        
-                                'WM_KEYUP requires that certain lParam bits be set.  See http://msdn.microsoft.com/en-us/library/windows/desktop/ms646281%28v=vs.85%29.aspx
-                                SendMessage m_EditBoxHwnd, WM_KEYUP, wParam, ByVal (lParam And &HDFFFFF81 Or &HC0000000)
-                                bHandled = True
-                                
-                            End If
+                            
+                            'WM_KEYUP requires that certain lParam bits be set.  See http://msdn.microsoft.com/en-us/library/windows/desktop/ms646281%28v=vs.85%29.aspx
+                            SendMessage m_EditBoxHwnd, WM_KEYUP, wParam, ByVal (lParam And &HDFFFFF81 Or &HC0000000)
+                            bHandled = True
                             
                         End If
                     
@@ -1309,10 +1288,32 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                 'The default key handler works just fine for character keys.  However, dialog keys (e.g. arrow keys) get eaten
                 ' by VB, so we must manually catch them in this hook, and forward them direct to the edit control.
                 If doesVirtualKeyRequireSpecialHandling(wParam) Then
-                
-                    'WM_KEYDOWN requires that certain bits be set.  See http://msdn.microsoft.com/en-us/library/windows/desktop/ms646280%28v=vs.85%29.aspx
-                    SendMessage m_EditBoxHwnd, WM_KEYDOWN, wParam, ByVal (lParam And &H51111111)
-                    bHandled = True
+                    
+                    'On a single-line control, the tab key should be used to redirect focus to a new window.
+                    If (wParam = VK_TAB) Then
+                        
+                        'Multiline edit boxes accept tab keypresses.  Single line ones do not, so interpret TAB as a
+                        ' request to forward (or reverse) focus.
+                        If (Not m_Multiline) And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
+                            
+                            'Set a module-level shift state, and a flag that tells the hook to deactivate after it eats this keypress.
+                            If isVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
+                            
+                            'Forward focus to the next control
+                            forwardFocusManually (m_FocusDirection = 1)
+                            m_FocusDirection = 0
+                            
+                            bHandled = True
+                            
+                        End If
+                        
+                    Else
+                    
+                        'WM_KEYDOWN requires that certain bits be set.  See http://msdn.microsoft.com/en-us/library/windows/desktop/ms646280%28v=vs.85%29.aspx
+                        SendMessage m_EditBoxHwnd, WM_KEYDOWN, wParam, ByVal (lParam And &H51111111)
+                        bHandled = True
+                        
+                    End If
                     
                 End If
                 
