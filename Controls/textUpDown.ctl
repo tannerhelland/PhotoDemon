@@ -150,10 +150,10 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
-    UserControl.Enabled = newValue
-    vsPrimary.Enabled = newValue
-    txtPrimary.Enabled = newValue
+Public Property Let Enabled(ByVal NewValue As Boolean)
+    UserControl.Enabled = NewValue
+    vsPrimary.Enabled = NewValue
+    txtPrimary.Enabled = NewValue
     PropertyChanged "Enabled"
 End Property
 
@@ -186,13 +186,13 @@ Attribute Value.VB_UserMemId = 0
     Value = controlVal
 End Property
 
-Public Property Let Value(ByVal newValue As Double)
+Public Property Let Value(ByVal NewValue As Double)
         
     'Don't make any changes unless the new value deviates from the existing one
-    If (newValue <> controlVal) Or (Not IsValid(False)) Then
+    If (NewValue <> controlVal) Or (Not IsValid(False)) Then
     
         'Internally track the value of the control
-        controlVal = newValue
+        controlVal = NewValue
         
         'Assign the scroll bar the "same" value.  This will vary based on the number of significant digits in use; because
         ' scroll bars cannot hold float values, we have to multiple by 10^n where n is the number of significant digits
@@ -200,7 +200,7 @@ Public Property Let Value(ByVal newValue As Double)
         Dim newScrollVal As Long
         newScrollVal = -1 * CLng(controlVal * (10 ^ significantDigits))
         
-        If g_UserModeFix Then
+        If gIsProgramRunning Then
         
             If vsPrimary.Value <> newScrollVal Then
                 
@@ -244,9 +244,9 @@ Public Property Get Min() As Double
     Min = controlMin
 End Property
 
-Public Property Let Min(ByVal newValue As Double)
+Public Property Let Min(ByVal NewValue As Double)
         
-    controlMin = newValue
+    controlMin = NewValue
     
     'Calculate a new scroll bar limit
     Dim newScrollLimit As Long
@@ -254,12 +254,12 @@ Public Property Let Min(ByVal newValue As Double)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    If g_UserModeFix Then vsPrimary.Max = newScrollLimit
+    If gIsProgramRunning Then vsPrimary.Max = newScrollLimit
     
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
         controlVal = controlMin
-        If g_UserModeFix Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
+        If gIsProgramRunning Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -273,9 +273,9 @@ Public Property Get Max() As Double
     Max = controlMax
 End Property
 
-Public Property Let Max(ByVal newValue As Double)
+Public Property Let Max(ByVal NewValue As Double)
         
-    controlMax = newValue
+    controlMax = NewValue
     
     'Calculate a new scroll bar limit
     Dim newScrollLimit As Long
@@ -283,13 +283,13 @@ Public Property Let Max(ByVal newValue As Double)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    If g_UserModeFix Then vsPrimary.Min = newScrollLimit
+    If gIsProgramRunning Then vsPrimary.Min = newScrollLimit
     
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
         
         controlVal = controlMax
-        If g_UserModeFix Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
+        If gIsProgramRunning Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
@@ -305,9 +305,9 @@ Public Property Get SigDigits() As Long
     SigDigits = significantDigits
 End Property
 
-Public Property Let SigDigits(ByVal newValue As Long)
+Public Property Let SigDigits(ByVal NewValue As Long)
         
-    significantDigits = newValue
+    significantDigits = NewValue
     
     'Calculate a new scroll bar limit
     Dim newMin As Long, newMax As Long
@@ -316,7 +316,7 @@ Public Property Let SigDigits(ByVal newValue As Long)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         vsPrimary.Max = newMax
         vsPrimary.Min = newMin
     End If
@@ -366,7 +366,7 @@ Private Sub UserControl_Initialize()
     txtPrimary.FontSize = m_FontSize
     
     'Prepare an API scroll bar
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         Set vsPrimary = New pdScrollAPI
         vsPrimary.initializeScrollBarWindow picScroll.hWnd, False, 0, 10, 0, 1, 1
     End If

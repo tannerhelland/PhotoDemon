@@ -131,9 +131,9 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
+Public Property Let Enabled(ByVal NewValue As Boolean)
     
-    UserControl.Enabled = newValue
+    UserControl.Enabled = NewValue
     PropertyChanged "Enabled"
     
     'Redraw the control
@@ -238,13 +238,13 @@ Public Property Get Value() As Boolean
     Value = m_ButtonState
 End Property
 
-Public Property Let Value(ByVal newValue As Boolean)
+Public Property Let Value(ByVal NewValue As Boolean)
     
     'Update our internal value tracker, but only if autotoggle is not active.  (Autotoggle causes the button to behave like
     ' a normal button, so there's no concept of a persistent "value".)
-    If (m_ButtonState <> newValue) And (Not m_AutoToggle) Then
+    If (m_ButtonState <> NewValue) And (Not m_AutoToggle) Then
     
-        m_ButtonState = newValue
+        m_ButtonState = NewValue
         
         'Redraw the control to match the new state
         redrawBackBuffer
@@ -310,7 +310,7 @@ End Sub
 Private Sub UserControl_Initialize()
     
     'When not in design mode, initialize trackers for input events
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
     
         Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker Me.hWnd, True, True, , True
@@ -360,7 +360,7 @@ End Sub
 Private Sub UserControl_Paint()
     
     'Provide minimal painting within the designer
-    If Not g_UserModeFix Then redrawBackBuffer
+    If Not gIsProgramRunning Then redrawBackBuffer
     
 End Sub
 
@@ -443,7 +443,7 @@ End Sub
 Private Sub redrawBackBuffer()
     
     'Start by erasing the back buffer
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor, 255
     Else
         m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, RGB(255, 255, 255)
@@ -518,7 +518,7 @@ Private Sub redrawBackBuffer()
     End If
         
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    If Not g_UserModeFix Then
+    If Not gIsProgramRunning Then
         
         Dim tmpRect As RECT
         With tmpRect
@@ -533,6 +533,6 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the buffer to the screen
-    If g_UserModeFix Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If gIsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub

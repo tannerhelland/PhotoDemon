@@ -270,11 +270,11 @@ Public Property Get GradientMiddleValue() As Double
     GradientMiddleValue = gradMiddleValue
 End Property
 
-Public Property Let GradientMiddleValue(ByVal newValue As Double)
+Public Property Let GradientMiddleValue(ByVal NewValue As Double)
     
     'Store the new value, then redraw the slider to match
-    If newValue <> gradMiddleValue Then
-        gradMiddleValue = newValue
+    If NewValue <> gradMiddleValue Then
+        gradMiddleValue = NewValue
         redrawSlider
         PropertyChanged "GradientMiddleValue"
         redrawInternalGradientDIB
@@ -305,10 +305,10 @@ Public Property Get NotchValueCustom() As Double
     NotchValueCustom = customNotchValue
 End Property
 
-Public Property Let NotchValueCustom(ByVal newValue As Double)
+Public Property Let NotchValueCustom(ByVal NewValue As Double)
     
     'Store the new position
-    customNotchValue = newValue
+    customNotchValue = NewValue
     
     'Redraw the control
     redrawSlider
@@ -346,12 +346,12 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
+Public Property Let Enabled(ByVal NewValue As Boolean)
     
-    UserControl.Enabled = newValue
+    UserControl.Enabled = NewValue
     
     'Disable text entry
-    tudPrimary.Enabled = newValue
+    tudPrimary.Enabled = NewValue
     
     'Redraw the slider; when disabled, the slider itself is not drawn (only the track behind it is)
     redrawSlider
@@ -464,13 +464,13 @@ Attribute Value.VB_UserMemId = 0
     Value = controlVal
 End Property
 
-Public Property Let Value(ByVal newValue As Double)
+Public Property Let Value(ByVal NewValue As Double)
     
     'Don't make any changes unless the new value deviates from the existing one
-    If newValue <> controlVal Then
+    If NewValue <> controlVal Then
     
         'Internally track the value of the control
-        controlVal = newValue
+        controlVal = NewValue
         
         'Check bounds
         If controlVal < controlMin Then controlVal = controlMin
@@ -514,9 +514,9 @@ Public Property Get Min() As Double
     Min = controlMin
 End Property
 
-Public Property Let Min(ByVal newValue As Double)
+Public Property Let Min(ByVal NewValue As Double)
     
-    controlMin = newValue
+    controlMin = NewValue
     tudPrimary.Min = controlMin
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
@@ -537,9 +537,9 @@ Public Property Get Max() As Double
     Max = controlMax
 End Property
 
-Public Property Let Max(ByVal newValue As Double)
+Public Property Let Max(ByVal NewValue As Double)
     
-    controlMax = newValue
+    controlMax = NewValue
     tudPrimary.Max = controlMax
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
@@ -560,8 +560,8 @@ Public Property Get SigDigits() As Long
     SigDigits = significantDigits
 End Property
 
-Public Property Let SigDigits(ByVal newValue As Long)
-    significantDigits = newValue
+Public Property Let SigDigits(ByVal NewValue As Long)
+    significantDigits = NewValue
     tudPrimary.SigDigits = significantDigits
     PropertyChanged "SigDigits"
 End Property
@@ -587,7 +587,7 @@ End Sub
 Private Sub UserControl_Initialize()
     
     'When not in design mode, initialize a tracker for mouse and keyboard events
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         
         'Start a flicker-free window painter
         Set cPainter = New pdWindowPainter
@@ -678,7 +678,7 @@ End Sub
 Private Sub UserControl_Paint()
 
     'Provide minimal painting within the designer
-    If Not g_UserModeFix Then redrawSlider
+    If Not gIsProgramRunning Then redrawSlider
     
 End Sub
 
@@ -787,7 +787,7 @@ Private Sub redrawSlider()
         m_SliderBackgroundDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, RGB(255, 255, 255)
     End If
     
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         GDI_Plus.GDIPlusFillDIBRect m_SliderBackgroundDIB, 0, 0, m_SliderBackgroundDIB.getDIBWidth, m_SliderBackgroundDIB.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
     Else
         m_SliderBackgroundDIB.createBlank m_SliderBackgroundDIB.getDIBWidth, m_SliderBackgroundDIB.getDIBHeight, 24, RGB(255, 255, 255)
@@ -806,7 +806,7 @@ Private Sub redrawSlider()
     
     'Pull relevant colors from the global themer object
     Dim trackColor As Long, sliderBackgroundColor As Long, sliderEdgeColor As Long
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         trackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
         sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
         sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
@@ -862,7 +862,7 @@ Private Sub redrawSlider()
     End If
     
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    If Not g_UserModeFix Then
+    If Not gIsProgramRunning Then
         
         UserControl.Picture = LoadPicture("")
         
@@ -897,7 +897,7 @@ Private Sub drawSliderKnob()
         
         'Retrieve colors from the global themer object
         Dim sliderBackgroundColor As Long, sliderEdgeColor As Long
-        If g_UserModeFix Then
+        If gIsProgramRunning Then
             sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
             sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
         End If
@@ -939,7 +939,7 @@ Private Sub drawSliderKnob()
     End If
     
     'Paint the buffer to the screen
-    If g_UserModeFix Then cPainter.requestRepaint Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If gIsProgramRunning Then cPainter.requestRepaint Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 

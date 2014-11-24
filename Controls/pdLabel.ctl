@@ -142,7 +142,7 @@ End Property
 
 Public Property Let Alignment(ByVal newAlignment As AlignmentConstants)
     m_Alignment = newAlignment
-    If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
+    If gIsProgramRunning Then m_BufferDirty = True Else updateControlSize
 End Property
 
 Public Property Get BackColor() As OLE_COLOR
@@ -166,7 +166,7 @@ End Property
 Public Property Let Caption(ByRef newCaption As String)
     If StrComp(newCaption, m_Caption, vbBinaryCompare) <> 0 Then
         m_Caption = newCaption
-        'If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
+        'If gIsProgramRunning Then m_BufferDirty = True Else updateControlSize
         updateControlSize
     End If
 End Property
@@ -177,9 +177,9 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
+Public Property Let Enabled(ByVal NewValue As Boolean)
     
-    UserControl.Enabled = newValue
+    UserControl.Enabled = NewValue
     PropertyChanged "Enabled"
     
     'Redraw the control
@@ -237,7 +237,7 @@ End Property
 
 Public Property Let Layout(ByVal newLayout As PD_LABEL_LAYOUT)
     m_Layout = newLayout
-    If g_UserModeFix Then m_BufferDirty = True Else updateControlSize
+    If gIsProgramRunning Then m_BufferDirty = True Else updateControlSize
 End Property
 
 'Because there can be a delay between window resize events and VB processing the related message (and updating its internal properties),
@@ -348,7 +348,7 @@ Private Sub UserControl_Initialize()
     curFont.setTextAlignment vbLeftJustify
     
     'When not in design mode, initialize a tracker for mouse events
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         
         'Start a flicker-free window painter
         Set cPainter = New pdWindowPainter
@@ -393,7 +393,7 @@ End Sub
 Private Sub UserControl_Paint()
     
     'Provide minimal painting within the designer
-    If Not g_UserModeFix Then
+    If Not gIsProgramRunning Then
         If m_BufferDirty Then updateControlSize Else redrawBackBuffer
     End If
     
@@ -532,7 +532,7 @@ Private Sub updateControlSize()
                 'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
-                If g_UserModeFix Then
+                If gIsProgramRunning Then
                     MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 0
                 Else
                     UserControl.Width = ScaleX(origWidth, vbPixels, vbTwips)
@@ -619,7 +619,7 @@ Private Sub updateControlSize()
                 'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
-                If g_UserModeFix Then
+                If gIsProgramRunning Then
                     MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, stringWidth, stringHeight, 1
                 Else
                     UserControl.Width = ScaleX(stringWidth, vbPixels, vbTwips)
@@ -656,7 +656,7 @@ Private Sub updateControlSize()
                 'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
-                If g_UserModeFix Then
+                If gIsProgramRunning Then
                     MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 1
                 Else
                     UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
@@ -708,7 +708,7 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
     
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         
         'Update the current font, as necessary
         refreshFont
@@ -732,7 +732,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Start by erasing the back buffer
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         If m_UseCustomBackColor Then
             GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor, 255
         Else
@@ -777,7 +777,7 @@ Private Sub redrawBackBuffer()
     End Select
     
     'Paint the buffer to the screen
-    If g_UserModeFix Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If gIsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 

@@ -418,19 +418,19 @@ Public Function getScrollValue(ByVal barType As PD_ORIENTATION) As Long
 
 End Function
 
-Public Sub setScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Long)
+Public Sub setScrollValue(ByVal barType As PD_ORIENTATION, ByVal NewValue As Long)
     
     Select Case barType
     
         Case PD_HORIZONTAL
-            HScroll.Value = newValue
+            HScroll.Value = NewValue
             
         Case PD_VERTICAL
-            VScroll.Value = newValue
+            VScroll.Value = NewValue
         
         Case PD_BOTH
-            HScroll.Value = newValue
-            VScroll.Value = newValue
+            HScroll.Value = NewValue
+            VScroll.Value = NewValue
         
     End Select
     
@@ -1767,7 +1767,7 @@ End Sub
 
 Private Sub UserControl_Initialize()
 
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         
         'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
         Set cMouseEvents = New pdInputMouse
@@ -1876,7 +1876,7 @@ End Sub
 
 Private Sub UserControl_Show()
 
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         
         'Prep the command buttons
         cmdZoomFit.AssignImage "SB_ZOOM_FIT"
@@ -1952,7 +1952,7 @@ Public Sub fixChromeLayout()
     
     'If the canvas is currently disabled (e.g. no image is loaded), let the user know that they can drag/drop files onto
     ' this space to begin editing
-    If (g_OpenImageCount = 0) And g_UserModeFix Then
+    If (g_OpenImageCount = 0) And gIsProgramRunning Then
     
         'Ignore redraws if the program is being closed; this improves program termination performance
         If (Not g_ProgramShuttingDown) Then

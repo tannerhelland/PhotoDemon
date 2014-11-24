@@ -158,9 +158,9 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal newValue As Boolean)
+Public Property Let Enabled(ByVal NewValue As Boolean)
     
-    UserControl.Enabled = newValue
+    UserControl.Enabled = NewValue
     PropertyChanged "Enabled"
     
     'Redraw the control
@@ -486,7 +486,7 @@ Private Sub UserControl_Initialize()
     curFont.setTextAlignment vbLeftJustify
     
     'When not in design mode, initialize a tracker for mouse events
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
     
         Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker Me.hWnd, True, True, , True
@@ -543,7 +543,7 @@ End Sub
 Private Sub UserControl_Paint()
     
     'Provide minimal painting within the designer
-    If Not g_UserModeFix Then redrawBackBuffer
+    If Not gIsProgramRunning Then redrawBackBuffer
     
 End Sub
 
@@ -737,7 +737,7 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
     
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         Me.Font.Name = g_InterfaceFont
         curFont.setFontFace g_InterfaceFont
         curFont.setFontSize mFont.Size
@@ -754,7 +754,7 @@ End Sub
 Private Sub redrawBackBuffer()
     
     'Start by erasing the back buffer
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
     Else
         m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
@@ -870,7 +870,7 @@ Private Sub redrawBackBuffer()
     End If
         
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    If Not g_UserModeFix Then
+    If Not gIsProgramRunning Then
         
         Dim tmpRect As RECT
         With tmpRect
@@ -885,6 +885,6 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the buffer to the screen
-    If g_UserModeFix Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If gIsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
