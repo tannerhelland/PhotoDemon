@@ -117,9 +117,9 @@ Public Declare Function LockWindowUpdate Lib "user32" (ByVal hWnd As Long) As Lo
 Public Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
 'API for drawing colored rectangles
-Public Declare Function SetRect Lib "user32" (lpRect As RECT, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
-Public Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Public Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Public Declare Function SetRect Lib "user32" (lpRect As RECTL, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
+Public Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECTL, ByVal hBrush As Long) As Long
+Public Declare Function FrameRect Lib "user32" (ByVal hDC As Long, lpRect As RECTL, ByVal hBrush As Long) As Long
 Public Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Public Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 

@@ -190,6 +190,8 @@ Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_MOUSEACTIVATE As Long = &H21
 Private Const WM_CTLCOLOREDIT As Long = &H133
 Private Const WM_SIZE As Long = &H5
+Private Const WM_MEASUREITEM As Long = &H2C
+Private Const WM_DRAWITEM As Long = &H2B
 
 Private Const VK_SHIFT As Long = &H10
 Private Const VK_CONTROL As Long = &H11
@@ -250,6 +252,8 @@ Private Const CB_GETCOUNT As Long = &H146
 Private Const CB_GETCURSEL As Long = &H147
 Private Const CB_SETCURSEL As Long = &H14E
 Private Const CB_GETITEMHEIGHT As Long = &H154
+Private Const CB_GETLBTEXT As Long = &H148
+Private Const CB_GETLBTEXTLEN As Long = &H149
 
 Private Const CBN_SELCHANGE As Long = 1
 Private Const CBN_DROPDOWN As Long = 7
@@ -257,8 +261,57 @@ Private Const CBN_DROPDOWN As Long = 7
 Private Const CBS_SIMPLE As Long = &H1
 Private Const CBS_DROPDOWN As Long = &H2
 Private Const CBS_DROPDOWNLIST As Long = &H3
-Private Const CBS_NOINTEGRALHEIGHT As Long = &H400
-Private Const CBS_AUTOHSCROLL As Long = &H40
+
+Private Const CBS_AUTOHSCROLL As Long = &H40&
+Private Const CBS_HASSTRINGS As Long = &H200&
+Private Const CBS_NOINTEGRALHEIGHT As Long = &H400&
+Private Const CBS_OWNERDRAWFIXED As Long = &H10&
+Private Const CBS_OWNERDRAWVARIABLE As Long = &H20&
+
+'Owner-drawn combo boxes require us to fill and/or use these structs during painting
+Private Type MEASUREITEMSTRUCT
+    CtlType As Long
+    CtlID As Long
+    ItemID As Long
+    ItemWidth As Long
+    ItemHeight As Long
+    ItemData As Long
+End Type
+
+'A DRAWITEMSTRUCT instance will specify one or more of these draw actions; as such, make sure to mask the values when checking them
+Private Const ODA_DRAWENTIRE As Long = &H1    'Redraw the whole item from scratch
+Private Const ODA_SELECT As Long = &H2        'Select state has changed (note: particularly relevant for checkbox-style drop-downs)
+Private Const ODA_FOCUS As Long = &H4         'Focus has changed
+
+'A DRAWITEMSTRUCT instance will return one or more of these states; as such, make sure to mask the values when checking them
+Private Const ODS_CHECKED As Long = &H8
+Private Const ODS_DISABLED As Long = &H4
+Private Const ODS_FOCUS As Long = &H10
+Private Const ODS_GRAYED As Long = &H2
+Private Const ODS_SELECTED As Long = &H1
+Private Const ODS_COMBOBOXEDIT As Long = &H1000
+
+Private Type DRAWITEMSTRUCT
+    CtlType As Long
+    CtlID As Long
+    ItemID As Long
+    ItemAction As Long
+    ItemState As Long
+    hWndItem As Long
+    hDC As Long
+    RCItem As RECTL
+    ItemData As Long
+End Type
+
+'The MeasureItemStruct struct, above, will identify the combo box using this constant in the CtlType field.
+Private Const ODT_COMBOBOX As Long = &H3
+
+'When creating a window, we assign it a unique ID.  This is handled via GetTickCount, which is as close to a pseudo-random ID as I care to implement.
+Private m_ComboBoxWindowID As Long
+
+'Because the control is owner-drawn, we must perform our own measurements.  We calculate these against a test string when creating the combo box;
+' the results are stored to this variable, and used for any subsequent measurements
+Private m_ItemHeight As Long
 
 'Basic combo box interaction functions
 
@@ -563,7 +616,11 @@ Private Function createComboBox() As Boolean
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsComboControl As Long
     flagsWinStyle = WS_VISIBLE Or WS_CHILD Or WS_VSCROLL Or WS_HSCROLL
     flagsWinStyleExtended = 0
-    flagsComboControl = CBS_DROPDOWNLIST
+    
+    'PhotoDemon only supports simple drop-downs.  Similarly, all drop-down entries are coerced into strings, so we can use the CBS_HASSTRINGS
+    ' setting, which instructs the drop-down to manage its own string memory (instead of us doing it manually).  This is a much better solution
+    ' for accessibility interoperability; see http://msdn.microsoft.com/en-us/library/windows/desktop/dd318073%28v=vs.85%29.aspx
+    flagsComboControl = CBS_DROPDOWNLIST Or CBS_HASSTRINGS Or CBS_OWNERDRAWFIXED
     
     'The underlying user control should ignore any height values set from the IDE; instead, it should be forced to an ideal height,
     ' using the current font as our guide.  We check for this here, prior to creating the combo box, as we can't easily
@@ -581,6 +638,9 @@ Private Function createComboBox() As Boolean
         'Determine a standard string height
         Dim idealHeight As Long
         idealHeight = curFont.getHeightOfString("abc123")
+        
+        'Cache this value at module-level; we will need it for subsequent WM_MEASUREITEM requests sent to the parent
+        m_ItemHeight = idealHeight
         
         'Resize the user control accordingly; the formula for height is the string height + 5px of borders.
         ' (5px = 2px on top, 3px on bottom.)  User control width is not changed.
@@ -603,6 +663,24 @@ Private Function createComboBox() As Boolean
             
     End If
     
+    'Determine a unique ID for this combo box instance.  This is needed to identify this control against other owner-drawn controls on the same parent.
+    m_ComboBoxWindowID = GetTickCount()
+    
+    'Prior to creating the combo box, we need to subclass the parent window.  It is important to do this now, because the combo box is owner-drawn,
+    ' so when it is initiated, the parent needs to supply measurement data - so we can't wait until post-creation to subclass the parent.
+    If g_IsProgramRunning Then
+        If Not (cSubclass Is Nothing) Then
+            
+            'Subclass the parent user control.
+            If Not m_ParentHasBeenSubclassed Then
+                cSubclass.ssc_Subclass UserControl.hWnd, 0, 1, Me, True, True, False
+                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_COMMAND, WM_MEASUREITEM, WM_DRAWITEM
+                m_ParentHasBeenSubclassed = True
+            End If
+            
+        End If
+    End If
+    
     'Retrieve the combo box's window rect, which is generated relative to the underlying DC
     Dim tmpRect As winRect
     getComboBoxRect tmpRect
@@ -611,7 +689,7 @@ Private Function createComboBox() As Boolean
     ' size calculation.  We start at zero, then increase the combo box size as additional items are added.
     With tmpRect
         m_ComboBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("COMBOBOX"), ByVal StrPtr(""), flagsWinStyle Or flagsComboControl, _
-        .x1, .y1, .x2, .y2, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
+        .x1, .y1, .x2, .y2, UserControl.hWnd, m_ComboBoxWindowID, App.hInstance, ByVal 0&)
     End With
     
     'Enable the window per the current UserControl's extender setting
@@ -1135,6 +1213,118 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 lReturn = m_ComboBoxBrush
                 
             End If
+        
+        'Because our combo box is owner-drawn, the system will request a measurement for the drop-down entries.
+        Case WM_MEASUREITEM
+        
+            'Check the control ID (specified by wParam) before proceeding
+            If wParam = m_ComboBoxWindowID Then
+            
+                'Retrieve the MeasureItemStruct pointed to by lParam
+                Dim MIS As MEASUREITEMSTRUCT
+                CopyMemory MIS, ByVal lParam, LenB(MIS)
+                
+                'The control type should always be combo box, but it doesn't hurt to check
+                If MIS.CtlType = ODT_COMBOBOX Then
+                    
+                    'If the ItemID is -1, the edit box is the source of the measure item.  Otherwise, it is the dropdown.
+                    ' (We shouldn't have to worry about this case, because we have specified integral height for the control.)
+                    If MIS.ItemID = -1 Then
+                        Debug.Print "Edit box ItemID!"
+                    Else
+                    
+                        'Fill the height parameter; note that m_ItemHeight is the literal height of a string using the current font.
+                        ' Any padding values must be added here.  (I've gone with 1px on either side.)
+                        MIS.ItemHeight = m_ItemHeight + 2
+                        
+                        'Copy the pointer to our modified MEASUREITEMSTRUCT back into lParam
+                        CopyMemory ByVal lParam, MIS, LenB(MIS)
+                        
+                        'Note that we have handled the message successfully
+                        bHandled = True
+                        lReturn = 1
+                        
+                    End If
+                    
+                End If
+                
+            End If
+            
+        Case WM_DRAWITEM
+        
+            'Check the control ID (specified by wParam) before proceeding
+            If wParam = m_ComboBoxWindowID Then
+            
+                'Retrieve the DrawItemStruct pointed to by lParam
+                Dim DIS As DRAWITEMSTRUCT
+                CopyMemory DIS, ByVal lParam, LenB(DIS)
+                
+                'The control type should always be combo box, but it doesn't hurt to check
+                If DIS.CtlType = ODT_COMBOBOX Then
+                    
+                    'If the ItemID is -1, the combo box is empty, and we don't actually need to do any drawing
+                    If DIS.ItemID <> -1 Then
+                        
+                        'Determine colors.  Obviously these vary depending on the selection state of the current entry
+                        Dim itemBackColor As Long, itemTextColor As Long
+                        
+                        If (DIS.ItemState And ODS_SELECTED) <> 0 Then
+                            itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+                            itemBackColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                        Else
+                            itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+                            itemBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        End If
+                        
+                        'Fill the background
+                        Dim tmpBackBrush As Long
+                        tmpBackBrush = CreateSolidBrush(itemBackColor)
+                        FillRect DIS.hDC, DIS.RCItem, tmpBackBrush
+                        DeleteObject tmpBackBrush
+                        
+                        'Retrieve the string for this entry; we start by determining the size of the string
+                        Dim strLength As Long
+                        strLength = SendMessage(DIS.hWndItem, CB_GETLBTEXTLEN, DIS.ItemID, ByVal 0&)
+                        
+                        'Prepare a buffer
+                        Dim tmpString As String
+                        tmpString = Space$(strLength + 1)
+                        
+                        'Retrieve the actual text
+                        SendMessage DIS.hWndItem, CB_GETLBTEXT, DIS.ItemID, ByVal StrPtr(tmpString)
+                        
+                        'Prepare a font renderer, then render the text
+                        If Not curFont Is Nothing Then
+                            
+                            curFont.releaseFromDC
+                            curFont.setFontColor itemTextColor
+                            curFont.attachToDC DIS.hDC
+                            
+                            With DIS.RCItem
+                                curFont.fastRenderTextWithClipping .Left + 1, .Top + 1, .Right - .Left - 2, .Bottom - .Top - 2, tmpString, False
+                            End With
+                            
+                            curFont.releaseFromDC
+                            
+                        End If
+                        
+                        'TEMPORARY TEST!  If the item has focus, draw a test focus rect
+                        If (DIS.ItemState And ODS_FOCUS) <> 0 Then
+                            tmpBackBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT))
+                            FrameRect DIS.hDC, DIS.RCItem, tmpBackBrush
+                            DeleteObject tmpBackBrush
+                        End If
+                        
+                        'Note that we have handled the message successfully
+                        bHandled = True
+                        lReturn = 1
+                        
+                    End If
+                    
+                End If
+                
+            End If
+        
         
         'On mouse activation, the previous VB window/control that had focus will not be redrawn to reflect its lost focus state.
         ' (Presumably, this is because VB handles focus internally, rather than using standard window messages.)  To avoid the

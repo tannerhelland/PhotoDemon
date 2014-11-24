@@ -612,7 +612,7 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         'If the user's mouse is over the current block, highlight the block
         If isHovered Then
         
-            Dim tmpRect As RECT, hBrush As Long
+            Dim tmpRect As RECTL, hBrush As Long
             SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
             FrameRect backDIB.getDIBDC, tmpRect, hBrush

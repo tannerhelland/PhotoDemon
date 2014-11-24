@@ -83,15 +83,6 @@ Begin VB.Form FormPhotoFilters
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   100
       SliderTrackStyle=   2
@@ -263,7 +254,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         linePadding = fixDPI(2)
     
         Dim mHeight As Single
-        Dim tmpRect As RECT
+        Dim tmpRect As RECTL
         Dim hBrush As Long
         
         'If this filter has been selected, draw the background with the system's current selection color

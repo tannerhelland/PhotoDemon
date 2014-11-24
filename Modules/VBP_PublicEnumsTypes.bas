@@ -8,6 +8,13 @@ Public Type RGBQUAD
    Alpha As Byte
 End Type
 
+Public Type RECTL
+    Left As Long
+    Top As Long
+    Right As Long
+    Bottom As Long
+End Type
+
 'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form.
 ' In theory, adding new tools should be as easy as changing these numbers.  All tool-related code is tied into these
 ' constants, so any changes here should automatically propagate throughout the software.  (In practice, be sure to
