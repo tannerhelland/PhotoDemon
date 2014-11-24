@@ -383,8 +383,14 @@ End Property
 
 Public Property Let Enabled(ByVal NewValue As Boolean)
     
+    'If the control is disabled, the BackColor property actually becomes relevant (because the edit box will allow the back color
+    ' to "show through").  As such, set it now, and note that we can use VB's internal property, because it simply wraps the
+    ' matching GDI function(s).
+    If g_IsProgramRunning Then UserControl.BackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+    
     If m_ComboBoxHwnd <> 0 Then EnableWindow m_ComboBoxHwnd, IIf(NewValue, 1, 0)
     UserControl.Enabled = NewValue
+    
     PropertyChanged "Enabled"
     
 End Property
@@ -440,10 +446,10 @@ Private Sub UserControl_Initialize()
     m_InternalResizeState = False
     
     'At run-time, initialize a subclasser
-    If gIsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
+    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
     
     'When not in design mode, initialize a tracker for mouse events
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
                         
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
@@ -525,7 +531,7 @@ Private Sub createComboBoxBrush()
 
     If m_ComboBoxBrush <> 0 Then DeleteObject m_ComboBoxBrush
     
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         m_ComboBoxBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT))
     Else
         m_ComboBoxBrush = CreateSolidBrush(RGB(128, 255, 255))
@@ -576,7 +582,7 @@ Private Function createComboBox() As Boolean
         'If it's design-time, resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
         ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
         ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
-        If gIsProgramRunning Then
+        If g_IsProgramRunning Then
             MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, UserControl.ScaleWidth, idealHeight + 6, 1
         Else
             UserControl.Height = ScaleY(idealHeight + 8, vbPixels, vbTwips)
@@ -605,7 +611,7 @@ Private Function createComboBox() As Boolean
     EnableWindow m_ComboBoxHwnd, IIf(Me.Enabled, 1, 0)
     
     'Assign a subclasser to enable proper tab and arrow key support
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         If Not (cSubclass Is Nothing) Then
             
             'Subclass the combo box
@@ -729,7 +735,7 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
     
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         
         'Create a brush for drawing the box background
         createComboBoxBrush
@@ -1111,7 +1117,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_ComboBoxHwnd Then
             
                 'We can set the text color directly, using the API
-                If gIsProgramRunning Then
+                If g_IsProgramRunning Then
                     SetTextColor wParam, g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
                 Else
                     SetTextColor wParam, RGB(0, 0, 128)

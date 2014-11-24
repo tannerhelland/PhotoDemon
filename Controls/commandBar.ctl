@@ -780,7 +780,7 @@ Private Sub updateControlLayout()
     UserControl.Height = fixDPI(50) * TwipsPerPixelYFix
     
     'Make the control the same width as its parent
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
     
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
@@ -804,7 +804,7 @@ Private Sub UserControl_Show()
     
     'When the control is first made visible, rebuild individual tooltips using a custom solution
     ' (which allows for linebreaks and theming).
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         
         Set m_ToolTip = New clsToolTip
         With m_ToolTip
@@ -891,7 +891,7 @@ Private Sub UserControl_Show()
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
     On Error GoTo somethingStoleFocus
-    If gIsProgramRunning Then CmdOK.SetFocus
+    If g_IsProgramRunning Then CmdOK.SetFocus
 
 somethingStoleFocus:
     

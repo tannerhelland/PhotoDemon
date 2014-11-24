@@ -200,7 +200,7 @@ Public Property Let Value(ByVal NewValue As Double)
         Dim newScrollVal As Long
         newScrollVal = -1 * CLng(controlVal * (10 ^ significantDigits))
         
-        If gIsProgramRunning Then
+        If g_IsProgramRunning Then
         
             If vsPrimary.Value <> newScrollVal Then
                 
@@ -254,12 +254,12 @@ Public Property Let Min(ByVal NewValue As Double)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    If gIsProgramRunning Then vsPrimary.Max = newScrollLimit
+    If g_IsProgramRunning Then vsPrimary.Max = newScrollLimit
     
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
         controlVal = controlMin
-        If gIsProgramRunning Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
+        If g_IsProgramRunning Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -283,13 +283,13 @@ Public Property Let Max(ByVal NewValue As Double)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    If gIsProgramRunning Then vsPrimary.Min = newScrollLimit
+    If g_IsProgramRunning Then vsPrimary.Min = newScrollLimit
     
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
         
         controlVal = controlMax
-        If gIsProgramRunning Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
+        If g_IsProgramRunning Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
@@ -316,7 +316,7 @@ Public Property Let SigDigits(ByVal NewValue As Long)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         vsPrimary.Max = newMax
         vsPrimary.Min = newMin
     End If
@@ -366,7 +366,7 @@ Private Sub UserControl_Initialize()
     txtPrimary.FontSize = m_FontSize
     
     'Prepare an API scroll bar
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         Set vsPrimary = New pdScrollAPI
         vsPrimary.initializeScrollBarWindow picScroll.hWnd, False, 0, 10, 0, 1, 1
     End If

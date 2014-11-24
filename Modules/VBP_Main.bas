@@ -63,7 +63,7 @@ Public Sub Main()
     
     'Because Ambient.UserMode does not report IDE behavior properly, we use our own UserMode tracker.  Many thanks to
     ' Kroc of camendesign.com for suggesting this fix.
-    gIsProgramRunning = True
+    g_IsProgramRunning = True
     
     'FormMain can now be loaded.  It will handle the rest of the load process.
     Load FormMain

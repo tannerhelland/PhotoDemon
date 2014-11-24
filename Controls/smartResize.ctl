@@ -725,7 +725,7 @@ Private Sub UserControl_Initialize()
     'Populate the width unit drop-down box
     cmbWidthUnit.Clear
     
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         cmbWidthUnit.AddItem g_Language.TranslateMessage(" percent"), 0
         cmbWidthUnit.AddItem g_Language.TranslateMessage(" pixels"), 1
         cmbWidthUnit.AddItem g_Language.TranslateMessage(" inches"), 2
@@ -746,7 +746,7 @@ Private Sub UserControl_Initialize()
     'Populate the resolution unit box
     cmbResolution.Clear
     
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         cmbResolution.AddItem g_Language.TranslateMessage(" pixels / inch (PPI)"), 0
         cmbResolution.AddItem g_Language.TranslateMessage(" pixels / centimeter (PPCM)"), 1
         cmbResolution.ListIndex = RU_PPI
@@ -784,7 +784,7 @@ End Sub
 Private Sub UserControl_Show()
 
     'Translate various bits of UI text at run-time
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         
         lblWidth.Caption = g_Language.TranslateMessage("width") & ":"
         lblHeight.Caption = g_Language.TranslateMessage("height") & ":"
@@ -932,7 +932,7 @@ End Sub
 ' trying to select new width/height values for a specific application with a set aspect ratio (e.g. 16:9 screens).
 Private Sub updateAspectRatio()
 
-    If Not gIsProgramRunning Then Exit Sub
+    If Not g_IsProgramRunning Then Exit Sub
 
     Dim wholeNumber As Double, Numerator As Double, Denominator As Double
     
