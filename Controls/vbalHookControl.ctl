@@ -362,11 +362,11 @@ End Property
 
 Private Sub UserControl_Initialize()
     'Instantiate the subclasser
-    If g_UserModeFix Then Set m_Subclass = New cSelfSubHookCallback
+    If gIsProgramRunning Then Set m_Subclass = New cSelfSubHookCallback
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-   m_bRunTime = g_UserModeFix
+   m_bRunTime = gIsProgramRunning
    Enabled = PropBag.ReadProperty("Enabled", True)
 End Sub
 

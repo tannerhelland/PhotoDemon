@@ -95,8 +95,8 @@ Option Explicit
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function MoveToEx Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, lpPoint As POINT) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -543,7 +543,7 @@ Private Const DI_NORMAL As Long = &H3
 ' --Property Variables:
 
 Private m_ButtonStyle   As enumButtonStlyes     'Choose your Style
-Private m_Buttonstate   As enumButtonStates     'Normal / Over / Down
+Private m_ButtonState   As enumButtonStates     'Normal / Over / Down
 
 Private m_bIsDown       As Boolean              'Is button is pressed?
 Private m_bMouseInCtl   As Boolean              'Is Mouse in Control
@@ -753,9 +753,9 @@ Dim a1               As Long
     If DstW = 0 Or DstH = 0 Then Exit Sub
     If SrcPic Is Nothing Then Exit Sub
 
-    If m_Buttonstate = eStateOver Then
+    If m_ButtonState = eStateOver Then
         picEffect = m_PicEffectonOver
-    ElseIf m_Buttonstate = eStateDown Then
+    ElseIf m_ButtonState = eStateDown Then
         picEffect = m_PicEffectonDown
     End If
 
@@ -769,7 +769,7 @@ Dim a1               As Long
         End Select
     End If
 
-    If m_Buttonstate = eStateOver Then
+    If m_ButtonState = eStateOver Then
         OverOpacity = m_PicOpacityOnOver
     End If
 
@@ -824,7 +824,7 @@ Dim hBrush           As Long
         f = h * DstW
         For b = 0 To newW
             i = f + b
-            If m_Buttonstate = eStateOver Then
+            If m_ButtonState = eStateOver Then
                 a1 = OverOpacity
             Else
                 a1 = IIf(m_bEnabled, m_PictureOpacity, bDisOpacity)
@@ -926,9 +926,9 @@ Dim a1               As Long
     If DstW = 0 Or DstH = 0 Then Exit Sub
     If SrcPic Is Nothing Then Exit Sub
 
-    If m_Buttonstate = eStateOver Then
+    If m_ButtonState = eStateOver Then
         picEffect = m_PicEffectonOver
-    ElseIf m_Buttonstate = eStateDown Then
+    ElseIf m_ButtonState = eStateDown Then
         picEffect = m_PicEffectonDown
     End If
 
@@ -942,7 +942,7 @@ Dim a1               As Long
         End Select
     End If
 
-    If m_Buttonstate = eStateOver Then
+    If m_ButtonState = eStateOver Then
         OverOpacity = m_PicOpacityOnOver
     End If
 
@@ -1015,7 +1015,7 @@ Dim a1               As Long
         For b = 0 To newW
             i = f + b
             If m_bEnabled Then
-                If m_Buttonstate = eStateOver Then
+                If m_ButtonState = eStateOver Then
                     a1 = (CLng(DataSrc(i).rgbAlpha) * OverOpacity) \ 255
                 Else
                     a1 = (CLng(DataSrc(i).rgbAlpha) * m_PictureOpacity) \ 255
@@ -1285,7 +1285,7 @@ Private Sub RedrawButton()
 
     If (m_ButtonMode <> ebmCommandButton) Then                        'If Checkboxmode True
         If Not (m_ButtonStyle = eStandard Or m_ButtonStyle = eXPToolbar) Then
-            If m_bValue Then m_Buttonstate = eStateDown
+            If m_bValue Then m_ButtonState = eStateDown
         End If
     End If
 
@@ -1300,33 +1300,33 @@ Private Sub RedrawButton()
     Case eFlatHover
 
     Case eWindowsXP
-        DrawWinXPButton m_Buttonstate
+        DrawWinXPButton m_ButtonState
     Case eXPToolbar
-        DrawXPToolbar m_Buttonstate
+        DrawXPToolbar m_ButtonState
     Case eGelButton
 
     Case eOfficeXP
-        DrawOfficeXP m_Buttonstate
+        DrawOfficeXP m_ButtonState
     Case eInstallShield
 
     Case eVistaAero
-        DrawVistaButton m_Buttonstate
+        DrawVistaButton m_ButtonState
     Case eVistaToolbar
-        DrawVistaToolbarStyle m_Buttonstate
+        DrawVistaToolbarStyle m_ButtonState
     Case eOutlook2007
-        DrawOutlook2007 m_Buttonstate
+        DrawOutlook2007 m_ButtonState
     Case eOffice2003
-        DrawOffice2003 m_Buttonstate
+        DrawOffice2003 m_ButtonState
     Case eWindowsTheme
         If IsThemed Then
             ' --Theme can be applied
-            WindowsThemeButton m_Buttonstate
+            WindowsThemeButton m_ButtonState
         Else
             ' --Fallback to ownerdraw WinXP Button
             m_ButtonStyle = eWindowsXP
             m_lXPColor = ecsBlue
             SetThemeColors
-            DrawWinXPButton m_Buttonstate
+            DrawWinXPButton m_ButtonState
         End If
     End Select
 
@@ -1405,7 +1405,7 @@ Dim lShadowClr       As Long
     lw = ScaleWidth                         'ScaleHeight of Button
     lh = ScaleHeight                        'ScaleWidth of Button
 
-    If (m_Buttonstate = eStateDown Or (m_ButtonMode <> ebmCommandButton And m_bValue = True)) Then
+    If (m_ButtonState = eStateDown Or (m_ButtonMode <> ebmCommandButton And m_bValue = True)) Then
         '-- Mouse down
         If Not m_PictureDown Is Nothing Then
             Set tmppic = m_PictureDown
@@ -1416,7 +1416,7 @@ Dim lShadowClr       As Long
                 Set tmppic = m_Picture
             End If
         End If
-    ElseIf (m_Buttonstate = eStateOver) Then
+    ElseIf (m_ButtonState = eStateOver) Then
         '-- Mouse in (over)
         If Not m_PictureHot Is Nothing Then
             Set tmppic = m_PictureHot
@@ -1552,7 +1552,7 @@ Dim lShadowClr       As Long
 
     ' --Some styles on down state donot change their text positions
     ' --See your XP and Vista buttons ;)
-    If m_Buttonstate = eStateDown Then
+    If m_ButtonState = eStateDown Then
         If m_ButtonStyle = e3DHover Or m_ButtonStyle = eFlat Or m_ButtonStyle = eFlatHover Or _
            m_ButtonStyle = eGelButton Or m_ButtonStyle = eOffice2003 _
            Or m_ButtonStyle = eXPToolbar Or m_ButtonStyle = eVistaToolbar Or m_ButtonStyle = eStandard Then
@@ -1564,7 +1564,7 @@ Dim lShadowClr       As Long
     End If
 
     ' --Draw Pictures
-    If m_bPicPushOnHover And m_Buttonstate = eStateOver Then
+    If m_bPicPushOnHover And m_ButtonState = eStateOver Then
         lShadowClr = TranslateColor(&HC0C0C0)
         DrawPicture m_PicRect, lShadowClr
         CopyRect pRect, m_PicRect
@@ -1575,7 +1575,7 @@ Dim lShadowClr       As Long
     End If
 
     If m_PictureShadow Then
-        If Not (m_bPicPushOnHover And m_Buttonstate = eStateOver) Then
+        If Not (m_bPicPushOnHover And m_ButtonState = eStateOver) Then
             DrawPicShadow
         End If
     End If
@@ -1587,7 +1587,7 @@ Dim lShadowClr       As Long
 
     ' --At Last, draw the Captions
     If m_bEnabled Then
-        If m_Buttonstate = eStateOver Then
+        If m_ButtonState = eStateOver Then
             DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColorOver), 0, 0
         Else
             DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColor), 0, 0
@@ -1600,7 +1600,7 @@ Dim lShadowClr       As Long
 
         If m_ButtonStyle = eStandard Or m_ButtonStyle = e3DHover Or m_ButtonStyle = eFlat Or m_ButtonStyle = eFlatHover Or m_ButtonStyle = eVistaToolbar Or m_ButtonStyle = eXPToolbar Then
             ' --move the symbol downwards for some button style on mouse down
-            If m_Buttonstate = eStateDown Then
+            If m_ButtonState = eStateDown Then
                 OffsetRect lpSignRect, 1, 1
             End If
         End If
@@ -1740,7 +1740,7 @@ Dim lShadowClr       As Long
 'Dim lPixelClr        As Long
 Dim lpRect           As RECT
 
-    If m_bPicPushOnHover And m_Buttonstate = eStateOver Then
+    If m_bPicPushOnHover And m_ButtonState = eStateOver Then
         OffsetRect m_PicRect, -2, -2
     End If
 
@@ -2142,7 +2142,7 @@ Dim BorderColor      As Long
 
     DrawPicwithCaption
 
-    If m_Buttonstate <> eStateNormal Then
+    If m_ButtonState <> eStateNormal Then
         DrawRectangle 0, 0, lw, lh, BorderColor
     End If
 
@@ -2406,7 +2406,7 @@ Dim bColor           As Long
 
     DrawPicwithCaption
 
-    If m_Buttonstate <> eStateNormal Then
+    If m_ButtonState <> eStateNormal Then
         DrawRectangle 0, 0, lw, lh, TranslateColor(&H800000)
     End If
 
@@ -2434,7 +2434,7 @@ Dim tmpState         As Long
         tmpState = 3
     End Select
 
-    If m_Buttonstate = eStateNormal Then
+    If m_ButtonState = eStateNormal Then
         'Change by Tanner - do not show a focus rect unless m_bShowFocus is explicitly set!
         If (m_bHasFocus Or m_bDefault) And m_bParentActive And m_bShowFocus Then
             tmpState = 5
@@ -2559,7 +2559,7 @@ Dim lpPoint          As POINT
             m_bIsDown = False
             m_bMouseInCtl = False
             m_bIsSpaceBarDown = False
-            m_Buttonstate = eStateNormal
+            m_ButtonState = eStateNormal
             m_bPopupShown = False
             m_bPopupInit = False
             RedrawButton
@@ -2617,7 +2617,7 @@ Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
             If KeyAscii = 13 Or KeyAscii = 27 Then Exit Sub 'Checkboxes dont repond to Enter/Escape
             m_bValue = Not m_bValue             'Change Value (Checked/Unchecked)
             If Not m_bValue Then                'If value unchecked then
-                m_Buttonstate = eStateNormal     'Normal State
+                m_ButtonState = eStateNormal     'Normal State
             End If
             RedrawButton
         ElseIf m_ButtonMode = ebmOptionButton Then
@@ -2650,7 +2650,7 @@ Private Sub UserControl_DblClick()
     If m_lDownButton = 1 Then                    'React to only Left button
 
         SetCapture (hWnd)                         'Preserve hWnd on DoubleClick
-        If m_Buttonstate <> eStateDown Then m_Buttonstate = eStateDown
+        If m_ButtonState <> eStateDown Then m_ButtonState = eStateDown
         RedrawButton
         UserControl_MouseDown m_lDownButton, m_lDShift, m_lDX, m_lDY
         If Not m_bPopupEnabled Then
@@ -2745,19 +2745,19 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
                 m_bValue = True                 'Pressed button Checked
             End If
 
-            If m_Buttonstate <> eStateDown Then
-                m_Buttonstate = eStateDown 'Button state should be down
+            If m_ButtonState <> eStateDown Then
+                m_ButtonState = eStateDown 'Button state should be down
                 RedrawButton
             End If
         Else
             If m_bMouseInCtl Then
-                If m_Buttonstate <> eStateDown Then
-                    m_Buttonstate = eStateDown
+                If m_ButtonState <> eStateDown Then
+                    m_ButtonState = eStateDown
                     RedrawButton
                 End If
             Else
-                If m_Buttonstate <> eStateNormal Then
-                    m_Buttonstate = eStateNormal  'jump button from
+                If m_ButtonState <> eStateNormal Then
+                    m_ButtonState = eStateNormal  'jump button from
                     RedrawButton                  'downstate - normal state
                 End If                            'if mouse button is pressed
             End If
@@ -2771,7 +2771,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
     Case Else
         If m_bIsSpaceBarDown Then
             m_bIsSpaceBarDown = False
-            m_Buttonstate = eStateNormal
+            m_ButtonState = eStateNormal
             RedrawButton
         End If
     End Select
@@ -2795,21 +2795,21 @@ Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
         ReleaseCapture                          'Now you can process further
         'as the spacebar is released
         If m_bMouseInCtl And m_bIsDown Then
-            If m_Buttonstate <> eStateDown Then
-                m_Buttonstate = eStateDown
+            If m_ButtonState <> eStateDown Then
+                m_ButtonState = eStateDown
                 RedrawButton
             End If
         ElseIf m_bMouseInCtl Then                'If spacebar released over ctl
-            If m_Buttonstate <> eStateOver Then
-                m_Buttonstate = eStateOver 'Draw Hover State
+            If m_ButtonState <> eStateOver Then
+                m_ButtonState = eStateOver 'Draw Hover State
                 RedrawButton
             End If
             If Not m_bIsDown And m_bIsSpaceBarDown Then
                 RaiseEvent Click
             End If
         Else                                         'If Spacebar released outside ctl
-            If m_Buttonstate <> eStateNormal Then
-                m_Buttonstate = eStateNormal
+            If m_ButtonState <> eStateNormal Then
+                m_ButtonState = eStateNormal
                 RedrawButton
             End If
             If Not m_bIsDown And m_bIsSpaceBarDown Then
@@ -2833,16 +2833,16 @@ Private Sub UserControl_LostFocus()
     m_bIsDown = False                                   'No down state
     m_bIsSpaceBarDown = False                           'No spacebar held
     If Not m_bParentActive Then
-        If m_Buttonstate <> eStateNormal Then
-            m_Buttonstate = eStateNormal
+        If m_ButtonState <> eStateNormal Then
+            m_ButtonState = eStateNormal
         End If
     ElseIf m_bMouseInCtl Then
-        If m_Buttonstate <> eStateOver Then
-            m_Buttonstate = eStateOver
+        If m_ButtonState <> eStateOver Then
+            m_ButtonState = eStateOver
         End If
     Else
-        If m_Buttonstate <> eStateNormal Then
-            m_Buttonstate = eStateNormal
+        If m_ButtonState <> eStateNormal Then
+            m_ButtonState = eStateNormal
         End If
     End If
     RedrawButton
@@ -2865,8 +2865,8 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, x As Sing
         m_bIsDown = True
 
         If (Not m_bIsSpaceBarDown) Then
-            If m_Buttonstate <> eStateDown Then
-                m_Buttonstate = eStateDown
+            If m_ButtonState <> eStateDown Then
+                m_ButtonState = eStateDown
                 RedrawButton
             End If
         End If
@@ -2902,7 +2902,7 @@ Const GCL_STYLE         As Long = (-26)
 
 ' --Dont show tooltips if disabled
 
-    If (Not m_bEnabled) Or m_bPopupShown Or m_Buttonstate = eStateDown Then Exit Sub
+    If (Not m_bEnabled) Or m_bPopupShown Or m_ButtonState = eStateDown Then Exit Sub
 
     ' --Destroy any previous tooltip
     If m_ltthWnd <> 0 Then
@@ -3100,26 +3100,26 @@ Dim lp               As POINT
 
         ' --Mouse button is pressed down
         If m_bIsDown Then
-            If m_Buttonstate <> eStateDown Then
-                m_Buttonstate = eStateDown
+            If m_ButtonState <> eStateDown Then
+                m_ButtonState = eStateDown
                 RedrawButton
             End If
         Else
             ' --Button should be in hot state if user leaves the button
             ' --with mouse button pressed
-            If m_Buttonstate <> eStateOver Then
-                m_Buttonstate = eStateOver
+            If m_ButtonState <> eStateOver Then
+                m_ButtonState = eStateOver
                 RedrawButton
                 ' --Create Tooltip Here
-                If m_Buttonstate <> eStateDown Then
+                If m_ButtonState <> eStateDown Then
                     CreateToolTip
                 End If
             End If
         End If
 
     Else
-        If m_Buttonstate <> eStateNormal Then
-            m_Buttonstate = eStateNormal
+        If m_ButtonState <> eStateNormal Then
+            m_ButtonState = eStateNormal
             RedrawButton
         End If
     End If
@@ -3134,7 +3134,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
     If m_bPopupEnabled Then
         m_bIsDown = False
         m_bPopupShown = False
-        m_Buttonstate = eStateNormal
+        m_ButtonState = eStateNormal
         RedrawButton
         Exit Sub
     End If
@@ -3157,7 +3157,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, x As Single
             End If
 
             ' --redraw Normal State
-            m_Buttonstate = eStateNormal
+            m_ButtonState = eStateNormal
             RedrawButton
             RaiseEvent Click
         End If
@@ -3244,7 +3244,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     UserControl_Resize
 
     On Error GoTo h:
-    If g_UserModeFix Then                                                              'If we're not in design mode
+    If gIsProgramRunning Then                                                              'If we're not in design mode
         TrackUser32 = IsFunctionSupported("TrackMouseEvent", "User32")
 
         If Not TrackUser32 Then IsFunctionSupported "_TrackMouseEvent", "ComCtl32"
@@ -3746,7 +3746,7 @@ Public Property Let Mode(ByVal New_mode As enumButtonModes)
 
     m_ButtonMode = New_mode
     If m_ButtonMode = ebmCommandButton Then
-        m_Buttonstate = eStateNormal        'Force Normal State for command buttons
+        m_ButtonState = eStateNormal        'Force Normal State for command buttons
     End If
     RedrawButton
     PropertyChanged "Value"
@@ -4054,12 +4054,12 @@ Public Property Let Value(ByVal New_Value As Boolean)
     If m_ButtonMode <> ebmCommandButton Then
         m_bValue = New_Value
         If Not m_bValue Then
-            m_Buttonstate = eStateNormal
+            m_ButtonState = eStateNormal
         End If
         RedrawButton
         PropertyChanged "Value"
     Else
-        m_Buttonstate = eStateNormal
+        m_ButtonState = eStateNormal
         RedrawButton
     End If
 
@@ -4207,8 +4207,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             End If
 
             If m_bIsSpaceBarDown Then Exit Sub
-            If m_Buttonstate <> eStateNormal Then
-                m_Buttonstate = eStateNormal
+            If m_ButtonState <> eStateNormal Then
+                m_ButtonState = eStateNormal
                 RedrawButton
             End If
             RaiseEvent MouseLeave
@@ -4236,7 +4236,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         Case WM_NCACTIVATE, WM_ACTIVATE
             If wParam Then
                 m_bParentActive = True
-                If m_Buttonstate <> eStateNormal Then m_Buttonstate = eStateNormal
+                If m_ButtonState <> eStateNormal Then m_ButtonState = eStateNormal
                 If m_bDefault Then
                     RedrawButton
                 End If
@@ -4246,7 +4246,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 m_bIsSpaceBarDown = False
                 m_bHasFocus = False
                 m_bParentActive = False
-                If m_Buttonstate <> eStateNormal Then m_Buttonstate = eStateNormal
+                If m_ButtonState <> eStateNormal Then m_ButtonState = eStateNormal
                 RedrawButton
             End If
         End Select

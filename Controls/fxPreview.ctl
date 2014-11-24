@@ -27,19 +27,27 @@ Begin VB.UserControl fxPreviewCtl
       TabIndex        =   2
       Top             =   5160
       Width           =   450
-      _extentx        =   794
-      _extenty        =   794
-      buttonstyle     =   7
-      font            =   "fxPreview.ctx":0312
-      backcolor       =   -2147483643
-      caption         =   ""
-      mode            =   1
-      value           =   -1  'True
-      handpointer     =   -1  'True
-      picturenormal   =   "fxPreview.ctx":033A
-      pictureeffectondown=   0
-      captioneffects  =   0
-      colorscheme     =   3
+      _ExtentX        =   794
+      _ExtentY        =   794
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      Value           =   -1  'True
+      HandPointer     =   -1  'True
+      PictureNormal   =   "fxPreview.ctx":0312
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -89,7 +97,7 @@ Begin VB.UserControl fxPreviewCtl
       ForeColor       =   &H00C07031&
       Height          =   210
       Left            =   120
-      MouseIcon       =   "fxPreview.ctx":108C
+      MouseIcon       =   "fxPreview.ctx":1064
       MousePointer    =   99  'Custom
       TabIndex        =   1
       Top             =   5280
@@ -162,7 +170,7 @@ Private originalImage As pdDIB, fxImage As pdDIB
 Private curImageState As Boolean
 
 'GetPixel is used to retrieve colors from the image
-Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
+Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
 
 'Mouse events are raised with the help of the pdInputMouse class
 Private WithEvents cMouseEvents As pdInputMouse
@@ -320,13 +328,13 @@ Public Function getPreviewHeight() As Long
     getPreviewHeight = picPreview.ScaleHeight
 End Function
 
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'If viewport scrolling is allowed, initialize it now
     If Not viewportFitFullImage Then
         If Button = vbLeftButton Then
-            m_InitX = X
-            m_InitY = Y
+            m_InitX = x
+            m_InitY = y
             cMouseEvents.setSystemCursor IDC_SIZEALL
         End If
     End If
@@ -336,7 +344,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         
         If Button = vbRightButton Then
         
-            curColor = GetPixel(originalImage.getDIBDC, X - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2), Y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2))
+            curColor = GetPixel(originalImage.getDIBDC, x - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2), y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2))
             
             If curColor = -1 Then curColor = RGB(127, 127, 127)
             
@@ -354,8 +362,8 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         
             'Return the mouse coordinates as a ratio between 0 and 1, with 1 representing max width/height
             Dim retX As Double, retY As Double
-            retX = X - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2)
-            retY = Y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2)
+            retX = x - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2)
+            retY = y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2)
             
             retX = retX / originalImage.getDIBWidth
             retY = retY / originalImage.getDIBHeight
@@ -368,7 +376,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
 
 End Sub
 
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'If this preview control instance allows the user to select a color, display the original image upon mouse entrance
     If viewportFitFullImage Then
@@ -384,7 +392,7 @@ Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVa
 
 End Sub
 
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'If this preview control instance allows the user to select a color, restore whatever image was previously
     ' displayed upon mouse exit
@@ -403,7 +411,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
 
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'If the viewport is not set to "fit to screen", then we must determine offsets based on the mouse position
     If Not viewportFitFullImage Then
@@ -414,8 +422,8 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             cMouseEvents.setSystemCursor IDC_SIZEALL
                 
             'Store new offsets for the image
-            m_OffsetX = m_InitX - X
-            m_OffsetY = m_InitY - Y
+            m_OffsetX = m_InitX - x
+            m_OffsetY = m_InitY - y
             
             'Note that we no longer have a valid copy of the original image data, so prepImageData must supply us with a new one
             m_HasOriginal = False
@@ -452,8 +460,8 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
             'Return the mouse coordinates as a ratio between 0 and 1, with 1 representing max width/height
             Dim retX As Double, retY As Double
-            retX = X - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2)
-            retY = Y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2)
+            retX = x - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2)
+            retY = y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2)
             
             retX = retX / originalImage.getDIBWidth
             retY = retY / originalImage.getDIBHeight
@@ -466,7 +474,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
 
 End Sub
 
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
 
     If Not viewportFitFullImage Then
         
@@ -560,7 +568,7 @@ Private Sub UserControl_Initialize()
     
     'A check must be made for IDE behavior so the project will compile; VB's initialization of user controls during
     ' compiling and design process causes no shortage of odd issues and errors otherwise
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         
         'Set up a mouse events handler.  (NOTE: this handler subclasses, which may cause instability in the IDE.)
         Set cMouseEvents = New pdInputMouse
@@ -615,7 +623,7 @@ End Sub
 Private Sub UserControl_Show()
     
     'Translate the user control text in the compiled EXE
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
         lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
     Else
         lblBeforeToggle.Caption = "show original image (alt+t) "
@@ -627,7 +635,7 @@ Private Sub UserControl_Show()
     redrawControl
     
     'Set an initial max/min for the preview offsets if the user chooses to preview at 100% zoom
-    If g_UserModeFix Then
+    If gIsProgramRunning Then
     
         'Reset the mouse cursor
         cMouseEvents.setSystemCursor IDC_ARROW
