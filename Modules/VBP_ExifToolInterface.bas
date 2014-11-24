@@ -665,9 +665,19 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
         cmdParams = cmdParams & "-ExifIFD:ExifImageHeight=" & srcPDImage.Height & vbCrLf
     End If
     
-    cmdParams = cmdParams & "-" & tagGroupPrefix & "XResolution=" & srcPDImage.getDPI() & vbCrLf & "-YResolution=" & srcPDImage.getDPI() & vbCrLf
+    cmdParams = cmdParams & "-" & tagGroupPrefix & "XResolution=" & srcPDImage.getDPI() & vbCrLf
+    cmdParams = cmdParams & "-" & tagGroupPrefix & "YResolution=" & srcPDImage.getDPI() & vbCrLf
     cmdParams = cmdParams & "-" & tagGroupPrefix & "ResolutionUnit=inches" & vbCrLf
+    
     cmdParams = cmdParams & "-" & tagGroupPrefix & "ColorSpace=sRGB" & vbCrLf
+    
+    'JPEGs have the unique issue of needing their resolution values also updated in the JFIF header, so we make
+    ' an additional request here for JPEGs specifically.
+    If srcPDImage.currentFileFormat = FIF_JPEG Then
+        cmdParams = cmdParams & "-JFIF:XResolution=" & srcPDImage.getDPI() & vbCrLf
+        cmdParams = cmdParams & "-JFIF:YResolution=" & srcPDImage.getDPI() & vbCrLf
+        cmdParams = cmdParams & "-JFIF:ResolutionUnit=inches" & vbCrLf
+    End If
     
     'If we were asked to remove GPS data, do so now
     If removeGPS Then cmdParams = cmdParams & "-gps:all=" & vbCrLf
