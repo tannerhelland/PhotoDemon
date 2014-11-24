@@ -251,6 +251,7 @@ Private Const CB_GETCURSEL As Long = &H147
 Private Const CB_SETCURSEL As Long = &H14E
 Private Const CB_GETITEMHEIGHT As Long = &H154
 
+Private Const CBN_SELCHANGE As Long = 1
 Private Const CBN_DROPDOWN As Long = 7
 
 Private Const CBS_SIMPLE As Long = &H1
@@ -386,7 +387,13 @@ Public Property Let Enabled(ByVal NewValue As Boolean)
     'If the control is disabled, the BackColor property actually becomes relevant (because the edit box will allow the back color
     ' to "show through").  As such, set it now, and note that we can use VB's internal property, because it simply wraps the
     ' matching GDI function(s).
-    If g_IsProgramRunning Then UserControl.BackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+    If g_IsProgramRunning Then
+        If NewValue Then
+            UserControl.BackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        Else
+            UserControl.BackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+        End If
+    End If
     
     If m_ComboBoxHwnd <> 0 Then EnableWindow m_ComboBoxHwnd, IIf(NewValue, 1, 0)
     UserControl.Enabled = NewValue
@@ -1101,11 +1108,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'Make sure the command is relative to *our* combo box, and not another one
             If lParam = m_ComboBoxHwnd Then
         
-                'Check for the EN_UPDATE flag; if present, raise the CHANGE event
-                'If (wParam \ &H10000) = EN_UPDATE Then
-                    'RaiseEvent Change
-                    'bHandled = True
-                'End If
+                'Check for the CBN_SELCHANGE flag; if present, raise the CLICK event
+                If (wParam \ &H10000) = CBN_SELCHANGE Then
+                    RaiseEvent Click
+                    bHandled = True
+                End If
                 
             End If
         
