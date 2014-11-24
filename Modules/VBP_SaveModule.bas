@@ -1577,7 +1577,11 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
         
     'Use that handle to save the image to JPEG format
     If fi_DIB <> 0 Then
-    
+        
+        'Pass this image's resolution values, if any, to FreeImage; it will embed these values in the JFIF header
+        FreeImage_SetResolutionX fi_DIB, srcPDImage.getDPI
+        FreeImage_SetResolutionY fi_DIB, srcPDImage.getDPI
+        
         Dim fi_Check As Long
         fi_Check = FreeImage_SaveEx(fi_DIB, JPEGPath, FIF_JPEG, jpegFlags, outputColorDepth, , , , , True)
         
