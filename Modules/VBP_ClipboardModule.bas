@@ -254,7 +254,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                             If srcIsMeantAsLayer Then
                                 Layer_Handler.loadImageAsNewLayer False, sFile(0), True
                             Else
-                                LoadFileAsNewImage sFile, False
+                                LoadFileAsNewImage sFile, False, , , , , , , , True
                             End If
                             
                             'Delete the temporary file
@@ -264,9 +264,20 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                             
                             clpObject.ClipboardClose
                             
-                            pasteWasSuccessful = True
-                            
-                            Exit Sub
+                            'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
+                            ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
+                            ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
+                            ' to use this technique for predicting failure.)
+                            If Not pdImages(UBound(pdImages)) Is Nothing Then
+                                If pdImages(UBound(pdImages)).IsActive Then
+                                    pasteWasSuccessful = True
+                                    Exit Sub
+                                Else
+                                    pasteWasSuccessful = False
+                                End If
+                            Else
+                                pasteWasSuccessful = False
+                            End If
                         
                         Else
                         
@@ -461,7 +472,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     If Data.GetFormat(vbCFFiles) Then
         
         'Copy the filenames into an array
-        ReDim sFile(0 To Data.Files.count) As String
+        ReDim sFile(0 To Data.Files.Count) As String
         
         Dim oleFilename
         
