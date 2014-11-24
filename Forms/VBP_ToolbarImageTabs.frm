@@ -904,7 +904,7 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
     
     If tabVisible Then
     
-        Dim tmpRect As RECT
+        Dim tmpRect As RECTL
         Dim hBrush As Long
     
         'If this thumbnail has been selected, draw the background with the system's current selection color

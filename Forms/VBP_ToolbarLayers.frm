@@ -674,7 +674,7 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
         
         'Fill the text box with the current layer name, and select it
         txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerName
-        txtLayerName.SelectAll
+        txtLayerName.selectAll
         
         txtLayerName.SetFocus
     
@@ -1269,7 +1269,7 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
         Dim linePadding As Long
         linePadding = fixDPI(2)
         
-        Dim tmpRect As RECT
+        Dim tmpRect As RECTL
         Dim hBrush As Long
         
         'For performance reasons, retrieve a reference to the corresponding pdLayer object.  We need to

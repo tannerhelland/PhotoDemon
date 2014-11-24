@@ -207,7 +207,7 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
         linePadding = fixDPI(2)
     
         Dim mHeight As Single
-        Dim tmpRect As RECT
+        Dim tmpRect As RECTL
         Dim hBrush As Long
         
         'If this filter has been selected, draw the background with the system's current selection color

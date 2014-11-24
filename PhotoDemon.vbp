@@ -257,7 +257,7 @@ Description="PhotoDemon Photo Editor"
 CompatibleMode="0"
 MajorVer=6
 MinorVer=5
-RevisionVer=382
+RevisionVer=383
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="©2000-2014 Tanner Helland -  photodemon.org"
@@ -297,3 +297,5 @@ ReplaceIcon=0
 SendCommandArgs=0
 SymbDbgPref=0
 RevisionVersion=0
+
+

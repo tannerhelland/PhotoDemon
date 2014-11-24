@@ -579,13 +579,6 @@ Private Type tmpLong
     lngResult As Long
 End Type
 
-Private Type RECTL
-    Left        As Long
-    Top         As Long
-    Width       As Long
-    Height      As Long
-End Type
-
 ' Information about image pixel data
 Private Type BitmapData
    Width As Long
@@ -1501,8 +1494,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         With tmpRect
             .Left = 0
             .Top = 0
-            .Width = imgWidth
-            .Height = imgHeight
+            .Right = imgWidth
+            .Bottom = imgHeight
         End With
         
         'Use LockBits to perform the copy for us.
@@ -1533,8 +1526,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             With tmpRect
                 .Left = 0
                 .Top = 0
-                .Width = imgWidth
-                .Height = imgHeight
+                .Right = imgWidth
+                .Bottom = imgHeight
             End With
             
             'Use LockBits to perform the copy for us.
