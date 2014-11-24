@@ -1767,7 +1767,7 @@ End Sub
 
 Private Sub UserControl_Initialize()
 
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         
         'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
         Set cMouseEvents = New pdInputMouse
@@ -1876,7 +1876,7 @@ End Sub
 
 Private Sub UserControl_Show()
 
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         
         'Prep the command buttons
         cmdZoomFit.AssignImage "SB_ZOOM_FIT"
@@ -1952,7 +1952,7 @@ Public Sub fixChromeLayout()
     
     'If the canvas is currently disabled (e.g. no image is loaded), let the user know that they can drag/drop files onto
     ' this space to begin editing
-    If (g_OpenImageCount = 0) And gIsProgramRunning Then
+    If (g_OpenImageCount = 0) And g_IsProgramRunning Then
     
         'Ignore redraws if the program is being closed; this improves program termination performance
         If (Not g_ProgramShuttingDown) Then

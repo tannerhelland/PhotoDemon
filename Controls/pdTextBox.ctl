@@ -362,7 +362,7 @@ Public Property Let Enabled(ByVal NewValue As Boolean)
     UserControl.Enabled = NewValue
     
     'Redraw the window to match
-    If gIsProgramRunning Then redrawBackBuffer
+    If g_IsProgramRunning Then redrawBackBuffer
     
     PropertyChanged "Enabled"
     
@@ -446,7 +446,7 @@ Public Property Let Text(ByRef newString As String)
     
     'We now fork our behavior according to IDE vs run-time.  PropertyChanged events are slow and unnecessary at run-time, while raising
     ' events is unnecessary in the IDE.
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
     
         'Note that updating text this way will not raise an EN_UPDATE message for the parent.  As such, we must raise a Change event manually.
         RaiseEvent Change
@@ -517,10 +517,10 @@ Private Sub UserControl_Initialize()
     m_InternalResizeState = False
     
     'At run-time, initialize a subclasser
-    If gIsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
+    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
     
     'When not in design mode, initialize a tracker for mouse events
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         
         'Start a flicker-free window painter
         Set cPainter = New pdWindowPainter
@@ -638,7 +638,7 @@ Private Sub createEditBoxBrush()
 
     If m_EditBoxBrush <> 0 Then DeleteObject m_EditBoxBrush
     
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         m_EditBoxBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT))
     Else
         m_EditBoxBrush = CreateSolidBrush(RGB(0, 255, 0))
@@ -700,7 +700,7 @@ Private Function createEditBox() As Boolean
             'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
             ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
             ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
-            If gIsProgramRunning Then
+            If g_IsProgramRunning Then
                 MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, UserControl.ScaleWidth, idealHeight + 5, 1
             Else
                 UserControl.Height = ScaleY(idealHeight + 5, vbPixels, vbTwips)
@@ -728,7 +728,7 @@ Private Function createEditBox() As Boolean
     EnableWindow m_EditBoxHwnd, IIf(Me.Enabled, 1, 0)
     
     'Assign a subclasser to enable IME support
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         If Not (cSubclass Is Nothing) Then
             
             'Subclass the edit box
@@ -839,7 +839,7 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
     
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         
         'Create a brush for drawing the box background
         createEditBoxBrush
@@ -873,7 +873,7 @@ End Sub
 Private Sub redrawBackBuffer()
     
     'Start by erasing the back buffer
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
     
         'Fill color changes depending on enablement
         Dim editBoxBackgroundColor As Long
@@ -885,6 +885,11 @@ Private Sub redrawBackBuffer()
         End If
         
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, editBoxBackgroundColor, 255
+        
+        'If the control is disabled, the BackColor property actually becomes relevant (because the edit box will allow the back color
+        ' to "show through").  As such, set it now, and note that we can use VB's internal property, because it simply wraps the
+        ' matching GDI function(s).
+        UserControl.BackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
         
     Else
         m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
@@ -903,7 +908,7 @@ Private Sub redrawBackBuffer()
     GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, editBoxBorderColor
     
     'Paint the buffer to the screen
-    If gIsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 
@@ -1412,7 +1417,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_EditBoxHwnd Then
             
                 'We can set the text color directly, using the API
-                If gIsProgramRunning Then
+                If g_IsProgramRunning Then
                     SetTextColor wParam, g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
                 Else
                     SetTextColor wParam, RGB(0, 0, 128)

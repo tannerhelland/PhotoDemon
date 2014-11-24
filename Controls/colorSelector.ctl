@@ -110,7 +110,7 @@ Private Sub UserControl_Initialize()
 
     drawControlBorders
     
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker UserControl.hWnd, True, , , True
         cMouseEvents.setSystemCursor IDC_HAND
@@ -153,8 +153,8 @@ Private Sub drawControlBorders()
     GDIPlusDrawLineToDC tmpDIB.getDIBDC, 0, UserControl.ScaleHeight - 1, 0, 0, vbBlack
     
     'Render the backcolor to the control; doing it this way ensures color management works.  (Note that we use a
-    ' gIsProgramRunning check to prevent color management from firing at compile-time.)
-    If gIsProgramRunning Then turnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
+    ' g_IsProgramRunning check to prevent color management from firing at compile-time.)
+    If g_IsProgramRunning Then turnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
     BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
     UserControl.Picture = UserControl.Image
     UserControl.Refresh

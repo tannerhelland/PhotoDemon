@@ -318,7 +318,7 @@ Private Sub UserControl_Initialize()
     curFont.setTextAlignment vbLeftJustify
     
     'When not in design mode, initialize a tracker for mouse events
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
     
         Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker Me.hWnd, True, True, , True
@@ -380,7 +380,7 @@ End Sub
 Private Sub UserControl_Paint()
     
     'Provide minimal painting within the designer
-    If Not gIsProgramRunning Then redrawBackBuffer
+    If Not g_IsProgramRunning Then redrawBackBuffer
     
 End Sub
 
@@ -545,7 +545,7 @@ End Sub
 Private Sub redrawBackBuffer()
 
     'Start by erasing the back buffer
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
     Else
         m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
@@ -611,7 +611,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Failsafe check for designer mode
-    If Not gIsProgramRunning Then
+    If Not g_IsProgramRunning Then
         curFont.setFontColor RGB(0, 0, 0)
     End If
     
@@ -642,7 +642,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    If Not gIsProgramRunning Then
+    If Not g_IsProgramRunning Then
         
         Dim tmpRect As RECT
         With tmpRect
@@ -657,7 +657,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the buffer to the screen
-    If gIsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 

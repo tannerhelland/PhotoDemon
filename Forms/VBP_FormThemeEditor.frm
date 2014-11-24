@@ -116,7 +116,7 @@ Begin VB.Form FormThemeEditor
       Width           =   4215
    End
    Begin VB.CommandButton cmdTextBoxTesting 
-      Caption         =   "resize edit box"
+      Caption         =   "toggle enablement"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -271,8 +271,8 @@ Private Sub cmdTextBoxTesting_Click(Index As Integer)
             
         '1 - resize text box
         Case 1
-            Randomize Timer
-            pdTextBox1.Move pdTextBox1.Left, pdTextBox1.Top, pdTextBox1.Width + ((Rnd * 10) - 5), pdTextBox1.Height + ((Rnd * 10) - 5)
+            pdTextBox1.Enabled = Not pdTextBox1.Enabled
+            pdComboBox2(1).Enabled = Not pdComboBox2(1).Enabled
             
         '2 - set random chars
         Case 2
@@ -292,7 +292,7 @@ Private Sub cmdTextBoxTesting_Click(Index As Integer)
             
         '4 - select all
         Case 4
-            pdTextBox1.SelectAll
+            pdTextBox1.selectAll
         
     End Select
     

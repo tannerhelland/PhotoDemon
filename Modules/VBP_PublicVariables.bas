@@ -78,6 +78,11 @@ Public g_ConfirmClosingUnsaved As Boolean
 'Whether or not we are running in the IDE or compiled
 Public g_IsProgramCompiled As Boolean
 
+'Per the excellent advice of Kroc (camendesign.com), a custom UserMode variable is less prone to errors than the usual
+' Ambient.UserMode value supplied to ActiveX controls.  This fixes a problem where ActiveX controls sometimes think they
+' are being run in a compiled EXE, when actually their properties are just being written as part of .exe compiling.
+Public g_IsProgramRunning As Boolean
+
 'Temporary loading variable to disable Autozoom feature
 Public g_AllowViewportRendering As Boolean
 
@@ -179,11 +184,6 @@ Public g_AllowDragAndDrop As Boolean
 
 'While Undo/Redo operations are active, certain tasks can be ignored.  This public value can be used to check Undo/Redo activity.
 Public g_UndoRedoActive As Boolean
-
-'Per the excellent advice of Kroc (camendesign.com), a custom UserMode variable is less prone to errors than the usual
-' Ambient.UserMode value supplied to ActiveX controls.  This fixes a problem where ActiveX controls sometimes think they
-' are being run in a compiled EXE, when actually their properties are just being written as part of .exe compiling.
-Public gIsProgramRunning As Boolean
 
 'GDI+ availability is determined at the very start of the program; we rely on it heavily, so expect problems if
 ' it can't be initialized!

@@ -587,7 +587,7 @@ End Sub
 Private Sub UserControl_Initialize()
     
     'When not in design mode, initialize a tracker for mouse and keyboard events
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         
         'Start a flicker-free window painter
         Set cPainter = New pdWindowPainter
@@ -678,7 +678,7 @@ End Sub
 Private Sub UserControl_Paint()
 
     'Provide minimal painting within the designer
-    If Not gIsProgramRunning Then redrawSlider
+    If Not g_IsProgramRunning Then redrawSlider
     
 End Sub
 
@@ -787,7 +787,7 @@ Private Sub redrawSlider()
         m_SliderBackgroundDIB.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, RGB(255, 255, 255)
     End If
     
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         GDI_Plus.GDIPlusFillDIBRect m_SliderBackgroundDIB, 0, 0, m_SliderBackgroundDIB.getDIBWidth, m_SliderBackgroundDIB.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
     Else
         m_SliderBackgroundDIB.createBlank m_SliderBackgroundDIB.getDIBWidth, m_SliderBackgroundDIB.getDIBHeight, 24, RGB(255, 255, 255)
@@ -806,7 +806,7 @@ Private Sub redrawSlider()
     
     'Pull relevant colors from the global themer object
     Dim trackColor As Long, sliderBackgroundColor As Long, sliderEdgeColor As Long
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         trackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
         sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
         sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
@@ -862,7 +862,7 @@ Private Sub redrawSlider()
     End If
     
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    If Not gIsProgramRunning Then
+    If Not g_IsProgramRunning Then
         
         UserControl.Picture = LoadPicture("")
         
@@ -897,7 +897,7 @@ Private Sub drawSliderKnob()
         
         'Retrieve colors from the global themer object
         Dim sliderBackgroundColor As Long, sliderEdgeColor As Long
-        If gIsProgramRunning Then
+        If g_IsProgramRunning Then
             sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
             sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
         End If
@@ -939,7 +939,7 @@ Private Sub drawSliderKnob()
     End If
     
     'Paint the buffer to the screen
-    If gIsProgramRunning Then cPainter.requestRepaint Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 

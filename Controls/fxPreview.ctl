@@ -568,7 +568,7 @@ Private Sub UserControl_Initialize()
     
     'A check must be made for IDE behavior so the project will compile; VB's initialization of user controls during
     ' compiling and design process causes no shortage of odd issues and errors otherwise
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         
         'Set up a mouse events handler.  (NOTE: this handler subclasses, which may cause instability in the IDE.)
         Set cMouseEvents = New pdInputMouse
@@ -623,7 +623,7 @@ End Sub
 Private Sub UserControl_Show()
     
     'Translate the user control text in the compiled EXE
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
         lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
     Else
         lblBeforeToggle.Caption = "show original image (alt+t) "
@@ -635,7 +635,7 @@ Private Sub UserControl_Show()
     redrawControl
     
     'Set an initial max/min for the preview offsets if the user chooses to preview at 100% zoom
-    If gIsProgramRunning Then
+    If g_IsProgramRunning Then
     
         'Reset the mouse cursor
         cMouseEvents.setSystemCursor IDC_ARROW
