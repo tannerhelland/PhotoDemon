@@ -361,7 +361,7 @@ Public Function retrieveMetadataString() As String
     If InStr(1, curMetadataString, "&quot;") > 0 Then curMetadataString = Replace(curMetadataString, "&quot;", """")
     If InStr(1, curMetadataString, "&gt;") > 0 Then curMetadataString = Replace(curMetadataString, "&gt;", ">")
     If InStr(1, curMetadataString, "&lt;") > 0 Then curMetadataString = Replace(curMetadataString, "&lt;", "<")
-    
+        
     'Return the processed string, then erase our copy of it
     retrieveMetadataString = curMetadataString
     curMetadataString = ""
@@ -442,7 +442,7 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     
     'Output long-format data
     cmdParams = cmdParams & "-l" & vbCrLf
-    
+        
     'Request a custom separator for list-type values
     cmdParams = cmdParams & "-sep" & vbCrLf & ";" & vbCrLf
         

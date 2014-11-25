@@ -290,6 +290,7 @@ Private Const ODS_FOCUS As Long = &H10
 Private Const ODS_GRAYED As Long = &H2
 Private Const ODS_SELECTED As Long = &H1
 Private Const ODS_COMBOBOXEDIT As Long = &H1000
+Private Const ODS_HOTLIGHT As Long = &H40&
 
 Private Type DRAWITEMSTRUCT
     CtlType As Long
@@ -312,6 +313,12 @@ Private m_ComboBoxWindowID As Long
 'Because the control is owner-drawn, we must perform our own measurements.  We calculate these against a test string when creating the combo box;
 ' the results are stored to this variable, and used for any subsequent measurements
 Private m_ItemHeight As Long
+
+'For consistency with other PD controls, the .ListIndex property will always poll the API window for its current value.  However, we need to do
+' some separate internal tracking to simplify the rendering process (since this controls is fully owner-drawn).  The last ListIndex change
+' notification will set this module-level variable to match the current .ListIndex; this value is used when draw notifications are received, to
+' differentiate between hovered items and the actually selected current item (which are not differentiated in the draw struct).
+Private m_CurrentListIndex As Long
 
 'Basic combo box interaction functions
 
@@ -1188,6 +1195,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
                 'Check for the CBN_SELCHANGE flag; if present, raise the CLICK event
                 If (wParam \ &H10000) = CBN_SELCHANGE Then
+                    m_CurrentListIndex = SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&)
                     RaiseEvent Click
                     bHandled = True
                 End If
@@ -1267,13 +1275,22 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         
                         'Determine colors.  Obviously these vary depending on the selection state of the current entry
                         Dim itemBackColor As Long, itemTextColor As Long
+                        Dim isMouseOverItem As Boolean
+                        isMouseOverItem = ((DIS.ItemState And ODS_SELECTED) <> 0)
                         
-                        If (DIS.ItemState And ODS_SELECTED) <> 0 Then
+                        If (DIS.ItemID = m_CurrentListIndex) And m_HasFocus Then
                             itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
                             itemBackColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
                         Else
-                            itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+                            
+                            If isMouseOverItem Then
+                                itemTextColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                            Else
+                                itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
+                            End If
+                            
                             itemBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                            
                         End If
                         
                         'Fill the background
@@ -1301,7 +1318,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             curFont.attachToDC DIS.hDC
                             
                             With DIS.RCItem
-                                curFont.fastRenderTextWithClipping .Left + 1, .Top + 1, .Right - .Left - 2, .Bottom - .Top - 2, tmpString, False
+                                curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - 4, (.Bottom - .Top) - 2, tmpString, False
                             End With
                             
                             curFont.releaseFromDC
@@ -1309,8 +1326,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         End If
                         
                         'TEMPORARY TEST!  If the item has focus, draw a test focus rect
-                        If (DIS.ItemState And ODS_FOCUS) <> 0 Then
-                            tmpBackBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT))
+                        If isMouseOverItem Then
+                            tmpBackBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_ACCENT_SHADOW))
                             FrameRect DIS.hDC, DIS.RCItem, tmpBackBrush
                             DeleteObject tmpBackBrush
                         End If
@@ -1319,6 +1336,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         bHandled = True
                         lReturn = 1
                         
+                    Else
+                    
+                        Debug.Print "received draw request for -1"
+                    
                     End If
                     
                 End If
