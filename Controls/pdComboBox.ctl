@@ -73,6 +73,11 @@ Option Explicit
 ' used the same semantics here.  Note, however, that "Click" will also return changes to the combo box that originate from the keyboard.
 Public Event Click()
 
+'Flicker-free window painter; note that two painters are (probably? TODO!) required: one for the edit portion of the control (including its button),
+' and another for the drop-down list (only the border is relevant here, as individual items draw their own background).
+Private WithEvents cPainterBox As pdWindowPainter
+Attribute cPainterBox.VB_VarHelpID = -1
+
 'Window styles
 Private Enum enWindowStyles
     WS_BORDER = &H800000
@@ -300,12 +305,29 @@ Private Type DRAWITEMSTRUCT
     ItemState As Long
     hWndItem As Long
     hDC As Long
-    RCItem As RECTL
+    rcItem As RECTL
     ItemData As Long
 End Type
 
 'The MeasureItemStruct struct, above, will identify the combo box using this constant in the CtlType field.
 Private Const ODT_COMBOBOX As Long = &H3
+
+Private Type COMBOBOXINFO
+    cbSize As Long
+    rcItem As RECTL
+    rcButton As RECTL
+    lStateButton As Long
+    hWndCombo As Long
+    hWndEdit As Long
+    hWndList As Long
+End Type
+
+'The COMBOBOXINFO struct, above, will report button state using one of the following constants:
+Private Const STATE_SYSTEM_UNPRESSED = &H0&
+Private Const STATE_SYSTEM_PRESSED = &H8&
+Private Const STATE_SYSTEM_INVISIBLE = &H8000&
+
+Private Declare Function GetComboBoxInfo Lib "user32" (ByVal hWndCombo As Long, ByRef pcbi As COMBOBOXINFO) As Long
 
 'When creating a window, we assign it a unique ID.  This is handled via GetTickCount, which is as close to a pseudo-random ID as I care to implement.
 Private m_ComboBoxWindowID As Long
@@ -474,6 +496,69 @@ Public Property Let FontSize(ByVal newSize As Single)
     End If
 End Property
 
+'Flicker-free paint requests for the main control box (e.g. NOT the drop-down list portion)
+Private Sub cPainterBox_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+
+    'Before painting, retrieve detailed information on the combo box
+    Dim cbiCombo As COMBOBOXINFO
+    cbiCombo.cbSize = LenB(cbiCombo)
+    
+    'Make sure the combo box exists
+    If m_ComboBoxHwnd <> 0 Then
+    
+        If GetComboBoxInfo(m_ComboBoxHwnd, cbiCombo) <> 0 Then
+        
+            'cbiCombo now contains a bunch of useful information, including hWnds for each portion of the combo box control, and a rect for both
+            ' the button area, and the edit area.  We will render each of these in turn.
+            
+            'Start by retrieving a DC for the edit area.
+            Dim targetDC As Long
+            targetDC = GetDC(m_ComboBoxHwnd)
+            
+            If targetDC <> 0 Then
+            
+                'Next, determine paint colors, contingent on enablement and other settings.
+                Dim cboBorderColor As Long, cboFillColor As Long
+                
+                If Me.Enabled Then
+                
+                    If m_HasFocus Then
+                        cboBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                        cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                    Else
+                        cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+                        cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                    End If
+                
+                Else
+                
+                    cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+                    cboFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+                
+                End If
+                
+                'Paint the control background
+                Dim tmpBrush As Long
+                tmpBrush = CreateSolidBrush(cboFillColor)
+                FillRect targetDC, cbiCombo.rcButton, tmpBrush
+                DeleteObject tmpBrush
+                
+                'Paint the border
+                tmpBrush = CreateSolidBrush(cboBorderColor)
+                FrameRect targetDC, cbiCombo.rcButton, tmpBrush
+                DeleteObject tmpBrush
+                    
+                'Release the DC
+                ReleaseDC m_ComboBoxHwnd, targetDC
+                    
+            End If
+            
+        End If
+    
+    End If
+    
+End Sub
+
 Private Sub tmrHookRelease_Timer()
 
     'If a hook is active, this timer will repeatedly try to kill it.  Do not enable it until you are certain the hook needs to be released.
@@ -513,7 +598,10 @@ Private Sub UserControl_Initialize()
     m_InternalResizeState = False
     
     'At run-time, initialize a subclasser
-    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
+    If g_IsProgramRunning Then
+        Set cSubclass = New cSelfSubHookCallback
+        Set cPainterBox = New pdWindowPainter
+    End If
     
     'When not in design mode, initialize a tracker for mouse events
     If g_IsProgramRunning Then
@@ -704,6 +792,7 @@ Private Function createComboBox() As Boolean
     
     'Assign a subclasser to enable proper tab and arrow key support
     If g_IsProgramRunning Then
+    
         If Not (cSubclass Is Nothing) Then
             
             'Subclass the combo box
@@ -718,6 +807,12 @@ Private Function createComboBox() As Boolean
             End If
             
         End If
+        
+        'Assign a second subclasser for the window painter
+        If Not (cPainterBox Is Nothing) Then
+            cPainterBox.startPainter m_ComboBoxHwnd
+        End If
+        
     End If
     
     'Assign the default font to the combo box
@@ -1027,6 +1122,109 @@ Private Function isVirtualKeyDown(ByVal vKey As Long) As Boolean
     isVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
 End Function
 
+'Given an hWnd relative to the combo box, perform painting!
+Private Function drawComboBox(ByVal targetHwnd As Long) As Boolean
+
+End Function
+
+'Given a DRAWITEMSTRUCT object, draw the corresponding item.  This function returns TRUE if drawing was successful.
+Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
+
+    Dim drawSuccess As Boolean
+    drawSuccess = False
+    
+    'The control type should always be combo box, but it doesn't hurt to check
+    If srcDIS.CtlType = ODT_COMBOBOX Then
+        
+        'If the ItemID is -1, the combo box is empty; this case is important to check, because an empty combo box won't have any text data,
+        ' so attempting to retrieve text entries will fail.
+        If srcDIS.ItemID <> -1 Then
+            
+            'Determine colors.  Obviously these vary depending on the selection state of the current entry
+            Dim itemBackColor As Long, itemTextColor As Long
+            Dim isMouseOverItem As Boolean
+            isMouseOverItem = ((srcDIS.ItemState And ODS_SELECTED) <> 0)
+            
+            'If the current entry is also the ListIndex, and the control has focus, render it inversely
+            If (srcDIS.ItemID = m_CurrentListIndex) And m_HasFocus Then
+                itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+                itemBackColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            
+            'If this entry is not the ListIndex, or the control does not have focus, render the item normally.
+            Else
+                
+                'If the mouse is currently over this item, highlight the text.  This is in keeping with other hover behavior in PD.
+                If isMouseOverItem And m_HasFocus Then
+                    itemTextColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                Else
+                    itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
+                End If
+                
+                itemBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                
+            End If
+            
+            'Fill the background
+            Dim tmpBackBrush As Long
+            tmpBackBrush = CreateSolidBrush(itemBackColor)
+            FillRect srcDIS.hDC, srcDIS.rcItem, tmpBackBrush
+            DeleteObject tmpBackBrush
+            
+            'Retrieve the string for this entry; we start by determining the size of the entry's text
+            Dim strLength As Long
+            strLength = SendMessage(srcDIS.hWndItem, CB_GETLBTEXTLEN, srcDIS.ItemID, ByVal 0&)
+            
+            'Prepare a buffer for the entry's text
+            Dim tmpString As String
+            tmpString = Space$(strLength + 1)
+            
+            'Retrieve the actual text into our string buffer
+            SendMessage srcDIS.hWndItem, CB_GETLBTEXT, srcDIS.ItemID, ByVal StrPtr(tmpString)
+            
+            'Prepare a font renderer, then render the text
+            If Not curFont Is Nothing Then
+                
+                curFont.releaseFromDC
+                curFont.setFontColor itemTextColor
+                curFont.attachToDC srcDIS.hDC
+                
+                With srcDIS.rcItem
+                    curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - 4, (.Bottom - .Top) - 2, tmpString, False
+                End With
+                
+                curFont.releaseFromDC
+                
+            End If
+            
+            'If the item has focus, draw a rectangular frame around the item.
+            If isMouseOverItem Then
+                tmpBackBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_ACCENT_SHADOW))
+                FrameRect srcDIS.hDC, srcDIS.rcItem, tmpBackBrush
+                DeleteObject tmpBackBrush
+            End If
+            
+            'Note that we have handled the draw request successfully
+            drawSuccess = True
+            
+        'The combo box is empty (TODO: do we still need to render a background here??)
+        Else
+        
+            drawSuccess = False
+        
+        End If
+    
+    'The item type is not combo box - not sure what to do here (TODO)
+    Else
+    
+        Debug.Print "draw request received for a non-combo-box item!"
+        drawSuccess = False
+    
+    End If
+    
+    drawComboBoxEntry = drawSuccess
+
+End Function
+
 'Install a keyboard hook in our window
 Private Sub InstallHookConditional()
 
@@ -1236,9 +1434,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 If MIS.CtlType = ODT_COMBOBOX Then
                     
                     'If the ItemID is -1, the edit box is the source of the measure item.  Otherwise, it is the dropdown.
-                    ' (We shouldn't have to worry about this case, because we have specified integral height for the control.)
+                    ' (We shouldn't have to worry about this case, because we have specified integral height for the control; however, we
+                    '  could technically override the measurement and provide our own size for the edit area.)
                     If MIS.ItemID = -1 Then
-                        Debug.Print "Edit box ItemID!"
+                        'Debug.Print "Edit box ItemID!"
                     Else
                     
                         'Fill the height parameter; note that m_ItemHeight is the literal height of a string using the current font.
@@ -1257,7 +1456,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 End If
                 
             End If
-            
+        
+        'Because our combo box is owner-drawn, the system will forward draw requests to us.
         Case WM_DRAWITEM
         
             'Check the control ID (specified by wParam) before proceeding
@@ -1267,85 +1467,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 Dim DIS As DRAWITEMSTRUCT
                 CopyMemory DIS, ByVal lParam, LenB(DIS)
                 
-                'The control type should always be combo box, but it doesn't hurt to check
-                If DIS.CtlType = ODT_COMBOBOX Then
-                    
-                    'If the ItemID is -1, the combo box is empty, and we don't actually need to do any drawing
-                    If DIS.ItemID <> -1 Then
-                        
-                        'Determine colors.  Obviously these vary depending on the selection state of the current entry
-                        Dim itemBackColor As Long, itemTextColor As Long
-                        Dim isMouseOverItem As Boolean
-                        isMouseOverItem = ((DIS.ItemState And ODS_SELECTED) <> 0)
-                        
-                        If (DIS.ItemID = m_CurrentListIndex) And m_HasFocus Then
-                            itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-                            itemBackColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                        Else
-                            
-                            If isMouseOverItem Then
-                                itemTextColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-                            Else
-                                itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
-                            End If
-                            
-                            itemBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                            
-                        End If
-                        
-                        'Fill the background
-                        Dim tmpBackBrush As Long
-                        tmpBackBrush = CreateSolidBrush(itemBackColor)
-                        FillRect DIS.hDC, DIS.RCItem, tmpBackBrush
-                        DeleteObject tmpBackBrush
-                        
-                        'Retrieve the string for this entry; we start by determining the size of the string
-                        Dim strLength As Long
-                        strLength = SendMessage(DIS.hWndItem, CB_GETLBTEXTLEN, DIS.ItemID, ByVal 0&)
-                        
-                        'Prepare a buffer
-                        Dim tmpString As String
-                        tmpString = Space$(strLength + 1)
-                        
-                        'Retrieve the actual text
-                        SendMessage DIS.hWndItem, CB_GETLBTEXT, DIS.ItemID, ByVal StrPtr(tmpString)
-                        
-                        'Prepare a font renderer, then render the text
-                        If Not curFont Is Nothing Then
-                            
-                            curFont.releaseFromDC
-                            curFont.setFontColor itemTextColor
-                            curFont.attachToDC DIS.hDC
-                            
-                            With DIS.RCItem
-                                curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - 4, (.Bottom - .Top) - 2, tmpString, False
-                            End With
-                            
-                            curFont.releaseFromDC
-                            
-                        End If
-                        
-                        'TEMPORARY TEST!  If the item has focus, draw a test focus rect
-                        If isMouseOverItem Then
-                            tmpBackBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_ACCENT_SHADOW))
-                            FrameRect DIS.hDC, DIS.RCItem, tmpBackBrush
-                            DeleteObject tmpBackBrush
-                        End If
-                        
-                        'Note that we have handled the message successfully
-                        bHandled = True
-                        lReturn = 1
-                        
-                    Else
-                    
-                        Debug.Print "received draw request for -1"
-                    
-                    End If
-                    
+                'Forward the DrawItemStruct to the dedicated draw sub
+                If drawComboBoxEntry(DIS) Then
+                    bHandled = True
+                    lReturn = 1
                 End If
                 
             End If
-        
         
         'On mouse activation, the previous VB window/control that had focus will not be redrawn to reflect its lost focus state.
         ' (Presumably, this is because VB handles focus internally, rather than using standard window messages.)  To avoid the

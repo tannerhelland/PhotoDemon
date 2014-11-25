@@ -19,10 +19,10 @@ Option Explicit
 'Various API calls required for screen capturing
 Public Declare Function GetDesktopWindow Lib "user32" () As Long
 Public Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function PrintWindow Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long, ByVal nFlags As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
@@ -152,15 +152,15 @@ Public Sub getDesktopAsDIB(ByRef dstDIB As pdDIB)
 End Sub
 
 'Copy the visual contents of any hWnd into a DIB; window chrome can be optionally included, if desired
-Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHWnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
+Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
 
     'Start by retrieving the necessary dimensions from the target window
     Dim targetRect As winRect
     
     If includeChrome Then
-        GetWindowRect targetHWnd, targetRect
+        GetWindowRect targetHwnd, targetRect
     Else
-        GetClientRect targetHWnd, targetRect
+        GetClientRect targetHwnd, targetRect
     End If
     
     'Check to make sure the window hasn't been unloaded
@@ -174,9 +174,9 @@ Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHWnd As 
     
     'Ask the window in question to paint itself into our DIB
     If includeChrome Then
-        PrintWindow targetHWnd, dstDIB.getDIBDC, 0
+        PrintWindow targetHwnd, dstDIB.getDIBDC, 0
     Else
-        PrintWindow targetHWnd, dstDIB.getDIBDC, PW_CLIENTONLY
+        PrintWindow targetHwnd, dstDIB.getDIBDC, PW_CLIENTONLY
     End If
     
     getHwndContentsAsDIB = True
