@@ -209,6 +209,12 @@ Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_ME
 'Obviously, we're going to be doing a lot of subclassing inside this control.
 Private cSubclass As cSelfSubHookCallback
 
+'Mouse input handler helps with things like enter/leave behavior
+Private WithEvents cMouseEvents As pdInputMouse
+Attribute cMouseEvents.VB_VarHelpID = -1
+Private WithEvents cMouseEventsListBox As pdInputMouse
+Attribute cMouseEventsListBox.VB_VarHelpID = -1
+
 'Unlike the combo box, which may be recreated multiple times as properties change, we only need to subclass the parent window once.
 ' After it has been subclassed, this will be set to TRUE.
 Private m_ParentHasBeenSubclassed As Boolean
@@ -266,6 +272,7 @@ Private Const CB_GETLBTEXTLEN As Long = &H149
 
 Private Const CBN_SELCHANGE As Long = 1
 Private Const CBN_DROPDOWN As Long = 7
+Private Const CBN_CLOSEUP As Long = 8
 
 Private Const CBS_SIMPLE As Long = &H1
 Private Const CBS_DROPDOWN As Long = &H2
@@ -345,6 +352,9 @@ Private m_ItemHeight As Long
 ' notification will set this module-level variable to match the current .ListIndex; this value is used when draw notifications are received, to
 ' differentiate between hovered items and the actually selected current item (which are not differentiated in the draw struct).
 Private m_CurrentListIndex As Long
+
+'If the mouse is currently over the combo box area, this will be set to TRUE
+Private m_MouseOverComboBox As Boolean
 
 'Basic combo box interaction functions
 
@@ -502,6 +512,34 @@ Public Property Let FontSize(ByVal newSize As Single)
         refreshFont
     End If
 End Property
+
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    m_MouseOverComboBox = True
+    cPainterBox.requestRepaint
+    
+    'Set a hand cursor
+    cMouseEvents.setSystemCursor IDC_HAND
+    
+End Sub
+
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    m_MouseOverComboBox = False
+    cPainterBox.requestRepaint
+    
+    'Reset the cursor
+    cMouseEvents.setSystemCursor IDC_ARROW
+    
+End Sub
+
+Private Sub cMouseEventsListBox_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEventsListBox.setSystemCursor IDC_HAND
+End Sub
+
+Private Sub cMouseEventsListBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEventsListBox.setSystemCursor IDC_ARROW
+End Sub
 
 'Flicker-free paint requests for the main control box (e.g. NOT the drop-down list portion)
 Private Sub cPainterBox_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
@@ -762,6 +800,13 @@ Private Function createComboBox() As Boolean
             cPainterBox.startPainter m_ComboBoxHwnd
         End If
         
+        '...and a third subclasser for mouse events
+        If (cMouseEvents Is Nothing) Then
+            Set cMouseEvents = New pdInputMouse
+            cMouseEvents.addInputTracker m_ComboBoxHwnd, True, , , True
+            cMouseEvents.setSystemCursor IDC_HAND
+        End If
+        
     End If
     
     'Assign the default font to the combo box
@@ -784,7 +829,10 @@ Private Function createComboBox() As Boolean
         Me.ListIndex = m_BackupListIndex
         
     End If
-        
+    
+    'Finally, synchronize the underlying user control to whatever size the system has created the combo box at
+    syncUserControlSizeToComboSize
+    
     'Return TRUE if successful
     createComboBox = (m_ComboBoxHwnd <> 0)
 
@@ -1098,25 +1146,34 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
             If targetDC <> 0 Then
             
                 'Next, determine paint colors, contingent on enablement and other settings.
-                Dim cboBorderColor As Long, cboFillColor As Long, cboTextColor As Long
+                Dim cboBorderColor As Long, cboFillColor As Long, cboTextColor As Long, cboButtonColor As Long
                 
                 If Me.Enabled Then
-                
-                    If m_HasFocus Then
+                    
+                    'When the mouse is over the combo box, the border and drop-down arrow are highlighted
+                    If m_MouseOverComboBox Then
                         cboBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-                        cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        cboButtonColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
                     Else
                         cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-                        cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        cboButtonColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
                     End If
                     
-                    cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
-                
+                    If m_HasFocus Then
+                        cboFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                        cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+                        cboButtonColor = cboTextColor
+                    Else
+                        cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
+                    End If
+                    
                 Else
                 
                     cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
                     cboFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
                     cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+                    cboButtonColor = cboTextColor
                 
                 End If
                 
@@ -1164,6 +1221,20 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                     
                 End If
                 
+                'Draw the button
+                Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
+                
+                buttonPt1.x = fullWinRect.Right - fixDPIFloat(16)
+                buttonPt1.y = (fullWinRect.Bottom - fullWinRect.Top) / 2 - fixDPIFloat(1)
+                
+                buttonPt3.x = fullWinRect.Right - fixDPIFloat(8)
+                buttonPt3.y = buttonPt1.y
+                
+                buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
+                buttonPt2.y = buttonPt1.y + fixDPIFloat(3)
+                
+                GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
+                GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
                 
                 'Release the DC
                 If Not srcIsWMPAINT Then
@@ -1189,7 +1260,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
         
         'If the ItemID is -1, the combo box is empty; this case is important to check, because an empty combo box won't have any text data,
         ' so attempting to retrieve text entries will fail.
-        If srcDIS.itemID <> -1 Then
+        If (srcDIS.itemID <> -1) Then
             
             'Determine colors.  Obviously these vary depending on the selection state of the current entry
             Dim itemBackColor As Long, itemTextColor As Long
@@ -1246,7 +1317,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 curFont.releaseFromDC
                 
             End If
-            
+                        
             'If the item has focus, draw a rectangular frame around the item.
             If isMouseOverItem Then
                 tmpBackBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_ACCENT_SHADOW))
@@ -1276,6 +1347,33 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
 
 End Function
 
+'When creating the combo box (or when the combo box is resized due to some external event), use this function to sync the underlying usercontrol size
+Private Sub syncUserControlSizeToComboSize()
+
+    'Get the window rect of the combo box
+    Dim comboRect As RECTL
+    GetWindowRect m_ComboBoxHwnd, comboRect
+                
+    'Resize the user control, as necessary
+    With UserControl
+    
+        If g_IsProgramCompiled Then
+            MoveWindow UserControl.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, comboRect.Right - comboRect.Left, comboRect.Bottom - comboRect.Top, 1
+        Else
+    
+            If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
+                .Size .ScaleX((comboRect.Right - comboRect.Left), vbPixels, vbTwips), .ScaleY((comboRect.Bottom - comboRect.Top), vbPixels, vbTwips)
+            End If
+        
+        End If
+    
+    End With
+    
+    'Repaint the control
+    cPainterBox.requestRepaint
+
+End Sub
+
 'Install a keyboard hook in our window
 Private Sub InstallHookConditional()
 
@@ -1288,6 +1386,7 @@ Private Sub InstallHookConditional()
         
         'Note that this window is now active
         m_HasFocus = True
+        cPainterBox.requestRepaint
         
         'No hook exists.  Hook the control now.
         cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_ComboBoxHwnd, 2, Me, , True
@@ -1303,6 +1402,7 @@ Private Sub RemoveHookConditional()
         
         'Note that this window is now considered inactive
         m_HasFocus = False
+        cPainterBox.requestRepaint
         
         'A hook exists.  Uninstall it now.
         cSubclass.shk_UnHook WH_KEYBOARD
@@ -1445,8 +1545,33 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Check for the CBN_SELCHANGE flag; if present, raise the CLICK event
                 If (wParam \ &H10000) = CBN_SELCHANGE Then
                     m_CurrentListIndex = SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&)
+                    cPainterBox.requestRepaint
                     RaiseEvent Click
                     bHandled = True
+                End If
+                
+                'Check for the DROPDOWN flag; if present, we need to assign a hand cursor to the list box
+                If (wParam \ &H10000) = CBN_DROPDOWN Then
+                    
+                    'Retrieve the hWnd of the dropdown
+                    Dim cbiCombo As COMBOBOXINFO
+                    cbiCombo.cbSize = LenB(cbiCombo)
+                    If GetComboBoxInfo(m_ComboBoxHwnd, cbiCombo) <> 0 Then
+                        
+                        Debug.Print "hWnd: " & cbiCombo.hWndList
+                        
+                        Set cMouseEventsListBox = New pdInputMouse
+                        cMouseEventsListBox.addInputTracker cbiCombo.hWndList, True, , , True
+                        cMouseEventsListBox.setSystemCursor IDC_HAND
+                        
+                    End If
+                    
+                End If
+                
+                'Check for the CLOSEUP flag; if present, we need to kill our mouse handler
+                If (wParam \ &H10000) = CBN_CLOSEUP Then
+                    cMouseEventsListBox.setSystemCursor IDC_ARROW
+                    Set cMouseEventsListBox = Nothing
                 End If
                 
             End If
@@ -1473,7 +1598,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
         'Because our combo box is owner-drawn, the system will request a measurement for the drop-down entries.
         Case WM_MEASUREITEM
-        
+            
             'Check the control ID (specified by wParam) before proceeding
             If wParam = m_ComboBoxWindowID Then
             
@@ -1534,7 +1659,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If Not m_HasFocus Then UserControl.SetFocus
             
         'When the control receives focus, initialize a keyboard hook.  This prevents accelerators from working, but it is the
-        ' only way to bypass VB's internal message translator, which will forcibly convert certain Unicode chars to ANSI.
+        ' only way to bypass VB's internal message translator, which will forcibly intercept dialog keys (arrows, etc).
+        ' Note that focus changes also force a repaint of the control.
         Case WM_SETFOCUS
             InstallHookConditional
             
@@ -1548,22 +1674,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'Resize messages must be handled manually for the combo box, as we need to dynamically sync the resize state of both parent and child window
         Case WM_SIZE
                         
-            'Disable VB resize handling
+            'Disable VB resize handling prior to synchronizing size
             m_InternalResizeState = True
             
-            'Get the window rect of the combo box
-            Dim comboRect As RECTL
-            GetWindowRect m_ComboBoxHwnd, comboRect
-                        
-            'Resize the user control, as necessary
-            With UserControl
+            'Sync the underlying user control to the combo box's dimensions
+            syncUserControlSizeToComboSize
             
-                If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
-                    .Size .ScaleX((comboRect.Right - comboRect.Left), vbPixels, vbTwips), .ScaleY((comboRect.Bottom - comboRect.Top), vbPixels, vbTwips)
-                End If
-            
-            End With
-            
+            'Restore VB's internal resize handler
             m_InternalResizeState = False
             
         'Other messages??
