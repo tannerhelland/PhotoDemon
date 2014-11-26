@@ -62,6 +62,9 @@ Private m_UpdateRect As RECT
 ' a single paint struct up front.
 Private m_PaintStruct As PAINTSTRUCT
 
+'BeginPaint returns a DC for the given window; we cache this, in case the client needs to make use of it
+Private m_WindowDC As Long
+
 'Subclasser for intercepting window messages
 Private cSubclass As cSelfSubHookCallback
 
@@ -101,11 +104,16 @@ Public Sub requestRepaint()
     
 End Sub
 
+'If the client needs the hDC specified by BeginPaint, they can request it here
+Public Function getPaintStructDC() As Long
+    getPaintStructDC = m_WindowDC
+End Function
+
 'Thin wrapper for the PaintWindow() event.  This is used to keep the actual subclassing function as small as possible.
 Public Sub prepPaintEvent()
 
     'Start painting
-    BeginPaint m_hWnd, m_PaintStruct
+    m_WindowDC = BeginPaint(m_hWnd, m_PaintStruct)
     
     'Notify the child that it's time for painting
     With m_UpdateRect
@@ -115,7 +123,7 @@ Public Sub prepPaintEvent()
     'End painting (note: BeginPaint automatically validated the window's contents, so we don't need to do any
     ' additional validation here)
     EndPaint m_hWnd, m_PaintStruct
-    
+        
 End Sub
 
 'All events subclassed by this window are processed here.
@@ -148,7 +156,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     If uMsg = WM_PAINT Then
         
         'Ignore paint requests for empty regions
-        If GetUpdateRect(m_hWnd, m_UpdateRect, 0) <> 0 Then prepPaintEvent
+        If GetUpdateRect(m_hWnd, m_UpdateRect, 0) <> 0 Then
+            prepPaintEvent
+        End If
         
         'Mark the message as handled and exit
         bHandled = True

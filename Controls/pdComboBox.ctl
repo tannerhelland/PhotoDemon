@@ -7,6 +7,7 @@ Begin VB.UserControl pdComboBox
    ClientTop       =   0
    ClientWidth     =   3015
    ClipControls    =   0   'False
+   FillColor       =   &H00FF00FF&
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +17,7 @@ Begin VB.UserControl pdComboBox
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   ForeColor       =   &H00C0C000&
    ScaleHeight     =   65
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   201
@@ -155,11 +157,12 @@ End Enum
 'System window handling APIs
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (ByVal dwExStyle As Long, ByVal lpClassName As Long, ByVal lpWindowName As Long, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
-Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As RECTL) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As RECTL) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECTL, ByVal bErase As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal hndWindow As Long) As Long
+Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
+Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
 
 'Getting/setting window data
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpStringPointer As Long, ByVal nMaxCount As Long) As Long
@@ -183,9 +186,6 @@ Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As I
 Private Const WM_KEYDOWN As Long = &H100
 Private Const WM_SYSKEYDOWN As Long = &H104
 Private Const WM_KEYUP As Long = &H101
-Private Const WM_CHAR As Long = &H102
-Private Const WM_UNICHAR As Long = &H109
-Private Const UNICODE_NOCHAR As Long = &HFFFF&
 Private Const WM_SETFOCUS As Long = &H7
 Private Const WM_KILLFOCUS As Long = &H8
 Private Const WM_SETTEXT As Long = &HC
@@ -197,6 +197,10 @@ Private Const WM_CTLCOLOREDIT As Long = &H133
 Private Const WM_SIZE As Long = &H5
 Private Const WM_MEASUREITEM As Long = &H2C
 Private Const WM_DRAWITEM As Long = &H2B
+Private Const WM_PAINT As Long = &HF
+Private Const WM_PRINTCLIENT As Long = &H318
+Private Const WM_LBUTTONDOWN As Long = &H201
+Private Const WM_LBUTTONUP As Long = &H202
 
 Private Const VK_SHIFT As Long = &H10
 Private Const VK_CONTROL As Long = &H11
@@ -277,9 +281,9 @@ Private Const CBS_OWNERDRAWVARIABLE As Long = &H20&
 Private Type MEASUREITEMSTRUCT
     CtlType As Long
     CtlID As Long
-    ItemID As Long
-    ItemWidth As Long
-    ItemHeight As Long
+    itemID As Long
+    itemWidth As Long
+    itemHeight As Long
     ItemData As Long
 End Type
 
@@ -300,8 +304,8 @@ Private Const ODS_HOTLIGHT As Long = &H40&
 Private Type DRAWITEMSTRUCT
     CtlType As Long
     CtlID As Long
-    ItemID As Long
-    ItemAction As Long
+    itemID As Long
+    itemAction As Long
     ItemState As Long
     hWndItem As Long
     hDC As Long
@@ -368,11 +372,11 @@ Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -
         
             'Rather than forcing combo boxes to a predetermined size, we dynamically adjust their size as items are added.
             ' To do this, we must start by getting the window rect of the current combo box.
-            Dim comboRect As winRect
+            Dim comboRect As RECTL
             GetClientRect Me.hWnd, comboRect
             
             'Next, resize the combo box to match the number of items currently in the box.
-            MoveWindow m_ComboBoxHwnd, comboRect.x1, comboRect.y1, comboRect.x2 - comboRect.x1, (comboRect.y2 - comboRect.y1) + ((SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&) + 1) * SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, 0, ByVal 0&)), 1
+            MoveWindow m_ComboBoxHwnd, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, (comboRect.Bottom - comboRect.Top) + ((SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&) + 1) * SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, 0, ByVal 0&)), 1
             
         End If
             
@@ -427,6 +431,9 @@ End Property
 Public Property Let ListIndex(ByVal newIndex As Long)
 
     If m_ComboBoxHwnd <> 0 Then
+        
+        'Make a backup of the new listindex
+        m_CurrentListIndex = newIndex
         
         'See if new ListIndex is different from the current ListIndex.  (We can skip the assignment step if they match.)
         If newIndex <> SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&) Then
@@ -498,65 +505,7 @@ End Property
 
 'Flicker-free paint requests for the main control box (e.g. NOT the drop-down list portion)
 Private Sub cPainterBox_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-
-    'Before painting, retrieve detailed information on the combo box
-    Dim cbiCombo As COMBOBOXINFO
-    cbiCombo.cbSize = LenB(cbiCombo)
-    
-    'Make sure the combo box exists
-    If m_ComboBoxHwnd <> 0 Then
-    
-        If GetComboBoxInfo(m_ComboBoxHwnd, cbiCombo) <> 0 Then
-        
-            'cbiCombo now contains a bunch of useful information, including hWnds for each portion of the combo box control, and a rect for both
-            ' the button area, and the edit area.  We will render each of these in turn.
-            
-            'Start by retrieving a DC for the edit area.
-            Dim targetDC As Long
-            targetDC = GetDC(m_ComboBoxHwnd)
-            
-            If targetDC <> 0 Then
-            
-                'Next, determine paint colors, contingent on enablement and other settings.
-                Dim cboBorderColor As Long, cboFillColor As Long
-                
-                If Me.Enabled Then
-                
-                    If m_HasFocus Then
-                        cboBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-                        cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-                    Else
-                        cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-                        cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                    End If
-                
-                Else
-                
-                    cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
-                    cboFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-                
-                End If
-                
-                'Paint the control background
-                Dim tmpBrush As Long
-                tmpBrush = CreateSolidBrush(cboFillColor)
-                FillRect targetDC, cbiCombo.rcButton, tmpBrush
-                DeleteObject tmpBrush
-                
-                'Paint the border
-                tmpBrush = CreateSolidBrush(cboBorderColor)
-                FrameRect targetDC, cbiCombo.rcButton, tmpBrush
-                DeleteObject tmpBrush
-                    
-                'Release the DC
-                ReleaseDC m_ComboBoxHwnd, targetDC
-                    
-            End If
-            
-        End If
-    
-    End If
-    
+    drawComboBox True
 End Sub
 
 Private Sub tmrHookRelease_Timer()
@@ -1122,10 +1071,112 @@ Private Function isVirtualKeyDown(ByVal vKey As Long) As Boolean
     isVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
 End Function
 
-'Given an hWnd relative to the combo box, perform painting!
-Private Function drawComboBox(ByVal targetHwnd As Long) As Boolean
+'Render the combo box area (not the list!)
+Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
 
-End Function
+    'Before painting, retrieve detailed information on the combo box
+    Dim cbiCombo As COMBOBOXINFO
+    cbiCombo.cbSize = LenB(cbiCombo)
+    
+    'Make sure the combo box exists
+    If m_ComboBoxHwnd <> 0 Then
+    
+        If GetComboBoxInfo(m_ComboBoxHwnd, cbiCombo) <> 0 Then
+        
+            'cbiCombo now contains a bunch of useful information, including hWnds for each portion of the combo box control, and a rect for both
+            ' the button area, and the edit area.  We will render each of these in turn.
+            
+            'Start by retrieving a DC for the edit area.
+            Dim targetDC As Long
+            
+            If srcIsWMPAINT Then
+                targetDC = cPainterBox.getPaintStructDC()
+            Else
+                targetDC = GetDC(m_ComboBoxHwnd)
+            End If
+            
+            If targetDC <> 0 Then
+            
+                'Next, determine paint colors, contingent on enablement and other settings.
+                Dim cboBorderColor As Long, cboFillColor As Long, cboTextColor As Long
+                
+                If Me.Enabled Then
+                
+                    If m_HasFocus Then
+                        cboBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                        cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                    Else
+                        cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+                        cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                    End If
+                    
+                    cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
+                
+                Else
+                
+                    cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+                    cboFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+                    cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+                
+                End If
+                
+                'Retrieve the full client area
+                Dim fullWinRect As RECTL
+                GetClientRect m_ComboBoxHwnd, fullWinRect
+                
+                'Paint the full control background
+                Dim tmpBrush As Long
+                tmpBrush = CreateSolidBrush(cboFillColor)
+                FillRect targetDC, fullWinRect, tmpBrush
+                DeleteObject tmpBrush
+                
+                'Paint the border
+                tmpBrush = CreateSolidBrush(cboBorderColor)
+                FrameRect targetDC, fullWinRect, tmpBrush
+                DeleteObject tmpBrush
+                
+                'Painting the combo box will also paint over the currently selected item, unfortunately.  To work around this, we must
+                ' paint that item manually, after the background has already been rendered.
+                
+                'Retrieve the string for the active; we start by determining the size of the entry's text
+                Dim strLength As Long
+                strLength = SendMessage(m_ComboBoxHwnd, CB_GETLBTEXTLEN, m_CurrentListIndex, ByVal 0&)
+                
+                'Prepare a buffer for the entry's text
+                Dim tmpString As String
+                tmpString = Space$(strLength + 1)
+                
+                'Retrieve the actual text into our string buffer
+                SendMessage m_ComboBoxHwnd, CB_GETLBTEXT, m_CurrentListIndex, ByVal StrPtr(tmpString)
+                
+                'Prepare a font renderer, then render the text
+                If Not curFont Is Nothing Then
+                    
+                    curFont.releaseFromDC
+                    curFont.setFontColor cboTextColor
+                    curFont.attachToDC targetDC
+                    
+                    With cbiCombo.rcItem
+                        curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - 4, (.Bottom - .Top) - 2, tmpString, False
+                    End With
+                    
+                    curFont.releaseFromDC
+                    
+                End If
+                
+                
+                'Release the DC
+                If Not srcIsWMPAINT Then
+                    ReleaseDC m_ComboBoxHwnd, targetDC
+                End If
+                    
+            End If
+            
+        End If
+    
+    End If
+
+End Sub
 
 'Given a DRAWITEMSTRUCT object, draw the corresponding item.  This function returns TRUE if drawing was successful.
 Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
@@ -1138,7 +1189,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
         
         'If the ItemID is -1, the combo box is empty; this case is important to check, because an empty combo box won't have any text data,
         ' so attempting to retrieve text entries will fail.
-        If srcDIS.ItemID <> -1 Then
+        If srcDIS.itemID <> -1 Then
             
             'Determine colors.  Obviously these vary depending on the selection state of the current entry
             Dim itemBackColor As Long, itemTextColor As Long
@@ -1146,7 +1197,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             isMouseOverItem = ((srcDIS.ItemState And ODS_SELECTED) <> 0)
             
             'If the current entry is also the ListIndex, and the control has focus, render it inversely
-            If (srcDIS.ItemID = m_CurrentListIndex) And m_HasFocus Then
+            If (srcDIS.itemID = m_CurrentListIndex) And m_HasFocus Then
                 itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
                 itemBackColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
             
@@ -1155,7 +1206,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 
                 'If the mouse is currently over this item, highlight the text.  This is in keeping with other hover behavior in PD.
                 If isMouseOverItem And m_HasFocus Then
-                    itemTextColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                    itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_HYPERLINK)
                 Else
                     itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
                 End If
@@ -1172,14 +1223,14 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             
             'Retrieve the string for this entry; we start by determining the size of the entry's text
             Dim strLength As Long
-            strLength = SendMessage(srcDIS.hWndItem, CB_GETLBTEXTLEN, srcDIS.ItemID, ByVal 0&)
+            strLength = SendMessage(srcDIS.hWndItem, CB_GETLBTEXTLEN, srcDIS.itemID, ByVal 0&)
             
             'Prepare a buffer for the entry's text
             Dim tmpString As String
             tmpString = Space$(strLength + 1)
             
             'Retrieve the actual text into our string buffer
-            SendMessage srcDIS.hWndItem, CB_GETLBTEXT, srcDIS.ItemID, ByVal StrPtr(tmpString)
+            SendMessage srcDIS.hWndItem, CB_GETLBTEXT, srcDIS.itemID, ByVal StrPtr(tmpString)
             
             'Prepare a font renderer, then render the text
             If Not curFont Is Nothing Then
@@ -1436,13 +1487,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     'If the ItemID is -1, the edit box is the source of the measure item.  Otherwise, it is the dropdown.
                     ' (We shouldn't have to worry about this case, because we have specified integral height for the control; however, we
                     '  could technically override the measurement and provide our own size for the edit area.)
-                    If MIS.ItemID = -1 Then
+                    If MIS.itemID = -1 Then
                         'Debug.Print "Edit box ItemID!"
                     Else
                     
                         'Fill the height parameter; note that m_ItemHeight is the literal height of a string using the current font.
                         ' Any padding values must be added here.  (I've gone with 1px on either side.)
-                        MIS.ItemHeight = m_ItemHeight + 2
+                        MIS.itemHeight = m_ItemHeight + 2
                         
                         'Copy the pointer to our modified MEASUREITEMSTRUCT back into lParam
                         CopyMemory ByVal lParam, MIS, LenB(MIS)
@@ -1474,7 +1525,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 End If
                 
             End If
-        
+            
         'On mouse activation, the previous VB window/control that had focus will not be redrawn to reflect its lost focus state.
         ' (Presumably, this is because VB handles focus internally, rather than using standard window messages.)  To avoid the
         ' appearance of two controls simultaneously having focus, we re-set focus to the underlying user control, which forces
@@ -1501,14 +1552,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             m_InternalResizeState = True
             
             'Get the window rect of the combo box
-            Dim comboRect As winRect
+            Dim comboRect As RECTL
             GetWindowRect m_ComboBoxHwnd, comboRect
                         
             'Resize the user control, as necessary
             With UserControl
             
-                If (comboRect.y2 - comboRect.y1) <> .ScaleHeight Or (comboRect.x2 - comboRect.x1) <> .ScaleWidth Then
-                    .Size .ScaleX((comboRect.x2 - comboRect.x1), vbPixels, vbTwips), .ScaleY((comboRect.y2 - comboRect.y1), vbPixels, vbTwips)
+                If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
+                    .Size .ScaleX((comboRect.Right - comboRect.Left), vbPixels, vbTwips), .ScaleY((comboRect.Bottom - comboRect.Top), vbPixels, vbTwips)
                 End If
             
             End With
