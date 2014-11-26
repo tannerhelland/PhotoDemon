@@ -260,6 +260,9 @@ Private m_ToolTip As clsToolTip
 Private m_ToolString As String
 
 'Combo box interaction functions
+Private Const WM_USER As Long = &H400
+Private Const CBEM_INSERTITEMA As Long = (WM_USER + 1)
+Private Const CBEM_INSERTITEMW As Long = (WM_USER + 11)
 Private Const CB_ADDSTRING As Long = &H143
 Private Const CB_INSERTSTRING As Long = &H14A
 Private Const CB_RESETCONTENT As Long = &H14B
@@ -373,7 +376,7 @@ Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -
         
         'Set the combo box to always display the full list amount in the drop-down; this is only applicable if a manifest is present,
         ' so it will have no effect in the IDE.
-        If g_IsProgramCompiled Then
+        If g_IsProgramCompiled And g_IsVistaOrLater Then
             SendMessage m_ComboBoxHwnd, CB_SETMINVISIBLE, SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&), ByVal 0&
         
         'If a manifest is not present, we can achieve the same thing by manually setting the window size to match the number of
@@ -803,7 +806,7 @@ Private Function createComboBox() As Boolean
         '...and a third subclasser for mouse events
         If (cMouseEvents Is Nothing) Then
             Set cMouseEvents = New pdInputMouse
-            cMouseEvents.addInputTracker m_ComboBoxHwnd, True, , , True
+            cMouseEvents.addInputTracker m_ComboBoxHwnd, True, , , True, True
             cMouseEvents.setSystemCursor IDC_HAND
         End If
         
@@ -1170,7 +1173,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                     
                 Else
                 
-                    cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+                    cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
                     cboFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
                     cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
                     cboButtonColor = cboTextColor
@@ -1370,7 +1373,7 @@ Private Sub syncUserControlSizeToComboSize()
     End With
     
     'Repaint the control
-    cPainterBox.requestRepaint
+    If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
 
 End Sub
 

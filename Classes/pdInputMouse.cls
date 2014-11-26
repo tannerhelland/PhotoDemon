@@ -341,7 +341,7 @@ End Sub
 'BY DEFAULT, all added hWnds will have MouseEnter/Leave/Wheel events tracked "for free".
 '
 'Note that this function will return TRUE if input tracking was initiated successfully.
-Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackStandardMouseEvents As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False) As Boolean
+Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackStandardMouseEvents As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False) As Boolean
         
     'Add the hWnd to our tracking array.  Note that the hWnd in position 0 is treated as the base.
     If targetHWnd <> 0 Then
@@ -376,7 +376,7 @@ Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTra
     'Subclassing was successful.  Add all relevant mouse messages.
     ' (Note that we subclass MouseMove events even if the user doesn't want these events returned; this is
     ' used to generate MouseEnter/Leave events.)
-    cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
+    If Not disregardWheelEvents Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
     
     'Set any optional event subclassing as well
     If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER

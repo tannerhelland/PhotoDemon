@@ -533,7 +533,7 @@ Private Sub updateControlSize()
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
                 If g_IsProgramRunning Then
-                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 0
+                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 1
                 Else
                     UserControl.Width = ScaleX(origWidth, vbPixels, vbTwips)
                     UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
