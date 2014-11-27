@@ -245,7 +245,6 @@ Private m_InHookNow As Boolean
 
 'If the user attempts to add items to the combo box before it is created (e.g. when the control is invisible), we will back up the
 ' items to this string.  When the combo box is created, this list will be automatically be added to the control.
-
 Private Type backupComboEntry
     entryIndex As Long
     entryString As String
@@ -260,9 +259,6 @@ Private m_ToolTip As clsToolTip
 Private m_ToolString As String
 
 'Combo box interaction functions
-Private Const WM_USER As Long = &H400
-Private Const CBEM_INSERTITEMA As Long = (WM_USER + 1)
-Private Const CBEM_INSERTITEMW As Long = (WM_USER + 11)
 Private Const CB_ADDSTRING As Long = &H143
 Private Const CB_INSERTSTRING As Long = &H14A
 Private Const CB_RESETCONTENT As Long = &H14B
@@ -272,6 +268,8 @@ Private Const CB_SETCURSEL As Long = &H14E
 Private Const CB_GETITEMHEIGHT As Long = &H154
 Private Const CB_GETLBTEXT As Long = &H148
 Private Const CB_GETLBTEXTLEN As Long = &H149
+Private Const CB_GETITEMDATA As Long = &H150
+Private Const CB_SETITEMDATA As Long = &H151
 
 Private Const CBN_SELCHANGE As Long = 1
 Private Const CBN_DROPDOWN As Long = 7
@@ -364,15 +362,44 @@ Private m_MouseOverComboBox As Boolean
 'Add an item to the combo box
 Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -1)
     
-    'Make sure the combo box exists
+    'Because Windows automatically converts to ANSI the Unicode contents of a Unicode combo box inside an ANSI project, we cannot simply add
+    ' Unicode strings directly to the combo box.  Instead, we manage our own Unicode-friendly copies of the combo box contents, as a backup.
+    ' This way, the combo box manages storage (with support for accessibility, just ANSI-only), and as far as rendering the actual strings goes,
+    ' we handle that part ourselves.
+    
+    'Resize the backup array as necessary
+    If m_NumBackupEntries = 0 Then ReDim m_BackupEntries(0 To 15) As backupComboEntry
+    If m_NumBackupEntries > UBound(m_BackupEntries) Then ReDim Preserve m_BackupEntries(0 To m_NumBackupEntries * 2 - 1) As backupComboEntry
+    
+    'Add this item to the backup array
+    m_BackupEntries(m_NumBackupEntries).entryIndex = itemIndex
+    m_BackupEntries(m_NumBackupEntries).entryString = srcItem
+    m_NumBackupEntries = m_NumBackupEntries + 1
+    
+    'Add this item to the API combo box.
+    copyStringToComboBox m_NumBackupEntries - 1
+    
+End Sub
+
+'Duplicate a given string inside the API combo box.  We don't actually use this copy of the string (we use our own, so we can support Unicode),
+' but this provides a fallback for accessibility technology.
+Private Sub copyStringToComboBox(ByVal strIndex As Long)
+
+    'Add this item to the combo box exists
     If (m_ComboBoxHwnd <> 0) Then
     
         'If no index is specified, let the default combo box handler decide order; otherwise, request the placement we were given.
-        If (itemIndex = -1) Then
-            SendMessage m_ComboBoxHwnd, CB_ADDSTRING, 0, ByVal StrPtr(srcItem)
+        Dim newIndex As Long
+        
+        If m_BackupEntries(strIndex).entryIndex = -1 Then
+            newIndex = SendMessage(m_ComboBoxHwnd, CB_ADDSTRING, 0, ByVal StrPtr(m_BackupEntries(strIndex).entryString))
         Else
-            SendMessage m_ComboBoxHwnd, CB_INSERTSTRING, itemIndex, ByVal StrPtr(srcItem)
+            newIndex = SendMessage(m_ComboBoxHwnd, CB_INSERTSTRING, m_BackupEntries(strIndex).entryIndex, ByVal StrPtr(m_BackupEntries(strIndex).entryString))
         End If
+        
+        'Copy the index value of our backup array (for this string) into the itemdata slot.  This allows us to retrieve the Unicode
+        ' version of the string, if any, at render time.
+        SendMessage m_ComboBoxHwnd, CB_SETITEMDATA, newIndex, ByVal strIndex
         
         'Set the combo box to always display the full list amount in the drop-down; this is only applicable if a manifest is present,
         ' so it will have no effect in the IDE.
@@ -392,22 +419,9 @@ Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -
             MoveWindow m_ComboBoxHwnd, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, (comboRect.Bottom - comboRect.Top) + ((SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&) + 1) * SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, 0, ByVal 0&)), 1
             
         End If
-            
-    'If the combo box does not exist, make a backup of the added item.  We will add these items in their original order once the combo box
-    ' has been successfully created.
-    Else
-    
-        'Resize the backup array as necessary
-        If m_NumBackupEntries = 0 Then ReDim m_BackupEntries(0 To 15) As backupComboEntry
-        If m_NumBackupEntries > UBound(m_BackupEntries) Then ReDim Preserve m_BackupEntries(0 To m_NumBackupEntries * 2 - 1) As backupComboEntry
-            
-        'Add this item to the backup array
-        m_BackupEntries(m_NumBackupEntries).entryIndex = itemIndex
-        m_BackupEntries(m_NumBackupEntries).entryString = srcItem
-        m_NumBackupEntries = m_NumBackupEntries + 1
         
     End If
-    
+
 End Sub
 
 'Clear all entries from the combo box
@@ -443,10 +457,10 @@ End Property
 
 Public Property Let ListIndex(ByVal newIndex As Long)
 
+    'Make a backup of the new listindex
+    m_CurrentListIndex = newIndex
+
     If m_ComboBoxHwnd <> 0 Then
-        
-        'Make a backup of the new listindex
-        m_CurrentListIndex = newIndex
         
         'See if new ListIndex is different from the current ListIndex.  (We can skip the assignment step if they match.)
         If newIndex <> SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&) Then
@@ -688,8 +702,6 @@ End Sub
 ' automate the process of destroying an existing window (if any) and recreating it anew.
 Private Function createComboBox() As Boolean
     
-    Debug.Print "Creating combo box " & UserControl.Name & " now..."
-    
     'If the combo box already exists, kill it
     ' TODO: do we ever actually need to do this, or can we get away with a single creation??
     destroyComboBox
@@ -818,15 +830,10 @@ Private Function createComboBox() As Boolean
     'If we backed up previous combo box entries at some point, we must restore those entries now.
     If m_NumBackupEntries > 0 Then
         
-        Debug.Print "adding backup items now..."
-        
         Dim i As Long
         For i = 0 To m_NumBackupEntries - 1
-            Me.AddItem m_BackupEntries(i).entryString, m_BackupEntries(i).entryIndex
+            copyStringToComboBox i
         Next i
-        
-        m_NumBackupEntries = 0
-        ReDim m_BackupEntries(0) As backupComboEntry
         
         'Also set a list index, if any.  (If none were specifed, the first entry in the list wil be selected.)
         Me.ListIndex = m_BackupListIndex
@@ -931,7 +938,7 @@ Public Sub updateAgainstCurrentTheme()
         refreshFont
         
         'Force an immediate repaint
-        ' TODO!!
+        cPainterBox.requestRepaint
                 
     End If
     
@@ -1198,16 +1205,12 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 'Painting the combo box will also paint over the currently selected item, unfortunately.  To work around this, we must
                 ' paint that item manually, after the background has already been rendered.
                 
-                'Retrieve the string for the active; we start by determining the size of the entry's text
-                Dim strLength As Long
-                strLength = SendMessage(m_ComboBoxHwnd, CB_GETLBTEXTLEN, m_CurrentListIndex, ByVal 0&)
-                
-                'Prepare a buffer for the entry's text
-                Dim tmpString As String
-                tmpString = Space$(strLength + 1)
-                
-                'Retrieve the actual text into our string buffer
-                SendMessage m_ComboBoxHwnd, CB_GETLBTEXT, m_CurrentListIndex, ByVal StrPtr(tmpString)
+                'Retrieve the string for the active combo box entry.
+                Dim stringIndex As Long, tmpString As String
+                stringIndex = SendMessage(m_ComboBoxHwnd, CB_GETITEMDATA, m_CurrentListIndex, ByVal 0&)
+                If stringIndex >= 0 Then
+                    tmpString = m_BackupEntries(stringIndex).entryString
+                End If
                 
                 'Prepare a font renderer, then render the text
                 If Not curFont Is Nothing Then
@@ -1227,6 +1230,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 'Draw the button
                 Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
                 
+                'Start with the downward-pointing arrow
                 buttonPt1.x = fullWinRect.Right - fixDPIFloat(16)
                 buttonPt1.y = (fullWinRect.Bottom - fullWinRect.Top) / 2 - fixDPIFloat(1)
                 
@@ -1239,6 +1243,16 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
                 GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
                 
+                'For an OSX-type look, we can mirror the arrow across the control's center line, then draw it again; I personally prefer
+                ' this behavior (as the list box may extend up or down), but I'm not sold on implementing it just yet, because it's out of place
+                ' next to regular Windows drop-downs...
+                'buttonPt1.y = fullWinRect.Bottom - buttonPt1.y
+                'buttonPt2.y = fullWinRect.Bottom - buttonPt2.y
+                'buttonPt3.y = fullWinRect.Bottom - buttonPt3.y
+                '
+                'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
+                'GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
+                                
                 'Release the DC
                 If Not srcIsWMPAINT Then
                     ReleaseDC m_ComboBoxHwnd, targetDC
@@ -1295,16 +1309,10 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             FillRect srcDIS.hDC, srcDIS.rcItem, tmpBackBrush
             DeleteObject tmpBackBrush
             
-            'Retrieve the string for this entry; we start by determining the size of the entry's text
-            Dim strLength As Long
-            strLength = SendMessage(srcDIS.hWndItem, CB_GETLBTEXTLEN, srcDIS.itemID, ByVal 0&)
-            
-            'Prepare a buffer for the entry's text
-            Dim tmpString As String
-            tmpString = Space$(strLength + 1)
-            
-            'Retrieve the actual text into our string buffer
-            SendMessage srcDIS.hWndItem, CB_GETLBTEXT, srcDIS.itemID, ByVal StrPtr(tmpString)
+            'Retrieve the string for the active combo box entry.
+            Dim stringIndex As Long, tmpString As String
+            stringIndex = SendMessage(m_ComboBoxHwnd, CB_GETITEMDATA, srcDIS.itemID, ByVal 0&)
+            tmpString = m_BackupEntries(stringIndex).entryString
             
             'Prepare a font renderer, then render the text
             If Not curFont Is Nothing Then
@@ -1560,8 +1568,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     Dim cbiCombo As COMBOBOXINFO
                     cbiCombo.cbSize = LenB(cbiCombo)
                     If GetComboBoxInfo(m_ComboBoxHwnd, cbiCombo) <> 0 Then
-                        
-                        Debug.Print "hWnd: " & cbiCombo.hWndList
                         
                         Set cMouseEventsListBox = New pdInputMouse
                         cMouseEventsListBox.addInputTracker cbiCombo.hWndList, True, , , True

@@ -314,6 +314,8 @@ Private Sub Form_Load()
     pdComboBox2(0).AddItem "2 - added at Form_Load", 1
     pdComboBox2(0).AddItem "3 - added at Form_Load", 2
     pdComboBox2(0).AddItem "4 - added at Form_Load, also ListIndex", 3
+    pdComboBox2(0).AddItem ChrW$(&H6B22) & ChrW$(&H8FCE) & ChrW$(&H6B22) & "abc", 4
+    pdTextBox2(1).Text = ChrW$(&H6B22) & ChrW$(&H8FCE) & ChrW$(&H6B22) & "abc"
     pdComboBox2(0).ListIndex = 3
 End Sub
 
