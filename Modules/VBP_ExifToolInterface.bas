@@ -652,24 +652,34 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     ' JFIF header, so we don't want those extra Exif tags included.
     cmdParams = cmdParams & "-IFD1:all=" & vbCrLf
     
-    'Now, we want to add a number of tags depending on the output format, and other considerations.
+    'Now, we want to add a number of tags whose values should always be written, as they can be crucial to understanding the
+    ' contents of the image.
     cmdParams = cmdParams & "-" & tagGroupPrefix & "Orientation=Horizontal" & vbCrLf
-    cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageWidth=" & srcPDImage.Width & vbCrLf
-    cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageHeight=" & srcPDImage.Height & vbCrLf
-    
-    If outputMetadataFormat = PDMF_XMP Then
-        cmdParams = cmdParams & "-xmp-exif:ExifImageWidth=" & srcPDImage.Width & vbCrLf
-        cmdParams = cmdParams & "-xmp-exif:ExifImageHeight=" & srcPDImage.Height & vbCrLf
-    Else
-        cmdParams = cmdParams & "-ExifIFD:ExifImageWidth=" & srcPDImage.Width & vbCrLf
-        cmdParams = cmdParams & "-ExifIFD:ExifImageHeight=" & srcPDImage.Height & vbCrLf
-    End If
-    
     cmdParams = cmdParams & "-" & tagGroupPrefix & "XResolution=" & srcPDImage.getDPI() & vbCrLf
     cmdParams = cmdParams & "-" & tagGroupPrefix & "YResolution=" & srcPDImage.getDPI() & vbCrLf
     cmdParams = cmdParams & "-" & tagGroupPrefix & "ResolutionUnit=inches" & vbCrLf
     
     cmdParams = cmdParams & "-" & tagGroupPrefix & "ColorSpace=sRGB" & vbCrLf
+    
+    'Size tags are written to different areas based on the type of metadata being written.  JPEGs require special rules; see the spec
+    ' for details: http://www.cipa.jp/std/documents/e/DC-008-2012_E.pdf
+    If srcPDImage.currentFileFormat = FIF_JPEG Then
+        cmdParams = cmdParams & "--" & tagGroupPrefix & "ImageWidth" & vbCrLf
+        cmdParams = cmdParams & "--" & tagGroupPrefix & "ImageHeight" & vbCrLf
+    Else
+        cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageWidth=" & srcPDImage.Width & vbCrLf
+        cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageHeight=" & srcPDImage.Height & vbCrLf
+    End If
+    
+    If outputMetadataFormat = PDMF_EXIF Then
+        cmdParams = cmdParams & "-ExifIFD:ExifImageWidth=" & srcPDImage.Width & vbCrLf
+        cmdParams = cmdParams & "-ExifIFD:ExifImageHeight=" & srcPDImage.Height & vbCrLf
+    ElseIf outputMetadataFormat = PDMF_XMP Then
+        cmdParams = cmdParams & "-xmp-exif:ExifImageWidth=" & srcPDImage.Width & vbCrLf
+        cmdParams = cmdParams & "-xmp-exif:ExifImageHeight=" & srcPDImage.Height & vbCrLf
+    End If
+    
+    
     
     'JPEGs have the unique issue of needing their resolution values also updated in the JFIF header, so we make
     ' an additional request here for JPEGs specifically.
