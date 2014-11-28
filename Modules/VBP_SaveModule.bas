@@ -450,13 +450,17 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         
             updateMRU = SaveJXRImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
-        'Anything else must be a bitmap
+        'BMP
         Case FIF_BMP
             
             'If the user has not provided explicit BMP parameters, load their default values from the preferences file
             If Not cParams.doesParamExist(1) Then cParams.setParamString Str(g_UserPreferences.GetPref_Boolean("File Formats", "Bitmap RLE", False))
             updateMRU = SaveBMP(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
-            
+        
+        'HDR
+        Case FIF_HDR
+            updateMRU = SaveHDRImage(srcPDImage, dstPath)
+        
         Case Else
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
             PhotoDemon_SaveImage = False
@@ -2052,6 +2056,86 @@ SaveWebPError:
 
     SaveWebPImage = False
     
+End Function
+
+'Save an HDR (High-Dynamic Range) image
+Public Function SaveHDRImage(ByRef srcPDImage As pdImage, ByVal HDRPath As String) As Boolean
+
+    On Error GoTo SaveHDRError
+
+    Dim sFileType As String
+    sFileType = "HDR"
+
+    'Make sure we found the plug-in when we loaded the program
+    If Not g_ImageFormats.FreeImageEnabled Then
+        pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        Message "Save cannot be completed without FreeImage library."
+        SaveHDRImage = False
+        Exit Function
+    End If
+    
+    Message "Preparing %1 image...", sFileType
+    
+    'Retrieve a composited copy of the image, at full size
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    srcPDImage.getCompositedImage tmpDIB, False
+    
+    'HDR only supports 24bpp
+    If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.convertTo24bpp
+        
+    'Convert our current DIB to a FreeImage-type DIB
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+        
+    'Use that handle to save the image to HDR format
+    If fi_DIB <> 0 Then
+        
+        'Convert the image data to RGBF format
+        Dim fi_FloatDIB As Long
+        fi_FloatDIB = FreeImage_ConvertToRGBF(fi_DIB)
+        
+        'Unload the FreeImage copy of our DIB
+        FreeImage_Unload fi_DIB
+        
+        'If successful, save the converted image to file
+        If fi_FloatDIB = 0 Then
+            Debug.Print "HDR save failed; could not convert to RGBF"
+            SaveHDRImage = False
+            Exit Function
+        End If
+        
+        Dim fi_Check As Long
+        fi_Check = FreeImage_Save(FIF_HDR, fi_FloatDIB, HDRPath, 0)
+        
+        If fi_Check Then
+            Message "%1 save complete.", sFileType
+        Else
+        
+            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            SaveHDRImage = False
+            Exit Function
+            
+        End If
+        
+        'Unload the FreeImage copy of our DIB
+        FreeImage_Unload fi_FloatDIB
+        
+    Else
+    
+        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+        SaveHDRImage = False
+        Exit Function
+        
+    End If
+    
+    SaveHDRImage = True
+    Exit Function
+        
+SaveHDRError:
+
+    SaveHDRImage = False
+        
 End Function
 
 'Given a source and destination DIB reference, fill the destination with a post-JPEG-compression of the original.  This

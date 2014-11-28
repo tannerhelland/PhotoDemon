@@ -15,10 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Format Manager
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 22/October/14
-'Last update: new function(s) for determining proper metadata format for a given image format.  These are used to instruct
-'              ExifTool to convert as many tags as possible to the most acceptable metadata format for a given image format,
-'              something especially relevant when converting between formats like JPEG and PNG.
+'Last updated: 28/November/14
+'Last update: HDR export added
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
@@ -345,7 +343,9 @@ Public Sub generateOutputFormats()
     addOutputFormat "BMP - Windows Bitmap", "bmp", FIF_BMP
     
     If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "GIF - Graphics Interchange Format", "gif", FIF_GIF
-        
+    
+    If FreeImageEnabled Then addOutputFormat "HDR - High Dynamic Range", "hdr", FIF_HDR
+    
     If FreeImageEnabled Then addOutputFormat "JP2 - JPEG 2000", "jp2", FIF_JP2
         
     If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "JPG - Joint Photographic Experts Group", "jpg", FIF_JPEG
@@ -511,13 +511,7 @@ Public Function doesFIFSupportMultipleColorDepths(ByVal outputFIF As Long) As Bo
 
     Select Case outputFIF
     
-        Case FIF_GIF
-            doesFIFSupportMultipleColorDepths = False
-            
-        Case FIF_JPEG
-            doesFIFSupportMultipleColorDepths = False
-            
-        Case FIF_PPM
+        Case FIF_GIF, FIF_HDR, FIF_JPEG, FIF_PPM
             doesFIFSupportMultipleColorDepths = False
             
         Case Else
@@ -570,6 +564,11 @@ Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColo
             Case FIF_GIF
             
                 If desiredColorDepth = 8 Then isColorDepthSupported = True Else isColorDepthSupported = False
+                
+            'HDR
+            Case FIF_HDR
+            
+                If desiredColorDepth = 24 Then isColorDepthSupported = True Else isColorDepthSupported = False
                 
             'JP2 (JPEG 2000)
             Case FIF_JP2
@@ -813,6 +812,10 @@ Public Function getClosestColorDepth(ByVal outputFIF As Long, ByVal desiredColor
         Case FIF_GIF
             getClosestColorDepth = 8
             
+        'HDR only supports 24bpp
+        Case FIF_HDR
+            getClosestColorDepth = 24
+            
         'JP2 (JPEG 2000) supports 24/32bpp
         Case FIF_JP2
             If desiredColorDepth <= 24 Then
@@ -900,6 +903,9 @@ Friend Function getIdealMetadataFormatFromFIF(ByVal outputFIF As Long) As PD_MET
         Case FIF_GIF
             getIdealMetadataFormatFromFIF = PDMF_XMP
         
+        Case FIF_HDR
+            getIdealMetadataFormatFromFIF = PDMF_NONE
+        
         Case FIF_JP2
             getIdealMetadataFormatFromFIF = PDMF_XMP
         
@@ -945,6 +951,9 @@ Public Function isExifAllowedForFIF(ByVal outputFIF As Long) As Boolean
             isExifAllowedForFIF = False
         
         Case FIF_GIF
+            isExifAllowedForFIF = False
+        
+        Case FIF_HDR
             isExifAllowedForFIF = False
         
         Case FIF_JP2
