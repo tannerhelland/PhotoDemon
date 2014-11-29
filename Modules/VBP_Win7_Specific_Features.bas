@@ -29,8 +29,8 @@ Private Declare Function IIDFromString Lib "ole32" (ByVal lpsz As String, lpiid 
 Private Declare Function CoCreateInstance Lib "ole32" (rclsid As Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, riid As Guid, ppv As Any) As Long
 
 Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function PutMem2 Lib "msvbvm60" (ByVal pWORDDst As Long, ByVal newValue As Long) As Long
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal pDWORDDst As Long, ByVal newValue As Long) As Long
+Private Declare Function PutMem2 Lib "msvbvm60" (ByVal pWORDDst As Long, ByVal NewValue As Long) As Long
+Private Declare Function PutMem4 Lib "msvbvm60" (ByVal pDWORDDst As Long, ByVal NewValue As Long) As Long
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWORDSrc As Long, ByVal pDWORDDst As Long) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
 Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
@@ -159,16 +159,16 @@ End Function
 Public Sub prepWin7Features()
 
     'Note that Win 7 features are allowed
-    win7FeaturesAllowed = True
+    win7FeaturesAllowed = False     'True
     
     Dim CLSID As Guid, InterfaceGuid As Guid
-    Call CLSIDFromString(StrConv(CLSID_TaskbarList, vbUnicode), CLSID)
-    Call IIDFromString(StrConv(IID_ITaskbarList3, vbUnicode), InterfaceGuid)
-    Call CoCreateInstance(CLSID, 0, 1, InterfaceGuid, objHandle)
+    'Call CLSIDFromString(StrConv(CLSID_TaskbarList, vbUnicode), CLSID)
+    'Call IIDFromString(StrConv(IID_ITaskbarList3, vbUnicode), InterfaceGuid)
+    'Call CoCreateInstance(CLSID, 0, 1, InterfaceGuid, objHandle)
     
 End Sub
 
 'Make sure to release the interface when we are done with it!
 Public Sub releaseWin7Features()
-    If win7FeaturesAllowed Then CallInterface objHandle, unk_Release, 0
+    'If win7FeaturesAllowed Then CallInterface objHandle, unk_Release, 0
 End Sub
