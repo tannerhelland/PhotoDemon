@@ -50,21 +50,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -2676,34 +2676,74 @@ Private Sub Form_Unload(Cancel As Integer)
         
     End If
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Removing printer temp files"
+    #End If
+    
     'Perform printer cleanup
     Printing.performPrinterCleanup
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Turning off hotkey manager"
+    #End If
     
     'Stop tracking hotkeys
     ctlAccelerator.Enabled = False
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Destroying custom icons for this session"
+    #End If
+    
     'Destroy all custom-created form icons
     destroyAllIcons
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Unloading custom cursors for this session"
+    #End If
+    
     'Release the hand cursor we use for all clickable objects
     unloadAllCursors
-
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Saving recent file list"
+    #End If
+    
     'Save the MRU list to the preferences file.  (I've considered doing this as files are loaded, but the only time
     ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
     ' the problematic image anyway.)
     g_RecentFiles.MRU_SaveToFile
-        
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Restoring ClearType settings (if any)"
+    #End If
+    
     'Restore the user's font smoothing setting as necessary
     handleClearType False
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Releasing custom Windows 7 features"
+    #End If
     
     'Release any Win7-specific features
     releaseWin7Features
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Releasing main form theming"
+    #End If
+    
     ReleaseFormTheming Me
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Shutting down window manager"
+    #End If
     
     'Release this form from the window manager, and write out all window data to file
     g_WindowManager.unregisterForm Me
     g_WindowManager.saveAllWindowLocations
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Forcibly unloading all remaining forms"
+    #End If
     
     'As a final failsafe, forcibly unload any remaining forms
     Dim tmpForm As Form
@@ -2716,6 +2756,10 @@ Private Sub Form_Unload(Cancel As Integer)
         End If
         
     Next tmpForm
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Final step: writing out new autosave checksum"
+    #End If
     
     'The very last thing we do before terminating is notify the Autosave handler that everything shut down correctly
     Autosave_Handler.purgeOldAutosaveData
