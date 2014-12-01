@@ -20,9 +20,11 @@ Option Explicit
 Public Declare Function GetDesktopWindow Lib "user32" () As Long
 Public Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Public Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function PrintWindow Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long, ByVal nFlags As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
@@ -119,48 +121,68 @@ End Sub
 'Use this function to return a copy of the current desktop in DIB format
 Public Sub getDesktopAsDIB(ByRef dstDIB As pdDIB)
 
-    'Get the window handle of the screen
-    Dim scrHwnd As Long
-    scrHwnd = GetDesktopWindow()
-    
-    'Use the GetDC call to generate a device context for the screen's hWnd
-    Dim scrhDC As Long
-    scrhDC = GetDC(scrHwnd)
-
-    'Get the screen dimensions in pixels and set the picture box size to that
+    'Use the g_cMonitors object to detect VIRTUAL screen size.  This will capture all monitors on a multimonitor arrangement,
+    ' not just the primary one.
     Dim screenLeft As Long, screenTop As Long
     Dim screenWidth As Long, screenHeight As Long
     
-    'UPDATE 12 November '12: use our new g_cMonitors object to detect VIRTUAL screen size.  This will capture all monitors
-    ' on a multimonitor arrangement, not just the primary one.
     screenLeft = g_cMonitors.DesktopLeft
     screenTop = g_cMonitors.DesktopTop
     screenWidth = g_cMonitors.DesktopWidth
     screenHeight = g_cMonitors.DesktopHeight
     
-    'Convert the hDC into the appropriate bitmap format
-    CreateCompatibleBitmap scrhDC, screenWidth, screenHeight
+    'Retrieve an hWnd and DC for the screen
+    Dim screenHwnd As Long, desktopDC As Long
+    screenHwnd = GetDesktopWindow()
+    desktopDC = GetDC(screenHwnd)
     
     'Copy the bitmap into the specified DIB
     dstDIB.createBlank screenWidth, screenHeight
-    BitBlt dstDIB.getDIBDC, 0, 0, screenWidth, screenHeight, scrhDC, screenLeft, screenTop, vbSrcCopy
+    BitBlt dstDIB.getDIBDC, 0, 0, screenWidth, screenHeight, desktopDC, 0, 0, vbSrcCopy
     
-    'Release the object and handle we generated for the capture, then exit
-    ReleaseDC scrHwnd, scrhDC
-    DeleteObject scrhDC
+    'Release everything we generated for the capture, then exit
+    ReleaseDC screenHwnd, desktopDC
 
 End Sub
 
+'Use this function to return a subsection of the current desktop in DIB format.
+' IMPORTANT NOTE: the source rect should be in *desktop coordinates*, which may not be zero-based on a multimonitor system.
+Public Sub getPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
+
+    'Use the g_cMonitors object to detect VIRTUAL screen size.  This will capture all monitors on a multimonitor arrangement,
+    ' not just the primary one.
+    Dim screenLeft As Long, screenTop As Long
+    Dim screenWidth As Long, screenHeight As Long
+    
+    screenLeft = g_cMonitors.DesktopLeft
+    screenTop = g_cMonitors.DesktopTop
+    screenWidth = g_cMonitors.DesktopWidth
+    screenHeight = g_cMonitors.DesktopHeight
+    
+    'Retrieve an hWnd and DC for the screen
+    Dim screenHwnd As Long, desktopDC As Long
+    screenHwnd = GetDesktopWindow()
+    desktopDC = GetDC(screenHwnd)
+    
+    'BitBlt the relevant portion of the screen into the specified DIB
+    dstDIB.createBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 24
+    BitBlt dstDIB.getDIBDC, 0, 0, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, desktopDC, srcRect.Left, srcRect.Top, vbSrcCopy
+    
+    'Release everything we generated for the capture, then exit
+    ReleaseDC screenHwnd, desktopDC
+    
+End Sub
+
 'Copy the visual contents of any hWnd into a DIB; window chrome can be optionally included, if desired
-Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
+Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHWnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
 
     'Start by retrieving the necessary dimensions from the target window
     Dim targetRect As winRect
     
     If includeChrome Then
-        GetWindowRect targetHwnd, targetRect
+        GetWindowRect targetHWnd, targetRect
     Else
-        GetClientRect targetHwnd, targetRect
+        GetClientRect targetHWnd, targetRect
     End If
     
     'Check to make sure the window hasn't been unloaded
@@ -174,9 +196,9 @@ Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As 
     
     'Ask the window in question to paint itself into our DIB
     If includeChrome Then
-        PrintWindow targetHwnd, dstDIB.getDIBDC, 0
+        PrintWindow targetHWnd, dstDIB.getDIBDC, 0
     Else
-        PrintWindow targetHwnd, dstDIB.getDIBDC, PW_CLIENTONLY
+        PrintWindow targetHWnd, dstDIB.getDIBDC, PW_CLIENTONLY
     End If
     
     getHwndContentsAsDIB = True
