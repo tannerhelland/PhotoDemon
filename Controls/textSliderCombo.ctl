@@ -801,7 +801,7 @@ Private Sub redrawSlider()
     'There are a few components to the slider:
     ' 1) The track that sits behind the slider.  It has two relevant parameters: a radius, and a color.  Its width is automatically
     '     calculated relevant to the width of the control as a whole.
-    ' 2) The slider knob that sits atop the track.  It has two relevant parameters: a radius, a fill color, and an edge color.
+    ' 2) The slider knob that sits atop the track.  It has three relevant parameters: a radius, a fill color, and an edge color.
     '     Its width is constant from a programmatic standpoint, though it does get updated at run-time to account for screen DPI.
     
     'Pull relevant colors from the global themer object

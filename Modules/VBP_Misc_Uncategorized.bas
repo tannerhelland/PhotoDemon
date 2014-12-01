@@ -216,10 +216,15 @@ End Function
 
 'Retrieve PD's current name and version, modified against "beta" labels, etc
 Public Function getPhotoDemonNameAndVersion() As String
+    getPhotoDemonNameAndVersion = App.Title & " " & getPhotoDemonVersion
+End Function
+
+'Retrieve PD's current version, modified against "beta" labels, etc
+Public Function getPhotoDemonVersion() As String
     
     'Even-numbered releases are "official" releases, so simply return the full version string
     If (CLng(App.Minor) Mod 2 = 0) Then
-        getPhotoDemonNameAndVersion = App.Title & " " & App.Major & "." & App.Minor
+        getPhotoDemonVersion = App.Major & "." & App.Minor
         
     Else
     
@@ -231,22 +236,34 @@ Public Function getPhotoDemonNameAndVersion() As String
         Select Case PD_BUILD_QUALITY
         
             Case PD_PRE_ALPHA
-                buildStateString = g_Language.TranslateMessage("pre-alpha")
+                If g_Language Is Nothing Then
+                    buildStateString = "pre-alpha"
+                Else
+                    buildStateString = g_Language.TranslateMessage("pre-alpha")
+                End If
             
             Case PD_ALPHA
-                buildStateString = g_Language.TranslateMessage("alpha")
+                If g_Language Is Nothing Then
+                    buildStateString = "alpha"
+                Else
+                    buildStateString = g_Language.TranslateMessage("alpha")
+                End If
             
             Case PD_BETA
-                buildStateString = g_Language.TranslateMessage("beta")
+                If g_Language Is Nothing Then
+                    buildStateString = "beta"
+                Else
+                    buildStateString = g_Language.TranslateMessage("beta")
+                End If
         
         End Select
         
         'Assemble a full title string, while handling the special case of .9 version numbers, which serve as production
         ' builds for the next .0 release.
         If App.Minor = 9 Then
-            getPhotoDemonNameAndVersion = App.Title & " " & CStr(App.Major + 1) & ".0 " & buildStateString & " (build " & CStr(App.Revision) & ")"
+            getPhotoDemonVersion = CStr(App.Major + 1) & ".0 " & buildStateString & " (build " & CStr(App.Revision) & ")"
         Else
-            getPhotoDemonNameAndVersion = App.Title & " " & App.Major & "." & CStr(App.Minor + 1) & " " & buildStateString & " (build " & CStr(App.Revision) & ")"
+            getPhotoDemonVersion = CStr(App.Major) & "." & CStr(App.Minor + 1) & " " & buildStateString & " (build " & CStr(App.Revision) & ")"
         End If
         
     End If

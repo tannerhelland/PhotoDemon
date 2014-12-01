@@ -19,6 +19,10 @@ Option Explicit
 'Use these to ensure that the splash shows for a certain amount of time
 Private m_LoadTime As Double, m_StartTime As Double
 
+'This constant is the number of "discrete" loading steps involved in loading the program.  It is relevant for displaying a progress bar on the
+' initial splash screen.
+Private Const NUMBER_OF_LOADING_STEPS As Long = 14
+
 'PHOTODEMON STARTS HERE (after Sub Main, that is).
 
 'Note that this function is called AFTER FormMain has been loaded.  FormMain is loaded - but not visible - so it can be operated
@@ -65,7 +69,7 @@ Public Sub LoadTheProgram()
     
         'Load FormSplash into memory, but don't make it visible.  Then ask it to prepare itself.
         FormSplash.Visible = False
-        FormSplash.prepareSplash
+        FormSplash.prepareSplashLogo NUMBER_OF_LOADING_STEPS
         
     End If
         
@@ -139,6 +143,39 @@ Public Sub LoadTheProgram()
     
     
     
+    
+    '*************************************************************************************************************************************
+    ' Initialize the translation (language) engine
+    '*************************************************************************************************************************************
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.markEvent "Initialize translation engine"
+    #End If
+    
+    'Initialize a new language engine.
+    Set g_Language = New pdTranslate
+        
+    LoadMessage "Scanning for language files..."
+    
+    'Before doing anything else, check to see what languages are available in the language folder.
+    ' (Note that this function will also populate the Languages menu, though it won't place a checkmark next to an entry yet.)
+    g_Language.CheckAvailableLanguages
+        
+    LoadMessage "Determining which language to use..."
+        
+    'Next, determine which language to use.  (This function will take into account the system language at first-run, so it can
+    ' estimate which language to present to the user.)
+    g_Language.DetermineLanguage
+    
+    LoadMessage "Applying selected language..."
+    
+    'Apply that language to the program.  This involves loading the translation file into memory, which can take a bit of time,
+    ' but it only needs to be done once.  From that point forward, any text requests will operate on the in-memory copy of the file.
+    g_Language.ApplyLanguage
+    
+    
+    
+    
     '*************************************************************************************************************************************
     ' PhotoDemon works very well with multiple monitors.  Check for such a situation now.
     '*************************************************************************************************************************************
@@ -192,38 +229,11 @@ Public Sub LoadTheProgram()
     'Make the splash screen's message display match the rest of PD
     FormSplash.lblMessage.FontName = g_InterfaceFont
     
+    'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
+    FormSplash.prepareRestOfSplash
+    
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
     FormSplash.Show vbModeless
-    
-    
-    '*************************************************************************************************************************************
-    ' Initialize the translation (language) engine
-    '*************************************************************************************************************************************
-    
-    #If DEBUGMODE = 1 Then
-        perfCheck.markEvent "Initialize translation engine"
-    #End If
-    
-    'Initialize a new language engine.
-    Set g_Language = New pdTranslate
-        
-    LoadMessage "Scanning for language files..."
-    
-    'Before doing anything else, check to see what languages are available in the language folder.
-    ' (Note that this function will also populate the Languages menu, though it won't place a checkmark next to an entry yet.)
-    g_Language.CheckAvailableLanguages
-        
-    LoadMessage "Determining which language to use..."
-        
-    'Next, determine which language to use.  (This function will take into account the system language at first-run, so it can
-    ' estimate which language to present to the user.)
-    g_Language.DetermineLanguage
-    
-    LoadMessage "Applying selected language..."
-    
-    'Apply that language to the program.  This involves loading the translation file into memory, which can take a bit of time,
-    ' but it only needs to be done once.  From that point forward, any text requests will operate on the in-memory copy of the file.
-    g_Language.ApplyLanguage
     
     
     
@@ -238,8 +248,6 @@ Public Sub LoadTheProgram()
     LoadMessage "Loading plugins..."
     
     LoadPlugins
-    
-    '(Note that LoadPlugins also checks GDI+ availability, despite GDI+ not really being a "plugin")
     
     'If ExifTool was enabled successfully, ask it to double-check that its tag database has been created
     ' successfully at some point in the past.  If it hasn't, generate a new copy now.
@@ -257,8 +265,7 @@ Public Sub LoadTheProgram()
     #If DEBUGMODE = 1 Then
         pdDebug.InitializeDebugger True
     #End If
-    
-    
+        
     
     '*************************************************************************************************************************************
     ' Based on available plugins, determine which image formats PhotoDemon can handle
@@ -2292,7 +2299,9 @@ End Function
 
 'This routine sets the message on the splash screen (used only when the program is first started)
 Public Sub LoadMessage(ByVal sMsg As String)
-
+    
+    Static loadProgress As Long
+    
     Dim warnIDE As String
     warnIDE = "(IDE NOT RECOMMENDED - PLEASE COMPILE)"
     
@@ -2313,10 +2322,12 @@ Public Sub LoadMessage(ByVal sMsg As String)
     
     If Not g_IsProgramCompiled Then sMsg = sMsg & "  " & warnIDE
     
-    If FormSplash.Visible Then
-        FormSplash.lblMessage = sMsg
-        FormSplash.lblMessage.Refresh
-    End If
+    'Previously, the current load text would be displayed to the user at this point.  As of version 6.6, this step is skipped in favor
+    ' of a more minimalist splash screen.
+    ' TODO BY 6.8's RELEASE: revisit this function entirely, and consider removing it if applicable
+    If FormSplash.Visible Then FormSplash.updateLoadProgress loadProgress
+    
+    loadProgress = loadProgress + 1
     
 End Sub
 
