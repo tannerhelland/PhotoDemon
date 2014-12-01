@@ -1236,11 +1236,11 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                                 testRange = CCur(assembledVirtualKeyString)
                                 
                                 'Perform a second check, to make sure the value fits within a VB long.
-                                If testRange <= LONG_MAX Then
-                                
+                                If (testRange <= LONG_MAX) And (testRange > 65536) Then
+                                    
                                     charAsLong = CLng(assembledVirtualKeyString)
                                     If charAsLong And &HFFFF0000 <> 0 Then
-                                    
+                                        
                                         'Convert it into two chars.  The code for this is rather involved; see http://en.wikipedia.org/wiki/UTF-16#Code_points_U.2B010000_to_U.2B10FFFF
                                         ' for details.
                                         charAsLong = charAsLong - &H10000
@@ -1262,12 +1262,12 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                                         tmpMsg.msgTime = GetTickCount()
                                         DispatchMessage tmpMsg
                                     
+                                        assembledVirtualKeyString = ""
+                                        bHandled = True
+                                    
                                     End If
                                 End If
                             End If
-                            
-                            assembledVirtualKeyString = ""
-                            bHandled = True
                             
                         'If we're already tracking sys key messages, continue assembling numeric keypresses
                         Else
