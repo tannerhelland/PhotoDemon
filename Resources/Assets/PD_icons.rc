@@ -335,6 +335,10 @@ PDLOGO       CUSTOM  MOVEABLE        LOADONCALL      6_4_splash.jpg
 PDLOGONOTEXT CUSTOM  MOVEABLE        LOADONCALL      6_4_no_overlay.jpg
 PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 
+//New program logo as of 6.6, with the goal of rendering as much of the logo at run-time as possible
+PDLOGOWHITE  CUSTOM  MOVEABLE        LOADONCALL      PD_white_logo_splash.png
+PDLOGOBLACK  CUSTOM  MOVEABLE        LOADONCALL      PD_black_logo_splash.png
+
 //Tool toolbox icons
 T_HAND       CUSTOM  MOVEABLE        LOADONCALL      toolbox_hand_24.png
 T_MOVE       CUSTOM  MOVEABLE        LOADONCALL      toolbox_move_arrow_24.png
