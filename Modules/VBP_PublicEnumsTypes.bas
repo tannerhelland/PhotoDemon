@@ -301,3 +301,16 @@ End Enum
 #If False Then
     Private Const PDMF_NONE = 0, PDMF_EXIF = 1, PDMF_IPTC = 2, PDMF_XMP = 3
 #End If
+
+'Some options in PD support automatic enablement, contingent on various (hopefully) intelligent algorithms.
+' Use this enum instead of raw Booleans if an algorithm is capable of self-setting certain settings.
+' (Say that 10x fast :p)
+Public Enum PD_BOOL
+    PD_BOOL_FALSE = 0
+    PD_BOOL_TRUE = 1
+    PD_BOOL_AUTO = 2
+End Enum
+
+#If False Then
+    Private Const PD_BOOL_FALSE = 0, PD_BOOL_TRUE = 1, PD_BOOL_AUTO = 2
+#End If
