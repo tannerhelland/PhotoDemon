@@ -348,6 +348,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     Dim fi_hasTransparency As Boolean
     Dim fi_transparentEntries As Long
     
+    
     '****************************************************************************
     ' If the image is > 32bpp, downsample it to 24 or 32bpp
     '****************************************************************************
@@ -427,7 +428,14 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
                     pdDebug.LogAction "No alpha found.  Further tone-mapping ignored at user's request."
                 #End If
                 
-                new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, False)
+                '48bpp images can be converted automatically.  Unfortunately, in an absolutely massive oversight by the FreeImage team,
+                ' 96bpp (RGBF) images cannot be auto-converted.  We must do it manually.
+                Debug.Print fi_DataType, FIT_RGBF
+                If (fi_DataType = FIT_RGBF) Then
+                    new_hDIB = convertFreeImageRGBFTo24bppDIB(fi_hDIB)
+                Else
+                    new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, False)
+                End If
                 
                 If pageToLoad <= 0 Then
                     If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
@@ -447,7 +455,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
     End If
     
-    'BecaHDR Tone Mapping may not preserve alpha channels (the FreeImage documentation is unclear on this),
+    'Because HDR Tone Mapping may not preserve alpha channels (the FreeImage documentation is unclear on this),
     ' we must do the same as above - manually make a copy of the image's alpha data, then reduce the image using tone mapping.
     ' Later in the process we will restore the alpha data to the image.
     If (fi_BPP = 64) Or (fi_BPP = 128) Then
@@ -883,6 +891,322 @@ isMultiImage_Error:
 
     isMultiImage = 0
 
+End Function
+
+'Perform linear scaling of a 96bpp RGBF image to standard 24bpp.  Note that an intermediate pdDIB object is used for convenience, but the returned
+' handle is to a FREEIMAGE OBJECT.
+'
+'Returns: a non-zero FreeImage 24bpp image handle if successful.  0 if unsuccessful.
+'
+'IMPORTANT NOTE: this function ONLY FREES THE INCOMING fi_Handle PARAMETER IF CONVERSION IS SUCCESSFUL.  If the function fails (returns 0),
+' I assume the caller still wants the original handle so it can proceed accordingly.  Similarly, the 24bpp handle this function returns (if
+' successful) must also be freed by the caller.  Ignore this, and the function will leak.
+Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal toNormalize As PD_BOOL = PD_BOOL_AUTO, Optional ByVal ignoreNegative As Boolean = False) As Long
+    
+    'Here's how this works: basically, we must manually convert the image, one scanline at a time, into 24bpp RGB format.
+    ' In the future, it might be nice to provide different conversion algorithms, but for now, linear scaling is assumed.
+    ' Some additional options can be set by the caller (like normalization)
+    
+    'Start by determining if normalization is required for this image.
+    Dim mustNormalize As Boolean
+    Dim minR As Double, maxR As Double, minG As Double, maxG As Double, minB As Double, maxB As Double
+    Dim rDist As Double, gDist As Double, bDist As Double
+    
+    'The toNormalize input has three possible values: false, true, or "decide for yourself".  In the last case, the image will be scanned,
+    ' and normalization will only be enabled if values fall outside the [0, 1] range.  (Files written by PhotoDemon will always be normalized
+    ' at write-time, so this technique works well when moving images into and out of PD.)
+    If toNormalize = PD_BOOL_AUTO Then
+        mustNormalize = isNormalizeRequired(fi_Handle, minR, maxR, minG, maxG, minB, maxB)
+    Else
+        mustNormalize = (toNormalize = PD_BOOL_TRUE)
+        If mustNormalize Then isNormalizeRequired fi_Handle, minR, maxR, minG, maxG, minB, maxB
+    End If
+    
+    'I have no idea if normalization is supposed to include negative numbers or not; each high-bit-depth format has its own quirks, and none are
+    ' clear on preferred defaults, so I'll leave this as manually settable for now.
+    If ignoreNegative Then
+        
+        rDist = maxR
+        gDist = maxG
+        bDist = maxB
+        
+        minR = 0
+        minG = 0
+        minB = 0
+    
+    'If negative values are considered valid, calculate a normalization distance between the max and min values of each channel
+    Else
+    
+        rDist = maxR - minR
+        gDist = maxG - minG
+        bDist = maxB - minB
+    
+    End If
+    
+    'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
+    Dim srcImageData() As Single
+    Dim srcSA As SAFEARRAY1D
+    
+    'Create a 24bpp DIB at the same size as the image
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createBlank FreeImage_GetWidth(fi_Handle), FreeImage_GetHeight(fi_Handle), 24
+    
+    'Point a byte array at the temporary DIB
+    Dim dstImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, tmpDIB
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+        
+    'Iterate through each scanline in the source image, copying it to destination as we go.
+    Dim iWidth As Long, iHeight As Long, iHeightInv As Long, iScanWidth As Long
+    iWidth = FreeImage_GetWidth(fi_Handle) - 1
+    iHeight = FreeImage_GetHeight(fi_Handle) - 1
+    iScanWidth = FreeImage_GetWidth(fi_Handle) * 3
+    
+    'Due to the potential math involved in conversion (if gamma and other settings are being toggled), we need a lot of intermediate variables.
+    ' Depending on the user's settings, some of these may go unused.
+    Dim rSrcF As Double, gSrcF As Double, bSrcF As Double
+    Dim rDstF As Double, gDstF As Double, bDstF As Double
+    Dim rDstL As Long, gDstL As Long, bDstL As Long
+    
+    Dim x As Long, y As Long, QuickX As Long
+    
+    For y = 0 To iHeight
+    
+        'FreeImage DIBs are stored bottom-up; we invert them during processing
+        iHeightInv = iHeight - y
+    
+        'Point a 1D VB array at this scanline
+        With srcSA
+            .cbElements = 4
+            .cDims = 1
+            .lBound = 0
+            .cElements = iScanWidth
+            .pvData = FreeImage_GetScanline(fi_Handle, y)
+        End With
+        CopyMemory ByVal VarPtrArray(srcImageData), VarPtr(srcSA), 4
+        
+        'Iterate through this line, converting values as we go
+        For x = 0 To iWidth
+            
+            'Retrieve the source values.  This includes an implicit cast to Double, which I've done because some formats support IEEE constants
+            ' like NaN or Infinity.  VB doesn't deal with these gracefully, and an implicit cast to Double seems to reduce unpredictable errors,
+            ' possibly by giving any range-check code some breathing room.
+            QuickX = x * 3
+            rSrcF = CDbl(srcImageData(QuickX))
+            gSrcF = CDbl(srcImageData(QuickX + 1))
+            bSrcF = CDbl(srcImageData(QuickX + 2))
+            
+            'If normalization is required, apply it now
+            If mustNormalize Then
+                
+                'If the caller has requested that we ignore negative values, clamp negative values to zero
+                If ignoreNegative Then
+                
+                    If rSrcF < 0 Then rSrcF = 0
+                    If gSrcF < 0 Then gSrcF = 0
+                    If bSrcF < 0 Then bSrcF = 0
+                
+                'If negative values are considered valid, redistribute them on the range [0, Dist[Min, Max]]
+                Else
+                    rSrcF = rSrcF - minR
+                    gSrcF = gSrcF - minG
+                    bSrcF = bSrcF - minB
+                End If
+                
+                'As a failsafe, make sure the image is not all black
+                If rDist > 0 Then
+                    rDstF = (rSrcF / rDist)
+                    
+                'If this channel is a single color, force it to black
+                Else
+                    rDstF = 0
+                End If
+                
+                'Repeat for g and b channels
+                If gDist > 0 Then
+                    gDstF = (gSrcF / gDist)
+                Else
+                    gDstF = 0
+                End If
+                
+                If bDist > 0 Then
+                    bDstF = (bSrcF / bDist)
+                Else
+                    bDstF = 0
+                End If
+                
+            'If an image does not need to be normalized, this step is much easier
+            Else
+                
+                rDstF = rSrcF
+                gDstF = gSrcF
+                bDstF = bSrcF
+                
+            End If
+                        
+            'In the future, gamma correction, etc could be applied here.
+            
+            'Apply failsafe range checks now
+            If rDstF < 0 Then
+                rDstF = 0
+            ElseIf rDstF > 1 Then
+                rDstF = 1
+            End If
+                
+            If gDstF < 0 Then
+                gDstF = 0
+            ElseIf gDstF > 1 Then
+                gDstF = 1
+            End If
+                
+            If bDstF < 0 Then
+                bDstF = 0
+            ElseIf bDstF > 1 Then
+                bDstF = 1
+            End If
+            
+            'Calculate corresponding integer values on the range [0, 255]
+            rDstL = rDstF * 255
+            gDstL = gDstF * 255
+            bDstL = bDstF * 255
+            
+            'Technically, the RGB values should be guaranteed on [0, 255] at this point - but better safe than sorry when working with
+            ' detailed floating-point conversions.
+            If rDstL > 255 Then
+                rDstL = 255
+            ElseIf rDstL < 0 Then
+                rDstL = 0
+            End If
+            
+            If gDstL > 255 Then
+                gDstL = 255
+            ElseIf gDstL < 0 Then
+                gDstL = 0
+            End If
+            
+            If bDstL > 255 Then
+                bDstL = 255
+            ElseIf bDstL < 0 Then
+                bDstL = 0
+            End If
+                        
+            'Copy the final, safe values into the destination
+            dstImageData(QuickX, iHeightInv) = bDstL
+            dstImageData(QuickX + 1, iHeightInv) = gDstL
+            dstImageData(QuickX + 2, iHeightInv) = rDstL
+            
+        Next x
+        
+        'Free our 1D array reference
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        
+    Next y
+    
+    'Point dstImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    
+    'Now that we are done with the original source FI DIB, free it
+    FreeImage_Unload fi_Handle
+    
+    'Create a FreeImage object from our DIB, then release our DIB
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    Set tmpDIB = Nothing
+    
+    'Success!
+    convertFreeImageRGBFTo24bppDIB = fi_DIB
+
+End Function
+
+'Returns TRUE if an RGBF format FreeImage DIB contains values outside the [0, 1] range (meaning normalization is required).
+' If normalization is required, the various min and max parameters will be filled for each channel.  It is up to the caller to determine how
+' these values are used; this function is only diagnostic.
+Private Function isNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As Double, ByRef dstMaxR As Double, ByRef dstMinG As Double, ByRef dstMaxG As Double, ByRef dstMinB As Double, ByRef dstMaxB As Double) As Boolean
+    
+    'Values within the [0, 1] range are considered normal.  Values outside this range are not normal, and normalization is thus required.
+    ' Because an image does not have to include 0 or 1 values specifically, we return TRUE exclusively; e.g. if any value falls outside
+    ' the [0, 1] range, normalization is required.
+    Dim minR As Single, maxR As Single, minG As Single, maxG As Single, minB As Single, maxB As Single
+    minR = 0: minG = 0: minB = 0
+    maxR = 1: maxG = 1: maxB = 1
+    
+    'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
+    Dim srcImageData() As Single
+    Dim srcSA As SAFEARRAY1D
+    
+    'Iterate through each scanline in the source image, checking normalize parameters as we go.
+    Dim iWidth As Long, iHeight As Long, iScanWidth As Long
+    iWidth = FreeImage_GetWidth(fi_Handle) - 1
+    iHeight = FreeImage_GetHeight(fi_Handle) - 1
+    iScanWidth = FreeImage_GetWidth(fi_Handle) * 3
+    
+    Dim srcR As Single, srcG As Single, srcB As Single
+    Dim x As Long, y As Long, QuickX As Long
+    
+    For y = 0 To iHeight
+        
+        'Point a 1D VB array at this scanline
+        With srcSA
+            .cbElements = 4
+            .cDims = 1
+            .lBound = 0
+            .cElements = iScanWidth
+            .pvData = FreeImage_GetScanline(fi_Handle, y)
+        End With
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+        'Iterate through this line, checking values as we go
+        For x = 0 To iWidth
+            
+            QuickX = x * 3
+            
+            srcR = srcImageData(QuickX)
+            srcG = srcImageData(QuickX + 1)
+            srcB = srcImageData(QuickX + 2)
+            
+            'Check max/min values independently for each channel
+            If srcR < minR Then
+                minR = srcR
+            ElseIf srcR > maxR Then
+                maxR = srcR
+            End If
+            
+            If srcG < minG Then
+                minG = srcG
+            ElseIf srcG > maxG Then
+                maxG = srcG
+            End If
+            
+            If srcB < minB Then
+                minB = srcB
+            ElseIf srcB > maxB Then
+                maxB = srcB
+            End If
+            
+        Next x
+        
+        'Free our 1D array reference
+        CopyMemory ByVal VarPtrArray(srcImageData()), 0&, 4
+        
+    Next y
+    
+    'Fill min/max RGB values regardless of normalization
+    dstMinR = minR
+    dstMaxR = maxR
+    dstMinG = minG
+    dstMaxG = maxG
+    dstMinB = minB
+    dstMaxB = maxB
+    
+    'If the max or min lie outside the image, notify the caller that normalization is required on this image
+    If (minR < 0) Or (maxR > 1) Or (minG < 0) Or (maxG > 1) Or (minB < 0) Or (maxB > 1) Then
+        isNormalizeRequired = True
+    Else
+        isNormalizeRequired = False
+    End If
+    
 End Function
 
 'Use FreeImage to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
