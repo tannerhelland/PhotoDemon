@@ -249,12 +249,16 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                         If Len(tmpDownloadFile) <> 0 Then
                         
                             sFile(0) = tmpDownloadFile
+                                    
+                            Dim tmpFilename As String
+                            tmpFilename = tmpDownloadFile
+                            StripFilename tmpFilename
                             
                             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                             If srcIsMeantAsLayer Then
                                 Layer_Handler.loadImageAsNewLayer False, sFile(0), True
                             Else
-                                LoadFileAsNewImage sFile, False, , , , , , , , True
+                                LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename, , , , , , True
                             End If
                             
                             'Delete the temporary file
