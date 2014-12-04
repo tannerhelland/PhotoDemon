@@ -349,7 +349,7 @@ Private Sub CmdOK_Click()
     
     If (Left$(fullURL, 7) <> "http://") And (Left$(fullURL, 6) <> "ftp://") Then
         pdMsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://"".", vbApplicationModal + vbOKOnly + vbExclamation, "Invalid URL"
-        txtURL.SelectAll
+        txtURL.selectAll
         Exit Sub
     End If
     
@@ -367,7 +367,7 @@ End Sub
 
 'When the form is activated, automatically select the text box for the user.  This makes a quick Ctrl+V possible.
 Private Sub Form_Activate()
-    txtURL.SelectAll
+    txtURL.selectAll
     txtURL.SetFocus
 End Sub
 
