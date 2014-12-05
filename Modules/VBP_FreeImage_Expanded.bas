@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_FreeImage_Expanded_Interface"
 'FreeImage Interface (Advanced)
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 3/September/12
-'Last updated: 08/July/14
-'Last update: remove global page count variables in favor of more OOP-appropriate functions
+'Last updated: 04/December/14
+'Last update: overhaul all code related to high bit-depth images
 '
 'This module represents a new - and significantly more comprehensive - approach to loading images via the
 ' FreeImage libary. It handles a variety of decisions on a per-format basis to ensure optimal load speed
@@ -350,32 +350,20 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     
     '****************************************************************************
-    ' If the image is > 32bpp, downsample it to 24 or 32bpp
+    ' If the image is high bit-depth (e.g. > 8 bits per channel), downsample it to a standard 24 or 32bpp image.
     '****************************************************************************
     
-    'First, check source images without an alpha channel.  Convert these using the superior tone mapping method.
-    If (fi_BPP = 48) Or (fi_BPP = 96) Then
+    If fi_DataType <> FIT_BITMAP Then
     
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "High bit-depth RGB image identified.  Checking for non-standard alpha encoding..."
+            pdDebug.LogAction "HDR image identified.  Raising tone-map dialog..."
         #End If
-        
-        'While images with these bit-depths may not have an alpha channel, they can have binary transparency - check for that now.
-        ' (Note: as of FreeImage 3.15.3 binary bit-depths are not detected correctly.  That said, they may someday be supported -
-        ' so I've implemented two checks to cover both contingencies.
-        fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
-        fi_transparentEntries = FreeImage_GetTransparencyCount(fi_hDIB)
     
-        'As of 25 Nov '12, the user can choose to disable tone-mapping (which makes HDR loading much faster, but reduces image quality).
-        ' Check that preference before tone-mapping the image.
-        ' Also, as of 11 Sep '14, images with attached ICC profiles will preferentially use that over forcible tone-mapping.
-        If g_UserPreferences.GetPref_Boolean("Loading", "HDR Tone Mapping", True) And (Not FreeImage_HasICCProfile(fi_hDIB)) Then
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Tone mapping HDR image to preserve tonal range..."
-            #End If
-            
-            new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
+        'Use the central tone-map handler to apply further tone-mapping
+        new_hDIB = raiseToneMapDialog(fi_hDIB)
+        
+        'A non-zero return signifies a successful tone-map operation.  Unload our old handle, and proceed with the new handle
+        If new_hDIB <> 0 Then
             
             'Add a note to the target image that tone-mapping was forcibly applied to the incoming data
             If Not (targetImage Is Nothing) Then
@@ -393,121 +381,27 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
                 End If
             End If
             
+            'Replace the primary FI_DIB handle with the new one, then carry on with loading
             fi_hDIB = new_hDIB
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Tone mapping complete."
             #End If
         
-        Else
-                
-            If fi_hasTransparency Or (fi_transparentEntries <> 0) Then
-            
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Alpha found, but further tone-mapping ignored at user's request."
-                #End If
-                
-                new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
-                
-                'Immediately unload the original image copy (which is probably enormous, on account of its bit-depth)
-                If pageToLoad <= 0 Then
-                    If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
-                Else
-                    If (fi_hDIB <> new_hDIB) Then
-                        needToCloseMulti = False
-                        FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                        FreeImage_CloseMultiBitmap fi_multi_hDIB
-                    End If
-                End If
-                
-                fi_hDIB = new_hDIB
-            
-            Else
-            
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "No alpha found.  Further tone-mapping ignored at user's request."
-                #End If
-                
-                '48bpp images can be converted automatically.  Unfortunately, in an absolutely massive oversight by the FreeImage team,
-                ' 96bpp (RGBF) images cannot be auto-converted.  We must do it manually.
-                Debug.Print fi_DataType, FIT_RGBF
-                If (fi_DataType = FIT_RGBF) Then
-                    new_hDIB = convertFreeImageRGBFTo24bppDIB(fi_hDIB)
-                Else
-                    new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, False)
-                End If
-                
-                If pageToLoad <= 0 Then
-                    If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
-                Else
-                    If (fi_hDIB <> new_hDIB) Then
-                        needToCloseMulti = False
-                        FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                        FreeImage_CloseMultiBitmap fi_multi_hDIB
-                    End If
-                End If
-            
-                fi_hDIB = new_hDIB
-            
-            End If
-        
-        End If
-        
-    End If
-    
-    'Because HDR Tone Mapping may not preserve alpha channels (the FreeImage documentation is unclear on this),
-    ' we must do the same as above - manually make a copy of the image's alpha data, then reduce the image using tone mapping.
-    ' Later in the process we will restore the alpha data to the image.
-    If (fi_BPP = 64) Or (fi_BPP = 128) Then
-    
-        'Again, check for the user's preference on tone-mapping
-        If g_UserPreferences.GetPref_Boolean("Loading", "HDR Tone Mapping", True) Then
-        
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "High bit-depth RGBA image identified.  Tone mapping HDR image to preserve tonal range..."
-            #End If
-        
-            'Now, convert the RGB data using the superior tone-mapping method.
-            new_hDIB = FreeImage_ToneMapping(fi_hDIB, FITMO_REINHARD05)
-            
-            If pageToLoad <= 0 Then
-                If (new_hDIB <> fi_hDIB) Then FreeImage_UnloadEx fi_hDIB
-            Else
-                If (new_hDIB <> fi_hDIB) Then
-                    needToCloseMulti = False
-                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                    FreeImage_CloseMultiBitmap fi_multi_hDIB
-                End If
-            End If
-            
-            fi_hDIB = new_hDIB
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Tone mapping complete."
-            #End If
-            
+        'The tone-mapper will return 0 if it failed.  If this happens, we cannot proceed with loading.
         Else
         
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "High bit-depth RGBA image identified.  Tone-mapping ignored at user's request."
+                pdDebug.LogAction "Tone-mapping canceled due to user request or error.  Abandoning image import."
             #End If
             
-            new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
+            If fi_hDIB <> 0 Then FreeImage_Unload fi_hDIB
             
-            If pageToLoad <= 0 Then
-                If (fi_hDIB <> new_hDIB) Then FreeImage_UnloadEx fi_hDIB
-            Else
-                If (fi_hDIB <> new_hDIB) Then
-                    needToCloseMulti = False
-                    FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-                    FreeImage_CloseMultiBitmap fi_multi_hDIB
-                End If
-            End If
-            
-            fi_hDIB = new_hDIB
+            LoadFreeImageV4 = False
+            Exit Function
         
         End If
-        
+    
     End If
     
     
@@ -893,15 +787,205 @@ isMultiImage_Error:
 
 End Function
 
+'Given a FreeImage handle, return a 24 or 32bpp pdDIB object, as relevant.  Note that this function does not modify premultiplication
+' status of 32bpp images.  The caller is responsible for applying that (as necessary).
+'
+'NOTE!  This function requires the FreeImage DIB to already be in 24 or 32bpp format.  It will fail if another bit-depth is used.
+'
+'ALSO NOTE!  This function does not free the incoming FreeImage handle.
+Public Function getPDDibFromFreeImageHandle(ByVal srcFI_Handle As Long, ByRef dstDIB As pdDIB) As Boolean
+
+    'Double-check the FreeImage handle's bit depth
+    Dim fiBPP As Long
+    fiBPP = FreeImage_GetBPP(srcFI_Handle)
+    
+    If (fiBPP <> 24) And (fiBPP <> 32) Then
+        getPDDibFromFreeImageHandle = False
+    Else
+        
+        Dim fi_Width As Long, fi_Height As Long
+        fi_Width = FreeImage_GetWidth(srcFI_Handle)
+        fi_Height = FreeImage_GetHeight(srcFI_Handle)
+        dstDIB.createBlank fi_Width, fi_Height, fiBPP, 0
+        SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(srcFI_Handle), ByVal FreeImage_GetInfo(srcFI_Handle), 0&
+        
+        getPDDibFromFreeImageHandle = True
+        
+    End If
+
+End Function
+
+'Prior to applying tone-mapping settings, query the user for their preferred behavior.  If the user doesn't want this dialog raised, this
+' function will silently retrieve the proper settings from the preference file, and proceed with tone-mapping automatically.
+'
+'Returns: a non-zero FreeImage 24 or 32bpp image handle if successful.  0 if unsuccessful.
+'
+'IMPORTANT NOTE!  If this function fails, further loading of the image must be halted.  PD cannot yet operate on anything larger than 32bpp,
+' so if tone-mapping fails, we must abandon loading completely.  (A failure state can also be triggered by the user canceling the
+' tone-mapping dialog.)
+Private Function raiseToneMapDialog(ByVal fi_Handle As Long) As Long
+
+    'Ask the user how they want to proceed.  Note that the dialog wrapper automatically handles the case of "do not prompt;
+    ' use previous settings."  If that happens, it will retrieve the proper conversion settings for us, and return a dummy
+    ' value of OK (as if the dialog were actually raised).
+    Dim howToProceed As VbMsgBoxResult, toneMapSettings As String
+    howToProceed = Dialog_Handler.promptToneMapSettings(fi_Handle, toneMapSettings)
+    
+    'Check for a cancellation state; if encountered, abandon ship now.
+    If howToProceed <> vbOK Then
+        raiseToneMapDialog = 0
+        Exit Function
+    
+    'The ToneMapSettings string will now contain all the information we need to proceed with the tone-map.  Forward it to the
+    ' central tone-mapping handler
+    Else
+        raiseToneMapDialog = applyToneMapping(fi_Handle, toneMapSettings)
+    End If
+
+End Function
+
+'Apply tone-mapping to a FreeImage DIB.  All valid FreeImage data types are supported, but for performance reasons, an intermediate cast to
+' RGBF or RGBAF may be applied (because VB doesn't provide unsigned Int datatypes).
+'
+'Returns: a non-zero FreeImage 24 or 32bpp image handle if successful.  0 if unsuccessful.
+'
+'IMPORTANT NOTE!  This function always releases the incoming FreeImage handle, regardless of success or failure state.  This is
+' to ensure proper load behavior (e.g. loading can't continue after a failed conversion, because we've forcibly killed the image handle),
+' and to reduce resource usage (as the source handle is likely enormous, and we don't want it sitting around any longer than is
+' absolutely necessary).
+Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings As String) As Long
+    
+    'Retrieve the source image's bit-depth and data type.  These are crucial to successful tone-mapping operations.
+    Dim fi_BPP As Long
+    fi_BPP = FreeImage_GetBPP(fi_Handle)
+    
+    Dim fi_DataType As FREE_IMAGE_TYPE
+    fi_DataType = FreeImage_GetImageType(fi_Handle)
+    
+    'Also, check for transparency in the source image.
+    Dim hasTransparency As Boolean, transparentEntries As Long
+    hasTransparency = FreeImage_IsTransparent(fi_Handle)
+    transparentEntries = FreeImage_GetTransparencyCount(fi_Handle)
+    If transparentEntries > 0 Then hasTransparency = True
+    
+    Dim newHandle As Long, rgbfHandle As Long
+    
+    'toneMapSettings contains all conversion instructions.  Parse it to determine which tone-map function to use.
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString toneMapSettings
+    
+    'The first parameter contains the requested tone-mapping operation.
+    Select Case cParams.GetLong(1)
+    
+        'Linear map
+        Case PDTM_LINEAR
+        
+            'FreeImage can perform some linear conversions for us, depending on the source image's bit-depth
+            If fi_DataType = FIT_RGB16 Then
+                applyToneMapping = FreeImage_ConvertTo24Bits(fi_Handle)
+                
+            ElseIf fi_DataType = FIT_RGBA16 Then
+                applyToneMapping = FreeImage_ConvertTo32Bits(fi_Handle)
+                
+            'Other data types must be converted manually.
+            Else
+                
+                newHandle = fi_Handle
+                
+                'For performance reasons, I've only written a single RGBF/RGBAF-based linear transform.  If the image is not in one
+                ' of these formats, convert it now.
+                If (fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF) Then
+                    
+                    'In the future, a transparency-friendly conversion may become available.  For now, however, transparency
+                    ' is sacrificed as part of the conversion function (as FreeImage does not provide an RGBAF cast).
+                    rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
+                    
+                    If rgbfHandle = 0 Then
+                        applyToneMapping = 0
+                        Exit Function
+                    End If
+                    
+                    newHandle = rgbfHandle
+                    
+                End If
+                
+                'At this point, fi_Handle now represents a 24bpp RGBF type FreeImage DIB.  Apply manual tone-mapping now.
+                newHandle = convertFreeImageRGBFTo24bppDIB(newHandle, PD_BOOL_FALSE, False)
+                
+                'Unload the intermediate RGBF handle as necessary
+                If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
+                
+                applyToneMapping = newHandle
+            
+            End If
+            
+        
+        'Adaptive logarithmic map
+        Case PDTM_ADAPTIVE_LOGARITHMIC
+            applyToneMapping = FreeImage_ToneMapping(fi_Handle, FITMO_DRAGO03, 0, 0)
+            
+        'Photoreceptor map
+        Case PDTM_PHOTORECEPTOR
+            applyToneMapping = FreeImage_ToneMapping(fi_Handle, FITMO_REINHARD05, 0, 0)
+            
+        'Custom map, using settings supplied by the user
+        Case PDTM_MANUAL
+            
+            newHandle = fi_Handle
+                
+            'For performance reasons, I've only written a single RGBF/RGBAF-based linear transform.  If the image is not in one
+            ' of these formats, convert it now.
+            If (fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF) Then
+                
+                'In the future, a transparency-friendly conversion may become available.  For now, however, transparency
+                ' is sacrificed as part of the conversion function (as FreeImage does not provide an RGBAF cast).
+                rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
+                
+                If rgbfHandle = 0 Then
+                    applyToneMapping = 0
+                    Exit Function
+                End If
+                
+                newHandle = rgbfHandle
+                
+            End If
+            
+            'At this point, fi_Handle now represents a 24bpp RGBF type FreeImage DIB.  Apply manual tone-mapping now.
+            newHandle = convertFreeImageRGBFTo24bppDIB(newHandle, PD_BOOL_FALSE, False)
+            
+            'Unload the intermediate RGBF handle as necessary
+            If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
+            
+            applyToneMapping = newHandle
+    
+    End Select
+
+End Function
+
 'Perform linear scaling of a 96bpp RGBF image to standard 24bpp.  Note that an intermediate pdDIB object is used for convenience, but the returned
-' handle is to a FREEIMAGE OBJECT.
+' handle is to a FREEIMAGE DIB.
 '
 'Returns: a non-zero FreeImage 24bpp image handle if successful.  0 if unsuccessful.
 '
-'IMPORTANT NOTE: this function ONLY FREES THE INCOMING fi_Handle PARAMETER IF CONVERSION IS SUCCESSFUL.  If the function fails (returns 0),
-' I assume the caller still wants the original handle so it can proceed accordingly.  Similarly, the 24bpp handle this function returns (if
-' successful) must also be freed by the caller.  Ignore this, and the function will leak.
+'IMPORTANT NOTE: REGARDLESS OF SUCCESS, THIS FUNCTION DOES NOT FREE THE INCOMING fi_Handle PARAMETER.  If the function fails (returns 0),
+' I assume the caller still wants the original handle so it can proceed accordingly.  Similarly, because this function is used to render
+' tone-mapping previews, it doesn't make sense to free the handle upon success, either.
+'
+'OTHER IMPORTANT NOTE: it's probably obvious, but the 24bpp handle this function returns (if successful) must also be freed by the caller.
+' Forget this, and the function will leak.
 Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal toNormalize As PD_BOOL = PD_BOOL_AUTO, Optional ByVal ignoreNegative As Boolean = False) As Long
+    
+    'Before doing anything, check the incoming fi_Handle.  For performance reasons, this function only handles RGBF and RGBAF formats.
+    ' Other formats are invalid.
+    Dim fi_DataType As FREE_IMAGE_TYPE
+    fi_DataType = FreeImage_GetImageType(fi_Handle)
+    
+    If (fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF) Then
+        Debug.Print "Tone-mapping request invalid"
+        convertFreeImageRGBFTo24bppDIB = 0
+        Exit Function
+    End If
     
     'Here's how this works: basically, we must manually convert the image, one scanline at a time, into 24bpp RGB format.
     ' In the future, it might be nice to provide different conversion algorithms, but for now, linear scaling is assumed.
@@ -947,10 +1031,15 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     Dim srcImageData() As Single
     Dim srcSA As SAFEARRAY1D
     
-    'Create a 24bpp DIB at the same size as the image
+    'Create a 24bpp or 32bpp DIB at the same size as the image
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createBlank FreeImage_GetWidth(fi_Handle), FreeImage_GetHeight(fi_Handle), 24
+    
+    If fi_DataType = FIT_RGBF Then
+        tmpDIB.createBlank FreeImage_GetWidth(fi_Handle), FreeImage_GetHeight(fi_Handle), 24
+    Else
+        tmpDIB.createBlank FreeImage_GetWidth(fi_Handle), FreeImage_GetHeight(fi_Handle), 32
+    End If
     
     'Point a byte array at the temporary DIB
     Dim dstImageData() As Byte
@@ -962,7 +1051,10 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     Dim iWidth As Long, iHeight As Long, iHeightInv As Long, iScanWidth As Long
     iWidth = FreeImage_GetWidth(fi_Handle) - 1
     iHeight = FreeImage_GetHeight(fi_Handle) - 1
-    iScanWidth = FreeImage_GetWidth(fi_Handle) * 3
+    iScanWidth = FreeImage_GetPitch(fi_Handle)
+    
+    Dim qvDepth As Long
+    If fi_DataType = FIT_RGBF Then qvDepth = 3 Else qvDepth = 4
     
     'Due to the potential math involved in conversion (if gamma and other settings are being toggled), we need a lot of intermediate variables.
     ' Depending on the user's settings, some of these may go unused.
@@ -993,7 +1085,7 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
             'Retrieve the source values.  This includes an implicit cast to Double, which I've done because some formats support IEEE constants
             ' like NaN or Infinity.  VB doesn't deal with these gracefully, and an implicit cast to Double seems to reduce unpredictable errors,
             ' possibly by giving any range-check code some breathing room.
-            QuickX = x * 3
+            QuickX = x * qvDepth
             rSrcF = CDbl(srcImageData(QuickX))
             gSrcF = CDbl(srcImageData(QuickX + 1))
             bSrcF = CDbl(srcImageData(QuickX + 2))
@@ -1107,12 +1199,10 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     'Point dstImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
-    'Now that we are done with the original source FI DIB, free it
-    FreeImage_Unload fi_Handle
-    
-    'Create a FreeImage object from our DIB, then release our DIB
+    'Create a FreeImage object from our pdDIB object, then release our pdDIB copy
     Dim fi_DIB As Long
     fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    
     Set tmpDIB = Nothing
     
     'Success!
@@ -1124,6 +1214,10 @@ End Function
 ' If normalization is required, the various min and max parameters will be filled for each channel.  It is up to the caller to determine how
 ' these values are used; this function is only diagnostic.
 Private Function isNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As Double, ByRef dstMaxR As Double, ByRef dstMinG As Double, ByRef dstMaxG As Double, ByRef dstMinB As Double, ByRef dstMaxB As Double) As Boolean
+    
+    'Before doing anything, check the incoming fi_Handle.  If alpha is present, pixel alignment calculations must be modified.
+    Dim fi_DataType As FREE_IMAGE_TYPE
+    fi_DataType = FreeImage_GetImageType(fi_Handle)
     
     'Values within the [0, 1] range are considered normal.  Values outside this range are not normal, and normalization is thus required.
     ' Because an image does not have to include 0 or 1 values specifically, we return TRUE exclusively; e.g. if any value falls outside
@@ -1140,7 +1234,10 @@ Private Function isNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     Dim iWidth As Long, iHeight As Long, iScanWidth As Long
     iWidth = FreeImage_GetWidth(fi_Handle) - 1
     iHeight = FreeImage_GetHeight(fi_Handle) - 1
-    iScanWidth = FreeImage_GetWidth(fi_Handle) * 3
+    iScanWidth = FreeImage_GetPitch(fi_Handle)
+    
+    Dim qvDepth As Long
+    If fi_DataType = FIT_RGBF Then qvDepth = 3 Else qvDepth = 4
     
     Dim srcR As Single, srcG As Single, srcB As Single
     Dim x As Long, y As Long, QuickX As Long
@@ -1160,7 +1257,7 @@ Private Function isNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
         'Iterate through this line, checking values as we go
         For x = 0 To iWidth
             
-            QuickX = x * 3
+            QuickX = x * qvDepth
             
             srcR = srcImageData(QuickX)
             srcG = srcImageData(QuickX + 1)
