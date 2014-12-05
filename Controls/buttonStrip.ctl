@@ -424,7 +424,7 @@ End Sub
 Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB)
     
     'Load the requested resource DIB, as necessary
-    If Len(resName) > 0 Then loadResourceToDIB resName, srcDIB
+    If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
     
     With m_Buttons(itemIndex)
         

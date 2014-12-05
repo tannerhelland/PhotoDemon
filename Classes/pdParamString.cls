@@ -66,7 +66,7 @@ Public Sub setParamString(ByVal pString As String)
     
     'If only one param is present, handle it specially
     Else
-        If Len(pString) > 0 Then
+        If Len(pString) <> 0 Then
             ReDim m_Params(0) As String
             m_Params(0) = m_ParamString
             m_numOfParams = 1

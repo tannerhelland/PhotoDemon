@@ -1267,18 +1267,20 @@ End Sub
 Public Function selectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
 
     If g_OpenImageCount > 0 Then
-        If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) And (Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests) Then
-            
-            If transformableMatters Then
-                If pdImages(g_CurrentImage).mainSelection.isTransformable Then
-                    selectionsAllowed = True
+        If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
+            If (Not pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests) Then
+                If transformableMatters Then
+                    If pdImages(g_CurrentImage).mainSelection.isTransformable Then
+                        selectionsAllowed = True
+                    Else
+                        selectionsAllowed = False
+                    End If
                 Else
-                    selectionsAllowed = False
+                    selectionsAllowed = True
                 End If
             Else
-                selectionsAllowed = True
+                selectionsAllowed = False
             End If
-            
         Else
             selectionsAllowed = False
         End If

@@ -394,7 +394,7 @@ Public Function getExifToolVersion() As String
             'The output string will be a simple version number, e.g. "X.YY", and it will be terminated by a vbCrLf character.
             ' Remove vbCrLf now.
             outputString = Trim$(outputString)
-            outputString = Replace(outputString, vbCrLf, "")
+            If InStr(outputString, vbCrLf) <> 0 Then outputString = Replace(outputString, vbCrLf, "")
             getExifToolVersion = outputString
             
         Else

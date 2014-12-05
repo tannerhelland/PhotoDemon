@@ -284,7 +284,7 @@ Private Sub updateAnchorButtons()
     'If the buttons already have images, remove them first
     If Not cImgCtl Is Nothing Then
         For i = 0 To 8
-            If Len(arrowLocations(i)) > 0 Then cImgCtl.RemoveImage cmdAnchor(i).hWnd
+            If Len(arrowLocations(i)) <> 0 Then cImgCtl.RemoveImage cmdAnchor(i).hWnd
         Next i
         Set cImgCtl = Nothing
     End If
@@ -301,7 +301,7 @@ Private Sub updateAnchorButtons()
         If g_IsProgramCompiled Then
             
             For i = 0 To 8
-                If Len(arrowLocations(i)) > 0 Then
+                If Len(arrowLocations(i)) <> 0 Then
                     With cImgCtl
                         .LoadImageFromStream cmdAnchor(i).hWnd, LoadResData(arrowLocations(i), "CUSTOM"), fixDPI(16), fixDPI(16)
                         .SetMargins cmdAnchor(i).hWnd, 0

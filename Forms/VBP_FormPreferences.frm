@@ -3138,7 +3138,7 @@ End Sub
 Private Sub CmdTmpPath_Click()
     Dim tString As String
     tString = BrowseForFolder(Me.hWnd)
-    If Len(tString) > 0 Then txtTempPath.Text = FixPath(tString)
+    If Len(tString) <> 0 Then txtTempPath.Text = FixPath(tString)
 End Sub
 
 'Load all relevant values from the preferences file, and populate their corresponding controls with the user's current settings

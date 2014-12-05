@@ -779,7 +779,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     tmpString = cmdBar.retrievePresetData("MultichannelLevelData")
     
     'Valid preset data was found
-    If Len(tmpString) > 0 Then
+    If Len(tmpString) <> 0 Then
     
         'Level value parsing will be handled via PD's standard param string parser class
         Dim cParams As pdParamString

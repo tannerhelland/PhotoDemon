@@ -749,7 +749,7 @@ Private Function createEditBox() As Boolean
     refreshFont True
     
     'If the edit box had text before we killed it, restore that text now
-    If Len(curText) > 0 Then Text = curText
+    If Len(curText) <> 0 Then Text = curText
     
     'Return TRUE if successful
     createEditBox = (m_EditBoxHwnd <> 0)
@@ -797,7 +797,7 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
     'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
     
     'Font face is always set automatically, to match the current program-wide font
-    If (Len(g_InterfaceFont) > 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
+    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
         fontRefreshRequired = True
         curFont.setFontFace g_InterfaceFont
     End If
@@ -1226,7 +1226,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                             m_AltKeyMode = False
                             
                             'Make sure the typed code is not longer than 10 chars (the limit for a Long)
-                            If Len(assembledVirtualKeyString) > 0 And Len(assembledVirtualKeyString) <= 10 Then
+                            If Len(assembledVirtualKeyString) <> 0 And Len(assembledVirtualKeyString) <= 10 Then
                             
                                 'If the Alt+keycode is larger than an Int, we must submit it manually.
                                 Dim charAsLong As Long
@@ -1277,7 +1277,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                             If isVirtualKeyNumeric(wParam, numCheck) Then
                                 assembledVirtualKeyString = assembledVirtualKeyString & CStr(numCheck)
                             Else
-                                If Len(assembledVirtualKeyString) > 0 Then assembledVirtualKeyString = ""
+                                If Len(assembledVirtualKeyString) <> 0 Then assembledVirtualKeyString = ""
                             End If
                             
                             bHandled = True

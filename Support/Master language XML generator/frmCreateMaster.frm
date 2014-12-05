@@ -317,7 +317,7 @@ End Sub
 Private Sub cmdMerge_Click()
 
     'Make sure our source file strings are not empty
-    If m_MasterText = "" Or m_OldLanguageText = "" Then
+    If Len(m_MasterText) = 0 Or Len(m_OldLanguageText) = 0 Then
         MsgBox "One or more source files are missing.  Supply those before attempting a merge."
         Exit Sub
     End If
@@ -363,7 +363,7 @@ Private Sub cmdMerge_Click()
         End If
                 
         'If a translation was found, insert it into the new file
-        If Len(translatedText) > 0 Then
+        If Len(translatedText) <> 0 Then
             findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & "<translation></translation>"
             replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
             m_NewLanguageText = Replace(m_NewLanguageText, findText, replaceText)
@@ -530,7 +530,7 @@ Private Sub cmdMergeAll_Click()
         'BEGIN COPY OF CODE FROM cmdMerge
         
             'Make sure our source file strings are not empty
-            If m_MasterText = "" Or m_OldLanguageText = "" Then
+            If Len(m_MasterText) = 0 Or Len(m_OldLanguageText) = 0 Then
                 Debug.Print "One or more source files are missing.  Supply those before attempting a merge."
                 Exit Sub
             End If
@@ -576,10 +576,10 @@ Private Sub cmdMergeAll_Click()
                 End If
                 
                 'Remove any tab stops from the translated text (which may have been added by an outside editor)
-                translatedText = Replace(translatedText, vbTab, "", , , vbBinaryCompare)
+                If InStr(translatedText, vbTab) <> 0 Then translatedText = Replace(translatedText, vbTab, "", , , vbBinaryCompare)
                                 
                 'If a translation was found, insert it into the new file
-                If Len(translatedText) > 0 Then
+                If Len(translatedText) <> 0 Then
                     'findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation></translation>"
                     'replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
                     findText = "<original>" & origText & "</original>" & vbCrLf & "<translation></translation>"
@@ -738,7 +738,7 @@ End Sub
 'Given a VB file (form, module, class, user control), extract any relevant text from it
 Private Sub processFile(ByVal srcFile As String)
 
-    If srcFile = "" Then Exit Sub
+    If Len(srcFile) = 0 Then Exit Sub
 
     m_FileName = getFilename(srcFile)
     
@@ -768,7 +768,7 @@ Private Sub processFile(ByVal srcFile As String)
     ' tracking down errors or incomplete text.
     If LenB(m_FileName) > 0 Then
         outputText = outputText & vbCrLf & vbCrLf & vbTab & vbTab
-        If Len(shortcutName) > 0 Then
+        If Len(shortcutName) <> 0 Then
             outputText = outputText & "<!-- BEGIN text for " & m_FileName & " (" & shortcutName & ") -->"
         Else
             outputText = outputText & "<!-- BEGIN text for " & m_FileName & " -->"
@@ -817,21 +817,21 @@ Private Sub processFile(ByVal srcFile As String)
         'If any of the functions are successful, they will return the string that needs to be added to the XML file
         
         '1) Check for a form caption
-        If InStr(1, curLineText, "Begin VB.Form", vbTextCompare) Then
+        If InStr(1, UCase$(curLineText), "BEGIN VB.FORM", vbBinaryCompare) Then
             processedText = findFormCaption(fileLines, curLineNumber)
                 
         '2) Check for a control caption.  (This has to be handled slightly differently than form caption.)
-        ElseIf ((InStr(1, curLineText, "Begin VB.", vbTextCompare) > 0) Or (InStr(1, curLineText, "Begin PhotoDemon.", vbTextCompare) > 0)) And (InStr(1, curLineText, "PictureBox", vbTextCompare) = 0) And (InStr(1, curLineText, "ComboBox") = 0) And (InStr(1, curLineText, ".Shape") = 0) And (InStr(1, curLineText, "TextBox") = 0) And (InStr(1, curLineText, "HScrollBar") = 0) And (InStr(1, curLineText, "VScrollBar") = 0) Then
+        ElseIf ((InStr(1, UCase$(curLineText), "BEGIN VB.", vbBinaryCompare) > 0) Or (InStr(1, UCase$(curLineText), "BEGIN PHOTODEMON.", vbBinaryCompare) > 0)) And (InStr(1, UCase$(curLineText), "PICTUREBOX", vbBinaryCompare) = 0) And (InStr(1, curLineText, "ComboBox") = 0) And (InStr(1, curLineText, ".Shape") = 0) And (InStr(1, curLineText, "TextBox") = 0) And (InStr(1, curLineText, "HScrollBar") = 0) And (InStr(1, curLineText, "VScrollBar") = 0) Then
             processedText = findControlCaption(fileLines, curLineNumber)
         
         '3) Check for tooltip text (several varations of this exist due to custom controls having unique tooltip property names)
-        ElseIf InStr(1, curLineText, "ToolTipText", vbTextCompare) And (InStr(1, curLineText, ".ToolTipText", vbTextCompare) = 0) Then
+        ElseIf InStr(1, UCase$(curLineText), "TOOLTIPTEXT", vbBinaryCompare) And (InStr(1, UCase$(curLineText), ".TOOLTIPTEXT", vbBinaryCompare) = 0) Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
                         
-        ElseIf (InStr(1, curLineText, "ToolTip", vbTextCompare) > 0) And (InStr(1, curLineText, ".ToolTip", vbTextCompare) = 0) And (InStr(1, curLineText, "TooltipTitle", vbTextCompare) = 0) And (InStr(1, curLineText, "ToolTipText", vbTextCompare) = 0) And (InStr(1, curLineText, "TooltipBackColor", vbTextCompare) = 0) And (InStr(1, curLineText, "ToolTipType", vbTextCompare) = 0) And (InStr(1, curLineText, "m_ToolTip", vbTextCompare) = 0) And (InStr(1, curLineText, "clsToolTip", vbTextCompare) = 0) And (Not m_FileName = "jcButton.ctl") And (InStr(1, curLineText, "=") > 0) And (InStr(1, curLineText, "PD_MAX_TOOLTIP_WIDTH") = 0) And (InStr(1, curLineText, "delaytime", vbTextCompare) = 0) And (InStr(1, curLineText, "eControl.ToolTipText", vbTextCompare) = 0) And (InStr(1, curLineText, "tooltipBackup", vbTextCompare) = 0) And (InStr(1, curLineText, "newTooltip", vbTextCompare) = 0) And (InStr(1, curLineText, "SetThumbnailTooltip", vbTextCompare) = 0) Then
+        ElseIf (InStr(1, UCase$(curLineText), "TOOLTIP", vbBinaryCompare) > 0) And (InStr(1, UCase$(curLineText), ".TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTITLE", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTEXT", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPBACKCOLOR", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTYPE", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "M_TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "CLSTOOLTIP", vbBinaryCompare) = 0) And (Not m_FileName = "jcButton.ctl") And (InStr(1, curLineText, "=") > 0) And (InStr(1, curLineText, "PD_MAX_TOOLTIP_WIDTH") = 0) And (InStr(1, UCase$(curLineText), "DELAYTIME", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "ECONTROL.TOOLTIPTEXT", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPBACKUP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "NEWTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "SETTHUMBNAILTOOLTIP", vbBinaryCompare) = 0) Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
         
-        ElseIf InStr(1, curLineText, "TooltipTitle", vbTextCompare) And (InStr(1, curLineText, ".TooltipTitle") = 0) And (Not m_FileName = "jcButton.ctl") Then
+        ElseIf InStr(1, UCase$(curLineText), "TOOLTIPTITLE", vbBinaryCompare) And (InStr(1, curLineText, ".TooltipTitle") = 0) And (Not m_FileName = "jcButton.ctl") Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
                         
         '4) Check for text added to a combo box or list box control at run-time
@@ -869,7 +869,7 @@ Private Sub processFile(ByVal srcFile As String)
         End If
         
         'DEBUG! Check for certain text entries here
-        'If (shortcutName = "FormLens") And Len(Trim$(processedText)) > 0 Then MsgBox processedText
+        'If (shortcutName = "FormLens") And Len(Trim$(processedText)) <> 0 Then MsgBox processedText
         
         'We now have text in potentially two places: processedText, and processedTextSecondary (for message box titles)
         chkText = Trim$(processedText)
@@ -1304,7 +1304,7 @@ Private Function findControlCaption(ByRef srcLines() As String, ByRef lineNumber
     m_ObjectName = Right(objectName, Len(objectName) - sPos)
     'MsgBox "OBJECT NAME: " & objectName
 
-    Do While InStr(1, srcLines(lineNumber), "Caption", vbTextCompare) = 0
+    Do While InStr(1, UCase$(srcLines(lineNumber)), "CAPTION", vbBinaryCompare) = 0
         lineNumber = lineNumber + 1
         
         'Some controls may not have a caption.  If this occurs, exit.

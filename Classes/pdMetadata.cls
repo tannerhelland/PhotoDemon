@@ -319,7 +319,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     Do
     
         'If our definitive text is found, parse this line to retrieve this tag's Group and Name values
-        If InStr(1, xmlLines(curLine), "rdf:parseType='Resource'", vbTextCompare) > 0 Then
+        If InStr(1, UCase$(xmlLines(curLine)), "RDF:PARSETYPE='RESOURCE'", vbBinaryCompare) > 0 Then
             
             ignoreThisTag = False
         
@@ -540,10 +540,10 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             End If
             
             'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all those under a single "Exif" header.
-            If InStr(1, tmpString, "IFD1", vbTextCompare) > 0 Then
+            If InStr(1, UCase$(tmpString), "IFD1", vbBinaryCompare) > 0 Then
                 iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
                 iMetadata(maxMetadataCount).Group = "Exif (thumbnail)"
-            ElseIf InStr(1, tmpString, "IFD", vbTextCompare) > 0 Then
+            ElseIf InStr(1, UCase$(tmpString), "IFD", vbBinaryCompare) > 0 Then
                 iMetadata(maxMetadataCount).SubGroup = iMetadata(maxMetadataCount).Group
                 iMetadata(maxMetadataCount).Group = "Exif"
             End If
@@ -589,7 +589,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             'PhotoDemon allows the presence of multiple tags everywhere except in JFIF headers.  Embedded thumbnails may have
             ' their own JFIF header, which includes information like x/y resolution that is totally irrelevant.  Thus we check
             ' for duplicate JFIF tags, and remove them as necessary.
-            If (InStr(1, iMetadata(maxMetadataCount).Group, "JFIF", vbTextCompare) > 0) And (Not ignoreThisTag) Then
+            If (InStr(1, UCase$(iMetadata(maxMetadataCount).Group), "JFIF", vbBinaryCompare) > 0) And (Not ignoreThisTag) Then
             
                 'Check the metadata list up to this point.  If a matching group and technical tag name are found,
                 ' move this tag into a separate "thumbnail" category.
@@ -606,7 +606,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             End If
             
             'Binary data serves no purpose in the user interface part of our metadata handler.  Remove any binary tags.
-            'If InStr(1, tmpString, "Binary data", vbTextCompare) > 0 Then ignoreThisTag = True
+            'If InStr(1, UCase$(tmpString), "BINARY DATA", vbBinaryCompare) > 0 Then ignoreThisTag = True
             
             'Increment the max metadata count, and redim our metadata array as necessary
             If Not ignoreThisTag Then
@@ -640,7 +640,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             tmpMDItem = getMetadataEntry(tagIndex)
                     
             '8bpp images are handled correctly by FreeImage, so we can safely ignore them.
-            If InStr(1, tmpMDItem.Value, "Binary", vbTextCompare) = 0 Then
+            If InStr(1, UCase$(tmpMDItem.Value), "BINARY", vbBinaryCompare) = 0 Then
                 
                 'This is not an 8bpp image, so custom handling is required.  Parse the RGB values of the color that needs to be
                 ' made transparent.  (ExifTool reports colors as a string, with each color separated by a space.)
@@ -793,41 +793,45 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
                 ' a parameter we pass to ExifTool, but any other privacy tags must be removed manually.
                 Dim i As Long
                 Dim removeThisTag As Boolean
+                Dim sMetadataName As String
                 For i = 0 To maxMetadataCount - 1
                 
                     removeThisTag = False
                 
                     'Compare this tag against a manually curated database of potentially private tags.  If a match is found,
                     ' mark this tag for removal.
-                    If InStr(1, iMetadata(i).Name, "Firmware", vbTextCompare) > 0 Then
+
+                    sMetadataName = UCase$(iMetadata(i).Name)
+        
+                    If InStr(1, sMetadataName, "FIRMWARE", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Serial", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "SERIAL", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Name", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "NAME", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Baby", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "BABY", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Software", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "SOFTWARE", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "About", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Creator", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "CREATOR", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Country", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "COUNTRY", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "City", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "CITY", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Location", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "LOCATION", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "By-line", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "BY-LINE", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "Toolkit", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "TOOLKIT", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Name, "History", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, sMetadataName, "HISTORY", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Value, "xmp.iid", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, UCase$(iMetadata(i).Value), "XMP.IID", vbBinaryCompare) > 0 Then
                         removeThisTag = True
-                    ElseIf InStr(1, iMetadata(i).Value, "xmp.did", vbTextCompare) > 0 Then
+                    ElseIf InStr(1, UCase$(iMetadata(i).Value), "XMP.DID", vbBinaryCompare) > 0 Then
                         removeThisTag = True
                         
                     End If

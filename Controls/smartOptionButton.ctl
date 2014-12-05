@@ -517,7 +517,7 @@ Public Sub translateCaption()
     If g_Language.translationActive Then
     
         'Only proceed if our caption requires translation (e.g. it's non-null and non-numeric)
-        If (Len(Trim(m_Caption)) > 0) And (Not IsNumeric(m_Caption)) Then
+        If (Len(Trim(m_Caption)) <> 0) And (Not IsNumeric(m_Caption)) Then
     
             'Retrieve the translated text
             newCaption = g_Language.TranslateMessage(m_Caption)
@@ -642,7 +642,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Render the text
-    If Len(m_TranslatedCaption) > 0 Then
+    If Len(m_TranslatedCaption) <> 0 Then
         curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_TranslatedCaption
     Else
         curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_Caption
@@ -652,7 +652,7 @@ Private Sub redrawBackBuffer()
     With clickableRect
         .Left = 0
         .Top = 0
-        If Len(m_TranslatedCaption) > 0 Then
+        If Len(m_TranslatedCaption) <> 0 Then
             .Right = offsetX * 2 + optCircleSize + fixDPI(6) + curFont.getWidthOfString(m_TranslatedCaption) + fixDPI(6)
         Else
             .Right = offsetX * 2 + optCircleSize + fixDPI(6) + curFont.getWidthOfString(m_Caption) + fixDPI(6)

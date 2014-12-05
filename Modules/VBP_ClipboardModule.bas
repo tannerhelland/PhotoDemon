@@ -221,7 +221,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             If clpObject.GetTextData(HtmlID, htmlString) Then
                 
                 'Look for an image reference within the HTML snippet
-                If InStr(1, htmlString, "<img ", vbTextCompare) > 0 Then
+                If InStr(1, UCase$(htmlString), "<IMG ", vbBinaryCompare) > 0 Then
                 
                     'Retrieve the full image path, which will be between the first set of quotation marks following the
                     ' "<img src=" statement in the HTML snippet.
@@ -230,8 +230,8 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                     
                     'Parse out the URL between the img src quotes
                     Dim urlStart As Long, urlEnd As Long
-                    urlStart = InStr(1, htmlString, "<img ", vbTextCompare)
-                    If urlStart > 0 Then urlStart = InStr(urlStart, htmlString, "src=", vbTextCompare)
+                    urlStart = InStr(1, UCase$(htmlString), "<IMG ", vbBinaryCompare)
+                    If urlStart > 0 Then urlStart = InStr(urlStart, UCase$(htmlString), "SRC=", vbBinaryCompare)
                     If urlStart > 0 Then urlStart = InStr(urlStart, htmlString, vbQuoteMark, vbBinaryCompare) + 1
                     
                     'The magic number 6 below is calculated as the length of (src="), + 1 to advance to the
@@ -246,7 +246,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                         tmpDownloadFile = FormInternetImport.downloadURLToTempFile(Mid$(htmlString, urlStart, urlEnd - urlStart))
                         
                         'If the download was successful, we can now use the standard image load routine to import the temporary file
-                        If Len(tmpDownloadFile) > 0 Then
+                        If Len(tmpDownloadFile) <> 0 Then
                         
                             sFile(0) = tmpDownloadFile
                             
@@ -345,14 +345,14 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         
         tmpDownloadFile = Trim$(Clipboard.GetText)
         
-        If (StrComp(Left$(tmpDownloadFile, 7), "http://", vbTextCompare) = 0) Or (StrComp(Left$(tmpDownloadFile, 6), "ftp://", vbTextCompare) = 0) Then
+        If (StrComp(UCase$(Left$(tmpDownloadFile, 7)), "HTTP://", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 6)), "FTP://", vbBinaryCompare) = 0) Then
         
             Message "Image URL found on clipboard.  Attempting to download..."
             
             tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
             
             'If the download was successful, we can now use the standard image load routine to import the temporary file
-            If Len(tmpDownloadFile) > 0 Then
+            If Len(tmpDownloadFile) <> 0 Then
             
                 sFile(0) = tmpDownloadFile
                 
@@ -481,7 +481,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         
         For Each oleFilename In Data.Files
             tmpString = oleFilename
-            If (Len(tmpString) > 0) And FileExist(tmpString) Then
+            If (Len(tmpString) <> 0) And FileExist(tmpString) Then
                 sFile(countFiles) = tmpString
                 countFiles = countFiles + 1
             End If
@@ -560,14 +560,14 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         Dim tmpDownloadFile As String
         tmpDownloadFile = Trim$(Data.GetData(vbCFText))
         
-        If (StrComp(Left$(tmpDownloadFile, 7), "http://", vbTextCompare) = 0) Or (StrComp(Left$(tmpDownloadFile, 6), "ftp://", vbTextCompare) = 0) Then
+        If (StrComp(UCase$(Left$(tmpDownloadFile, 7)), "HTTP://", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 6)), "FTP://", vbBinaryCompare) = 0) Then
         
             Message "Image URL found on clipboard.  Attempting to download..."
             
             tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
             
             'If the download was successful, we can now use the standard image load routine to import the temporary file
-            If Len(tmpDownloadFile) > 0 Then
+            If Len(tmpDownloadFile) <> 0 Then
                 
                 'Depending on the number of open images, load the clipboard data as a new image or as a new layer in the current image
                 If (g_OpenImageCount > 0) And intendedTargetIsLayer Then

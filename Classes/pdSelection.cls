@@ -299,7 +299,7 @@ Public Sub initFromParamString(ByVal paramString As String)
     ' as specific data types upon request.
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(paramString) > 0 Then cParams.setParamString paramString
+    If Len(paramString) <> 0 Then cParams.setParamString paramString
     
     'The order of param string values is HARD-CODED per the following table:
     

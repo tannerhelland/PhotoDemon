@@ -265,7 +265,7 @@ End Property
 Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB)
     
     'Load the requested resource DIB, as necessary
-    If Len(resName) > 0 Then loadResourceToDIB resName, srcDIB
+    If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
         
     'Start by making a copy of the source DIB
     Set btImage = New pdDIB
