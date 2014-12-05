@@ -202,7 +202,7 @@ Public Sub DetermineLanguage()
         curLanguageFile = g_UserPreferences.GetPref_String("Language", "Current Language File", "")
         
         'If no specific file has been named, use the default language
-        If curLanguageFile = "" Then
+        If Len(curLanguageFile) = 0 Then
             curLanguage = defaultLanguage
         
         'If a file HAS been named, make sure it still exists; if it doesn't, default to English (US) and show the language dialog
@@ -625,7 +625,7 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
         'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
         If translationActive And (InStr(1, searchString, vbCrLf) > 0) Then
             newString = getTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf))
-            If newString = "" Then newString = srcMessage
+            If Len(newString) = 0 Then newString = srcMessage
         Else
             newString = srcMessage
         End If

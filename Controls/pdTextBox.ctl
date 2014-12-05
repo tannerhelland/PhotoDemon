@@ -1277,7 +1277,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                             If isVirtualKeyNumeric(wParam, numCheck) Then
                                 assembledVirtualKeyString = assembledVirtualKeyString & CStr(numCheck)
                             Else
-                                If Len(assembledVirtualKeyString) > 0 Then assembledVirtualKeyString = ""
+                                If Len(assembledVirtualKeyString) <> 0 Then assembledVirtualKeyString = ""
                             End If
                             
                             bHandled = True

@@ -193,7 +193,7 @@ End Function
 ' The imageToSave is a reference to an ID in the pdImages() array.  It can be grabbed from the form.Tag value as well.
 Public Function MenuSave(ByVal imageID As Long) As Boolean
 
-    If pdImages(imageID).locationOnDisk = "" Then
+    If Len(pdImages(imageID).locationOnDisk) = 0 Then
     
         'This image hasn't been saved before.  Launch the Save As... dialog
         MenuSave = MenuSaveAs(imageID)

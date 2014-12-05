@@ -2421,7 +2421,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                 End If
                 
                 'If the user wants us to apply a macro, ensure that the macro text box has a macro file specified
-                If CBool(chkActions(2)) And ((txtMacro.Text = "no macro selected") Or (txtMacro.Text = "")) Then
+                If CBool(chkActions(2)) And ((txtMacro.Text = "no macro selected") Or (Len(txtMacro.Text) = 0)) Then
                     pdMsgBox "You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.", vbExclamation + vbOKOnly + vbApplicationModal, "No macro file selected"
                     txtMacro.SelectAll
                     Exit Sub
