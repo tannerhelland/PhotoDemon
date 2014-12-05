@@ -836,7 +836,7 @@ Private Sub UserControl_Show()
         parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
         
         'If the user has supplied a custom name for this tool, append it to the default name
-        If Len(userSuppliedToolName) > 0 Then parentToolName = parentToolName & "_" & userSuppliedToolName
+        If Len(userSuppliedToolName) <> 0 Then parentToolName = parentToolName & "_" & userSuppliedToolName
         
         parentToolPath = g_UserPreferences.getPresetPath & parentToolName & ".xml"
     
@@ -996,10 +996,10 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
         End Select
         
         'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
-        If Len(controlValue) > 0 Then controlValue = Trim$(controlValue)
+        If Len(controlValue) <> 0 Then controlValue = Trim$(controlValue)
         
         'If this control has a valid value property, add it to the XML file
-        If Len(controlValue) > 0 Then
+        If Len(controlValue) <> 0 Then
         
             'If this control is part of a control array, we need to remember its index as well
             If controlIndex >= 0 Then
@@ -1096,7 +1096,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
             controlValue = xmlEngine.getUniqueTag_String(controlName, "", , "presetEntry", "id", xmlSafePresetName)
         End If
         
-        If Len(controlValue) > 0 Then
+        If Len(controlValue) <> 0 Then
         
             'An entry exists!  Assign out its value according to the type of control this is.
             Select Case controlType

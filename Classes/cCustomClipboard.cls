@@ -442,7 +442,7 @@ Dim bData() As Byte
 Dim i As Long
 ' Sets the text in sText onto the clipboard under format
 ' lFormatID:
-    If (Len(sText) > 0) Then
+    If (Len(sText) <> 0) Then
         ReDim bData(0 To Len(sText)) As Byte
         For i = 0 To Len(sText) - 1
             bData(i) = Asc(Mid$(sText, i + 1, 1))

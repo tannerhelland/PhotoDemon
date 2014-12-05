@@ -111,7 +111,7 @@ SaveMacroAgain:
         
         Dim i As Long
         For i = 0 To ProcessCount
-            If (Len(Processes(i).Id) > 0) And (Not Processes(i).Dialog) And Processes(i).Recorded Then
+            If (Len(Processes(i).Id) <> 0) And (Not Processes(i).Dialog) And Processes(i).Recorded Then
                 numOfValidProcesses = numOfValidProcesses + 1
             End If
         Next i
@@ -126,7 +126,7 @@ SaveMacroAgain:
         For i = 0 To ProcessCount
             
             'We only want to write out valid processes, using the same criteria as the original counting loop above.
-            If (Len(Processes(i).Id) > 0) And (Not Processes(i).Dialog) And Processes(i).Recorded Then
+            If (Len(Processes(i).Id) <> 0) And (Not Processes(i).Dialog) And Processes(i).Recorded Then
                 numOfValidProcesses = numOfValidProcesses + 1
                 
                 'Start each process entry with a unique identifier

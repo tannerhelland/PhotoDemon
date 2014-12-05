@@ -224,7 +224,7 @@ Public Function buildParams(ParamArray allParams() As Variant) As String
                 tmpString = Trim$(allParams(i))
             End If
         
-            If Len(tmpString) > 0 Then
+            If Len(tmpString) <> 0 Then
                 
                 'Add the string (properly escaped) to the param string
                 buildParams = buildParams & escapeParamCharacters(tmpString)

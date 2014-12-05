@@ -628,7 +628,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             'If the cursor is over a thumbnail, update the tooltip to display that image's filename
             If curThumbHover <> -1 Then
                         
-                If Len(pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk) > 0 Then
+                If Len(pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk) <> 0 Then
                     m_ToolTip.ToolTipHeader = pdImages(imgThumbnails(curThumbHover).indexInPDImages).originalFileNameAndExtension
                     m_ToolTip.ToolText(Me) = pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk
                 Else

@@ -208,7 +208,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
         Next i
     
         'If the image has been saved before, update the tooltip text on the "Save" button accordingly
-        If Len(pdImages(imageBeingClosed).locationOnDisk) > 0 Then
+        If Len(pdImages(imageBeingClosed).locationOnDisk) <> 0 Then
             .ToolText(cmdAnswer(0)) = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.")
         Else
             .ToolText(cmdAnswer(0)) = g_Language.TranslateMessage("Because this image has not been saved before, you will be prompted to provide a file name for it.")

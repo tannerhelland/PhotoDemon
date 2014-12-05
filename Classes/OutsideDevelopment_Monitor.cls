@@ -75,7 +75,7 @@ Private m_Primary As Boolean
 ' exist, we'll use the Windows fallback (which is often something dumb like "Generic PnP Monitor").
 Public Function getBestMonitorName() As String
     
-    If Len(m_EDIDModelName) > 0 Then
+    If Len(m_EDIDModelName) <> 0 Then
         getBestMonitorName = m_EDIDModelName
     Else
         getBestMonitorName = m_FriendlyName

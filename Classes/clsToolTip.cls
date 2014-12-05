@@ -251,7 +251,7 @@ Public Function AddTool(ByRef ctrl As Object, Optional ByVal strText As String) 
             End If
             .uId = ctrl.hWnd
             
-            If Len(strText) > 0 Then
+            If Len(strText) <> 0 Then
 
                 'MODIFICATION
                 'sending a blank string to ToolText deletes the control from the collection

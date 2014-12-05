@@ -1042,7 +1042,7 @@ Private Sub loadRecentColorList()
             tmpColorString = xmlEngine.getUniqueTag_String("color", , , "colorEntry", "id", allRecentColors(i))
             
             'Translate the color into a long, and update the corresponding picture box
-            If Len(tmpColorString) > 0 Then recentColors(i) = CLng(tmpColorString)
+            If Len(tmpColorString) <> 0 Then recentColors(i) = CLng(tmpColorString)
             
         Next i
     
