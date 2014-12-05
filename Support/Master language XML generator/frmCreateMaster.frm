@@ -576,7 +576,7 @@ Private Sub cmdMergeAll_Click()
                 End If
                 
                 'Remove any tab stops from the translated text (which may have been added by an outside editor)
-                translatedText = Replace(translatedText, vbTab, "", , , vbBinaryCompare)
+                If InStr(translatedText, vbTab) <> 0 Then translatedText = Replace(translatedText, vbTab, "", , , vbBinaryCompare)
                                 
                 'If a translation was found, insert it into the new file
                 If Len(translatedText) <> 0 Then

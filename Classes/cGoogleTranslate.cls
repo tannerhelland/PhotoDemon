@@ -91,12 +91,12 @@ Public Function getGoogleTranslation(ByVal srcText As String, Optional ByRef cop
     
     'PhotoDemon uses %n to define custom parameters in text entries.  URLs also make use of the % identifier,
     ' so replace our % with something else before attempting to translate.
-    srcText = Replace(srcText, "%", "&#37;", , , vbBinaryCompare)
+    If InStr(srcText, "%") <> 0 Then srcText = Replace(srcText, "%", "&#37;", , , vbBinaryCompare)
     
     'Some PhotoDemon phrases contain line breaks.  We can't pass these in a URL, so replace them with a custom ID.
-    srcText = Replace(srcText, vbCrLf, "VBCRLF")
-    srcText = Replace(srcText, vbLf, "VBCRLF")
-    srcText = Replace(srcText, vbCr, "VBCRLF")
+    If InStr(srcText, vbCrLf) <> 0 Then srcText = Replace(srcText, vbCrLf, "VBCRLF")
+    If InStr(srcText, vbLf) <> 0 Then srcText = Replace(srcText, vbLf, "VBCRLF")
+    If InStr(srcText, vbCr) <> 0 Then srcText = Replace(srcText, vbCr, "VBCRLF")
     
     getGoogleTranslation = ""
     
@@ -141,8 +141,8 @@ RetryTranslation:
     End If
     
     'Return any characters we removed before translation
-    origHTML = Replace(origHTML, "&#37;", "%", , , vbBinaryCompare)
-    origHTML = Replace(origHTML, "VBCRLF", vbCrLf)
+    If InStr(origHTML, "&#37;") <> 0 Then origHTML = Replace(origHTML, "&#37;", "%", , , vbBinaryCompare)
+    If InStr(origHTML, "VBCRLF") <> 0 Then origHTML = Replace(origHTML, "VBCRLF", vbCrLf)
     
     'Remove all irrelevant HTML tags
     processedHTML = stripHTMLTags(origHTML)
@@ -150,25 +150,25 @@ RetryTranslation:
     'Finally, fix some weird quirks of the Google translate service.  For example, spaces are frequently
     ' added to translated text for no good reason - so remove these in an attempt to preserve the original
     ' text as much as possible.
-    processedHTML = Replace(processedHTML, "&gt;", ">", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "&lt;", "<", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "&amp;", "&", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, vbTab, "", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "( ", "(", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " )", ")", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " ,", ",", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " :", ":", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " .", ".", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " \ ", "\", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, " / ", "/", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "»", "'", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "«", "'", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, "% ", " %", 1, , vbTextCompare)
+    If InStr(processedHTML, "&gt;") <> 0 Then processedHTML = Replace(processedHTML, "&gt;", ">", 1, , vbTextCompare)
+    If InStr(processedHTML, "&lt;") <> 0 Then pprocessedHTML = Replace(processedHTML, "&lt;", "<", 1, , vbTextCompare)
+    If InStr(processedHTML, "&amp;") <> 0 Then processedHTML = Replace(processedHTML, "&amp;", "&", 1, , vbTextCompare)
+    If InStr(processedHTML, vbTab) <> 0 Then processedHTML = Replace(processedHTML, vbTab, "", 1, , vbTextCompare)
+    If InStr(processedHTML, "( ") <> 0 Then processedHTML = Replace(processedHTML, "( ", "(", 1, , vbTextCompare)
+    If InStr(processedHTML, " )") <> 0 Then processedHTML = Replace(processedHTML, " )", ")", 1, , vbTextCompare)
+    If InStr(processedHTML, " ,") <> 0 Then processedHTML = Replace(processedHTML, " ,", ",", 1, , vbTextCompare)
+    If InStr(processedHTML, " :") <> 0 Then processedHTML = Replace(processedHTML, " :", ":", 1, , vbTextCompare)
+    If InStr(processedHTML, " .") <> 0 Then processedHTML = Replace(processedHTML, " .", ".", 1, , vbTextCompare)
+    If InStr(processedHTML, " \") <> 0 Then processedHTML = Replace(processedHTML, " \ ", "\", 1, , vbTextCompare)
+    If InStr(processedHTML, " /") <> 0 Then processedHTML = Replace(processedHTML, " / ", "/", 1, , vbTextCompare)
+    If InStr(processedHTML, "»") <> 0 Then processedHTML = Replace(processedHTML, "»", "'", 1, , vbTextCompare)
+    If InStr(processedHTML, "«") <> 0 Then processedHTML = Replace(processedHTML, "«", "'", 1, , vbTextCompare)
+    If InStr(processedHTML, "% ") <> 0 Then processedHTML = Replace(processedHTML, "% ", " %", 1, , vbTextCompare)
     
     'Thanks to Zhu JY for pointing out that «/» are not handled properly under some localizations, so use their
     ' character codes instead.
-    processedHTML = Replace(processedHTML, Chr$(174), "'", 1, , vbTextCompare)
-    processedHTML = Replace(processedHTML, Chr$(175), "'", 1, , vbTextCompare)
+    If InStr(processedHTML, Chr$(174)) <> 0 Then processedHTML = Replace(processedHTML, Chr$(174), "'", 1, , vbTextCompare)
+    If InStr(processedHTML, Chr$(175)) <> 0 Then processedHTML = Replace(processedHTML, Chr$(175), "'", 1, , vbTextCompare)
     
     'Return the translated data
     getGoogleTranslation = processedHTML
