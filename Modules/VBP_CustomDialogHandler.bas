@@ -3,17 +3,17 @@ Attribute VB_Name = "Dialog_Handler"
 'Custom Dialog Interface
 'Copyright ©2012-2014 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 14/February/14
-'Last update: added support for the new WebP export dialog
+'Last updated: 05/December/14
+'Last update: finish support for the new tone-mapping dialog
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and usable) dialogs
 ' designed around a specific purpose.
 '
 'All dialogs are based off the same template, as you can see - they are just modal forms with a specially
-' designed ".ShowDialog" sub or function that sets a ".userResponse" property.  The wrapper function in this
+' designed ".ShowDialog" sub or function that sets a ".DialogResult" property.  The wrapper function in this
 ' module simply checks that value, unloads the dialog form, then returns the value; this keeps all load/unload
-' burdens here so that calling functions can simply use a MsgBox-style line to call the dialogs and check
+' burdens here so that calling functions can simply use a MsgBox-style line to call custom dialogs and retrieve
 ' the user's response.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -232,3 +232,57 @@ Public Sub showStraightenDialog(ByVal StraightenTarget As PD_ACTION_TARGET)
 
 End Sub
 
+'Present a dialog box to ask the user how they want to tone map an incoming high bit-depth image.  Unlike other dialog
+' requests, this one returns a pdParamString.  This is necessary because the return may have multiple parameters.
+Public Function promptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParamString As String) As VbMsgBoxResult
+    
+    'Before displaying the dialog, see if the user has requested that we automatically display previously specified settings
+    If g_UserPreferences.GetPref_Boolean("Loading", "Tone Mapping Prompt", True) Then
+    
+        'Load the dialog, and supply it with any information it needs prior to display
+        Load dialog_ToneMapping
+        dialog_ToneMapping.fi_HandleCopy = fi_Handle
+        
+        'Display the (modal) dialog and wait for it to return
+        dialog_ToneMapping.showDialog
+        
+        'This function will return the actual dialog result (OK vs Cancel)...
+        promptToneMapSettings = dialog_ToneMapping.DialogResult
+        
+        If promptToneMapSettings = vbOK Then
+        
+            '...but we also need to return a copy of the parameter string, which FreeImage will use to actually render
+            ' any requested tone-mapping operations.
+            copyOfParamString = dialog_ToneMapping.toneMapSettings
+            
+            'If the user doesn't want us to raise this dialog in the future, store their preference now
+            g_UserPreferences.SetPref_Boolean "Loading", "Tone Mapping Prompt", Not dialog_ToneMapping.RememberSettings
+            
+            'Write the param string out to the preferences file (in case the user decides to toggle this preference
+            ' from the preferences dialog, or if they want settings automatically applied going forward).
+            g_UserPreferences.SetPref_String "Loading", "Tone Mapping Settings", copyOfParamString
+            
+        End If
+            
+        'Release any other references, then exit
+        Unload dialog_ToneMapping
+        Set dialog_ToneMapping = Nothing
+        
+    'The user has requested that we do not prompt them for tone-map settings.  Use whatever settings they have
+    ' previously specified.  If no settings were previously specified (meaning they disabled this preference prior
+    ' to actually loading an HDR image, argh), generate a default set of "good enough" parameters.
+    Else
+    
+        copyOfParamString = g_UserPreferences.GetPref_String("Loading", "Tone Mapping Settings", "")
+        
+        'Check for an empty string; if found, build a default param string
+        If Len(copyOfParamString) = 0 Then
+            copyOfParamString = buildParams(1, 0, 0)
+        End If
+        
+        'Return "OK"
+        promptToneMapSettings = vbOK
+    
+    End If
+
+End Function

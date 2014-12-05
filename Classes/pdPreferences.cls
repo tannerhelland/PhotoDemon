@@ -457,7 +457,7 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "AutomaticallyLoadMetadata", "False"
         xmlEngine.writeTag "ExifAutoRotate", "True"
         xmlEngine.writeTag "InitialImageZoom", "0"
-        xmlEngine.writeTag "HDRToneMapping", "True"
+        xmlEngine.writeTag "ToneMappingPrompt", "True"
         xmlEngine.writeTag "VerifyInitialColorDepth", "True"
     xmlEngine.closeTag "Loading"
     xmlEngine.writeBlankLine
