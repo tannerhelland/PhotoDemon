@@ -317,7 +317,7 @@ End Sub
 Private Sub cmdMerge_Click()
 
     'Make sure our source file strings are not empty
-    If m_MasterText = "" Or m_OldLanguageText = "" Then
+    If Len(m_MasterText) = 0 Or Len(m_OldLanguageText) = 0 Then
         MsgBox "One or more source files are missing.  Supply those before attempting a merge."
         Exit Sub
     End If
@@ -530,7 +530,7 @@ Private Sub cmdMergeAll_Click()
         'BEGIN COPY OF CODE FROM cmdMerge
         
             'Make sure our source file strings are not empty
-            If m_MasterText = "" Or m_OldLanguageText = "" Then
+            If Len(m_MasterText) = 0 Or Len(m_OldLanguageText) = 0 Then
                 Debug.Print "One or more source files are missing.  Supply those before attempting a merge."
                 Exit Sub
             End If
@@ -738,7 +738,7 @@ End Sub
 'Given a VB file (form, module, class, user control), extract any relevant text from it
 Private Sub processFile(ByVal srcFile As String)
 
-    If srcFile = "" Then Exit Sub
+    If Len(srcFile) = 0 Then Exit Sub
 
     m_FileName = getFilename(srcFile)
     
