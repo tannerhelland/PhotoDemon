@@ -333,13 +333,19 @@ End Sub
 Private Sub updatePreview(ByVal srcImagePath As String)
     
     'Display a preview of the selected image
+    Dim tmpDIBExists As Boolean
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     QuickLoadImageToDIB srcImagePath, tmpDIB
     
-    If Not (tmpDIB Is Nothing) And (tmpDIB.getDIBWidth > 0) And (tmpDIB.getDIBHeight > 0) Then
+    If Not (tmpDIB Is Nothing) Then
+      If (tmpDIB.getDIBWidth > 0) And (tmpDIB.getDIBHeight > 0) Then
+        tmpDIBExists = True
         tmpDIB.renderToPictureBox picPreview
-    Else
+      End If
+    End If
+
+    If Not tmpDIBExists Then
         picPreview.Picture = LoadPicture("")
         Dim strToPrint As String
         strToPrint = g_Language.TranslateMessage("Preview not available")
