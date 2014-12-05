@@ -191,7 +191,7 @@ Public Function writeNewSection(ByVal sectionName As String, Optional ByVal sect
         Dim newTagSection As String
         newTagSection = "<" & sectionName
         
-        If Len(sectionAttribute) > 0 Then
+        If Len(sectionAttribute) <> 0 Then
             newTagSection = newTagSection & " " & sectionAttribute & "=""" & sectionAttributeValue & """>"
         Else
             newTagSection = newTagSection & ">"
@@ -213,7 +213,7 @@ End Function
 Public Function doesTagExist(ByVal tagName As String, Optional ByVal attributeName As String = "", Optional ByVal attributeValue As String = "") As Boolean
 
     'If an attribute is provided, finding the tag is a bit messier
-    If Len(attributeName) > 0 Then
+    If Len(attributeName) <> 0 Then
     
         If InStr(1, m_xmlContents, "<" & tagName & " " & attributeName & "=""" & attributeValue & """>", m_TextCompareMode) Then
             doesTagExist = True
@@ -276,8 +276,8 @@ Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, 
 
     'Create a start and end tag to search for, which will vary contingent on the presence of a section request
     Dim startTag As String, closeTag As String
-    If Len(sectionName) > 0 Then
-        If Len(sectionAttribute) > 0 Then
+    If Len(sectionName) <> 0 Then
+        If Len(sectionAttribute) <> 0 Then
             startTag = "<" & sectionName & " " & sectionAttribute & "=""" & sectionAttributeValue & """>"
         Else
             startTag = "<" & sectionName & ">"
@@ -292,7 +292,7 @@ Public Function updateTag(ByVal tagName As String, ByVal tagContents As String, 
     sectionStartLocation = 0
     
     'If a section is specified, add the tag at the end of that section.  Otherwise, add it at the end of the XML file.
-    If Len(sectionAttribute) > 0 Then
+    If Len(sectionAttribute) <> 0 Then
     
         'Finding the proper section close tag for sections with attributes is a bit trickier.  Start by finding the
         ' start location of the requested section+attribute, then find the close tag that follows that.
@@ -670,9 +670,9 @@ Public Function getUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     
     'If a section was provided, start our unique tag search there.  At present, we don't care if our search extends past
     ' that section, but only because we know it will never happen!
-    If Len(xmlSection) > 0 Then
+    If Len(xmlSection) <> 0 Then
     
-        If Len(xmlSectionAttribute) > 0 Then
+        If Len(xmlSectionAttribute) <> 0 Then
             searchLocation = InStr(1, m_xmlContents, "<" & xmlSection & " " & xmlSectionAttribute & "=""" & xmlSectionAttributeValue & """>", m_TextCompareMode)
         Else
             searchLocation = InStr(1, m_xmlContents, "<" & xmlSection & ">", m_TextCompareMode)
@@ -686,7 +686,7 @@ Public Function getUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
-    If Len(tmpString) > 0 Then
+    If Len(tmpString) <> 0 Then
         getUniqueTag_String = Trim$(tmpString)
     Else
         getUniqueTag_String = defaultReturn
@@ -699,7 +699,7 @@ Public Function getUniqueTag_Long(ByVal tagName As String, Optional ByVal defaul
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
-    If Len(tmpString) > 0 Then
+    If Len(tmpString) <> 0 Then
         getUniqueTag_Long = CLng(tmpString)
     Else
         getUniqueTag_Long = defaultReturn
@@ -712,7 +712,7 @@ Public Function getUniqueTag_Boolean(ByVal tagName As String, Optional ByVal def
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
-    If Len(tmpString) > 0 Then
+    If Len(tmpString) <> 0 Then
         getUniqueTag_Boolean = CBool(tmpString)
     Else
         getUniqueTag_Boolean = defaultReturn
@@ -725,7 +725,7 @@ Public Function getUniqueTag_Double(ByVal tagName As String, Optional ByVal defa
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)
     
-    If Len(tmpString) > 0 Then
+    If Len(tmpString) <> 0 Then
         getUniqueTag_Double = CDblCustom(tmpString)
     Else
         getUniqueTag_Double = defaultReturn

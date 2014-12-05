@@ -194,7 +194,7 @@ Public Sub assignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal obj
     Else
         
         'Use the form's containing monitor to retrieve a matching profile from the preferences file
-        If Len(currentColorProfile) > 0 Then
+        If Len(currentColorProfile) <> 0 Then
             SetICMProfile objectHDC, currentColorProfile
         Else
             SetICMProfile objectHDC, currentSystemColorProfile

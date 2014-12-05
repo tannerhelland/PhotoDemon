@@ -697,7 +697,7 @@ Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage
     
     'Copy the name locally, and set other values to their natural defaults
     With myLayerData
-        If Len(newLayerName) > 0 Then
+        If Len(newLayerName) <> 0 Then
             .l_Name = newLayerName
         Else
             .l_Name = g_Language.TranslateMessage("New Image Layer")

@@ -1282,7 +1282,7 @@ Private Function getWindowCaption(ByRef srcImage As pdImage) As String
     
     'Start by seeing if this image has some kind of filename.  This field should always be populated by the load function,
     ' but better safe than sorry!
-    If Len(srcImage.originalFileNameAndExtension) > 0 Then
+    If Len(srcImage.originalFileNameAndExtension) <> 0 Then
     
         'This image has a filename!  Next, check the user's preference for long or short window captions
         If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
@@ -1293,7 +1293,7 @@ Private Function getWindowCaption(ByRef srcImage As pdImage) As String
         
             'The user prefers long captions.  Make sure this image has such a location; if they do not, fallback
             ' and use just the filename.
-            If Len(srcImage.locationOnDisk) > 0 Then
+            If Len(srcImage.locationOnDisk) <> 0 Then
                 captionBase = srcImage.locationOnDisk
             Else
                 captionBase = srcImage.originalFileNameAndExtension

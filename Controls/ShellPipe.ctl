@@ -647,7 +647,7 @@ Public Function Run( _
         .dwThreadID = 0
     End With
     
-    If Len(CurrentDir) > 0 Then
+    If Len(CurrentDir) <> 0 Then
         AnsiCurrentDir = StrConv(CurrentDir, vbFromUnicode)
         ReDim Preserve AnsiCurrentDir(UBound(AnsiCurrentDir) + 1) 'Add Nul.
         pAnsiCurrentDir = VarPtr(AnsiCurrentDir(0))

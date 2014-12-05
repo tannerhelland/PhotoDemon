@@ -395,7 +395,7 @@ Public Sub restoreUndoData()
     If (undoNum = undoNumAtLastSave_Flat) Or (undoNum = undoNumAtLastSave_PDI) Then
     
         'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
-        If Len(parentPDImage.locationOnDisk) > 0 Then
+        If Len(parentPDImage.locationOnDisk) <> 0 Then
             
             If parentPDImage.currentFileFormat = FIF_PDI Then
                 parentPDImage.setSaveState True, pdSE_SavePDI

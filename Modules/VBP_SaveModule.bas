@@ -538,7 +538,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             Message "Save canceled."
             
             'If FreeImage failed, report its message back to the user.  Otherwise, display a generic warning.
-            If Len(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) > 0 Then
+            If Len(g_FreeImageErrorMessages(UBound(g_FreeImageErrorMessages))) <> 0 Then
                 
                 Dim listOfFreeImageErrors As String
                 listOfFreeImageErrors = """"
@@ -585,7 +585,7 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
     'Parse all possible BMP parameters (at present there is only one possible parameter, which specifies RLE compression for 8bpp images)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(bmpParams) > 0 Then cParams.setParamString bmpParams
+    If Len(bmpParams) <> 0 Then cParams.setParamString bmpParams
     Dim BMPCompression As Boolean
     BMPCompression = cParams.GetBool(1, False)
     
@@ -963,7 +963,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     ' (At present, three are possible: compression level, interlacing, BKGD chunk preservation (background color)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(pngParams) > 0 Then cParams.setParamString pngParams
+    If Len(pngParams) <> 0 Then cParams.setParamString pngParams
     Dim pngCompressionLevel As Long
     pngCompressionLevel = cParams.GetLong(1, 9)
     Dim pngUseInterlacing As Boolean, pngPreserveBKGD As Boolean
@@ -1242,7 +1242,7 @@ Public Function SavePPMImage(ByRef srcPDImage As pdImage, ByVal PPMPath As Strin
     'Parse all possible PPM parameters (at present there is only one possible parameter, which sets RAW vs ASCII encoding)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(ppmParams) > 0 Then cParams.setParamString ppmParams
+    If Len(ppmParams) <> 0 Then cParams.setParamString ppmParams
     Dim ppmFormat As Long
     ppmFormat = cParams.GetLong(1, 0)
 
@@ -1316,7 +1316,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     'Parse all possible TGA parameters (at present there is only one possible parameter, which specifies RLE compression)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(tgaParams) > 0 Then cParams.setParamString tgaParams
+    If Len(tgaParams) <> 0 Then cParams.setParamString tgaParams
     Dim TGACompression As Boolean
     TGACompression = cParams.GetBool(1, False)
     
@@ -1464,7 +1464,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     'Parse all possible JPEG parameters
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(jpegParams) > 0 Then cParams.setParamString jpegParams
+    If Len(jpegParams) <> 0 Then cParams.setParamString jpegParams
     Dim jpegFlags As Long
     
     'Start by retrieving quality
@@ -1625,7 +1625,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     ' (At present, two are possible: one for compression type, and another for CMYK encoding)
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(tiffParams) > 0 Then cParams.setParamString tiffParams
+    If Len(tiffParams) <> 0 Then cParams.setParamString tiffParams
     Dim tiffEncoding As Long
     tiffEncoding = cParams.GetLong(1, 0)
     Dim tiffUseCMYK As Boolean
@@ -1842,7 +1842,7 @@ Public Function SaveJP2Image(ByRef srcPDImage As pdImage, ByVal jp2Path As Strin
     'Parse all possible JPEG-2000 params
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(jp2Params) > 0 Then cParams.setParamString jp2Params
+    If Len(jp2Params) <> 0 Then cParams.setParamString jp2Params
     Dim JP2Quality As Long
     If cParams.doesParamExist(1) Then JP2Quality = cParams.GetLong(1) Else JP2Quality = 1
     
@@ -1914,7 +1914,7 @@ Public Function SaveJXRImage(ByRef srcPDImage As pdImage, ByVal jxrPath As Strin
     'Parse all possible JXR params
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(jxrParams) > 0 Then cParams.setParamString jxrParams
+    If Len(jxrParams) <> 0 Then cParams.setParamString jxrParams
     Dim jxrQuality As Long, jxrProgressive As Boolean
     
     'Quality is the first parameter
@@ -1994,7 +1994,7 @@ Public Function SaveWebPImage(ByRef srcPDImage As pdImage, ByVal WebPPath As Str
     'Parse all possible WebP params
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(WebPParams) > 0 Then cParams.setParamString WebPParams
+    If Len(WebPParams) <> 0 Then cParams.setParamString WebPParams
     Dim WebPQuality As Long
     If cParams.doesParamExist(1) Then WebPQuality = cParams.GetLong(1) Else WebPQuality = 0
     

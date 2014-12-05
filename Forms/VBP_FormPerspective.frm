@@ -304,7 +304,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
     'Parse the incoming parameter string into individual (x, y) pairs
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(listOfModifiers) > 0 Then cParams.setParamString listOfModifiers
+    If Len(listOfModifiers) <> 0 Then cParams.setParamString listOfModifiers
     
     'See if the user wants a rect -> quad ("Normal" in GIMP) or quad -> rect ("Corrective" in GIMP) mapping
     Dim correctiveProjection As Boolean

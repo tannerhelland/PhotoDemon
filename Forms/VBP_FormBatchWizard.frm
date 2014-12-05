@@ -3094,7 +3094,7 @@ Private Sub updateSourceImageList()
     Do While chkFile <> ""
         
         chkFileExt = GetExtension(chkFile)
-        If Len(chkFileExt) > 0 Then
+        If Len(chkFileExt) <> 0 Then
             
             chkFileExt = "." & LCase(chkFileExt)
             
@@ -3576,7 +3576,7 @@ Private Sub prepareForBatchConversion()
                     If curPage > 0 Then tmpFilename = tmpFilename & " (" & curPage & ")"
                     
                     'If requested, remove any specified text from the filename
-                    If CBool(chkRenameRemove) And (Len(txtRenameRemove) > 0) Then
+                    If CBool(chkRenameRemove) And (Len(txtRenameRemove) <> 0) Then
                     
                         'Use case-sensitive or case-insensitive matching as requested
                         If CBool(chkRenameCaseSensitive) Then
@@ -3664,7 +3664,7 @@ Private Sub prepareForBatchConversion()
                                     
                     'Request a save from the PhotoDemon_SaveImage method, and pass it a specialized string containing
                     ' any extra information for the requested format (JPEG quality, etc)
-                    If Len(m_FormatParams) > 0 Then
+                    If Len(m_FormatParams) <> 0 Then
                         PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, CLng(g_CurrentImage), False, m_FormatParams
                     Else
                         PhotoDemon_SaveImage pdImages(CLng(g_CurrentImage)), tmpFilename, CLng(g_CurrentImage), False

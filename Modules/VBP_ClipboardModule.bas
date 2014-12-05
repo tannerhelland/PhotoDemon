@@ -246,7 +246,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                         tmpDownloadFile = FormInternetImport.downloadURLToTempFile(Mid$(htmlString, urlStart, urlEnd - urlStart))
                         
                         'If the download was successful, we can now use the standard image load routine to import the temporary file
-                        If Len(tmpDownloadFile) > 0 Then
+                        If Len(tmpDownloadFile) <> 0 Then
                         
                             sFile(0) = tmpDownloadFile
                             
@@ -352,7 +352,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
             
             'If the download was successful, we can now use the standard image load routine to import the temporary file
-            If Len(tmpDownloadFile) > 0 Then
+            If Len(tmpDownloadFile) <> 0 Then
             
                 sFile(0) = tmpDownloadFile
                 
@@ -481,7 +481,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         
         For Each oleFilename In Data.Files
             tmpString = oleFilename
-            If (Len(tmpString) > 0) And FileExist(tmpString) Then
+            If (Len(tmpString) <> 0) And FileExist(tmpString) Then
                 sFile(countFiles) = tmpString
                 countFiles = countFiles + 1
             End If
@@ -567,7 +567,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
             tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
             
             'If the download was successful, we can now use the standard image load routine to import the temporary file
-            If Len(tmpDownloadFile) > 0 Then
+            If Len(tmpDownloadFile) <> 0 Then
                 
                 'Depending on the number of open images, load the clipboard data as a new image or as a new layer in the current image
                 If (g_OpenImageCount > 0) And intendedTargetIsLayer Then

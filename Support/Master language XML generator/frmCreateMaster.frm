@@ -363,7 +363,7 @@ Private Sub cmdMerge_Click()
         End If
                 
         'If a translation was found, insert it into the new file
-        If Len(translatedText) > 0 Then
+        If Len(translatedText) <> 0 Then
             findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & "<translation></translation>"
             replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
             m_NewLanguageText = Replace(m_NewLanguageText, findText, replaceText)
@@ -579,7 +579,7 @@ Private Sub cmdMergeAll_Click()
                 translatedText = Replace(translatedText, vbTab, "", , , vbBinaryCompare)
                                 
                 'If a translation was found, insert it into the new file
-                If Len(translatedText) > 0 Then
+                If Len(translatedText) <> 0 Then
                     'findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation></translation>"
                     'replaceText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation>" & translatedText & "</translation>"
                     findText = "<original>" & origText & "</original>" & vbCrLf & "<translation></translation>"
@@ -768,7 +768,7 @@ Private Sub processFile(ByVal srcFile As String)
     ' tracking down errors or incomplete text.
     If LenB(m_FileName) > 0 Then
         outputText = outputText & vbCrLf & vbCrLf & vbTab & vbTab
-        If Len(shortcutName) > 0 Then
+        If Len(shortcutName) <> 0 Then
             outputText = outputText & "<!-- BEGIN text for " & m_FileName & " (" & shortcutName & ") -->"
         Else
             outputText = outputText & "<!-- BEGIN text for " & m_FileName & " -->"
@@ -869,7 +869,7 @@ Private Sub processFile(ByVal srcFile As String)
         End If
         
         'DEBUG! Check for certain text entries here
-        'If (shortcutName = "FormLens") And Len(Trim$(processedText)) > 0 Then MsgBox processedText
+        'If (shortcutName = "FormLens") And Len(Trim$(processedText)) <> 0 Then MsgBox processedText
         
         'We now have text in potentially two places: processedText, and processedTextSecondary (for message box titles)
         chkText = Trim$(processedText)

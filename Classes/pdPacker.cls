@@ -452,7 +452,7 @@ End Function
 Public Function addNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As Boolean = True, Optional ByVal compressionLevel As Long = -1, Optional ByVal requestChecksum As Boolean = False) As Boolean
     
     'Forward the string pointer to the actual addNodeData function, and return its result.
-    If Len(srcDataString) > 0 Then
+    If Len(srcDataString) <> 0 Then
         addNodeDataFromString = addNodeDataFromPointer(nodeIndex, useHeaderBuffer, StrPtr(srcDataString), Len(srcDataString) * 2, compressData, compressionLevel, requestChecksum)
     End If
 
@@ -1045,7 +1045,7 @@ Public Function init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveIni
     'The caller wants us to handle zLib initialization.  Attempt to load the zLib library path we were passed.
     Else
     
-        If Len(pathToZLibDLL) > 0 Then
+        If Len(pathToZLibDLL) <> 0 Then
         
             'If the library was successfully loaded, a non-zero value will be returned.
             m_ZLibToken = LoadLibrary(pathToZLibDLL)
