@@ -130,6 +130,8 @@ Private m_FocusRectActive As Boolean
 'Whenever the control is repainted, the clickable rect will be updated to reflect the relevant portion of the control's interior
 Private clickableRect As RECT
 
+Private m_HasBeenShown As Boolean
+
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
 Private m_ToolString As String
@@ -275,16 +277,20 @@ Public Property Let Value(ByVal NewValue As Boolean)
     If m_Value <> NewValue Then
     
         m_Value = NewValue
-        PropertyChanged "Value"
+        If Not g_IsProgramRunning Then PropertyChanged "Value"
         
         'Redraw the control; it's important to do this *before* raising the associated event, to maintain an impression of max responsiveness
         redrawBackBuffer
         
-        'Set all other option buttons to FALSE
-        If NewValue Then updateValue
+        If NewValue Then
+            
+            'Set all other option buttons to FALSE
+            updateValue
         
-        'If the value is being newly set to TRUE, notify the user by raising the CLICK event
-        If NewValue Then RaiseEvent Click
+            'If the value is being newly set to TRUE, notify the user by raising the CLICK event
+            RaiseEvent Click
+            
+        End If
         
     End If
     
@@ -422,6 +428,10 @@ Private Sub UserControl_Show()
         End With
 
     End If
+    
+    'Also, redraw the back buffer as necessary
+    m_HasBeenShown = True
+    redrawBackBuffer
     
 End Sub
 
@@ -569,6 +579,8 @@ End Sub
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
 Private Sub redrawBackBuffer()
+    
+    If Not m_HasBeenShown Then Exit Sub
     
     'Start by erasing the back buffer
     If g_IsProgramRunning Then
