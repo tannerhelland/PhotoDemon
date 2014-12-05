@@ -41,6 +41,7 @@ Begin VB.Form dialog_ExportJPEG
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -252,15 +253,6 @@ Begin VB.Form dialog_ExportJPEG
          Width           =   4335
          _ExtentX        =   7223
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   1
          Max             =   99
          Value           =   90

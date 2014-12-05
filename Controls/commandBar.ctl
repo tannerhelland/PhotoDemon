@@ -226,7 +226,19 @@ Private curPresetEntry As String
 ' settings will be some other image's dimensions), this bool will be set to TRUE
 Private suspendLastUsedAutoLoad As Boolean
 
-'When the user presses "Enter" while inside the preset combo box,
+'If the parent does not want the command bar to auto-unload it when OK or CANCEL is pressed, this will be set to TRUE
+Private m_dontAutoUnloadParent As Boolean
+
+'The command bar is set to auto-unload its parent object when OK or CANCEL is pressed.  In some instances (e.g. forms prefaced with
+' "dialog_", which return a VBMsgBoxResult), this behavior is not desirable.  It can be overridden by setting this property to TRUE.
+Public Property Get dontAutoUnloadParent() As Boolean
+    dontAutoUnloadParent = m_dontAutoUnloadParent
+End Property
+
+Public Property Let dontAutoUnloadParent(ByVal newValue As Boolean)
+    m_dontAutoUnloadParent = newValue
+    PropertyChanged "dontAutoUnloadParent"
+End Property
 
 'Some dialogs (e.g. Resize) may not want us to automatically load their last-used settings, because they need to
 ' populate the dialog with values unique to the current image.  If this property is set, last-used settings will
@@ -235,8 +247,8 @@ Public Property Get dontAutoLoadLastPreset() As Boolean
     dontAutoLoadLastPreset = suspendLastUsedAutoLoad
 End Property
 
-Public Property Let dontAutoLoadLastPreset(ByVal NewValue As Boolean)
-    suspendLastUsedAutoLoad = NewValue
+Public Property Let dontAutoLoadLastPreset(ByVal newValue As Boolean)
+    suspendLastUsedAutoLoad = newValue
     PropertyChanged "dontAutoLoadLastPreset"
 End Property
 
@@ -505,8 +517,8 @@ End Function
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
+    Set cmdOK.Font = mFont
+    Set cmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
@@ -534,14 +546,9 @@ Private Sub CmdCancel_Click()
         dontShutdownYet = False
         Exit Sub
     End If
-    
-    'If the current form's progress bar is visible, hide it
-    If g_OpenImageCount > 0 Then
-        'If pdImages(g_CurrentImage).containingForm.picProgressBar.Visible Then pdImages(g_CurrentImage).containingForm.picProgressBar.Visible = False
-    End If
-    
-    'Automatically unload our parent
-    Unload UserControl.Parent
+        
+    'Automatically unload our parent, unless the override property is set (as it is in dialogs that return some value)
+    If Not m_dontAutoUnloadParent Then Unload UserControl.Parent
     
 End Sub
 
@@ -596,8 +603,8 @@ Private Sub CmdOK_Click()
     'Finally, let the user proceed with whatever comes next!
     RaiseEvent OKClick
     
-    'When everything is done, unload our parent form
-    Unload UserControl.Parent
+    'When everything is done, unload our parent form (unless the override property is set, as it is by default)
+    If Not m_dontAutoUnloadParent Then Unload UserControl.Parent
     
 End Sub
 
@@ -698,8 +705,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd CmdOK.hWnd
-    setHandCursorToHwnd CmdCancel.hWnd
+    setHandCursorToHwnd cmdOK.hWnd
+    setHandCursorToHwnd cmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -753,6 +760,7 @@ Private Sub UserControl_InitProperties()
     mFont_FontChanged ("")
     BackColor = &HEEEEEE
     dontAutoLoadLastPreset = False
+    dontAutoUnloadParent = False
     
 End Sub
 
@@ -762,6 +770,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Set Font = .ReadProperty("Font", Ambient.Font)
         BackColor = .ReadProperty("BackColor", &HEEEEEE)
         dontAutoLoadLastPreset = .ReadProperty("AutoloadLastPreset", False)
+        dontAutoUnloadParent = .ReadProperty("dontAutoUnloadParent", False)
     End With
     
 End Sub
@@ -785,8 +794,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
         'Right-align the Cancel and OK buttons
-        CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - fixDPI(8)
-        CmdOK.Left = CmdCancel.Left - CmdOK.Width - fixDPI(8)
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
         
     End If
     
@@ -811,8 +820,8 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
@@ -821,8 +830,8 @@ Private Sub UserControl_Show()
         End With
         
         'Translate all control captions
-        CmdOK.Caption = g_Language.TranslateMessage(CmdOK.Caption)
-        CmdCancel.Caption = g_Language.TranslateMessage(CmdCancel.Caption)
+        cmdOK.Caption = g_Language.TranslateMessage(cmdOK.Caption)
+        cmdCancel.Caption = g_Language.TranslateMessage(cmdCancel.Caption)
         
         'In the IDE, we also need to translate the left-hand buttons
         If Not g_IsProgramCompiled Then
@@ -891,7 +900,7 @@ Private Sub UserControl_Show()
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
     On Error GoTo somethingStoleFocus
-    If g_IsProgramRunning Then CmdOK.SetFocus
+    If g_IsProgramRunning Then cmdOK.SetFocus
 
 somethingStoleFocus:
     
@@ -922,6 +931,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Font", mFont, "Tahoma"
         .WriteProperty "BackColor", BackColor, &HEEEEEE
         .WriteProperty "AutoloadLastPreset", suspendLastUsedAutoLoad, False
+        .WriteProperty "dontAutoUnloadParent", m_dontAutoUnloadParent, False
     End With
     
 End Sub
@@ -1109,7 +1119,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     eControl.Value = CLng(controlValue)
                 
                 Case "smartOptionButton"
-                    eControl.Value = CBool(controlValue)
+                    If CBool(controlValue) Then eControl.Value = CBool(controlValue)
                     
                 'Button strips have a .ListIndex property
                 Case "buttonStrip"

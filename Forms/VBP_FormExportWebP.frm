@@ -49,15 +49,6 @@ Begin VB.Form dialog_ExportWebP
       Width           =   5775
       _ExtentX        =   15055
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   100
       Value           =   80
@@ -81,6 +72,7 @@ Begin VB.Form dialog_ExportWebP
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
