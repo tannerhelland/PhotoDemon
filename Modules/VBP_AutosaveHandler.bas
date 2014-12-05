@@ -132,7 +132,7 @@ Public Function saveableImagesPresent() As Long
     chkFile = Dir(g_UserPreferences.GetTempPath & "~PDU_StackSummary_*_.pdtmp", vbNormal)
     
     'Continue checking potential autosave XML entries until all have been analyzed
-    Do While Len(chkFile) > 0
+    Do While Len(chkFile) <> 0
     
         'First, make sure the file actually contains XML data
         If xmlEngine.loadXMLFile(g_UserPreferences.GetTempPath & chkFile) Then

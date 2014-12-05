@@ -116,7 +116,7 @@ Private Function getMRUHash(ByVal FilePath As String) As String
     prevHash = doesMRUHashExist(FilePath)
     
     'If it does, return it.
-    If Len(prevHash) > 0 Then
+    If Len(prevHash) <> 0 Then
         getMRUHash = prevHash
         Exit Function
     
@@ -307,7 +307,7 @@ Public Sub MRU_SaveToFile()
     
     Dim fileOK As Boolean
     
-    Do While Len(chkFile) > 0
+    Do While Len(chkFile) <> 0
         
         fileOK = False
         

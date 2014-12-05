@@ -580,7 +580,7 @@ Public Function getOSVersionAsString() As String
     buildString = TrimNull(tOSVI.szCSDVersion)
     
     With tOSVI
-        getOSVersionAsString = osName & " " & IIf(Len(buildString) > 0, buildString, "") & osBitness & "(" & .dwMajorVersion & "." & .dwMinorVersion & "." & .dwBuildNumber & ")"
+        getOSVersionAsString = osName & " " & IIf(Len(buildString) <> 0, buildString, "") & osBitness & "(" & .dwMajorVersion & "." & .dwMinorVersion & "." & .dwBuildNumber & ")"
     End With
 
 End Function
@@ -610,7 +610,7 @@ Public Function getProcessorFeatures() As String
     If IsProcessorFeaturePresent(PF_VIRT_FIRMWARE_ENABLED) Then listFeatures = listFeatures & "Virtualization" & ", "
     
     'Trim the trailing comma and blank space
-    If Len(listFeatures) > 0 Then
+    If Len(listFeatures) <> 0 Then
         getProcessorFeatures = Left$(listFeatures, Len(listFeatures) - 2)
     Else
         getProcessorFeatures = "(none)"

@@ -932,7 +932,7 @@ Private Sub cmbPhraseFilter_Click()
         'Translated phrases
         Case 1
             For i = 0 To numOfPhrases - 1
-                If Len(allPhrases(i).Translation) > 0 Then
+                If Len(allPhrases(i).Translation) <> 0 Then
                     lstPhrases.AddItem allPhrases(i).ListBoxEntry
                     lstPhrases.ItemData(lstPhrases.newIndex) = i
                 End If
@@ -1000,7 +1000,7 @@ Private Sub cmdAutoTranslate_Click()
             retString = autoTranslate.getGoogleTranslation(srcPhrase)
             
             'If Google succeeded, store the new translation to file
-            If Len(retString) > 0 Then
+            If Len(retString) <> 0 Then
                 
                 'Store the translation
                 allPhrases(i).Translation = retString
@@ -1127,7 +1127,7 @@ Private Sub cmdNextPhrase_Click()
         Case 2
         
             'If a translation has been provided, this item is no longer part of the "untranslated phrases" group
-            If Len(txtTranslation) > 0 Then
+            If Len(txtTranslation) <> 0 Then
                 
                 newIndex = lstPhrases.ListIndex
                 lstPhrases.RemoveItem lstPhrases.ListIndex
@@ -1577,7 +1577,7 @@ Private Sub lstPhrases_Click()
     ' (contingent on the relevant check box setting)
     lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase")
     
-    If Len(allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation) > 0 Then
+    If Len(allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation) <> 0 Then
         txtTranslation = allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation
         lblTranslatedPhrase = lblTranslatedPhrase & " " & g_Language.TranslateMessage("(saved):")
     Else
@@ -1592,7 +1592,7 @@ Private Sub lstPhrases_Click()
             ' assigning new text.
             Dim retString As String
             retString = autoTranslate.getGoogleTranslation(allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Original)
-            If Len(retString) > 0 Then
+            If Len(retString) <> 0 Then
                 txtTranslation = ""
                 txtTranslation = retString
             Else
@@ -1709,7 +1709,7 @@ Private Sub populateAvailableLanguages()
     For i = 0 To UBound(listOfAvailableLanguages)
     
         'Note that we DO NOT add the English language entry - that is used by the "start a new language file from scratch" option.
-        If StrComp(listOfAvailableLanguages(i).langType, "Default", vbTextCompare) <> 0 Then
+        If StrComp(UCase$(listOfAvailableLanguages(i).langType), "DEFAULT", vbBinaryCompare) <> 0 Then
             Dim listEntry As String
             listEntry = listOfAvailableLanguages(i).langName
             
@@ -1725,7 +1725,7 @@ Private Sub populateAvailableLanguages()
                 listEntry = listEntry & " "
                 listEntry = listEntry & g_Language.TranslateMessage("by")
                 listEntry = listEntry & " "
-                If Len(listOfAvailableLanguages(i).Author) > 0 Then
+                If Len(listOfAvailableLanguages(i).Author) <> 0 Then
                     listEntry = listEntry & listOfAvailableLanguages(i).Author
                 Else
                     listEntry = listEntry & g_Language.TranslateMessage("unknown author")
@@ -1738,7 +1738,7 @@ Private Sub populateAvailableLanguages()
                 listEntry = listEntry & " "
                 listEntry = listEntry & g_Language.TranslateMessage("by")
                 listEntry = listEntry & " "
-                If Len(listOfAvailableLanguages(i).Author) > 0 Then
+                If Len(listOfAvailableLanguages(i).Author) <> 0 Then
                     listEntry = listEntry & listOfAvailableLanguages(i).Author
                 Else
                     listEntry = listEntry & g_Language.TranslateMessage("unknown author")

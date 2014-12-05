@@ -588,7 +588,7 @@ Private Sub Form_Load()
     btsGroup_Click 0
     
     'Technical metadata reports are only available for images that exist on disk
-    If Len(pdImages(g_CurrentImage).locationOnDisk) > 0 Then
+    If Len(pdImages(g_CurrentImage).locationOnDisk) <> 0 Then
         cmdTechnicalReport.Visible = True
     Else
         cmdTechnicalReport.Visible = False
@@ -667,7 +667,7 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         If (btsTechnical(1).ListIndex = 0) Then
             drawString = thisTag.Value
         Else
-            If Len(thisTag.ActualValue) > 0 Then
+            If Len(thisTag.ActualValue) <> 0 Then
                 drawString = thisTag.ActualValue
             Else
                 drawString = thisTag.Value

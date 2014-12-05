@@ -744,7 +744,7 @@ Private Sub UserControl_Show()
     
     'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
     ' using a custom solution (which allows for linebreaks and theming).
-    If Len(Extender.ToolTipText) > 0 Then assignTooltip Extender.ToolTipText
+    If Len(Extender.ToolTipText) <> 0 Then assignTooltip Extender.ToolTipText
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360) Then redrawInternalGradientDIB
@@ -1123,7 +1123,7 @@ End Sub
 ' to change the language at run-time and still have translations work as expected.
 Public Sub assignTooltip(ByVal newTooltip As String)
     m_ToolString = newTooltip
-    If Len(m_ToolString) > 0 Then refreshTooltipObject
+    If Len(m_ToolString) <> 0 Then refreshTooltipObject
 End Sub
 
 'When the program language is changed, the object's tooltip must be retranslated to match.  External functions can

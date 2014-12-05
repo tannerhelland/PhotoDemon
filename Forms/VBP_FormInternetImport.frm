@@ -135,7 +135,7 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
     downloadedFilename = downloadURLToTempFile(URL)
     
     'If the download worked, attempt to load the image.
-    If Len(downloadedFilename) > 0 Then
+    If Len(downloadedFilename) <> 0 Then
     
         Dim sFile(0) As String
         sFile(0) = downloadedFilename

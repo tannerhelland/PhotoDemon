@@ -233,7 +233,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 lastSelParamString = pdImages(g_CurrentImage).undoManager.getLastParamString(UNDO_SELECTION)
                 
                 'If such a param string exists, compare it against the current selection param string
-                If Len(lastSelParamString) > 0 Then
+                If Len(lastSelParamString) <> 0 Then
                 
                     'If the last selection Undo param string does not match the current selection param string, the user has
                     ' modified the selection in some way since the last Undo was created.  Create a new entry now.
@@ -268,7 +268,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     ' as specific data types when it comes time to use them.
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(processParameters) > 0 Then cParams.setParamString processParameters
+    If Len(processParameters) <> 0 Then cParams.setParamString processParameters
     
     '******************************************************************************************************************
     '
@@ -1522,7 +1522,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         'DEBUG FAILSAFE
         ' This function should never be passed a process ID it can't parse, but if that happens, ask the user to report the unparsed ID
         Case Else
-            If Len(processID) > 0 Then pdMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical + vbOKOnly + vbApplicationModal, "Processor Error", processID
+            If Len(processID) <> 0 Then pdMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical + vbOKOnly + vbApplicationModal, "Processor Error", processID
         
     End Select
     

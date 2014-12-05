@@ -202,7 +202,7 @@ Public Sub DetermineLanguage()
         curLanguageFile = g_UserPreferences.GetPref_String("Language", "Current Language File", "")
         
         'If no specific file has been named, use the default language
-        If curLanguageFile = "" Then
+        If Len(curLanguageFile) = 0 Then
             curLanguage = defaultLanguage
         
         'If a file HAS been named, make sure it still exists; if it doesn't, default to English (US) and show the language dialog
@@ -361,7 +361,7 @@ Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
     Dim chkFile As String
     chkFile = Dir(srcFolder & "*.xml", vbNormal)
         
-    Do While (Len(chkFile) > 0)
+    Do While (Len(chkFile) <> 0)
         
         'Use PD's XML engine to load the file
         Set tmpXMLEngine = New pdXML
@@ -425,7 +425,7 @@ Public Sub CheckAvailableLanguages()
     'Mark the location in the array of the default language, as other functions may need to know it
     Dim i As Long
     For i = 0 To numOfLanguages - 1
-        If StrComp(availableLanguages(i).langName, "English (US) - Default", vbTextCompare) = 0 Then defaultLanguage = i
+        If StrComp(UCase$(availableLanguages(i).langName), "ENGLISH (US) - DEFAULT", vbBinaryCompare) = 0 Then defaultLanguage = i
     Next i
     
     'TESTING: display the info we retrieved
@@ -625,7 +625,7 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
         'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
         If translationActive And (InStr(1, searchString, vbCrLf) > 0) Then
             newString = getTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf))
-            If newString = "" Then newString = srcMessage
+            If Len(newString) = 0 Then newString = srcMessage
         Else
             newString = srcMessage
         End If
@@ -715,7 +715,7 @@ Public Sub restoreFormCaption(ByRef srcForm As Form)
     newString = getOriginalTagFromTranslation(searchString)
     
     'If a new string was found, apply it to the object's caption
-    If Len(newString) > 0 Then
+    If Len(newString) <> 0 Then
         If Not (g_WindowManager Is Nothing) Then
             g_WindowManager.requestWindowCaptionChange srcForm, " " & newString
         Else
@@ -738,7 +738,7 @@ Public Sub translateFormCaption(ByRef srcForm As Form)
     End If
     
     'If a new string was found, apply it to the object's caption
-    If Len(newString) > 0 Then
+    If Len(newString) <> 0 Then
         If Not (g_WindowManager Is Nothing) Then
             g_WindowManager.requestWindowCaptionChange srcForm, " " & newString
         Else
@@ -838,13 +838,13 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
             'TESTING ONLY
             'If srcForm.Name <> "FormMain" Then MsgBox eControl.Caption
             
-            If (Len(Trim(eControl.Caption)) > 0) And (Not IsNumeric(eControl.Caption)) Then translateObjectCaption eControl
-            If (Len(Trim(eControl.ToolTipText)) > 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
+            If (Len(Trim(eControl.Caption)) <> 0) And (Not IsNumeric(eControl.Caption)) Then translateObjectCaption eControl
+            If (Len(Trim(eControl.ToolTipText)) <> 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
                         
             'jcButton controls have multiple tooltip entries, including a tooltip title
             If (TypeOf eControl Is jcbutton) Then
-                If (Len(Trim(eControl.TooltipTitle)) > 0) Then eControl.TooltipTitle = TranslateMessage(eControl.TooltipTitle)
-                If (Len(Trim(eControl.ToolTip)) > 0) Then eControl.ToolTip = TranslateMessage(eControl.ToolTip)
+                If (Len(Trim(eControl.TooltipTitle)) <> 0) Then eControl.TooltipTitle = TranslateMessage(eControl.TooltipTitle)
+                If (Len(Trim(eControl.ToolTip)) <> 0) Then eControl.ToolTip = TranslateMessage(eControl.ToolTip)
             End If
             
         End If
@@ -853,7 +853,7 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
         
             eControl.translateCaption
-            If (Len(Trim(eControl.ToolTipText)) > 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
+            If (Len(Trim(eControl.ToolTipText)) <> 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
         
         End If
         

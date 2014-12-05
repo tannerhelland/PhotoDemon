@@ -221,7 +221,7 @@ Private Function getLogID() As Long
     chkFile = Dir(m_logPath & "DebugReport_*.log", vbNormal)
     
     'Continue checking potential autosave XML entries until all have been analyzed
-    Do While Len(chkFile) > 0
+    Do While Len(chkFile) <> 0
         
         'Log this file and increment the file counter
         logFiles(numFiles) = m_logPath & chkFile

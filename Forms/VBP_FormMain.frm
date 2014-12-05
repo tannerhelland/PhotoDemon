@@ -2402,7 +2402,7 @@ Private Sub Form_Load()
     
     Message "Checking command line..."
     
-    If Len(g_CommandLine) > 0 Then
+    If Len(g_CommandLine) <> 0 Then
         Message "Loading requested images..."
         Loading.LoadImagesFromCommandLine
     End If

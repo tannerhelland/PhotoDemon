@@ -1853,12 +1853,12 @@ Dim i                As Long
 
     UserControl.AccessKeys = vbNullString
     If Len(m_Caption) > 1 Then
-        i = InStr(1, m_Caption, "&", vbTextCompare)
+        i = InStr(1, m_Caption, "&", vbBinaryCompare)
         If (i < Len(m_Caption)) And (i > 0) Then
             If Mid$(m_Caption, i + 1, 1) <> "&" Then
                 AccessKeys = LCase$(Mid$(m_Caption, i + 1, 1))
             Else
-                i = InStr(i + 2, m_Caption, "&", vbTextCompare)
+                i = InStr(i + 2, m_Caption, "&", vbBinaryCompare)
                 If Mid$(m_Caption, i + 1, 1) <> "&" Then
                     AccessKeys = LCase$(Mid$(m_Caption, i + 1, 1))
                 End If

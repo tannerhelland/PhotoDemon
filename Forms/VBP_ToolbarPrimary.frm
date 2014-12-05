@@ -711,7 +711,7 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
 
     'Restore the last-used selection tool (which will be saved in the main form's preset file, if it exists)
     g_PreviousTool = -1
-    If Len(lastUsedSettings.retrievePresetData("ActiveSelectionTool")) > 0 Then
+    If Len(lastUsedSettings.retrievePresetData("ActiveSelectionTool")) <> 0 Then
         g_CurrentTool = CLng(lastUsedSettings.retrievePresetData("ActiveSelectionTool"))
     Else
         g_CurrentTool = NAV_DRAG

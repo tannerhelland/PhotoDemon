@@ -431,7 +431,7 @@ Private Function GetMonitorInformation(hMonitor As Long, cMon As clsMonitor) As 
             Dim edidArray() As Byte
             
             'If a device ID was successfully retrieved (this should always happen), attempt to retrieve a matching EDID
-            If (Len(devID) > 0) And (InStr(1, devID, "#") > 0) Then
+            If (Len(devID) <> 0) And (InStr(1, devID, "#") <> 0) Then
             
                 'Convert the device ID to a registry path
                 Dim regPath As String, tmpStringArray() As String
