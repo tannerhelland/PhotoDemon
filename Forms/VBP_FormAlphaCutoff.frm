@@ -3,7 +3,7 @@ Begin VB.Form dialog_AlphaCutoff
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Please Choose A Transparency Threshold"
+   Caption         =   " Please choose a transparency threshold"
    ClientHeight    =   6660
    ClientLeft      =   45
    ClientTop       =   285
@@ -51,6 +51,7 @@ Begin VB.Form dialog_AlphaCutoff
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
@@ -60,15 +61,6 @@ Begin VB.Form dialog_AlphaCutoff
       Width           =   6615
       _ExtentX        =   11456
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   255
       Value           =   127
       NotchPosition   =   2
