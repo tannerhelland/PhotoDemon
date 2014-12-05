@@ -425,7 +425,7 @@ Public Sub CheckAvailableLanguages()
     'Mark the location in the array of the default language, as other functions may need to know it
     Dim i As Long
     For i = 0 To numOfLanguages - 1
-        If StrComp(availableLanguages(i).langName, "English (US) - Default", vbTextCompare) = 0 Then defaultLanguage = i
+        If StrComp(UCase$(availableLanguages(i).langName), "ENGLISH (US) - DEFAULT", vbBinaryCompare) = 0 Then defaultLanguage = i
     Next i
     
     'TESTING: display the info we retrieved

@@ -714,7 +714,7 @@ Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
             
             'Certain actions are irrelevant to this function; in particular, "Fade" and "Repeat" cannot be "faded" or "repeated".
             ' In these instances, we want to continue searching backward, to find the original function that was faded or repeated.
-            If (StrComp(undoStack(i).processID, "Fade", vbTextCompare) <> 0) And (StrComp(undoStack(i).processID, "Repeat", vbTextCompare) <> 0) Then
+            If (StrComp(UCase$(undoStack(i).processID), "FADE", vbBinaryCompare) <> 0) And (StrComp(UCase$(undoStack(i).processID), "REPEAT", vbBinaryCompare) <> 0) Then
                 actionFound = True
                 affectedLayerID = undoStack(i).undoLayerID
                 nameOfProcessorAction = undoStack(i).processID

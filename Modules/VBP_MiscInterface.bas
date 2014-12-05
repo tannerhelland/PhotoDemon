@@ -1405,7 +1405,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
             
                 'Check the last param passed.  If it's the string "DONOTLOG", do not log this entry.  (PD sometimes uses this
                 ' to avoid logging useless data, like layer hover events or download updates.)
-                If StrComp(CStr(ExtraText(UBound(ExtraText))), "DONOTLOG", vbTextCompare) <> 0 Then
+                If StrComp(UCase$(CStr(ExtraText(UBound(ExtraText)))), "DONOTLOG", vbBinaryCompare) <> 0 Then
                     pdDebug.LogAction tmpDupeCheckString, PDM_USER_MESSAGE
                 End If
             
