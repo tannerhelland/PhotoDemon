@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 
 '***************************************************************************
 'Google Translate Interface
-'Copyright ©2013-2014 by Frank Donckers
+'Copyright Â©2013-2014 by Frank Donckers
 'Created: 19/February/13
 'Last updated: 10/September/13
 'Last update: (by Tanner) moved all relevant code into this singular class, various minor modifications
@@ -151,7 +151,7 @@ RetryTranslation:
     ' added to translated text for no good reason - so remove these in an attempt to preserve the original
     ' text as much as possible.
     If InStr(processedHTML, "&gt;") <> 0 Then processedHTML = Replace(processedHTML, "&gt;", ">", 1, , vbTextCompare)
-    If InStr(processedHTML, "&lt;") <> 0 Then pprocessedHTML = Replace(processedHTML, "&lt;", "<", 1, , vbTextCompare)
+    If InStr(processedHTML, "&lt;") <> 0 Then processedHTML = Replace(processedHTML, "&lt;", "<", 1, , vbTextCompare)
     If InStr(processedHTML, "&amp;") <> 0 Then processedHTML = Replace(processedHTML, "&amp;", "&", 1, , vbTextCompare)
     If InStr(processedHTML, vbTab) <> 0 Then processedHTML = Replace(processedHTML, vbTab, "", 1, , vbTextCompare)
     If InStr(processedHTML, "( ") <> 0 Then processedHTML = Replace(processedHTML, "( ", "(", 1, , vbTextCompare)
@@ -161,11 +161,11 @@ RetryTranslation:
     If InStr(processedHTML, " .") <> 0 Then processedHTML = Replace(processedHTML, " .", ".", 1, , vbTextCompare)
     If InStr(processedHTML, " \") <> 0 Then processedHTML = Replace(processedHTML, " \ ", "\", 1, , vbTextCompare)
     If InStr(processedHTML, " /") <> 0 Then processedHTML = Replace(processedHTML, " / ", "/", 1, , vbTextCompare)
-    If InStr(processedHTML, "»") <> 0 Then processedHTML = Replace(processedHTML, "»", "'", 1, , vbTextCompare)
-    If InStr(processedHTML, "«") <> 0 Then processedHTML = Replace(processedHTML, "«", "'", 1, , vbTextCompare)
+    If InStr(processedHTML, "Â»") <> 0 Then processedHTML = Replace(processedHTML, "Â»", "'", 1, , vbTextCompare)
+    If InStr(processedHTML, "Â«") <> 0 Then processedHTML = Replace(processedHTML, "Â«", "'", 1, , vbTextCompare)
     If InStr(processedHTML, "% ") <> 0 Then processedHTML = Replace(processedHTML, "% ", " %", 1, , vbTextCompare)
     
-    'Thanks to Zhu JY for pointing out that «/» are not handled properly under some localizations, so use their
+    'Thanks to Zhu JY for pointing out that Â«/Â» are not handled properly under some localizations, so use their
     ' character codes instead.
     If InStr(processedHTML, Chr$(174)) <> 0 Then processedHTML = Replace(processedHTML, Chr$(174), "'", 1, , vbTextCompare)
     If InStr(processedHTML, Chr$(175)) <> 0 Then processedHTML = Replace(processedHTML, Chr$(175), "'", 1, , vbTextCompare)
