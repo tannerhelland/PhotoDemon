@@ -1709,7 +1709,7 @@ Private Sub populateAvailableLanguages()
     For i = 0 To UBound(listOfAvailableLanguages)
     
         'Note that we DO NOT add the English language entry - that is used by the "start a new language file from scratch" option.
-        If StrComp(listOfAvailableLanguages(i).langType, "Default", vbTextCompare) <> 0 Then
+        If StrComp(UCase$(listOfAvailableLanguages(i).langType), "DEFAULT", vbBinaryCompare) <> 0 Then
             Dim listEntry As String
             listEntry = listOfAvailableLanguages(i).langName
             

@@ -434,7 +434,7 @@ Public Function GetDomainName(ByVal Address As String) As String
     End If
         
     strOutput = Right$(strOutput, Len(strOutput) - lngBCount)
-    strOutput = Left$(strOutput, InStr(1, strOutput, "/", vbTextCompare) - 1)
+    strOutput = Left$(strOutput, InStr(1, strOutput, "/", vbBinaryCompare) - 1)
     GetDomainName = strOutput
 
 End Function
