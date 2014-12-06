@@ -152,7 +152,6 @@ End Property
 
 Public Property Let Enabled(ByVal NewValue As Boolean)
     UserControl.Enabled = NewValue
-    vsPrimary.Enabled = NewValue
     txtPrimary.Enabled = NewValue
     PropertyChanged "Enabled"
 End Property
