@@ -374,6 +374,7 @@ Private Sub Form_Load()
     GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html", True
     GenerateThankyou "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock", True
     GenerateThankyou "Google Translate", "http://translate.google.com", True
+    GenerateThankyou "Hans Nolte", "https://github.com/hansnolte", True
     GenerateThankyou "Helmut Kuerbiss"
     GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1", True
     GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html", True
@@ -388,11 +389,13 @@ Private Sub Form_Load()
     GenerateThankyou "Paul Bourke", "http://paulbourke.net/miscellaneous/", True
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx", True
     GenerateThankyou "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/", True
+    GenerateThankyou "PortableFreeware.com team", "http://www.portablefreeware.com/forums/viewtopic.php?t=21652", True
     GenerateThankyou "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1", True
     GenerateThankyou "Rod Stephens", "http://www.vb-helper.com", True
     GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp", True
     GenerateThankyou "Tango Icon Library", "http://tango.freedesktop.org/", True
     GenerateThankyou "Tom Loos", "http://www.designedbyinstinct.com", True
+    GenerateThankyou "Will Stampfer", "https://github.com/epmatsw", True
     GenerateThankyou "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/", True
     GenerateThankyou "Zhu JinYong", "http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=2211529461&lngWId=1", True
     GenerateThankyou ""

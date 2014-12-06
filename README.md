@@ -1,4 +1,4 @@
-# PhotoDemon 6.4
+# PhotoDemon 6.6 alpha
 
 ![PhotoDemon Screenshot] (http://photodemon.org/images/PD_64.jpg)
 
@@ -39,10 +39,10 @@ Most free, open-source image editors are usability nightmares. PhotoDemon tries 
 
 ### What doesn't PhotoDemon do?
 
-* The current release (6.4) does not support text layers.  Text layers are planned for the next release.
-* The current release (6.4) does not generally support Unicode filenames, folders, or text entry.  Improved Unicode support is planned for the next release.
-* The current release (6.4) does not provide any on-canvas painting tools.  Some on-canvas paint tools are planned for the next release.
-* The current release (6.4) may not integrate well with high-contrast Windows themes, or non-standard Windows themes.  Improvements to theming are planned for the next release.
+* The current release (6.6a) does not support text layers.  Text layers are planned for the next release.
+* The current release (6.6a) does not generally support Unicode filenames, folders, or text entry.  Improved Unicode support is planned for the next release.
+* The current release (6.6a) does not provide any on-canvas painting tools.  Some on-canvas paint tools are planned for the next release.
+* The current release (6.6a) may not integrate well with high-contrast Windows themes, or non-standard Windows themes.  Improvements to theming are planned for the next release.
 * PhotoDemon isn't designed for OSes other than Microsoft Windows.  A compatibility layer like Wine (http://www.winehq.org/) may allow PhotoDemon to work on OSX, Linux, BSD, Solaris, or Maemo systems, but program stability and performance may suffer.
 
 ### How can I get involved? 
@@ -82,11 +82,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ### Who has contributed to PhotoDemon's development?
 
 PhotoDemon would not be possible without the help of many talented contributors, including...
+* Helmut Kuerbiss for maintaining (and hand-editing!) the German language file.
+* Will Stampfer for a comprehensive code review and multiple optimization and bug-fix patches
+(https://github.com/epmatsw)
+* Hans Nolte for many improvements to HDR image format handling
+(https://github.com/hansnolte)
+* Zhu JinYong for a great deal of Unicode testing and help
+(http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66273&lngWId=1)
+* The portablefreeware.com team for helping me debug a nasty Windows 7 crash
+(http://www.portablefreeware.com/forums/viewtopic.php?t=21652)
 * Frank Donckers for extensive help with the translation engine. Frank also maintains the Dutch and French language files.
 (http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=2213335741)
 * GioRock for the Italian language file and extensive debugging (http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266)
 * Audioglider for the development of many Adjustment and Effect tools, including Channel Mixer, Vibrance, Exposure, Sunshine, Bilateral Smoothing, Lens Flare, and more (https://github.com/audioglider)
-* Helmut Kuerbiss for maintaining (and hand-editing!) the German language file.
 * Robert Rayment for detailed research and bug-testing  (http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1)
 * Rod Stephens and VB-Helper.com for a themable, multiline-supporting tooltip class (http://www.vb-helper.com/howto_multi_line_tooltip.html)
 * Kroc of camendesign.com for the bluDownload library and debugging contributions (http://camendesign.com)
@@ -115,4 +123,4 @@ PhotoDemon would not be possible without the help of many talented contributors,
 * vbForums.com user dilettante for an asynchronous piping custom control and lightweight binary stream class (http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control)
 * Tom Loos for additional Windows 8/8.1 testing
 (http://www.designedbyinstinct.com)
-* All those who have contributed patches, bug reports, and donations, with extra special thanks to: Mohammad Reza, A.G. Violette, Abhijit Mhapsekar, Allan Lima, Zhu JinYong, Andrew Yeoman, Dave Jamison, Alfred Hellmueller.
+* All those who have contributed patches, bug reports, and donations, with extra special thanks to: Mohammad Reza, A.G. Violette, Abhijit Mhapsekar, Allan Lima, Andrew Yeoman, Dave Jamison, Alfred Hellmueller.
