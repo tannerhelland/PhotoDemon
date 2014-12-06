@@ -344,7 +344,7 @@ Private Sub txtPrimary_KeyUp(KeyCode As Integer, Shift As Integer)
     If IsTextEntryValid() Then
         If shpError.Visible Then shpError.Visible = False
         textBoxInitiated = True
-        vsPrimary.Value = Val(txtPrimary) * -1 * (10 ^ significantDigits)
+        vsPrimary.Value = CDblCustom(txtPrimary) * -1 * (10 ^ significantDigits)
         textBoxInitiated = False
     Else
         shpError.Visible = True
