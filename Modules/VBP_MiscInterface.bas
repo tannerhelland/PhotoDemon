@@ -1440,7 +1440,28 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         If MacroStatus = MacroSTART Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
         
         'Post the message to the screen
-        If MacroStatus <> MacroBATCH Then FormMain.mainCanvas(0).displayCanvasMessage newString
+        If MacroStatus <> MacroBATCH Then
+            
+            'If the window is disabled, it will not refresh when new messages are posted.  We can work around this limitation
+            ' by toggling the state immediately prior to updating, then restoring the state afterward
+            
+            'Make a backup of the current form state
+            Dim curMainFormState As Boolean, curMainFormCursor As Long
+            curMainFormState = FormMain.Enabled
+            curMainFormCursor = Screen.MousePointer
+            
+            'Display the message
+            If Not (curMainFormState) Then FormMain.Enabled = True
+            FormMain.mainCanvas(0).displayCanvasMessage newString
+            Replacement_DoEvents FormMain.mainCanvas(0).hWnd
+            
+            'Restore original form state (only relevant if we had to change state to display the message)
+            If Not (curMainFormState) Then
+                FormMain.Enabled = False
+                Screen.MousePointer = curMainFormCursor
+            End If
+            
+        End If
         
         'Update the global "previous message" string, so external functions can access it.
         g_LastPostedMessage = newString
