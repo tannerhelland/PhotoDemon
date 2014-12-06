@@ -2105,6 +2105,60 @@ Public Function SaveHDRImage(ByRef srcPDImage As pdImage, ByVal HDRPath As Strin
             Exit Function
         End If
         
+        'Prior to saving, we must account for default 2.2 gamma correction.  We do this by iterating through the source, and modifying gamma
+        ' values as we go.  (If we reduce gamma prior to RGBF conversion, quality will obviously be impacted due to clipping.)
+        
+        'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
+        Dim srcImageData() As Single
+        Dim srcSA As SAFEARRAY1D
+        
+        'Iterate through each scanline in the source image, copying it to destination as we go.
+        Dim iWidth As Long, iHeight As Long, iScanWidth As Long, iLoopWidth As Long
+        iWidth = FreeImage_GetWidth(fi_FloatDIB) - 1
+        iHeight = FreeImage_GetHeight(fi_FloatDIB) - 1
+        iScanWidth = FreeImage_GetPitch(fi_FloatDIB)
+        iLoopWidth = FreeImage_GetWidth(fi_FloatDIB) * 3 - 1
+        
+        Dim srcF As Single
+        
+        Dim gammaCorrection As Double
+        gammaCorrection = 1# / (1# / 2.2)
+        
+        Dim x As Long, y As Long
+        
+        For y = 0 To iHeight
+            
+            'Point a 1D VB array at this scanline
+            With srcSA
+                .cbElements = 4
+                .cDims = 1
+                .lBound = 0
+                .cElements = iScanWidth
+                .pvData = FreeImage_GetScanline(fi_FloatDIB, y)
+            End With
+            CopyMemory ByVal VarPtrArray(srcImageData), VarPtr(srcSA), 4
+            
+            'Iterate through this line, converting values as we go
+            For x = 0 To iLoopWidth
+                
+                'Retrieve the source values
+                srcF = srcImageData(x)
+                
+                'Apply 1/2.2 gamma correction
+                If srcF > 0 Then
+                    srcF = srcF ^ gammaCorrection
+                    srcImageData(x) = srcF
+                End If
+                
+            Next x
+            
+            'Free our 1D array reference
+            CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+            
+        Next y
+        
+        
+        'With gamma properly accounted for, we can now write the image out to file.
         Dim fi_Check As Long
         fi_Check = FreeImage_Save(FIF_HDR, fi_FloatDIB, HDRPath, 0)
         
