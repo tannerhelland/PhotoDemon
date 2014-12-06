@@ -263,32 +263,39 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             ' of the image before saving it - which makes it much faster - but FreeImage provides a number of additional
             ' parameters, like optimization, thumbnail embedding, and custom subsampling.  If no optional parameters are in use
             ' (or if FreeImage is unavailable), use GDI+.  Otherwise, use FreeImage.
+            beginSaveProcess
+            
             If g_ImageFormats.FreeImageEnabled And (cParams.doesParamExist(2) Or cParams.doesParamExist(3)) Then
-                Screen.MousePointer = vbHourglass
                 updateMRU = SaveJPEGImage(srcPDImage, dstPath, cParams.getParamString)
-                Screen.MousePointer = vbDefault
+                
             ElseIf g_ImageFormats.GDIPlusEnabled Then
-                Screen.MousePointer = vbHourglass
                 updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageJPEG, 24, cParams.GetLong(1, 92))
-                Screen.MousePointer = vbDefault
             Else
+                
                 Message "No %1 encoder found. Save aborted.", "JPEG"
                 PhotoDemon_SaveImage = False
+                endSaveProcess
                 
                 Exit Function
+                
             End If
             
             
         'PDI, PhotoDemon's internal format
         Case FIF_PDI
+        
             If g_ZLibEnabled Then
+                beginSaveProcess
                 updateMRU = SavePhotoDemonImage(srcPDImage, dstPath, , , , , , True)
             Else
-            'If zLib doesn't exist...
+            
+                'If zLib doesn't exist...
                 pdMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
                 Message "No %1 encoder found. Save aborted.", "PDI"
+                endSaveProcess
                 
                 Exit Function
+                
             End If
         
         'GIF
@@ -296,18 +303,26 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         
             'GIFs are preferentially exported by FreeImage, then GDI+ (if available)
             If g_ImageFormats.FreeImageEnabled Then
+                
+                beginSaveProcess
+                
                 If Not cParams.doesParamExist(1) Then
                     updateMRU = SaveGIFImage(srcPDImage, dstPath)
                 Else
                     updateMRU = SaveGIFImage(srcPDImage, dstPath, cParams.GetLong(1))
                 End If
+                
             ElseIf g_ImageFormats.GDIPlusEnabled Then
+                beginSaveProcess
                 updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageGIF, 8)
             Else
+            
                 Message "No %1 encoder found. Save aborted.", "GIF"
                 PhotoDemon_SaveImage = False
+                endSaveProcess
                 
                 Exit Function
+                
             End If
             
         'PNG
@@ -322,24 +337,31 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             End If
             
             'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
+            beginSaveProcess
+            
             If g_ImageFormats.FreeImageEnabled Then
                 updateMRU = SavePNGImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             ElseIf g_ImageFormats.GDIPlusEnabled Then
                 updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImagePNG, outputColorDepth)
             Else
+            
                 Message "No %1 encoder found. Save aborted.", "PNG"
                 PhotoDemon_SaveImage = False
+                endSaveProcess
                 
                 Exit Function
+                
             End If
             
         'PPM
         Case FIF_PPM
+            beginSaveProcess
             If Not cParams.doesParamExist(1) Then cParams.setParamString Str(g_UserPreferences.GetPref_Long("File Formats", "PPM Export Format", 0))
             updateMRU = SavePPMImage(srcPDImage, dstPath, cParams.getParamString)
                 
         'TGA
         Case FIF_TARGA
+            beginSaveProcess
             If Not cParams.doesParamExist(1) Then cParams.setParamString Str(g_UserPreferences.GetPref_Boolean("File Formats", "TGA RLE", False))
             updateMRU = SaveTGAImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
@@ -356,10 +378,13 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     srcPDImage.imgStorage.Item("hasSeenJP2Prompt") = True
                     PhotoDemon_SaveImage = True
                 Else
+                
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
+                    endSaveProcess
                     
                     Exit Function
+                    
                 End If
                 
                 'If the user clicked OK, replace the functions save parameters with the ones set by the user
@@ -369,7 +394,8 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
             'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
             srcPDImage.saveParameters = cParams.getParamString
-        
+            
+            beginSaveProcess
             updateMRU = SaveJP2Image(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
         'TIFF
@@ -381,15 +407,20 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             End If
             
             'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
+            beginSaveProcess
+            
             If g_ImageFormats.FreeImageEnabled Then
                 updateMRU = SaveTIFImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             ElseIf g_ImageFormats.GDIPlusEnabled Then
                 updateMRU = GDIPlusSavePicture(srcPDImage, dstPath, ImageTIFF, outputColorDepth)
             Else
+            
                 Message "No %1 encoder found. Save aborted.", "TIFF"
                 PhotoDemon_SaveImage = False
+                endSaveProcess
                 
                 Exit Function
+                
             End If
         
         'WebP
@@ -405,10 +436,13 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     srcPDImage.imgStorage.Item("hasSeenWebPPrompt") = True
                     PhotoDemon_SaveImage = True
                 Else
+                
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
+                    endSaveProcess
                     
                     Exit Function
+                    
                 End If
                 
                 'If the user clicked OK, replace the functions save parameters with the ones set by the user
@@ -418,7 +452,8 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
             'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
             srcPDImage.saveParameters = cParams.getParamString
-        
+            
+            beginSaveProcess
             updateMRU = SaveWebPImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
         
         'JPEG XR
@@ -434,10 +469,13 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     srcPDImage.imgStorage.Item("hasSeenJXRPrompt") = True
                     PhotoDemon_SaveImage = True
                 Else
+                
                     PhotoDemon_SaveImage = False
                     Message "Save canceled."
+                    endSaveProcess
                     
                     Exit Function
+                    
                 End If
                 
                 'If the user clicked OK, replace the functions save parameters with the ones set by the user
@@ -447,7 +485,8 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
             'Store the JPEG-2000 quality in the image object so we don't have to pester the user for it if they save again
             srcPDImage.saveParameters = cParams.getParamString
-        
+            
+            beginSaveProcess
             updateMRU = SaveJXRImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
         'BMP
@@ -455,15 +494,21 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
             'If the user has not provided explicit BMP parameters, load their default values from the preferences file
             If Not cParams.doesParamExist(1) Then cParams.setParamString Str(g_UserPreferences.GetPref_Boolean("File Formats", "Bitmap RLE", False))
+            
+            beginSaveProcess
             updateMRU = SaveBMP(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
         
         'HDR
         Case FIF_HDR
+            beginSaveProcess
             updateMRU = SaveHDRImage(srcPDImage, dstPath)
         
         Case Else
+        
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
             PhotoDemon_SaveImage = False
+            endSaveProcess
+            
             Exit Function
         
     End Select
@@ -491,6 +536,9 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         End If
         
     End If
+    
+    'At this point, it's safe to re-enable the main form and restore the default cursor
+    endSaveProcess
     
     'UpdateMRU should only be true if the save was successful
     If updateMRU And (Not suspendMRUUpdating) Then
@@ -2628,3 +2676,22 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
     End If
 
 End Function
+
+'Some image formats can take a long time to write, especially if the image is large.  As a failsafe, call this function prior to
+' initiating a save request.  Just make sure to call the counterpart function when saving completes (or if saving fails); otherwise, the
+' main form will be disabled!
+Private Sub beginSaveProcess()
+
+    'Disable the main form and set a busy cursor
+    FormMain.Enabled = False
+    Screen.MousePointer = vbHourglass
+
+End Sub
+
+Private Sub endSaveProcess()
+
+    'Re-enable the main form and restore the default cursor
+    FormMain.Enabled = True
+    Screen.MousePointer = vbDefault
+
+End Sub
