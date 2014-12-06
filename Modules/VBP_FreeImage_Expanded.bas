@@ -880,54 +880,43 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
     
         'Linear map
         Case PDTM_LINEAR
-        
-            'FreeImage can perform some linear conversions for us, depending on the source image's bit-depth
-            If fi_DataType = FIT_RGB16 Then
-                applyToneMapping = FreeImage_ConvertTo24Bits(fi_Handle)
                 
-            ElseIf fi_DataType = FIT_RGBA16 Then
-                applyToneMapping = FreeImage_ConvertTo32Bits(fi_Handle)
+            newHandle = fi_Handle
+            
+            'For performance reasons, I've only written a single RGBF/RGBAF-based linear transform.  If the image is not in one
+            ' of these formats, convert it now.
+            If (fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF) Then
                 
-            'Other data types must be converted manually.
-            Else
+                'In the future, a transparency-friendly conversion may become available.  For now, however, transparency
+                ' is sacrificed as part of the conversion function (as FreeImage does not provide an RGBAF cast).
+                rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
                 
-                newHandle = fi_Handle
-                
-                'For performance reasons, I've only written a single RGBF/RGBAF-based linear transform.  If the image is not in one
-                ' of these formats, convert it now.
-                If (fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF) Then
-                    
-                    'In the future, a transparency-friendly conversion may become available.  For now, however, transparency
-                    ' is sacrificed as part of the conversion function (as FreeImage does not provide an RGBAF cast).
-                    rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
-                    
-                    If rgbfHandle = 0 Then
-                        applyToneMapping = 0
-                        Exit Function
-                    End If
-                    
-                    newHandle = rgbfHandle
-                    
+                If rgbfHandle = 0 Then
+                    applyToneMapping = 0
+                    Exit Function
                 End If
                 
-                'At this point, fi_Handle now represents a 24bpp RGBF type FreeImage DIB.  Apply manual tone-mapping now.
-                newHandle = convertFreeImageRGBFTo24bppDIB(newHandle, PD_BOOL_FALSE, False)
+                newHandle = rgbfHandle
                 
-                'Unload the intermediate RGBF handle as necessary
-                If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
-                
-                applyToneMapping = newHandle
-            
             End If
+            
+            'At this point, fi_Handle now represents a 24bpp RGBF type FreeImage DIB.  Apply manual tone-mapping now.
+            newHandle = convertFreeImageRGBFTo24bppDIB(newHandle, cParams.GetLong(3), False, cParams.GetDouble(2))
+            
+            'Unload the intermediate RGBF handle as necessary
+            If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
+            
+            applyToneMapping = newHandle
             
         
         'Adaptive logarithmic map
         Case PDTM_ADAPTIVE_LOGARITHMIC
-            applyToneMapping = FreeImage_ToneMapping(fi_Handle, FITMO_DRAGO03, 0, 0)
+            applyToneMapping = FreeImage_TmoDrago03(fi_Handle, cParams.GetDouble(2), cParams.GetDouble(3))
             
         'Photoreceptor map
         Case PDTM_PHOTORECEPTOR
-            applyToneMapping = FreeImage_ToneMapping(fi_Handle, FITMO_REINHARD05, 0, 0)
+            
+            applyToneMapping = FreeImage_TmoReinhard05Ex(fi_Handle, cParams.GetDouble(2), ByVal 0#, cParams.GetDouble(3), cParams.GetDouble(4))
             
         'Custom map, using settings supplied by the user
         Case PDTM_MANUAL
@@ -952,7 +941,7 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             End If
             
             'At this point, fi_Handle now represents a 24bpp RGBF type FreeImage DIB.  Apply manual tone-mapping now.
-            newHandle = convertFreeImageRGBFTo24bppDIB(newHandle, PD_BOOL_FALSE, False)
+            newHandle = convertFreeImageRGBFTo24bppDIB(newHandle, PD_BOOL_AUTO, False)
             
             'Unload the intermediate RGBF handle as necessary
             If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
@@ -974,7 +963,7 @@ End Function
 '
 'OTHER IMPORTANT NOTE: it's probably obvious, but the 24bpp handle this function returns (if successful) must also be freed by the caller.
 ' Forget this, and the function will leak.
-Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal toNormalize As PD_BOOL = PD_BOOL_AUTO, Optional ByVal ignoreNegative As Boolean = False) As Long
+Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal toNormalize As PD_BOOL = PD_BOOL_AUTO, Optional ByVal ignoreNegative As Boolean = False, Optional ByVal newGamma As Double = 2.2) As Long
     
     'Before doing anything, check the incoming fi_Handle.  For performance reasons, this function only handles RGBF and RGBAF formats.
     ' Other formats are invalid.
@@ -1055,6 +1044,10 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     
     Dim qvDepth As Long
     If fi_DataType = FIT_RGBF Then qvDepth = 3 Else qvDepth = 4
+    
+    'Prep any other post-processing adjustments
+    Dim gammaCorrection As Double
+    gammaCorrection = 1 / newGamma
     
     'Due to the potential math involved in conversion (if gamma and other settings are being toggled), we need a lot of intermediate variables.
     ' Depending on the user's settings, some of these may go unused.
@@ -1138,6 +1131,14 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
                 
             End If
                         
+            'Apply gamma now (if any).  Unfortunately, lookup tables aren't an option because we're dealing with floating-point input,
+            ' so this step is a little slow due to the exponent operator.
+            If newGamma <> 1# Then
+                If rDstF > 0 Then rDstF = rDstF ^ gammaCorrection
+                If gDstF > 0 Then gDstF = gDstF ^ gammaCorrection
+                If bDstF > 0 Then bDstF = bDstF ^ gammaCorrection
+            End If
+            
             'In the future, gamma correction, etc could be applied here.
             
             'Apply failsafe range checks now
