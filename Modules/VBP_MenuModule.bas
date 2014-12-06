@@ -288,7 +288,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     
             'The user may have loaded a file format where INPUT is supported but OUTPUT is not.  If this happens,
             ' we need to suggest an alternative format.  Use the color-depth of the current image as our guide.
-            If g_LastSaveFilter = -1 Then
+            If g_LastSaveFilter = 0 Then
                 
                 '24bpp DIBs default to JPEG
                 If pdImages(g_CurrentImage).getCompositeImageColorDepth() = 24 Then
