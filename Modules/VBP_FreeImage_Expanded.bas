@@ -912,16 +912,6 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             
             applyToneMapping = newHandle
             
-        
-        'Adaptive logarithmic map
-        Case PDTM_DRAGO
-            applyToneMapping = FreeImage_TmoDrago03(fi_Handle, cParams.GetDouble(2), cParams.GetDouble(3))
-            
-        'Photoreceptor map
-        Case PDTM_REINHARD
-            
-            applyToneMapping = FreeImage_TmoReinhard05Ex(fi_Handle, cParams.GetDouble(2), ByVal 0#, cParams.GetDouble(3), cParams.GetDouble(4))
-            
         'Filmic tone-map; basically a nice S-curve with an emphasis on rich blacks
         Case PDTM_FILMIC
             
@@ -951,6 +941,15 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
             
             applyToneMapping = newHandle
+        
+        'Adaptive logarithmic map
+        Case PDTM_DRAGO
+            applyToneMapping = FreeImage_TmoDrago03(fi_Handle, cParams.GetDouble(2), cParams.GetDouble(3))
+            
+        'Photoreceptor map
+        Case PDTM_REINHARD
+            applyToneMapping = FreeImage_TmoReinhard05Ex(fi_Handle, cParams.GetDouble(2), ByVal 0#, cParams.GetDouble(3), cParams.GetDouble(4))
+        
     
     End Select
 
