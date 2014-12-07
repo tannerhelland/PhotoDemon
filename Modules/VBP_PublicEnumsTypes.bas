@@ -318,11 +318,11 @@ End Enum
 'Tone-mapping is required for high bit-depth images.  PhotoDemon supports a variety of tone-map operations.
 Public Enum PD_TONE_MAP
     PDTM_LINEAR = 0
-    PDTM_ADAPTIVE_LOGARITHMIC = 1
-    PDTM_PHOTORECEPTOR = 2
-    PDTM_MANUAL = 3
+    PDTM_DRAGO = 1
+    PDTM_REINHARD = 2
+    PDTM_FILMIC = 3
 End Enum
 
 #If False Then
-    Private Const PDTM_LINEAR = 0, PDTM_ADAPTIVE_LOGARITHMIC = 1, PDTM_PHOTORECEPTOR = 2, PDTM_MANUAL = 3
+    Private Const PDTM_LINEAR = 0, PDTM_DRAGO = 1, PDTM_REINHARD = 2, PDTM_FILMIC = 3
 #End If

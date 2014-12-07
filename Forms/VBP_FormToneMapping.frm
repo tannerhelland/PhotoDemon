@@ -31,10 +31,18 @@ Begin VB.Form dialog_ToneMapping
       TabIndex        =   2
       Top             =   5910
       Width           =   11655
-      _extentx        =   20558
-      _extenty        =   1323
-      font            =   "VBP_FormToneMapping.frx":0000
-      dontautounloadparent=   -1
+      _ExtentX        =   20558
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      dontAutoUnloadParent=   -1  'True
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -56,11 +64,19 @@ Begin VB.Form dialog_ToneMapping
       TabIndex        =   3
       Top             =   5490
       Width           =   6660
-      _extentx        =   11748
-      _extenty        =   582
-      caption         =   "in the future, automatically apply these settings"
-      font            =   "VBP_FormToneMapping.frx":0028
-      value           =   2
+      _ExtentX        =   11748
+      _ExtentY        =   582
+      Caption         =   "in the future, automatically apply these settings"
+      Value           =   0
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.buttonStrip btsMethod 
       Height          =   720
@@ -68,19 +84,211 @@ Begin VB.Form dialog_ToneMapping
       TabIndex        =   4
       Top             =   1200
       Width           =   6615
-      _extentx        =   9790
-      _extenty        =   1058
-      font            =   "VBP_FormToneMapping.frx":0050
+      _ExtentX        =   9790
+      _ExtentY        =   1058
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3255
+      Height          =   3375
+      Index           =   0
+      Left            =   4800
+      ScaleHeight     =   225
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   457
+      TabIndex        =   5
+      Top             =   2040
+      Width           =   6855
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   0
+         Left            =   120
+         Top             =   0
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "gamma"
+         FontSize        =   11
+      End
+      Begin PhotoDemon.sliderTextCombo sltGamma 
+         Height          =   495
+         Index           =   0
+         Left            =   120
+         TabIndex        =   7
+         Top             =   360
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   873
+         ForeColor       =   0
+         Min             =   1
+         Max             =   5
+         SigDigits       =   2
+         Value           =   2.2
+         NotchPosition   =   2
+         NotchValueCustom=   2.2
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   9
+         Left            =   120
+         Top             =   960
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "normalize"
+         FontSize        =   11
+      End
+      Begin PhotoDemon.smartOptionButton optNormalize 
+         Height          =   330
+         Index           =   0
+         Left            =   360
+         TabIndex        =   18
+         Top             =   1380
+         Width           =   6255
+         _ExtentX        =   11033
+         _ExtentY        =   582
+         Caption         =   "none"
+         Value           =   -1  'True
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optNormalize 
+         Height          =   330
+         Index           =   1
+         Left            =   360
+         TabIndex        =   19
+         Top             =   1740
+         Width           =   6255
+         _ExtentX        =   11033
+         _ExtentY        =   582
+         Caption         =   "visible spectrum"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+      Begin PhotoDemon.smartOptionButton optNormalize 
+         Height          =   330
+         Index           =   2
+         Left            =   360
+         TabIndex        =   20
+         Top             =   2100
+         Width           =   6255
+         _ExtentX        =   11033
+         _ExtentY        =   582
+         Caption         =   "full spectrum"
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3375
+      Index           =   1
+      Left            =   4800
+      ScaleHeight     =   225
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   457
+      TabIndex        =   8
+      Top             =   2040
+      Visible         =   0   'False
+      Width           =   6855
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   2
+         Left            =   120
+         Top             =   0
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "gamma"
+         FontSize        =   11
+      End
+      Begin PhotoDemon.sliderTextCombo sltGamma 
+         Height          =   495
+         Index           =   1
+         Left            =   120
+         TabIndex        =   9
+         Top             =   360
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   873
+         ForeColor       =   0
+         Min             =   1
+         Max             =   5
+         SigDigits       =   2
+         Value           =   2.2
+         NotchPosition   =   2
+         NotchValueCustom=   2.2
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   3
+         Left            =   120
+         Top             =   960
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "exposure"
+         FontSize        =   11
+      End
+      Begin PhotoDemon.sliderTextCombo sltExposure 
+         Height          =   495
+         Index           =   0
+         Left            =   120
+         TabIndex        =   10
+         Top             =   1320
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   873
+         ForeColor       =   0
+         Min             =   -8
+         Max             =   8
+         SigDigits       =   2
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3375
       Index           =   2
       Left            =   4800
-      ScaleHeight     =   217
+      ScaleHeight     =   225
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   457
       TabIndex        =   6
@@ -93,10 +301,10 @@ Begin VB.Form dialog_ToneMapping
          Left            =   120
          Top             =   0
          Width           =   6495
-         _extentx        =   11456
-         _extenty        =   582
-         caption         =   "intensity"
-         fontsize        =   11
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "intensity"
+         FontSize        =   11
       End
       Begin PhotoDemon.sliderTextCombo sltIntensity 
          Height          =   495
@@ -104,12 +312,12 @@ Begin VB.Form dialog_ToneMapping
          TabIndex        =   11
          Top             =   360
          Width           =   6615
-         _extentx        =   11668
-         _extenty        =   873
-         forecolor       =   0
-         min             =   -4
-         max             =   4
-         sigdigits       =   2
+         _ExtentX        =   11668
+         _ExtentY        =   873
+         ForeColor       =   0
+         Min             =   -4
+         Max             =   4
+         SigDigits       =   2
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   330
@@ -117,10 +325,10 @@ Begin VB.Form dialog_ToneMapping
          Left            =   120
          Top             =   960
          Width           =   6495
-         _extentx        =   11456
-         _extenty        =   582
-         caption         =   "adaptation"
-         fontsize        =   11
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "adaptation"
+         FontSize        =   11
       End
       Begin PhotoDemon.sliderTextCombo sltAdaptation 
          Height          =   495
@@ -128,15 +336,15 @@ Begin VB.Form dialog_ToneMapping
          TabIndex        =   12
          Top             =   1320
          Width           =   6615
-         _extentx        =   11456
-         _extenty        =   873
-         forecolor       =   0
-         max             =   1
-         sigdigits       =   2
-         slidertrackstyle=   1
-         value           =   1
-         notchposition   =   2
-         notchvaluecustom=   1
+         _ExtentX        =   11456
+         _ExtentY        =   873
+         ForeColor       =   0
+         Max             =   1
+         SigDigits       =   2
+         SliderTrackStyle=   1
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   330
@@ -144,10 +352,10 @@ Begin VB.Form dialog_ToneMapping
          Left            =   120
          Top             =   1920
          Width           =   6495
-         _extentx        =   11456
-         _extenty        =   582
-         caption         =   "color correction"
-         fontsize        =   11
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "color correction"
+         FontSize        =   11
       End
       Begin PhotoDemon.sliderTextCombo sltColorCorrection 
          Height          =   495
@@ -155,12 +363,12 @@ Begin VB.Form dialog_ToneMapping
          TabIndex        =   13
          Top             =   2280
          Width           =   6615
-         _extentx        =   11456
-         _extenty        =   873
-         forecolor       =   0
-         max             =   1
-         sigdigits       =   2
-         slidertrackstyle=   1
+         _ExtentX        =   11456
+         _ExtentY        =   873
+         ForeColor       =   0
+         Max             =   1
+         SigDigits       =   2
+         SliderTrackStyle=   1
       End
    End
    Begin VB.PictureBox picContainer 
@@ -168,109 +376,98 @@ Begin VB.Form dialog_ToneMapping
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3255
-      Index           =   0
+      Height          =   3375
+      Index           =   3
       Left            =   4800
-      ScaleHeight     =   217
+      ScaleHeight     =   225
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   457
-      TabIndex        =   5
+      TabIndex        =   14
       Top             =   2040
+      Visible         =   0   'False
       Width           =   6855
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   330
-         Index           =   0
+         Index           =   6
          Left            =   120
          Top             =   0
          Width           =   6495
-         _extentx        =   11456
-         _extenty        =   582
-         caption         =   "gamma"
-         fontsize        =   11
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "gamma"
+         FontSize        =   11
       End
       Begin PhotoDemon.sliderTextCombo sltGamma 
          Height          =   495
-         Index           =   0
-         Left            =   120
-         TabIndex        =   7
-         Top             =   360
-         Width           =   6615
-         _extentx        =   11668
-         _extenty        =   873
-         forecolor       =   0
-         min             =   1
-         max             =   5
-         sigdigits       =   2
-         value           =   2.2
-         notchposition   =   2
-         notchvaluecustom=   2.2
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   3255
-      Index           =   1
-      Left            =   4800
-      ScaleHeight     =   217
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
-      TabIndex        =   8
-      Top             =   2040
-      Width           =   6855
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
          Index           =   2
          Left            =   120
-         Top             =   0
-         Width           =   6495
-         _extentx        =   11456
-         _extenty        =   582
-         caption         =   "gamma"
-         fontsize        =   11
-      End
-      Begin PhotoDemon.sliderTextCombo sltGamma 
-         Height          =   495
-         Index           =   1
-         Left            =   120
-         TabIndex        =   9
+         TabIndex        =   15
          Top             =   360
          Width           =   6615
-         _extentx        =   11668
-         _extenty        =   873
-         forecolor       =   0
-         min             =   1
-         max             =   5
-         sigdigits       =   2
-         value           =   2.2
-         notchposition   =   2
-         notchvaluecustom=   2.2
+         _ExtentX        =   11668
+         _ExtentY        =   873
+         ForeColor       =   0
+         Min             =   1
+         Max             =   5
+         SigDigits       =   2
+         Value           =   2.2
+         NotchPosition   =   2
+         NotchValueCustom=   2.2
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   330
-         Index           =   3
+         Index           =   7
          Left            =   120
          Top             =   960
          Width           =   6495
-         _extentx        =   11456
-         _extenty        =   582
-         caption         =   "exposure"
-         fontsize        =   11
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "exposure"
+         FontSize        =   11
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   8
+         Left            =   120
+         Top             =   1920
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "white point"
+         FontSize        =   11
       End
       Begin PhotoDemon.sliderTextCombo sltExposure 
          Height          =   495
+         Index           =   1
          Left            =   120
-         TabIndex        =   10
+         TabIndex        =   16
          Top             =   1320
          Width           =   6615
-         _extentx        =   11668
-         _extenty        =   873
-         forecolor       =   0
-         min             =   -8
-         max             =   8
-         sigdigits       =   2
+         _ExtentX        =   11668
+         _ExtentY        =   873
+         ForeColor       =   0
+         Min             =   0.01
+         Max             =   8
+         SigDigits       =   2
+         Value           =   2
+         NotchPosition   =   2
+         NotchValueCustom=   2
+      End
+      Begin PhotoDemon.sliderTextCombo sltWhitepoint 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   17
+         Top             =   2280
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   873
+         ForeColor       =   0
+         Min             =   1
+         Max             =   40
+         SigDigits       =   2
+         Value           =   11.2
+         NotchPosition   =   2
+         NotchValueCustom=   11.2
       End
    End
    Begin VB.Label lblWarning 
@@ -302,18 +499,31 @@ Attribute VB_Exposed = False
 'Tone Mapping (e.g. high-bit-depth image import) Dialog
 'Copyright ©2014-2015 by Tanner Helland
 'Created: 04/December/14
-'Last updated: 04/December/14
-'Last update: merge existing tone-mapping code into this dialog, and expose options to the user.
+'Last updated: 07/December/14
+'Last update: add new filmic tone-mapping mode; see http://fr.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting for details
 '
-'Dialog for presenting the user a choice of alpha cut-off.  When reducing complex (32bpp)
-' alpha channels to the simple ones required by 8bpp images, there is no fool-proof
-' heuristic for maximizing quality.  In these cases, some user intervention is required
-' to inspect the image and make sure everything looks acceptable.
+'Images with more than 8-bits per channel cannot be displayed on conventional monitors.  These images must undergo a
+' process called Tone Mapping (http://en.wikipedia.org/wiki/Tone_mapping) which reduces their color count to a range
+' acceptable for display.
 '
-'Thus this dialog.  It should only be called when a 32bpp image has a non-binary alpha
-' channel.  The individual save functions automatically check for binary alpha channels,
-' and if one is found, it handles the alpha-cutoff on its own (on account of there only
-' being "fully transparent" and "fully opaque" pixels).
+'Unfortunately, there are many nuances to tone-mapping, which makes handling difficult to automate.  HDR images
+' (I'm using the literal meaning here, not the literal HDR format) come in many shapes and sizes: some are pre-normalized.
+' Some include infrared channels.  Some are in non-floating point HDR formats, and thus require conversion to RGBF.
+' Some are already gamma corrected.  My frequent use of "some" here is not accidental - there are variations in all these
+' parameters, and a lack of good metadata handling for these formats means that handling is not clear-cut.
+'
+'Hence the need for this dialog.  When an HDR image is loaded (including many RAW formats), this dialog will be triggered,
+' giving the user a way to control how the image is mapped to their display.
+'
+'The linear and filmic options are custom coded for PD.  Drago and Reinhard simply wrap the matching FreeImage.dll functions.
+'
+'Many thanks to Hans Nolte for his invaluable help on this topic.  (https://github.com/tannerhelland/PhotoDemon/issues/149)
+'
+'Thanks also to John Hable (formerly of Naughty Dog) for his great presentation on tone-mapping, including a breakdown
+' of his fast and reliable Filmic Tonemapping method: http://fr.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting
+' Additional filmic tonemapping references include:
+'  - http://filmicgames.com/archives/190
+'  - http://filmicgames.com/archives/75
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -508,6 +718,9 @@ Private Sub cmdBar_ResetClick()
     btsMethod.ListIndex = 0
     sltGamma(0) = 2.2
     sltGamma(1) = 2.2
+    sltGamma(2) = 2.2
+    sltExposure(1) = 2#
+    sltWhitepoint = 11.2
     chkRemember.Value = vbUnchecked
     cmdBar.markPreviewStatus True
     
@@ -524,6 +737,7 @@ Private Sub Form_Load()
     btsMethod.AddItem "linear", 0
     btsMethod.AddItem "Drago", 1
     btsMethod.AddItem "Reinhard", 2
+    btsMethod.AddItem "filmic", 3
     btsMethod.ListIndex = 0
         
 End Sub
@@ -540,38 +754,53 @@ End Sub
 Private Function getToneMapParamString() As String
     
     'The param string's functions are highly variable, depending on the selected values
-    Dim strParams() As Variant
-    ReDim strParams(0 To 4) As Variant
+    Dim vParams() As Variant
+    ReDim vParams(0 To 4) As Variant
     
     'First comes the actual conversion method
-    strParams(0) = btsMethod.ListIndex
+    vParams(0) = btsMethod.ListIndex
     
     'Subsequent parameters vary by method
-    Select Case strParams(0)
+    Select Case vParams(0)
     
         Case PDTM_LINEAR
-            strParams(1) = sltGamma(0).Value
+            vParams(1) = sltGamma(0).Value
             
-            'If normalize is exposed in the future, set it as the second parameter; the tone-mapping function is
-            ' automatically prepared to operate on this value if supplied.
-            strParams(2) = 0
+            'Normalization is a little weird, because it controls two values in the destination
+            If optNormalize(0) Then
+                vParams(2) = PD_BOOL_FALSE
+                vParams(3) = False
+            ElseIf optNormalize(1) Then
+                vParams(2) = PD_BOOL_AUTO
+                vParams(3) = True
+            Else
+                vParams(2) = PD_BOOL_TRUE
+                vParams(3) = False
+            End If
         
-        Case PDTM_ADAPTIVE_LOGARITHMIC
-            strParams(1) = sltGamma(1).Value
-            strParams(2) = sltExposure.Value
+        Case PDTM_DRAGO
+            vParams(1) = sltGamma(1).Value
+            vParams(2) = sltExposure(0).Value
         
-        Case PDTM_PHOTORECEPTOR
-            strParams(1) = sltIntensity.Value
-            strParams(2) = sltAdaptation.Value
-            strParams(3) = sltColorCorrection.Value
+        Case PDTM_REINHARD
+            vParams(1) = sltIntensity.Value
+            vParams(2) = sltAdaptation.Value
+            vParams(3) = sltColorCorrection.Value
         
-        Case PDTM_MANUAL
+        Case PDTM_FILMIC
+            vParams(1) = sltGamma(2).Value
+            vParams(2) = sltExposure(1).Value
+            vParams(3) = sltWhitepoint.Value
     
     End Select
     
-    getToneMapParamString = buildParams(strParams(0), strParams(1), strParams(2), strParams(3), strParams(4))
+    getToneMapParamString = buildParams(vParams(0), vParams(1), vParams(2), vParams(3), vParams(4))
     
 End Function
+
+Private Sub optNormalize_Click(Index As Integer)
+    updatePreview
+End Sub
 
 Private Sub sltAdaptation_Change()
     updatePreview
@@ -581,7 +810,7 @@ Private Sub sltColorCorrection_Change()
     updatePreview
 End Sub
 
-Private Sub sltExposure_Change()
+Private Sub sltExposure_Change(Index As Integer)
     updatePreview
 End Sub
 
@@ -590,5 +819,9 @@ Private Sub sltGamma_Change(Index As Integer)
 End Sub
 
 Private Sub sltIntensity_Change()
+    updatePreview
+End Sub
+
+Private Sub sltWhitepoint_Change()
     updatePreview
 End Sub

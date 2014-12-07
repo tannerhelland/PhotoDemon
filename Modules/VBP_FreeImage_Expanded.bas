@@ -22,6 +22,10 @@ Attribute VB_Name = "Plugin_FreeImage_Expanded_Interface"
 Option Explicit
 
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
+
+'Additional variables for PD-specific tone-mapping functions
+Private m_shoulderStrength As Double, m_linearStrength As Double, m_linearAngle As Double, m_linearWhitePoint As Single
+Private m_toeStrength As Double, m_toeNumerator As Double, m_toeDenominator As Double, m_toeAngle As Double
     
 'Is FreeImage available as a plugin?  (NOTE: this is now determined separately from FreeImageEnabled.)
 Public Function isFreeImageAvailable() As Boolean
@@ -901,7 +905,7 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             End If
             
             'At this point, fi_Handle now represents a 24bpp RGBF type FreeImage DIB.  Apply manual tone-mapping now.
-            newHandle = convertFreeImageRGBFTo24bppDIB(newHandle, cParams.GetLong(3), False, cParams.GetDouble(2))
+            newHandle = convertFreeImageRGBFTo24bppDIB(newHandle, cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(2))
             
             'Unload the intermediate RGBF handle as necessary
             If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
@@ -910,19 +914,19 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             
         
         'Adaptive logarithmic map
-        Case PDTM_ADAPTIVE_LOGARITHMIC
+        Case PDTM_DRAGO
             applyToneMapping = FreeImage_TmoDrago03(fi_Handle, cParams.GetDouble(2), cParams.GetDouble(3))
             
         'Photoreceptor map
-        Case PDTM_PHOTORECEPTOR
+        Case PDTM_REINHARD
             
             applyToneMapping = FreeImage_TmoReinhard05Ex(fi_Handle, cParams.GetDouble(2), ByVal 0#, cParams.GetDouble(3), cParams.GetDouble(4))
             
-        'Custom map, using settings supplied by the user
-        Case PDTM_MANUAL
+        'Filmic tone-map; basically a nice S-curve with an emphasis on rich blacks
+        Case PDTM_FILMIC
             
             newHandle = fi_Handle
-                
+            
             'For performance reasons, I've only written a single RGBF/RGBAF-based linear transform.  If the image is not in one
             ' of these formats, convert it now.
             If (fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF) Then
@@ -941,7 +945,7 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             End If
             
             'At this point, fi_Handle now represents a 24bpp RGBF type FreeImage DIB.  Apply manual tone-mapping now.
-            newHandle = convertFreeImageRGBFTo24bppDIB(newHandle, PD_BOOL_AUTO, False)
+            newHandle = toneMapFilmic_RGBFTo24bppDIB(newHandle, cParams.GetDouble(2), cParams.GetDouble(3), , , , , , , cParams.GetDouble(4))
             
             'Unload the intermediate RGBF handle as necessary
             If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
@@ -1139,7 +1143,7 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
                 If bDstF > 0 Then bDstF = bDstF ^ gammaCorrection
             End If
             
-            'In the future, gamma correction, etc could be applied here.
+            'In the future, additional corrections could be applied here.
             
             'Apply failsafe range checks now
             If rDstF < 0 Then
@@ -1209,6 +1213,212 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     'Success!
     convertFreeImageRGBFTo24bppDIB = fi_DIB
 
+End Function
+
+'Perform so-called "Filmic" tone-mapping of a 96bpp RGBF image to standard 24bpp.  Note that an intermediate pdDIB object is used
+' for convenience, but the returned handle is to a FREEIMAGE DIB.
+'
+'Returns: a non-zero FreeImage 24bpp image handle if successful.  0 if unsuccessful.
+'
+'IMPORTANT NOTE: REGARDLESS OF SUCCESS, THIS FUNCTION DOES NOT FREE THE INCOMING fi_Handle PARAMETER.  If the function fails (returns 0),
+' I assume the caller still wants the original handle so it can proceed accordingly.  Similarly, because this function is used to render
+' tone-mapping previews, it doesn't make sense to free the handle upon success, either.
+'
+'OTHER IMPORTANT NOTE: it's probably obvious, but the 24bpp handle this function returns (if successful) must also be freed by the caller.
+' Forget this, and the function will leak.
+Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional ByVal newGamma As Single = 2.2, Optional ByVal exposureCompensation As Single = 2#, Optional ByVal shoulderStrength As Single = 0.22, Optional ByVal linearStrength As Single = 0.3, Optional ByVal linearAngle As Single = 0.1, Optional ByVal toeStrength As Single = 0.2, Optional ByVal toeNumerator As Single = 0.01, Optional ByVal toeDenominator As Single = 0.3, Optional ByVal linearWhitePoint As Single = 11.2) As Long
+    
+    'Before doing anything, check the incoming fi_Handle.  For performance reasons, this function only handles RGBF and RGBAF formats.
+    ' Other formats are invalid.
+    Dim fi_DataType As FREE_IMAGE_TYPE
+    fi_DataType = FreeImage_GetImageType(fi_Handle)
+    
+    If (fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF) Then
+        Debug.Print "Tone-mapping request invalid"
+        toneMapFilmic_RGBFTo24bppDIB = 0
+        Exit Function
+    End If
+    
+    'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
+    Dim srcImageData() As Single
+    Dim srcSA As SAFEARRAY1D
+    
+    'Create a 24bpp or 32bpp DIB at the same size as the image
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    If fi_DataType = FIT_RGBF Then
+        tmpDIB.createBlank FreeImage_GetWidth(fi_Handle), FreeImage_GetHeight(fi_Handle), 24
+    Else
+        tmpDIB.createBlank FreeImage_GetWidth(fi_Handle), FreeImage_GetHeight(fi_Handle), 32
+    End If
+    
+    'Point a byte array at the temporary DIB
+    Dim dstImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, tmpDIB
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+        
+    'Iterate through each scanline in the source image, copying it to destination as we go.
+    Dim iWidth As Long, iHeight As Long, iHeightInv As Long, iScanWidth As Long
+    iWidth = FreeImage_GetWidth(fi_Handle) - 1
+    iHeight = FreeImage_GetHeight(fi_Handle) - 1
+    iScanWidth = FreeImage_GetPitch(fi_Handle)
+    
+    Dim qvDepth As Long
+    If fi_DataType = FIT_RGBF Then qvDepth = 3 Else qvDepth = 4
+    
+    'Shift the parameter values into module-level variables; this is necessary because the actual filmic tone-map function
+    ' is standalone, and we don't want to be passing a crapload of Double-type variables to it for every channel of
+    ' every pixel in the (presumably large) image.
+    m_shoulderStrength = shoulderStrength
+    m_linearStrength = linearStrength
+    m_linearAngle = linearAngle
+    m_toeStrength = toeStrength
+    m_toeNumerator = toeNumerator
+    m_toeDenominator = toeDenominator
+    m_linearWhitePoint = linearWhitePoint
+    m_toeAngle = toeNumerator / toeDenominator
+    
+    'In advance, calculate the filmic function for the white point
+    Dim fWhitePoint As Double
+    fWhitePoint = fFilmicTonemap(m_linearWhitePoint)
+    
+    'Prep any other post-processing adjustments
+    Dim gammaCorrection As Double
+    gammaCorrection = 1 / newGamma
+    
+    'Due to the potential math involved in conversion (if gamma and other settings are being toggled), we need a lot of intermediate variables.
+    ' Depending on the user's settings, some of these may go unused.
+    Dim rSrcF As Single, gSrcF As Single, bSrcF As Single
+    Dim rDstF As Single, gDstF As Single, bDstF As Single
+    Dim rDstL As Long, gDstL As Long, bDstL As Long
+    
+    Dim x As Long, y As Long, QuickX As Long
+    
+    For y = 0 To iHeight
+    
+        'FreeImage DIBs are stored bottom-up; we invert them during processing
+        iHeightInv = iHeight - y
+    
+        'Point a 1D VB array at this scanline
+        With srcSA
+            .cbElements = 4
+            .cDims = 1
+            .lBound = 0
+            .cElements = iScanWidth
+            .pvData = FreeImage_GetScanline(fi_Handle, y)
+        End With
+        CopyMemory ByVal VarPtrArray(srcImageData), VarPtr(srcSA), 4
+        
+        'Iterate through this line, converting values as we go
+        For x = 0 To iWidth
+            
+            'Retrieve the source values.
+            QuickX = x * qvDepth
+            rSrcF = srcImageData(QuickX)
+            gSrcF = srcImageData(QuickX + 1)
+            bSrcF = srcImageData(QuickX + 2)
+            
+            'Apply filmic tone-mapping.  See http://fr.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting for details
+            rDstF = fFilmicTonemap(exposureCompensation * rSrcF) / fWhitePoint
+            gDstF = fFilmicTonemap(exposureCompensation * gSrcF) / fWhitePoint
+            bDstF = fFilmicTonemap(exposureCompensation * bSrcF) / fWhitePoint
+                                    
+            'Apply gamma now (if any).  Unfortunately, lookup tables aren't an option because we're dealing with floating-point input,
+            ' so this step is a little slow due to the exponent operator.
+            If newGamma <> 1# Then
+                If rDstF > 0 Then rDstF = rDstF ^ gammaCorrection
+                If gDstF > 0 Then gDstF = gDstF ^ gammaCorrection
+                If bDstF > 0 Then bDstF = bDstF ^ gammaCorrection
+            End If
+                        
+            'Apply failsafe range checks
+            If rDstF < 0 Then
+                rDstF = 0
+            ElseIf rDstF > 1 Then
+                rDstF = 1
+            End If
+                
+            If gDstF < 0 Then
+                gDstF = 0
+            ElseIf gDstF > 1 Then
+                gDstF = 1
+            End If
+                
+            If bDstF < 0 Then
+                bDstF = 0
+            ElseIf bDstF > 1 Then
+                bDstF = 1
+            End If
+            
+            'Calculate corresponding integer values on the range [0, 255]
+            rDstL = rDstF * 255
+            gDstL = gDstF * 255
+            bDstL = bDstF * 255
+            
+            'Technically, the RGB values should be guaranteed on [0, 255] at this point - but better safe than sorry when working with
+            ' detailed floating-point conversions.
+            If rDstL > 255 Then
+                rDstL = 255
+            ElseIf rDstL < 0 Then
+                rDstL = 0
+            End If
+            
+            If gDstL > 255 Then
+                gDstL = 255
+            ElseIf gDstL < 0 Then
+                gDstL = 0
+            End If
+            
+            If bDstL > 255 Then
+                bDstL = 255
+            ElseIf bDstL < 0 Then
+                bDstL = 0
+            End If
+                        
+            'Copy the final, safe values into the destination
+            dstImageData(QuickX, iHeightInv) = bDstL
+            dstImageData(QuickX + 1, iHeightInv) = gDstL
+            dstImageData(QuickX + 2, iHeightInv) = rDstL
+            
+        Next x
+        
+        'Free our 1D array reference
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        
+    Next y
+    
+    'Point dstImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    
+    'Create a FreeImage object from our pdDIB object, then release our pdDIB copy
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    
+    Set tmpDIB = Nothing
+    
+    'Success!
+    toneMapFilmic_RGBFTo24bppDIB = fi_DIB
+
+End Function
+
+'Filmic tone-map function
+Private Function fFilmicTonemap(ByRef x As Single) As Single
+    
+    'In advance, calculate the filmic function for the white point
+    Dim numFunction As Double, denFunction As Double
+    
+    numFunction = x * (m_shoulderStrength * x + m_linearStrength * m_linearAngle) + m_toeStrength * m_toeNumerator
+    denFunction = x * (m_shoulderStrength * x + m_linearStrength) + m_toeStrength * m_toeDenominator
+    
+    'Failsafe check for DBZ errors
+    If denFunction > 0 Then
+        fFilmicTonemap = (numFunction / denFunction) - m_toeAngle
+    Else
+        fFilmicTonemap = 1
+    End If
+    
 End Function
 
 'Returns TRUE if an RGBF format FreeImage DIB contains values outside the [0, 1] range (meaning normalization is required).
