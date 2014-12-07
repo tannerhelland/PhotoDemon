@@ -58,7 +58,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
@@ -1347,17 +1347,17 @@ Begin VB.Form FormMain
    Begin VB.Menu MnuWindowTop 
       Caption         =   "&Window"
       Begin VB.Menu MnuWindow 
-         Caption         =   "File toolbox"
+         Caption         =   "Toolbox"
          Checked         =   -1  'True
          Index           =   0
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Layers toolbox"
+         Caption         =   "Tool options"
          Checked         =   -1  'True
          Index           =   1
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Tools toolbox"
+         Caption         =   "Layers"
          Checked         =   -1  'True
          Index           =   2
       End
@@ -4096,17 +4096,17 @@ Private Sub MnuWindow_Click(Index As Integer)
 
     Select Case Index
     
-        'Show/hide file toolbox
+        'Show/hide primary toolbox
         Case 0
             toggleToolbarVisibility FILE_TOOLBOX
         
-        'Show/hide layer toolbox
+        'Show/hide tool options
         Case 1
-            toggleToolbarVisibility LAYER_TOOLBOX
-            
-        'Show/hide tools toolbox
-        Case 2
             toggleToolbarVisibility TOOLS_TOOLBOX
+        
+        'Show/hide layer toolbox
+        Case 2
+            toggleToolbarVisibility LAYER_TOOLBOX
         
         '<top-level Image tabstrip>
         Case 3
