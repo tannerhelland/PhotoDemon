@@ -343,8 +343,8 @@ Public Sub LoadTheProgram()
     
     'Retrieve visibility and mark those menus as well
     FormMain.MnuWindow(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
-    FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
-    FormMain.MnuWindow(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
+    FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
+    FormMain.MnuWindow(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
     
     #If DEBUGMODE = 1 Then
         FormMain.MnuDevelopers(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)

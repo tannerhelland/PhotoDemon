@@ -956,16 +956,16 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
             g_UserPreferences.SetPref_Boolean "Core", "Show File Toolbox", FormMain.MnuWindow(0).Checked
             g_WindowManager.setWindowVisibility toolbar_Toolbox.hWnd, FormMain.MnuWindow(0).Checked
             
-        Case LAYER_TOOLBOX
-            FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Show Layers Toolbox", FormMain.MnuWindow(1).Checked
-            g_WindowManager.setWindowVisibility toolbar_Layers.hWnd, FormMain.MnuWindow(1).Checked
-    
         Case TOOLS_TOOLBOX
-            FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Show Selections Toolbox", FormMain.MnuWindow(2).Checked
-            g_WindowManager.setWindowVisibility toolbar_Options.hWnd, FormMain.MnuWindow(2).Checked
+            FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Show Selections Toolbox", FormMain.MnuWindow(1).Checked
+            g_WindowManager.setWindowVisibility toolbar_Options.hWnd, FormMain.MnuWindow(1).Checked
             
+        Case LAYER_TOOLBOX
+            FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Show Layers Toolbox", FormMain.MnuWindow(2).Checked
+            g_WindowManager.setWindowVisibility toolbar_Layers.hWnd, FormMain.MnuWindow(2).Checked
+        
         Case DEBUG_TOOLBOX
             FormMain.MnuDevelopers(0).Checked = Not FormMain.MnuDevelopers(0).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show Debug Window", FormMain.MnuDevelopers(0).Checked
