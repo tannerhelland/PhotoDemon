@@ -959,7 +959,10 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
         Case TOOLS_TOOLBOX
             FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show Selections Toolbox", FormMain.MnuWindow(1).Checked
-            g_WindowManager.setWindowVisibility toolbar_Options.hWnd, FormMain.MnuWindow(1).Checked
+            
+            'Because this toolbox's visibility is also tied to the current tool, we wrap a different functions.  This function
+            ' will show/hide the toolbox as necessary.
+            toolbar_Toolbox.resetToolButtonStates
             
         Case LAYER_TOOLBOX
             FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked

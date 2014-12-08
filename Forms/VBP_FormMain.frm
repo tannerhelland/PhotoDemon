@@ -50,21 +50,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0   'False
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -2315,10 +2315,15 @@ Private Sub Form_Load()
     'Display the various toolboxes per the user's display settings
     toolbar_Toolbox.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_Toolbox.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
-    toolbar_Options.Show vbModeless, Me
-    g_WindowManager.setWindowVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
+    
     toolbar_Layers.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
+    
+    'Visibility for the options toolbox is automatically set according to the current tool; this is different from other dialogs.
+    ' (Note that the .resetToolButtonStates function checks the relevant preference prior to changing the window state, so all
+    '  cases are covered nicely.)
+    toolbar_Options.Show vbModeless, Me
+    toolbar_Toolbox.resetToolButtonStates
     
     'We only display the image tab manager now if the user loaded two or more images from the command line
     toolbar_ImageTabs.Show vbModeless, Me
