@@ -737,7 +737,9 @@ End Sub
 Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogForm As Form, Optional ByVal doNotUnload As Boolean = False)
 
     On Error GoTo showPDDialogError
-
+    
+    g_ModalDialogActive = True
+    
     'Start by loading the form and hiding it
     dialogForm.Visible = False
     
@@ -804,11 +806,15 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
         Set dialogForm = Nothing
     End If
     
+    g_ModalDialogActive = False
+    
     Exit Sub
     
 'For reasons I can't yet ascertain, this function will sometimes fail, claiming that a modal window is already active.  If that happens,
 ' we can just exit.
 showPDDialogError:
+
+    g_ModalDialogActive = False
 
 End Sub
 
@@ -1454,12 +1460,12 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
             curMainFormCursor = Screen.MousePointer
             
             'Display the message
-            If Not (curMainFormState) Then FormMain.Enabled = True
+            If (Not curMainFormState) And (Not g_ModalDialogActive) Then FormMain.Enabled = True
             FormMain.mainCanvas(0).displayCanvasMessage newString
             Replacement_DoEvents FormMain.mainCanvas(0).hWnd
             
             'Restore original form state (only relevant if we had to change state to display the message)
-            If Not (curMainFormState) Then
+            If (Not curMainFormState) And (Not g_ModalDialogActive) Then
                 FormMain.Enabled = False
                 Screen.MousePointer = curMainFormCursor
             End If
