@@ -24,17 +24,8 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   707
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.pdComboBox pdComboBox1 
-      Height          =   360
-      Left            =   4800
-      TabIndex        =   7
-      Top             =   6000
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   635
-   End
    Begin VB.CommandButton cmdTextBoxTesting 
-      Caption         =   "select all"
+      Caption         =   "add new drop-down entries"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -47,9 +38,36 @@ Begin VB.Form FormThemeEditor
       Height          =   615
       Index           =   4
       Left            =   240
-      TabIndex        =   6
+      TabIndex        =   13
       Top             =   5760
       Width           =   2055
+   End
+   Begin VB.CommandButton cmdTextBoxTesting 
+      Caption         =   "delete drop-down entries"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Index           =   5
+      Left            =   2400
+      TabIndex        =   12
+      Top             =   5760
+      Width           =   2055
+   End
+   Begin PhotoDemon.pdComboBox pdComboBox1 
+      Height          =   360
+      Left            =   4800
+      TabIndex        =   6
+      Top             =   6000
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   635
    End
    Begin VB.CommandButton cmdTextBoxTesting 
       Caption         =   "toggle multiline"
@@ -178,7 +196,7 @@ Begin VB.Form FormThemeEditor
       Index           =   1
       Left            =   120
       Top             =   3840
-      Width           =   2580
+      Width           =   1650
       _ExtentX        =   4551
       _ExtentY        =   503
       Caption         =   "text box testing options:"
@@ -201,7 +219,7 @@ Begin VB.Form FormThemeEditor
       Height          =   315
       Index           =   0
       Left            =   240
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   2640
       Width           =   9975
       _ExtentX        =   17595
@@ -211,7 +229,7 @@ Begin VB.Form FormThemeEditor
       Height          =   315
       Index           =   1
       Left            =   240
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   3000
       Width           =   9975
       _ExtentX        =   17595
@@ -221,7 +239,7 @@ Begin VB.Form FormThemeEditor
       Height          =   315
       Index           =   2
       Left            =   240
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   3360
       Width           =   9975
       _ExtentX        =   17595
@@ -232,7 +250,7 @@ Begin VB.Form FormThemeEditor
       Height          =   360
       Index           =   0
       Left            =   4800
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   6480
       Width           =   5655
       _ExtentX        =   9975
@@ -242,7 +260,7 @@ Begin VB.Form FormThemeEditor
       Height          =   360
       Index           =   1
       Left            =   4800
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   6960
       Width           =   5655
       _ExtentX        =   9975
@@ -290,9 +308,14 @@ Private Sub cmdTextBoxTesting_Click(Index As Integer)
         Case 3
             pdTextBox1.Multiline = Not pdTextBox1.Multiline
             
-        '4 - select all
+        '4 - add new drop-down entries
         Case 4
-            pdTextBox1.selectAll
+            pdComboBox1.AddItem pdComboBox1.ListCount
+        
+        '5 - delete drop-down entries
+        Case 5
+            pdComboBox1.RemoveItem pdComboBox1.ListCount - 1
+        
         
     End Select
     
@@ -310,6 +333,7 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub Form_Load()
+
     pdComboBox2(0).AddItem "1 - added at Form_Load", 0
     pdComboBox2(0).AddItem "2 - added at Form_Load", 1
     pdComboBox2(0).AddItem "3 - added at Form_Load", 2
@@ -317,6 +341,9 @@ Private Sub Form_Load()
     pdComboBox2(0).AddItem ChrW$(&H6B22) & ChrW$(&H8FCE) & ChrW$(&H6B22) & "abc", 4
     pdTextBox2(1).Text = ChrW$(&H6B22) & ChrW$(&H8FCE) & ChrW$(&H6B22) & "abc"
     pdComboBox2(0).ListIndex = 3
+    
+    makeFormPretty Me
+    
 End Sub
 
 Private Sub pdComboBox1_Click()
