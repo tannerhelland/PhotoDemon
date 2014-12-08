@@ -717,7 +717,9 @@ Private Sub cmdBar_ResetClick()
     cmdBar.markPreviewStatus False
     btsMethod.ListIndex = 0
     sltGamma(0) = 2.2
-    sltGamma(1) = 2.2
+    sltGamma(1) = 1#        'FreeImage documentation is unclear on the correct behavior for Drago gamma.  2.2 is recommended as
+                            ' a "starting place", but this seems to blow out the image, so I'm changing PD to recommend 1.0 as
+                            ' the default Drago value.
     sltGamma(2) = 2.2
     sltExposure(1) = 2#
     sltWhitepoint = 11.2

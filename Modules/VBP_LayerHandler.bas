@@ -195,7 +195,7 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
             Message "New layer added successfully."
         
         Else
-            Message "Image file could not be loaded (unknown error occurred)."
+            Debug.Print "Image file could not be loaded as new layer.  (User cancellation is one possible outcome, FYI.)"
         End If
     
     End If

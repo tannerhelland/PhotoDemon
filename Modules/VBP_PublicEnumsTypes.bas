@@ -326,3 +326,14 @@ End Enum
 #If False Then
     Private Const PDTM_LINEAR = 0, PDTM_FILMIC = 1, PDTM_DRAGO = 2, PDTM_REINHARD = 3
 #End If
+
+'Some operations need to return more detailed state than just FALSE/TRUE.  (For example, loading images via FreeImage.)
+Public Enum PD_OPERATION_OUTCOME
+    PD_SUCCESS = -1
+    PD_FAILURE_GENERIC = 0
+    PD_FAILURE_USER_CANCELED = 1
+End Enum
+
+#If False Then
+    Private Const PD_SUCCESS = -1, PD_FAILURE_GENERIC = 0, PD_FAILURE_USER_CANCELED = 1
+#End If

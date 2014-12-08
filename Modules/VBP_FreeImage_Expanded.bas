@@ -33,7 +33,7 @@ Public Function isFreeImageAvailable() As Boolean
 End Function
     
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
-Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing) As Boolean
+Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing) As PD_OPERATION_OUTCOME
 
     On Error GoTo FreeImageV4_AdvancedError
     
@@ -43,7 +43,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     'Double-check that FreeImage.dll was located at start-up
     If Not g_ImageFormats.FreeImageEnabled Then
-        LoadFreeImageV4 = False
+        LoadFreeImageV4 = PD_FAILURE_GENERIC
         Exit Function
     End If
     
@@ -71,7 +71,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             pdDebug.LogAction "Filetype not supported by FreeImage.  Import abandoned."
         #End If
         
-        LoadFreeImageV4 = False
+        LoadFreeImageV4 = PD_FAILURE_GENERIC
         Exit Function
         
     End If
@@ -258,7 +258,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             pdDebug.LogAction "Import via FreeImage failed (blank handle)."
         #End If
         
-        LoadFreeImageV4 = False
+        LoadFreeImageV4 = PD_FAILURE_GENERIC
         Exit Function
         
     End If
@@ -364,10 +364,11 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         #End If
     
         'Use the central tone-map handler to apply further tone-mapping
-        new_hDIB = raiseToneMapDialog(fi_hDIB)
+        Dim toneMappingOutcome As PD_OPERATION_OUTCOME
+        toneMappingOutcome = raiseToneMapDialog(fi_hDIB, new_hDIB)
         
         'A non-zero return signifies a successful tone-map operation.  Unload our old handle, and proceed with the new handle
-        If new_hDIB <> 0 Then
+        If (toneMappingOutcome = PD_SUCCESS) And (new_hDIB <> 0) Then
             
             'Add a note to the target image that tone-mapping was forcibly applied to the incoming data
             If Not (targetImage Is Nothing) Then
@@ -401,7 +402,12 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
             If fi_hDIB <> 0 Then FreeImage_Unload fi_hDIB
             
-            LoadFreeImageV4 = False
+            If toneMappingOutcome <> PD_SUCCESS Then
+                LoadFreeImageV4 = toneMappingOutcome
+            Else
+                LoadFreeImageV4 = PD_FAILURE_GENERIC
+            End If
+            
             Exit Function
         
         End If
@@ -637,7 +643,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' values; check for this, and if it happens, abandon the load immediately.  (This is not ideal, because it leaks memory
     ' - but it prevents a hard program crash, so I consider it the lesser of two evils.)
     If (fi_Width > 1000000) Or (fi_Height > 1000000) Then
-        LoadFreeImageV4 = False
+        LoadFreeImageV4 = PD_FAILURE_GENERIC
         Exit Function
     Else
         creationSuccess = dstDIB.createBlank(fi_Width, fi_Height, fi_BPP)
@@ -657,7 +663,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             If (fi_multi_hDIB <> 0) Then FreeImage_CloseMultiBitmap fi_multi_hDIB
         End If
         
-        LoadFreeImageV4 = False
+        LoadFreeImageV4 = PD_FAILURE_GENERIC
         Exit Function
     End If
     
@@ -719,7 +725,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     '****************************************************************************
     
     'Mark this load as successful
-    LoadFreeImageV4 = True
+    LoadFreeImageV4 = PD_SUCCESS
     
     Exit Function
     
@@ -736,7 +742,7 @@ FreeImageV4_AdvancedError:
     If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
     
     'Mark this load as unsuccessful
-    LoadFreeImageV4 = False
+    LoadFreeImageV4 = PD_FAILURE_GENERIC
     
 End Function
 
@@ -822,12 +828,13 @@ End Function
 'Prior to applying tone-mapping settings, query the user for their preferred behavior.  If the user doesn't want this dialog raised, this
 ' function will silently retrieve the proper settings from the preference file, and proceed with tone-mapping automatically.
 '
-'Returns: a non-zero FreeImage 24 or 32bpp image handle if successful.  0 if unsuccessful.
+'Returns: fills dst_fiHandle with a non-zero FreeImage 24 or 32bpp image handle if successful.  0 if unsuccessful.
+'         The function itself will return a PD_OPERATION_OUTCOME value; this is important for determining if the user canceled the dialog.
 '
 'IMPORTANT NOTE!  If this function fails, further loading of the image must be halted.  PD cannot yet operate on anything larger than 32bpp,
 ' so if tone-mapping fails, we must abandon loading completely.  (A failure state can also be triggered by the user canceling the
 ' tone-mapping dialog.)
-Private Function raiseToneMapDialog(ByVal fi_Handle As Long) As Long
+Private Function raiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle As Long) As PD_OPERATION_OUTCOME
 
     'Ask the user how they want to proceed.  Note that the dialog wrapper automatically handles the case of "do not prompt;
     ' use previous settings."  If that happens, it will retrieve the proper conversion settings for us, and return a dummy
@@ -837,13 +844,23 @@ Private Function raiseToneMapDialog(ByVal fi_Handle As Long) As Long
     
     'Check for a cancellation state; if encountered, abandon ship now.
     If howToProceed <> vbOK Then
-        raiseToneMapDialog = 0
+    
+        dst_fiHandle = 0
+        raiseToneMapDialog = PD_FAILURE_USER_CANCELED
         Exit Function
     
     'The ToneMapSettings string will now contain all the information we need to proceed with the tone-map.  Forward it to the
-    ' central tone-mapping handler
+    ' central tone-mapping handler and use its success/fail state for this function as well.
     Else
-        raiseToneMapDialog = applyToneMapping(fi_Handle, toneMapSettings)
+        
+        dst_fiHandle = applyToneMapping(fi_Handle, toneMapSettings)
+        
+        If dst_fiHandle = 0 Then
+            raiseToneMapDialog = PD_FAILURE_GENERIC
+        Else
+            raiseToneMapDialog = PD_SUCCESS
+        End If
+        
     End If
 
 End Function

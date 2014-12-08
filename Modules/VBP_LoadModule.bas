@@ -798,6 +798,11 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
         
         loadSuccessful = False
         loadedByOtherMeans = False
+        
+        'Note that FreeImage may raise additional dialogs (e.g. for HDR/RAW images), so it does not return a binary pass/fail.
+        ' If the function fails due to user cancellation, we will suppress subsequent error message boxes.
+        Dim freeImage_Return As PD_OPERATION_OUTCOME
+        freeImage_Return = PD_FAILURE_GENERIC
             
         'Depending on the file's extension, load the image using the most appropriate image decoding routine
         Select Case FileExtension
@@ -858,7 +863,9 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                     Else
                         
                         pageNumber = 0
-                        loadSuccessful = LoadFreeImageV4(sFile(thisImage), targetDIB, pageNumber, isThisPrimaryImage)
+                        freeImage_Return = LoadFreeImageV4(sFile(thisImage), targetDIB, pageNumber, isThisPrimaryImage)
+                        
+                        If freeImage_Return = PD_SUCCESS Then loadSuccessful = True Else loadSuccessful = False
                     
                     End If
                     
@@ -889,7 +896,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 End If
                 
                 'If FreeImage fails for some reason, offload the image to GDI+.
-                If (Not loadSuccessful) And g_ImageFormats.GDIPlusEnabled Then
+                If (Not loadSuccessful) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) And g_ImageFormats.GDIPlusEnabled Then
                     
                     #If DEBUGMODE = 1 Then
                         pdDebug.LogAction "FreeImage refused to load image.  Dropping back to GDI+ and trying again..."
@@ -913,14 +920,14 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                         
                         'Mirror the original file's color depth
                         targetImage.originalColorDepth = targetDIB.getOriginalColorDepth
-                                                
+                        
                     End If
                         
                 End If
                 
                 'If both FreeImage and GDI+ failed, give the image one last try with VB's LoadPicture - UNLESS the image is a WMF or EMF,
                 ' which if malformed can cause LoadPicture to experience a silent fail, bringing down the entire program.
-                If (Not loadSuccessful) And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then
+                If (Not loadSuccessful) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) And ((FileExtension <> "EMF") And (FileExtension <> "WMF")) Then
                     
                     #If DEBUGMODE = 1 Then
                         Message "GDI+ refused to load image.  Dropping back to internal routines and trying again..."
@@ -957,7 +964,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             If multipleFilesLoading Then
                 brokenFiles = brokenFiles & getFilename(sFile(thisImage)) & vbCrLf
             Else
-                If (MacroStatus <> MacroBATCH) And (Not suspendWarnings) Then
+                If (MacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
                     pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", sFile(thisImage)
                 End If
             End If
@@ -1545,7 +1552,10 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     Dim tmpPDImage As pdImage
     Set tmpPDImage = New pdImage
     
-    'Determine the most appropriate load function for this image's format (FreeImage, GDI+, or VB's LoadPicture)
+    'Determine the most appropriate load function for this image's format (FreeImage, GDI+, or VB's LoadPicture).  Note that FreeImage does not
+    ' return a generic pass/fail value.
+    Dim freeImageReturn As PD_OPERATION_OUTCOME
+    freeImageReturn = PD_FAILURE_GENERIC
     
     'Start by stripping the extension from the file path
     FileExtension = UCase(GetExtension(imagePath))
@@ -1580,7 +1590,11 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         Case Else
             
             'If FreeImage is available, use it to try and load the image.
-            If g_ImageFormats.FreeImageEnabled Then loadSuccessful = LoadFreeImageV4(imagePath, targetDIB, 0, False)
+            If g_ImageFormats.FreeImageEnabled Then
+                freeImageReturn = LoadFreeImageV4(imagePath, targetDIB, 0, False)
+                If freeImageReturn = PD_SUCCESS Then loadSuccessful = True Else loadSuccessful = False
+            End If
+                
                 
             'If FreeImage fails for some reason, offload the image to GDI+ - UNLESS the image is a WMF or EMF, which can cause
             ' GDI+ to experience a silent fail, thus bringing down the entire program.
@@ -1596,8 +1610,13 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     ' non-zero width and height before continuing.
     If (Not loadSuccessful) Or (targetDIB.getDIBWidth = 0) Or (targetDIB.getDIBHeight = 0) Then
         
-        Message "Failed to load %1", imagePath
-        pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", imagePath
+        'Only display an error dialog if the import wasn't canceled by the user
+        If freeImageReturn <> PD_FAILURE_USER_CANCELED Then
+            Message "Failed to load %1", imagePath
+            pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", imagePath
+        Else
+            Message "Layer import canceled."
+        End If
         
         'Deactivate the (now useless) DIB
         targetDIB.eraseDIB
