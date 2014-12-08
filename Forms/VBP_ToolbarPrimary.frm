@@ -32,17 +32,8 @@ Begin VB.Form toolbar_Toolbox
       Top             =   30
       Width           =   2175
       _ExtentX        =   450
-      _ExtentY        =   423
+      _ExtentY        =   503
       Caption         =   "file"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -299,17 +290,8 @@ Begin VB.Form toolbar_Toolbox
       Top             =   1620
       Width           =   2175
       _ExtentX        =   3836
-      _ExtentY        =   423
+      _ExtentY        =   503
       Caption         =   "undo"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -318,17 +300,8 @@ Begin VB.Form toolbar_Toolbox
       Top             =   2700
       Width           =   2175
       _ExtentX        =   3836
-      _ExtentY        =   423
+      _ExtentY        =   503
       Caption         =   "non-destructive"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -337,17 +310,8 @@ Begin VB.Form toolbar_Toolbox
       Top             =   3660
       Width           =   2175
       _ExtentX        =   3836
-      _ExtentY        =   423
+      _ExtentY        =   503
       Caption         =   "selection"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblWarning 
       Alignment       =   2  'Center
@@ -621,6 +585,24 @@ Public Sub resetToolButtonStates()
         
     End Select
     
+    'Next, we can automatically hide the options toolbox for certain tools (because they have no options).  This is a
+    ' nice courtesy, as it frees up space on the main canvas area if the current tool has no adjustable options.
+    If Me.Visible Then
+    
+        Select Case g_CurrentTool
+            
+            'Hand tool is currently the only tool without additional options
+            Case NAV_DRAG
+                g_WindowManager.setWindowVisibility toolbar_Options.hWnd, False, False
+                
+            'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
+            Case Else
+                g_WindowManager.setWindowVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True), False
+                
+        End Select
+        
+    End If
+    
     'If a selection tool is active, we will also need activate a specific subpanel
     Dim activeSelectionSubpanel As Long
     If (getSelectionShapeFromCurrentTool > -1) Then
@@ -711,11 +693,13 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
 
     'Restore the last-used selection tool (which will be saved in the main form's preset file, if it exists)
     g_PreviousTool = -1
+    
     If Len(lastUsedSettings.retrievePresetData("ActiveSelectionTool")) <> 0 Then
         g_CurrentTool = CLng(lastUsedSettings.retrievePresetData("ActiveSelectionTool"))
     Else
         g_CurrentTool = NAV_DRAG
     End If
+    
     resetToolButtonStates
     
 End Sub
