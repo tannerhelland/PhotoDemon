@@ -102,15 +102,6 @@ Begin VB.Form toolbar_Options
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Max             =   100
       End
       Begin VB.PictureBox picSelectionSubcontainer 
@@ -160,15 +151,6 @@ Begin VB.Form toolbar_Options
             Width           =   2670
             _ExtentX        =   4710
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Min             =   1
             Max             =   10000
             Value           =   1
@@ -184,15 +166,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -205,15 +178,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -226,15 +190,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -247,15 +202,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
             CausesValidation=   0   'False
@@ -266,15 +212,6 @@ Begin VB.Form toolbar_Options
             Width           =   2670
             _ExtentX        =   4710
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Min             =   1
             Max             =   10000
             Value           =   10
@@ -419,15 +356,6 @@ Begin VB.Form toolbar_Options
             Width           =   2670
             _ExtentX        =   4710
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Min             =   1
             Max             =   10000
             Value           =   1
@@ -443,15 +371,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -464,15 +383,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -485,15 +395,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -506,15 +407,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin VB.Label lblSelection 
             Appearance      =   0  'Flat
@@ -633,15 +525,6 @@ Begin VB.Form toolbar_Options
             Width           =   2670
             _ExtentX        =   4710
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Min             =   1
             Max             =   10000
             Value           =   1
@@ -657,15 +540,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -678,15 +552,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -699,15 +564,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.textUpDown tudSel 
             Height          =   405
@@ -720,15 +576,6 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   714
             Min             =   -30000
             Max             =   30000
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.sliderTextCombo sltCornerRounding 
             CausesValidation=   0   'False
@@ -739,15 +586,6 @@ Begin VB.Form toolbar_Options
             Width           =   2670
             _ExtentX        =   4710
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Max             =   1
          End
          Begin VB.Label lblSelection 
@@ -906,15 +744,6 @@ Begin VB.Form toolbar_Options
             Width           =   2670
             _ExtentX        =   4710
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Max             =   255
             SigDigits       =   1
          End
@@ -1053,15 +882,6 @@ Begin VB.Form toolbar_Options
             Width           =   2670
             _ExtentX        =   4710
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Min             =   1
             Max             =   10000
             Value           =   1
@@ -1076,15 +896,6 @@ Begin VB.Form toolbar_Options
             Width           =   2670
             _ExtentX        =   4710
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Max             =   1
             SigDigits       =   2
          End
@@ -1183,15 +994,6 @@ Begin VB.Form toolbar_Options
             Width           =   2670
             _ExtentX        =   4710
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Min             =   1
             Max             =   10000
             Value           =   1
@@ -1205,15 +1007,6 @@ Begin VB.Form toolbar_Options
             Width           =   2670
             _ExtentX        =   4710
             _ExtentY        =   873
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
             Max             =   1
             SigDigits       =   2
          End
@@ -1356,15 +1149,6 @@ Begin VB.Form toolbar_Options
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   -2
          Max             =   2
          SigDigits       =   2
@@ -1380,15 +1164,6 @@ Begin VB.Form toolbar_Options
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   -100
          Max             =   100
       End
@@ -1402,15 +1177,6 @@ Begin VB.Form toolbar_Options
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   -100
          Max             =   100
       End
@@ -1424,15 +1190,6 @@ Begin VB.Form toolbar_Options
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   -100
          Max             =   100
       End
@@ -1500,15 +1257,6 @@ Begin VB.Form toolbar_Options
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   -100
          Max             =   100
          SliderTrackStyle=   3
@@ -1526,15 +1274,6 @@ Begin VB.Form toolbar_Options
          Width           =   2670
          _ExtentX        =   4710
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   -100
          Max             =   100
          SliderTrackStyle=   3
@@ -2255,6 +1994,30 @@ Public Sub updateSelectionPanelLayout()
         Else
             sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromCurrentTool).Visible = False
         End If
+    End If
+    
+    'Finally, the magic wand selection type is unique because it cannot display an outline.  (This might someday be possible,
+    ' but we would need to construct the border region ourselves - and I'm not a huge fan of the work involved.)
+    ' As such, when activating that tool, we need to remove the Outline option, and when switching to a different tool, we need
+    ' to restore the option.
+    If g_CurrentTool = SELECT_WAND Then
+    
+        'See if the combo box is already modified
+        If cboSelRender.ListCount = 3 Then
+            
+            'Remove the "outline" option
+            If toolbar_Options.cboSelRender.ListIndex = 2 Then toolbar_Options.cboSelRender.ListIndex = 0
+            toolbar_Options.cboSelRender.RemoveItem 2
+            
+        End If
+    
+    Else
+    
+        'See if the combo box is missing an entry
+        If cboSelRender.ListCount = 2 Then
+            toolbar_Options.cboSelRender.AddItem " Outline", 2
+        End If
+    
     End If
     
 End Sub
