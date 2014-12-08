@@ -260,6 +260,7 @@ Private m_ToolString As String
 
 'Combo box interaction functions
 Private Const CB_ADDSTRING As Long = &H143
+Private Const CB_DELETESTRING As Long = &H144
 Private Const CB_INSERTSTRING As Long = &H14A
 Private Const CB_RESETCONTENT As Long = &H14B
 Private Const CB_GETCOUNT As Long = &H146
@@ -378,6 +379,65 @@ Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -
     
     'Add this item to the API combo box.
     copyStringToComboBox m_NumBackupEntries - 1
+    
+End Sub
+
+'Remove an item from the combo box
+Public Sub RemoveItem(ByVal itemIndex As Long)
+    
+    'First, make sure the requested index is valid
+    If (itemIndex >= 0) And (itemIndex < m_NumBackupEntries) Then
+    
+        'Cache the current .ListIndex; we will need this later on, to prevent the "-1" .ListIndex scenario
+        Dim priorListIndex As Long
+        priorListIndex = Me.ListIndex
+    
+        'Modify our internal string storage first
+        Dim i As Long
+        For i = itemIndex To m_NumBackupEntries - 1
+        
+            If (i + 1) < UBound(m_BackupEntries) Then
+                m_BackupEntries(i) = m_BackupEntries(i + 1)
+                
+                'Copy the index value of our backup array (for this string) into the new itemdata slot.  This allows us to retrieve the Unicode
+                ' version of the string, if any, at render time.
+                SendMessage m_ComboBoxHwnd, CB_SETITEMDATA, i, ByVal i
+                
+            End If
+            
+        Next i
+        
+        m_NumBackupEntries = m_NumBackupEntries - 1
+        
+        'Forward the request to the API box as well
+        SendMessage m_ComboBoxHwnd, CB_DELETESTRING, itemIndex, ByVal 0&
+        
+        'Resize the drop-down portion to match; see copyStringToComboBox, below, for details on how this works
+        If g_IsProgramCompiled And g_IsVistaOrLater Then
+            SendMessage m_ComboBoxHwnd, CB_SETMINVISIBLE, SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&), ByVal 0&
+        Else
+            Dim comboRect As RECTL
+            GetClientRect Me.hWnd, comboRect
+            MoveWindow m_ComboBoxHwnd, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, (comboRect.Bottom - comboRect.Top) + ((SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&) + 1) * SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, 0, ByVal 0&)), 1
+        End If
+        
+        'If the removal affected the current ListIndex, update it to match
+        If itemIndex <= priorListIndex Then
+            
+            'Make sure there is at least one valid entry in the drop-down
+            If Me.ListCount >= 0 Then
+            
+                If priorListIndex > 0 Then
+                    Me.ListIndex = priorListIndex - 1
+                Else
+                    Me.ListIndex = 0
+                End If
+                
+            End If
+            
+        End If
+    
+    End If
     
 End Sub
 
@@ -556,6 +616,10 @@ End Sub
 
 Private Sub cMouseEventsListBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     cMouseEventsListBox.setSystemCursor IDC_ARROW
+End Sub
+
+Private Sub cMouseEventsListBox_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEventsListBox.setSystemCursor IDC_HAND
 End Sub
 
 'Flicker-free paint requests for the main control box (e.g. NOT the drop-down list portion)
@@ -1569,8 +1633,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     cbiCombo.cbSize = LenB(cbiCombo)
                     If GetComboBoxInfo(m_ComboBoxHwnd, cbiCombo) <> 0 Then
                         
+                        'Note: this does not actually set a hand cursor when compiled.  No idea why.  TODO!
                         Set cMouseEventsListBox = New pdInputMouse
-                        cMouseEventsListBox.addInputTracker cbiCombo.hWndList, True, , , True
+                        cMouseEventsListBox.addInputTracker cbiCombo.hWndList, True, , , True, True
                         cMouseEventsListBox.setSystemCursor IDC_HAND
                         
                     End If
