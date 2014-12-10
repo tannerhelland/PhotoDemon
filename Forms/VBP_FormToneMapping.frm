@@ -102,6 +102,75 @@ Begin VB.Form dialog_ToneMapping
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   3375
+      Index           =   2
+      Left            =   4800
+      ScaleHeight     =   225
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   457
+      TabIndex        =   8
+      Top             =   2040
+      Visible         =   0   'False
+      Width           =   6855
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   2
+         Left            =   120
+         Top             =   0
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "gamma"
+         FontSize        =   11
+      End
+      Begin PhotoDemon.sliderTextCombo sltGamma 
+         Height          =   495
+         Index           =   1
+         Left            =   120
+         TabIndex        =   9
+         Top             =   360
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   873
+         ForeColor       =   0
+         Min             =   1
+         Max             =   5
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   3
+         Left            =   120
+         Top             =   960
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   582
+         Caption         =   "exposure"
+         FontSize        =   11
+      End
+      Begin PhotoDemon.sliderTextCombo sltExposure 
+         Height          =   495
+         Index           =   0
+         Left            =   120
+         TabIndex        =   10
+         Top             =   1320
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   873
+         ForeColor       =   0
+         Min             =   -8
+         Max             =   8
+         SigDigits       =   2
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3375
       Index           =   3
       Left            =   4800
       ScaleHeight     =   225
@@ -399,75 +468,6 @@ Begin VB.Form dialog_ToneMapping
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   3375
-      Index           =   2
-      Left            =   4800
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
-      TabIndex        =   8
-      Top             =   2040
-      Visible         =   0   'False
-      Width           =   6855
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   2
-         Left            =   120
-         Top             =   0
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "gamma"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.sliderTextCombo sltGamma 
-         Height          =   495
-         Index           =   1
-         Left            =   120
-         TabIndex        =   9
-         Top             =   360
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   873
-         ForeColor       =   0
-         Min             =   1
-         Max             =   5
-         SigDigits       =   2
-         Value           =   2.2
-         NotchPosition   =   2
-         NotchValueCustom=   2.2
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   3
-         Left            =   120
-         Top             =   960
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "exposure"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.sliderTextCombo sltExposure 
-         Height          =   495
-         Index           =   0
-         Left            =   120
-         TabIndex        =   10
-         Top             =   1320
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   873
-         ForeColor       =   0
-         Min             =   -8
-         Max             =   8
-         SigDigits       =   2
       End
    End
    Begin VB.Label lblWarning 
