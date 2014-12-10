@@ -140,7 +140,7 @@
 
 <phrase>
 <original>Analyzing current monitor setup</original>
-<translation>Analyseren van de huidige monitor setup</translation>
+<translation>Analyseren van de huidige monitor instelling</translation>
 </phrase>
 
 <phrase>
@@ -199,7 +199,7 @@
 (Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)</original>
 <translation>Open een of meer afbeeldingen te bewerken.
 
-(Een andere manier om beelden te openen is ze te slepen vanaf uw bureaublad of Windows Verkenner en neer te zetten in PhotoDemon.)</translation>
+(Een andere manier om afbeeldingen te openen is om ze vanaf uw bureaublad of Windows Verkenner te slepen en neer te zetten in PhotoDemon.)</translation>
 </phrase>
 
 <phrase>
@@ -217,7 +217,7 @@ Als de huidige afbeelding niet is opgeslagen, wordt u gevraagd om ze op te slaan
 Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
 <translation>Sluit de huidige afbeelding.
 
-Omdat je de vraag naar opslaan hebt uitgeschakeld (via Bewerken -> Voorkeuren), Zal u de vraag om de afbeelding op te slaan niet meer krijgen voordat ze wordt gesloten.</translation>
+Omdat je de vraag naar opslaan hebt uitgeschakeld (via Bewerken -> Voorkeuren), Zal je de vraag om de afbeelding op te slaan niet meer krijgen voordat ze wordt gesloten.</translation>
 </phrase>
 
 <phrase>
@@ -246,7 +246,7 @@ LET OP: dit zal het huidige afbeeldingsbestand overschrijven. Om op te slaan naa
 
 <phrase>
 <original>Finishing final program initialization steps</original>
-<translation>Afwerking laatste programma initialisatie stappen</translation>
+<translation>Afwerking laatste programma initialisatiestappen</translation>
 </phrase>
 
 <phrase>
@@ -293,12 +293,12 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1
 
-Gebruik een ander programma om deze afbeelding op te slaan in een generiek formaat (zoals JPEG of PNG) voordat u het in PhotoDemon. Bedankt!</translation>
+Gebruik een ander programma om deze afbeelding op te slaan in een generiek formaat (zoals JPEG of PNG) voordat je ze in PhotoDemon laadt. Bedankt!</translation>
 </phrase>
 
 <phrase>
 <original>Image Import Failed</original>
-<translation>Importeren van afbeelding mislukt</translation>
+<translation>Importeren afbeelding mislukt</translation>
 </phrase>
 
 <phrase>
@@ -328,7 +328,7 @@ Gebruik een ander programma om deze afbeelding op te slaan in een generiek forma
 
 <phrase>
 <original>Image loaded successfully.</original>
-<translation>Afbeelding geladen met succes.</translation>
+<translation>Afbeelding met succes geladen.</translation>
 </phrase>
 
 <phrase>
@@ -356,7 +356,7 @@ Als deze afbeelding oorspronkelijk opgeslagen was op een verwisselbaar medium (D
 
 <phrase>
 <original>All images loaded, except for those in invalid formats.</original>
-<translation>Alle afbeeldingen zijn geladen, met uitzondering van de in ongeldige formaten.</translation>
+<translation>Alle afbeeldingen zijn geladen, met uitzondering van deze in ongeldige formaten.</translation>
 </phrase>
 
 <phrase>
@@ -369,7 +369,7 @@ Please use another program to save these images in a generic format (such as JPE
 
 %1
 
- Gebruik een ander programma om deze afbeeldingen op te slaan in een generiek formaat (zoals JPEG of PNG) voordat u ze in PhotoDemon gebruikt. Bedankt!</translation>
+ Gebruik een ander programma om deze afbeeldingen op te slaan in een generiek formaat (zoals JPEG of PNG) voordat je ze in PhotoDemon laadt. Bedankt!</translation>
 </phrase>
 
 <phrase>
@@ -388,7 +388,7 @@ Please use another program to save these images in a generic format (such as JPE
 To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
 <translation>Het PDI-bestand " %1" bevat gecomprimeerde gegevens, maar de ZLIB plugin ontbreekt of uitgeschakeld.
 
-Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op Help > Controleren op updates, en wanneer het wordt gevraagd, laat PhotoDemon dan toe om alle aanbevolen plugins downloaden.</translation>
+Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op Help > Controleren op updates, en wanneer het wordt gevraagd, laat PhotoDemon dan toe om alle aanbevolen plugins te downloaden.</translation>
 </phrase>
 
 <phrase>
@@ -403,7 +403,7 @@ Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op H
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
-<translation>Er is een fout opgetreden (# %1 - %2). PDI Laden afgebroken.</translation>
+<translation>Er is een fout opgetreden (#%1 - %2). PDI Laden afgebroken.</translation>
 </phrase>
 
 <phrase>
@@ -418,7 +418,7 @@ Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op H
 
 <phrase>
 <original>Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up</original>
-<translation>Vorige PhotoDemon sessie onverwacht beëindigd. Uitvoeren opschonen insteekmodule</translation>
+<translation>Vorige PhotoDemonsessie is onverwacht beëindigd. Uitvoeren opschonen insteekmodule</translation>
 </phrase>
 
 <phrase>
@@ -444,7 +444,7 @@ Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op H
 
 <phrase>
 <original>Original color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>Originele kleurdiepte van %1 bpp wordt ondersteund door dit formaat . Verdergaan met opslaan</translation>
+<translation>Originele kleurdiepte van %1 bpp wordt ondersteund door dit formaat. Verdergaan met opslaan</translation>
 </phrase>
 
 <phrase>
@@ -464,7 +464,7 @@ Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op H
 
 <phrase>
 <original>Recommended color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>Aanbevolen kleurdiepte van %1 bpp wordt ondersteund door dit formaat . Verdergaan met opslaan</translation>
+<translation>Aanbevolen kleurdiepte van %1 bpp wordt ondersteund door dit formaat. Verdergaan met opslaan</translation>
 </phrase>
 
 <phrase>
@@ -479,7 +479,7 @@ Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op H
 
 <phrase>
 <original>Requested color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>Kleurdiepte van %1 bpp wordt ondersteund door dit formaat . Verdergaan met opslaan</translation>
+<translation>Kleurdiepte van %1 bpp wordt ondersteund door dit formaat. Verdergaan met opslaan</translation>
 </phrase>
 
 <phrase>
@@ -522,11 +522,11 @@ Om PDI opslag mogelijk te maken, staat u %1 toe insteekmodule updates te downloa
 %1
 
 In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
-<translation>Er is een fout opgetreden bij een poging om de afbeelding op te slaan. De FreeImage plugin meldde de volgende fout gegevens: 
+<translation>Er is een fout opgetreden bij een poging om de afbeelding op te slaan. De FreeImage plugin meldde de volgende foutgegevens: 
 
  %1
 
-In de tussentijd, probeer het opslaan van de afbeelding naar een ander formaat. je kan de PhotoDemon ontwikkelaars ook laten weten over dit, via de Help-> Submit Bug Report menu.</translation>
+Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan de PhotoDemon ontwikkelaars ook laten weten over dit, via de Help-> Submit Bug Report menu.</translation>
 </phrase>
 
 <phrase>
@@ -538,7 +538,7 @@ In de tussentijd, probeer het opslaan van de afbeelding naar een ander formaat. 
 <original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
 
 If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
-<translation>Een niet nader gespecificeerde fout is opgetreden bij een poging om de afbeelding op te slaan. Probeer het opslaan van de afbeelding naar een ander format.
+<translation>Een niet nader gespecificeerde fout is opgetreden bij een poging om de afbeelding op te slaan. Probeer de afbeelding op te slaan in een ander format.
 
 Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/contact aan de PhotoDemon ontwikkelaars</translation>
 </phrase>
@@ -580,7 +580,7 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 
 <phrase>
 <original>Saving %1 layer</original>
-<translation>Saving %1 laag</translation>
+<translation>Opslaan %1 laag</translation>
 </phrase>
 
 <phrase>
@@ -589,7 +589,7 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
 <translation>De FreeImage -interface plug-in (FreeImage.dll) werd gemarkeerd als missend of uitgeschakeld bij initialisatie van het programma.
 
-Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het FreeImage.dll bestand (te downloaden van http://freeimage.sourceforge.net/download.html) in de plug-in directory en start je het programma opnieuw.</translation>
+Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het FreeImage.dll bestand (te downloaden van http://freeimage.sourceforge.net/download.html) in de plug-in directory en herstart je het programma.</translation>
 </phrase>
 
 <phrase>
@@ -619,12 +619,12 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>PNGQuant could not write file.  Saving 32bpp image instead</original>
-<translation>Pngquant kon niet bestand schrijven. Afeelding opslaan 32bpp in plaats</translation>
+<translation>Pngquant kon bestand niet schrijven. Afeelding opslaan 32bpp in plaats</translation>
 </phrase>
 
 <phrase>
 <original>PPM save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>PPM opslaan mislukt ( FreeImage_SaveEx silent fail ). Meldt deze fout aub met behulp van Help -> Indienen Bug Report .</translation>
+<translation>PPM opslaan mislukt (FreeImage_SaveEx silent fail). Meldt deze fout aub met behulp van Help -> Indienen Bug Report .</translation>
 </phrase>
 
 <phrase>
@@ -644,7 +644,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>No color found.  Saving 8bpp grayscale JPEG.</original>
-<translation>Geen kleur gevonden . Bezig opslaan 8bpp grijstinten JPEG.</translation>
+<translation>Geen kleur gevonden. Bezig opslaan 8bpp grijstinten JPEG.</translation>
 </phrase>
 
 <phrase>
@@ -654,7 +654,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Miniatuur opslaan mislukt (FreeImage_SaveEx silent fail). Meld deze fout gebruik van de Help -> Submit Bug Report.</translation>
+<translation>Miniatuur opslaan mislukt (FreeImage_SaveEx silent fail). Meld deze fout gebruik van de Help -> Indienen Bug Report.</translation>
 </phrase>
 
 <phrase>
@@ -664,7 +664,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>Thumbnail save failed (unspecified GDI+ error).</original>
-<translation>Opslaan Miniatuur mislukt (onverwachte GDI+ fout)</translation>
+<translation>Opslaan miniatuur mislukt (onverwachte GDI+ fout)</translation>
 </phrase>
 
 <!-- VBP_SaveModule.bas contains 114 phrases. 73 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
@@ -696,12 +696,12 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>Note: this operation will flatten the image before converting it to indexed color mode.</original>
-<translation>Opmerking: deze handeling wordt de afbeelding afgeplat voordat ze wordt omgezet naar de geïndexeerde kleuren modus.</translation>
+<translation>Opmerking: met deze handeling wordt de afbeelding afgeplat voordat ze wordt omgezet naar de geïndexeerde kleurenmodus.</translation>
 </phrase>
 
 <phrase>
 <original>The FreeImage plugin is missing.  Please install it if you wish to use this tool.</original>
-<translation>De FreeImage plugin ontbreekt. Installeer deze als u wenst om deze tool te gebruiken.</translation>
+<translation>De FreeImage plugin ontbreekt. Installeer deze als je wenst om deze tool te gebruiken.</translation>
 </phrase>
 
 <phrase>
@@ -797,7 +797,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>Image URL found on clipboard.  Attempting to download</original>
-<translation>Afbeeldings-URL gevonden op klembord. Proberen te downloaden</translation>
+<translation>Afbeeldings-URL gevonden op klembord. Trachten te downloaden</translation>
 </phrase>
 
 <phrase>
@@ -807,7 +807,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Het klembord is leeg of het bevat geen geldig beeldformaat. Gelieve een geldig afbeelding naar het klembord te kopieren en opnieuw te proberen .</translation>
+<translation>Het klembord is leeg of het bevat geen geldig afbeeldingsformaat. Gelieve een geldig afbeelding naar het klembord te kopieren en opnieuw te proberen .</translation>
 </phrase>
 
 <phrase>
@@ -938,7 +938,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>stretching to new size  (default)</original>
-<translation>uitrekken tot nieuwe grootte  (standaard)</translation>
+<translation>uitrekken tot nieuwe grootte (standaard)</translation>
 </phrase>
 
 <phrase>
@@ -958,7 +958,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.</original>
-<translation>Resampling heeft invloed op de kwaliteit van gewijzigde afbeeldingen.  Lees het Image Resampling artikel op Wikipedia voor een goede samenvatting van resampling technieken.</translation>
+<translation>Resampling heeft invloed op de kwaliteit van gewijzigde afbeeldingen. Lees het Image Resampling artikel op Wikipedia voor een goede samenvatting van resampling technieken.</translation>
 </phrase>
 
 <phrase>
@@ -968,7 +968,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>Bij het wijzigen van de beeldverhouding van een afbeelding, kan ongewenste uitrekking optreden. PhotoDemon kan dit voorkomen door het gebruik van lege randen of bijsnijden.</translation>
+<translation>Bij het wijzigen van de beeldverhouding van een afbeelding kan ongewenste uitrekking optreden. PhotoDemon kan dit voorkomen door het gebruik van lege randen of bijsnijden.</translation>
 </phrase>
 
 <phrase>
@@ -1108,7 +1108,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>Sampling image data to determine true contrast</original>
-<translation>Sampling van beeldgegevens om het echte contrast te bepalen</translation>
+<translation>Sampling van afbeeldingsgegevens om het echte contrast te bepalen</translation>
 </phrase>
 
 <phrase>
@@ -1170,12 +1170,12 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
-<translation>Er is niet genoeg geheugen beschikbaar om deze bewerking voort te zetten. Gelieve systeemgeheugen (RAM) vrij te maken en opnieuw te proberen . Als het probleem aanhoudt, verlaag dan de zoomwaarde probeer opnieuw .</translation>
+<translation>Er is niet genoeg geheugen beschikbaar om deze bewerking voort te zetten. Gelieve systeemgeheugen (RAM) vrij te maken en opnieuw te proberen . Als het probleem aanhoudt, verlaag dan de zoomwaarde en probeer opnieuw .</translation>
 </phrase>
 
 <phrase>
 <original>Out of memory</original>
-<translation>Er is onvoldoende geheugen</translation>
+<translation>Onvoldoende geheugen</translation>
 </phrase>
 
 <phrase>
@@ -1190,7 +1190,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <phrase>
 <original>Viewport rendering paused due to unexpected error (#%1)</original>
-<translation>Viewport translateren gepauzeerd als gevolg van een onverwachte fout (# %1)</translation>
+<translation>Viewport translateren gepauzeerd als gevolg van een onverwachte fout (#%1)</translation>
 </phrase>
 
 <!-- VBP_ZoomModule.bas contains 6 phrases.  All 6 were unique, so 6 new phrases were written to file. -->
@@ -1275,11 +1275,11 @@ A.U.B. rapporteer deze bug via de Help -> Indienen Bug Report menu.</translation
 - If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
 
 - If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>Helaas blijkt dit afbeeldingsbestand ongeldig te zijn. Dit kan gebeuren als een bestand geen beeldgegevens bevat, of als het beeldgegevens bevat in een niet-ondersteunde indeling.
+<translation>Helaas blijkt dit afbeeldingsbestand ongeldig te zijn. Dit kan gebeuren als een bestand geen afbeeldingsgegevens bevat, of als het afbeeldingsgegevens bevat in een niet-ondersteunde indeling.
 
 - Als u deze foto hebt gedownload via het internet, kan de download voortijdig beëindigd zijn. Probeer het downloaden van de afbeelding opnieuw.
 
-- Als dit afbeeldingsbestand afkomstig is van een digitale camera, scanner of een ander beeldbewerkingsprogramma, is het mogelijk dat PhotoDemon gewoon dit bepaald bestandsformaat niet begrijpt. Sla de afbeelding in een generiek formaat (zoals JPEG of PNG), en probeer dan weer terug.</translation>
+- Als dit afbeeldingsbestand afkomstig is van een digitale camera, scanner of een ander beeldbewerkingsprogramma, is het mogelijk dat PhotoDemon gewoon dit bepaald bestandsformaat niet begrijpt. Sla de afbeelding op in een generiek formaat (zoals JPEG of PNG), en probeer dan weer terug.</translation>
 </phrase>
 
 <phrase>
@@ -1312,7 +1312,7 @@ A.U.B. rapporteer deze bug via de Help -> Indienen Bug Report menu.</translation
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
 <translation>PhotoDemon kon geen extra informatie vinden voor deze fout. Dit betekent waarschijnlijk dat deze fout een bug is, en het moet worden opgelost!
 
-Wilt u een bug rapport indienen ? (Het duurt minder dan een minuut, en het helpt iedereen die gebruik maakt van de software.)</translation>
+Wilt u een bug rapport indienen? (Het duurt minder dan een minuut, en het helpt iedereen die gebruik maakt van de software.)</translation>
 </phrase>
 
 <phrase>
@@ -1573,12 +1573,12 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 
 <phrase>
 <original>use logarithmic values</original>
-<translation>Gebruik logaritmische waarden</translation>
+<translation>gebruik logaritmische waarden</translation>
 </phrase>
 
 <phrase>
 <original>use smooth lines</original>
-<translation>Gebruik vloeiende lijnen</translation>
+<translation>gebruik vloeiende lijnen</translation>
 </phrase>
 
 <phrase>
@@ -1674,7 +1674,7 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 
 <phrase>
 <original>Macro Data</original>
-<translation>Macro gegevens</translation>
+<translation>Macrogegevens</translation>
 </phrase>
 
 <phrase>
@@ -1693,7 +1693,7 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
 <translation>Als u deze macro niet opslaat gaan alle acties opgenomen tijdens deze sessie permanent verloren. Weet u zeker dat u wilt annuleren?
 
-(Druk op Nee om terug te keren naar het Save Macro -scherm. Merk op dat u deze macro later altijd kunt verwijderen als u besluit dat u het niet wilt.)</translation>
+(Druk op Nee om terug te keren naar het Bewaren Macro scherm. Merk op dat u deze macro later altijd kunt verwijderen als u besluit dat u deze niet wilt.)</translation>
 </phrase>
 
 <phrase>
@@ -1737,7 +1737,7 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
 
 (Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>Helaas wordt dit macro bestand niet meer ondersteund door de huidige versie van PhotoDemon.
+<translation>Helaas wordt dit macrobestand niet meer ondersteund door de huidige versie van PhotoDemon.
 
 In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies te ondersteunen, de prestaties te verbeteren, en om een aantal reeds lang bestaande problemen met de betrouwbaarheid op te lossen. Helaas, dit betekent dat macro's opgenomen voorafgaand aan versie 6.0, niet meer vereenigbaar zijn. U moet deze macor's opnieuw opnemen.
 
@@ -1767,7 +1767,7 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 
 <phrase>
 <original>Converting image mode</original>
-<translation>Omzetten van beeld-modus</translation>
+<translation>Omzetten van beeldmodus</translation>
 </phrase>
 
 <phrase>
@@ -1938,7 +1938,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Screenshot</original>
-<translation>Screenshot</translation>
+<translation>Schermafdruk</translation>
 </phrase>
 
 <phrase>
@@ -1963,12 +1963,12 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Revert</original>
-<translation>keren</translation>
+<translation>Keren</translation>
 </phrase>
 
 <phrase>
 <original>&Batch process</original>
-<translation>&Batch -proces</translation>
+<translation>&Batch proces</translation>
 </phrase>
 
 <phrase>
@@ -1983,7 +1983,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>&Edit</original>
-<translation>&Bewerken</translation>
+<translation>B&ewerken</translation>
 </phrase>
 
 <phrase>
@@ -2013,7 +2013,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Cu&t</original>
-<translation>Cut</translation>
+<translation>Knippen</translation>
 </phrase>
 
 <phrase>
@@ -2023,7 +2023,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>&Copy</original>
-<translation>Copy</translation>
+<translation>Kopiëren</translation>
 </phrase>
 
 <phrase>
@@ -2043,7 +2043,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>&Empty clipboard</original>
-<translation>&Ledig klembord</translation>
+<translation>&Ledigen klembord</translation>
 </phrase>
 
 <phrase>
@@ -2068,7 +2068,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>1:1 (actual size, 100%)</original>
-<translation>1:1 (ware grootte, 100 %)</translation>
+<translation>1:1 (ware grootte, 100%)</translation>
 </phrase>
 
 <phrase>
@@ -2088,7 +2088,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Content-aware resize</original>
-<translation>inhoud-bewuste herschaling</translation>
+<translation>Inhoudbewuste herschaling</translation>
 </phrase>
 
 <phrase>
@@ -2183,7 +2183,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>&Layer</original>
-<translation>layer</translation>
+<translation>&Laag</translation>
 </phrase>
 
 <phrase>
@@ -2193,32 +2193,32 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Blank layer</original>
-<translation>lege laag</translation>
+<translation>Lege laag</translation>
 </phrase>
 
 <phrase>
 <original>Duplicate of current layer</original>
-<translation>Dupliceren van de huidige laag</translation>
+<translation>Duplicaat van huidige laag</translation>
 </phrase>
 
 <phrase>
 <original>From file</original>
-<translation>uit bestand</translation>
+<translation>Uit bestand</translation>
 </phrase>
 
 <phrase>
 <original>Delete</original>
-<translation>Delete</translation>
+<translation>Verwijder</translation>
 </phrase>
 
 <phrase>
 <original>Current layer</original>
-<translation>huidige laag</translation>
+<translation>Huidige laag</translation>
 </phrase>
 
 <phrase>
 <original>Hidden layers</original>
-<translation>verborgen lagen</translation>
+<translation>Verborgen lagen</translation>
 </phrase>
 
 <phrase>
@@ -2233,7 +2233,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Order</original>
-<translation>Bestel</translation>
+<translation>Volgorde</translation>
 </phrase>
 
 <phrase>
@@ -2423,7 +2423,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Auto enhance</original>
-<translation>Auto te verbeteren</translation>
+<translation>Auto-verbetering</translation>
 </phrase>
 
 <phrase>
@@ -2873,7 +2873,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Median smoothing</original>
-<translation>Mediaan vergladden</translation>
+<translation>Mediaans vergladden</translation>
 </phrase>
 
 <phrase>
@@ -2958,7 +2958,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Thermograph (heat map)</original>
-<translation>Thermograaf (Warmte Map)</translation>
+<translation>Thermograaf (warmtemap)</translation>
 </phrase>
 
 <phrase>
@@ -3148,32 +3148,32 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Auto correct color</original>
-<translation>Auto correctie kleur</translation>
+<translation>Autocorrectie kleur</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct contrast</original>
-<translation>Auto correctie contrast</translation>
+<translation>Autocorrectie contrast</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct lighting</original>
-<translation>Auto correctie verlichting</translation>
+<translation>Autocorrectie belichting</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance color</original>
-<translation>Auto verbetering kleuren</translation>
+<translation>Autoverbetering kleuren</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance contrast</original>
-<translation>Auto verbetering contrast</translation>
+<translation>Autoverbetering contrast</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance lighting</original>
-<translation>Auto verbetering verlichting</translation>
+<translation>Autoverbetering belichting</translation>
 </phrase>
 
 <phrase>
@@ -3263,7 +3263,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Content-aware layer resize</original>
-<translation>inhoud-bewuste laagherschaling</translation>
+<translation>Inhoudbewuste laagherschaling</translation>
 </phrase>
 
 <phrase>
@@ -3273,7 +3273,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Erode (minimum rank)</original>
-<translation>Erode (minimum rangschikking)</translation>
+<translation>Eroderen (minimum rangschikking)</translation>
 </phrase>
 
 <phrase>
@@ -3288,7 +3288,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Checking for old autosave data</original>
-<translation>Controleren op oude autosave data</translation>
+<translation>Controleren op oude autosavedata</translation>
 </phrase>
 
 <phrase>
@@ -3298,7 +3298,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Multiple PhotoDemon sessions active; autosave check abandoned.</original>
-<translation>Meerdere PhotoDemon sessies actief; autosave check verlaten.</translation>
+<translation>Meerdere PhotoDemon sessies actief; autosave controle verlaten.</translation>
 </phrase>
 
 <phrase>
@@ -3318,17 +3318,17 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Checking for previously downloaded update data</original>
-<translation>Controleren op eerder gedownloade update data</translation>
+<translation>Controleren op eerder gedownloade updategegevens</translation>
 </phrase>
 
 <phrase>
 <original>An error occurred while looking for an update file.</original>
-<translation>Er is een fout opgetreden tijdens het zoeken naar een update-bestand.</translation>
+<translation>Er is een fout opgetreden tijdens het zoeken naar een updatebestand.</translation>
 </phrase>
 
 <phrase>
 <original>Update data found, but this copy of PhotoDemon is already up-to-date.</original>
-<translation>Data update gevonden, maar dit exemplaar van PhotoDemon is al up-to-date.</translation>
+<translation>Updategegevens gevonden, maar dit exemplaar van PhotoDemon is al up-to-date.</translation>
 </phrase>
 
 <phrase>
@@ -3338,7 +3338,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Some core plugins could not be found. Preparing updater</original>
-<translation>Sommige core insteekmodules kunnen niet worden gevonden. Voorbereiden updater</translation>
+<translation>Sommige kerninsteekmodules kunnen niet worden gevonden. Voorbereiden updater</translation>
 </phrase>
 
 <phrase>
@@ -3458,7 +3458,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Software update check postponed.</original>
-<translation>Software-update controle uitgesteld.</translation>
+<translation>Softwareupdate controle uitgesteld.</translation>
 </phrase>
 
 <phrase>
@@ -3477,7 +3477,7 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 
 <phrase>
 <original>Software update found!  Launching update notifier</original>
-<translation>Software-update gevonden! Lancering Update Notifier</translation>
+<translation>Softwareupdate gevonden! Lancering Update Notifier</translation>
 </phrase>
 
 <phrase>
@@ -3575,17 +3575,17 @@ Opmerking: enkele kleine programmateksten (zoals hover tooltips) kunnen niet liv
 
 <phrase>
 <original>No metadata available.</original>
-<translation>Geen metadata beschikbaar.</translation>
+<translation>Geen metagegevens beschikbaar.</translation>
 </phrase>
 
 <phrase>
 <original>This image does not contain any metadata.</original>
-<translation>De afbeelding bevat geen metadata.</translation>
+<translation>De afbeelding bevat geen metagegevens.</translation>
 </phrase>
 
 <phrase>
 <original>No metadata available</original>
-<translation>Geen metadata beschikbaar</translation>
+<translation>Geen metagegevens beschikbaar</translation>
 </phrase>
 
 <phrase>
@@ -3595,7 +3595,7 @@ Opmerking: enkele kleine programmateksten (zoals hover tooltips) kunnen niet liv
 
 <phrase>
 <original>Loading metadata for this image</original>
-<translation>Laden metadata voor deze afbeelding</translation>
+<translation>Laden metagegevens voor deze afbeelding</translation>
 </phrase>
 
 <phrase>
@@ -3605,7 +3605,7 @@ Opmerking: enkele kleine programmateksten (zoals hover tooltips) kunnen niet liv
 
 <phrase>
 <original>No GPS data found</original>
-<translation>Geen GPS data gevonden</translation>
+<translation>Geen GPS gegevens gevonden</translation>
 </phrase>
 
 <phrase>
@@ -3715,7 +3715,7 @@ Opmerking: enkele kleine programmateksten (zoals hover tooltips) kunnen niet liv
 
 <phrase>
 <original>Export selection mask as image</original>
-<translation>Export selectie masker als afbeelding</translation>
+<translation>Exporteer selectie masker als afbeelding</translation>
 </phrase>
 
 <phrase>
@@ -3770,12 +3770,12 @@ Opmerking: enkele kleine programmateksten (zoals hover tooltips) kunnen niet liv
 Please make sure the device is turned on and ready for use.</original>
 <translation>De geselecteerde scanner of digitale camera reageert niet.
 
-Zorg ervoor dat het apparaat is ingeschakeld en klaar voor gebruik.</translation>
+Zorg ervoor dat het apparaat is ingeschakeld en klaar is voor gebruik.</translation>
 </phrase>
 
 <phrase>
 <original>Scanner Interface Error</original>
-<translation>Scanner Interface fout</translation>
+<translation>Scanner Interfacefout</translation>
 </phrase>
 
 <phrase>
@@ -3789,7 +3789,7 @@ Zorg ervoor dat het apparaat is ingeschakeld en klaar voor gebruik.</translation
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>De scanner/camera -interface plug-in (EZTW32.dll) werd aangeduid als ontbrekend tijdens de initialisatie van het programma.
 
-Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (beschikbaar voor download vanaf http://eztwain.com/ezt1_download.htm) in de plug-in directory en herstart je het programma.</translation>
+Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (beschikbaar voor download vanaf http://eztwain.com/ezt1_download.htm) in de plug-in directory en herstart je het programma.</translation>
 </phrase>
 
 <phrase>
@@ -3804,7 +3804,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>Scanner/digital camera import disabled</original>
-<translation>Import van Scanner/digitale camera uitgeschakeld</translation>
+<translation>Import van scanner/digitale camera uitgeschakeld</translation>
 </phrase>
 
 <phrase>
@@ -3849,7 +3849,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #%1).  Please visit http://www.eztwain.com for more information.</original>
-<translation>De scanner heeft een foutcode geretourneerd die niet is opgegeven in de EZTW32.dll documentatie (Error # %1). Ga naar http://www.eztwain.com voor meer informatie.</translation>
+<translation>De scanner heeft een foutcode geretourneerd die niet is opgegeven in de EZTW32.dll documentatie (Error #%1). Ga naar http://www.eztwain.com voor meer informatie.</translation>
 </phrase>
 
 <phrase>
@@ -3981,7 +3981,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>detection direction(s)</original>
-<translation>detectie richting (en)</translation>
+<translation>detectie richting(en)</translation>
 </phrase>
 
 <phrase>
@@ -4103,7 +4103,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>An error (#%1) has occurred.  Compression halted.</original>
-<translation>Er heeft een fout (# %1) plaatsgevonden. Compressie gestopt.</translation>
+<translation>Er heeft een fout (#%1) plaatsgevonden. Compressie gestopt.</translation>
 </phrase>
 
 <phrase>
@@ -4139,7 +4139,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>automatically calculate threshold</original>
-<translation>berekent automatisch drempel</translation>
+<translation>bereken automatisch drempel</translation>
 </phrase>
 
 <phrase>
@@ -4169,7 +4169,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>Converting image to two colors</original>
-<translation>Omzetten van afbeelding naar twee kleuren</translation>
+<translation>Omzetten afbeelding naar twee kleuren</translation>
 </phrase>
 
 <!-- VBP_FormBlackAndWhite.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -4200,7 +4200,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>Interface Options</original>
-<translation>Interface-opties</translation>
+<translation>Interface opties</translation>
 </phrase>
 
 <phrase>
@@ -4225,7 +4225,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>Advanced</original>
-<translation>Gevorderd</translation>
+<translation>Geavanceerd</translation>
 </phrase>
 
 <phrase>
@@ -4240,7 +4240,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>Color and Transparency Options</original>
-<translation>Kleur en Transparantopties</translation>
+<translation>Kleur en Transparant opties</translation>
 </phrase>
 
 <phrase>
@@ -4260,7 +4260,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>Save (Export) Options</original>
-<translation>Opslaan (exporteren) Opties</translation>
+<translation>Opslaan (Exporteren) Opties</translation>
 </phrase>
 
 <phrase>
@@ -4270,7 +4270,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>File Format Options</original>
-<translation>opties voor het bestandsformaat</translation>
+<translation>Opties voor bestandsformaat</translation>
 </phrase>
 
 <phrase>
@@ -4290,17 +4290,17 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>interface</original>
-<translation>-interface</translation>
+<translation>interface</translation>
 </phrase>
 
 <phrase>
 <original>no compression (fastest)</original>
-<translation>geen compressie (snelste)</translation>
+<translation>geen compressie (snelst)</translation>
 </phrase>
 
 <phrase>
 <original>maximum compression (slowest)</original>
-<translation>maximale compressie (langzaamste)</translation>
+<translation>maximale compressie (langzaamst)</translation>
 </phrase>
 
 <phrase>
@@ -4310,7 +4310,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>undo/redo</original>
-<translation>undo/redo</translation>
+<translation>ongedaan maken/herhalen</translation>
 </phrase>
 
 <phrase>
@@ -4325,7 +4325,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>when rendering the image canvas</original>
-<translation>bij het renderen van de afbeeldingscanvas</translation>
+<translation>bij het translateren van de afbeeldingscanvas</translation>
 </phrase>
 
 <phrase>
@@ -4365,12 +4365,12 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>if core plugins cannot be located, offer to download them</original>
-<translation>als core insteekmodules niet gevonden worden, aanbieden om ze te downloaden</translation>
+<translation>als kerninsteekmodules niet gevonden worden, aanbieden om ze te downloaden</translation>
 </phrase>
 
 <phrase>
 <original>automatically check for software updates every 10 days</original>
-<translation>automatisch controleren op software-updates om de 10 dagen</translation>
+<translation>automatisch controleren op softwareupdates om de 10 dagen</translation>
 </phrase>
 
 <phrase>
@@ -4405,7 +4405,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>recently used file shortcuts should be</original>
-<translation>laatst gebruikte bestanden snelkoppelingen moeten worden</translation>
+<translation>snelkoppelingen van laatst gebruikte bestanden moeten worden</translation>
 </phrase>
 
 <phrase>
@@ -4460,17 +4460,17 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>when rendering images to the screen</original>
-<translation>bij het renderen van afbeeldingen naar het scherm</translation>
+<translation>bij het translateren van afbeeldingen naar het scherm</translation>
 </phrase>
 
 <phrase>
 <original>transparency checkerboard size</original>
-<translation>transparantie dambord -grootte</translation>
+<translation>transparantie dambordgrootte</translation>
 </phrase>
 
 <phrase>
 <original>transparency checkerboard colors</original>
-<translation>transparantie dambord -kleuren</translation>
+<translation>transparantie dambordkleuren</translation>
 </phrase>
 
 <phrase>
@@ -4480,7 +4480,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>preserve file's original background color, if available</original>
-<translation>bewaren oorspronkelijke achtergrondkleur van bestand, indien beschikbaar</translation>
+<translation>behouden oorspronkelijke achtergrondkleur van bestand, indien beschikbaar</translation>
 </phrase>
 
 <phrase>
@@ -4520,7 +4520,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>use RLE compression when saving 8bpp BMP images</original>
-<translation>gebruik RLE -codering bij het opslaan van 8bpp BMP-afbeeldingen</translation>
+<translation>gebruik RLE codering bij het opslaan van 8bpp BMP afbeeldingen</translation>
 </phrase>
 
 <phrase>
@@ -4570,7 +4570,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>when saving images that originally contained metadata</original>
-<translation>bij het opslaan van afbeeldingen die oorspronkelijk metadata bevatte</translation>
+<translation>bij het opslaan van afbeeldingen die oorspronkelijk metagegevens bevatte</translation>
 </phrase>
 
 <phrase>
@@ -4625,7 +4625,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
-<translation>gehoorzamen auto-rotate instructies binnenkant beeldbestanden</translation>
+<translation>gehoorzamen auto-rotate instructies binnen afbeeldingsbestanden</translation>
 </phrase>
 
 <phrase>
@@ -4650,7 +4650,7 @@ Om de scanner -ondersteuning in te schakelen, kopieer je het EZTW32.dll bestand 
 
 <phrase>
 <original>when an image is first loaded, set its viewport zoom to</original>
-<translation>wanneer een afbeelding eerst wordt geladen, stel de viewport zoom in op</translation>
+<translation>wanneer een afbeelding voor het eerst wordt geladen, stel de viewport zoom in op</translation>
 </phrase>
 
 <phrase>
@@ -4728,7 +4728,7 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>descriptive - full location, including folder(s)</original>
-<translation>beschrijvende - volledige locatie, inclusief map (pen)</translation>
+<translation>beschrijvende - volledige locatie, inclusief map(pen)</translation>
 </phrase>
 
 <phrase>
@@ -4738,7 +4738,7 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>descriptive - full locations, including folder(s)</original>
-<translation>beschrijvende - volledige locaties, inclusief map (pen)</translation>
+<translation>beschrijvende - volledige locaties, inclusief map(pen)</translation>
 </phrase>
 
 <phrase>
@@ -4753,7 +4753,7 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily).</original>
-<translation>Deze optie laat toe om PhotoDemon binnenkomende afbeeldingen te laten scannen om de meest geschikte kleurdiepte te bepalen op een case-by- case basis (in plaats van te vertrouwen op de kleur van de bronafbeelding, die willekeurig kan zijn gekozen).</translation>
+<translation>Deze optie laat toe om PhotoDemon binnenkomende afbeeldingen te laten scannen om de meest geschikte kleurdiepte te bepalen op een case-by-case basis (in plaats van te vertrouwen op de kleur van de bronafbeelding, die willekeurig kan zijn gekozen).</translation>
 </phrase>
 
 <phrase>
@@ -4763,12 +4763,12 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>Tone mapping is used to preserve the tonal range of HDR images.  This setting is very useful for RAW photos and scanned documents, but it adds a significant amount of time to the image load process.</original>
-<translation>Tone mapping wordt gebruikt om het toonbereik van HDR-afbeeldingen te bewaren. Deze instelling is erg handig voor RAW- foto's en gescande documenten, maar het voegt wel een aanzienlijke hoeveelheid tijd toe bij het laadproces van afbeeldingen.</translation>
+<translation>Tone mapping wordt gebruikt om het toonbereik van HDR-afbeeldingen te bewaren. Deze instelling is erg handig voor RAW foto's en gescande documenten, maar het voegt wel een aanzienlijke hoeveelheid tijd toe aan het laadproces van afbeeldingen.</translation>
 </phrase>
 
 <phrase>
 <original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>De meeste digitale foto's bevatten onder andere de rotatie-instructies (EXIF oriëntatie metadata), die PhotoDemon zal gebruiken om automatisch foto's te roteren. Sommige oudere smartphones en camera's schrijven deze instructies mogelijk niet correct, dus als je foto's zijwaarts of ondersteboven worden geïmporteerd, kunt u proberen van de auto-rotate functie uit te schakelen.</translation>
+<translation>De meeste digitale foto's bevatten onder andere de rotatie-instructies (EXIF oriëntatie metagegevens), die PhotoDemon zal gebruiken om automatisch foto's te roteren. Sommige oudere smartphones en camera's schrijven deze instructies mogelijk niet correct, dus als foto's zijwaarts of ondersteboven worden geïmporteerd, kan je proberen om de auto-rotate functie uit te schakelen.</translation>
 </phrase>
 
 <phrase>
@@ -4778,12 +4778,12 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>1:1 (100% zoom, or "actual size")</original>
-<translation>1:1 (100 %zoom, of "werkelijke grootte")</translation>
+<translation>1:1 (100% zoom, of "werkelijke grootte")</translation>
 </phrase>
 
 <phrase>
 <original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
-<translation>Elke foto groter dan 2 megapixels is te groot om te passen op een gemiddelde computer monitor. PhotoDemon kan automatisch uitzoomen op grote foto's, zodat de gehele afbeelding te bekijken is.</translation>
+<translation>Elke foto groter dan 2 megapixels is te groot om te passen op een gemiddelde computermonitor. PhotoDemon kan automatisch uitzoomen op grote foto's, zodat de gehele afbeelding te bekijken is.</translation>
 </phrase>
 
 <phrase>
@@ -4818,7 +4818,7 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-<translation>De meeste foto-editors gebruiken het formaat van de huidige afbeelding als de standaard in het "Opslaan als"-scherm. Bij het werken met RAW-afbeeldingen die uiteindelijk zullen worden opgeslagen in JPEG, is het handig om PhotoDemon dit te laten onthouden als de "laatst gebruikt" optie.</translation>
+<translation>De meeste foto-editors gebruiken het formaat van de huidige afbeelding als de standaard in het "Opslaan als"-scherm. Bij het werken met RAW afbeeldingen die uiteindelijk zullen worden opgeslagen in JPEG, is het handig om PhotoDemon dit te laten onthouden als de "laatst gebruikt" optie.</translation>
 </phrase>
 
 <phrase>
@@ -4843,7 +4843,7 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)</original>
-<translation>behoud alle relevante metadata, maar verwijder persoonlijke labels (GPS coords, serial # 's, etc)</translation>
+<translation>behoud alle relevante metadata, maar verwijder persoonlijke labels (GPS coördinaten, serie # 's, enz)</translation>
 </phrase>
 
 <phrase>
@@ -4853,7 +4853,7 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu.</original>
-<translation>Metadata zijn extra gegevens in een afbeeldingsbestand, toegevoegd door een camera of door foto-software. Deze gegevens bestaan uit dingen zoals het merk en model van de camera, de GPS-coördinaten waar een foto is genomen, of vele andere items. Om metagegevens van een afbeelding te bekijken, gebruikt u het Afbeelding -> Metagegevens menu.</translation>
+<translation>Metadata zijn extra gegevens in een afbeeldingsbestand, toegevoegd door een camera of door foto-software. Deze gegevens bestaan uit dingen zoals het merk en model van de camera, de GPS-coördinaten waar een foto is genomen, of vele andere items. Om metadata van een afbeelding te bekijken, gebruikt u het Afbeelding -> metadata menu.</translation>
 </phrase>
 
 <phrase>
@@ -4913,12 +4913,12 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)</original>
-<translation>Binaire codering van PPM-bestanden wordt sterk aanbevolen. (Met andere woorden, niet deze instelling te wijzigen, tenzij u zeker weet dat ASCII-codering is wat je wilt. :)</translation>
+<translation>Binaire codering van PPM-bestanden wordt sterk aanbevolen. (Met andere woorden, wijzig deze instelling niet, tenzij je zeker weet dat ASCII-codering is wat je wilt. :)</translation>
 </phrase>
 
 <phrase>
 <original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
-<translation>TGA -bestanden ondersteunen slechts één type compressie. PhotoDemon kan eenvoudige RLE -codering toepassen bij het opslaan van TGA afbeeldingen.</translation>
+<translation>TGA -bestanden ondersteunen slechts één type compressie. PhotoDemon kan eenvoudige RLE-codering toepassen bij het opslaan van TGA afbeeldingen.</translation>
 </phrase>
 
 <phrase>
@@ -4953,27 +4953,27 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>CCITT Group 3 fax encoding - 1bpp only</original>
-<translation>CCITT Groep 3 fax codering enkel - 1bpp</translation>
+<translation>CCITT Groep 3 fax codering - enkel 1bpp</translation>
 </phrase>
 
 <phrase>
 <original>CCITT Group 4 fax encoding - 1bpp only</original>
-<translation>CCITT Groep 4 fax -codering - enkel 1bpp</translation>
+<translation>CCITT Groep 4 fax codering - enkel 1bpp</translation>
 </phrase>
 
 <phrase>
 <original>TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.</original>
-<translation>TIFFs ondersteunen verschillende compressietechnieken. Sommige van deze technieken zijn beperkt tot specifieke kleur diepten, dus zorg ervoor dat je er één uitkiest dat bij de geplande op te slaan afbeeldingen past.</translation>
+<translation>TIFFs ondersteunen verschillende compressietechnieken. Sommige van deze technieken zijn beperkt tot specifieke kleurdiepten, dus zorg ervoor dat je er één uitkiest dat bij de geplande op te slaan afbeeldingen past.</translation>
 </phrase>
 
 <phrase>
 <original>TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required.</original>
-<translation>TIFF's ondersteunen zowel RGB -als CMYK- kleurruimten. RGB wordt standaard gebruikt, maar wanneer een TIFF-bestand gebruikt zal worden in gedrukte documenten, is CMYK soms nodig.</translation>
+<translation>TIFF's ondersteunen zowel RGB als CMYK kleurruimten. RGB wordt standaard gebruikt, maar wanneer een TIFF-bestand gebruikt zal worden in gedrukte documenten, is CMYK soms nodig.</translation>
 </phrase>
 
 <phrase>
 <original>maximize quality</original>
-<translation>maximaliseren van kwaliteit</translation>
+<translation>maximaliseren kwaliteit</translation>
 </phrase>
 
 <phrase>
@@ -4983,12 +4983,12 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>maximize performance</original>
-<translation>maximaliseren van de prestaties</translation>
+<translation>maximaliseren prestaties</translation>
 </phrase>
 
 <phrase>
 <original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>Zoals elke foto-editor, PhotoDemon zet vaak kleuren tussen verschillende referentie-ruimtes. De nauwkeurigheid van deze omzetting kunnen worden beperkt tot de prestaties te verbeteren.</translation>
+<translation>Zoals elke foto-editor, zet PhotoDemon vaak kleuren om tussen verschillende referentie-ruimtes. De nauwkeurigheid van deze omzetting kunnen worden beperkt om de prestaties te verbeteren.</translation>
 </phrase>
 
 <phrase>
@@ -5003,12 +5003,12 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>Rendering van het primaire afbeeldingscanvas is een veel voorkomende bottleneck voor de prestaties van PhotoDemon. De automatische instelling wordt aanbevolen, maar voor oudere pc's, je kan de maximaliseren van de prestaties optie handmatig selecteren om de kwaliteit op te offeren voor ruwe prestaties.</translation>
+<translation>Translateren van het primaire afbeeldingscanvas is een veel voorkomende bottleneck voor de prestaties van PhotoDemon. De automatische instelling wordt aanbevolen, maar voor oudere pc's, kan je de maximaliseren van de prestaties optie handmatig selecteren om de kwaliteit op te offeren voor ruwe prestaties.</translation>
 </phrase>
 
 <phrase>
 <original>By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but increases disk space usage.  Compressing undo data will reduce disk space usage, at some cost to performance.  (Note that undo data is erased when PhotoDemon exits, so this setting only affects disk space usage while PhotoDemon is running.)</original>
-<translation>Standaard wordt PhotoDemon's undo data niet gecomprimeerd. Dit maakt ongedaan maken operaties zeer snel, maar verhoogt het gebruik van schijfruimte. Comprimeren van ongedaan maken gegevens zal het gebruik van schijfruimte verminderen, dit ten kosten van de prestaties. (Merk op dat de gegevens ongedaan wordt gewist wanneer PhotoDemon stopt, deze instelling heeft enkel invloed op het gebruik van schijfruimte, terwijl PhotoDemon draait.)</translation>
+<translation>Standaard wordt PhotoDemon's ongedaan maken -data niet gecomprimeerd. Dit maakt ongedaan maken operaties zeer snel, maar verhoogt het gebruik van schijfruimte. Comprimeren van ongedaan maken -gegevens zal het gebruik van schijfruimte verminderen, dit ten kosten van de prestaties. (Merk op dat de ongedaan maken gegevens wordt gewist wanneer PhotoDemon stopt, deze instelling heeft enkel invloed op het gebruik van schijfruimte, terwijl PhotoDemon draait.)</translation>
 </phrase>
 
 <phrase>
@@ -5033,17 +5033,17 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Geef een kleurprofiel voor elke monitor die momenteel aangesloten is op het systeem. Merk op dat de tekst tussen haakjes de beeldschermadapter is die de genoemde monitor stuurt.</translation>
+<translation>Geef een kleurprofiel op voor elke monitor die momenteel aangesloten is op het systeem. Merk op dat de tekst tussen haakjes de beeldschermadapter is die de genoemde monitor stuurt.</translation>
 </phrase>
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Klik op deze knop om een "bladeren voor kleurprofiel" dialoog te  tonen.</translation>
+<translation>Klik op deze knop om een "bladeren voor kleurprofiel" dialoog te tonen.</translation>
 </phrase>
 
 <phrase>
 <original>Highlight checks</original>
-<translation>Hooglicht controles</translation>
+<translation>Glanspunt controles</translation>
 </phrase>
 
 <phrase>
@@ -5112,9 +5112,9 @@ Weet u zeker dat u wilt doorgaan?</translation>
 The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single "updates.txt" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server.
 
 If you choose to disable these features, you can always visit photodemon.org to manually download the most recent version of the program.</original>
-<translation>PhotoDemon biedt twee niet-essentiële functies die internettoegang nodig hebben: het controleren op software-updates, en het aanbieden om de kern insteekmodules te downloaden als ze niet aanwezig zijn in de \App\PhotoDemon\Plugins subdirectory.
+<translation>PhotoDemon biedt twee niet-essentiële functies die internettoegang nodig hebben: het controleren op Softwareupdates, en het aanbieden om de kerninsteekmodules te downloaden als ze niet aanwezig zijn in de \App\PhotoDemon\Plugins subdirectory.
 
-De ontwikkelaars van PhotoDemon nemen privacy zeer serieus, dus geen informatie - statistische of anderszins - wordt geüpload door deze functies. Het controleren op software-updates maak enkel gebruik van de download van het "updates.txt" bestand met de nieuwste softwareversie nummer. Ook het downloaden van ontbrekende insteekmodules gaat gewoon om het downloaden van een of meer gecomprimeerde insteekmodule bestanden vanop de PhotoDemon server.
+De ontwikkelaars van PhotoDemon nemen privacy zeer serieus, dus geen informatie - statistische of anderszins - wordt geüpload door deze functies. Het controleren op Softwareupdates maak enkel gebruik van de download van het "updates.txt" bestand met de nieuwste softwareversie nummer. Ook het downloaden van ontbrekende insteekmodules gaat gewoon om het downloaden van een of meer gecomprimeerde insteekmodule bestanden vanop de PhotoDemon server.
 
 Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht op photodemon.org om de meest recente versie van het programma handmatig te downloaden.</translation>
 </phrase>
@@ -5156,12 +5156,12 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 
 <phrase>
 <original>Load options allow you to customize the way image files enter the application.</original>
-<translation>Met de opties voor laden kan u de manier aanpassen waarop afbeeldingsbestanden de applicatie binnenkomen.</translation>
+<translation>Met de opties voor laden kan je de manier aanpassen waarop afbeeldingsbestanden de applicatie binnenkomen.</translation>
 </phrase>
 
 <phrase>
 <original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Met de opties voor opslaan kan u de manier aanpassen waarop afbeeldingsbestanden de applicatie verlaten.</translation>
+<translation>Met de opties voor opslaan kan je de manier aanpassen waarop afbeeldingsbestanden de applicatie verlaten.</translation>
 </phrase>
 
 <phrase>
@@ -5237,7 +5237,7 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 
 <phrase>
 <original>Applying intelligent coloring</original>
-<translation>Toepassen van intelligente kleuren</translation>
+<translation>Toepassen van intelligent kleuren</translation>
 </phrase>
 
 <phrase>
@@ -5304,17 +5304,17 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 
 <phrase>
 <original>Enhancing colors</original>
-<translation>het verbeteren van kleuren</translation>
+<translation>Verbeteren van kleuren</translation>
 </phrase>
 
 <phrase>
 <original>Enhancing contrast</original>
-<translation>het verbeteren van het contrast</translation>
+<translation>Verbeteren van het contrast</translation>
 </phrase>
 
 <phrase>
 <original>Enhancing lighting</original>
-<translation>Verbeteren van de verlichting</translation>
+<translation>Verbeteren van de belichting</translation>
 </phrase>
 
 <!-- VBP_Filters_Color_Effects.bas contains 11 phrases.  All 11 were unique, so 11 new phrases were written to file. -->
@@ -5370,7 +5370,7 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 
 <phrase>
 <original>Crop complete.  (Note: the selected area was automatically unselected.)</original>
-<translation>Bijsnijden voltooien. (Let op:. Het geselecteerde gebied is automatisch gedeselecteerd)</translation>
+<translation>Bijsnijden voltooid. (Let op:. Het geselecteerde gebied is automatisch gedeselecteerd)</translation>
 </phrase>
 
 <phrase>
@@ -5542,12 +5542,12 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 
 <phrase>
 <original>portrait</original>
-<translation>portret</translation>
+<translation>staand</translation>
 </phrase>
 
 <phrase>
 <original>landscape</original>
-<translation>landschap</translation>
+<translation>liggend</translation>
 </phrase>
 
 <phrase>
@@ -5609,7 +5609,7 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 
 <phrase>
 <original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>Wanneer deze knop actief is, kunt u de hooglichtingangsniveaukleur instellen door met de rechtermuisknop te klikken op een kleur in het voorbeeldvenster.</translation>
+<translation>Wanneer deze knop actief is, kan je de glanspuntingangsniveaukleur instellen door met de rechtermuisknop te klikken op een kleur in het voorbeeldvenster.</translation>
 </phrase>
 
 <phrase>
@@ -5693,7 +5693,7 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 
 <phrase>
 <original>Image download complete.</original>
-<translation>Afbeelding downloaden voltooid.</translation>
+<translation>Downloaden afbeelding voltooid.</translation>
 </phrase>
 
 <phrase>
@@ -5703,7 +5703,7 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 
 <phrase>
 <original>%1 could not establish an Internet connection. Please double-check your connection.  If the problem persists, try downloading the image manually using your Internet browser of choice.  Once downloaded, you may open the file in %1 just like any other image file.</original>
-<translation>%1 Kon geen internetverbinding tot stand brengen. Gelieve uw verbinding te dubbel-checken. Als het probleem zich blijft voordoen, probeer dan de afbeelding handmatig te downloaden met behulp van een Internet-browser naar keuze. Eenmaal gedownload, kunt u het bestand openen in %1, net als elk ander afbeeldings-bestand.</translation>
+<translation>%1 Kon geen internetverbinding tot stand brengen. Gelieve uw verbinding te dubbel-checken. Als het probleem zich blijft voordoen, probeer dan de afbeelding handmatig te downloaden met behulp van een Internet-browser naar keuze. Eenmaal gedownload, kan je het bestand openen in %1, net als elk ander afbeeldingsbestand.</translation>
 </phrase>
 
 <phrase>
@@ -5713,7 +5713,7 @@ Als u er voor kiest om deze functies uit te schakelen, dan kunt u altijd terecht
 
 <phrase>
 <original>Verifying image URL (this may take a moment)</original>
-<translation>Verifiëren afbeelding URL (dit kan even duren)</translation>
+<translation>Verifiëren URL afbeelding (dit kan even duren)</translation>
 </phrase>
 
 <phrase>
@@ -5764,7 +5764,7 @@ You will need to download this file using your Internet browser, then manually l
 I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(</original>
 <translation>Helaas, heeft %1 %2 voorkomen van het direct downloaden van deze afbeelding. (Directe downloads zijn soms verward als hotlinking door verkeerd geconfigureerde servers.) 
 
-Je moet dit bestand handmatig te downloaden met behulp van uw internet browser, en dan laden in %2.
+Je moet dit bestand handmatig downloaden met behulp van uw internet browser, en dan laden in %2.
 
 Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen aan slechte server configuraties.:(</translation>
 </phrase>
@@ -5791,7 +5791,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>Please be respectful of copyrights when downloading images.  Even if an image is available online, it may not be licensed for use outside a specific website. Thanks!</original>
-<translation>Houd rekening met auteursrechten bij het downloaden van afbeeldingen. Hoewel de afbeelding online beschikbaar is, kan het zijn dat deze niet toegelaten is voor gebruik buiten een bepaalde website. Bedankt!</translation>
+<translation>Houd rekening met auteursrechten bij het downloaden van afbeeldingen. Hoewel de afbeelding online beschikbaar is, kan het zijn dat deze niet toegelaten zijn voor gebruik buiten een bepaalde website. Bedankt!</translation>
 </phrase>
 
 <phrase>
@@ -5827,7 +5827,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>Postpone Plugin Download</original>
-<translation>Uitstellen insteekmodule Download</translation>
+<translation>Uitstellen Insteekmodule Download</translation>
 </phrase>
 
 <phrase>
@@ -5857,22 +5857,22 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>free, open-source library for optimizing portable network graphics (PNG files)</original>
-<translation>gratis, open- source bibliotheek voor het optimaliseren van Portable Network Graphics (PNG-bestanden)</translation>
+<translation>gratis, open-source bibliotheek voor het optimaliseren van Portable Network Graphics (PNG-bestanden)</translation>
 </phrase>
 
 <phrase>
 <original>free, open-source interface for importing images from scanners and digital cameras</original>
-<translation>gratis, open -source -interface voor het importeren van afbeeldingen van scanners en digitale camera's</translation>
+<translation>gratis, open-source -interface voor het importeren van afbeeldingen van scanners en digitale camera's</translation>
 </phrase>
 
 <phrase>
 <original>free, open-source compression library; required to decompress all other plugins</original>
-<translation>gratis, open -source compressie bibliotheek; nodig om alle andere insteekmodules te decomprimeren</translation>
+<translation>gratis, open-source compressie bibliotheek; nodig om alle andere insteekmodules te decomprimeren</translation>
 </phrase>
 
 <phrase>
 <original>free, open-source library for importing and exporting a variety of image formats</original>
-<translation>gratis, open- source bibliotheek voor het importeren en exporteren van een verscheidenheid van beeldformaten</translation>
+<translation>gratis, open-source bibliotheek voor het importeren en exporteren van een verscheidenheid van beeldformaten</translation>
 </phrase>
 
 <phrase>
@@ -5882,17 +5882,17 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>Would you like PhotoDemon to download these plugins for you?</original>
-<translation>Wilt u dat PhotoDemon deze insteekmodules download voor u?</translation>
+<translation>Wilt u dat PhotoDemon deze insteekmodules voor u download?</translation>
 </phrase>
 
 <phrase>
 <original>total download size of all plugins</original>
-<translation>Totale download grootte van alle insteekmodules</translation>
+<translation>Totale downloadgrootte van alle insteekmodules</translation>
 </phrase>
 
 <phrase>
 <original>Core Plugins Missing - Download Recommended</original>
-<translation>Core insteekmodules Ontbreken- Download Aanbevolen</translation>
+<translation>kerninsteekmodules Ontbreken - Download Aanbevolen</translation>
 </phrase>
 
 <phrase>
@@ -5907,7 +5907,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <phrase>
 <original>Plugins could not be downloaded at this time.  Carry on!</original>
-<translation>Insteekmodules konden niet worden gedownload op dit moment. Ga door !</translation>
+<translation>Insteekmodules konden niet worden gedownload op dit moment. Ga door!</translation>
 </phrase>
 
 <phrase>
@@ -5929,7 +5929,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
 
 To improve your user experience, please connect to the Internet, then allow the program to automatically download these free, open-source plugin(s)</original>
-<translation>Bedankt voor het gebruik van PhotoDemon. Helaas kon één of meerdere kern insteekmodules niet worden gevonden. PhotoDemon zal nog wel werken zonder deze insteekmodules, maar een aantal functies zullen gedeactiveerd zijn.
+<translation>Bedankt voor het gebruik van PhotoDemon. Helaas kon één of meerdere kerninsteekmodules niet worden gevonden. PhotoDemon zal nog wel werken zonder deze insteekmodules, maar een aantal functies zullen gedeactiveerd zijn.
 
 Om uw gebruikerservaring te verbeteren, maakt u verbinding met het internet, en laat u het programma deze gratis open-source insteekmodule(s) automatisch downloaden.</translation>
 </phrase>
@@ -5938,7 +5938,7 @@ Om uw gebruikerservaring te verbeteren, maakt u verbinding met het internet, en 
 <original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
 
 To improve your user experience, please allow the program to automatically download these free, open-source plugin(s)</original>
-<translation>Bedankt voor het gebruik van PhotoDemon. Helaas kon één of meer kern insteekmodules niet worden gevonden. PhotoDemon zal nog wel werken zonder deze insteekmodules, maar een aantal functies zijn uitgeschakeld.
+<translation>Bedankt voor het gebruik van PhotoDemon. Helaas kon één of meer kerninsteekmodules niet worden gevonden. PhotoDemon zal nog wel werken zonder deze insteekmodules, maar een aantal functies zijn uitgeschakeld.
 
 Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch te downloaden, om uw gebruikerservaring te verbeteren.</translation>
 </phrase>
@@ -5950,17 +5950,17 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 
 <phrase>
 <original>This is the recommended selection.  PhotoDemon will automatically download the selected plugins for you.  These plugins will be saved in the program's /Data/Plugins subdirectory.</original>
-<translation>Dit is de aanbevolen keuze. PhotoDemon zal automatisch downloaden van de geselecteerde insteekmodules voor je. Deze insteekmodules worden opgeslagen in submap van het programma /Data/Plugins.</translation>
+<translation>Dit is de aanbevolen keuze. PhotoDemon zal de geselecteerde insteekmodules automatisch downloaden voor u. Deze insteekmodules worden opgeslagen in submap van het programma /Data/Plugins.</translation>
 </phrase>
 
 <phrase>
 <original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be temporarily disabled until these plugins are available.</original>
-<translation>Deze optie wordt niet aanbevolen. PhotoDemon zal nog steeds draaien zonder insteekmodules, maar veel functies en tools wordt tijdelijk uitgeschakeld totdat deze insteekmodules zijn beschikbaar.</translation>
+<translation>Deze optie wordt niet aanbevolen. PhotoDemon zal nog steeds werken zonder insteekmodules, maar veel functies en tools worden tijdelijk uitgeschakeld totdat deze insteekmodules beschikbaar zijn.</translation>
 </phrase>
 
 <phrase>
 <original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be permanently disabled.</original>
-<translation>Deze optie wordt niet aanbevolen. PhotoDemon zal nog steeds draaien zonder insteekmodules, maar veel functies en tools zal permanent worden uitgeschakeld.</translation>
+<translation>Deze optie wordt niet aanbevolen. PhotoDemon zal nog steeds werken zonder insteekmodules, maar veel functies en tools zullen permanent worden uitgeschakeld.</translation>
 </phrase>
 
 <phrase>
@@ -5970,7 +5970,7 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 
 <phrase>
 <original>Checking again for Internet connection</original>
-<translation>Nogmaals controleren op een Internet -verbinding</translation>
+<translation>Nogmaals controleren op een Internetverbinding</translation>
 </phrase>
 
 <phrase>
@@ -6000,12 +6000,12 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 
 <phrase>
 <original>Downloading core plugin files</original>
-<translation>Downloaden van core insteekmodule -bestanden</translation>
+<translation>Downloaden van core insteekmodule-bestanden</translation>
 </phrase>
 
 <phrase>
 <original>Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)</original>
-<translation>Als gevolg van een onvoorziene fout, stelt %1 het downloaden van insteekmodules uit voor het moment. Volgende keer dat u deze toepassing start, zal ze de download opnieuw proberen. (Excuses voor het ongemak.)</translation>
+<translation>Als gevolg van een onvoorziene fout, stelt %1 het downloaden van insteekmodules uit voor het moment. Volgende keer dat u deze toepassing start, zal het de download opnieuw proberen. (Excuses voor het ongemak.)</translation>
 </phrase>
 
 <phrase>
@@ -6020,7 +6020,7 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 
 <phrase>
 <original>Plugins downloaded successfully.  To complete plugin setup, please restart the program.</original>
-<translation>Insteekmodules succesvol gedownload. Herstart het programma om de insteekmodule installatie te voltooien, .</translation>
+<translation>Insteekmodules succesvol gedownload. Herstart het programma om de insteekmodule-installatie te voltooien, .</translation>
 </phrase>
 
 <phrase>
@@ -6030,7 +6030,7 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 
 <phrase>
 <original>Plugin Server Not Responding</original>
-<translation>insteekmodule-server reageert niet</translation>
+<translation>Insteekmodule-server reageert niet</translation>
 </phrase>
 
 <phrase>
@@ -6045,7 +6045,7 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 
 <phrase>
 <original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.</original>
-<translation>%1 heeft de toegang tot het internet verloren. Gelieve uw internetverbinding te dubbel-checken. Als het probleem zich blijft voordoen, neem de download dan opnieuw op een later tijdstip op.</translation>
+<translation>%1 heeft de toegang tot het internet verloren. Gelieve uw internetverbinding te dubbel-checken. Als het probleem zich blijft voordoen, probeer het dan opnieuw op een later tijdstip.</translation>
 </phrase>
 
 <phrase>
@@ -6073,7 +6073,7 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 
 <phrase>
 <original>Failed to initialize custom hotkey handler.</original>
-<translation>Aangepaste sneltoets handler te initialiseren mislukt.</translation>
+<translation>Initialiseren van aangepaste sneltoets handler mislukt.</translation>
 </phrase>
 
 <!-- vbalHookControl.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -6122,7 +6122,7 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 
 <phrase>
 <original>Not now, not ever.  Do not prompt me about future updates.</original>
-<translation>Nu niet, nooit. Vraag me nooit meer voor toekomstige updates.</translation>
+<translation>Nu niet, nooit. Vraag me nooit meer naar toekomstige updates.</translation>
 </phrase>
 
 <phrase>
@@ -6169,7 +6169,7 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 <original>The next time you launch the program, it will remind you about this software update.
 
 Note: you can always manually download the latest version by visiting photodemon.org.</original>
-<translation>De volgende keer dat u het programma start, zal het u aan deze software-update herinneren.
+<translation>De volgende keer dat u het programma start, zal het u aan deze Softwareupdate herinneren.
 
 Opmerking: je kan de nieuwste versie altijd handmatig downloaden door naar photodemon.org te gaan.</translation>
 </phrase>
@@ -6305,32 +6305,32 @@ Opmerking: je kan de nieuwste versie altijd handmatig downloaden door naar photo
 
 <phrase>
 <original>GDI+ failed to render blur effect (Error Code %1).</original>
-<translation>GDI + heeft gefaald om vervagings effect te renderen (foutcode %1)</translation>
+<translation>GDI+ heeft gefaald om vervagingseffect te translateren (foutcode %1)</translation>
 </phrase>
 
 <phrase>
 <original>GDI+ failed to set effect parameters.</original>
-<translation>GDI heeft gefaald tijdens het instellen van effect parameters.</translation>
+<translation>GDI+ heeft gefaald tijdens het instellen van effect-parameters.</translation>
 </phrase>
 
 <phrase>
 <original>GDI+ failed to create blur effect object</original>
-<translation>GDI heeft gefaald om een vervagingseffect object te maken</translation>
+<translation>GDI+ heeft gefaald om een vervagingseffect-object te maken</translation>
 </phrase>
 
 <phrase>
 <original>Initializing GDI+</original>
-<translation>Initialiseren GDI +</translation>
+<translation>Initialiseren GDI+</translation>
 </phrase>
 
 <phrase>
 <original>Creating GDI+ compatible image copy</original>
-<translation>Maken van GDI + compatibele afbeelding kopiëren</translation>
+<translation>Maken van GDI+ compatibele afbeeldingskopie</translation>
 </phrase>
 
 <phrase>
 <original>Preparing GDI+ encoder for this filetype</original>
-<translation>Voorbereiden GDI +-encoder voor dit bestandstype</translation>
+<translation>Voorbereiden GDI+ encoder voor dit bestandstype</translation>
 </phrase>
 
 <phrase>
@@ -6351,7 +6351,7 @@ Opmerking: je kan de nieuwste versie altijd handmatig downloaden door naar photo
 
 <phrase>
 <original>Import via FreeImage failed (Err # %1)</original>
-<translation>Import via FreeImage mislukt (Err # %1)</translation>
+<translation>Import via FreeImage mislukt (Fout # %1)</translation>
 </phrase>
 
 <!-- VBP_FreeImage_Expanded.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -6490,7 +6490,7 @@ Opmerking: je kan de nieuwste versie altijd handmatig downloaden door naar photo
 
 <phrase>
 <original>Isolating the %1 channel</original>
-<translation>Isoleren van het %1 kanaal</translation>
+<translation>Isoleren van %1 kanaal</translation>
 </phrase>
 
 <!-- VBP_FormRechannel.frm contains 36 phrases. 27 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -6548,7 +6548,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>Please load or import an image to begin editing.</original>
-<translation>Gelieve te laden of importeer een afbeelding om de bewerking te beginnen.</translation>
+<translation>Gelieve een afbeelding te laden of importeren om de bewerking te beginnen.</translation>
 </phrase>
 
 <phrase>
@@ -6643,7 +6643,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>Overlay</original>
-<translation>overlay</translation>
+<translation>Overlay</translation>
 </phrase>
 
 <phrase>
@@ -6658,7 +6658,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>Vivid light</original>
-<translation>Vivid licht</translation>
+<translation>Levendig licht</translation>
 </phrase>
 
 <phrase>
@@ -6799,7 +6799,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>Rotating layer</original>
-<translation>Roterende laag</translation>
+<translation>Draaien laag</translation>
 </phrase>
 
 <phrase>
@@ -6814,7 +6814,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
-<translation>De FreeImage insteekmodule is vereist voor beeldrotatie. Ga naar Extra -> Opties - > Updates en laat PhotoDemon de belangrijkste insteekmodules downloaden. Start dan het programma opnieuw.</translation>
+<translation>De FreeImage insteekmodule is vereist voor beeldrotatie. Ga naar Extra -> Opties -> Updates en laat PhotoDemon de belangrijkste insteekmodules downloaden. Start dan het programma opnieuw.</translation>
 </phrase>
 
 <phrase>
@@ -6850,7 +6850,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>Do not save the image (discard all changes)</original>
-<translation>Niet opslaan van de afbeelding (negeer alle wijzigingen)</translation>
+<translation>Sla de afbeelding niet op(negeer alle wijzigingen)</translation>
 </phrase>
 
 <phrase>
@@ -6874,7 +6874,7 @@ Geef een numerieke waarde.</translation>
 If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
 <translation>OPMERKING: Als u op 'Opslaan' klikt, zal PhotoDemon deze afbeelding opslaan met behulp van de huidige bestandsnaam.
 
-Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', en gebruik dan het Bestand - > Opslaan als menu-item.</translation>
+Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', en gebruik dan het Bestand -> Opslaan als menu-item.</translation>
 </phrase>
 
 <phrase>
@@ -6884,12 +6884,12 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>If you do not save this image, any changes you have made will be permanently lost.</original>
-<translation>Als u de afbeelding niet opslaat gaan alle wijzigingen die u hebt gemaakt permanent verloren.</translation>
+<translation>Als u de afbeelding niet opslaat, gaan alle wijzigingen die u hebt gemaakt permanent verloren.</translation>
 </phrase>
 
 <phrase>
 <original>Canceling will return you to the main PhotoDemon window.</original>
-<translation>Bij annuleren, gaat u terug naar het PhotoDemon hoofdvenster.</translation>
+<translation>Bij annuleren gaat u terug naar het PhotoDemon hoofdvenster.</translation>
 </phrase>
 
 <phrase>
@@ -6962,7 +6962,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Disclaimer: all hardware acceleration data is provided by the operating system.  It specifically represents GDI acceleration, which is independent from DirectX and OpenGL.  OS version and desktop mode also affect support capabilities.  For best results, please run PhotoDemon on Windows 7 or 8, on an Aero-enabled desktop.</original>
-<translation>Disclaimer: alle hardware acceleratiedata wordt geleverd door het besturingssysteem. Het vertegenwoordigt specifiek GDI versnelling, die onafhankelijk is van DirectX en OpenGL. OS-versie en desktop-modus obeïnvloeden mogelijkheden voor ondersteuning. Voor het beste resultaat, gelieve PhotoDemon op Windows 7 of 8 te draaien, op een Aero-in geschakeld bureaublad.</translation>
+<translation>Disclaimer: alle hardware acceleratiedata wordt geleverd door het besturingssysteem. Het vertegenwoordigt specifieke GDI versnelling, die onafhankelijk is van DirectX en OpenGL. OS-versie en desktop-modus beïnvloeden mogelijkheden voor ondersteuning. Gelieve PhotoDemon op Windows 7 of 8 te draaien, op een Aero-in geschakeld bureaublad voor het beste resultaat.</translation>
 </phrase>
 
 <phrase>
@@ -7013,12 +7013,12 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>%1 contains multiple pages (%2 in total).  How would you like to proceed?</original>
-<translation>%1 bevat meerdere pagina's (%2 in totaal). Hoe wilt u doorgaan?</translation>
+<translation>%1 bevat meerdere pagina's (%2 in totaal). Hoe wil je doorgaan?</translation>
 </phrase>
 
 <phrase>
 <original>%1 is an animated GIF file (%2 frames total).  How would you like to proceed?</original>
-<translation>%1 is een geanimeerd GIF-bestand (%2 frames in totaal). Hoe wilt u doorgaan?</translation>
+<translation>%1 is een geanimeerd GIF-bestand (%2 frames in totaal). Hoe wil je doorgaan?</translation>
 </phrase>
 
 <phrase>
@@ -7038,12 +7038,12 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.</original>
-<translation>Deze optie zal enkel het eerste frame laden van het geanimeerde GIF-bestand, en het effectief behandelen als een niet -geanimeerde GIF-bestand.</translation>
+<translation>Deze optie zal enkel het eerste frame laden van het geanimeerde GIF-bestand, en het effectief behandelen als een niet-geanimeerde GIF-bestand.</translation>
 </phrase>
 
 <phrase>
 <original>%1 contains multiple icons (%2 in total).  How would you like to proceed?</original>
-<translation>%1 bevat meerdere pictogrammen (%2 in totaal). Hoe wilt u doorgaan?</translation>
+<translation>%1 bevat meerdere pictogrammen (%2 in totaal). Hoe wil je doorgaan?</translation>
 </phrase>
 
 <phrase>
@@ -7058,7 +7058,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Load only the first icon</original>
-<translation>Enkel het eerste pictigram laden</translation>
+<translation>Enkel het eerste pictogram laden</translation>
 </phrase>
 
 <phrase>
@@ -7105,7 +7105,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
-<translation>Subsampling beïnvloed de manier waarop de JPEG- encoder de afbeeldingsluminantie comprimeert. 4:2:0 (matig) is de standaardwaarde.</translation>
+<translation>Subsampling beïnvloed de manier waarop de JPEG-encoder de afbeeldingsluminantie comprimeert. 4:2:0 (matig) is de standaardwaarde.</translation>
 </phrase>
 
 <phrase>
@@ -7145,7 +7145,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>click here to review the image's metadata</original>
-<translation>klik hier om de metagegevens van de afbeelding te beoordelen</translation>
+<translation>klik hier om de metadata van de afbeelding te beoordelen</translation>
 </phrase>
 
 <phrase>
@@ -7185,7 +7185,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Custom value</original>
-<translation>aangepaste waarde</translation>
+<translation>Aangepaste waarde</translation>
 </phrase>
 
 <phrase>
@@ -7225,7 +7225,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Perceptive color matching uses the CIE L*a*b* color space for highly accurate color modeling.  Enabling this setting may increase processing time by several seconds.</original>
-<translation>Perceptieve kleuraanpassing gebruikt de CIE L * a * b * kleurruimte voor uiterst accurate kleuren modellering. Deze instelling inschakelen, kan de verwerkingstijd doen toenemen met enkele seconden.</translation>
+<translation>Perceptieve kleuraanpassing gebruikt de CIE L*a*b* kleurruimte voor uiterst accurate kleuren modellering. Deze instelling inschakelen, kan de verwerkingstijd doen toenemen met enkele seconden.</translation>
 </phrase>
 
 <phrase>
@@ -7250,7 +7250,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>use program-wide setting (default)</original>
-<translation>gebruik program-wide (standaard) instelling</translation>
+<translation>gebruik program-wijde (standaard) instelling</translation>
 </phrase>
 
 <phrase>
@@ -7260,12 +7260,12 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>The current program-wide setting is</original>
-<translation>De huidige program-wide instelling is</translation>
+<translation>De huidige program-wijde instelling is</translation>
 </phrase>
 
 <phrase>
 <original>You can change the program-wide setting from the Tools -> Options menu.</original>
-<translation>Je kan deprogram-wide-instelling veranderen vanuit het Tools -> Options menu.</translation>
+<translation>Je kan de program-wijde-instelling veranderen vanuit het Tools -> Options menu.</translation>
 </phrase>
 
 <phrase>
@@ -7280,17 +7280,17 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size.</original>
-<translation>Optimalisatie is een echte aanrader. Met deze optie laat de JPEG-encoder toe om een optimale Huffman codering tabel te berekenen voor het bestand. Het heeft geen invloed op de afbeeldingskwaliteit - alleen de bestandsgrootte.</translation>
+<translation>Optimalisatie is een echte aanrader. Deze optie laat de JPEG-encoder toe om een optimale Huffman codering tabel te berekenen voor het bestand. Het heeft geen invloed op de afbeeldingskwaliteit - alleen de bestandsgrootte.</translation>
 </phrase>
 
 <phrase>
 <original>Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.</original>
-<translation>Progressieve codering wordt soms gebruikt voor JPEG-bestanden die worden gebruikt op het internet. Het slaat de afbeeling op in drie stappen, die gebruikt kunnen worden om de afbeelding geleidelijk te laten verschijnen op een trage internetverbinding.</translation>
+<translation>Progressieve codering wordt soms gebruikt voor JPEG-bestanden die worden gebruikt op het internet. Het slaat de afbeeling op in drie stappen die gebruikt kunnen worden om de afbeelding geleidelijk te laten verschijnen op een trage internetverbinding.</translation>
 </phrase>
 
 <phrase>
 <original>Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).</original>
-<translation>Ingesloten miniaturen te verhogen bestandsgrootte, maar ze helpen voorbeelden van de afbeelding sneller te laten verschijnen in andere software (bijv. Windows Explorer).</translation>
+<translation>Ingesloten miniaturen verhogen de bestandsgrootte, maar ze helpen voorbeelden van de afbeelding sneller te laten verschijnen in andere software (bijv. Windows Explorer).</translation>
 </phrase>
 
 <phrase>
@@ -7413,7 +7413,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Please Choose A Transparency Threshold</original>
-<translation>Kies een drempel voor Transparantie</translation>
+<translation>Kies een transparantie-drempel</translation>
 </phrase>
 
 <phrase>
@@ -7443,7 +7443,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Waiting for user to specify alpha threshold</original>
-<translation>Wachten op specificatie van de gebruiker voor alfa drempel</translation>
+<translation>Wachten op specificatie van de gebruiker voor alfa-drempel</translation>
 </phrase>
 
 <!-- VBP_FormAlphaCutoff.frm contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
@@ -7489,7 +7489,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Als u aandringt op het runnen van PhotoDemon in de IDE, stuur dan geen berichten met betrekking tot IDE crashes of vastopen door. De ontwikkellaars van PhotoDemon nemen alleen meldingen aan van problemen en bugs met betrekking tot het gecompileerde. Exe bestand.</translation>
+<translation>Als u aandringt op het runnen van PhotoDemon in de IDE, stuur dan geen berichten met betrekking tot IDE crashes of vastlopen door. De ontwikkellaars van PhotoDemon nemen alleen meldingen aan van problemen en bugs met betrekking tot het gecompileerde .exe bestand.</translation>
 </phrase>
 
 <!-- VBP_FormIDEWarning.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -7500,7 +7500,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>PhotoDemon Plugin Manager</original>
-<translation>PhotoDemon insteekmodule Manager</translation>
+<translation>PhotoDemon Insteekmodule Manager</translation>
 </phrase>
 
 <phrase>
@@ -7560,7 +7560,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>improve IE6 compatibility (reduces image quality; use with caution)</original>
-<translation>verbeteren IE6 compatibiliteit (vermindert de beeldkwaliteit; gebruiken met de nodige voorzichtigheid)</translation>
+<translation>verbeteren IE6 compatibiliteit (vermindert de beeldkwaliteit; gebruik met de nodige voorzichtigheid)</translation>
 </phrase>
 
 <phrase>
@@ -7772,7 +7772,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>radius (percentage)</original>
-<translation>Radius (percentage)</translation>
+<translation>radius (percentage)</translation>
 </phrase>
 
 <phrase>
@@ -8063,7 +8063,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>apply blur to</original>
-<translation>vervagen toepassen aan</translation>
+<translation>vervaging toepassen aan</translation>
 </phrase>
 
 <phrase>
@@ -8221,7 +8221,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>highlights</original>
-<translation>hooglichten</translation>
+<translation>glanspunten</translation>
 </phrase>
 
 <phrase>
@@ -8318,7 +8318,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Dilate (Maximum rank filter)</original>
-<translation>Verwijden (Maximum rangschikking filter)</translation>
+<translation>Verwijden (Maximale rangschikking filter)</translation>
 </phrase>
 
 <phrase>
@@ -8345,7 +8345,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Convert Monochrome Image to Grayscale</original>
-<translation>Converteer Monochrome afbeelding om in grijswaarden</translation>
+<translation>Converteer Monochrome afbeelding naar grijswaarden</translation>
 </phrase>
 
 <phrase>
@@ -8360,12 +8360,12 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Converting monochrome image to grayscale</original>
-<translation>Het omzetten van zwart-wit afbeelding om in grijswaarden</translation>
+<translation>Omzetten van zwart-wit afbeelding in grijswaarden</translation>
 </phrase>
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>Net als alle zwart-wit-naar-grijswaarden tools, zal deze tool een wazige afbeelding produceren. je kan gebruik maken van de Effecten -> Verscherpen -> Onscherp maskeren tool om dit op te lossen. (Voor de beste resultaten een onscherp masker straal tenminste zo groot als deze radius.)</translation>
+<translation>Net als alle zwart-wit-naar-grijswaarden tools, zal deze tool een wazige afbeelding produceren. je kan gebruik maken van de Effecten -> Verscherpen -> Onscherp maskeren tool om dit op te lossen. (Voor de beste resultaten een onscherp masker straal gebruiken tenminste zo groot als deze radius.)</translation>
 </phrase>
 
 <!-- VBP_FormMonoToColor.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8413,7 +8413,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>Adjusting shadows, midtones, and highlights</original>
-<translation>Aanpassen van schaduwen, middentonen en hooglichten</translation>
+<translation>Aanpassen van schaduwen, middentonen en glanspunten</translation>
 </phrase>
 
 <!-- VBP_FormShadowHighlight.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8484,17 +8484,17 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>batch list</original>
-<translation>batch lijst</translation>
+<translation>batchlijst</translation>
 </phrase>
 
 <phrase>
 <original>modify batch list</original>
-<translation>aanpassen batch lijst</translation>
+<translation>aanpassen batchlijst</translation>
 </phrase>
 
 <phrase>
 <original>load / save batch list</original>
-<translation>laden / opslaan batch lijst</translation>
+<translation>laden / opslaan batchlijst</translation>
 </phrase>
 
 <phrase>
@@ -8549,7 +8549,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>after images are processed, save them with the following name</original>
-<translation>nadat ze zijn verwerkt, sla de afbeeldingen op met de volgende naam</translation>
+<translation>nadat ze zijn verwerkt, sla de afbeeldingen op met volgende naam</translation>
 </phrase>
 
 <phrase>
@@ -8649,12 +8649,12 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 
 <phrase>
 <original>apply one or more photo editing actions</original>
-<translation>een of meer foto's bewerkingsacties toepassen</translation>
+<translation>een of meer foto bewerkingsacties toepassen</translation>
 </phrase>
 
 <phrase>
 <original>fix exposure and lighting problems</original>
-<translation>repareer belichting en verlichtings problemen</translation>
+<translation>repareer belichting en belichtingsproblemen</translation>
 </phrase>
 
 <phrase>
@@ -8698,7 +8698,7 @@ Als u ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren', 
 Would you like to save your batch list before exiting?</original>
 <translation>Wanneer je nu afsluit, zal uw batchlijst (de lijst met te verwerken afbeeldingen) verloren gaan. Door de lijst op te slaan, kan je deze batch operatie verderzetten op een later tijdstip.
 
-Wil je de batch lijst opslaan voordat je afsluit?</translation>
+Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
@@ -8738,7 +8738,7 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.</original>
-<translation>U heeft verzocht om een macro te laten toepadden op elke afbeelding, maar geen macro-bestand is geselecteerd. Selecteer een geldige macro-bestand.</translation>
+<translation>U heeft verzocht om een macro te laten toepassen op elke afbeelding, maar geen macro-bestand is geselecteerd. Selecteer een geldig macro-bestand.</translation>
 </phrase>
 
 <phrase>
@@ -8748,7 +8748,7 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>You have not selected any images to process!  Please place one or more images in the batch list (at the bottom of the screen) before moving to the next step.</original>
-<translation>Je hebt geen afbeelding geselecteerd om te verwerken! Plaats a.u.b. 1 of meerdere afbeeldingen in de batchlijst (anderaan het scherm) alvorens naar de volgende stap te gaan.</translation>
+<translation>Je hebt geen afbeelding geselecteerd om te verwerken! Plaats 1 of meerdere afbeeldingen in de batchlijst (anderaan het scherm) alvorens naar de volgende stap te gaan.</translation>
 </phrase>
 
 <phrase>
@@ -8788,7 +8788,7 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>Opmerking: een macro is simpelweg een lijst van fotobewerkingsacties. Het kan elke aanpassing -filter, effect bevatten in het hoofdprogramma. Je kan een nieuwe macro maken met gebruik van "Gereedschappen -> Macros -> Opnemen nieuwe macro" menu in het hoofdscherm.</translation>
+<translation>Opmerking: een macro is simpelweg een lijst van fotobewerkingsacties. Het kan elke aanpassing, filter of effect bevatten in het hoofdprogramma. Je kan een nieuwe macro maken met gebruik van "Gereedschappen -> Macros -> Opnemen nieuwe macro" menu in het hoofdscherm.</translation>
 </phrase>
 
 <phrase>
@@ -8798,7 +8798,7 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Step 2: prepare the batch list (the list of images to be processed)</original>
-<translation>Stap 2: voorbereiden van de batch lijst(de lijst met te verwerken afbeeldingen)</translation>
+<translation>Stap 2: voorbereiden van de batchlijst(de lijst met te verwerken afbeeldingen)</translation>
 </phrase>
 
 <phrase>
@@ -8818,7 +8818,7 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.</original>
-<translation>3) Slepen en neerzetten van bestanden op de batch lijst vanuit Windows Verkenner of uw bureaublad.</translation>
+<translation>3) Slepen en neerzetten van bestanden op de batchlijst vanuit Windows Verkenner of uw bureaublad.</translation>
 </phrase>
 
 <phrase>
@@ -8838,7 +8838,7 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>PhotoDemon needs to know which format to use when saving the images in your batch list.</original>
-<translation>PhotoDemon moet weten welk formaat te gebruiken tijdens het opslaan van de afbeeldingen in uw batch lijst.</translation>
+<translation>PhotoDemon moet weten welk formaat te gebruiken tijdens het opslaan van de afbeeldingen in uw batchlijst.</translation>
 </phrase>
 
 <phrase>
@@ -8873,7 +8873,7 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-<translation>Tenslotte, wanneer twee of meerdere afbeeldingen in de batch lijst de zelfde bestandsnaam hebben, en de optie "origenele bestandsnamen" geselecteerd is, zullen zulke bestanden een unieke bestandsnaam krijgen (bv: "origineel bestand (2)").</translation>
+<translation>Tenslotte, wanneer twee of meerdere afbeeldingen in de batchlijst de zelfde bestandsnaam hebben, en de optie "origenele bestandsnamen" geselecteerd is, zullen zulke bestanden een unieke bestandsnaam krijgen (bv: "origineel bestand (2)").</translation>
 </phrase>
 
 <phrase>
@@ -8898,7 +8898,7 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
-<translation>Je hebt geen afbeeldingsbestanden geselecteerd. Voeg één of meer bestanden toe aan de batch lijst voor het opslaan.</translation>
+<translation>Je hebt geen afbeeldingsbestanden geselecteerd. Voeg één of meer bestanden toe aan de batchlijst voor het opslaan.</translation>
 </phrase>
 
 <phrase>
@@ -8913,19 +8913,19 @@ Wil je de batch lijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>fit inclusively</original>
-<translation>passen insluitend</translation>
+<translation>insluitend passen</translation>
 </phrase>
 
 <phrase>
 <original>fit exclusively</original>
-<translation>passen uitsluitend</translation>
+<translation>uitsluitend passen</translation>
 </phrase>
 
 <phrase>
 <original>GIF images only support simple transparency, meaning each pixel in a GIF image must be fully transparent or fully opaque.  If your batch list includes 32bpp images with complex alpha channels, PhotoDemon must simplify them before saving to GIF format.
 
 By default, transparency will be split down the middle, or you can specify a custom cut-off value.</original>
-<translation>GIF-afbeeldingen ondersteunen alleen eenvoudige transparantie, wat betekent dat elke pixel in een GIF-afbeelding volledig transparant of volledig ondoorzichtig moet zijn. Als de batch lijst 32bpp afbeeldingen met complexe alfakanalen bevat, moeten PhotoDemon hen vereenvoudigen alvorens ze op te slaan naar de GIF-indeling.
+<translation>GIF-afbeeldingen ondersteunen alleen eenvoudige transparantie, wat betekent dat elke pixel in een GIF-afbeelding volledig transparant of volledig ondoorzichtig moet zijn. Als de batchlijst 32bpp afbeeldingen met complexe alfakanalen bevat, moet PhotoDemon hen vereenvoudigen alvorens ze op te slaan naar de GIF-indeling.
 
 Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangepaste cut-off waarde opgeven.</translation>
 </phrase>
@@ -8972,7 +8972,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>Preparing batch processing engine</original>
-<translation>Voorbereiden van batchprocessingmachine</translation>
+<translation>Voorbereiden van batchverwerkingsgmachine</translation>
 </phrase>
 
 <phrase>
@@ -9169,22 +9169,22 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>Embedding metadata</original>
-<translation>Inbedding metadata</translation>
+<translation>Inbedding metagegevens</translation>
 </phrase>
 
 <phrase>
 <original>Metadata embedded successfully.</original>
-<translation>Inbedding metadata succesvol.</translation>
+<translation>Inbedding metagegevens succesvol.</translation>
 </phrase>
 
 <phrase>
 <original>Metadata may not have been embedded (but saved image still written successfully).</original>
-<translation>Metadata mogelijk niet ingebed (maar bewaarde afbeelding succesvol weggeschreven)</translation>
+<translation>Metagegevens mogelijk niet ingebed (maar bewaarde afbeelding succesvol weggeschreven)</translation>
 </phrase>
 
 <phrase>
 <original>Removing metadata with potential privacy concerns</original>
-<translation>Verwijderen metadata met potentïele belangen</translation>
+<translation>Verwijderen metagegevens met potentïele belangen</translation>
 </phrase>
 
 <!-- pdMetadata.cls contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -9195,12 +9195,12 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>ExifTool could not be started.  Metadata unavailable for this session.</original>
-<translation>ExifTool kan niet worden gestart. Metadata niet beschikbaar voor deze sessie.</translation>
+<translation>ExifTool kan niet worden gestart. Metagegevens niet beschikbaar voor deze sessie.</translation>
 </phrase>
 
 <phrase>
 <original>ExifTool initiated successfully.  Ready to process metadata.</original>
-<translation>ExifTool succesvol gestart . Klaar om metadata te verwerken.</translation>
+<translation>ExifTool succesvol gestart . Klaar om metagegevens te verwerken.</translation>
 </phrase>
 
 <phrase>
@@ -9331,7 +9331,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>reduce haze in landscape photography</original>
-<translation>reduceren waas in landschap fotografie</translation>
+<translation>reduceren waas in landschapfotografie</translation>
 </phrase>
 
 <phrase>
@@ -9361,7 +9361,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>absorb excessive sky blue, make sky darker in black/white photos</original>
-<translation>absorbeer buitensporig hemelsblauw, maak lucht donerder in zwart-wit foto's</translation>
+<translation>absorbeer buitensporig hemelsblauw, maak lucht donkerder in zwart-wit foto's</translation>
 </phrase>
 
 <phrase>
@@ -9521,7 +9521,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>direct color separation; contrast effects in commercial photography</original>
-<translation>directe kleurenseparatie; contrast effecten in commersiële fotografie</translation>
+<translation>directe kleurenseparatie; contrast effecten in commerciële fotografie</translation>
 </phrase>
 
 <phrase>
@@ -9536,7 +9536,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>deep blue tricolor</original>
-<translation>diep lauw driekleuren</translation>
+<translation>diep blauw driekleuren</translation>
 </phrase>
 
 <phrase>
@@ -9581,7 +9581,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>infrared photography longpass filter blocking</original>
-<translation>infrarood fotografie longpass filetr blokkereing</translation>
+<translation>infrarood fotografie longpass filter blokkering</translation>
 </phrase>
 
 <phrase>
@@ -9666,7 +9666,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>warming filter, 5500K to 3400K; converts sunlight to incandescent</original>
-<translation>warmte filter; t5500K to 3400K; converteert zonlicht naar gloeiend</translation>
+<translation>warmte filter; 5500K to 3400K; converteert zonlicht naar gloeiend</translation>
 </phrase>
 
 <phrase>
@@ -9696,12 +9696,12 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>neutral density filter; equally blocks all light frequencies</original>
-<translation>neutraal densitiet filter; blokkeert evenzeer al de lichtfrequenties</translation>
+<translation>neutraal densiteit filter; blokkeert evenzeer al de lichtfrequenties</translation>
 </phrase>
 
 <phrase>
 <original>Applying photo filter</original>
-<translation>Toepassen van fotofilter</translation>
+<translation>Toepassen fotofilter</translation>
 </phrase>
 
 <!-- VBP_FormPhotoFilters.frm contains 105 phrases. 26 were duplicates of existing phrases, so only 79 new phrases were written to file. -->
@@ -9727,7 +9727,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>emphasize center</original>
-<translation>bendrukken centrum</translation>
+<translation>benadrukken centrum</translation>
 </phrase>
 
 <phrase>
@@ -9737,7 +9737,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>inside-out</original>
-<translation>binnen-uit</translation>
+<translation>binnenste-buiten</translation>
 </phrase>
 
 <phrase>
@@ -10084,7 +10084,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>sharpen</original>
-<translation>scherpen</translation>
+<translation>verscherpen</translation>
 </phrase>
 
 <!-- VBP_FormSharpen.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10157,7 +10157,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>Reset</original>
-<translation>voorinstelling</translation>
+<translation>Reset</translation>
 </phrase>
 
 <phrase>
@@ -10222,7 +10222,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>Save the current settings as a preset.  Please enter a descriptive preset name before saving.</original>
-<translation>Bewaar de huidige instellingen als een voorinstelling. Geef een omschrijvende voorinstelling -naam alvorens op te slaan.</translation>
+<translation>Bewaar de huidige instellingen als een voorinstelling. Geef een omschrijvende voorinstelling-naam alvorens op te slaan.</translation>
 </phrase>
 
 <phrase>
@@ -10232,7 +10232,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>This tool's preset file may be corrupted.  A new preset file has been created.</original>
-<translation>Dit gereedschapsvoorinstelling bestand is mogelijk corrupt. Een nieuw voorinstelling bestand is aangemaakt.</translation>
+<translation>Dit gereedschaps-voorinstelling bestand is mogelijk corrupt. Een nieuw voorinstelling-bestand is aangemaakt.</translation>
 </phrase>
 
 <!-- commandBar.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -10414,7 +10414,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>e.g. "English" or "English (US)".  This text will be displayed in PhotoDemon's Language menu.</original>
-<translation>e.g. "Vlaams" or "Vlaams (BE)". Deze tekst wordt weergegeven in de PhotoDemon Taal menu.</translation>
+<translation>e.g. "Vlaams" or "Vlaams (BE)". Deze tekst wordt weergegeven in het PhotoDemon Taal menu.</translation>
 </phrase>
 
 <phrase>
@@ -10429,7 +10429,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>author name(s)</original>
-<translation>auteur (nam(en)</translation>
+<translation>auteur naam(en)</translation>
 </phrase>
 
 <phrase>
@@ -10459,7 +10459,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>Step 1: select a language file</original>
-<translation>Staop1: selecteer een taalbestand</translation>
+<translation>Stap1: selecteer een taalbestand</translation>
 </phrase>
 
 <phrase>
@@ -10620,12 +10620,12 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>add language metadata</original>
-<translation>toevoegen taal-metadata</translation>
+<translation>toevoegen taal-metagegevens</translation>
 </phrase>
 
 <phrase>
 <original>In this step, please provide a bit of metadata regarding this language.  This information helps PhotoDemon know how to handle this language file.</original>
-<translation>Bij deze stap, geef je aub een beetje metadata aangaande deze taal. Deze info help PhotoDemon Know How om dit taalbestand te behandelen.</translation>
+<translation>Bij deze stap, geef je aub een beetje metagegevens aangaande deze taal. Deze info help PhotoDemon Know How om dit taalbestand te behandelen.</translation>
 </phrase>
 
 <phrase>
@@ -10655,7 +10655,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's user language folder.  This means you can exit the program at any time without losing your work.</original>
-<translation>Elke keer wanneer een zin aangepast is, zal een autosave automatisch aangemaakt worden in de PhotoDemon taal -map. Dit betekend dat je op elk tijdstip het programma kan verlaten zonder uw werk te verliezen.</translation>
+<translation>Telkens een zin aangepast is, zal een autosave automatisch aangemaakt worden in de PhotoDemon taal-map. Dit betekend dat je op elk tijdstip het programma kan verlaten zonder uw werk te verliezen.</translation>
 </phrase>
 
 <phrase>
@@ -10797,7 +10797,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Tools</original>
-<translation>Gereedschap</translation>
+<translation>Gereedschappen</translation>
 </phrase>
 
 <phrase>
@@ -10817,7 +10817,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>ignore transparent pixels when auto-activating layers</original>
-<translation>negeer transparante pixels wanneer automatisch activeren van lagen</translation>
+<translation>negeer transparante pixels bij automatisch activeren van lagen</translation>
 </phrase>
 
 <phrase>
@@ -10847,7 +10847,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>size (w, h)</original>
-<translation>grootte (b, h)</translation>
+<translation>grootte (w, h)</translation>
 </phrase>
 
 <phrase>
@@ -10937,7 +10937,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Apply non-destructive lighting adjustments</original>
-<translation>Solliciteer niet-destructieve verlichting aanpassingen</translation>
+<translation>Toepassen niet-destructieve belichting aanpassingen</translation>
 </phrase>
 
 <phrase>
@@ -10957,7 +10957,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Highlight (Red)</original>
-<translation>Hooglicht (Rood)</translation>
+<translation>Glanspunt (Rood)</translation>
 </phrase>
 
 <phrase>
@@ -10967,7 +10967,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Antialiased</original>
-<translation>anti-aliasing</translation>
+<translation>Anti-aliasing</translation>
 </phrase>
 
 <phrase>
@@ -11017,7 +11017,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>Maak quick-fix aanpassingen permanent. Deze actie is nooit verplicht, maar als de viewport rendering traag is en vele quick-fix aanpassingen actief zijn, kan dit de prestaties verbeteren.</translation>
+<translation>Maak quick-fix aanpassingen permanent. Deze actie is nooit verplicht, maar als het viewport translateren traag is en vele quick-fix aanpassingen actief zijn, kan dit de prestaties verbeteren.</translation>
 </phrase>
 
 <phrase>
@@ -11220,7 +11220,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Click this button to enable color capturing from anywhere on the screen.</original>
-<translation>Klik op deze knop om de kleur vast te leggen van overal op het scherm.</translation>
+<translation>Klik op deze knop om de kleur te kunnen vast te leggen van overal op het scherm.</translation>
 </phrase>
 
 <!-- VBP_FormColorSelector.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -11261,7 +11261,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>In the next step, you can specify detailed layout information (margins, positioning, etc)</original>
-<translation>In de volgende stap kan je gedetailleerde layout informatie (marges, positionering, etc) opgeven</translation>
+<translation>In de volgende stap kan je gedetailleerde layoutinformatie opgeven (marges, positionering, etc)</translation>
 </phrase>
 
 <phrase>
@@ -11271,12 +11271,12 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>draft (least ink)</original>
-<translation>ontwerp (minst inkt)</translation>
+<translation>ontwerp (minste inkt)</translation>
 </phrase>
 
 <phrase>
 <original>best (most ink)</original>
-<translation>beste (meest inkt)</translation>
+<translation>beste (meeste inkt)</translation>
 </phrase>
 
 <!-- VBP_FormPrintWizard.frm contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -11292,7 +11292,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Image successfully sent to Windows Photo Printer.</original>
-<translation>Afbeelding succesvol naar Windows Photo Printer verzonden.</translation>
+<translation>Afbeelding succesvol naar Windows PhotoPrinter verzonden.</translation>
 </phrase>
 
 <!-- VBP_PrinterSupport.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -11308,7 +11308,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>minimize PhotoDemon prior to capture</original>
-<translation>PhotoDemon minimaliseren voorafgaand aan capture</translation>
+<translation>PhotoDemon minimaliseren voorafgaand aan vastlegging</translation>
 </phrase>
 
 <phrase>
@@ -11448,7 +11448,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Purging old autosave data</original>
-<translation>Zuiveren oude autosave data</translation>
+<translation>Zuiveren oude autosave gegevens</translation>
 </phrase>
 
 <phrase>
@@ -11484,12 +11484,12 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>autosave entries found</original>
-<translation>autosave-data gevonden</translation>
+<translation>autosave-gegevens gevonden</translation>
 </phrase>
 
 <phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
-<translation>Autosave-data gevonden. Wilt u deze herstellen?</translation>
+<translation>Autosave-gegevens gevonden. Wilt u deze herstellen?</translation>
 </phrase>
 
 <phrase>
@@ -11499,12 +11499,12 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?</original>
-<translation>Als u nu afsluit, gaat deze autosave-data voor altijd verloren. Weet u zeker dat u wilt afsluiten?</translation>
+<translation>Als u nu afsluit, gaan deze autosave-gegevens voor altijd verloren. Weet u zeker dat u wilt afsluiten?</translation>
 </phrase>
 
 <phrase>
 <original>Warning: autosave data will be deleted</original>
-<translation>Waarschuwing: autosave-data wordt verwijderd</translation>
+<translation>Waarschuwing: autosave-gegevens worden verwijderd</translation>
 </phrase>
 
 <!-- VBP_FormAutosaveWarning.frm contains 12 phrases. 4 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -11616,7 +11616,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
-<translation>Shift-toets: het behoud van laag beeldverhouding</translation>
+<translation>Shift-toets: behouden van laag beeldverhouding</translation>
 </phrase>
 
 <phrase>
@@ -11736,7 +11736,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>Waiting for user to specify WebP export options</original>
-<translation>Wachten voor de gebruiker om WebP export opties op te geven</translation>
+<translation>Wachten op de gebruiker om WebP export opties op te geven</translation>
 </phrase>
 
 <!-- VBP_FormExportWebP.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -11805,7 +11805,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>blend</original>
-<translation>blend</translation>
+<translation>mengsel</translation>
 </phrase>
 
 <phrase>
@@ -11954,7 +11954,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>highlight color</original>
-<translation>hooglichtkleur</translation>
+<translation>glanspuntkleur</translation>
 </phrase>
 
 <phrase>
@@ -12121,7 +12121,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>top of layer stack</original>
-<translation>boven lagenstack</translation>
+<translation>bovenkant lagenstack</translation>
 </phrase>
 
 <phrase>
@@ -12266,7 +12266,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>Generating HDR map for image</original>
-<translation>Genereren van HDR kaart voor afbeelding</translation>
+<translation>Genereren van HDR map voor afbeelding</translation>
 </phrase>
 
 <!-- VBP_FormHDR.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -12303,7 +12303,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>Randomize cloud base</original>
-<translation>Willekeurig wolkenbasis</translation>
+<translation>Willekeurige wolkenbasis</translation>
 </phrase>
 
 <phrase>

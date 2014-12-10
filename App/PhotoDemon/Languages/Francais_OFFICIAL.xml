@@ -165,7 +165,7 @@
 
 <phrase>
 <original>Loading import/export libraries</original>
-<translation>Chargez bibliothèques import / export</translation>
+<translation>Chargement bibliothèques import/export</translation>
 </phrase>
 
 <phrase>
@@ -241,7 +241,7 @@ ATTENTION: ceci va écraser le fichier image en cours. Pour enregistrer dans un f
 
 <phrase>
 <original>Loading image(s)</original>
-<translation>Chargement de l'image (s)</translation>
+<translation>Chargement de l'image(s)</translation>
 </phrase>
 
 <phrase>
@@ -293,7 +293,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1 
 
-S'il vous plaît utiliser un autre programme pour enregistrer cette image dans un format générique (tel que JPEG ou PNG) avant de charger il en PhotoDemon. Merci !</translation>
+S'il vous plaît utiliser un autre programme pour enregistrer cette image dans un format générique (que JPEG ou PNG) avant de charger il en PhotoDemon. Merci !</translation>
 </phrase>
 
 <phrase>
@@ -403,7 +403,7 @@ Pour activer le support pour les fichiers compressés PDI, cliquez sur Aide > Vér
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
-<translation>Une erreur s'est produite (#% 1 - %2). Charge PDI abandonné.</translation>
+<translation>Une erreur s'est produite (#%1 - %2). Charge PDI abandonné.</translation>
 </phrase>
 
 <phrase>
@@ -589,7 +589,7 @@ Si le problème persiste, s'il vous plaît le signaler aux développeurs PhotoDemon
 To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
 <translation>L'interface FreeImage plug-in (FreeImage.dll) a été marqué comme manquant ou désactivé lors de l'initialisation du programme.
 
-Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier FreeImage.dll (téléchargeable depuis http:// freeimage.sourceforge.net/download.html) dans le répertoire plug-in et recharger le programme.</translation>
+Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier FreeImage.dll (téléchargeable depuis http://freeimage.sourceforge.net/download.html) dans le répertoire plug-in et recharger le programme.</translation>
 </phrase>
 
 <phrase>
@@ -629,7 +629,7 @@ Pour activer le support de ce format d'image, s'il vous plaît copiez le fichier 
 
 <phrase>
 <original>Testing JPEG quality values to determine best setting</original>
-<translation>Test de valeurs de qualité JPEG pour déterminer la meilleure mise en</translation>
+<translation>Test de valeurs de qualité JPEG pour déterminer la meilleure mise en jour</translation>
 </phrase>
 
 <phrase>
@@ -999,7 +999,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>horizontal</original>
-<translation>horizontal</translation>
+<translation>horizontalement</translation>
 </phrase>
 
 <phrase>
@@ -1051,7 +1051,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Capturing screen</original>
-<translation>capture d'écran</translation>
+<translation>Capture d'écran</translation>
 </phrase>
 
 <phrase>
@@ -1083,7 +1083,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Brightness/Contrast</original>
-<translation>Luminosité / Contraste</translation>
+<translation>Luminosité/Contraste</translation>
 </phrase>
 
 <phrase>
@@ -1118,7 +1118,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Brightness and contrast</original>
-<translation>Luminosité / Contraste</translation>
+<translation>Luminosité est Contraste</translation>
 </phrase>
 
 <!-- VBP_FormBrightnessContrast.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
@@ -1129,12 +1129,12 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Pixelate Options</original>
-<translation>options de Pixelate</translation>
+<translation>Options de Pixelate</translation>
 </phrase>
 
 <phrase>
 <original>keep both dimensions in sync</original>
-<translation>deux dimensions en synchro garder</translation>
+<translation>garder deux dimensions en synchro</translation>
 </phrase>
 
 <phrase>
@@ -1190,7 +1190,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Viewport rendering paused due to unexpected error (#%1)</original>
-<translation>Rendu Viewport suspendue en raison d'une erreur inattendue (# %1)</translation>
+<translation>Rendu Viewport suspendue en raison d'une erreur inattendue (#%1)</translation>
 </phrase>
 
 <!-- VBP_ZoomModule.bas contains 6 phrases.  All 6 were unique, so 6 new phrases were written to file. -->
@@ -1397,7 +1397,7 @@ Lors de terminé, cliquez sur le bouton Envoyer. Je vous remercie!</translation>
 
 <phrase>
 <original>Custom Diffuse</original>
-<translation>diffusion personnalisée</translation>
+<translation>Diffusion personnalisée</translation>
 </phrase>
 
 <phrase>
@@ -1464,7 +1464,7 @@ Lors de terminé, cliquez sur le bouton Envoyer. Je vous remercie!</translation>
 
 <phrase>
 <original>offset</original>
-<translation>Offset</translation>
+<translation>offset</translation>
 </phrase>
 
 <phrase>
@@ -1501,7 +1501,7 @@ Lors de terminé, cliquez sur le bouton Envoyer. Je vous remercie!</translation>
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>Malheureusement, le nombre d'images que vous avez sélectionné dépasse ce que Windows ® permet une seule opération de chargement. S'il vous plaît essayer de nouveau avec un petit set d'images sélectionnées.</translation>
+<translation>Malheureusement, le nombre d'images que vous avez sélectionné dépasse ce que Windows® permet une seule opération de chargement. S'il vous plaît essayer de nouveau avec un petit set d'images sélectionnées.</translation>
 </phrase>
 
 <phrase>
@@ -1613,7 +1613,7 @@ Lors de terminé, cliquez sur le bouton Envoyer. Je vous remercie!</translation>
 
 <phrase>
 <original>rendering options</original>
-<translation>Options de rendu</translation>
+<translation>options de rendu</translation>
 </phrase>
 
 <phrase>
@@ -1674,12 +1674,12 @@ Lors de terminé, cliquez sur le bouton Envoyer. Je vous remercie!</translation>
 
 <phrase>
 <original>Macro Data</original>
-<translation>données macro.</translation>
+<translation>Données macro.</translation>
 </phrase>
 
 <phrase>
 <original>Save macro data</original>
-<translation>Enregistrer les données macro-</translation>
+<translation>Enregistrer les données macro</translation>
 </phrase>
 
 <phrase>
@@ -1802,7 +1802,7 @@ In 6.0, les fichiers de macros PhotoDemon ont été redessinés pour soutenir de no
 
 <phrase>
 <original>vibrate</original>
-<translation>Vibrer</translation>
+<translation>vibrer</translation>
 </phrase>
 
 <phrase>
@@ -1918,7 +1918,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>From clipboard</original>
-<translation>du Presse-papiers</translation>
+<translation>Du Presse-papiers</translation>
 </phrase>
 
 <phrase>
@@ -1963,12 +1963,12 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Revert</original>
-<translation>revenir</translation>
+<translation>Revenir</translation>
 </phrase>
 
 <phrase>
 <original>&Batch process</original>
-<translation>Batch &</translation>
+<translation>Process &Batch</translation>
 </phrase>
 
 <phrase>
@@ -2013,7 +2013,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Cu&t</original>
-<translation>C&oupe</translation>
+<translation>Co&upe</translation>
 </phrase>
 
 <phrase>
@@ -2023,7 +2023,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>&Copy</original>
-<translation>& Copie</translation>
+<translation>&Copie</translation>
 </phrase>
 
 <phrase>
@@ -2063,12 +2063,12 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Zoom &out</original>
-<translation>Zoom a&rrière</translation>
+<translation>Z&oom arrière</translation>
 </phrase>
 
 <phrase>
 <original>1:1 (actual size, 100%)</original>
-<translation>1:1 (taille réelle, 100 %)</translation>
+<translation>1:1 (taille réelle, 100%)</translation>
 </phrase>
 
 <phrase>
@@ -2323,17 +2323,17 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>&Select</original>
-<translation>&Dossier</translation>
+<translation>&Select</translation>
 </phrase>
 
 <phrase>
 <original>All</original>
-<translation>tous</translation>
+<translation>Tous</translation>
 </phrase>
 
 <phrase>
 <original>None</original>
-<translation>aucun</translation>
+<translation>Aucun</translation>
 </phrase>
 
 <phrase>
@@ -2343,7 +2343,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Grow</original>
-<translation>croître</translation>
+<translation>Croître</translation>
 </phrase>
 
 <phrase>
@@ -2358,7 +2358,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Feather</original>
-<translation>plume</translation>
+<translation>Plume</translation>
 </phrase>
 
 <phrase>
@@ -2458,7 +2458,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Channels</original>
-<translation>chaînes</translation>
+<translation>Chaînes</translation>
 </phrase>
 
 <phrase>
@@ -2473,12 +2473,12 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Maximum channel</original>
-<translation>canal maximum</translation>
+<translation>Canal maximum</translation>
 </phrase>
 
 <phrase>
 <original>Minimum channel</original>
-<translation>canal minimum</translation>
+<translation>Canal minimum</translation>
 </phrase>
 
 <phrase>
@@ -2513,7 +2513,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Replace color</original>
-<translation>remplacer une couleur</translation>
+<translation>Remplacer une couleur</translation>
 </phrase>
 
 <phrase>
@@ -2583,7 +2583,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Exposure</original>
-<translation>exposition</translation>
+<translation>Exposition</translation>
 </phrase>
 
 <phrase>
@@ -2688,17 +2688,17 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Motion blur</original>
-<translation>motion blur</translation>
+<translation>Flou de mouvement</translation>
 </phrase>
 
 <phrase>
 <original>Radial blur</original>
-<translation>flou Radial</translation>
+<translation>Flou Radial</translation>
 </phrase>
 
 <phrase>
 <original>Zoom blur</original>
-<translation>Zoom flou</translation>
+<translation>Flou zoom</translation>
 </phrase>
 
 <phrase>
@@ -2908,7 +2908,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Perspective</original>
-<translation>perspective</translation>
+<translation>Perspective</translation>
 </phrase>
 
 <phrase>
@@ -2973,7 +2973,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>&Tools</original>
-<translation>&Outils</translation>
+<translation>Ou&tils</translation>
 </phrase>
 
 <phrase>
@@ -3043,12 +3043,12 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Image tabstrip</original>
-<translation>image tabstrip</translation>
+<translation>Tabstrip image</translation>
 </phrase>
 
 <phrase>
 <original>Always show</original>
-<translation>toujours montrer</translation>
+<translation>Toujours montrer</translation>
 </phrase>
 
 <phrase>
@@ -3063,27 +3063,27 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Left</original>
-<translation>gauche</translation>
+<translation>Gauche</translation>
 </phrase>
 
 <phrase>
 <original>Top</original>
-<translation>haut</translation>
+<translation>Haut</translation>
 </phrase>
 
 <phrase>
 <original>Right</original>
-<translation>droit</translation>
+<translation>Droit</translation>
 </phrase>
 
 <phrase>
 <original>Bottom</original>
-<translation>bas</translation>
+<translation>Bas</translation>
 </phrase>
 
 <phrase>
 <original>Floating toolboxes</original>
-<translation>boîtes à outils flottantes</translation>
+<translation>Boîtes à outils flottantes</translation>
 </phrase>
 
 <phrase>
@@ -3123,7 +3123,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>&Visit the PhotoDemon website</original>
-<translation>Visitez le site Internet et PhotoDemon</translation>
+<translation>&Visitez le site Internet et PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -3143,37 +3143,37 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Photo filter</original>
-<translation>filtre photo</translation>
+<translation>Filtre photo</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct color</original>
-<translation>Correcte automatique  couleur</translation>
+<translation>Correcte couleur automatique</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct contrast</original>
-<translation>Correcte automatique contraste </translation>
+<translation>Correcte contraste automatique</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct lighting</original>
-<translation>Correct automatique eclairage </translation>
+<translation>Correct eclairage automatique</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance color</original>
-<translation>Améliorer automatique couleur</translation>
+<translation>Améliorer couleur automatique</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance contrast</original>
-<translation>Améliorer automatique contraste</translation>
+<translation>Améliorer contraste automatique</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance lighting</original>
-<translation>Améliorer automatique éclairage</translation>
+<translation>Améliorer éclairage automatique</translation>
 </phrase>
 
 <phrase>
@@ -3228,7 +3228,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Rotate layer 90° clockwise</original>
-<translation>Tournez couche de 90° dans le sens horaire</translation>
+<translation>Rotation de couche de 90° dans le sens horaire</translation>
 </phrase>
 
 <phrase>
@@ -3243,7 +3243,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Arbitrary layer rotation</original>
-<translation>Rotation de la couche arbitraire</translation>
+<translation>Rotation de couche arbitraire</translation>
 </phrase>
 
 <phrase>
@@ -3278,7 +3278,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Remove selection</original>
-<translation>supprimer la sélection</translation>
+<translation>Supprimer la sélection</translation>
 </phrase>
 
 <phrase>
@@ -3388,7 +3388,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Repeat last action</original>
-<translation>Répétez Dernière action</translation>
+<translation>Répétez dernière action</translation>
 </phrase>
 
 <phrase>
@@ -3428,7 +3428,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Batch wizard</original>
-<translation>assistant lot</translation>
+<translation>Assistant lot</translation>
 </phrase>
 
 <phrase>
@@ -3501,12 +3501,12 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifie
 
 <phrase>
 <original>Duplicate image</original>
-<translation>dupliquer l'image</translation>
+<translation>Dupliquer l'image</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware image resize</original>
-<translation>Redimensionnement image  contenu-courant</translation>
+<translation>Redimensionnement image contenu-courant</translation>
 </phrase>
 
 <phrase>
@@ -3650,7 +3650,7 @@ Note: un texte de programme de la mineure (comme les info-bulles de survol) ne p
 
 <phrase>
 <original>Rotate image 180°</original>
-<translation>Pivoter l'image de 180 °</translation>
+<translation>Pivoter l'image de 180°</translation>
 </phrase>
 
 <phrase>
@@ -3675,7 +3675,7 @@ Note: un texte de programme de la mineure (comme les info-bulles de survol) ne p
 
 <phrase>
 <original>Invert selection</original>
-<translation>inverser la sélection</translation>
+<translation>Inverser la sélection</translation>
 </phrase>
 
 <phrase>
@@ -3685,7 +3685,7 @@ Note: un texte de programme de la mineure (comme les info-bulles de survol) ne p
 
 <phrase>
 <original>Shrink selection</original>
-<translation>reculer sélection</translation>
+<translation>Reculer sélection</translation>
 </phrase>
 
 <phrase>
@@ -3715,7 +3715,7 @@ Note: un texte de programme de la mineure (comme les info-bulles de survol) ne p
 
 <phrase>
 <original>Export selection mask as image</original>
-<translation>l'exportation à masque de sélection comme l'image</translation>
+<translation>L'exportation à masque de sélection comme l'image</translation>
 </phrase>
 
 <phrase>
@@ -3725,7 +3725,7 @@ Note: un texte de programme de la mineure (comme les info-bulles de survol) ne p
 
 <phrase>
 <original>Unsharp mask</original>
-<translation>masque flou</translation>
+<translation>Masque flou</translation>
 </phrase>
 
 <phrase>
@@ -3770,7 +3770,7 @@ Note: un texte de programme de la mineure (comme les info-bulles de survol) ne p
 Please make sure the device is turned on and ready for use.</original>
 <translation>Le scanner ou appareil photo numérique sélectionné ne répond pas.
 
-S'il vous plaît assurez -vous que l' appareil est allumé et prêt à l'emploi.</translation>
+S'il vous plaît assurez-vous que l'appareil est allumé et prêt à l'emploi.</translation>
 </phrase>
 
 <phrase>
@@ -3804,12 +3804,12 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>Scanner/digital camera import disabled</original>
-<translation>Importer à partir scanner / appareil photo numérique hors</translation>
+<translation>Importer à partir scanner/appareil photo numérique hors</translation>
 </phrase>
 
 <phrase>
 <original>Scanned Image</original>
-<translation>image numérisée</translation>
+<translation>Image numérisée</translation>
 </phrase>
 
 <phrase>
@@ -3885,7 +3885,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>style</original>
-<translation>Style</translation>
+<translation>style</translation>
 </phrase>
 
 <phrase>
@@ -3905,12 +3905,12 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>Desaturate</original>
-<translation>réduire la saturation</translation>
+<translation>Réduire la saturation</translation>
 </phrase>
 
 <phrase>
 <original>Decompose</original>
-<translation>décomposer</translation>
+<translation>Décomposer</translation>
 </phrase>
 
 <phrase>
@@ -3945,7 +3945,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>Sierra-3</original>
-<translation>Sierra -3</translation>
+<translation>Sierra-3</translation>
 </phrase>
 
 <phrase>
@@ -3960,7 +3960,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>Atkinson / Classic Macintosh</original>
-<translation>Atkinson/Macintosh Classic</translation>
+<translation>Atkinson / Macintosh Classic</translation>
 </phrase>
 
 <!-- VBP_FormGrayscale.frm contains 26 phrases. 6 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -3971,7 +3971,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>use black background</original>
-<translation>Utilisez fond noir</translation>
+<translation>utilisez fond noir</translation>
 </phrase>
 
 <phrase>
@@ -3996,32 +3996,32 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>Hilite edge detection</original>
-<translation>détection des contours Hilite</translation>
+<translation>Détection des contours Hilite</translation>
 </phrase>
 
 <phrase>
 <original>Laplacian edge detection</original>
-<translation>détection des contours Laplacian</translation>
+<translation>Détection des contours Laplacian</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon edge detection</original>
-<translation>technique de détection PhotoDemon</translation>
+<translation>Technique de détection PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Prewitt edge detection</original>
-<translation>technique de détection Prewitt</translation>
+<translation>Technique de détection Prewitt</translation>
 </phrase>
 
 <phrase>
 <original>Roberts cross edge detection</original>
-<translation>technique de détection croix Roberts</translation>
+<translation>Technique de détection croix Roberts</translation>
 </phrase>
 
 <phrase>
 <original>Sobel edge detection</original>
-<translation>echnique de détection Sobel</translation>
+<translation>Technique de détection Sobel</translation>
 </phrase>
 
 <phrase>
@@ -4072,7 +4072,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>Submerging image in artificial water</original>
-<translation>immersion L'image dans l'eau artificielle</translation>
+<translation>Immersion L'image dans l'eau artificielle</translation>
 </phrase>
 
 <phrase>
@@ -4210,7 +4210,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>Update Options</original>
-<translation>mettre à jour les options</translation>
+<translation>Mettre à jour les options</translation>
 </phrase>
 
 <phrase>
@@ -4265,13 +4265,12 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dll
 
 <phrase>
 <original>File formats</original>
-<translation>Les formats
-de fichiers</translation>
+<translation>Formats de fichiers</translation>
 </phrase>
 
 <phrase>
 <original>File Format Options</original>
-<translation>les options de format de fichier</translation>
+<translation>Options de format de fichier</translation>
 </phrase>
 
 <phrase>
@@ -4341,7 +4340,7 @@ de fichiers</translation>
 
 <phrase>
 <original>Click to open a browse-for-folder dialog</original>
-<translation>Cliquez pour ouvrir un dialogue de navigation-à-de-s fins-de-dossier</translation>
+<translation>Cliquez pour ouvrir un dialogue de parcourir-pour-dossier</translation>
 </phrase>
 
 <phrase>
@@ -4366,7 +4365,7 @@ de fichiers</translation>
 
 <phrase>
 <original>if core plugins cannot be located, offer to download them</original>
-<translation>En tant que plugins de base ne peut être trouvé, proposant de télécharger</translation>
+<translation>en tant que plugins de base ne peut être trouvé, proposant de télécharger</translation>
 </phrase>
 
 <phrase>
@@ -4466,7 +4465,7 @@ de fichiers</translation>
 
 <phrase>
 <original>transparency checkerboard size</original>
-<translation>Taille</translation>
+<translation>taille transparence en damier</translation>
 </phrase>
 
 <phrase>
@@ -4476,7 +4475,7 @@ de fichiers</translation>
 
 <phrase>
 <original>transparency management</original>
-<translation>la gestion de la transparence</translation>
+<translation>gestion de la transparence</translation>
 </phrase>
 
 <phrase>
@@ -4506,7 +4505,7 @@ de fichiers</translation>
 
 <phrase>
 <original>PNG (Portable Network Graphic) options</original>
-<translation>PNG (Portable Network Graphic) Options</translation>
+<translation>Options PNG (Portable Network Graphic)</translation>
 </phrase>
 
 <phrase>
@@ -4516,7 +4515,7 @@ de fichiers</translation>
 
 <phrase>
 <original>TGA (Truevision) options</original>
-<translation>TGA (Truevision) Options</translation>
+<translation>Options TGA (Truevision)</translation>
 </phrase>
 
 <phrase>
@@ -4526,7 +4525,7 @@ de fichiers</translation>
 
 <phrase>
 <original>BMP (Bitmap) options</original>
-<translation>BMP (Bitmap) Options</translation>
+<translation>Options BMP (Bitmap)</translation>
 </phrase>
 
 <phrase>
@@ -4536,7 +4535,7 @@ de fichiers</translation>
 
 <phrase>
 <original>TIFF (Tagged Image File Format) options</original>
-<translation>TIFF (Tagged Image File Format) Options</translation>
+<translation>Options TIFF (Tagged Image File Format)</translation>
 </phrase>
 
 <phrase>
@@ -4546,7 +4545,7 @@ de fichiers</translation>
 
 <phrase>
 <original>PPM (Portable Pixmap) options</original>
-<translation>PPM (Portable pixmap) Options</translation>
+<translation>Options PPM (Portable pixmap)</translation>
 </phrase>
 
 <phrase>
@@ -4641,7 +4640,7 @@ de fichiers</translation>
 
 <phrase>
 <original>high-dynamic range (HDR) images</original>
-<translation>Gamme images haute dynamique (HDR)</translation>
+<translation>gamme images haute dynamique (HDR)</translation>
 </phrase>
 
 <phrase>
@@ -4680,7 +4679,7 @@ de fichiers</translation>
 Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.</original>
 <translation>Fermez l'image actuelle
 
- Parce que vous avez désactivé la sauvegarde invites. (Via Outils - > Options), vous ne recevrez une invite pour enregistrer cette image avant qu'elle ne se referme.</translation>
+ Parce que vous avez désactivé la sauvegarde invites. (Via Outils -> Options), vous ne recevrez une invite pour enregistrer cette image avant qu'elle ne se referme.</translation>
 </phrase>
 
 <phrase>
@@ -4779,7 +4778,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>1:1 (100% zoom, or "actual size")</original>
-<translation>1:1 (100 %zoom, ou " taille réelle ")</translation>
+<translation>1:1 (100% zoom, ou " taille réelle ")</translation>
 </phrase>
 
 <phrase>
@@ -4934,12 +4933,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Official DEFLATE ('Adobe-style')</original>
-<translation>DEFLATE officiel (' Adobe - style')</translation>
+<translation>DEFLATE officiel (' Adobe-style')</translation>
 </phrase>
 
 <phrase>
 <original>PKZIP DEFLATE (also known as zLib DEFLATE)</original>
-<translation>DEFLATE PKZIP (également connu sous le nom DEFLATE zLib)</translation>
+<translation>DEFLATE PKZIP (également connu sous le nom zLib DEFLATE)</translation>
 </phrase>
 
 <phrase>
@@ -4949,7 +4948,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>JPEG - 8bpp grayscale or 24bpp color only</original>
-<translation>JPEG - 8bpp en niveaux de gris ou couleur 24 bits seulement</translation>
+<translation>JPEG - 8bpp en niveaux de gris ou couleur 24bpp seulement</translation>
 </phrase>
 
 <phrase>
@@ -5014,12 +5013,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Primary monitor</original>
-<translation>moniteur principal</translation>
+<translation>Moniteur principal</translation>
 </phrase>
 
 <phrase>
 <original>Secondary monitor</original>
-<translation>moniteur secondaire</translation>
+<translation>Moniteur secondaire</translation>
 </phrase>
 
 <phrase>
@@ -5270,7 +5269,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>Shifting RGB values right</original>
-<translation>Déplacer des valeurs RVB droit</translation>
+<translation>Déplacer des valeurs RVB à droit</translation>
 </phrase>
 
 <phrase>
@@ -5371,7 +5370,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>Crop complete.  (Note: the selected area was automatically unselected.)</original>
-<translation>Crop compléter. (Remarque:. La zone sélectionnée n'est pas automatiquement sélectionné)</translation>
+<translation>Crop compléter. (Remarque: La zone sélectionnée n'est pas automatiquement sélectionné.)</translation>
 </phrase>
 
 <phrase>
@@ -5427,7 +5426,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>Emboss/Engrave</original>
-<translation>Emboss / Gravure</translation>
+<translation>Emboss/Gravure</translation>
 </phrase>
 
 <phrase>
@@ -5478,32 +5477,32 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>fit on page</original>
-<translation>s'adapter à la page</translation>
+<translation>adapter à la page</translation>
 </phrase>
 
 <phrase>
 <original>quality</original>
-<translation>Qualité</translation>
+<translation>qualité</translation>
 </phrase>
 
 <phrase>
 <original>note: DPI is read-only when "fit to page" is selected.</original>
-<translation>Remarque: DPI est en lecture seule lorsque " ajuster à la page " est sélectionné.</translation>
+<translation>Remarque: DPI est en lecture seule lorsque "ajuster à la page" est sélectionné.</translation>
 </phrase>
 
 <phrase>
 <original>dpi (print resolution)</original>
-<translation>ppp (résolution d'impression)</translation>
+<translation>dpi (résolution d'impression)</translation>
 </phrase>
 
 <phrase>
 <original>paper size</original>
-<translation>Papier Taille</translation>
+<translation>taille de papier</translation>
 </phrase>
 
 <phrase>
 <original>layout options</original>
-<translation>Options de mise en page</translation>
+<translation>options de mise en page</translation>
 </phrase>
 
 <phrase>
@@ -5518,12 +5517,12 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>Imprimer prévisualisation nécessite le plugin FreeImage, qui ne pouvait pas être situé sur cet ordinateur. Pour activer la prévisualisation, s'il vous plaît allez dans 'Edition -  > Préférences. Vérifier s'il manque des plugins au démarrage du programme et sélectionnez La prochaine fois que vous chargez PhotoDemon, il vous proposera de télécharger ce plugin po'ur vous.</translation>
+<translation>Imprimer prévisualisation nécessite le plugin FreeImage, qui ne pouvait pas être situé sur cet ordinateur. Pour activer la prévisualisation, s'il vous plaît allez dans 'Edition -> Préférences. Vérifier s'il manque des plugins au démarrage du programme et sélectionnez La prochaine fois que vous chargez PhotoDemon, il vous proposera de télécharger ce plugin po'ur vous.</translation>
 </phrase>
 
 <phrase>
 <original>draft</original>
-<translation>Mise en forme</translation>
+<translation>mise en forme</translation>
 </phrase>
 
 <phrase>
@@ -5573,7 +5572,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>L'image imprimée avec succès. (Remarque: en fonction de l'imprimante apparaissent des écrans de confirmation supplémentaires.)</translation>
+<translation>L'image est imprimée avec succès. (Remarque: en fonction de l'imprimante apparaissent des écrans de confirmation supplémentaires.)</translation>
 </phrase>
 
 <!-- VBP_FormPrint.frm contains 29 phrases. 6 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -5719,7 +5718,7 @@ If vous choisissez de désactiver ces fonctionnalités, vous pouvez toujours visit
 
 <phrase>
 <original>%1 could not locate a valid file at that URL.  Please double-check the path.  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>%1 n'a pas pu localiser un fichier valide à cette URL.  S'il vous plaît vérifiez le chemin. Si le problème persiste, essayez de télécharger le fichier manuellement à l'aide de votre navigateur Internet.</translation>
+<translation>%1 n'a pas pu localiser un fichier valide à cette URL. S'il vous plaît vérifiez le chemin. Si le problème persiste, essayez de télécharger le fichier manuellement à l'aide de votre navigateur Internet.</translation>
 </phrase>
 
 <phrase>
@@ -5858,22 +5857,22 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a rien
 
 <phrase>
 <original>free, open-source library for optimizing portable network graphics (PNG files)</original>
-<translation>bibliothèque open- source gratuit, pour optimiser Portable Network Graphics (PNG)</translation>
+<translation>bibliothèque open-source gratuit, pour optimiser Portable Network Graphics (PNG)</translation>
 </phrase>
 
 <phrase>
 <original>free, open-source interface for importing images from scanners and digital cameras</original>
-<translation>bibliothèque open- source gratuit, pour importer des images à partir de scanners et appareils photo numériques</translation>
+<translation>bibliothèque open-source gratuit, pour importer des images à partir de scanners et appareils photo numériques</translation>
 </phrase>
 
 <phrase>
 <original>free, open-source compression library; required to decompress all other plugins</original>
-<translation>bibliothèque open- source gratuit, de compression open-source, nécessaire pour décompresser tous les autres plugins</translation>
+<translation>bibliothèque open-source gratuit, de compression open-source, nécessaire pour décompresser tous les autres plugins</translation>
 </phrase>
 
 <phrase>
 <original>free, open-source library for importing and exporting a variety of image formats</original>
-<translation>bibliothèque open- source gratuit, pour importer et exporter une variété de formats d'image</translation>
+<translation>bibliothèque open-source gratuit, pour importer et exporter une variété de formats d'image</translation>
 </phrase>
 
 <phrase>
@@ -5946,7 +5945,7 @@ To améliorer votre expérience utilisateur, s'il vous plaît laissez le programme 
 
 <phrase>
 <original>Missing plugins detected.  Generating download information (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Plugins manquants détecté. Générer des informations de téléchargement (cette fonction peut être désactivée dans le menu Outils - > Options de menu)</translation>
+<translation>Plugins manquants détecté. Générer des informations de téléchargement (cette fonction peut être désactivée dans le menu Outils -> Options de menu)</translation>
 </phrase>
 
 <phrase>
@@ -6011,7 +6010,7 @@ To améliorer votre expérience utilisateur, s'il vous plaît laissez le programme 
 
 <phrase>
 <original>Unspecified Download Error</original>
-<translation>Erreur de téléchargement Non spécifié</translation>
+<translation>Erreur de téléchargement non spécifié</translation>
 </phrase>
 
 <phrase>
@@ -6051,7 +6050,7 @@ To améliorer votre expérience utilisateur, s'il vous plaît laissez le programme 
 
 <phrase>
 <original>total download size</original>
-<translation>Taille</translation>
+<translation>Taille totale du téléchargement</translation>
 </phrase>
 
 <!-- VBP_FormPluginDownloader.frm contains 67 phrases. 19 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
@@ -6204,7 +6203,7 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 
 <phrase>
 <original>Tile Image</original>
-<translation>l'image Tile</translation>
+<translation>Carrelage image</translation>
 </phrase>
 
 <phrase>
@@ -6264,7 +6263,7 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 
 <phrase>
 <original>the new image will be %1 %3 wide by %2 %3 tall</original>
-<translation>L'image finale sera %1 %3 de large par %2 %3 de hauteur.</translation>
+<translation>l'image finale sera %1 %3 de large par %2 %3 de hauteur.</translation>
 </phrase>
 
 <!-- VBP_FormTile.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -6306,32 +6305,32 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 
 <phrase>
 <original>GDI+ failed to render blur effect (Error Code %1).</original>
-<translation>GDI a omis de rendre l'effet de flou (code d'erreur %1).</translation>
+<translation>GDI+ a omis de rendre l'effet de flou (code d'erreur %1).</translation>
 </phrase>
 
 <phrase>
 <original>GDI+ failed to set effect parameters.</original>
-<translation>GDI a omis de régler les paramètres d'effet.</translation>
+<translation>GDI+ a omis de régler les paramètres d'effet.</translation>
 </phrase>
 
 <phrase>
 <original>GDI+ failed to create blur effect object</original>
-<translation>GDI n'a pas réussi à créer l'objet de l'effet de flou</translation>
+<translation>GDI+ n'a pas réussi à créer l'objet de l'effet de flou</translation>
 </phrase>
 
 <phrase>
 <original>Initializing GDI+</original>
-<translation>Initialiser GDI +</translation>
+<translation>Initialiser GDI+</translation>
 </phrase>
 
 <phrase>
 <original>Creating GDI+ compatible image copy</original>
-<translation>Faire GDI + copie de l'image compatible</translation>
+<translation>Faire GDI+ copie de l'image compatible</translation>
 </phrase>
 
 <phrase>
 <original>Preparing GDI+ encoder for this filetype</original>
-<translation>Préparation GDI + codeur pour ce type de fichier</translation>
+<translation>Préparation GDI+ codeur pour ce type de fichier</translation>
 </phrase>
 
 <phrase>
@@ -6430,7 +6429,7 @@ Remarque: vous pouvez toujours télécharger manuellement la dernière version en v
 
 <phrase>
 <original>Inverting selection</original>
-<translation>sélection inversant</translation>
+<translation>Sélection inversant</translation>
 </phrase>
 
 <phrase>
@@ -6554,12 +6553,12 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Repeat: %1</original>
-<translation>Répétez= %1</translation>
+<translation>Répétez: %1</translation>
 </phrase>
 
 <phrase>
 <original>Fade: %1</original>
-<translation>Effacer</translation>
+<translation>Effacer: %1</translation>
 </phrase>
 
 <phrase>
@@ -6699,12 +6698,12 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Hue</original>
-<translation>teinte</translation>
+<translation>Teinte</translation>
 </phrase>
 
 <phrase>
 <original>Saturation</original>
-<translation>saturation</translation>
+<translation>Saturation</translation>
 </phrase>
 
 <phrase>
@@ -6815,7 +6814,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <phrase>
 <original>The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.</original>
-<translation>Le FreeImage plug-in est nécessaire pour rotation de l'image. S'il vous plaît allez dans Outils - > Options -> Mises à jour et permettent de télécharger PhotoDemon plugins de base. Puis redémarrez le programme.</translation>
+<translation>Le FreeImage plug-in est nécessaire pour rotation de l'image. S'il vous plaît allez dans Outils -> Options -> Mises à jour et permettent de télécharger PhotoDemon plugins de base. Puis redémarrez le programme.</translation>
 </phrase>
 
 <phrase>
@@ -6841,7 +6840,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Unsaved Changes</original>
-<translation>Les modifications non enregistrées</translation>
+<translation>Modifications non enregistrées</translation>
 </phrase>
 
 <phrase>
@@ -7096,7 +7095,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>JPEG Export Options</original>
-<translation>JPEG Options d'exportation</translation>
+<translation>Options d'exportation JPEG</translation>
 </phrase>
 
 <phrase>
@@ -7271,7 +7270,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>n/a</original>
-<translation>n / a</translation>
+<translation>n/a</translation>
 </phrase>
 
 <phrase>
@@ -7307,7 +7306,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>JPEG 2000 Export Options</original>
-<translation>Options  JPEG 2000 Export</translation>
+<translation>Options JPEG 2000 Export</translation>
 </phrase>
 
 <phrase>
@@ -7506,7 +7505,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>&Reset all plugin options</original>
-<translation>&Réinitialiser Toutes les options du plugin</translation>
+<translation>&Réinitialiser toutes les options du plugin</translation>
 </phrase>
 
 <phrase>
@@ -7631,7 +7630,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>ExifTool homepage</original>
-<translation>accueil ExifTool</translation>
+<translation>Accueil ExifTool</translation>
 </phrase>
 
 <phrase>
@@ -7651,7 +7650,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>EZTwain license</original>
-<translation>EZTwain licence</translation>
+<translation>Licence EZTwain</translation>
 </phrase>
 
 <phrase>
@@ -7666,12 +7665,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>zLib homepage</original>
-<translation>page d'accueil zLib</translation>
+<translation>Page d'accueil zLib</translation>
 </phrase>
 
 <phrase>
 <original>zLib plugin information</original>
-<translation>embrochable de l'information zLib</translation>
+<translation>Embrochable de l'information zLib</translation>
 </phrase>
 
 <phrase>
@@ -7686,12 +7685,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>FreeImage license</original>
-<translation>FreeImage licence</translation>
+<translation>LicenceFreeImage</translation>
 </phrase>
 
 <phrase>
 <original>FreeImage Public License (FIPL)</original>
-<translation>FreeImage Public License (FIPL)</translation>
+<translation>License Public FreeImage (FIPL)</translation>
 </phrase>
 
 <phrase>
@@ -7804,7 +7803,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>center position (x, y)</original>
-<translation>position de point (x, y)</translation>
+<translation>position de point (x,y)</translation>
 </phrase>
 
 <phrase>
@@ -7856,12 +7855,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>pinch amount</original>
-<translation>Quantité serrant</translation>
+<translation>quantité serrant</translation>
 </phrase>
 
 <phrase>
 <original>whirl angle</original>
-<translation>Angle de tourbillon</translation>
+<translation>angle de tourbillon</translation>
 </phrase>
 
 <phrase>
@@ -7882,7 +7881,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>vertical strength (amplitude)</original>
-<translation>la force verticale (amplitude)</translation>
+<translation>force verticale (amplitude)</translation>
 </phrase>
 
 <phrase>
@@ -8033,7 +8032,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>blur radius</original>
-<translation>rayon</translation>
+<translation>rayon de flou</translation>
 </phrase>
 
 <phrase>
@@ -8111,7 +8110,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>amount</original>
-<translation>Quantité</translation>
+<translation>quantité</translation>
 </phrase>
 
 <phrase>
@@ -8137,7 +8136,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>correction zoom</original>
-<translation>Zoom de correction</translation>
+<translation>zoom de correction</translation>
 </phrase>
 
 <phrase>
@@ -8212,7 +8211,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>shadows</original>
-<translation>Ombre</translation>
+<translation>ombre</translation>
 </phrase>
 
 <phrase>
@@ -8222,7 +8221,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>highlights</original>
-<translation>Saillants</translation>
+<translation>saillants</translation>
 </phrase>
 
 <phrase>
@@ -8258,7 +8257,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fit to image</original>
-<translation>s'adapter à l'image</translation>
+<translation>adapter à l'image</translation>
 </phrase>
 
 <phrase>
@@ -8278,7 +8277,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying vignetting</original>
-<translation>L'application de vignettage</translation>
+<translation>Application de vignettage</translation>
 </phrase>
 
 <!-- VBP_FormVignette.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -8399,7 +8398,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Shadow / Midtone / Highlight</original>
-<translation>Ombre / Midtone / Highlight</translation>
+<translation>Ombre / Demi-teinte / Tons moyens</translation>
 </phrase>
 
 <phrase>
@@ -8435,7 +8434,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>&Next</original>
-<translation>&Suivant</translation>
+<translation>Suiva&nt</translation>
 </phrase>
 
 <phrase>
@@ -8555,17 +8554,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>additional rename options</original>
-<translation>les options de renommage supplémentaires</translation>
+<translation>options de renommage supplémentaires</translation>
 </phrase>
 
 <phrase>
 <original>output images to this folder</original>
-<translation>Enregistrer des images dans ce dossier</translation>
+<translation>enregistrer des images dans ce dossier</translation>
 </phrase>
 
 <phrase>
 <original>keep images in their original format</original>
-<translation>Garder des images dans leur format original</translation>
+<translation>garder des images dans leur format original</translation>
 </phrase>
 
 <phrase>
@@ -8575,7 +8574,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>GIF options</original>
-<translation>Options de GIF</translation>
+<translation>Options GIF</translation>
 </phrase>
 
 <phrase>
@@ -8585,27 +8584,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>PPM options</original>
-<translation>Options de PPM</translation>
+<translation>Options PPM</translation>
 </phrase>
 
 <phrase>
 <original>TIFF options</original>
-<translation>Options de TIFF</translation>
+<translation>Options TIFF</translation>
 </phrase>
 
 <phrase>
 <original>JPEG-2000 options</original>
-<translation>Options de JPEG-2000</translation>
+<translation>Options JPEG-2000</translation>
 </phrase>
 
 <phrase>
 <original>BMP options</original>
-<translation>Options de BMP</translation>
+<translation>Options BMP</translation>
 </phrase>
 
 <phrase>
 <original>TGA options</original>
-<translation>Options de TGA</translation>
+<translation>Options TGA</translation>
 </phrase>
 
 <phrase>
@@ -8620,12 +8619,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>JPEG options</original>
-<translation>Options de JPEG</translation>
+<translation>Options JPEG</translation>
 </phrase>
 
 <phrase>
 <original>PNG options</original>
-<translation>Options de PNG</translation>
+<translation>Options PNG</translation>
 </phrase>
 
 <phrase>
@@ -8635,7 +8634,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>custom actions from a saved macro file</original>
-<translation>des actions personnalisées à partir d'un fichier de macro sauvegardée</translation>
+<translation>actions personnalisées à partir d'un fichier de macro sauvegardée</translation>
 </phrase>
 
 <phrase>
@@ -8879,7 +8878,7 @@ Vous souhaitez sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>Batch processing is now underway.</original>
-<translation>Le traitement par lot est en cours.</translation>
+<translation>Traitement par lot est en cours.</translation>
 </phrase>
 
 <phrase>
@@ -9018,7 +9017,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Batch conversion canceled.</original>
-<translation>La conversion par lots annulés.</translation>
+<translation>Conversion par lots annulés.</translation>
 </phrase>
 
 <phrase>
@@ -9081,7 +9080,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Applying new perspective</original>
-<translation>L'application de nouvelles perspectives</translation>
+<translation>Application de nouvelles perspectives</translation>
 </phrase>
 
 <phrase>
@@ -9185,7 +9184,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Removing metadata with potential privacy concerns</original>
-<translation>La suppression des métadonnées avec des problèmes potentiels de confidentialité</translation>
+<translation>Suppression des métadonnées avec des problèmes potentiels de confidentialité</translation>
 </phrase>
 
 <!-- pdMetadata.cls contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -9275,7 +9274,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Poking image</original>
-<translation>poussant l'image</translation>
+<translation>Poussant l'image</translation>
 </phrase>
 
 <!-- VBP_FormPoke.frm contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9301,7 +9300,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Wrapping image around sphere</original>
-<translation>d'emballage L'image autour sphère</translation>
+<translation>Emballage L'image autour sphère</translation>
 </phrase>
 
 <!-- VBP_FormSpherize.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9412,12 +9411,12 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>stronger version of 15</original>
-<translation>La version forte de 15</translation>
+<translation>version forte de 15</translation>
 </phrase>
 
 <phrase>
 <original>orange</original>
-<translation>d'orange</translation>
+<translation>orange</translation>
 </phrase>
 
 <phrase>
@@ -9432,7 +9431,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>stronger version of 21</original>
-<translation>La version forte de 21</translation>
+<translation>version forte de 21</translation>
 </phrase>
 
 <phrase>
@@ -9442,7 +9441,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>contrast effects, darken sky and water</original>
-<translation>des effets de contraste, assombrir le ciel et l'eau</translation>
+<translation>effets de contraste, assombrir le ciel et l'eau</translation>
 </phrase>
 
 <phrase>
@@ -9462,7 +9461,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>deep red</original>
-<translation>d'un rouge profond</translation>
+<translation>rouge profond</translation>
 </phrase>
 
 <phrase>
@@ -9909,7 +9908,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Sharpening selection</original>
-<translation>affûtage sélection</translation>
+<translation>Affûtage sélection</translation>
 </phrase>
 
 <phrase>
@@ -10063,7 +10062,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>exposure compensation (stops)</original>
-<translation>la compensation d'exposition (arrêts)</translation>
+<translation>compensation d'exposition (arrêts)</translation>
 </phrase>
 
 <phrase>
@@ -10101,7 +10100,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>brush size</original>
-<translation>la taille du pinceau</translation>
+<translation>taille du pinceau</translation>
 </phrase>
 
 <phrase>
@@ -10303,12 +10302,12 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>distance</original>
-<translation>la distance</translation>
+<translation>distance</translation>
 </phrase>
 
 <phrase>
 <original>Applying motion blur</original>
-<translation>On applique un flou de mouvement</translation>
+<translation>Applique un flou de mouvement</translation>
 </phrase>
 
 <!-- VBP_FormMotionBlur.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10430,7 +10429,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>author name(s)</original>
-<translation>Nom de l'auteur(s)</translation>
+<translation>nom de l'auteur(s)</translation>
 </phrase>
 
 <phrase>
@@ -10475,7 +10474,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Processing phrase %1 of %2</original>
-<translation>traitement de phrase %1 de %2</translation>
+<translation>Traitement de phrase %1 de %2</translation>
 </phrase>
 
 <phrase>
@@ -10504,7 +10503,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une valeu
 
 <phrase>
 <original>Administrator access required</original>
-<translation>L'accès de l'administrateur nécessaire</translation>
+<translation>Accès de l'administrateur nécessaire</translation>
 </phrase>
 
 <phrase>
@@ -10782,7 +10781,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>macro recording in progress</original>
-<translation>L'enregistrement de macro en cours</translation>
+<translation>Enregistrement de macro en cours</translation>
 </phrase>
 
 <!-- VBP_ToolbarPrimary.frm contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10924,7 +10923,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Rectangular Selection</original>
-<translation>sélection rectangulaire</translation>
+<translation>Sélection rectangulaire</translation>
 </phrase>
 
 <phrase>
@@ -11108,7 +11107,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Replacing color</original>
-<translation>remplacement de couleur</translation>
+<translation>Remplacement de couleur</translation>
 </phrase>
 
 <!-- VBP_FormReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -11202,7 +11201,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>HTML / CSS</original>
-<translation>HTML/CSS</translation>
+<translation>HTML / CSS</translation>
 </phrase>
 
 <phrase>
@@ -11258,7 +11257,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>print quality</original>
-<translation>la qualité d'impression</translation>
+<translation>qualité d'impression</translation>
 </phrase>
 
 <phrase>
@@ -11305,7 +11304,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>Screenshot options</original>
-<translation>Options de Captures d'écran</translation>
+<translation>Options de captures d'écran</translation>
 </phrase>
 
 <phrase>
@@ -11547,12 +11546,12 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photode
 
 <phrase>
 <original>pixels / inch (PPI)</original>
-<translation>pixels/pouce (PPI)</translation>
+<translation>pixels / pouce (PPI)</translation>
 </phrase>
 
 <phrase>
 <original>pixels / centimeter (PPCM)</original>
-<translation>Pixel/centimètre (PPCM)</translation>
+<translation>Pixel / centimètre (PPCM)</translation>
 </phrase>
 
 <phrase>
@@ -11713,7 +11712,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Lossless (100)</original>
-<translation>Lossless (100)</translation>
+<translation>Sans pertes (100)</translation>
 </phrase>
 
 <phrase>
@@ -11951,12 +11950,12 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>shadow color</original>
-<translation>Couleur de l'ombre</translation>
+<translation>couleur de l'ombre</translation>
 </phrase>
 
 <phrase>
 <original>highlight color</original>
-<translation>Couleur d'accompagnement </translation>
+<translation>couleur d'accompagnement </translation>
 </phrase>
 
 <phrase>
@@ -12294,7 +12293,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Lighting image on fire</original>
-<translation>L'image d'éclairage sur le feu</translation>
+<translation>Aclairage l'image sur le feu</translation>
 </phrase>
 
 <!-- VBP_FormBurn.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -12342,7 +12341,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>&Restore selected state</original>
-<translation>&Restaurer état ??sélectionné</translation>
+<translation>&Restaurer état sélectionné</translation>
 </phrase>
 
 <phrase>
