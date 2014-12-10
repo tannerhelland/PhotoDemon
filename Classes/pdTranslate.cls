@@ -624,8 +624,18 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
         
         'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
         If translationActive And (InStr(1, searchString, vbCrLf) > 0) Then
+            
             newString = getTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf))
-            If Len(newString) = 0 Then newString = srcMessage
+            
+            If Len(newString) = 0 Then
+                newString = srcMessage
+            Else
+            
+                'Convert vbLf to vbCrLf, to ensure proper rendering.  Thanks to Frank Donckers for this fix!
+                newString = Replace$(newString, vbLf, vbCrLf)
+            
+            End If
+            
         Else
             newString = srcMessage
         End If
