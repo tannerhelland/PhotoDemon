@@ -197,9 +197,9 @@ Begin VB.Form FormThemeEditor
       Left            =   120
       Top             =   3840
       Width           =   1650
-      _ExtentX        =   4551
+      _ExtentX        =   2910
       _ExtentY        =   503
-      Caption         =   "text box testing options:"
+      Caption         =   "testing options:"
       FontSize        =   12
       Layout          =   2
    End
@@ -208,10 +208,10 @@ Begin VB.Form FormThemeEditor
       Index           =   2
       Left            =   4800
       Top             =   3840
-      Width           =   5715
-      _ExtentX        =   6059
+      Width           =   4455
+      _ExtentX        =   7858
       _ExtentY        =   503
-      Caption         =   "Unicode label for testing output:"
+      Caption         =   "Other Unicode controls for testing output:"
       FontSize        =   12
       Layout          =   2
    End
