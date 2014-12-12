@@ -52,7 +52,7 @@ Private Const INACTIVE_TOOLBOX_OPACITY As Byte = 170
 
 'Subclassed messages related to window movement
 Private Const WM_SYSCOMMAND As Long = &H112
-Private Const WM_SYSCOMMAND_WPARAM_MASK As Long = &HFFF0
+Private Const WM_SYSCOMMAND_WPARAM_MASK As Long = &HFFF0&
 Private Const WM_MOUSEMOVE As Long = &H200
 Private Const WM_MOVE As Long = &H3
 Private Const WM_MOVING As Long = &H216
@@ -63,6 +63,7 @@ Private Const WM_SIZE As Long = &H5
 Private Const WM_ERASEBKGND As Long = &H14
 Private Const WM_SHOWWINDOW As Long = &H18
 Private Const WM_WINDOWPOSCHANGED As Long = &H47
+Private Const WM_NCACTIVATE As Long = &H86
 
 'Subclassed messages for detecting when PD is losing focus to another app, or regaining it from another app
 Private Const WM_ACTIVATE      As Long = &H6
@@ -284,7 +285,7 @@ Private Const SM_CYSIZEFRAME As Long = 33
 'API calls for window positioning and tracking
 Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
@@ -295,10 +296,10 @@ Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Lo
 Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHWnd As Long, ByVal TransColor As Long, ByVal newAlpha As Byte, ByVal fFlags As Long) As Boolean
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Long) As Long
-Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
 Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As Long
@@ -954,15 +955,15 @@ Private Sub getClientCoordsRelativeToScreen(ByVal targetHWnd As Long, ByRef rect
     ClientToScreen targetHWnd, clientLeft
     
     'Fill the bottom-right coord object, then convert it to screen coords
-    clientRight.X = curClientRect.x2
-    clientRight.Y = curClientRect.y2
+    clientRight.x = curClientRect.x2
+    clientRight.y = curClientRect.y2
     ClientToScreen targetHWnd, clientRight
     
     'Fill the rect object we were passed.
-    rectToFill.x1 = clientLeft.X
-    rectToFill.y1 = clientLeft.Y
-    rectToFill.x2 = clientRight.X
-    rectToFill.y2 = clientRight.Y
+    rectToFill.x1 = clientLeft.x
+    rectToFill.y1 = clientLeft.y
+    rectToFill.x2 = clientRight.x
+    rectToFill.y2 = clientRight.y
 
 End Sub
 
@@ -2183,19 +2184,22 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     Select Case wParam
 
                         Case SC_MAXIMIZE
-                            Debug.Print "Received system maximize message " & bBefore
-
+                            'Debug.Print "Received system maximize message " & bBefore
+                        
+                        Case SC_MINIMIZE
+                            'Debug.Print "Received system minimize message " & bBefore
+                        
                         Case SC_RESTORE
-                            Debug.Print "Received system restore window message " & bBefore
+                            'Debug.Print "Received system restore window message " & bBefore
 
                         Case SC_SIZE
-                            Debug.Print "Received system window size message " & bBefore
+                            'Debug.Print "Received system window size message " & bBefore
 
                         Case SC_MOVE
-                            Debug.Print "Received system window move message " & bBefore
+                            'Debug.Print "Received system window move message " & bBefore
 
                         Case Else
-                            Debug.Print "Received unknown system window message: " & wParam
+                            'Debug.Print "Received unknown system window message: " & wParam
 
                     End Select
 
@@ -2207,8 +2211,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'The OS will automatically handle window restoration for us, but we need to make sure to resync all window positions
                 ' afterwards.  If we don't do this, PD's internal window position values will fall out of sync.
-                If ((wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Or (wParam = SC_MOVE)) And (bBefore = False) Then
-                
+                If ((wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Or (wParam = SC_MOVE)) And (bBefore = False) And (Not isPDDeactivated) Then
+                    
+                    'Debug.Print "PD restoration code running..."
+                    
                     GetWindowRect mainWindowHwnd, curWinRect
                     For i = 0 To numOfPDWindows - 1
                         requestWindowResync i
@@ -2221,6 +2227,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'When minimizing, check all windows, and if one has not been minimized, minimize it now
                 If (wParam = SC_MINIMIZE) And (bBefore = True) Then
+                    
+                    'Debug.Print "PD minimize code running..."
                     
                     'As a failsafe, update each window's location before minimizing it
                     For i = 0 To numOfPDWindows - 1
@@ -2246,7 +2254,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 End If
                 
             'The user is switching to or from PD and another application
-            Case WM_ACTIVATEAPP
+            Case WM_NCACTIVATE  'WM_ACTIVATEAPP was originally used here, but it is an unreliable piece of garbage.  It is sent to all top-level
+                                ' windows, even when they are not being activated.  Thank you to the nice MSDN commenter who suggested NCACTIVATE
+                                ' as a more reliable alternative.
             
                 If bBefore Then
             
@@ -2273,7 +2283,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                 Else
                 
-                    If (wParam <> WA_INACTIVE) Then
+                    If (wParam <> WA_INACTIVE) And (Not isPDDeactivated) And (Not insideMinimizeMode) Then
+                        
+                        'Debug.Print "Running Show Desktop hack"
                         
                         'This rather nasty hack is required to work around the "Show Desktop" event.  For reasons known only
                         ' to MS engineers, the Show Desktop command does not send *ANY* WM_SYSCOMMAND messages to your window.
