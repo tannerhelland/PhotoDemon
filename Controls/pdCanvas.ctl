@@ -239,8 +239,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright ©2002-2014 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 01/October/14
-'Last update: fix mousewheel zoom to work with new "fit image" zoom options
+'Last updated: 12/December/14
+'Last update: performance optimizations
 '
 'In years past, PhotoDemon would use a separate canvas (a full VB Form) for each loaded image.  In 2013, as part of the massive
 ' window manager rewrite, I rewrote the program to only have a single canvas active at any time.  The canvas was rebuilt as a user
@@ -396,14 +396,35 @@ End Function
 
 Public Sub setScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibility As Boolean)
     
-    If barType = PD_HORIZONTAL Then
-        picScrollH.Visible = newVisibility
-    Else
-        picScrollV.Visible = newVisibility
-    End If
+    'If the scroll bar status wasn't actually changed, we can avoid a forced screen refresh
+    Dim changesMade As Boolean
+    changesMade = False
+    
+    Select Case barType
+    
+        Case PD_HORIZONTAL
+            If newVisibility <> picScrollH.Visible Then
+                picScrollH.Visible = newVisibility
+                changesMade = True
+            End If
+        
+        Case PD_VERTICAL
+            If newVisibility <> picScrollV.Visible Then
+                picScrollV.Visible = newVisibility
+                changesMade = True
+            End If
+        
+        Case PD_BOTH
+            If (newVisibility <> picScrollH.Visible) Or (newVisibility <> picScrollV.Visible) Then
+                picScrollH.Visible = newVisibility
+                picScrollV.Visible = newVisibility
+                changesMade = True
+            End If
+    
+    End Select
     
     'When scroll bar visibility is changed, we must move the main canvas picture box to match
-    alignCanvasPictureBox
+    If changesMade Then alignCanvasPictureBox
     
 End Sub
 
@@ -706,7 +727,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 'Redraw the viewport if necessary
                 If canvasUpdateRequired Then
                     markEventHandled = True
-                    ScrollViewport pdImages(g_CurrentImage), Me
+                    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
                 End If
                     
             'Move stuff around
@@ -732,7 +753,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                     'Redraw the viewport if necessary
                     If canvasUpdateRequired Then
                         markEventHandled = True
-                        ScrollViewport pdImages(g_CurrentImage), Me
+                        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
                     End If
                     
                 'Handle non-arrow keys next
@@ -773,7 +794,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                         pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
                         
                         'Redraw the viewport and interface to match
-                        RenderViewport pdImages(g_CurrentImage), Me
+                        Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
                         syncInterfaceToCurrentImage
                         
                     End If
@@ -782,7 +803,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                     If (vkCode = VK_SPACE) Then
                         markEventHandled = True
                         pdImages(g_CurrentImage).getActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility)
-                        ScrollViewport pdImages(g_CurrentImage), Me
+                        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
                         syncInterfaceToCurrentImage
                     End If
                 
@@ -836,7 +857,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                             
                             End If
                             
-                            RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                            Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                             
                         End If
                     
@@ -919,7 +940,7 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
                     End If
                     
                     'Redraw the screen to reflect this new change.
-                    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
                 End If
             
@@ -964,7 +985,7 @@ Private Sub CmbZoom_Click()
         
         'Redraw the viewport (if allowed; some functions will prevent us from doing this, as they plan to request their own
         ' refresh after additional processing occurs)
-        If g_AllowViewportRendering Then PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "zoom changed by primary drop-down box"
+        If g_AllowViewportRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "zoom changed by primary drop-down box"
         
     End If
 
@@ -1081,7 +1102,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                         'If the layer under the mouse is not already active, activate it now
                         If layerUnderMouse <> pdImages(g_CurrentImage).getActiveLayerIndex Then
                             Layer_Handler.setActiveLayerByIndex layerUnderMouse, False
-                            RenderViewport pdImages(g_CurrentImage), Me
+                            Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
                         End If
                     
                     End If
@@ -1154,7 +1175,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                                     pdImages(g_CurrentImage).mainSelection.overrideTransformMode True
                                     
                                     'Redraw the screen
-                                    RenderViewport pdImages(g_CurrentImage), Me
+                                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
                                     
                                 End If
                             
@@ -1183,7 +1204,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             'Magic wand selections are easy.  They never transform - they only generate anew
             Case SELECT_WAND
                 Selection_Handler.initSelectionByPoint imgX, imgY
-                RenderViewport pdImages(g_CurrentImage), Me
+                Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
                 
             'In the future, other tools can be handled here
             Case Else
@@ -1270,7 +1291,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 End If
                 
                 'Force a redraw of the viewport
-                If hasMouseMoved > 1 Then RenderViewport pdImages(g_CurrentImage), Me
+                If hasMouseMoved > 1 Then Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
             
             'Lasso selections are handled specially, because mouse move events control the drawing of the lasso
             Case SELECT_LASSO
@@ -1292,13 +1313,13 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 #End If
                 
                 'Force a redraw of the viewport
-                If hasMouseMoved > 1 Then RenderViewport pdImages(g_CurrentImage), Me
+                If hasMouseMoved > 1 Then Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
             
             'Wand selections are easier than other selection types, because they don't support any special transforms
             Case SELECT_WAND
                 If pdImages(g_CurrentImage).selectionActive Then
                     pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
-                    RenderViewport pdImages(g_CurrentImage), Me
+                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
                 End If
             
         End Select
@@ -1472,7 +1493,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     End If
                     
                     'Force a redraw of the screen
-                    RenderViewport pdImages(g_CurrentImage), Me
+                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
                     
                 Else
                     'If the selection is not active, make sure it stays that way
@@ -1553,7 +1574,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     End If
                     
                     'Force a redraw of the screen
-                    RenderViewport pdImages(g_CurrentImage), Me
+                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
                 
                 Else
                     'If the selection is not active, make sure it stays that way
@@ -1579,7 +1600,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     End If
                     
                     'Force a redraw of the screen
-                    RenderViewport pdImages(g_CurrentImage), Me
+                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
                     
                 Else
                     'If the selection is not active, make sure it stays that way
@@ -1624,7 +1645,7 @@ Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConsta
             
             m_suspendRedraws = False
             
-            ScrollViewport pdImages(g_CurrentImage), Me
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
         
         ElseIf scrollAmount < 0 Then
         
@@ -1638,7 +1659,7 @@ Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConsta
             
             m_suspendRedraws = False
             
-            ScrollViewport pdImages(g_CurrentImage), Me
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
             
         End If
         
@@ -1670,7 +1691,7 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
             
             m_suspendRedraws = False
             
-            ScrollViewport pdImages(g_CurrentImage), Me
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
         
         ElseIf scrollAmount > 0 Then
             
@@ -1684,7 +1705,7 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
             
             m_suspendRedraws = False
             
-            ScrollViewport pdImages(g_CurrentImage), Me
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
             
         End If
 
@@ -1730,9 +1751,9 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
     'Re-enable automatic viewport redraws
     g_AllowViewportRendering = True
     
-    'Request a manual redraw from PrepareViewport, while supplying our x/y coordinates so that it can preserve mouse position
+    'Request a manual redraw from Viewport_Engine.Stage1_InitializeBuffer, while supplying our x/y coordinates so that it can preserve mouse position
     ' relative to the underlying image.
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "mousewheel zoom", x, y, imgX, imgY
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "mousewheel zoom", x, y, imgX, imgY
 
 End Sub
 
@@ -1840,7 +1861,7 @@ Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub HScroll_Scroll()
-    If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
+    If (Not m_suspendRedraws) Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
 End Sub
 
 Private Sub UserControl_Resize()
@@ -1927,7 +1948,7 @@ CanvasShowError:
 End Sub
 
 Private Sub VScroll_Scroll()
-    If (Not m_suspendRedraws) Then ScrollViewport pdImages(g_CurrentImage), Me
+    If (Not m_suspendRedraws) Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
 End Sub
 
 'Whenever this window changes size, we may need to re-align various bits of internal chrome (status bar, rulers, etc).  Call this function

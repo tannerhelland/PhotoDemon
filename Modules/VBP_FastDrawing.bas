@@ -657,7 +657,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
         
         'Pass control to the viewport renderer, which will perform the actual rendering
-        ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         Message "Finished."
     

@@ -61,15 +61,6 @@ Begin VB.Form FormStraighten
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -15
       Max             =   15
       SigDigits       =   2
@@ -386,7 +377,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             End If
             
             'Fit the new image on-screen and redraw its viewport
-            PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Image or layer straightening"
+            Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Image or layer straightening"
             
             Message "Straighten complete."
             SetProgBarVal 0

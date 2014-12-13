@@ -326,7 +326,7 @@ Private Sub updateAnchorButtons()
 
 End Sub
 
-Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     m_CurrentAnchor = Index
     updateAnchorButtons
 End Sub
@@ -526,7 +526,7 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     ' appearance of any of the layers, we can leave it as-is!
     
     'Fit the new image on-screen and redraw its viewport
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Canvas resize"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Canvas resize"
     
     Message "Finished."
     

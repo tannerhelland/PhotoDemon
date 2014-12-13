@@ -100,7 +100,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
     Next i
     
     'Redraw the active viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 

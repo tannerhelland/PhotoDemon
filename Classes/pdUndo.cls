@@ -354,7 +354,7 @@ Public Sub moveToSpecificUndoPoint(ByVal undoIndex As Long)
     writeUndoDataToXML generateUndoHeaderFilename()
     
     'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Undo Pointer moved to arbitary location"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Undo Pointer moved to arbitary location"
     
     Message "Image successfully restored."
     
@@ -534,7 +534,7 @@ Public Sub restoreUndoData()
         End If
         
         'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
-        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "LoadUndo + full layer reconstruction"
+        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "LoadUndo + full layer reconstruction"
     
     End If
     

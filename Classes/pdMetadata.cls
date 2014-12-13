@@ -707,7 +707,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                         
                         'Refresh the screen
                         If parentImageID = g_CurrentImage Then
-                            PrepareViewport pdImages(parentImageID), FormMain.mainCanvas(0), "Custom PNG chunk found"
+                            Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0), "Custom PNG chunk found"
                             toolbar_ImageTabs.notifyUpdatedImage parentImageID
                         End If
                         

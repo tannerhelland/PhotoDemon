@@ -78,15 +78,6 @@ Begin VB.Form FormFadeLast
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   100
       Value           =   50
@@ -295,7 +286,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
         pdImages(g_CurrentImage).getLayerByID(m_relevantLayerID).notifyLayerModified
         
         syncInterfaceToCurrentImage
-        ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         SetProgBarVal 0
         releaseProgressBar

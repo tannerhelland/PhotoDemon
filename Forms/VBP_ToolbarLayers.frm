@@ -462,7 +462,7 @@ Private Sub cboBlendMode_Click()
         If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
         
             pdImages(g_CurrentImage).getActiveLayer.setLayerBlendMode cboBlendMode.ListIndex
-            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         End If
     
@@ -491,13 +491,13 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
         'Right key increases active layer opacity
         If (vkCode = VK_RIGHT) And (pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility) Then
             sltLayerOpacity.Value = sltLayerOpacity.Value + 10
-            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
         'Left key decreases active layer opacity
         If (vkCode = VK_LEFT) And (pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility) Then
             sltLayerOpacity.Value = sltLayerOpacity.Value - 10
-            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
         'Delete key: delete the active layer (if allowed)
@@ -537,7 +537,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
                 
                 'Redraw the viewport and interface to match
-                RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 syncInterfaceToCurrentImage
                 
                 'All that interface stuff may have messed up focus; retain it on the layer box
@@ -555,7 +555,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
         'Space bar: toggle active layer visibility
         If (vkCode = VK_SPACE) Then
             pdImages(g_CurrentImage).getActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility)
-            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             syncInterfaceToCurrentImage
         End If
         
@@ -644,7 +644,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             ' the active layer.
             Else
                 Layer_Handler.setActiveLayerByIndex clickedLayer, False
-                RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             End If
             
             'Redraw the layer box to represent any changes from this interaction.
@@ -785,7 +785,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             toolbar_Layers.forceRedraw True
             
             'Redraw the viewport
-            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         End If
         
@@ -897,7 +897,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 toolbar_Layers.forceRedraw True
                 
                 'Redraw the viewport
-                ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
             End If
             
@@ -1523,7 +1523,7 @@ Private Sub sltLayerOpacity_Change()
         If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
         
             pdImages(g_CurrentImage).getActiveLayer.setLayerOpacity sltLayerOpacity.Value
-            ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         End If
     
