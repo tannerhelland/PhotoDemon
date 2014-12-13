@@ -43,7 +43,7 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long)
     toolbar_Layers.forceRedraw True
     
     'Render the new image to screen (not technically necessary, but doesn't hurt)
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
             
     'Synchronize the interface to the new image
     syncInterfaceToCurrentImage
@@ -133,7 +133,7 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVa
     End If
     
     'Redraw the main viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
@@ -187,7 +187,7 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
             End If
             
             'Render the new image to screen
-            PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
+            Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
             
             'Synchronize the interface to the new image
             syncInterfaceToCurrentImage
@@ -237,7 +237,7 @@ Public Sub setActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedra
     Processor.setImageCheckpoint
     
     'Redraw the viewport, but only if requested
-    If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -260,7 +260,7 @@ Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal als
     Processor.setImageCheckpoint
     
     'Redraw the viewport, but only if requested
-    If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -277,7 +277,7 @@ Public Sub setLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     syncInterfaceToCurrentImage
     
     'Redraw the viewport, but only if requested
-    If alsoRedrawViewport Then ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -311,7 +311,7 @@ Public Sub duplicateLayerByIndex(ByVal dLayerIndex As Long)
     toolbar_Layers.forceRedraw True
     
     'Render the new image to screen
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
             
     'Synchronize the interface to the new image
     syncInterfaceToCurrentImage
@@ -370,7 +370,7 @@ Public Sub mergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
         toolbar_Layers.forceRedraw True
     
         'Redraw the viewport
-        ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
     End If
 
@@ -456,7 +456,7 @@ Public Sub deleteLayer(ByVal dLayerIndex As Long)
     toolbar_Layers.forceRedraw True
     
     'Redraw the viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -504,7 +504,7 @@ Public Sub deleteHiddenLayers()
     toolbar_Layers.forceRedraw True
     
     'Redraw the viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -527,7 +527,7 @@ Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
         toolbar_Layers.forceRedraw True
         
         'Redraw the viewport
-        ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
     End If
 
@@ -572,7 +572,7 @@ Public Sub moveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
         toolbar_Layers.forceRedraw True
         
         'Redraw the viewport
-        ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
     End If
 
@@ -614,7 +614,7 @@ Public Sub flattenImage()
     toolbar_Layers.forceRedraw True
     
     'Redraw the viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -673,7 +673,7 @@ Public Sub mergeVisibleLayers()
     toolbar_Layers.forceRedraw True
     
     'Redraw the viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -687,7 +687,7 @@ Public Sub resetLayerSize(ByVal srcLayerIndex As Long)
     syncInterfaceToCurrentImage
     
     'Redraw the viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -708,7 +708,7 @@ Public Sub resizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
     End With
     
     'Redraw the viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -727,7 +727,7 @@ Public Sub moveLayerOnCanvas(ByVal srcLayerIndex As Long, ByVal resizeParams As 
     End With
     
     'Redraw the viewport
-    ScrollViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 

@@ -123,7 +123,7 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     srcCanvas.setRedrawSuspension False
     
     'Manually request a canvas redraw
-    ScrollViewport srcImage, srcCanvas
+    Viewport_Engine.Stage2_CompositeAllLayers srcImage, srcCanvas
 
 End Sub
 
@@ -261,7 +261,7 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
     Else
     
         'Manually request a canvas redraw
-        ScrollViewport srcImage, srcCanvas
+        Viewport_Engine.Stage2_CompositeAllLayers srcImage, srcCanvas
     
     End If
     
@@ -279,7 +279,7 @@ Public Sub makeQuickFixesPermanent()
     
     'Reset the quick-fix settings stored inside the pdLayer object
     Dim i As Long
-    For i = 0 To toolbar_Options.sltQuickFix.count - 1
+    For i = 0 To toolbar_Options.sltQuickFix.Count - 1
         pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState i, 0
     Next i
     

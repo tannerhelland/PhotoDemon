@@ -31,9 +31,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   30
       Width           =   2175
-      _extentx        =   450
-      _extenty        =   503
-      caption         =   "file"
+      _ExtentX        =   450
+      _ExtentY        =   503
+      Caption         =   "file"
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -42,8 +42,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   8
       Top             =   3000
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.jcbutton cmdOpen 
       Height          =   600
@@ -51,17 +51,25 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   0
       Top             =   300
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   13
-      font            =   "VBP_ToolbarPrimary.frx":0000
-      backcolor       =   15199212
-      caption         =   ""
-      handpointer     =   -1
-      picturenormal   =   "VBP_ToolbarPrimary.frx":0028
-      disabledpicturemode=   1
-      captioneffects  =   0
-      tooltiptitle    =   "Open"
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   13
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   15199212
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":0000
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      TooltipTitle    =   "Open"
    End
    Begin PhotoDemon.jcbutton cmdSave 
       Height          =   600
@@ -69,17 +77,25 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   1
       Top             =   960
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   13
-      font            =   "VBP_ToolbarPrimary.frx":0D7A
-      backcolor       =   15199212
-      caption         =   ""
-      handpointer     =   -1
-      picturenormal   =   "VBP_ToolbarPrimary.frx":0DA2
-      disabledpicturemode=   1
-      captioneffects  =   0
-      tooltiptitle    =   "Save"
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   13
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   15199212
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":0D52
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      TooltipTitle    =   "Save"
    End
    Begin PhotoDemon.jcbutton cmdUndo 
       Height          =   600
@@ -87,18 +103,26 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   2
       Top             =   1920
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   13
-      font            =   "VBP_ToolbarPrimary.frx":1AF4
-      backcolor       =   15199212
-      caption         =   ""
-      handpointer     =   -1
-      picturenormal   =   "VBP_ToolbarPrimary.frx":1B1C
-      disabledpicturemode=   1
-      captioneffects  =   0
-      tooltiptitle    =   "Undo"
-      tooltipbackcolor=   -2147483643
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   13
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   15199212
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":1AA4
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      TooltipTitle    =   "Undo"
+      TooltipBackColor=   -2147483643
    End
    Begin PhotoDemon.jcbutton cmdRedo 
       Height          =   600
@@ -106,18 +130,26 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   3
       Top             =   1920
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   13
-      font            =   "VBP_ToolbarPrimary.frx":286E
-      backcolor       =   15199212
-      caption         =   ""
-      handpointer     =   -1
-      picturenormal   =   "VBP_ToolbarPrimary.frx":2896
-      disabledpicturemode=   1
-      captioneffects  =   0
-      tooltiptitle    =   "Redo"
-      tooltipbackcolor=   -2147483643
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   13
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   15199212
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":27F6
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      TooltipTitle    =   "Redo"
+      TooltipBackColor=   -2147483643
    End
    Begin PhotoDemon.jcbutton cmdClose 
       Height          =   600
@@ -125,17 +157,25 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   4
       Top             =   300
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   13
-      font            =   "VBP_ToolbarPrimary.frx":35E8
-      backcolor       =   15199212
-      caption         =   ""
-      handpointer     =   -1
-      picturenormal   =   "VBP_ToolbarPrimary.frx":3610
-      disabledpicturemode=   1
-      captioneffects  =   0
-      tooltiptitle    =   "Close"
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   13
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   15199212
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":3548
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      TooltipTitle    =   "Close"
    End
    Begin PhotoDemon.jcbutton cmdSaveAs 
       Height          =   600
@@ -143,17 +183,25 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   5
       Top             =   960
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
-      buttonstyle     =   13
-      font            =   "VBP_ToolbarPrimary.frx":4362
-      backcolor       =   15199212
-      caption         =   ""
-      handpointer     =   -1
-      picturenormal   =   "VBP_ToolbarPrimary.frx":438A
-      disabledpicturemode=   1
-      captioneffects  =   0
-      tooltiptitle    =   "Save as"
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      ButtonStyle     =   13
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   15199212
+      Caption         =   ""
+      HandPointer     =   -1  'True
+      PictureNormal   =   "VBP_ToolbarPrimary.frx":429A
+      DisabledPictureMode=   1
+      CaptionEffects  =   0
+      TooltipTitle    =   "Save as"
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -162,8 +210,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   9
       Top             =   3000
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -172,8 +220,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   10
       Top             =   3000
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -182,8 +230,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   11
       Top             =   3960
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -192,8 +240,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   12
       Top             =   3960
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -202,8 +250,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   13
       Top             =   3960
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -212,8 +260,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   14
       Top             =   4560
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -222,8 +270,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   15
       Top             =   4560
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -232,8 +280,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   16
       Top             =   4560
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -241,9 +289,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   1620
       Width           =   2175
-      _extentx        =   3836
-      _extenty        =   503
-      caption         =   "undo"
+      _ExtentX        =   3836
+      _ExtentY        =   503
+      Caption         =   "undo"
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -251,9 +299,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   2700
       Width           =   2175
-      _extentx        =   3836
-      _extenty        =   503
-      caption         =   "non-destructive"
+      _ExtentX        =   3836
+      _ExtentY        =   503
+      Caption         =   "non-destructive"
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -261,16 +309,16 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   3660
       Width           =   2175
-      _extentx        =   3836
-      _extenty        =   503
-      caption         =   "selection"
+      _ExtentX        =   3836
+      _ExtentY        =   503
+      Caption         =   "selection"
    End
    Begin VB.Label lblWarning 
       Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_ToolbarPrimary.frx":50DC
+      Caption         =   $"VBP_ToolbarPrimary.frx":4FEC
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -414,7 +462,7 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
     ' the layer toolbox.
@@ -428,7 +476,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
     Dim hitCode As Long
     
     'Check the mouse position to see if it's in resize territory (along the left edge of the toolbox)
-    If (Y > 0) And (Y < Me.ScaleHeight) And (X > (Me.ScaleWidth - resizeBorderAllowance)) Then
+    If (y > 0) And (y < Me.ScaleHeight) And (x > (Me.ScaleWidth - resizeBorderAllowance)) Then
         mouseInResizeTerritory = True
         hitCode = HTRIGHT
     End If
@@ -540,7 +588,7 @@ Private Sub newToolSelected()
     End Select
     
     'Finally, because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas
-    RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -643,7 +691,7 @@ Public Sub resetToolButtonStates()
             'Simply update the shape and redraw the viewport
             pdImages(g_CurrentImage).mainSelection.setSelectionShape Selection_Handler.getSelectionShapeFromCurrentTool
             syncTextToCurrentSelection g_CurrentImage
-            RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
         Else
             Process "Remove selection", , , UNDO_SELECTION

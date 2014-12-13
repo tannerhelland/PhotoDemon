@@ -924,7 +924,7 @@ Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
     
     'If images are loaded, we may need to redraw their viewports because the available client area may have changed.
     If (g_NumOfImagesLoaded > 0) Then
-        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Image tabstrip visibility toggled"
+        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Image tabstrip visibility toggled"
     End If
 
 End Sub

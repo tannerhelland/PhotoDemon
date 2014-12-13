@@ -1268,9 +1268,9 @@ PDI_Load_Continuation:
             g_AllowViewportRendering = False
             FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = targetImage.currentZoomValue
         
-            'Now that the image's window has been fully sized and moved around, use PrepareViewport to set up any scrollbars and a back-buffer
+            'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
             g_AllowViewportRendering = True
-            PrepareViewport targetImage, FormMain.mainCanvas(0), "LoadFileAsNewImage"
+            Viewport_Engine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0), "LoadFileAsNewImage"
                                     
             'Add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile sFile(thisImage), targetImage
@@ -1353,7 +1353,7 @@ PDI_Load_Continuation:
                     End If
                     
                     'Redraw the main viewport
-                    PrepareViewport targetImage, FormMain.mainCanvas(0)
+                    Viewport_Engine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0)
                 
                 'If the load was unsuccessful, delete the blank layer we created
                 Else
@@ -1485,7 +1485,7 @@ PreloadMoreImages:
         
         End If
         
-        PrepareViewport targetImage, FormMain.mainCanvas(0), "multiframe image"
+        Viewport_Engine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0), "multiframe image"
         syncInterfaceToCurrentImage
     
     End If
@@ -2294,7 +2294,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestNewMask
         
     'Render the image to the screen, if requested
-    If Not suspendRedraw Then PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "LoadUndo"
+    If Not suspendRedraw Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "LoadUndo"
     
 End Sub
 

@@ -85,13 +85,13 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     g_AllowViewportRendering = True
         
     'Now fix scrollbars and everything
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitOnScreen"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitOnScreen"
     
     'Re-enable scrolling
     g_AllowViewportRendering = True
     
     'Now fix scrollbars and everything
-    If Not suppressRendering Then PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitImageToViewport"
+    If Not suppressRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitImageToViewport"
     
 End Sub
 
@@ -111,7 +111,7 @@ Public Sub FitOnScreen()
     g_AllowViewportRendering = True
         
     'Now fix scrollbars and everything
-    PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitOnScreen"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitOnScreen"
     
 End Sub
 
@@ -143,7 +143,7 @@ Public Function fullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         If redrawScreen Then
         
             If g_OpenImageCount > 0 Then
-                PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "another image closed"
+                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "another image closed"
             Else
                 FormMain.mainCanvas(0).clearCanvas
             End If
@@ -346,7 +346,7 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         
             If refreshScreen Then
             
-                PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Form received focus"
+                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Form received focus"
         
                 'Reflow any image-window-specific chrome (status bar, rulers, etc)
                 FormMain.mainCanvas(0).fixChromeLayout

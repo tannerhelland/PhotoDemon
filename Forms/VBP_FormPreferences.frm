@@ -3103,7 +3103,7 @@ Private Sub CmdOK_Click()
     FormMain.mainCanvas(0).BackColor = g_CanvasBackground
     
     If g_OpenImageCount > 0 Then
-        PrepareViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
     
     toolbar_ImageTabs.forceRedraw

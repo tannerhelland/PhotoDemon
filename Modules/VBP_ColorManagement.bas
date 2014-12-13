@@ -641,7 +641,7 @@ Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         
         'If an image has been loaded, and it is valid, redraw it now
         If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).loadedSuccessfully Then
-            RenderViewport pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
         'Note that the image tabstrip is also color-managed, so it needs to be redrawn as well

@@ -1,4 +1,4 @@
-Attribute VB_Name = "Viewport_Handler"
+Attribute VB_Name = "Viewport_Engine"
 '***************************************************************************
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright ©2001-2014 by Tanner Helland
@@ -7,9 +7,9 @@ Attribute VB_Name = "Viewport_Handler"
 'Last update: add support for "preserve relative canvas position under cursor while mousewheel zooming"
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
-' - PrepareViewport: for recalculating all viewport variables and controls (done only when the zoom value is changed or a new picture is loaded)
-' - ScrollViewport: when the viewport is scrolled (minimal redrawing is done, since the zoom value hasn't changed)
-' - RenderViewport: perform any final compositing, such as the Selection Tool effect, then draw the viewport on-screen
+' - Viewport_Engine.Stage1_InitializeBuffer: for recalculating all viewport variables and controls (done only when the zoom value is changed or a new picture is loaded)
+' - Viewport_Engine.Stage2_CompositeAllLayers: when the viewport is scrolled (minimal redrawing is done, since the zoom value hasn't changed)
+' - Viewport_Engine.Stage3_CompositeCanvas: perform any final compositing, such as the Selection Tool effect, then draw the viewport on-screen
 '
 'PhotoDemon is intelligent about calling the lowest routine in the pipeline, which helps it render the viewport quickly
 ' regardless of zoom or scroll values.
@@ -47,10 +47,10 @@ Private frontBuffer As pdDIB
 'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
 Private cornerFix As pdDIB
 
-'RenderViewport is the last step in the viewport chain.  (PrepareViewport -> ScrollViewport -> RenderViewport)
-' It can only be executed after both PrepareViewport and ScrollViewport have been run at least once.  It assumes a fully composited backbuffer,
+'Viewport_Engine.Stage3_CompositeCanvas is the last step in the viewport chain.  (Viewport_Engine.Stage1_InitializeBuffer -> Viewport_Engine.Stage2_CompositeAllLayers -> Viewport_Engine.Stage3_CompositeCanvas)
+' It can only be executed after both Viewport_Engine.Stage1_InitializeBuffer and Viewport_Engine.Stage2_CompositeAllLayers have been run at least once.  It assumes a fully composited backbuffer,
 ' which is then copied to the front buffer, and any final composites (such as a selection) are drawn atop that.
-Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
 
     'If no images have been loaded, clear the canvas and exit
     If g_OpenImageCount = 0 Then
@@ -196,9 +196,9 @@ Public Sub RenderViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     
 End Sub
 
-'ScrollViewport is used to update the on-screen image when the scroll bars are used.
+'Stage2_CompositeAllLayers is used to update the on-screen image when the scroll bars are used.
 ' Given how frequently it is used, I've tried to make it as small and fast as possible.
-Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
     
     'If no images have been loaded, clear the canvas and exit
     If g_OpenImageCount = 0 Then
@@ -273,13 +273,13 @@ Public Sub ScrollViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas
     End If
     
     'Pass control to the viewport renderer, which will handle the final compositing
-    RenderViewport srcImage, dstCanvas
+    Stage3_CompositeCanvas srcImage, dstCanvas
     
     If g_DisplayTimingReports Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"
     
 End Sub
 
-'Per its name, PrepareViewport is responsible for preparing a bunch of math related to viewport rendering.  Its duties include:
+'Per its name, Stage1_InitializeBuffer is responsible for preparing a bunch of math related to viewport rendering.  Its duties include:
     '1) Calculating all zoom-related math
     '2) Determining whether scroll bars are required, and if they are, what their max/min values should be
     '3) Canvas offsets, if the image is zoomed out far enough that dead space is present in the viewport.
@@ -297,18 +297,18 @@ End Sub
 'Because the full rendering pipeline must be executed when this function is called, it is considered highly expensive, even though
 ' the math it performs is relatively quick.  To help cut down on overuse of this function (e.g. sloppy pipeline requests), an optional
 ' "reasonForRedraw" parameter is used.  This untranslated string, supplied by the caller, has proven helpful while optimizing.
-' Similarly, if you see a bunch of PrepareViewport requests happening back-to-back in the Debug window, you should investigate,
+' Similarly, if you see a bunch of Stage1_InitializeBuffer requests happening back-to-back in the Debug window, you should investigate,
 ' because such operations are likely hurting performance.
 
 'While this function is primarily concerned with the math required to handle zoom and scroll operations correctly, there are a few
 ' additional parameters that are occasionally necessary.  "Zoom to Coordinate" behavior, used when the mousewheel is applied while
-' over a specific pixel, will pass targetX and targetY parameters to the function.  If present, PrepareViewport will automatically
+' over a specific pixel, will pass targetX and targetY parameters to the function.  If present, Stage1_InitializeBuffer will automatically
 ' set the scroll bar values after its calculations are complete, in a way that preserves the on-screen position of the passed
 ' coordinate.  (Note that it does this as closely as it can, but some zoom changes make this impossible, such as zooming out to a
 ' point where scroll bars are no longer visible).
 
 'As an important follow-up note, two sets of target coordinates must be passed for this capability to work: one set of coordinates
-' in *canvas space*, and one set in *image space*.  Both are required, because PrepareViewport doesn't keep track of past zoom values.
+' in *canvas space*, and one set in *image space*.  Both are required, because Stage1_InitializeBuffer doesn't keep track of past zoom values.
 ' This means that once the viewport's zoom level has been changed (as will likely happen prior to calling this function, by mousewheel),
 ' this function does know what the prior zoom level was - and a single set of coordinates is not enough to maintain image positioning.
 
@@ -317,52 +317,60 @@ End Sub
 ' 2) disable automatic canvas redraws
 ' 3) change the zoom value; this allows the zoom engine to reconstruct conditional values, like "fit to window"
 ' 4) re-enable automatic canvas redraws (this can happen now, or after step 5 - just don't forget to do it!)
-' 5) request a manual redraw via PrepareViewport, and be sure supply the previously cached x/y values
-Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByRef reasonForRedraw As String, Optional ByVal oldXCanvas As Long = 0, Optional ByVal oldYCanvas As Long = 0, Optional ByVal targetXImage As Double = 0, Optional ByVal targetYImage As Double = 0)
-
-    'Don't attempt to resize the scroll bars if g_AllowViewportRendering is disabled. This is used to provide a smoother user experience,
-    ' especially when images are being loaded.
+' 5) request a manual redraw via Stage1_InitializeBuffer, and be sure supply the previously cached x/y values
+Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByRef reasonForRedraw As String, Optional ByVal oldXCanvas As Long = 0, Optional ByVal oldYCanvas As Long = 0, Optional ByVal targetXImage As Double = 0, Optional ByVal targetYImage As Double = 0)
     
-    ' (Detailed explanation: this routine is automatically triggered by the main window's resize notifications.  When new images are loaded,
-    '  the image tabstrip will likely appear, which in turn changes the available viewport space, just like a resize event.  To prevent
-    '  this behavior from triggering multiple PrepareViewport requests, g_AllowViewportRendering is utilized.)
+    
+    On Error GoTo ViewportPipeline_Stage1_Error
+    
+    
+    'This initial stage of the pipeline contains a number of "do not render the viewport at all" checks.
+    
+    'First, and most obvious, is to exit now if the public g_AllowViewportRendering parameter has been forcibly disabled.
+    ' (Detailed explanation: this routine is automatically triggered by the main window's resize notifications.  When new images
+    '  are loaded, the image tabstrip will likely appear, which in turn changes the available viewport space, just like a resize
+    '  event.  To prevent  this behavior from triggering multiple Stage1_InitializeBuffer requests, g_AllowViewportRendering is
+    '  utilized.)
     If Not g_AllowViewportRendering Then Exit Sub
     
-    'Make sure the target canvas is valid
+    'Second, exit if the destination canvas has not been initialized yet; this can happen during program initialization.
     If dstCanvas Is Nothing Then Exit Sub
     
-    'If no images have been loaded, simply clear the canvas and exit
+    'Third, exit if no images have been loaded.  The canvas will take care of rendering a blank viewport.
     If g_OpenImageCount = 0 Then
         FormMain.mainCanvas(0).clearCanvas
         Exit Sub
     End If
     
-    'We will be reference the source pdImage object many times.  To improve performance, cache its ID value
+    'Fourth, exit if the source image is invalid.
+    If srcImage Is Nothing Then Exit Sub
+    
+    'Fifth, if the source image is inactive (e.g. it has been unloaded at some point in the past), do not execute a redraw.
+    ' (For performance reasons, PD does not shrink its primary pdImages() array unless required due to memory pressure.
+    '  Instead, it just deactivates entries by marking the .IsActive property - so that property must be considered
+    '  prior to executing events for an image.)
+    If Not srcImage.IsActive Then Exit Sub
+    
+    
+    'If we made it all the way here, the viewport pipeline needs to be executed.
+    
+    
+    'We will be referencing the source pdImage object many times.  To improve performance, cache its ID value
     Dim curImage As Long
     curImage = srcImage.imageID
     
-    'If a redraw has been requested for this image, but the image is inactive (e.g. it has been unloaded at some point in the past),
-    ' do not execute a redraw.  For performance reasons, PD does not shrink its primary pdImages() array unless required due to
-    ' memory pressure.  Instead, it just deactivates entries by marking the .IsActive property - so that property must be considered
-    ' prior to executing events for an image.
-    If Not srcImage.IsActive Then Exit Sub
-    
-    'Because this routine is time-consuming, I track it carefully to try and minimize how frequently it's called.
+    'Because this routine is time-consuming, I carefully track its usage to try and minimize how frequently it's called.
     ' Feel free to comment out this line if you don't find it helpful.
     Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & curImage & ") "
     
-    'Error-handling really isn't necessary any more, because I've modified the render pipeline to use way less memory than it
-    ' traditionally did.  Despite this, I've left the old error handler, "just in case".
-    On Error GoTo ZoomErrorHandler
-    
-    'This crucial value is the mathematical ratio of the current zoom value: 1 for 100%, 0.5 for 50%, etc.
+    'This crucial value is the mathematical ratio of the current zoom value: 1 for 100%, 0.5 for 50%, 2 for 200%, etc.
     ' We can't generate this automatically, because specialty zoom values (like "fit to window") must be externally generated
-    ' by PD's central zoom handler.
+    ' by PD's zoom handler.
     m_ZoomRatio = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
-    'The fundamental problem this pipeline stage must solve is: how much screen real-estate do we have to work with, and how must
-    ' we fit the image into that real-state.  It quickly becomes complicated because some decisions we make will actually change
-    ' the available real-estate (e.g. enabling a vertical scrollbar reduces horizontal real-estate, requiring a re-calculation
+    'The fundamental problem this first pipeline stage must solve is: how much screen real-estate do we have to work with, and how
+    ' must we fit the image into that real-state.  It quickly becomes complicated because some decisions we make will actually
+    ' change the available real-estate (e.g. enabling a vertical scrollbar reduces horizontal real-estate, requiring a re-calculation
     ' of any horizontal data up to that point).
     
     'Also problematic is the potential of future feature additions, like rulers, that also interfere with our available screen
@@ -382,38 +390,50 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
     m_ImageWidthZoomed = (srcImage.Width * m_ZoomRatio)
     m_ImageHeightZoomed = (srcImage.Height * m_ZoomRatio)
     
-    'Calculate the vertical offset of the viewport.  This changes according to the height of the top-aligned status bar,
-    ' and in the future, it will also change if rulers are visible.
+    'Calculate the vertical offset of the viewport.  While not relevant at present, it will someday be necessary to allow
+    ' for rulers.
     Dim verticalOffset As Long
     verticalOffset = srcImage.imgViewport.getVerticalOffset
     
-    'Grab the form dimensions; these are necessary for rendering the scroll bars
+    'Grab the canvas dimensions; note that these are just thin wrappers to the .ScaleWidth and .ScaleHeight properties
+    ' of the control.
     Dim canvasWidth As Long, canvasHeight As Long
     canvasWidth = dstCanvas.getCanvasWidth
     canvasHeight = dstCanvas.getCanvasHeight - verticalOffset
     
     'These variables will reflect whether or not scroll bars are enabled; this is used rather than the .Enabled property so we
-    ' can defer rendering the scroll bars until the last possible instant (rather than turning them on-and-off mid-subroutine)
+    ' can defer rendering the scroll bars until the last possible instant (rather than turning them on-and-off mid-subroutine).
     Dim hScrollEnabled As Boolean, vScrollEnabled As Boolean
     hScrollEnabled = False
     vScrollEnabled = False
     
-    'Step 1: compare viewport width to zoomed image width
+    'Step 1: compare zoomed image width to canvas width.  If the zoomed image width is larger, we need to enable a horizontal
+    ' scroll bar.  Also, because fractional zoom values are allowed, Int() is used to clamp.
     If Int(m_ImageWidthZoomed) > canvasWidth Then hScrollEnabled = True
     
-    'Step 2: compare viewport height to zoomed image height.  If the horizontal scrollbar has been enabled, factor that into our calculations
-    If (Int(m_ImageHeightZoomed) > canvasHeight) Or (hScrollEnabled And (Int(m_ImageHeightZoomed) > (canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL)))) Then vScrollEnabled = True
+    'Step 2: repeat Step 1, but in the vertical direction.  Note that we must subtract the horizontal scroll bar's height, if
+    ' it was enabled by step 1.
+    If (Int(m_ImageHeightZoomed) > canvasHeight) Then
+        vScrollEnabled = True
+    Else
+        If hScrollEnabled And (Int(m_ImageHeightZoomed) > (canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL))) Then
+            vScrollEnabled = True
+        End If
+    End If
+        
+    'Step 3: one last check on horizontal viewport width; if the vertical scrollbar was enabled by step 2, the horizontal
+    ' viewport width has changed.
+    If vScrollEnabled And (Not hScrollEnabled) Then
+        If (Int(m_ImageWidthZoomed) > (canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL))) Then hScrollEnabled = True
+    End If
     
-    'Step 3: one last check on horizontal viewport width; if the vertical scrollbar was enabled, the horizontal viewport width has changed.
-    If vScrollEnabled And (Not hScrollEnabled) And (Int(m_ImageWidthZoomed) > (canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL))) Then hScrollEnabled = True
+    'We now know which scroll bars need to be enabled, which allows us to finalize the viewport's position and size.
+    ' (Remember that the viewport's position must be changed if either dimension is smaller than the canvas area, as we
+    '  need to center it inside the canvas.)
+    Dim viewportLeft As Double, viewportTop As Double
+    Dim viewportWidth As Double, viewportHeight As Double
     
-    'We now know which scroll bars need to be enabled.  Before calculating scroll bar stuff, however, let's figure out where our viewport will
-    ' be located - on the edge if scroll bars are enabled, or centered in the viewable area if scroll bars are NOT enabled.
-    
-    'Additionally, calculate viewport size - full form size if scroll bars are enabled, full image size (including zoom) if they are not
-    Dim viewportLeft As Long, viewportTop As Long
-    Dim viewportWidth As Long, viewportHeight As Long
-    
+    'These nested If statements basically cover the case of neither or one or both scroll bars being active.
     If hScrollEnabled Then
         viewportLeft = 0
         If Not vScrollEnabled Then
@@ -446,215 +466,211 @@ Public Sub PrepareViewport(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanva
         End If
     End If
     
-    'Now we know 1) which scrollbars are enabled, 2) the position of our viewport, 3) the size of our viewport.  Knowing this, we can now calculate
-    ' the scroll bar values.
+    'Now we know a whole bunch of things:
+    ' 1) which scrollbars, if any, are enabled
+    ' 2) the position of the viewport (image portion of the canvas)
+    ' 3) the size of the viewport.
     
-    'First - if no scroll bars are enabled, draw the viewport and exit.
+    'From these three things, we can now calculate scroll bar maximum values, if necessary.
+    
+    'First, however, let's cover the case of "no scroll bars are enabled."  When that happens, this function's work is
+    ' already complete, so we can advance to the next stage of the pipeline!
     If (Not hScrollEnabled) And (Not vScrollEnabled) Then
     
-        'Reset the scroll bar values so ScrollViewport doesn't assume we want scrolling
+        'Reset the scroll bar values to zero; this allows future pipeline stages to shortcut some calculations
         dstCanvas.setRedrawSuspension True
         dstCanvas.setScrollValue PD_BOTH, 0
         dstCanvas.setRedrawSuspension False
     
-        'Hide the scroll bars if necessary
-        If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then dstCanvas.setScrollVisibility PD_HORIZONTAL, False
-        If dstCanvas.getScrollVisibility(PD_VERTICAL) Then dstCanvas.setScrollVisibility PD_VERTICAL, False
-            
-        'Resize the buffer and store the relevant painting information into this pdImages object
+        'If the scroll bars are currently visible, hide 'em.  Note that the canvas itself will determine whether the
+        ' primary canvas area needs to be moved as a result of this.
+        dstCanvas.setScrollVisibility PD_BOTH, False
+        
+        'Resize the back buffer and store the relevant painting information into the passed pdImages() object.
+        ' (TODO: roll the canvas color over to the central themer.)
         srcImage.backBuffer.createBlank canvasWidth, canvasHeight, 24, g_CanvasBackground
         srcImage.imgViewport.targetLeft = viewportLeft
         srcImage.imgViewport.targetTop = viewportTop
         srcImage.imgViewport.targetWidth = viewportWidth
         srcImage.imgViewport.targetHeight = viewportHeight
         
-        'Pass control to the viewport renderer
-        ScrollViewport srcImage, dstCanvas
+        'Pass control to the next stage of the pipeline
+        Viewport_Engine.Stage2_CompositeAllLayers srcImage, dstCanvas
         
-        Exit Sub
+    
+    'This Else() bracket covers the case of one or both viewport scroll bars being enabled.  Inside this block, we will calculate
+    ' the scrollbar's maximum values, and if zoom-to-position is used, we will also calculate the scrollbar's values.
+    Else
+    
+        Dim newScrollMax As Long
+        Dim newXCanvas As Double, newYCanvas As Double, canvasXDiff As Double, canvasYDiff As Double
         
-    End If
-    
-    
-    Dim newScrollMax As Long
-    Dim newXCanvas As Double, newYCanvas As Double, canvasXDiff As Double, canvasYDiff As Double
-    
-    'If we've reached this point, one or both scroll bars are enabled.  The time has come to calculate their values.
-    
-    'Horizontal scroll bar comes first.
-    If hScrollEnabled Then
-    
-        'If zoomed-in, set the scroll bar range to the number of not visible pixels.
-        If m_ZoomRatio <= 1 Then
-            newScrollMax = srcImage.Width - Int(viewportWidth * g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
-        'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
-        Else
-            newScrollMax = srcImage.Width - Int(viewportWidth / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
-        End If
-        
-        'Apply the new maximum
+        'We are now going to set a bunch of scroll bar properties, all at once.  These changes may cause the scroll bars
+        ' to initiate a pipeline request - to prevent that, we forcibly disable screen refreshes in advance.
         dstCanvas.setRedrawSuspension True
-        dstCanvas.setScrollMax PD_HORIZONTAL, newScrollMax
-        dstCanvas.setRedrawSuspension False
         
-        'If the calling function supplied targetX values, calculate a theoretical new scroll bar value that maintains
-        ' the position of the image, relative to the updated viewport.  (Note: if the calculated value exceeds the range of the
-        ' current or future scroll bar max value, PD's custom scroll bar class will solve the problem automatically.)
-        If oldXCanvas <> 0 Then
-        
-            dstCanvas.setRedrawSuspension True
-        
-            'From the supplied coordinates, we know that image coordinate targetXImage was originally located at position
-            ' oldXCanvas.  Our goal is to make targetXImage *remain* at oldXCanvas position, while accounting for
-            ' any changes made to zoom (and thus to scroll bar max/min values).
+        'Horizontal scroll bar is processed first.
+        If hScrollEnabled Then
             
-            'Start by converting targetXCanvas to the current canvas space.  This will give us a value NewCanvasX, that describes
-            ' where that coordinate lies on the *new* canvas.
-            dstCanvas.setScrollValue PD_HORIZONTAL, 0
-            Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), targetXImage, targetYImage, newXCanvas, newYCanvas, False
-            
-            'Use the difference between newCanvasX and oldCanvasX to determine a new scroll bar value.
-            canvasXDiff = newXCanvas - oldXCanvas
-            
-            'Modify the scrollbar by canvasXDiff amount, while accounting for zoom (as different zoom levels cause scroll bar
-            ' notches to represent varying amounts of pixels)
-            dstCanvas.setScrollValue PD_HORIZONTAL, canvasXDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
-            
-            dstCanvas.setRedrawSuspension False
-        
-        End If
-                        
-        'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
-        If (dstCanvas.getScrollMax(PD_HORIZONTAL) > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
-            dstCanvas.setScrollLargeChange PD_HORIZONTAL, dstCanvas.getScrollMax(PD_HORIZONTAL) \ 16
-        Else
-            dstCanvas.setScrollLargeChange PD_HORIZONTAL, 1
-        End If
-        
-    End If
-    
-    'Same formula, but with width and height swapped for vertical scrolling
-    If vScrollEnabled Then
-    
-        'If zoomed-in, set the scroll bar range to the number of not visible pixels.
-        If m_ZoomRatio <= 1 Then
-            newScrollMax = srcImage.Height - Int(viewportHeight * g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
-        'If zoomed-out, use a modified formula (as there is no reason to scroll at sub-pixel levels.)
-        Else
-            newScrollMax = srcImage.Height - Int(viewportHeight / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
-        End If
-        
-        'Apply the new maximum
-        dstCanvas.setRedrawSuspension True
-        dstCanvas.setScrollMax PD_VERTICAL, newScrollMax
-        dstCanvas.setRedrawSuspension False
-        
-        'If the calling function supplied targetY values, calculate a theoretical new scroll bar value that maintains
-        ' the position of the image, relative to the updated viewport.  (Note: if the calculated value exceeds the range of the
-        ' current or future scroll bar max value, PD's custom scroll bar class will solve the problem automatically.)
-        If oldYCanvas <> 0 Then
-        
-            dstCanvas.setRedrawSuspension True
-        
-            'From the supplied coordinates, we know that image coordinate targetYImage was originally located at position
-            ' oldYCanvas.  Our goal is to make targetYImage *remain* at oldYCanvas position, while accounting for
-            ' any changes made to zoom (and thus to scroll bar max/min values).
-            
-            'Start by converting the old targetYImage to the current canvas space, *with an assumed scroll bar value of zero*.
-            ' This will give us a value NewYCanvas, that describes where that coordinate lies on the *new* canvas.
-            dstCanvas.setScrollValue PD_VERTICAL, 0
-            Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), targetXImage, targetYImage, newXCanvas, newYCanvas, False
-            
-            'Use the difference between newCanvasY and oldCanvasY to determine a new scroll bar value.
-            canvasYDiff = newYCanvas - oldYCanvas
-            
-            'Modify the scrollbar by canvasYDiff amount, while accounting for zoom (as different zoom levels cause scroll bar
-            ' notches to represent varying amounts of pixels)
-            dstCanvas.setScrollValue PD_VERTICAL, canvasYDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
-            
-            dstCanvas.setRedrawSuspension False
-        
-        End If
+            'If zoomed out, set the scroll bar range to the number of not-visible pixels.  This will result in sub-pixel scrolling
+            ' if the scrollbar is clicked-and-held.
+            If m_ZoomRatio <= 1 Then
+                newScrollMax = srcImage.Width - Int(viewportWidth * g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
                 
-        'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new maximum value
-        If (dstCanvas.getScrollMax(PD_VERTICAL) > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
-            dstCanvas.setScrollLargeChange PD_VERTICAL, dstCanvas.getScrollMax(PD_VERTICAL) \ 16
-        Else
-            dstCanvas.setScrollLargeChange PD_VERTICAL, 1
+            'If zoomed-out, we must divide by the zoom factor (instead of multiplying by it).  This allows us to scroll by integer
+            ' pixel values, which is more convenient, especially at massive zoom levels.
+            Else
+                newScrollMax = srcImage.Width - Int(viewportWidth / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
+                
+            End If
+            
+            'Set the new maximum value
+            dstCanvas.setScrollMax PD_HORIZONTAL, newScrollMax
+            
+            'If the calling function supplied a targetX value, we will use that to calculate the theoretical scroll bar value that
+            ' maintains the position of that pixel on the screen.
+            ' (Note: I call the value "theoretical", because it may lie outside the range of the scroll bar.  If this happens, PD's
+            '  custom scroll bar class will automatically bring the value in-bounds.)
+            If oldXCanvas <> 0 Then
+                
+                'From the supplied coordinates, we know that image coordinate targetXImage was originally located at position
+                ' oldXCanvas.  Our goal is to make targetXImage *remain* at oldXCanvas position, while accounting for
+                ' any changes made to zoom (and thus to scroll bar max/min values).
+                
+                'Start by converting targetXCanvas to the current canvas space.  This will give us a value NewCanvasX, that describes
+                ' where that coordinate lies on the *new* canvas.
+                dstCanvas.setScrollValue PD_HORIZONTAL, 0
+                Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), targetXImage, targetYImage, newXCanvas, newYCanvas, False
+                
+                'Use the difference between newCanvasX and oldCanvasX to determine a new scroll bar value.
+                canvasXDiff = newXCanvas - oldXCanvas
+                
+                'Modify the scrollbar by canvasXDiff amount, while accounting for zoom (as different zoom levels cause scroll bar
+                ' notches to represent varying amounts of pixels)
+                dstCanvas.setScrollValue PD_HORIZONTAL, canvasXDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
+                
+            End If
+                            
+            'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new
+            ' maximum value.
+            If (dstCanvas.getScrollMax(PD_HORIZONTAL) > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
+                dstCanvas.setScrollLargeChange PD_HORIZONTAL, dstCanvas.getScrollMax(PD_HORIZONTAL) \ 16
+            Else
+                dstCanvas.setScrollLargeChange PD_HORIZONTAL, 1
+            End If
+            
         End If
         
-    End If
-    
-    'Added to our list of "things we know" is the scroll bar maximum values (and they have already been set).
-    ' As such, the time has come to render everything to the screen.
-    
-    'Horizontal scroll bar gets rendered first...
-    If hScrollEnabled Then
-        dstCanvas.moveScrollBar PD_HORIZONTAL, 0, canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL), viewportWidth, dstCanvas.getScrollHeight(PD_HORIZONTAL)
-        If (Not dstCanvas.getScrollVisibility(PD_HORIZONTAL)) Then dstCanvas.setScrollVisibility PD_HORIZONTAL, True
-    Else
+        'Now repeat all of the above steps, but for the vertical scroll bar.
+        If vScrollEnabled Then
+            
+            If m_ZoomRatio <= 1 Then
+                newScrollMax = srcImage.Height - Int(viewportHeight * g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
+            Else
+                newScrollMax = srcImage.Height - Int(viewportHeight / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
+            End If
+            
+            dstCanvas.setScrollMax PD_VERTICAL, newScrollMax
+            
+            If oldYCanvas <> 0 Then
+                
+                dstCanvas.setScrollValue PD_VERTICAL, 0
+                
+                Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), targetXImage, targetYImage, newXCanvas, newYCanvas, False
+                canvasYDiff = newYCanvas - oldYCanvas
+                dstCanvas.setScrollValue PD_VERTICAL, canvasYDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
+                
+            End If
+            
+            If (dstCanvas.getScrollMax(PD_VERTICAL) > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
+                dstCanvas.setScrollLargeChange PD_VERTICAL, dstCanvas.getScrollMax(PD_VERTICAL) \ 16
+            Else
+                dstCanvas.setScrollLargeChange PD_VERTICAL, 1
+            End If
+            
+        End If
         
-        'Note that we disable automatic canvas redraws prior to changing the scroll bar value; otherwise, the change will
-        ' force a redraw, and we don't want that yet.
-        dstCanvas.setRedrawSuspension True
-        dstCanvas.setScrollValue PD_HORIZONTAL, 0
-        If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then dstCanvas.setScrollVisibility PD_HORIZONTAL, False
+        
+        'At this point, scroll bar max values are now properly set.
+        
+        
+        'It is now time to display the scroll bars, if they aren't displayed already.  As part of this step, we may also need
+        ' to *hide* the scroll bars if they were previously visible, but aren't now.
+        If hScrollEnabled Then
+            dstCanvas.moveScrollBar PD_HORIZONTAL, 0, canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL), viewportWidth, dstCanvas.getScrollHeight(PD_HORIZONTAL)
+            dstCanvas.setScrollVisibility PD_HORIZONTAL, True
+        Else
+            
+            'If the scroll bar is being hidden, set its value to 0.  This allows subsequent pipeline stages to skip some steps.
+            dstCanvas.setScrollValue PD_HORIZONTAL, 0
+            dstCanvas.setScrollVisibility PD_HORIZONTAL, False
+            
+        End If
+        
+        'Repeat the above steps for the vertical scroll bar
+        If vScrollEnabled Then
+            dstCanvas.moveScrollBar PD_VERTICAL, canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL), srcImage.imgViewport.getTopOffset, dstCanvas.getScrollWidth(PD_VERTICAL), viewportHeight
+            dstCanvas.setScrollVisibility PD_VERTICAL, True
+        Else
+            dstCanvas.setScrollValue PD_VERTICAL, 0
+            dstCanvas.setScrollVisibility PD_VERTICAL, False
+        End If
+        
+        
+        'With all major UI elements now positioned and updated, we can re-enable automatic viewport pipeline requests
         dstCanvas.setRedrawSuspension False
         
-    End If
-    
-    'Then vertical scroll bar...
-    If vScrollEnabled Then
-        dstCanvas.moveScrollBar PD_VERTICAL, canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL), srcImage.imgViewport.getTopOffset, dstCanvas.getScrollWidth(PD_VERTICAL), viewportHeight
-        If (Not dstCanvas.getScrollVisibility(PD_VERTICAL)) Then dstCanvas.setScrollVisibility PD_VERTICAL, True
-    Else
-    
-        dstCanvas.setRedrawSuspension True
-        dstCanvas.setScrollValue PD_VERTICAL, 0
-        If dstCanvas.getScrollVisibility(PD_VERTICAL) Then dstCanvas.setScrollVisibility PD_VERTICAL, False
-        dstCanvas.setRedrawSuspension False
+        'This pipeline stage is pretty much complete.  All that's left to do is intializing this pdImage's back buffer to its new size,
+        ' and caching all relevant viewport measurements (as subsequent stages need them).
+        
+        'Prepare the back buffer.  Note that we can shrink it slightly if scroll bars are active.
+        Dim finalCanvasWidth As Long, finalCanvasHeight As Long
+        If vScrollEnabled Then finalCanvasWidth = canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL) Else finalCanvasWidth = canvasWidth
+        If hScrollEnabled Then finalCanvasHeight = canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL) Else finalCanvasHeight = canvasHeight
+        
+        'Testing shows no measurable difference between a 32-bit or 24-bit back buffer.  I am going to try 32-bit for now,
+        ' but you can easily swap 32 for 24 if desired.
+        srcImage.backBuffer.createBlank finalCanvasWidth, finalCanvasHeight, 32, g_CanvasBackground, 255
+        
+        'Cache our viewport position and measurements inside the source object.  Future pipeline stages need these values.
+        srcImage.imgViewport.targetLeft = viewportLeft
+        srcImage.imgViewport.targetTop = viewportTop
+        srcImage.imgViewport.targetWidth = viewportWidth
+        srcImage.imgViewport.targetHeight = viewportHeight
+            
+        'Pass control to the next pipeline stage.
+        Stage2_CompositeAllLayers srcImage, dstCanvas
         
     End If
     
-    'We don't actually render the image here; instead, we prepare the buffer (backBuffer) and store the relevant
-    ' drawing variables to this pdImages object.  ScrollViewport (above) will handle the actual drawing.
-    Dim newVWidth As Long, newVHeight As Long
-    If hScrollEnabled Then newVWidth = viewportWidth Else newVWidth = canvasWidth
-    If vScrollEnabled Then newVHeight = viewportHeight Else newVHeight = canvasHeight
-    newVWidth = canvasWidth
-    newVHeight = canvasHeight
     
-    'Prepare the relevant back buffer
-    srcImage.backBuffer.createBlank newVWidth, newVHeight, 24, g_CanvasBackground
     
-    srcImage.imgViewport.targetLeft = viewportLeft
-    srcImage.imgViewport.targetTop = viewportTop
-    srcImage.imgViewport.targetWidth = viewportWidth
-    srcImage.imgViewport.targetHeight = viewportHeight
-        
-    'Pass control to the viewport renderer (found at the top of this module)
-    ScrollViewport srcImage, dstCanvas
-
+    'This stage of the pipeline has completed successfully!
     Exit Sub
 
-ZoomErrorHandler:
 
-    If Err = 480 Then
-        pdMsgBox "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.", vbExclamation + vbOKOnly, "Out of memory"
-        SetProgBarVal 0
-        releaseProgressBar
-        Message "Operation halted."
-    ElseIf Err = 13 Then
-        Message "Invalid zoom value."
-        Exit Sub
-    Else
-        Message "Viewport rendering paused due to unexpected error (#%1)", Err
-        Exit Sub
-    End If
+
+ViewportPipeline_Stage1_Error:
+
+    Select Case Err.Number
+    
+        'Out of memory
+        Case 480
+            pdMsgBox "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.", vbExclamation + vbOKOnly, "Out of memory"
+            SetProgBarVal 0
+            releaseProgressBar
+            Message "Operation halted."
+            
+        'Anything else.  (Never encountered; failsafe only.)
+        Case Else
+            Message "Viewport rendering paused due to unexpected error (#%1)", Err
+            
+    End Select
 
 End Sub
 
 'When all images have been unloaded, the temporary front buffer can also be erased to keep memory usage as low as possible.
+' While not actually part of the viewport pipeline, I find it intuitive to store this function here.
 Public Sub eraseViewportBuffers()
     If Not frontBuffer Is Nothing Then
         frontBuffer.eraseDIB
