@@ -15,6 +15,20 @@ Public Type RECTL
     Bottom As Long
 End Type
 
+Public Type RECTF_RB
+    Left As Single
+    Top As Single
+    Right As Single
+    Bottom As Single
+End Type
+
+Public Type RECTF
+    Left As Single
+    Top As Single
+    Width As Single
+    Height As Single
+End Type
+
 'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form.
 ' In theory, adding new tools should be as easy as changing these numbers.  All tool-related code is tied into these
 ' constants, so any changes here should automatically propagate throughout the software.  (In practice, be sure to
@@ -281,13 +295,6 @@ End Enum
 #If False Then
     Private Const PDRUID_CHANNEL_RED = 0, PDRUID_CHANNEL_GREEN = 1, PDRUID_CHANNEL_BLUE = 2, PDRUID_CHANNEL_RGB = 3
 #End If
-
-Public Type RECTF
-    Left As Single
-    Top As Single
-    Width As Single
-    Height As Single
-End Type
 
 'Metadata formats.  These are important when writing metadata to a file that is being saved to a different format
 ' from its original state (e.g. JPEG to PNG, which requires complicated metadata conversions).

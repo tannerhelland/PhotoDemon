@@ -200,42 +200,50 @@ End Sub
 ' Given how frequently it is used, I've tried to make it as small and fast as possible.
 Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
     
-    'If no images have been loaded, clear the canvas and exit
-    If g_OpenImageCount = 0 Then
-        FormMain.mainCanvas(0).clearCanvas
-        Exit Sub
-    End If
     
-    'Make sure the target form is valid
+    'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
+    
+    'First, and most obvious, is to exit now if the public g_AllowViewportRendering parameter has been forcibly disabled.
+    If Not g_AllowViewportRendering Then Exit Sub
+    
+    'I think we can successfully ignore this check, as the previous stage handles it, but I'm leaving it here "just in case"
+    'If g_OpenImageCount = 0 Then
+    '    FormMain.mainCanvas(0).clearCanvas
+    '    Exit Sub
+    'End If
+    
+    'Make sure the target canvas is valid
     If dstCanvas Is Nothing Then Exit Sub
     
-    'If the image associated with this form is inactive, ignore this request
+    'If the pdImage object associated with this form is inactive, ignore this request
     If Not srcImage.IsActive Then Exit Sub
     
     'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
-    ' but disabled for BETA and PRODUCTION builds; see the
+    ' but disabled for BETA and PRODUCTION builds; see the LoadTheProgram() function for details.
     Dim startTime As Double
     If g_DisplayTimingReports Then startTime = Timer
     
-    'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
-    'm_ZoomRatio = g_Zoom.getZoomValue(srcImage.currentZoomValue)
-
+    'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared
+    
     'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient.
     ' Because rounding errors may occur with cerain image sizes, apply a special check when zoom = 100.
     If srcImage.currentZoomValue = g_Zoom.getZoom100Index Then
         srcWidth = srcImage.imgViewport.targetWidth
         srcHeight = srcImage.imgViewport.targetHeight
     Else
-        srcWidth = Int(srcImage.imgViewport.targetWidth / m_ZoomRatio)
-        srcHeight = Int(srcImage.imgViewport.targetHeight / m_ZoomRatio)
+        srcWidth = srcImage.imgViewport.targetWidth / m_ZoomRatio
+        srcHeight = srcImage.imgViewport.targetHeight / m_ZoomRatio
     End If
         
     'These variables are the offset, as determined by the scroll bar values
     If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then srcX = dstCanvas.getScrollValue(PD_HORIZONTAL) Else srcX = 0
     If dstCanvas.getScrollVisibility(PD_VERTICAL) Then srcY = dstCanvas.getScrollValue(PD_VERTICAL) Else srcY = 0
         
-    'Before rendering the image, apply a checkerboard pattern to the target image's back buffer
-    Drawing.fillDIBWithAlphaCheckerboard srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
+    'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
+    ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
+    With srcImage.imgViewport
+        GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.backBuffer, .targetLeft, .targetTop, .targetWidth, .targetHeight, g_CheckerboardPattern
+    End With
     
     'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
     ' in the future... but for now, we leave it, just in case.
@@ -253,28 +261,15 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
             srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
         End If
         
-    'This is an emergency fallback, only.  PD probably won't work at all without GDI+ - consider yourself warned!
+    'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
     Else
-    
         Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
-        
-        'Because we have no support for dynamic resizing of layers without GDI+, we must retrieve a full copy of the composited image.
-        Dim compositedImage As pdDIB
-        Set compositedImage = New pdDIB
-        srcImage.getCompositedImage compositedImage
-    
-        'Create a blank DIB in the parent pdImages object.  (For performance reasons, we create this image at the size of the viewport.)
-        srcImage.alphaFixDIB.createBlank srcWidth, srcHeight, 32
-        BitBlt srcImage.alphaFixDIB.getDIBDC, 0, 0, srcWidth, srcHeight, compositedImage.getDIBDC, srcX, srcY, vbSrcCopy
-        
-        'Paint that chopped-out DIB to the target image's back buffer
-        srcImage.alphaFixDIB.alphaBlendToDC srcImage.backBuffer.getDIBDC, 255, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight
-        
     End If
     
     'Pass control to the viewport renderer, which will handle the final compositing
     Stage3_CompositeCanvas srcImage, dstCanvas
     
+    'If timing reports are enabled, we report them after the rest of the pipeline has finished.
     If g_DisplayTimingReports Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"
     
 End Sub

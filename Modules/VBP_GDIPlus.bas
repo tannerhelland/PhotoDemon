@@ -390,6 +390,7 @@ Private Declare Function GdipDrawLine Lib "gdiplus" (ByVal mGraphics As Long, By
 Private Declare Function GdipDrawRectangle Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single) As Long
 Private Declare Function GdipDrawEllipse Lib "gdiplus" (ByVal mGraphics As Long, ByVal mPen As Long, ByVal x As Single, ByVal y As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
 Private Declare Function GdipFillEllipseI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
+Private Declare Function GdipFillRectangle Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Single, ByVal mY As Single, ByVal mWidth As Single, ByVal mHeight As Single) As Long
 Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
 Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal mBrushMode As GDIFillMode, mPath As Long) As Long
 Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal mPath As Long) As Long
@@ -447,9 +448,11 @@ Private Declare Function GdipFillPolygon2I Lib "gdiplus" (ByVal mGraphics As Lon
 Private Declare Function GdipCreateRegionRect Lib "gdiplus" (ByRef srcRect As RECTF, ByRef hRegion As Long) As Long
 Private Declare Function GdipCreateRegionPath Lib "gdiplus" (ByVal hPath As Long, hRegion As Long) As Long
 Private Declare Function GdipIsVisibleRegionPoint Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphics As Long, ByRef boolResult As Long) As Long
+Private Declare Function GdipIsVisibleRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal hGraphics As Long, ByRef dstResult As Long) As Long
 Private Declare Function GdipCombineRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByRef newRect As RECTF, ByVal useCombineMode As CombineMode) As Long
 Private Declare Function GdipGetRegionBounds Lib "gdiplus" (ByVal hRegion As Long, ByVal mGraphics As Long, ByRef dstRect As RECTF) As Long
 Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) As Long
+Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal iWrapMode As WrapMode, ByRef hTexture As Long) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
@@ -594,6 +597,11 @@ Public g_GDIPlusToken As Long
 
 'GDI+ v1.1 allows for advanced fx work.  When we initialize GDI+, check the availability of version 1.1.
 Public g_GDIPlusFXAvailable As Boolean
+
+'Some GDI+ functions require world transformation data.  This dummy graphics container is used to host any such transformations.
+' It is created when GDI+ is initialized, and destroyed when GDI+ is released.  To be a good citizen, please undo any world transforms
+' before a function releases.  This ensures that subsequent functions are not messed up.
+Private m_TransformDIB As pdDIB, m_TransformGraphics As Long
 
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
@@ -1149,16 +1157,17 @@ End Function
 ' in a single pass.
 Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255) As Boolean
 
-    'Create a GDI+ copy of the image and request matching AA behavior
+    'Create a GDI+ copy of the image and request AA
     Dim iGraphics As Long
     GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
     
-    'Create a solid fill brush
+    'Create a solid fill brush from the source image
     Dim iBrush As Long
     GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), iBrush
     
     'Apply the brush
-    GdipFillRectangleI iGraphics, iBrush, x1, y1, xWidth, yHeight
+    GdipFillRectangle iGraphics, iBrush, x1, y1, xWidth, yHeight
     
     'Release all created objects
     GdipDeleteBrush iBrush
@@ -1166,6 +1175,31 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
     
     GDIPlusFillDIBRect = True
 
+End Function
+
+'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
+Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Long, ByVal y1 As Long, ByVal bltWidth As Long, ByVal bltHeight As Long, ByRef srcDIB As pdDIB) As Boolean
+    
+    'Create a GDI+ copy of the image and request AA
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
+    
+    'Create a texture fill brush from the source image
+    Dim srcBitmap As Long, iBrush As Long
+    getGdipBitmapHandleFromDIB srcBitmap, srcDIB
+    GdipCreateTexture srcBitmap, WrapModeTile, iBrush
+    
+    'Apply the brush
+    GdipFillRectangle iGraphics, iBrush, x1, y1, bltWidth, bltHeight
+    
+    'Release all created objects
+    GdipDeleteBrush iBrush
+    GdipDisposeImage srcBitmap
+    GdipDeleteGraphics iGraphics
+    
+    GDIPlusFillDIBRect_Pattern = True
+    
 End Function
 
 'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
@@ -1947,6 +1981,46 @@ Public Function getGDIPlusRegionFromPoints(ByVal numOfPoints As Long, ByVal ptrF
 
 End Function
 
+Public Function IntersectRectF(ByRef dstRect As RECTF, ByRef srcRect1 As RECTF, ByRef srcRect2 As RECTF) As Boolean
+
+    'First, let's check to see if the rects intersect.  If they do not, we don't have to return an intersection.
+    Dim hRegion As Long
+    GdipCreateRegionRect srcRect1, hRegion
+    
+    Dim intersectResult As Long
+    GdipIsVisibleRegionRect hRegion, srcRect2.Left, srcRect2.Top, srcRect2.Width, srcRect2.Height, 0, intersectResult
+    
+    If intersectResult = 0 Then
+    
+        'The rects do not overlap.  Return a blank rect.
+        With dstRect
+            .Left = 0
+            .Top = 0
+            .Width = 0
+            .Height = 0
+        End With
+        
+        IntersectRectF = False
+    
+    Else
+    
+        'The rects overlap.  Calculate the intersection.
+        GdipCombineRegionRect hRegion, srcRect2, CombineModeIntersect
+        
+        'Retrieve the new region's boundaries into the target rect.  Note that a dummy container is required, which supplies world transforms
+        ' (if any).
+        GdipGetRegionBounds hRegion, m_TransformGraphics, dstRect
+        
+        'Release the region
+        GdipDeleteRegion hRegion
+        
+        'Return TRUE
+        IntersectRectF = True
+    
+    End If
+
+End Function
+
 'Given an arbitrary array of points, use GDI+ to find a bounding rect for the region created from the closed shape formed by the points.
 ' This function is self-managing, meaning it will delete any GDI+ objects it generates.
 Public Function getGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single, Optional ByVal penWidth As Single = 1#, Optional ByVal customLinecap As LineCap = 0) As RECTF
@@ -2065,6 +2139,13 @@ Public Function isGDIPlusAvailable() As Boolean
         isGDIPlusAvailable = True
         g_GDIPlusAvailable = True
         
+        'Next, we're going to create a dummy graphics container.  This is useful for GDI+ functions that require world transformation data.
+        Set m_TransformDIB = New pdDIB
+        m_TransformDIB.createBlank 8, 8, 32, 0, 0
+        GdipCreateFromHDC m_TransformDIB.getDIBDC, m_TransformGraphics
+        
+        'Note that these dummy objects are released when GDI+ terminates.
+        
         'Next, check to see if v1.1 is available.  This allows for advanced fx work.
         Dim hMod As Long
         hMod = LoadLibrary("gdiplus.dll")
@@ -2081,7 +2162,13 @@ End Function
 
 'At shutdown, this function must be called to release our GDI+ instance
 Public Function releaseGDIPlus()
+
+    'Release any dummy containers we have created
+    GdipDeleteGraphics m_TransformGraphics
+    Set m_TransformDIB = Nothing
+
     GdiplusShutdown g_GDIPlusToken
+    
 End Function
 
 'Thanks to Carles P.V. for providing the following four functions, which are used as part of GDI+ image saving.

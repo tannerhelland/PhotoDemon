@@ -519,24 +519,24 @@ End Sub
 '
 'This function is large, complicated, and unfortunately tricky, as we must resize and composite each layer in turn.  Optimizing this
 ' function will be a huge project going forward, but we must optimize carefully if we want the viewport to work smoothly.
-Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal interpolationType As InterpolationMode)
+Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As InterpolationMode)
     
     'Before doing anything else, fill two rects with the coordinates we were passed.  We will use these rects to calculate the
     ' boundary regions for all individual layers.
-    Dim dstViewportRect As RECT, srcImageRect As RECT
+    Dim dstViewportRect As RECTF, srcImageRect As RECTF
     
     With dstViewportRect
         .Left = dstX
         .Top = dstY
-        .Right = dstX + dstWidth
-        .Bottom = dstY + dstHeight
+        .Width = dstWidth
+        .Height = dstHeight
     End With
     
     With srcImageRect
         .Left = srcX
         .Top = srcY
-        .Right = srcX + srcWidth
-        .Bottom = srcY + srcHeight
+        .Width = srcWidth
+        .Height = srcHeight
     End With
         
     'A few other things to note before we begin:
@@ -545,10 +545,10 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     ' - The difference between the destination and source sizes can be used to infer a zoom value.  Note that aspect
     '    ratio will *always* be preserved by this function.
     ' - At present, GDI+ is used for all resizing.  Any other function with a StretchBlt-like interface could also
-    '    be used, but GDI+ is currently the fastest method we have.
+    '    be used, but GDI+ is currently the fastest method we have access to.
     
     'Check for the special case of 100% zoom (e.g. the source rect and dest rect are the same size).  When this happens, we can
-    ' shortcut our rendering by skipping the resize step entirely.
+    ' shortcut certain parts of the compositing process.
     Dim isRectZoomless As Boolean
     
     If (dstWidth = srcWidth) And (dstHeight = srcHeight) Then
@@ -559,6 +559,7 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     
     'Start by creating a temporary DIB the size of the destination image (viewport).  All compositing will be done to this DIB,
     ' and as the final step, we will AlphaBlend the finished image onto dstDIB.
+    ' TODO: make this temporary layer static, so we don't have to constantly recreate it.
     Dim dstLayer As pdLayer
     Set dstLayer = New pdLayer
     dstLayer.layerDIB.createBlank dstWidth, dstHeight, 32
@@ -577,8 +578,8 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     
     'Start by seeing if the base layer intersects with the viewport at all.  We solve this by finding the intersection rect of
     ' the current source rectangle, and the base layer.  If successful, this will return their intersection, as well as a
-    ' non-zero function return value.
-    Dim layerRect As RECT, intRectSrc As RECT, dstRect As RECT, srcRect As RECT
+    ' Boolean indicating whether the layers intersect.
+    Dim layerRect As RECTF, intRectSrc As RECTF, dstRect As RECTF, srcRect As RECTF
     
     Dim tmpLayerRef As pdLayer
     
@@ -591,29 +592,45 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         If tmpLayerRef.getLayerVisibility Then
             
             'Retrieve a rect for this layer, relative to the full-size composite image
-            Layer_Handler.fillRectForLayer tmpLayerRef, layerRect, True
+            Layer_Handler.fillRectForLayerF tmpLayerRef, layerRect, True
             
-            If IntersectRect(intRectSrc, srcImageRect, layerRect) <> 0 Then
-            
-                'The base layer intersects with the viewport rect, and the intersecting area is now contained within intRectSrc.
-                ' We need to convert that into a relevant dstRect, so that we have both source and destination values for our
-                ' resize function.
-                getDstRectFromSrcRect dstRect, intRectSrc, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight
+            'Check for an intersection between the target rect (passed to this function) and the base layer rect.
+            If GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRect) Then
+                
+                'The composite operation works similar to BitBlt, by calculating a destination rectangle and a source rectangle.
+                ' We know that these two rectangles define the same rectangle of the image, which allows us to infer zoom as well.
+                
+                'Now that we know the region of this layer that corresponds to the requested destination rect, we will use the
+                ' getDstRectFromSrcRectF() function to translate our already calculated eight bare destination and source values
+                ' (x/y/width/height) and retrieve a usable destination rect for this layer, defining the destination region of
+                ' the target covered by this layer.
+                getDstRectFromSrcRectF dstRect, intRectSrc, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight
                 
                 'dstRect and intRectSrc now contain StretchBlt-compatible destination and source rectangles RELATIVE TO THE FULL IMAGE.
-                ' Because the layer is unlikely to be the same size as the full image, we must come up with a final source rect that
-                ' represents the source area, relative to the layer's DIB (which is probably smaller than the full image).
-                'As an additional headache, we must also factor in the layer's current x/y modifiers, which are used if the user
-                ' has dynamically resized the image on the canvas.
+                
+                'Because the current layer may not be the same size as the full image, we must perform one final translation: a source
+                ' rect that represents the source area, relative to the current layer's DIB.  This step is important if the layer has
+                ' had non-destructive resizing applied, because this is when we apply that calculation.
                 With srcRect
                     .Left = (intRectSrc.Left - tmpLayerRef.getLayerOffsetX) * (1 / tmpLayerRef.getLayerCanvasXModifier)
-                    .Right = (intRectSrc.Right - tmpLayerRef.getLayerOffsetX) * (1 / tmpLayerRef.getLayerCanvasXModifier)
+                    .Width = intRectSrc.Width * (1 / tmpLayerRef.getLayerCanvasXModifier)
                     .Top = (intRectSrc.Top - tmpLayerRef.getLayerOffsetY) * (1 / tmpLayerRef.getLayerCanvasYModifier)
-                    .Bottom = (intRectSrc.Bottom - tmpLayerRef.getLayerOffsetY) * (1 / tmpLayerRef.getLayerCanvasYModifier)
+                    .Height = intRectSrc.Height * (1 / tmpLayerRef.getLayerCanvasYModifier)
                 End With
                 
-                'We now have everything we need to create a resized version of this layer!  Grab it now.
-                tmpDIB.createBlank dstRect.Right - dstRect.Left, dstRect.Bottom - dstRect.Top, 32, 0
+                'With all coordinate math complete, we now proceed with the actual compositing!
+                
+                'Two conditions require us to create a temporary DIB prior to actually compositing this layer:
+                ' 1) Non-destructive effects
+                ' 2) Non-standard blend modes
+                
+                'These conditions are unpleasant, because additional per-pixel processing is required, instead of a basic alpha-blending
+                ' that we can let GDI+ automatically handle.
+                
+                'Check for such conditions now.
+                
+                ' (TODO: skip the temporary DIB step if non-destructive effects are not being used.)
+                tmpDIB.createBlank dstRect.Width, dstRect.Height, 32, 0
                 
                 'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
                 ' we can completely skip the resize step and simply use BitBlt (way faster)
@@ -640,7 +657,7 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                             Dim tmpNDFXDIB As pdDIB
                             Set tmpNDFXDIB = New pdDIB
                             
-                            tmpNDFXDIB.createBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 32, 0
+                            tmpNDFXDIB.createBlank srcRect.Width, srcRect.Height, 32, 0
                             BitBlt tmpNDFXDIB.getDIBDC, 0, 0, tmpNDFXDIB.getDIBWidth, tmpNDFXDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
                             
                             'Apply the non-destructive FX to the smaller source DIB; this is faster than applying it after the resize action,
@@ -662,9 +679,9 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                         
                             'Check for non-destructive resizing.  If present, switch to GDI+; otherwise, StretchBlt is sufficient.
                             If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
-                                StretchBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, vbSrcCopy
+                                StretchBlt tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, vbSrcCopy
                             Else
-                                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, InterpolationModeNearestNeighbor
+                                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, InterpolationModeNearestNeighbor
                             End If
                             
                         End If
@@ -674,7 +691,7 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                     Else
                         
                         'If the user has requested MAX PERFORMANCE rendering, override the requested interpolation type with nearest neighbor
-                        GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, interpolationType
+                        GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, interpolationType
                         
                         'Apply non-destructive FX now
                         If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, tmpDIB
@@ -1003,6 +1020,30 @@ Private Function getDstRectFromSrcRect(ByRef dstRect As RECT, ByRef srcRect As R
         .Right = dstX + (srcRectF.Width * dstWidth)
         .Top = dstY + (srcRectF.Top * dstHeight)
         .Bottom = dstY + (srcRectF.Height * dstHeight)
+    End With
+
+End Function
+
+'Given StretchBlt-like parameters, create a destination rect that reflects the transformation of a source rect
+' from the source coordinate space to the destination coordinate space.
+Private Function getDstRectFromSrcRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single)
+    
+    'To make our calculations easier, we're going to convert the source rectangle coordinates to a [0, 1] scale, relative to the total source area.
+    Dim tmpRectF As RECTF
+    
+    With tmpRectF
+        .Left = (srcRect.Left - srcX) / srcWidth
+        .Width = srcRect.Width / srcWidth
+        .Top = (srcRect.Top - srcY) / srcHeight
+        .Height = srcRect.Height / srcHeight
+    End With
+    
+    'Using those source values, fill the destination rect
+    With dstRect
+        .Left = dstX + (tmpRectF.Left * dstWidth)
+        .Width = tmpRectF.Width * dstWidth
+        .Top = dstY + (tmpRectF.Top * dstHeight)
+        .Height = tmpRectF.Height * dstHeight
     End With
 
 End Function
