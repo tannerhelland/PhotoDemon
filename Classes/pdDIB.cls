@@ -1151,49 +1151,38 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     If dstHeight > 0 Then dstAspect = dstWidth / dstHeight Else dstAspect = 1
         
     Dim dWidth As Long, dHeight As Long, previewX As Long, previewY As Long
+    convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
     
     If srcAspect > dstAspect Then
-        dWidth = dstWidth
-        dHeight = CDbl(srcHeight / srcWidth) * dWidth
         previewY = CLng((dstHeight - dHeight) / 2)
         previewX = 0
-        
     Else
-        dHeight = dstHeight
-        dWidth = (srcAspect * dHeight)
         previewX = CLng((dstWidth - dWidth) / 2)
         previewY = 0
-        
     End If
     
-    'Create a temporary DIB to house the stretched image
+    'Create a temporary DIB to house the stretched image.  This is required for proper GDI-based color management.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    tmpDIB.createBlank dWidth, dHeight
-    
-    'If the target area is smaller than the DIB, request halftoning
-    If (dstPicture.ScaleWidth < dibWidth) Or (dstPicture.ScaleHeight < dibHeight) Then
-        SetStretchBltMode tmpDIB.getDIBDC, STRETCHBLT_HALFTONE
-    Else
-        SetStretchBltMode tmpDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
-    End If
+    tmpDIB.createBlank dWidth, dHeight, 24
     
     'For 24bpp images, simply copy over the current image data
     If dibColorDepth = 24 Then
+    
+        'If the target area is smaller than the DIB, request halftoning
+        If (dstPicture.ScaleWidth < dibWidth) Or (dstPicture.ScaleHeight < dibHeight) Then
+            SetStretchBltMode tmpDIB.getDIBDC, STRETCHBLT_HALFTONE
+        Else
+            SetStretchBltMode tmpDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
+        End If
+        
         StretchBlt tmpDIB.getDIBDC, 0, 0, dWidth, dHeight, dibDC, 0, 0, dibWidth, dibHeight, vbSrcCopy
     
-    'For 32bpp images, we must first apply a background checkerboard pattern, then alphablend the shrunken
-    ' image onto it.  (Note that GDI+ is used to perform the resize, as StretchBlt can't handle RGBA data properly.)
+    'For 32bpp images, we must first apply a background checkerboard pattern, then alpha-blend the resized
+    ' image onto it.
     Else
-    
-        Drawing.fillDIBWithAlphaCheckerboard tmpDIB, 0, 0, dWidth, dHeight
-        
-        Dim gdipResizeDIB As pdDIB
-        Set gdipResizeDIB = New pdDIB
-        gdipResizeDIB.createBlank dWidth, dHeight, 32
-        GDIPlusResizeDIB gdipResizeDIB, 0, 0, dWidth, dHeight, Me, 0, 0, dibWidth, dibHeight, InterpolationModeHighQualityBicubic
-        gdipResizeDIB.alphaBlendToDC tmpDIB.getDIBDC
-        
+        GDI_Plus.GDIPlusFillDIBRect_Pattern tmpDIB, 0, 0, dWidth, dHeight, g_CheckerboardPattern
+        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, dWidth, dHeight, Me, 0, 0, dibWidth, dibHeight
     End If
     
     'Activate color management for the destination picture box
@@ -1203,13 +1192,13 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
     'Render the image to the picture box
     BitBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
     
+    Set tmpDIB = Nothing
+    
     If dstPicture.AutoRedraw Then
         dstPicture.Picture = dstPicture.Image
         dstPicture.Refresh
     End If
     
-    Set tmpDIB = Nothing
-
 End Sub
 
 'Load a DIB's header and image information from file.  If the file is compressed, it will automatically be decompressed.
@@ -1864,5 +1853,22 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Lon
     End If
     
     AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, dibWidth, newWidth), IIf(newHeight = 0, dibHeight, newHeight), dibDC, 0, 0, dibWidth, dibHeight, bfParams
+    
+End Sub
+
+'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects premultiplied image data
+Public Sub alphaBlendToDCEx(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, Optional ByVal customAlpha As Long = 255)
+    
+    Dim bfParams As Long
+    
+    If dibColorDepth = 32 Then
+        'Use the image's current alpha channel, and blend it with the supplied customAlpha value
+        bfParams = customAlpha * &H10000 Or &H1000000
+    Else
+        'Ignore alpha channel, and only use the supplied customAlpha value
+        bfParams = (customAlpha * &H10000)
+    End If
+    
+    AlphaBlend dstDC, dstX, dstY, dstWidth, dstHeight, dibDC, srcX, srcY, srcWidth, srcHeight, bfParams
     
 End Sub

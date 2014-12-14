@@ -242,8 +242,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
     ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
     With srcImage.imgViewport
-        GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.backBuffer, .targetLeft, .targetTop, .targetWidth - 1, .targetHeight - 1, g_CheckerboardPattern
-        Debug.Print "Fill GDI+ calc: ", .targetLeft, .targetTop, .targetWidth, .targetHeight
+        GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.backBuffer, .targetLeft, .targetTop, .targetWidth, .targetHeight, g_CheckerboardPattern
     End With
     
     'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
@@ -261,7 +260,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         Else
             srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
         End If
-        
+                
     'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
     Else
         Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"

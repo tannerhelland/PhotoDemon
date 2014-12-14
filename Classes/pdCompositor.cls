@@ -295,13 +295,14 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                     
                     'Top layer is opaque, so premultiplication is irrelevant
                     
-                    'TODO!  Fix compositing so these checks aren't necessary
-                    If newR > 1 Then newR = 1
-                    If newG > 1 Then newG = 1
-                    If newB > 1 Then newB = 1
-                    If newR < 0 Then newR = 0
-                    If newG < 0 Then newG = 0
-                    If newB < 0 Then newB = 0
+                    'NOTE!  I've tried to write the compositor so that additional bounds checks are not needed.
+                    ' If errors ever occur in the future, you can start debugging by enabling the checks below.
+                        'If newR > 1 Then newR = 1
+                        'If newG > 1 Then newG = 1
+                        'If newB > 1 Then newB = 1
+                        'If newR < 0 Then newR = 0
+                        'If newG < 0 Then newG = 0
+                        'If newB < 0 Then newB = 0
                     
                     tImageData(QuickX + 2, y) = (newR * 255)
                     tImageData(QuickX + 1, y) = (newG * 255)
@@ -315,10 +316,11 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                     newG = (newG * bottomA) + (topG * (1 - bottomA))
                     newB = (newB * bottomA) + (topB * (1 - bottomA))
                     
-                    'TODO!  Fix compositing so these checks aren't necessary
-                    If newR > 1 Then newR = 1
-                    If newG > 1 Then newG = 1
-                    If newB > 1 Then newB = 1
+                    'NOTE!  I've tried to write the compositor so that additional bounds checks are not needed.
+                    ' If errors ever occur in the future, you can start debugging by enabling the checks below.
+                    'If newR > 1 Then newR = 1
+                    'If newG > 1 Then newG = 1
+                    'If newB > 1 Then newB = 1
                     
                     'Copy the new values into the bottom layer, and premultiply them
                     tImageData(QuickX + 2, y) = (newR * 255) * topA
@@ -727,9 +729,21 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                 'This is a simple layer, with no non-destructive effects or weird blend modes.  Composite it instantly, without using
                 ' a temporary placeholder layer.
                 Else
-                
-                    'GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, InterpolationModeNearestNeighbor
-                    GDIPlus_StretchBlt dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100
+                    
+                    'If the rect is zoomless, it means we don't have to perform subpixel positioning.  GDI's AlphaBlend is thus perfectly
+                    ' acceptable, and it will be much faster (5-10x) than GDI+.
+                    If isRectZoomless Then
+                        tmpLayerRef.layerDIB.alphaBlendToDCEx dstLayer.layerDIB.getDIBDC, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity * 2.55
+                    Else
+                    
+                        'When zoomed out, nearest neighbor is preferred
+                        If srcWidth < dstWidth Then
+                            GDIPlus_StretchBlt dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100, InterpolationModeNearestNeighbor
+                        Else
+                            GDIPlus_StretchBlt dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100, interpolationType
+                        End If
+                        
+                    End If
                     
                 End If
                 
@@ -741,11 +755,14 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         
     Next i
     
-    'With all layers successfully blended onto tmpLayer's DIB, we can now perform a final alphaBlend onto dstDIB
-    'dstLayer.layerDIB.alphaBlendToDC dstDIB.getDIBDC, 255, dstX, dstY
-    GDIPlus_StretchBlt dstDIB, dstX, dstY, dstWidth, dstHeight, dstLayer.layerDIB, dstX - Int(dstX), dstY - Int(dstY), dstWidth, dstHeight, 1, InterpolationModeHighQualityBicubic
-    Debug.Print "Final GDI+ calc: ", dstX, dstY, dstWidth, dstHeight
-    
+    'With all layers successfully blended onto tmpLayer's DIB, we can now perform a final alphaBlend onto dstDIB.
+    ' If we are at 100% zoom, subpixel positioning is not relevant, so we use GDI's AlphaBlend for a huge performance boost
+    If isRectZoomless Then
+        dstLayer.layerDIB.alphaBlendToDCEx dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, dstWidth, dstHeight
+    Else
+        GDIPlus_StretchBlt dstDIB, dstX, dstY, dstWidth, dstHeight, dstLayer.layerDIB, dstX - Int(dstX), dstY - Int(dstY), dstWidth, dstHeight, 1, InterpolationModeHighQualityBicubic
+    End If
+        
     'Release the temp layer's hold on the destination DIB
     Set dstLayer.layerDIB = Nothing
     Set tmpDIB = Nothing
@@ -1059,6 +1076,10 @@ Private Function getDstRectFromSrcRectF(ByRef dstRect As RECTF, ByRef srcRect As
     
     'To make our calculations easier, we're going to convert the source rectangle coordinates to a [0, 1] scale, relative to the total source area.
     Dim tmpRectF As RECTF
+    
+    If (srcWidth = 0) Or (srcHeight = 0) Then
+        Exit Function
+    End If
     
     With tmpRectF
         .Left = (srcRect.Left - srcX) / srcWidth

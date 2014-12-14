@@ -129,7 +129,7 @@ Private Type ImageCodecInfo
     formatDescription As Long
     FilenameExtension As Long
     MimeType          As Long
-    flags             As Long
+    Flags             As Long
     Version           As Long
     SigCount          As Long
     SigSize           As Long
@@ -1215,7 +1215,7 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     Dim iGraphics As Long
     GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
     GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
-    GdipSetCompositingQuality iGraphics, CompositingQualityHighQuality
+    GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
     GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
         
     'Create a texture fill brush from the source image
@@ -2212,7 +2212,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         'GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0&, 0&
         
         'To improve performance, explicitly request high-speed alpha compositing operation
-        GdipSetCompositingQuality iGraphics, CompositingQualityHighQuality
+        GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
         
         'PixelOffsetMode doesn't seem to affect rendering speed more than < 5%, but I did notice a slight
         ' improvement from explicitly requesting HighQuality mode - so why not leave it?

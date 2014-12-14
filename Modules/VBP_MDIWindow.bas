@@ -86,10 +86,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
         
     'Now fix scrollbars and everything
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitOnScreen"
-    
-    'Re-enable scrolling
-    g_AllowViewportRendering = True
-    
+        
     'Now fix scrollbars and everything
     If Not suppressRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitImageToViewport"
     
