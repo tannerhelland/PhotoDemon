@@ -628,9 +628,9 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                 ' rect that represents the source area, relative to the current layer's DIB.  This step is important if the layer has
                 ' had non-destructive resizing applied, because this is when we apply that calculation.
                 With srcRect
-                    .Left = (intRectSrc.Left - tmpLayerRef.getLayerOffsetX) * (1 / tmpLayerRef.getLayerCanvasXModifier)
+                    .Left = (intRectSrc.Left - CSng(tmpLayerRef.getLayerOffsetX)) * (1 / tmpLayerRef.getLayerCanvasXModifier)
                     .Width = intRectSrc.Width * (1 / tmpLayerRef.getLayerCanvasXModifier)
-                    .Top = (intRectSrc.Top - tmpLayerRef.getLayerOffsetY) * (1 / tmpLayerRef.getLayerCanvasYModifier)
+                    .Top = (intRectSrc.Top - CSng(tmpLayerRef.getLayerOffsetY)) * (1 / tmpLayerRef.getLayerCanvasYModifier)
                     .Height = intRectSrc.Height * (1 / tmpLayerRef.getLayerCanvasYModifier)
                 End With
                 
@@ -732,17 +732,33 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                     
                     'If the rect is zoomless, it means we don't have to perform subpixel positioning.  GDI's AlphaBlend is thus perfectly
                     ' acceptable, and it will be much faster (5-10x) than GDI+.
-                    If isRectZoomless Then
+                    If isRectZoomless And (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
+                        
+                        'AlphaBlend is very picky about invalid width/height values.  Make sure the source rect is valid.
+                        ' (It may be ever-so-slightly off due to rounding issues during all the floating-point math we perform.)
+                        If srcRect.Width > tmpLayerRef.layerDIB.getDIBWidth Then srcRect.Width = tmpLayerRef.layerDIB.getDIBWidth
+                        If srcRect.Height > tmpLayerRef.layerDIB.getDIBHeight Then srcRect.Height = tmpLayerRef.layerDIB.getDIBHeight
                         tmpLayerRef.layerDIB.alphaBlendToDCEx dstLayer.layerDIB.getDIBDC, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity * 2.55
+                        
                     Else
-                    
+                        
+                        If srcRect.Width > tmpLayerRef.layerDIB.getDIBWidth Then srcRect.Width = tmpLayerRef.layerDIB.getDIBWidth
+                        If srcRect.Height > tmpLayerRef.layerDIB.getDIBHeight Then srcRect.Height = tmpLayerRef.layerDIB.getDIBHeight
+                        
                         'When zoomed out, nearest neighbor is preferred
                         If srcWidth < dstWidth Then
                             GDIPlus_StretchBlt dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100, InterpolationModeNearestNeighbor
                         Else
+                            
+                            'GDI+ demonstrates a lot of weird behavior.  It seems fairly clear that parts of the library are half-baked.
+                            ' Their prefiltering algorithm works reasonably well on photos, but on images with sharp-defined edges
+                            ' (such as text), it causes weird alignment issues.  Unfiltered bilinear resampling does not experience this
+                            ' issue.  I'm leaving this comment here because once we have text layers, I want to conditionally enable
+                            ' bilinear resampling for them.  This will keep text properly aligned, without hurting photographic layers.
                             GDIPlus_StretchBlt dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100, interpolationType
+                            
                         End If
-                        
+                                                
                     End If
                     
                 End If
@@ -760,7 +776,7 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     If isRectZoomless Then
         dstLayer.layerDIB.alphaBlendToDCEx dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, dstWidth, dstHeight
     Else
-        GDIPlus_StretchBlt dstDIB, dstX, dstY, dstWidth, dstHeight, dstLayer.layerDIB, dstX - Int(dstX), dstY - Int(dstY), dstWidth, dstHeight, 1, InterpolationModeHighQualityBicubic
+        GDIPlus_StretchBlt dstDIB, Int(dstX), Int(dstY), dstWidth + Int(dstX - Int(dstX) + 0.99), dstHeight + Int(dstY - Int(dstY) + 0.99), dstLayer.layerDIB, 0, 0, dstWidth, dstHeight, 1, InterpolationModeHighQualityBicubic
     End If
         
     'Release the temp layer's hold on the destination DIB

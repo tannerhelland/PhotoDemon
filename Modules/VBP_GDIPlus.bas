@@ -2203,28 +2203,23 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     
     'Request the smoothing mode we were passed
     If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
-    
+        
         'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
         ' algorithm from drawing semi-transparent lines randomly around image borders.
         ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
         Dim imgAttributesHandle As Long
         GdipCreateImageAttributes imgAttributesHandle
-        'GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0&, 0&
         
-        'To improve performance, explicitly request high-speed alpha compositing operation
+        'To improve performance, explicitly request high-speed (aka linear) alpha compositing operation, and standard
+        ' pixel offsets (on pixel borders, instead of center points)
+        GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0, 0
         GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
+        GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighSpeed
         
-        'PixelOffsetMode doesn't seem to affect rendering speed more than < 5%, but I did notice a slight
-        ' improvement from explicitly requesting HighQuality mode - so why not leave it?
-        GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
-        
-        'Check for modified alpha
+        'If modified alpha is requested, pass the new value to this image container
         If newAlpha <> 1 Then
-            
-            'Alpha has been modified.  Request a new alpha mode for the container.
             m_AttributesMatrix(3, 3) = newAlpha
             GdipSetImageAttributesColorMatrix imgAttributesHandle, ColorAdjustTypeBitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, ColorMatrixFlagsDefault
-            
         End If
     
         'Perform the resize

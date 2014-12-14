@@ -315,7 +315,11 @@ End Function
 Public Function getLayerByIndex(ByVal layerIndex As Long) As pdLayer
     
     'As a failsafe, validate the incoming layer index
-    If layerIndex > UBound(imgLayers) Then layerIndex = UBound(imgLayers)
+    If layerIndex > UBound(imgLayers) Then
+        layerIndex = UBound(imgLayers)
+        Debug.Print "WARNING! Invalid layerIndex requested (" & layerIndex & ":" & UBound(imgLayers) & ")"
+    End If
+    
     If layerIndex < 0 Then layerIndex = 0
     
     'Return the requested layer
