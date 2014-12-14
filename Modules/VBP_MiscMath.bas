@@ -213,6 +213,22 @@ Public Function Acos(ByVal x As Double) As Double
     Acos = Atan2(Sqr(1 - x * x), x)
 End Function
 
+'Return the maximum of two floating point values
+Public Function Max2Float_Single(f1 As Single, f2 As Single) As Single
+    If f1 > f2 Then
+        Max2Float_Single = f1
+    Else
+        Max2Float_Single = f2
+    End If
+End Function
+
+Public Function Min2Float_Single(f1 As Single, f2 As Single) As Single
+    If f1 < f2 Then
+        Min2Float_Single = f1
+    Else
+        Min2Float_Single = f2
+    End If
+End Function
 
 'Return the maximum of three floating point values
 Public Function Max3Float(rR As Double, rG As Double, rB As Double) As Double

@@ -129,7 +129,7 @@ Private Type ImageCodecInfo
     formatDescription As Long
     FilenameExtension As Long
     MimeType          As Long
-    Flags             As Long
+    flags             As Long
     Version           As Long
     SigCount          As Long
     SigSize           As Long
@@ -258,6 +258,31 @@ End Enum
 
 #If False Then
     Const DashStyleSolid = 0, DashStyleDash = 1, DashStyleDot = 2, DashStyleDashDot = 3, DashStyleDashDotDot = 4, DashStyleCustom = 5
+#End If
+
+Private Enum ColorAdjustType
+    ColorAdjustTypeDefault = 0
+    ColorAdjustTypeBitmap = 1
+    ColorAdjustTypeBrush = 2
+    ColorAdjustTypePen = 3
+    ColorAdjustTypeText = 4
+    ColorAdjustTypeCount = 5
+    ColorAdjustTypeAny = 6
+End Enum
+
+#If False Then
+    Const ColorAdjustTypeDefault = 0, ColorAdjustTypeBitmap = 1, ColorAdjustTypeBrush = 2, ColorAdjustTypePen = 3, ColorAdjustTypeText = 4
+    Const ColorAdjustTypeCount = 5, ColorAdjustTypeAny = 6
+#End If
+
+Private Enum ColorMatrixFlags
+    ColorMatrixFlagsDefault = 0
+    ColorMatrixFlagsSkipGrays = 1
+    ColorMatrixFlagsAltGray = 2
+End Enum
+
+#If False Then
+    Const ColorMatrixFlagsDefault = 0, ColorMatrixFlagsSkipGrays = 1, ColorMatrixFlagsAltGray = 2
 #End If
 
 ' Dash cap constants
@@ -453,6 +478,8 @@ Private Declare Function GdipCombineRegionRect Lib "gdiplus" (ByVal hRegion As L
 Private Declare Function GdipGetRegionBounds Lib "gdiplus" (ByVal hRegion As Long, ByVal mGraphics As Long, ByRef dstRect As RECTF) As Long
 Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) As Long
 Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal iWrapMode As WrapMode, ByRef hTexture As Long) As Long
+Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType, ByVal enableFlag As Long, ByVal colorMatrixPointer As Long, ByVal grayMatrixPointer As Long, ByVal extraFlags As ColorMatrixFlags) As Long
+Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
@@ -602,6 +629,10 @@ Public g_GDIPlusFXAvailable As Boolean
 ' It is created when GDI+ is initialized, and destroyed when GDI+ is released.  To be a good citizen, please undo any world transforms
 ' before a function releases.  This ensures that subsequent functions are not messed up.
 Private m_TransformDIB As pdDIB, m_TransformGraphics As Long
+
+'To modify opacity in GDI+, an image attributes matrix is used.  Rather than recreating one every time an alpha operation is required,
+' we simply create a default identity matrix at initialization, then re-use it as necessary.
+Private m_AttributesMatrix() As Single
 
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
@@ -1178,13 +1209,15 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
 End Function
 
 'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
-Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Long, ByVal y1 As Long, ByVal bltWidth As Long, ByVal bltHeight As Long, ByRef srcDIB As pdDIB) As Boolean
+Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal bltWidth As Single, ByVal bltHeight As Single, ByRef srcDIB As pdDIB) As Boolean
     
     'Create a GDI+ copy of the image and request AA
     Dim iGraphics As Long
     GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
     GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
-    
+    GdipSetCompositingQuality iGraphics, CompositingQualityHighQuality
+    GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
+        
     'Create a texture fill brush from the source image
     Dim srcBitmap As Long, iBrush As Long
     getGdipBitmapHandleFromDIB srcBitmap, srcDIB
@@ -1981,43 +2014,65 @@ Public Function getGDIPlusRegionFromPoints(ByVal numOfPoints As Long, ByVal ptrF
 
 End Function
 
+'I'm not sure whether a pure GDI+ solution or a manual solution is faster, but because the manual solution guarantees the
+' smallest possible rect (unlike GDI+), I'm going with it for now.
 Public Function IntersectRectF(ByRef dstRect As RECTF, ByRef srcRect1 As RECTF, ByRef srcRect2 As RECTF) As Boolean
 
-    'First, let's check to see if the rects intersect.  If they do not, we don't have to return an intersection.
-    Dim hRegion As Long
-    GdipCreateRegionRect srcRect1, hRegion
+    With dstRect
     
-    Dim intersectResult As Long
-    GdipIsVisibleRegionRect hRegion, srcRect2.Left, srcRect2.Top, srcRect2.Width, srcRect2.Height, 0, intersectResult
+        .Left = Max2Float_Single(srcRect1.Left, srcRect2.Left)
+        .Width = Min2Float_Single(srcRect1.Left + srcRect1.Width, srcRect2.Left + srcRect2.Width)
+        .Top = Max2Float_Single(srcRect1.Top, srcRect2.Top)
+        .Height = Min2Float_Single(srcRect1.Top + srcRect1.Height, srcRect2.Top + srcRect2.Height)
+
+        If (.Width >= .Left) And (.Height >= .Top) Then
+            .Width = .Width - .Left
+            .Height = .Height - .Top
+            IntersectRectF = True
+        Else
+            IntersectRectF = False
+        End If
     
-    If intersectResult = 0 Then
-    
-        'The rects do not overlap.  Return a blank rect.
-        With dstRect
-            .Left = 0
-            .Top = 0
-            .Width = 0
-            .Height = 0
-        End With
-        
-        IntersectRectF = False
-    
-    Else
-    
-        'The rects overlap.  Calculate the intersection.
-        GdipCombineRegionRect hRegion, srcRect2, CombineModeIntersect
-        
-        'Retrieve the new region's boundaries into the target rect.  Note that a dummy container is required, which supplies world transforms
-        ' (if any).
-        GdipGetRegionBounds hRegion, m_TransformGraphics, dstRect
-        
-        'Release the region
-        GdipDeleteRegion hRegion
-        
-        'Return TRUE
-        IntersectRectF = True
-    
-    End If
+    End With
+
+
+'    'PURE GDI+ SOLUTION FOLLOWS
+
+'    'First, let's check to see if the rects intersect.  If they do not, we don't have to return an intersection.
+'    Dim hRegion As Long
+'    GdipCreateRegionRect srcRect1, hRegion
+'
+'    Dim intersectResult As Long
+'    GdipIsVisibleRegionRect hRegion, srcRect2.Left, srcRect2.Top, srcRect2.Width, srcRect2.Height, 0, intersectResult
+'
+'    If intersectResult = 0 Then
+'
+'        'The rects do not overlap.  Return a blank rect.
+'        With dstRect
+'            .Left = 0
+'            .Top = 0
+'            .Width = 0
+'            .Height = 0
+'        End With
+'
+'        IntersectRectF = False
+'
+'    Else
+'
+'        'The rects overlap.  Calculate the intersection.
+'        GdipCombineRegionRect hRegion, srcRect2, CombineModeIntersect
+'
+'        'Retrieve the new region's boundaries into the target rect.  Note that a dummy container is required, which supplies world transforms
+'        ' (if any).
+'        GdipGetRegionBounds hRegion, m_TransformGraphics, dstRect
+'
+'        'Release the region
+'        GdipDeleteRegion hRegion
+'
+'        'Return TRUE
+'        IntersectRectF = True
+'
+'    End If
 
 End Function
 
@@ -2124,6 +2179,76 @@ Public Function isPointInGDIPlusRegion(ByVal srcX As Single, ByVal srcY As Singl
     
 End Function
 
+'Nearly identical to StretchBlt, but using GDI+ so we can:
+' 1) support fractional source/dest/width/height
+' 2) apply variable opacity
+' 3) control stretch mode directly inside the call
+Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As InterpolationMode = InterpolationModeHighQualityBicubic)
+
+    'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
+    ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
+    ' have timing reports sent to the debug window.
+    'Dim profileTime As Double
+    'profileTime = Timer
+    
+    'Create a GDI+ graphics object that points to the destination DIB's DC
+    Dim iGraphics As Long, tBitmap As Long
+    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    
+    'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
+    ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
+    getGdipBitmapHandleFromDIB tBitmap, srcDIB
+    
+    'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
+    
+    'Request the smoothing mode we were passed
+    If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
+    
+        'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
+        ' algorithm from drawing semi-transparent lines randomly around image borders.
+        ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
+        Dim imgAttributesHandle As Long
+        GdipCreateImageAttributes imgAttributesHandle
+        'GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0&, 0&
+        
+        'To improve performance, explicitly request high-speed alpha compositing operation
+        GdipSetCompositingQuality iGraphics, CompositingQualityHighQuality
+        
+        'PixelOffsetMode doesn't seem to affect rendering speed more than < 5%, but I did notice a slight
+        ' improvement from explicitly requesting HighQuality mode - so why not leave it?
+        GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
+        
+        'Check for modified alpha
+        If newAlpha <> 1 Then
+            
+            'Alpha has been modified.  Request a new alpha mode for the container.
+            m_AttributesMatrix(3, 3) = newAlpha
+            GdipSetImageAttributesColorMatrix imgAttributesHandle, ColorAdjustTypeBitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, ColorMatrixFlagsDefault
+            
+        End If
+    
+        'Perform the resize
+        GdipDrawImageRectRect iGraphics, tBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, UnitPixel, imgAttributesHandle
+        
+        'Release our image attributes object
+        GdipDisposeImageAttributes imgAttributesHandle
+        
+        'Reset alpha in the master identity matrix
+        If newAlpha <> 1 Then m_AttributesMatrix(3, 3) = 1
+        
+    End If
+    
+    'Release both the destination graphics object and the source bitmap object
+    GdipDeleteGraphics iGraphics
+    GdipDisposeImage tBitmap
+    
+    'Uncomment the line below to receive timing reports
+    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    
+    
+End Sub
+
+
 'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.
 Public Function isGDIPlusAvailable() As Boolean
 
@@ -2145,6 +2270,14 @@ Public Function isGDIPlusAvailable() As Boolean
         GdipCreateFromHDC m_TransformDIB.getDIBDC, m_TransformGraphics
         
         'Note that these dummy objects are released when GDI+ terminates.
+        
+        'Next, create a default identity matrix for image attributes.
+        ReDim m_AttributesMatrix(0 To 4, 0 To 4) As Single
+        m_AttributesMatrix(0, 0) = 1
+        m_AttributesMatrix(1, 1) = 1
+        m_AttributesMatrix(2, 2) = 1
+        m_AttributesMatrix(3, 3) = 1
+        m_AttributesMatrix(4, 4) = 1
         
         'Next, check to see if v1.1 is available.  This allows for advanced fx work.
         Dim hMod As Long
