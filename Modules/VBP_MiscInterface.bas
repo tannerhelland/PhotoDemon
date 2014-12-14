@@ -1462,7 +1462,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
             'Display the message
             If (Not curMainFormState) And (Not g_ModalDialogActive) Then FormMain.Enabled = True
             FormMain.mainCanvas(0).displayCanvasMessage newString
-            Replacement_DoEvents FormMain.mainCanvas(0).hWnd
+            If (Not curMainFormState) Then Replacement_DoEvents FormMain.mainCanvas(0).hWnd
             
             'Restore original form state (only relevant if we had to change state to display the message)
             If (Not curMainFormState) And (Not g_ModalDialogActive) Then
