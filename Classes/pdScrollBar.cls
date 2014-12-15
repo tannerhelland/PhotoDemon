@@ -247,11 +247,11 @@ Public Property Get Enabled() As Boolean
     Enabled = m_Enabled
 End Property
 
-Public Property Let Enabled(newValue As Boolean)
+Public Property Let Enabled(NewValue As Boolean)
 
-    m_Enabled = newValue
+    m_Enabled = NewValue
 
-    If newValue Then
+    If NewValue Then
         EnableScrollBar m_ScrollHwnd, SB_CTL, ESB_ENABLE_BOTH
     Else
         EnableScrollBar m_ScrollHwnd, SB_CTL, ESB_DISABLE_BOTH
@@ -264,13 +264,13 @@ Public Property Get Value() As Long
     Value = m_Value
 End Property
 
-Public Property Let Value(newValue As Long)
+Public Property Let Value(NewValue As Long)
 
     'Check range
-    If newValue < m_Min Then newValue = m_Min
-    If newValue > m_Max Then newValue = m_Max
+    If NewValue < m_Min Then NewValue = m_Min
+    If NewValue > m_Max Then NewValue = m_Max
 
-    m_Value = newValue
+    m_Value = NewValue
     
     'Update the scroll bar as well
     Dim scrollData As SCROLLINFO
@@ -278,7 +278,7 @@ Public Property Let Value(newValue As Long)
     With scrollData
         .cbSize = Len(scrollData)
         .fMask = SIF_POS
-        .nPos = newValue
+        .nPos = NewValue
     End With
     
     SetScrollInfo m_ScrollHwnd, SB_CTL, scrollData, True
@@ -293,12 +293,15 @@ Public Property Get Min() As Long
     Min = m_Min
 End Property
 
-Public Property Let Min(newValue As Long)
+Public Property Let Min(NewValue As Long)
 
     'Check range
-    If newValue > m_Max Then newValue = m_Max - 1
+    If NewValue > m_Max Then
+        Debug.Print "WARNING! Invalid scroll bar minimum value requested!"
+        NewValue = m_Max - 1
+    End If
     
-    m_Min = newValue
+    m_Min = NewValue
     
     'Similarly, check to make sure our current value is not less than the new minimum
     Dim forcedToChangeValue As Boolean
@@ -332,12 +335,15 @@ Public Property Get Max() As Long
     Max = m_Max
 End Property
 
-Public Property Let Max(newValue As Long)
+Public Property Let Max(NewValue As Long)
 
     'Check range
-    If newValue < m_Min Then newValue = m_Min + 1
+    If NewValue < m_Min Then
+        Debug.Print "WARNING! Invalid scroll bar maximum value requested!"
+        NewValue = m_Min + 1
+    End If
     
-    m_Max = newValue
+    m_Max = NewValue
     
     'Similarly, check to make sure our current value is not more than the new maximum
     Dim forcedToChangeValue As Boolean
@@ -371,8 +377,8 @@ Public Property Get LargeChange() As Long
     LargeChange = m_LargeChange
 End Property
 
-Public Property Let LargeChange(newValue As Long)
-    m_LargeChange = newValue
+Public Property Let LargeChange(NewValue As Long)
+    m_LargeChange = NewValue
 End Property
 
 'INITIALIZE class

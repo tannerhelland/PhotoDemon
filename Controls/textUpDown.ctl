@@ -253,12 +253,12 @@ Public Property Let Min(ByVal NewValue As Double)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    If g_IsProgramRunning Then vsPrimary.Max = newScrollLimit
+    If Not (vsPrimary Is Nothing) Then vsPrimary.Max = newScrollLimit
     
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
         controlVal = controlMin
-        If g_IsProgramRunning Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
+        If Not (vsPrimary Is Nothing) Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -282,13 +282,13 @@ Public Property Let Max(ByVal NewValue As Double)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    If g_IsProgramRunning Then vsPrimary.Min = newScrollLimit
+    If Not (vsPrimary Is Nothing) Then vsPrimary.Min = newScrollLimit
     
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
         
         controlVal = controlMax
-        If g_IsProgramRunning Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
+        If Not (vsPrimary Is Nothing) Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
@@ -315,7 +315,7 @@ Public Property Let SigDigits(ByVal NewValue As Long)
     
     'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
     ' it automatically.
-    If g_IsProgramRunning Then
+    If Not (vsPrimary Is Nothing) Then
         vsPrimary.Max = newMax
         vsPrimary.Min = newMin
     End If
@@ -399,9 +399,9 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         FontSize = .ReadProperty("FontSize", 10)
         ForeColor = .ReadProperty("ForeColor", &H404040)
-        Min = .ReadProperty("Min", 0)
-        Max = .ReadProperty("Max", 10)
         SigDigits = .ReadProperty("SigDigits", 0)
+        Max = .ReadProperty("Max", 10)
+        Min = .ReadProperty("Min", 0)
         Value = .ReadProperty("Value", 0)
     End With
         

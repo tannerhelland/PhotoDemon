@@ -486,13 +486,13 @@ Public Property Let Value(ByVal NewValue As Double)
                 
                 'The text box contains valid numerical data.  If it matches the current control value, skip the refresh step.
                 If StrComp(getFormattedStringValue(tudPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then
-                    tudPrimary.Value = controlVal
+                    tudPrimary.Value = CStr(controlVal)
                 End If
             
             'The text box is currently in an error state.  Copy the new text into place without a duplication check.
             Else
             
-                tudPrimary.Value = controlVal
+                tudPrimary.Value = CStr(controlVal)
             
             End If
             
@@ -688,9 +688,9 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         FontSize = .ReadProperty("FontSize", 10)
         ForeColor = .ReadProperty("ForeColor", &H404040)
-        Min = .ReadProperty("Min", 0)
-        Max = .ReadProperty("Max", 10)
         SigDigits = .ReadProperty("SigDigits", 0)
+        Max = .ReadProperty("Max", 10)
+        Min = .ReadProperty("Min", 0)
         SliderTrackStyle = .ReadProperty("SliderTrackStyle", DefaultStyle)
         Value = .ReadProperty("Value", 0)
         GradientColorLeft = .ReadProperty("GradientColorLeft", RGB(0, 0, 0))
@@ -748,7 +748,7 @@ Private Sub UserControl_Show()
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360) Then redrawInternalGradientDIB
-        
+    
     redrawSlider
         
 End Sub
