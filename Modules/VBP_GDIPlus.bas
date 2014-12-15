@@ -1190,12 +1190,18 @@ End Function
 
 'Use GDI+ to fill a DIB with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full DIB alpha
 ' in a single pass.
-Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver) As Boolean
+Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request AA
     Dim iGraphics As Long
     GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
-    GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
+    
+    If useAA Then
+        GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
+    Else
+        GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    End If
+    
     GdipSetCompositingMode iGraphics, dstFillMode
     
     'Create a solid fill brush from the source image
