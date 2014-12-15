@@ -773,6 +773,9 @@ Public Sub deactivateImage()
     'Release the viewport renderer
     If Not (imgViewport Is Nothing) Then Set imgViewport = Nothing
     
+    'Release the compositor
+    If Not (imgCompositor Is Nothing) Then Set imgCompositor = Nothing
+    
     'It doesn't make a big difference, but we can also empty out this image's String-type variables to save a bit of space.
     originalFileName = ""
     originalFileNameAndExtension = ""
