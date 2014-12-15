@@ -311,7 +311,7 @@ Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Lon
     
     'Red, green, and blue variables for each gradient color
     Dim rLeft As Long, gLeft As Long, bLeft As Long
-    Dim rRight As Long, gRight As Long, bRight As Long
+    Dim rRight As Long, gRight As Long, Bright As Long
     
     'Extract the red, green, and blue values from the gradient colors (which were passed as Longs)
     rLeft = ExtractR(colorLeft)
@@ -319,7 +319,7 @@ Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Lon
     bLeft = ExtractB(colorLeft)
     rRight = ExtractR(colorRight)
     gRight = ExtractG(colorRight)
-    bRight = ExtractB(colorRight)
+    Bright = ExtractB(colorRight)
     
     'Calculate a width for the gradient area
     Dim gradWidth As Long
@@ -345,7 +345,7 @@ Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Lon
         'Calculate blendd RGB values for this position
         newR = BlendColors(rLeft, rRight, blendRatio)
         newG = BlendColors(gLeft, gRight, blendRatio)
-        newB = BlendColors(bLeft, bRight, blendRatio)
+        newB = BlendColors(bLeft, Bright, blendRatio)
         
         'Draw a vertical line at this position, using the calculated color
         If alphaMatters Then
@@ -559,6 +559,31 @@ Public Sub getCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT
 
 End Sub
 
+'Same as above, but using floating-point values
+Public Sub getCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As RECTF, Optional ByVal useCanvasModifiers As Boolean = False)
+
+    Dim tmpX As Double, tmpY As Double
+    
+    With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
+        
+        'Start with the top-left corner
+        convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX, .getLayerOffsetY, tmpX, tmpY
+        dstRect.Left = tmpX
+        dstRect.Top = tmpY
+        
+        'End with the bottom-right corner
+        If useCanvasModifiers Then
+            convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth * .getLayerCanvasXModifier, .getLayerOffsetY + .layerDIB.getDIBHeight * .getLayerCanvasYModifier, tmpX, tmpY
+        Else
+            convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth, .getLayerOffsetY + .layerDIB.getDIBHeight, tmpX, tmpY
+        End If
+        dstRect.Width = tmpX - dstRect.Left
+        dstRect.Height = tmpY - dstRect.Top
+        
+    End With
+
+End Sub
+
 'On the current viewport, render lines around the active layer
 Public Sub drawLayerBoundaries(ByVal layerIndex As Long)
 
@@ -609,8 +634,8 @@ End Sub
 Public Sub drawLayerNodes(ByVal layerIndex As Long)
 
     'Start by filling a rect with the current layer boundaries, but translated to the canvas coordinate system
-    Dim layerCanvasRect As RECT
-    getCanvasRectForLayer layerIndex, layerCanvasRect, True
+    Dim layerCanvasRect As RECTF
+    getCanvasRectForLayerF layerIndex, layerCanvasRect, True
     
     'Draw transform nodes around the layer
     Dim circRadius As Long
@@ -623,10 +648,12 @@ Public Sub drawLayerNodes(ByVal layerIndex As Long)
     Dim dstDC As Long
     dstDC = FormMain.mainCanvas(0).hDC
     
-    'Corner circles first
-    GDIPlusDrawCanvasCircle dstDC, layerCanvasRect.Left, layerCanvasRect.Top, circRadius, circAlpha
-    GDIPlusDrawCanvasCircle dstDC, layerCanvasRect.Right, layerCanvasRect.Top, circRadius, circAlpha
-    GDIPlusDrawCanvasCircle dstDC, layerCanvasRect.Right, layerCanvasRect.Bottom, circRadius, circAlpha
-    GDIPlusDrawCanvasCircle dstDC, layerCanvasRect.Left, layerCanvasRect.Bottom, circRadius, circAlpha
+    'Use GDI+ to render four corner circles
+    With layerCanvasRect
+        GDIPlusDrawCanvasCircle dstDC, .Left, .Top, circRadius, circAlpha
+        GDIPlusDrawCanvasCircle dstDC, .Left + .Width, .Top, circRadius, circAlpha
+        GDIPlusDrawCanvasCircle dstDC, .Left + .Width, .Top + .Height, circRadius, circAlpha
+        GDIPlusDrawCanvasCircle dstDC, .Left, .Top + .Height, circRadius, circAlpha
+    End With
 
 End Sub
