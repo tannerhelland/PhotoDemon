@@ -115,6 +115,7 @@ Private Const STRETCHBLT_HALFTONE As Long = 4
 
 'SafeArray API functions
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
+Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 
 'DIB API functions
@@ -1072,7 +1073,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
 End Function
 
 'This will effectively reset everything related to this DIB, including all image data. Use cautiously!
-Public Function eraseDIB()
+Public Sub eraseDIB()
 
     'If we have image data, clear it out
     If dibDC <> 0 Then
@@ -1101,7 +1102,19 @@ Public Function eraseDIB()
     dibWidth = 0
     dibHeight = 0
     
-End Function
+End Sub
+
+'Maintain the DIB's dimensions, but reset all bytes to 0.  This is done using FillMemory for maximum performance.
+Public Sub resetDIB()
+
+    'Retrieve a pointer to the DIB array and the array's current size
+    Dim tmpDibPointer As Long, tmpDibSize As Long
+    retrieveDIBPointerAndSize tmpDibPointer, tmpDibSize
+    
+    'Erase everything
+    FillMemory tmpDibPointer, tmpDibSize, 0
+
+End Sub
 
 'INITIALIZE class
 Private Sub Class_Initialize()

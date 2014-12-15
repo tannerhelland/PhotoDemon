@@ -1216,3 +1216,8 @@ Public Function estimateRAMUsage() As Long
     estimateRAMUsage = estimateRAMUsage * 1.1
 
 End Function
+
+Private Sub Class_Terminate()
+    Set layerDIB = Nothing
+    Set layerThumbnail = Nothing
+End Sub

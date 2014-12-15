@@ -478,7 +478,7 @@ Private Declare Function GdipCombineRegionRect Lib "gdiplus" (ByVal hRegion As L
 Private Declare Function GdipGetRegionBounds Lib "gdiplus" (ByVal hRegion As Long, ByVal mGraphics As Long, ByRef dstRect As RECTF) As Long
 Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) As Long
 Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal iWrapMode As WrapMode, ByRef hTexture As Long) As Long
-Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType, ByVal enableFlag As Long, ByVal colorMatrixPointer As Long, ByVal grayMatrixPointer As Long, ByVal extraFlags As ColorMatrixFlags) As Long
+Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType, ByVal EnableFlag As Long, ByVal colorMatrixPointer As Long, ByVal grayMatrixPointer As Long, ByVal extraFlags As ColorMatrixFlags) As Long
 Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
 
 'Transforms
@@ -528,10 +528,14 @@ End Enum
 #End If
 
 'Alpha compositing options; note that Over will apply alpha blending, while Copy will not
-Private Enum CompositingMode
+Public Enum CompositingMode
    CompositingModeSourceOver = 0
    CompositingModeSourceCopy = 1
 End Enum
+
+#If False Then
+    Const CompositingModeSourceOver = 0, CompositingModeSourceCopy = 1
+#End If
 
 'Alpha compositing qualities, which in turn affect how carefully GDI+ will blend the pixels.  Use with caution!
 Public Enum CompositingQuality
@@ -1186,12 +1190,13 @@ End Function
 
 'Use GDI+ to fill a DIB with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full DIB alpha
 ' in a single pass.
-Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255) As Boolean
+Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver) As Boolean
 
     'Create a GDI+ copy of the image and request AA
     Dim iGraphics As Long
     GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
     GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
+    GdipSetCompositingMode iGraphics, dstFillMode
     
     'Create a solid fill brush from the source image
     Dim iBrush As Long
