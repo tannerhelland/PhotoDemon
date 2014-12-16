@@ -1650,6 +1650,10 @@ Public Declare Function FreeImage_ConvertToFloat Lib "FreeImage.dll" Alias "_Fre
 Public Declare Function FreeImage_ConvertToRGBF Lib "FreeImage.dll" Alias "_FreeImage_ConvertToRGBF@4" ( _
            ByVal BITMAP As Long) As Long
 
+'Manually patched by Tanner:
+Public Declare Function FreeImage_ConvertToRGBAF Lib "FreeImage.dll" Alias "_FreeImage_ConvertToRGBAF@4" ( _
+           ByVal BITMAP As Long) As Long
+
 Public Declare Function FreeImage_ConvertToUINT16 Lib "FreeImage.dll" Alias "_FreeImage_ConvertToUINT16@4" ( _
            ByVal BITMAP As Long) As Long
 

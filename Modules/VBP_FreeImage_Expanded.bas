@@ -910,7 +910,11 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
                 
                 'In the future, a transparency-friendly conversion may become available.  For now, however, transparency
                 ' is sacrificed as part of the conversion function (as FreeImage does not provide an RGBAF cast).
-                rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
+                If fi_DataType = FIT_RGBF Then
+                    rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
+                Else
+                    rgbfHandle = FreeImage_ConvertToRGBAF(fi_Handle)
+                End If
                 
                 If rgbfHandle = 0 Then
                     applyToneMapping = 0
@@ -940,7 +944,11 @@ Public Function applyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
                 
                 'In the future, a transparency-friendly conversion may become available.  For now, however, transparency
                 ' is sacrificed as part of the conversion function (as FreeImage does not provide an RGBAF cast).
-                rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
+                If fi_DataType = FIT_RGBF Then
+                    rgbfHandle = FreeImage_ConvertToRGBF(fi_Handle)
+                Else
+                    rgbfHandle = FreeImage_ConvertToRGBAF(fi_Handle)
+                End If
                 
                 If rgbfHandle = 0 Then
                     applyToneMapping = 0
@@ -1075,6 +1083,10 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     Dim rDstF As Double, gDstF As Double, bDstF As Double
     Dim rDstL As Long, gDstL As Long, bDstL As Long
     
+    'Alpha is also a possibility, but unlike RGB values, we assume it is always normalized.  This allows us to skip any intermediate processing,
+    ' and simply copy the value directly into the destination (after redistributing to the proper range, of course).
+    Dim aDstF As Double, aDstL As Long
+    
     Dim x As Long, y As Long, QuickX As Long
     
     For y = 0 To iHeight
@@ -1102,6 +1114,7 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
             rSrcF = CDbl(srcImageData(QuickX))
             gSrcF = CDbl(srcImageData(QuickX + 1))
             bSrcF = CDbl(srcImageData(QuickX + 2))
+            If qvDepth = 4 Then aDstF = CDbl(srcImageData(QuickX + 3))
             
             'If normalization is required, apply it now
             If mustNormalize Then
@@ -1150,6 +1163,8 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
                 bDstF = bSrcF
                 
             End If
+            
+            'FYI, alpha is always unnormalized
                         
             'Apply gamma now (if any).  Unfortunately, lookup tables aren't an option because we're dealing with floating-point input,
             ' so this step is a little slow due to the exponent operator.
@@ -1178,6 +1193,13 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
                 bDstF = 0
             ElseIf bDstF > 1 Then
                 bDstF = 1
+            End If
+            
+            'Handle alpha, if necessary
+            If qvDepth = 4 Then
+                If aDstF > 1 Then aDstF = 1
+                If aDstF < 0 Then aDstF = 0
+                aDstL = aDstF * 255
             End If
             
             'Calculate corresponding integer values on the range [0, 255]
@@ -1209,6 +1231,7 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
             dstImageData(QuickX, iHeightInv) = bDstL
             dstImageData(QuickX + 1, iHeightInv) = gDstL
             dstImageData(QuickX + 2, iHeightInv) = rDstL
+            If qvDepth = 4 Then dstImageData(QuickX + 3, iHeightInv) = aDstL
             
         Next x
         
@@ -1310,6 +1333,10 @@ Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     Dim rDstF As Single, gDstF As Single, bDstF As Single
     Dim rDstL As Long, gDstL As Long, bDstL As Long
     
+    'Alpha is also a possibility, but unlike RGB values, we assume it is always normalized.  This allows us to skip any intermediate processing,
+    ' and simply copy the value directly into the destination (after redistributing to the proper range, of course).
+    Dim aDstF As Double, aDstL As Long
+    
     Dim x As Long, y As Long, QuickX As Long
     
     For y = 0 To iHeight
@@ -1335,6 +1362,7 @@ Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
             rSrcF = srcImageData(QuickX)
             gSrcF = srcImageData(QuickX + 1)
             bSrcF = srcImageData(QuickX + 2)
+            If qvDepth = 4 Then aDstF = CDbl(srcImageData(QuickX + 3))
             
             'Apply filmic tone-mapping.  See http://fr.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting for details
             rDstF = fFilmicTonemap(exposureCompensation * rSrcF) / fWhitePoint
@@ -1368,6 +1396,13 @@ Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
                 bDstF = 1
             End If
             
+            'Handle alpha, if necessary
+            If qvDepth = 4 Then
+                If aDstF > 1 Then aDstF = 1
+                If aDstF < 0 Then aDstF = 0
+                aDstL = aDstF * 255
+            End If
+            
             'Calculate corresponding integer values on the range [0, 255]
             rDstL = rDstF * 255
             gDstL = gDstF * 255
@@ -1397,6 +1432,7 @@ Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
             dstImageData(QuickX, iHeightInv) = bDstL
             dstImageData(QuickX + 1, iHeightInv) = gDstL
             dstImageData(QuickX + 2, iHeightInv) = rDstL
+            If qvDepth = 4 Then dstImageData(QuickX + 3, iHeightInv) = aDstL
             
         Next x
         
