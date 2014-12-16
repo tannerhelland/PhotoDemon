@@ -47,9 +47,88 @@ Private frontBuffer As pdDIB
 'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
 Private cornerFix As pdDIB
 
-'Viewport_Engine.Stage3_CompositeCanvas is the last step in the viewport chain.  (Viewport_Engine.Stage1_InitializeBuffer -> Viewport_Engine.Stage2_CompositeAllLayers -> Viewport_Engine.Stage3_CompositeCanvas)
-' It can only be executed after both Viewport_Engine.Stage1_InitializeBuffer and Viewport_Engine.Stage2_CompositeAllLayers have been run at least once.  It assumes a fully composited backbuffer,
-' which is then copied to the front buffer, and any final composites (such as a selection) are drawn atop that.
+'Stage4_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
+' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
+' very fast, and should be used whenever full compositing is unnecessary.
+'
+'As part of the buffer flip, this stage will also activate and apply color management to the completed front buffer.
+' (Still TODO is fixing the canvas to not rely on AutoRedraw, which will spare us having to re-activate color management on every draw.)
+Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+
+    'If no images have been loaded, clear the canvas and exit
+    If g_OpenImageCount = 0 Then
+        FormMain.mainCanvas(0).clearCanvas
+        Exit Sub
+    End If
+
+    'Make sure the canvas is valid
+    If dstCanvas Is Nothing Then Exit Sub
+    
+    'If the image associated with this form is inactive, ignore this request
+    If Not srcImage.IsActive Then Exit Sub
+    
+    'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
+    ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
+    If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
+        assignDefaultColorProfileToObject dstCanvas.hWnd, dstCanvas.hDC
+        turnOnColorManagementForDC dstCanvas.hDC
+    End If
+    
+    'Finally, flip the front buffer to the screen
+    BitBlt dstCanvas.hDC, 0, srcImage.imgViewport.getTopOffset, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
+    
+    
+    'Finally, we can do some tool-specific rendering directly onto the form.
+    Select Case g_CurrentTool
+    
+        'The nav tool provides two render options at present: draw layer borders, and draw layer transform nodes
+        Case NAV_MOVE
+        
+            'If the user has requested visible layer borders, draw them now
+            If CBool(toolbar_Options.chkLayerBorder) Then
+                
+                'Draw layer borders
+                Drawing.drawLayerBoundaries srcImage.getActiveLayerIndex
+                
+            End If
+            
+            'If the user has requested visible transformation nodes, draw them now
+            If CBool(toolbar_Options.chkLayerNodes) Then
+                
+                'Draw layer nodes
+                Drawing.drawLayerNodes srcImage.getActiveLayerIndex
+                
+            End If
+        
+        'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
+        ' draw transform nodes around the selection area.
+        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_WAND
+            
+            'Next, check to see if a selection is active and transformable.  If it is, draw nodes around the selected area.
+            If srcImage.selectionActive Then
+                srcImage.mainSelection.renderTransformNodes srcImage, dstCanvas, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop
+            End If
+        
+    End Select
+    
+    'FYI, in the future, any additional UI compositing can be handled here.
+    
+    'With all rendering complete, copy the form's image into the .Picture (e.g. render it on-screen) and refresh
+    dstCanvas.requestBufferSync
+
+End Sub
+
+'Stage3_CompositeCanvas takes the current canvas (which has a checkerboard and fully layered image drawn atop it) and applies a few
+' other frills to it, including things like canvas decorations (e.g. drop-shadows, a fix for the space between scroll bars), and the
+' current selection, if one is active.  This stage is the final stage before color-management is applied, so it's important to render
+' any color-specific bits now, as the next stage will apply color-management processing to whatever is contained in the front buffer.
+'
+'When this stage is finished, the srcImage.frontBuffer object will contain a screen-ready copy of the canvas, with the fully
+' composited image drawn atop a checkerboard in the viewport section of the canvas.  Standard canvas decorations will also be present,
+' provided that the user's performance settings allow them.
+'
+'After this stage, the only things that should be rendered onto the canvas are uncolored UI elements, like custom-drawn cursors or
+' control nodes.
 Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
 
     'If no images have been loaded, clear the canvas and exit
@@ -64,21 +143,17 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     'If the image associated with this form is inactive, ignore this request
     If Not srcImage.IsActive Then Exit Sub
 
-    'Reset the front buffer
-    If Not (frontBuffer Is Nothing) Then
-        frontBuffer.eraseDIB
-        Set frontBuffer = Nothing
+    'Create the front buffer as necessary
+    If frontBuffer Is Nothing Then Set frontBuffer = New pdDIB
+        
+    If (frontBuffer.getDIBWidth <> srcImage.backBuffer.getDIBWidth) Or (frontBuffer.getDIBHeight <> srcImage.backBuffer.getDIBHeight) Then
+        frontBuffer.createFromExistingDIB srcImage.backBuffer
+    Else
+        BitBlt frontBuffer.getDIBDC, 0, 0, srcImage.backBuffer.getDIBWidth, srcImage.backBuffer.getDIBHeight, srcImage.backBuffer.getDIBDC, 0, 0, vbSrcCopy
     End If
-    Set frontBuffer = New pdDIB
+        
     
-    'We can use the .Tag property of the target form to locate the matching pdImage in the pdImages array
-    Dim curImage As Long
-    curImage = srcImage.imageID
-    
-    'Copy the current back buffer into the front buffer
-    frontBuffer.createFromExistingDIB srcImage.backBuffer
-    
-    'If the user has allowed interface decorations, handle that next
+    'If the user's performance preferences allow for interface decorations, render them next
     If g_InterfacePerformance <> PD_PERF_FASTEST Then
     
         'We'll handle this in two steps; first, render the horizontal shadows
@@ -123,27 +198,6 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     
     End If
     
-    'Check to see if a selection is active.
-    If srcImage.selectionActive Then
-    
-        'If it is, composite the selection against the front buffer
-        srcImage.mainSelection.renderCustom frontBuffer, srcImage, FormMain.mainCanvas(0), srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, toolbar_Options.cboSelRender.ListIndex, toolbar_Options.csSelectionHighlight.Color
-    
-    End If
-    
-    'In the future, any additional UI compositing can be handled here.
-    
-    'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
-    ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
-    If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
-        assignDefaultColorProfileToObject dstCanvas.hWnd, dstCanvas.hDC
-        turnOnColorManagementForDC dstCanvas.hDC
-    End If
-    
-    'Finally, flip the front buffer to the screen
-    'BitBlt formToBuffer.hDC, 0, 26, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
-    BitBlt dstCanvas.hDC, 0, srcImage.imgViewport.getTopOffset, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
-        
     'If both scrollbars are active, copy a gray square over the small space between them
     If dstCanvas.getScrollVisibility(PD_HORIZONTAL) And dstCanvas.getScrollVisibility(PD_VERTICAL) Then
         
@@ -158,59 +212,31 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
         
     End If
     
-    'Finally, we can do some tool-specific rendering directly onto the form.
-    Select Case g_CurrentTool
+    'Check to see if a selection is active.
+    If srcImage.selectionActive Then
     
-        'The nav tool provides two render options at present: draw layer borders, and draw layer transform nodes
-        Case NAV_MOVE
-        
-            'If the user has requested visible layer borders, draw them now
-            If CBool(toolbar_Options.chkLayerBorder) Then
-                
-                'Draw layer borders
-                Drawing.drawLayerBoundaries pdImages(g_CurrentImage).getActiveLayerIndex
-                
-            End If
-            
-            'If the user has requested visible transformation nodes, draw them now
-            If CBool(toolbar_Options.chkLayerNodes) Then
-                
-                'Draw layer nodes
-                Drawing.drawLayerNodes pdImages(g_CurrentImage).getActiveLayerIndex
-                
-            End If
-        
-        'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
-        ' draw transform nodes around the selection area.
-        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_WAND
-            
-            'Next, check to see if a selection is active and transformable.  If it is, draw nodes around the selected area.
-            If srcImage.selectionActive Then
-                srcImage.mainSelection.renderTransformNodes srcImage, dstCanvas, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop
-            End If
-        
-    End Select
+        'If it is, composite the selection against the front buffer
+        srcImage.mainSelection.renderCustom frontBuffer, srcImage, dstCanvas, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, toolbar_Options.cboSelRender.ListIndex, toolbar_Options.csSelectionHighlight.Color
     
-    'With all rendering complete, copy the form's image into the .Picture (e.g. render it on-screen) and refresh
-    dstCanvas.requestBufferSync
+    End If
+        
+    'Pass the completed front buffer to the final stage of the pipeline, which will flip everything to the screen and render any
+    ' remaining UI elements!
+    Stage4_FlipBufferAndDrawUI srcImage, dstCanvas
+    
     
 End Sub
 
-'Stage2_CompositeAllLayers is used to update the on-screen image when the scroll bars are used.
-' Given how frequently it is used, I've tried to make it as small and fast as possible.
+'Stage2_CompositeAllLayers is used to composite the current image onto the source pdImage's back buffer.  This function does not
+' perform any initialization or pre-rendering checks, so you cannot use it if zoom is changed, or if the viewport area has changed.
+' (Stage1_InitializeBuffer is used for that.)  The most common use-case for this function is the use of scrollbars, or non-destructive
+' layer changes that require a recomposite of the image, but not a full recreation calculation of the viewport and canvas buffers.
 Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
-    
-    
+        
     'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
     
     'First, and most obvious, is to exit now if the public g_AllowViewportRendering parameter has been forcibly disabled.
     If Not g_AllowViewportRendering Then Exit Sub
-    
-    'I think we can successfully ignore this check, as the previous stage handles it, but I'm leaving it here "just in case"
-    'If g_OpenImageCount = 0 Then
-    '    FormMain.mainCanvas(0).clearCanvas
-    '    Exit Sub
-    'End If
     
     'Make sure the target canvas is valid
     If dstCanvas Is Nothing Then Exit Sub
@@ -223,10 +249,14 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     Dim startTime As Double
     If g_DisplayTimingReports Then startTime = Timer
     
-    'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared
+    'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  The goal of this stage is two-fold:
+    ' 1) Fill the viewport area of the canvas with a checkerboard pattern
+    ' 2) Render the fully composited image atop the checkerboard pattern
+    
+    'Note that the imgCompositor object will handle most of this stage for us, as it performs the actual compositing.
     
     'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient.
-    ' Because rounding errors may occur with cerain image sizes, apply a special check when zoom = 100.
+    ' Because rounding errors may occur with certain image sizes, we apply a special check when zoom = 100.
     If srcImage.currentZoomValue = g_Zoom.getZoom100Index Then
         srcWidth = srcImage.imgViewport.targetWidth
         srcHeight = srcImage.imgViewport.targetHeight
@@ -235,7 +265,9 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         srcHeight = srcImage.imgViewport.targetHeight / m_ZoomRatio
     End If
         
-    'These variables are the offset, as determined by the scroll bar values
+    'These variables are the offset into the source image, as determined by the scroll bar's values.  PD supports partial
+    ' compositing of a given region of the image.  This allows for excellent performance when the image is larger than the
+    ' available screen real-estate (as we don't waste time compositing invisible regions).
     If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then srcX = dstCanvas.getScrollValue(PD_HORIZONTAL) Else srcX = 0
     If dstCanvas.getScrollVisibility(PD_VERTICAL) Then srcY = dstCanvas.getScrollValue(PD_VERTICAL) Else srcY = 0
         
@@ -249,14 +281,18 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     ' in the future... but for now, we leave it, just in case.
     If g_GDIPlusAvailable Then
         
-        'Use our new rect-specific compositor to retrieve only the relevant section of the current viewport.  Interpolation mode depends
-        ' on the current zoom value, and the user's viewport performance preference.
+        'We can now use PD's amazing rect-specific compositor to retrieve only the relevant section of the current viewport.
+        ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
+        ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
+        '        GDI+'s preprocessing, which screws up subpixel positioning.)
         
         'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
         If g_ViewportPerformance = PD_PERF_FASTEST Then
             srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, InterpolationModeNearestNeighbor
             
-        'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom
+        'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
+        ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
+        ' automatically (regardless of what method we request).
         Else
             srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
         End If
@@ -266,7 +302,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
     End If
     
-    'Pass control to the viewport renderer, which will handle the final compositing
+    'Pass control to the next stage of the pipeline.
     Stage3_CompositeCanvas srcImage, dstCanvas
     
     'If timing reports are enabled, we report them after the rest of the pipeline has finished.
@@ -623,9 +659,14 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
         If vScrollEnabled Then finalCanvasWidth = canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL) Else finalCanvasWidth = canvasWidth
         If hScrollEnabled Then finalCanvasHeight = canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL) Else finalCanvasHeight = canvasHeight
         
-        'Testing shows no measurable difference between a 32-bit or 24-bit back buffer.  I am going to try 32-bit for now,
-        ' but you can easily swap 32 for 24 if desired.
-        srcImage.backBuffer.createBlank finalCanvasWidth, finalCanvasHeight, 32, g_CanvasBackground, 255
+        'Testing shows no measurable difference between a 32-bit or 24-bit back buffer.  I am going to try 24-bit for now,
+        ' but you can easily swap in the other if desired.  (NOTE!  32-bit screws up selection rendering, because it always assumes
+        ' a 24-bit target for performance reasons.  Should revisit!)
+        If (srcImage.backBuffer.getDIBWidth <> finalCanvasWidth) Or (srcImage.backBuffer.getDIBHeight <> finalCanvasHeight) Then
+            srcImage.backBuffer.createBlank finalCanvasWidth, finalCanvasHeight, 24, g_CanvasBackground, 255
+        Else
+            GDI_Plus.GDIPlusFillDIBRect srcImage.backBuffer, 0, 0, finalCanvasWidth, finalCanvasHeight, g_CanvasBackground, 255, CompositingModeSourceCopy
+        End If
         
         'Cache our viewport position and measurements inside the source object.  Future pipeline stages need these values.
         srcImage.imgViewport.targetLeft = viewportLeft
