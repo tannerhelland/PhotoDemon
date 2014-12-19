@@ -479,7 +479,9 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         'Save (left-hand panel button AND menu item)
         Case tSave
             If FormMain.MnuFile(7).Enabled <> NewState Then
-                toolbar_Toolbox.cmdSave.Enabled = NewState
+                
+                toolbar_Toolbox.cmdFile(FILE_SAVE).Enabled = NewState
+                
                 FormMain.MnuFile(7).Enabled = NewState
                 
                 'The File -> Revert menu is also tied to Save state (if the image has not been saved in its current state,
@@ -491,7 +493,10 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         'Save As (menu item only)
         Case tSaveAs
             If FormMain.MnuFile(8).Enabled <> NewState Then
-                toolbar_Toolbox.cmdSaveAs.Enabled = NewState
+                
+                toolbar_Toolbox.cmdFile(FILE_SAVEAS_LAYERS).Enabled = NewState
+                toolbar_Toolbox.cmdFile(FILE_SAVEAS_FLAT).Enabled = NewState
+                
                 FormMain.MnuFile(8).Enabled = NewState
             End If
             
@@ -500,23 +505,27 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             If FormMain.MnuFile(4).Enabled <> NewState Then
                 FormMain.MnuFile(4).Enabled = NewState
                 FormMain.MnuFile(5).Enabled = NewState
-                toolbar_Toolbox.cmdClose.Enabled = NewState
+                toolbar_Toolbox.cmdFile(FILE_CLOSE).Enabled = NewState
             End If
         
-        'Undo (left-hand panel button AND menu item)
+        'Undo (left-hand panel button AND menu item).  Undo toggles also control the "Fade last action" button, because that
+        ' action requires Undo data to operate.
         Case tUndo
         
             If FormMain.MnuEdit(0).Enabled <> NewState Then
-                toolbar_Toolbox.cmdUndo.Enabled = NewState
+                toolbar_Toolbox.cmdFile(FILE_UNDO).Enabled = NewState
+                toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = NewState
                 FormMain.MnuEdit(0).Enabled = NewState
             End If
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If NewState Then
-                toolbar_Toolbox.cmdUndo.ToolTip = g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID)
+                toolbar_Toolbox.cmdFile(FILE_UNDO).ToolTipText = g_Language.TranslateMessage("Undo:" & " " & pdImages(g_CurrentImage).undoManager.getUndoProcessID)
+                toolbar_Toolbox.cmdFile(FILE_FADE).ToolTipText = g_Language.TranslateMessage("Fade:" & " " & pdImages(g_CurrentImage).undoManager.getUndoProcessID)
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID) & vbTab & "Ctrl+Z"
             Else
-                toolbar_Toolbox.cmdUndo.ToolTip = ""
+                toolbar_Toolbox.cmdFile(FILE_UNDO).ToolTipText = ""
+                toolbar_Toolbox.cmdFile(FILE_FADE).ToolTipText = ""
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
             End If
             
@@ -526,16 +535,16 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         'Redo (left-hand panel button AND menu item)
         Case tRedo
             If FormMain.MnuEdit(1).Enabled <> NewState Then
-                toolbar_Toolbox.cmdRedo.Enabled = NewState
+                toolbar_Toolbox.cmdFile(FILE_REDO).Enabled = NewState
                 FormMain.MnuEdit(1).Enabled = NewState
             End If
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If NewState Then
-                toolbar_Toolbox.cmdRedo.ToolTip = g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID)
+                toolbar_Toolbox.cmdFile(FILE_REDO).ToolTipText = g_Language.TranslateMessage("Redo:" & " " & pdImages(g_CurrentImage).undoManager.getRedoProcessID)
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID) & vbTab & "Ctrl+Y"
             Else
-                toolbar_Toolbox.cmdRedo.ToolTip = ""
+                toolbar_Toolbox.cmdFile(FILE_REDO).ToolTipText = ""
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
             End If
             
