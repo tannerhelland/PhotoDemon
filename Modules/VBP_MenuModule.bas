@@ -23,9 +23,7 @@ Public Sub MenuOpen()
     Dim sFile() As String
     
     If PhotoDemon_OpenImageDialog(sFile, getModalOwner().hWnd) Then LoadFileAsNewImage sFile
-
-    Erase sFile
-
+    
 End Sub
 
 'Pass this function a string array, and it will fill it with a list of files selected by the user.
@@ -346,6 +344,86 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     'Release the common dialog object
     Set CC = Nothing
     
+End Function
+
+'Save a lossless copy of the current image.  I've debated a lot of small details about how to best implement this (e.g. how to
+' "most intuitively" implement this), and I've settled on the following:
+' 1) Save the copy to the same folder as the current image (if available).  If it's not available, we have no choice but to
+'     prompt for a folder.
+' 2) Save the image in PDI format.
+' 3) Update the Recent Files list with the saved copy.  If we don't do this, the user has no way of knowing what save settings
+'     we've used (filename, location, etc)
+' 4) Increment the filename automatically.  Saving a copy does not overwrite old copies.  This is important.
+Public Function MenuSaveLosslessCopy(ByVal imageID As Long) As Boolean
+
+    'First things first: see if the image currently exists on-disk.  If it doesn't, we have no choice but to provide a save
+    ' prompt.
+    If Len(pdImages(imageID).locationOnDisk) = 0 Then
+        
+        'TODO: make this a dialog with a "check to remember" option.  I'm waiting on this because I want a generic solution
+        '       for these types of dialogs, because they would be helpful in many places throughout PD.
+        pdMsgBox "Before lossless copies can be saved, you must save this image at least once." & vbCrLf & vbCrLf & "Lossless copies will be saved to the same folder as this initial image save.", vbInformation + vbOKOnly + vbApplicationModal, "Initial save required"
+        
+        'This image hasn't been saved before.  Launch the Save As... dialog, and wait for it to return.
+        MenuSaveLosslessCopy = MenuSaveAs(imageID)
+        
+        'If the user canceled, abandon ship
+        If Not MenuSaveLosslessCopy Then Exit Function
+        
+    End If
+    
+    'If we made it here, this image has been saved before.  That gives us a folder where we can place our lossless copies.
+    Dim dstFilename As String, tmpPathString As String
+    
+    'Determine the destination directory now
+    tmpPathString = pdImages(imageID).locationOnDisk
+    StripDirectory tmpPathString
+    
+    'Next, let's determine the target filename.  This is the current filename, auto-incremented to whatever number is
+    ' available next.
+    Dim tmpFilename As String
+    tmpFilename = pdImages(imageID).originalFileName
+    
+    'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety, with the PDI
+    ' file extension forcibly applied.
+    dstFilename = tmpPathString & incrementFilename(tmpPathString, tmpFilename, "pdi") & "." & "pdi"
+    
+    'dstFilename now contains the full path and filename where our image copy should go.  Save it!
+    If g_ZLibEnabled Then
+        Saving.beginSaveProcess
+        MenuSaveLosslessCopy = SavePhotoDemonImage(pdImages(imageID), dstFilename, , , , , , True)
+    Else
+    
+        'If zLib doesn't exist...
+        pdMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
+        Message "No %1 encoder found. Save aborted.", "PDI"
+        Saving.endSaveProcess
+        MenuSaveLosslessCopy = False
+        
+        Exit Function
+        
+    End If
+        
+    'At this point, it's safe to re-enable the main form and restore the default cursor
+    Saving.endSaveProcess
+    
+    'MenuSaveLosslessCopy should only be true if the save was successful
+    If MenuSaveLosslessCopy Then
+        
+        'Add this file to the MRU list
+        g_RecentFiles.MRU_AddNewFile dstFilename, pdImages(imageID)
+        
+        'Return SUCCESS!
+        MenuSaveLosslessCopy = True
+        
+    Else
+        
+        Message "Save canceled."
+        pdMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbApplicationModal Or vbOKOnly, "Image save error"
+        MenuSaveLosslessCopy = False
+        
+    End If
+
 End Function
 
 'Close the active image

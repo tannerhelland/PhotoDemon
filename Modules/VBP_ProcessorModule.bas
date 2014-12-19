@@ -297,19 +297,22 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         ' This includes actions like opening or saving images.  These actions are never recorded.
     
         Case "Open"
-            MenuOpen
+            File_Menu.MenuOpen
             
         Case "Close"
-            MenuClose
+            File_Menu.MenuClose
             
         Case "Close all"
-            MenuCloseAll
+            File_Menu.MenuCloseAll
         
         Case "Save"
-            MenuSave g_CurrentImage
+            File_Menu.MenuSave g_CurrentImage
             
         Case "Save as"
-            MenuSaveAs g_CurrentImage
+            File_Menu.MenuSaveAs g_CurrentImage
+            
+        Case "Save copy"
+            File_Menu.MenuSaveLosslessCopy g_CurrentImage
             
         Case "Revert"
             If FormMain.MnuFile(7).Enabled Then
