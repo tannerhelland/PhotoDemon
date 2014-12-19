@@ -262,7 +262,7 @@ End Property
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
 ' Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).
 ' No preprocessing is currently applied to DIBs loaded as a resource.
-Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB)
+Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
     
     'Load the requested resource DIB, as necessary
     If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
@@ -275,11 +275,16 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     Set btImageDisabled = New pdDIB
     btImageDisabled.createFromExistingDIB btImage
     GrayscaleDIB btImageDisabled, True
-        
+    If scalePixelsWhenDisabled <> 0 Then ScaleDIBRGBValues btImageDisabled, scalePixelsWhenDisabled, True
+    
     'Finally, create a "glowy" hovered version of the DIB for hover state
     Set btImageHover = New pdDIB
     btImageHover.createFromExistingDIB btImage
-    ScaleDIBRGBValues btImageHover, UC_HOVER_BRIGHTNESS, True
+    If customGlowWhenHovered = 0 Then
+        ScaleDIBRGBValues btImageHover, UC_HOVER_BRIGHTNESS, True
+    Else
+        ScaleDIBRGBValues btImageHover, customGlowWhenHovered, True
+    End If
     
     'Request a control size update, which will also calculate a centered position for the new image
     updateControlSize
@@ -351,6 +356,18 @@ Private Sub UserControl_LostFocus()
     'If a focus rect has been drawn, remove it now
     If m_FocusRectActive Then
         m_FocusRectActive = False
+        redrawBackBuffer
+    End If
+
+End Sub
+
+'Because VB is very dumb about focus handling, it is sometimes necessary for external functions to notify of focus loss.
+Public Sub notifyFocusLost()
+
+    'If a focus rect has been drawn, remove it now
+    If m_FocusRectActive Or m_MouseInsideUC Then
+        m_FocusRectActive = False
+        m_MouseInsideUC = False
         redrawBackBuffer
     End If
 
