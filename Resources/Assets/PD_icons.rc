@@ -339,7 +339,18 @@ PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 PDLOGOWHITE  CUSTOM  MOVEABLE        LOADONCALL      PD_white_logo_splash.png
 PDLOGOBLACK  CUSTOM  MOVEABLE        LOADONCALL      PD_black_logo_splash.png
 
-//Tool toolbox icons
+//File tool area toolbox icons
+TF_NEW       CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_new_24.png
+TF_OPEN      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_open_24.png
+TF_CLOSE     CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_close_24.png
+TF_SAVE      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_save_24.png
+TF_SAVEPDI   CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_saveas_24.png
+TF_SAVEAS    CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_export_24.png
+TF_UNDO      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_undo_24.png
+TF_FADE      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_fade_24.png
+TF_REDO      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_redo_24.png
+
+//Canvas tool area toolbox icons
 T_HAND       CUSTOM  MOVEABLE        LOADONCALL      toolbox_hand_24.png
 T_MOVE       CUSTOM  MOVEABLE        LOADONCALL      toolbox_move_arrow_24.png
 T_NDFX       CUSTOM  MOVEABLE        LOADONCALL      toolbox_ndfx_24.png

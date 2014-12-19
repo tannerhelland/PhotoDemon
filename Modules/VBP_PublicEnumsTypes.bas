@@ -51,6 +51,28 @@ End Enum
     Const SELECT_POLYGON = 6, SELECT_LASSO = 7, SELECT_WAND = 8
 #End If
 
+'Currently supported file tools; these numbers correspond to the index of the tool's command button on the main form.
+' In theory, adding new tools should be as easy as changing these numbers.  All file-tool-related code is tied into
+' these constants, so any changes here should automatically propagate throughout the software.  (In practice, be sure
+' to double-check everything!!)
+Public Enum PDFileTools
+    FILE_NEW = 0
+    FILE_OPEN = 1
+    FILE_CLOSE = 2
+    FILE_SAVE = 3
+    FILE_SAVEAS_LAYERS = 4
+    FILE_SAVEAS_FLAT = 5
+    FILE_UNDO = 6
+    FILE_FADE = 7
+    FILE_REDO = 8
+End Enum
+
+#If False Then
+    Const FILE_NEW = 0, FILE_OPEN = 1, FILE_CLOSE = 2
+    Const FILE_SAVE = 3, FILE_SAVEAS_LAYERS = 4, FILE_SAVEAS_FLAT = 5
+    Const FILE_UNDO = 6, FILE_FADE = 7, FILE_REDO = 8
+#End If
+
 'How should the selection be rendered?
 Public Enum SelectionRender
     SELECTION_RENDER_HIGHLIGHT = 0
