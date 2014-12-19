@@ -2680,7 +2680,7 @@ End Function
 'Some image formats can take a long time to write, especially if the image is large.  As a failsafe, call this function prior to
 ' initiating a save request.  Just make sure to call the counterpart function when saving completes (or if saving fails); otherwise, the
 ' main form will be disabled!
-Private Sub beginSaveProcess()
+Public Sub beginSaveProcess()
 
     'Disable the main form and set a busy cursor
     FormMain.Enabled = False
@@ -2688,7 +2688,7 @@ Private Sub beginSaveProcess()
 
 End Sub
 
-Private Sub endSaveProcess()
+Public Sub endSaveProcess()
 
     'Re-enable the main form and restore the default cursor
     FormMain.Enabled = True
