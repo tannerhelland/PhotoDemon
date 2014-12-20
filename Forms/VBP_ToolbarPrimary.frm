@@ -39,8 +39,8 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   0
       Left            =   120
-      TabIndex        =   2
-      Top             =   3000
+      TabIndex        =   1
+      Top             =   2880
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
@@ -49,8 +49,8 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   1
       Left            =   840
-      TabIndex        =   3
-      Top             =   3000
+      TabIndex        =   2
+      Top             =   2880
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
@@ -59,8 +59,8 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   2
       Left            =   1560
-      TabIndex        =   4
-      Top             =   3000
+      TabIndex        =   3
+      Top             =   2880
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
@@ -69,8 +69,8 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   3
       Left            =   120
-      TabIndex        =   5
-      Top             =   3960
+      TabIndex        =   4
+      Top             =   3840
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
@@ -79,8 +79,8 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   4
       Left            =   840
-      TabIndex        =   6
-      Top             =   3960
+      TabIndex        =   5
+      Top             =   3840
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
@@ -89,8 +89,8 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   5
       Left            =   1560
-      TabIndex        =   7
-      Top             =   3960
+      TabIndex        =   6
+      Top             =   3840
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
@@ -99,8 +99,8 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   6
       Left            =   120
-      TabIndex        =   8
-      Top             =   4560
+      TabIndex        =   7
+      Top             =   4440
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
@@ -109,8 +109,8 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   7
       Left            =   840
-      TabIndex        =   9
-      Top             =   4560
+      TabIndex        =   8
+      Top             =   4440
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
@@ -119,8 +119,8 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   8
       Left            =   1560
-      TabIndex        =   10
-      Top             =   4560
+      TabIndex        =   9
+      Top             =   4440
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
@@ -139,7 +139,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   2
       Left            =   120
-      Top             =   2700
+      Top             =   2580
       Width           =   2175
       _ExtentX        =   3836
       _ExtentY        =   503
@@ -149,7 +149,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   240
       Index           =   3
       Left            =   120
-      Top             =   3660
+      Top             =   3540
       Width           =   2175
       _ExtentX        =   3836
       _ExtentY        =   503
@@ -159,7 +159,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   0
       Left            =   120
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   300
       Width           =   720
       _ExtentX        =   1085
@@ -169,7 +169,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   1
       Left            =   840
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   300
       Width           =   720
       _ExtentX        =   1085
@@ -179,7 +179,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   2
       Left            =   1560
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   300
       Width           =   720
       _ExtentX        =   1085
@@ -189,7 +189,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   3
       Left            =   120
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   960
       Width           =   720
       _ExtentX        =   1085
@@ -199,7 +199,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   4
       Left            =   840
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   960
       Width           =   720
       _ExtentX        =   1085
@@ -209,7 +209,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   5
       Left            =   1560
-      TabIndex        =   16
+      TabIndex        =   15
       Top             =   960
       Width           =   720
       _ExtentX        =   1085
@@ -219,7 +219,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   6
       Left            =   120
-      TabIndex        =   17
+      TabIndex        =   16
       Top             =   1920
       Width           =   720
       _ExtentX        =   1085
@@ -229,7 +229,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   7
       Left            =   840
-      TabIndex        =   18
+      TabIndex        =   17
       Top             =   1920
       Width           =   720
       _ExtentX        =   1085
@@ -239,42 +239,11 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   8
       Left            =   1560
-      TabIndex        =   19
+      TabIndex        =   18
       Top             =   1920
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
-   End
-   Begin VB.Label lblWarning 
-      Alignment       =   2  'Center
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   $"VBP_ToolbarPrimary.frx":0000
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   3000
-      Left            =   120
-      TabIndex        =   1
-      Top             =   6000
-      UseMnemonic     =   0   'False
-      Width           =   2160
-      WordWrap        =   -1  'True
-   End
-   Begin VB.Line lnSeparator 
-      BorderColor     =   &H80000002&
-      X1              =   8
-      X2              =   148
-      Y1              =   176
-      Y2              =   176
    End
    Begin VB.Label lblRecording 
       Alignment       =   2  'Center
@@ -491,6 +460,147 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     'Save all last-used settings to file
     lastUsedSettings.saveAllControlValues
     
+End Sub
+
+Private Sub Form_Resize()
+    
+    'Reflow the form's contents
+    reflowToolboxLayout
+    
+End Sub
+
+Private Sub reflowToolboxLayout()
+
+    Dim i As Long
+    
+    'Reflow label width first; they are easy because they simply match the width of the form
+    For i = 0 To lblCategories.UBound
+        lblCategories(i).Width = Me.ScaleWidth - (lblCategories(i).Left + fixDPI(2))
+    Next i
+    
+    lblRecording.Width = Me.ScaleWidth - (lblRecording.Left + fixDPI(2))
+    
+    'Next, we are going to reflow the interface in two segments: the "file" buttons (which are handled separately, since
+    ' they are actual buttons and not persistent toggles), then the toolbox buttons.
+    
+    'Conceptually, reflowing is simple: we iterate through controls in top-to-bottom order, and we position them
+    ' according to a few simple rules:
+    ' 1) Title labels are handled first.  They always receive their own row
+    ' 2) Buttons are laid out in groups.  The groups are hand-coded.
+    ' 3) Buttons are laid out in horizontal rows until the end of the form is reached.  When this happens, buttons are
+    '     pushed down to a new row.
+    ' 4) We repeat the pattern until all buttons and labels have been dealt with.
+    
+    Dim hOffset As Long, vOffset As Long
+    Dim hOffsetDefaultLabel As Long, hOffsetDefaultButton As Long
+    Dim labelMarginBottom As Long, labelMarginTop As Long, buttonMarginBottom As Long, buttonMarginRight As Long
+    
+    'Start by establishing default values
+    hOffsetDefaultLabel = lblCategories(0).Left
+    hOffsetDefaultButton = 0
+    labelMarginBottom = fixDPI(4)
+    labelMarginTop = fixDPI(2)
+    buttonMarginBottom = 0
+    buttonMarginRight = fixDPI(1)
+    
+    'File group
+    lblCategories(0).Top = 2
+    vOffset = lblCategories(0).Top + lblCategories(0).Height + labelMarginBottom
+    
+    For i = FILE_NEW To FILE_SAVEAS_FLAT
+        
+        'Move this button into position
+        cmdFile(i).Move hOffset, vOffset
+        
+        'Calculate a new offset for the next button
+        hOffset = hOffset + cmdFile(i).Width + buttonMarginRight
+        If hOffset + cmdFile(i).Width > Me.ScaleWidth Then
+            hOffset = hOffsetDefaultButton
+            vOffset = vOffset + cmdFile(i).Height + buttonMarginBottom
+        End If
+        
+    Next i
+    
+    'Undo group
+    If vOffset < cmdFile(FILE_SAVEAS_FLAT).Top + cmdFile(FILE_SAVEAS_FLAT).Height Then
+        vOffset = cmdFile(FILE_SAVEAS_FLAT).Top + cmdFile(FILE_SAVEAS_FLAT).Height + buttonMarginBottom
+    End If
+    
+    vOffset = vOffset + labelMarginTop
+    lblCategories(1).Move hOffsetDefaultLabel, vOffset
+    vOffset = lblCategories(1).Top + lblCategories(1).Height + labelMarginBottom
+    hOffset = hOffsetDefaultButton
+    
+    For i = FILE_UNDO To FILE_REDO
+        
+        'Move this button into position
+        cmdFile(i).Move hOffset, vOffset
+        
+        'Calculate a new offset for the next button
+        hOffset = hOffset + cmdFile(i).Width + buttonMarginRight
+        If hOffset + cmdFile(i).Width > Me.ScaleWidth Then
+            hOffset = hOffsetDefaultButton
+            vOffset = vOffset + cmdFile(i).Height + buttonMarginBottom
+        End If
+        
+    Next i
+    
+    'Non-destructive group
+    If vOffset < cmdFile(FILE_REDO).Top + cmdFile(FILE_REDO).Height Then
+        vOffset = cmdFile(FILE_REDO).Top + cmdFile(FILE_REDO).Height + buttonMarginBottom
+    End If
+    
+    vOffset = vOffset + labelMarginTop
+    lblCategories(2).Move hOffsetDefaultLabel, vOffset
+    vOffset = lblCategories(2).Top + lblCategories(2).Height + labelMarginBottom
+    hOffset = hOffsetDefaultButton
+    
+    For i = NAV_DRAG To QUICK_FIX_LIGHTING
+        
+        'Move this button into position
+        cmdTools(i).Move hOffset, vOffset
+        
+        'Calculate a new offset for the next button
+        hOffset = hOffset + cmdTools(i).Width + buttonMarginRight
+        If hOffset + cmdTools(i).Width > Me.ScaleWidth Then
+            hOffset = hOffsetDefaultButton
+            vOffset = vOffset + cmdTools(i).Height + buttonMarginBottom
+        End If
+        
+    Next i
+    
+    'Selection group
+    If vOffset < cmdTools(QUICK_FIX_LIGHTING).Top + cmdTools(QUICK_FIX_LIGHTING).Height Then
+        vOffset = cmdTools(QUICK_FIX_LIGHTING).Top + cmdTools(QUICK_FIX_LIGHTING).Height + buttonMarginBottom
+    End If
+    
+    vOffset = vOffset + labelMarginTop
+    lblCategories(3).Move hOffsetDefaultLabel, vOffset
+    vOffset = lblCategories(3).Top + lblCategories(3).Height + labelMarginBottom
+    hOffset = hOffsetDefaultButton
+    
+    For i = SELECT_RECT To SELECT_WAND
+        
+        'Move this button into position
+        cmdTools(i).Move hOffset, vOffset
+        
+        'Calculate a new offset for the next button
+        hOffset = hOffset + cmdTools(i).Width + buttonMarginRight
+        If hOffset + cmdTools(i).Width > Me.ScaleWidth Then
+            hOffset = hOffsetDefaultButton
+            vOffset = vOffset + cmdTools(i).Height + buttonMarginBottom
+        End If
+        
+    Next i
+    
+    'Macro recording message
+    If vOffset < cmdTools(SELECT_WAND).Top + cmdTools(SELECT_WAND).Height Then
+        vOffset = cmdTools(SELECT_WAND).Top + cmdTools(SELECT_WAND).Height + buttonMarginBottom
+    End If
+    
+    vOffset = vOffset + labelMarginTop
+    lblRecording.Move lblRecording.Left, vOffset
+
 End Sub
 
 'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
