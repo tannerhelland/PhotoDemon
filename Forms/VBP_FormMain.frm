@@ -2017,16 +2017,10 @@ Private Sub MnuWindowToolbox_Click(Index As Integer)
         '<separator>
         Case 3
         
-        'Small buttons
-        Case 4
-        
-        'Medium buttons
-        Case 5
-        
-        'Large buttons
-        Case 6
-        
-    
+        'Changes to button size (small, normal, large)
+        Case 4, 5, 6
+            toolbar_Toolbox.updateButtonSize Index - 4
+            
     End Select
     
 End Sub

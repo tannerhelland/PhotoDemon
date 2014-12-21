@@ -1521,6 +1521,55 @@ Public Sub registerParentForm(ByRef parentForm As Form)
         
 End Sub
 
+'Some windows can have varying minimum allowed size depending on user settings (e.g. the size of a toolbox button).  External functions
+' can use this function to update as necessary.
+Public Sub updateMinimumDimensions(ByVal srcHwnd As Long, Optional ByVal minWidth As Long = -1, Optional ByVal minHeight As Long = -1)
+    
+    Dim tmpRect As winRect
+    
+    'Find this window in the collection
+    Dim i As Long
+    For i = 0 To numOfPDWindows
+        
+        If pdWindows(i).hWnd = srcHwnd Then
+        
+            'Update our stored min width/height values, and resize as necessary
+            If minWidth <> -1 Then
+                pdWindows(i).minimumWidth = minWidth
+                
+                'Retrieve window dimensions
+                GetWindowRect srcHwnd, tmpRect
+                
+                'If the window is too small, fix it now
+                If getWindowWidth(srcHwnd) < minWidth Then
+                    pdWindows(i).formReference.Move pdWindows(i).formReference.Left, pdWindows(i).formReference.Top, minWidth * Screen.TwipsPerPixelX
+                    If Not toolbarsFloating Then FormMain.refreshAllCanvases
+                End If
+                
+            End If
+            
+            If minHeight <> -1 Then
+                pdWindows(i).minimumHeight = minHeight
+                
+                'Retrieve window dimensions
+                GetWindowRect srcHwnd, tmpRect
+                
+                'If the window is too small, fix it now
+                If getWindowHeight(srcHwnd) < minHeight Then
+                    pdWindows(i).formReference.Move pdWindows(i).formReference.Left, pdWindows(i).formReference.Top, , minHeight * Screen.TwipsPerPixelY
+                    If Not toolbarsFloating Then FormMain.refreshAllCanvases
+                End If
+                
+            End If
+            
+            Exit For
+        
+        End If
+        
+    Next i
+
+End Sub
+
 'Each child window must be registered through this class, using its hWnd.  This class will then use that hWnd to do things
 ' like move child windows proportionally to their parent.
 Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pdWindowType, Optional ByVal preferredLocationIfNecessary As Long = 1, Optional ByVal toolbarType As pdToolbarType = NOT_A_TOOLBAR, Optional imageWindowIndex As Long = -1, Optional ByVal minWidth As Long = -1, Optional ByVal minHeight As Long = -1)
