@@ -24,6 +24,20 @@ Begin VB.Form FormMetadata
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
+   Begin VB.PictureBox picScroll 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   5115
+      Left            =   6615
+      ScaleHeight     =   341
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   17
+      TabIndex        =   15
+      Top             =   1740
+      Width           =   255
+   End
    Begin VB.CommandButton cmdTechnicalReport 
       Caption         =   "Generate full metadata report (HTML)..."
       BeginProperty Font 
@@ -37,14 +51,14 @@ Begin VB.Form FormMetadata
       EndProperty
       Height          =   735
       Left            =   7440
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   4380
       Width           =   4410
    End
    Begin PhotoDemon.buttonStrip btsGroup 
       Height          =   615
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   540
       Width           =   11730
       _ExtentX        =   20690
@@ -58,14 +72,6 @@ Begin VB.Form FormMetadata
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin VB.VScrollBar vsMetadata 
-      Height          =   5115
-      LargeChange     =   32
-      Left            =   6615
-      TabIndex        =   4
-      Top             =   1740
-      Width           =   330
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -121,7 +127,7 @@ Begin VB.Form FormMetadata
       Height          =   495
       Index           =   0
       Left            =   7440
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   2160
       Width           =   4410
       _ExtentX        =   20690
@@ -140,7 +146,7 @@ Begin VB.Form FormMetadata
       Height          =   495
       Index           =   1
       Left            =   7440
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   3240
       Width           =   4410
       _ExtentX        =   6720
@@ -172,7 +178,7 @@ Begin VB.Form FormMetadata
       Height          =   270
       Index           =   5
       Left            =   7440
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   3960
       Width           =   1020
    End
@@ -183,7 +189,7 @@ Begin VB.Form FormMetadata
       ForeColor       =   &H80000008&
       Height          =   735
       Left            =   7320
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   6120
       Width           =   4575
       WordWrap        =   -1  'True
@@ -212,7 +218,7 @@ Begin VB.Form FormMetadata
       Height          =   285
       Index           =   4
       Left            =   7320
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   1320
       Width           =   1920
    End
@@ -233,7 +239,7 @@ Begin VB.Form FormMetadata
       Height          =   270
       Index           =   3
       Left            =   7440
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   2820
       Width           =   1080
    End
@@ -254,7 +260,7 @@ Begin VB.Form FormMetadata
       Height          =   270
       Index           =   2
       Left            =   7440
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   1740
       Width           =   1125
    End
@@ -275,7 +281,7 @@ Begin VB.Form FormMetadata
       Height          =   285
       Index           =   1
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   1320
       Width           =   2220
    End
@@ -296,7 +302,7 @@ Begin VB.Form FormMetadata
       Height          =   285
       Index           =   0
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   120
       Width           =   3315
    End
@@ -372,6 +378,9 @@ Private m_SeparatorColor As OLE_COLOR
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
+'API scrollbar allows for larger scroll values
+Private WithEvents vsMetadata As pdScrollAPI
+
 'When a new metadata category is selected, redraw all the metadata text currently on screen
 Private Sub btsGroup_Click(ByVal buttonIndex As Long)
     
@@ -390,9 +399,9 @@ Private Sub btsGroup_Click(ByVal buttonIndex As Long)
     
     vsMetadata.Value = 0
     If maxMDSize < picBuffer.Height Then
-        vsMetadata.Visible = False
+        picScroll.Visible = False
     Else
-        vsMetadata.Visible = True
+        picScroll.Visible = True
         vsMetadata.Max = maxMDSize - picBuffer.Height
     End If
     
@@ -425,7 +434,7 @@ End Sub
 Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 
     'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-    If vsMetadata.Visible Then
+    If picScroll.Visible Then
   
         If scrollAmount < 0 Then
             
@@ -463,7 +472,11 @@ End Sub
 
 'LOAD dialog
 Private Sub Form_Load()
-
+    
+    'Create an API scroll bar for the main metadata window
+    Set vsMetadata = New pdScrollAPI
+    vsMetadata.initializeScrollBarWindow picScroll.hWnd, False, 0, 100, 0, 1, 32
+    
     'Note that this form will be interacting heavily with the current image's metadata container.
     
     'Enable mousewheel scrolling for the metadata box
@@ -689,10 +702,6 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
 End Sub
 
 'When the scrollbar is moved, redraw the metadata list
-Private Sub vsMetadata_Change()
-    redrawMetadataList
-End Sub
-
 Private Sub vsMetadata_Scroll()
     redrawMetadataList
 End Sub
