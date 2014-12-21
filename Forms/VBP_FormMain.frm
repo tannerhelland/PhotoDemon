@@ -1348,8 +1348,38 @@ Begin VB.Form FormMain
       Caption         =   "&Window"
       Begin VB.Menu MnuWindow 
          Caption         =   "Toolbox"
-         Checked         =   -1  'True
          Index           =   0
+         Begin VB.Menu MnuWindowToolbox 
+            Caption         =   "Display toolbox"
+            Checked         =   -1  'True
+            Index           =   0
+         End
+         Begin VB.Menu MnuWindowToolbox 
+            Caption         =   "-"
+            Index           =   1
+         End
+         Begin VB.Menu MnuWindowToolbox 
+            Caption         =   "Display tool category titles"
+            Checked         =   -1  'True
+            Index           =   2
+         End
+         Begin VB.Menu MnuWindowToolbox 
+            Caption         =   "-"
+            Index           =   3
+         End
+         Begin VB.Menu MnuWindowToolbox 
+            Caption         =   "Small buttons"
+            Index           =   4
+         End
+         Begin VB.Menu MnuWindowToolbox 
+            Caption         =   "Normal buttons"
+            Checked         =   -1  'True
+            Index           =   5
+         End
+         Begin VB.Menu MnuWindowToolbox 
+            Caption         =   "Large buttons"
+            Index           =   6
+         End
       End
       Begin VB.Menu MnuWindow 
          Caption         =   "Tool options"
@@ -1967,6 +1997,38 @@ End Sub
 
 Private Sub MnuNatureTest_Click()
     'showPDDialog vbModal, FormFreeze2
+End Sub
+
+Private Sub MnuWindowToolbox_Click(Index As Integer)
+    
+    Select Case Index
+    
+        'Toggle toolbox visibility
+        Case 0
+            toggleToolbarVisibility FILE_TOOLBOX
+        
+        '<separator>
+        Case 1
+        
+        'Toggle category labels
+        Case 2
+            toolbar_Toolbox.toggleToolCategoryLabels
+        
+        '<separator>
+        Case 3
+        
+        'Small buttons
+        Case 4
+        
+        'Medium buttons
+        Case 5
+        
+        'Large buttons
+        Case 6
+        
+    
+    End Select
+    
 End Sub
 
 Private Sub shellPipeMain_ErrDataArrival(ByVal CharsTotal As Long)
@@ -4101,10 +4163,9 @@ Private Sub MnuWindow_Click(Index As Integer)
 
     Select Case Index
     
-        'Show/hide primary toolbox
+        '<top-level Primary Toolbox options>
         Case 0
-            toggleToolbarVisibility FILE_TOOLBOX
-        
+            
         'Show/hide tool options
         Case 1
             toggleToolbarVisibility TOOLS_TOOLBOX

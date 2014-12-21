@@ -967,9 +967,9 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
     Select Case whichToolbar
     
         Case FILE_TOOLBOX
-            FormMain.MnuWindow(0).Checked = Not FormMain.MnuWindow(0).Checked
-            g_UserPreferences.SetPref_Boolean "Core", "Show File Toolbox", FormMain.MnuWindow(0).Checked
-            g_WindowManager.setWindowVisibility toolbar_Toolbox.hWnd, FormMain.MnuWindow(0).Checked
+            FormMain.MnuWindowToolbox(0).Checked = Not FormMain.MnuWindowToolbox(0).Checked
+            g_UserPreferences.SetPref_Boolean "Core", "Show File Toolbox", FormMain.MnuWindowToolbox(0).Checked
+            g_WindowManager.setWindowVisibility toolbar_Toolbox.hWnd, FormMain.MnuWindowToolbox(0).Checked
             
         Case TOOLS_TOOLBOX
             FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
