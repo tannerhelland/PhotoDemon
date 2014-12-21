@@ -739,7 +739,7 @@ Private Sub Form_Resize()
     Dim i As Long
 
     'If the tabstrip is horizontal and the window's height is changing, we need to recreate all image thumbnails
-    If ((Not verticalLayout) And (thumbHeight <> g_WindowManager.getClientHeight(Me.hWnd))) Then
+    If ((Not verticalLayout) And (thumbHeight <> g_WindowManager.getClientHeight(Me.hWnd) - 2)) Then
         
         thumbHeight = g_WindowManager.getClientHeight(Me.hWnd) - 2
     
