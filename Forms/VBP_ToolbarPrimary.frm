@@ -496,15 +496,15 @@ Private Sub reflowToolboxLayout()
     Dim labelMarginBottom As Long, labelMarginTop As Long, buttonMarginBottom As Long, buttonMarginRight As Long
     
     'Start by establishing default values
-    hOffsetDefaultLabel = lblCategories(0).Left
-    hOffsetDefaultButton = 0
-    labelMarginBottom = fixDPI(4)
-    labelMarginTop = fixDPI(2)
-    buttonMarginBottom = 0
-    buttonMarginRight = fixDPI(1)
+    hOffsetDefaultLabel = fixDPI(4) 'Left-position of labels
+    hOffsetDefaultButton = 0        'Left-position of left-most buttons
+    labelMarginBottom = fixDPI(4)   'Distance between the bottom of labels and the top of buttons
+    labelMarginTop = fixDPI(2)      'Distance between the bottom of buttons and top of labels
+    buttonMarginBottom = 0          'Distance between button rows
+    buttonMarginRight = 0           'Distance between buttons
     
     'File group
-    lblCategories(0).Top = 2
+    lblCategories(0).Move hOffsetDefaultLabel, fixDPI(2)
     vOffset = lblCategories(0).Top + lblCategories(0).Height + labelMarginBottom
     
     For i = FILE_NEW To FILE_SAVEAS_FLAT

@@ -2302,7 +2302,7 @@ Private Sub Form_Load()
     Me.Visible = True
     
     'Register all toolbox forms with the window manager
-    g_WindowManager.registerChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX, , 56
+    g_WindowManager.registerChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX, , 48
     g_WindowManager.registerChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , 200
     g_WindowManager.registerChildForm toolbar_Options, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
     g_WindowManager.registerChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , 32
