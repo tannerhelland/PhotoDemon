@@ -358,7 +358,7 @@ Public Sub LoadTheProgram()
     
     'The primary toolbox has some options of its own.  Load them now.
     FormMain.MnuWindowToolbox(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
-    
+    toolbar_Toolbox.updateButtonSize g_UserPreferences.GetPref_Long("Core", "Toolbox Button Size", 1), True
     
     
     '*************************************************************************************************************************************
