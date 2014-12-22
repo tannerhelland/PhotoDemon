@@ -295,7 +295,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
         'FILE MENU FUNCTIONS
         ' This includes actions like opening or saving images.  These actions are never recorded.
-    
+        
+        Case "New image"
+            pdMsgBox "The New Image dialog is still under construction.  Sorry!", vbApplicationModal + vbOKOnly + vbInformation, "Coming soon!"
+        
         Case "Open"
             File_Menu.MenuOpen
             
