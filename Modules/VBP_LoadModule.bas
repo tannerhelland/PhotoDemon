@@ -2352,15 +2352,17 @@ Public Sub LoadAccelerators()
     With FormMain.ctlAccelerator
     
         'File menu
-        .AddAccelerator vbKeyO, vbCtrlMask, "Open", FormMain.MnuFile(0), True, False, True, UNDO_NOTHING
-        .AddAccelerator vbKeyF4, vbCtrlMask, "Close", FormMain.MnuFile(4), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyF4, vbCtrlMask Or vbShiftMask, "Close all", FormMain.MnuFile(5), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyS, vbCtrlMask, "Save", FormMain.MnuFile(7), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", FormMain.MnuFile(8), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyF12, 0, "Revert", FormMain.MnuFile(9), True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", FormMain.MnuFile(11), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyP, vbCtrlMask, "Print", FormMain.MnuFile(13), True, True, True, UNDO_NOTHING
-        .AddAccelerator vbKeyQ, vbCtrlMask, "Exit program", FormMain.MnuFile(15), True, False, True, UNDO_NOTHING
+        .AddAccelerator vbKeyN, vbCtrlMask, "New image", FormMain.MnuFile(0), True, False, True, UNDO_NOTHING
+        .AddAccelerator vbKeyO, vbCtrlMask, "Open", FormMain.MnuFile(1), True, False, True, UNDO_NOTHING
+        .AddAccelerator vbKeyF4, vbCtrlMask, "Close", FormMain.MnuFile(5), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyF4, vbCtrlMask Or vbShiftMask, "Close all", FormMain.MnuFile(6), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyS, vbCtrlMask, "Save", FormMain.MnuFile(8), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "Save copy", FormMain.MnuFile(9), True, False, True, UNDO_NOTHING
+        .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", FormMain.MnuFile(10), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyF12, 0, "Revert", FormMain.MnuFile(11), True, True, False, UNDO_NOTHING
+        .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", FormMain.MnuFile(13), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyP, vbCtrlMask, "Print", FormMain.MnuFile(15), True, True, True, UNDO_NOTHING
+        .AddAccelerator vbKeyQ, vbCtrlMask, "Exit program", FormMain.MnuFile(17), True, False, True, UNDO_NOTHING
         
             'File -> Import submenu
             .AddAccelerator vbKeyI, vbCtrlMask Or vbShiftMask Or vbAltMask, "Scan image", FormMain.MnuScanImage, True, False, True, UNDO_NOTHING

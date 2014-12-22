@@ -478,33 +478,35 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
         'Save (left-hand panel button AND menu item)
         Case tSave
-            If FormMain.MnuFile(7).Enabled <> NewState Then
+            If FormMain.MnuFile(8).Enabled <> NewState Then
                 
                 toolbar_Toolbox.cmdFile(FILE_SAVE).Enabled = NewState
                 
-                FormMain.MnuFile(7).Enabled = NewState
+                FormMain.MnuFile(8).Enabled = NewState
                 
                 'The File -> Revert menu is also tied to Save state (if the image has not been saved in its current state,
                 ' we allow the user to revert to the last save state).
-                FormMain.MnuFile(9).Enabled = NewState
+                FormMain.MnuFile(11).Enabled = NewState
                 
             End If
             
-        'Save As (menu item only)
+        'Save As (menu item only).  Note that Save Copy is also tied to Save As functionality, because they use the same rules
+        ' for enablement (e.g. disabled if no images are loaded, always enabled otherwise)
         Case tSaveAs
-            If FormMain.MnuFile(8).Enabled <> NewState Then
+            If FormMain.MnuFile(10).Enabled <> NewState Then
                 
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_LAYERS).Enabled = NewState
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_FLAT).Enabled = NewState
                 
-                FormMain.MnuFile(8).Enabled = NewState
+                FormMain.MnuFile(9).Enabled = NewState
+                FormMain.MnuFile(10).Enabled = NewState
             End If
             
         'Close and Close All
         Case tClose
-            If FormMain.MnuFile(4).Enabled <> NewState Then
-                FormMain.MnuFile(4).Enabled = NewState
+            If FormMain.MnuFile(5).Enabled <> NewState Then
                 FormMain.MnuFile(5).Enabled = NewState
+                FormMain.MnuFile(6).Enabled = NewState
                 toolbar_Toolbox.cmdFile(FILE_CLOSE).Enabled = NewState
             End If
         
@@ -571,7 +573,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
                 'Use this same command to disable other menus
                 
                 'File -> Print
-                FormMain.MnuFile(13).Enabled = NewState
+                FormMain.MnuFile(15).Enabled = NewState
                 
                 'Layer menu
                 FormMain.MnuLayerTop.Enabled = NewState

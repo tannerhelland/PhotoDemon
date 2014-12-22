@@ -333,7 +333,7 @@ Private Sub cmdFile_Click(Index As Integer)
     Select Case Index
     
         Case FILE_NEW
-            pdMsgBox "Not implemented yet", vbCritical + vbOKOnly + vbApplicationModal, "WARNING: feature under construction"
+            Process "New image", True
         
         Case FILE_OPEN
             Process "Open", True
