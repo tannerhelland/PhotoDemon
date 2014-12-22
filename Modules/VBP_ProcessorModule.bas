@@ -315,7 +315,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             File_Menu.MenuSaveLosslessCopy g_CurrentImage
             
         Case "Revert"
-            If FormMain.MnuFile(7).Enabled Then
+            If FormMain.MnuFile(9).Enabled Then
                 pdImages(g_CurrentImage).undoManager.revertToLastSavedState
                 
                 'Also, redraw the current child form icon and the image tab-bar

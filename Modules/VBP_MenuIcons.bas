@@ -165,30 +165,30 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Load every icon from the resource file.  (Yes, there are a LOT of icons!)
         
     'File Menu
-    addMenuIcon "OPENIMG", 0, 0       'Open Image
-    addMenuIcon "OPENREC", 0, 1       'Open recent
-    addMenuIcon "IMPORT", 0, 2        'Import
-    addMenuIcon "CLOSE", 0, 4         'Close
-    addMenuIcon "CLOSE", 0, 5         'Close All
-    addMenuIcon "SAVE", 0, 7          'Save
-    addMenuIcon "SAVEAS", 0, 8        'Save As...
-    addMenuIcon "REVERT", 0, 9        'Revert
-    addMenuIcon "BCONVERT", 0, 11     'Batch conversion
-    addMenuIcon "PRINT", 0, 13        'Print
-    addMenuIcon "EXIT", 0, 15         'Exit
+    addMenuIcon "OPENIMG", 0, 1       'Open Image
+    addMenuIcon "OPENREC", 0, 2       'Open recent
+    addMenuIcon "IMPORT", 0, 3        'Import
+    addMenuIcon "CLOSE", 0, 5         'Close
+    addMenuIcon "CLOSE", 0, 6         'Close All
+    addMenuIcon "SAVE", 0, 8          'Save
+    addMenuIcon "SAVEAS", 0, 10       'Save As...
+    addMenuIcon "REVERT", 0, 11       'Revert
+    addMenuIcon "BCONVERT", 0, 13     'Batch conversion
+    addMenuIcon "PRINT", 0, 15        'Print
+    addMenuIcon "EXIT", 0, 17         'Exit
     
     '--> Import Sub-Menu
     'NOTE: the specific menu values will be different if the scanner plugin (eztw32.dll) isn't found.
     If g_ScanEnabled Then
-        addMenuIcon "PASTE_IMAGE", 0, 2, 0 'From Clipboard (Paste as New Image)
-        addMenuIcon "SCANNER", 0, 2, 2     'Scan Image
-        addMenuIcon "SCANNERSEL", 0, 2, 3  'Select Scanner
-        addMenuIcon "DOWNLOAD", 0, 2, 5    'Online Image
-        addMenuIcon "SCREENCAP", 0, 2, 7   'Screen Capture
+        addMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
+        addMenuIcon "SCANNER", 0, 3, 2     'Scan Image
+        addMenuIcon "SCANNERSEL", 0, 3, 3  'Select Scanner
+        addMenuIcon "DOWNLOAD", 0, 3, 5    'Online Image
+        addMenuIcon "SCREENCAP", 0, 3, 7   'Screen Capture
     Else
-        addMenuIcon "PASTE_IMAGE", 0, 2, 0 'From Clipboard (Paste as New Image)
-        addMenuIcon "DOWNLOAD", 0, 2, 2    'Online Image
-        addMenuIcon "SCREENCAP", 0, 2, 4   'Screen Capture
+        addMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
+        addMenuIcon "DOWNLOAD", 0, 3, 2    'Online Image
+        addMenuIcon "SCREENCAP", 0, 3, 4   'Screen Capture
     End If
         
     'Edit Menu
@@ -582,8 +582,8 @@ Public Sub resetMenuIcons()
     
     'Vista+ gets nice, large icons added later in the process.  XP is stuck with 16x16 ones, which we add now.
     If Not g_IsVistaOrLater Then
-        addMenuIcon "LOADALL", 0, 1, numOfMRUFiles + 1
-        addMenuIcon "CLEARRECENT", 0, 1, numOfMRUFiles + 2
+        addMenuIcon "LOADALL", 0, 2, numOfMRUFiles + 1
+        addMenuIcon "CLEARRECENT", 0, 2, numOfMRUFiles + 2
     End If
     
     'Clear the current MRU icon cache.
@@ -616,11 +616,11 @@ Public Sub resetMenuIcons()
                         
                     iconLocation = iconLocation + 1
                     cMRUIcons.AddImageFromFile tmpFilename
-                    cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 1
+                    cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 2
                 
                 'If a thumbnail for this file does not exist, supply a placeholder image (Vista+ only; on XP it will simply be blank)
                 Else
-                    If g_IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 1
+                    If g_IsVistaOrLater Then cMRUIcons.PutImageToVBMenu 0, i, 0, 2
                 End If
                 
             End If
@@ -630,10 +630,10 @@ Public Sub resetMenuIcons()
         'Vista+ users now get their nice, large "load all recent files" and "clear list" icons.
         If g_IsVistaOrLater Then
             cMRUIcons.AddImageFromStream LoadResData("LOADALLLRG", "CUSTOM")
-            cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 1
+            cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 2
             
             cMRUIcons.AddImageFromStream LoadResData("CLEARRECLRG", "CUSTOM")
-            cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 1
+            cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 2
         End If
         
     End If

@@ -77,12 +77,16 @@ Begin VB.Form FormMain
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
       Begin VB.Menu MnuFile 
-         Caption         =   "&Open..."
+         Caption         =   "&New..."
          Index           =   0
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "Open &recent"
+         Caption         =   "&Open..."
          Index           =   1
+      End
+      Begin VB.Menu MnuFile 
+         Caption         =   "Open &recent"
+         Index           =   2
          Begin VB.Menu mnuRecDocs 
             Caption         =   "Empty"
             Enabled         =   0   'False
@@ -100,7 +104,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuFile 
          Caption         =   "&Import"
-         Index           =   2
+         Index           =   3
          Begin VB.Menu MnuImportClipboard 
             Caption         =   "From clipboard"
          End
@@ -128,38 +132,34 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuFile 
          Caption         =   "-"
-         Index           =   3
-      End
-      Begin VB.Menu MnuFile 
-         Caption         =   "&Close"
          Index           =   4
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "Close all"
+         Caption         =   "&Close"
          Index           =   5
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "-"
+         Caption         =   "Close all"
          Index           =   6
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Save"
+         Caption         =   "-"
          Index           =   7
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "Save &as..."
+         Caption         =   "&Save"
          Index           =   8
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "Revert"
+         Caption         =   "Save copy (&lossless)"
          Index           =   9
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "-"
+         Caption         =   "Save &as..."
          Index           =   10
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Batch process..."
+         Caption         =   "Revert"
          Index           =   11
       End
       Begin VB.Menu MnuFile 
@@ -167,7 +167,7 @@ Begin VB.Form FormMain
          Index           =   12
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "&Print..."
+         Caption         =   "&Batch process..."
          Index           =   13
       End
       Begin VB.Menu MnuFile 
@@ -175,8 +175,16 @@ Begin VB.Form FormMain
          Index           =   14
       End
       Begin VB.Menu MnuFile 
-         Caption         =   "E&xit"
+         Caption         =   "&Print..."
          Index           =   15
+      End
+      Begin VB.Menu MnuFile 
+         Caption         =   "-"
+         Index           =   16
+      End
+      Begin VB.Menu MnuFile 
+         Caption         =   "E&xit"
+         Index           =   17
       End
    End
    Begin VB.Menu MnuEditTop 
@@ -3257,62 +3265,70 @@ Private Sub MnuFile_Click(Index As Integer)
 
     Select Case Index
     
-        'Open
+        'New
         Case 0
+            Process "New image", True
+        
+        'Open
+        Case 1
             Process "Open", True
         
         '<Open Recent top-level>
-        Case 1
-        
-        '<Import top-level>
         Case 2
         
-        '<separator>
+        '<Import top-level>
         Case 3
         
-        'Close
+        '<separator>
         Case 4
+        
+        'Close
+        Case 5
             Process "Close", True
         
         'Close all
-        Case 5
+        Case 6
             Process "Close all", True
             
         '<separator>
-        Case 6
+        Case 7
         
         'Save
-        Case 7
+        Case 8
             Process "Save", True
             
+        'Save copy (lossless)
+        Case 9
+            Process "Save copy", , , UNDO_NOTHING
+            
         'Save as
-        Case 8
+        Case 10
             Process "Save as", True
         
         'Revert
-        Case 9
+        Case 11
             'TODO: figure out correct Undo behavior for REVERT action
             Process "Revert", False, , UNDO_NOTHING
         
         '<separator>
-        Case 10
+        Case 12
         
         'Batch wizard
-        Case 11
+        Case 13
             Process "Batch wizard", True
         
         '<separator>
-        Case 12
+        Case 14
         
         'Print
-        Case 13
+        Case 15
             Process "Print", True
             
         '<separator>
-        Case 14
+        Case 16
         
         'Exit
-        Case 15
+        Case 17
             Process "Exit program", True
         
     
