@@ -677,3 +677,322 @@ Public Function areColorProfilesEqual(ByVal profileHandle1 As Long, ByVal profil
     areColorProfilesEqual = profilesEqual
     
 End Function
+
+'RGB to XYZ conversion using custom endpoints requires a special transform.  We cannot use Microsoft's built-in transform methods as they do
+' not support variable white space endpoints (WTF, MICROSOFT).
+Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal redX As Double, ByVal redY As Double, ByVal greenX As Double, ByVal greenY As Double, ByVal blueX As Double, ByVal blueY As Double, ByVal whiteX As Double, ByVal whiteY As Double, Optional ByRef srcGamma As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+
+    'As always, Bruce Lindbloom provides very helpful conversion functions here:
+    ' http://brucelindbloom.com/index.html?Eqn_RGB_to_XYZ.html
+    '
+    'The biggest problem with XYZ conversion is inverting the calculation matrix.  This is a big headache, as VB provides no inherent
+    ' matrix functions, so we have to do everything manually.
+    
+    'Start by calculating an XYZ triplet that corresponds to the incoming white point value
+    Dim Xw As Double, Yw As Double, Zw As Double
+    Xw = whiteX / whiteY
+    Yw = 1
+    Zw = (1 - whiteX - whiteY) / whiteY
+    
+    'Next, calculate xyz triplets that correspond to the incoming RGB endpoints, using the same xyz to XYZ conversion as the white point.
+    Dim Xr As Double, Yr As Double, Zr As Double
+    Dim Xg As Double, Yg As Double, Zg As Double
+    Dim Xb As Double, Yb As Double, Zb As Double
+    
+    Xr = redX / redY
+    Yr = 1
+    Zr = (1 - redX - redY) / redY
+    
+    Xg = greenX / greenY
+    Yg = 1
+    Zg = (1 - greenX - greenY) / greenY
+    
+    Xb = blueX / blueY
+    Yb = 1
+    Zb = (1 - blueX - blueY) / blueY
+    
+    'Now comes the ugly stuff.  We can think of the calculated XYZ values (for each of RGB) as a conversion matrix, which looks like this:
+    ' [Xr Xg Xb
+    '  Yr Yg Yb
+    '  Zr Zg Zb]
+    '
+    'We want to calculate a new conversion vector, [Sr Sg Sb], that takes into account the white endpoints specified above.  To calculate
+    ' such a vector, we need to multiple the white point vector [Xw Yw Zw] by the *inverse* of the matrix above.  Matrix inversion is
+    ' unpleasant work, as VB provides no internal function for it - so we must invert it manually.
+    '
+    'There are a number of different matrix inversion algorithms, but I'm going to use Gaussian elimination, as it's one of the few I
+    ' remember from school.  Thanks to Vagelis Plevris of Greece, whose FreeVBCode project provided a nice refresher on how one can
+    ' tackle this in VB (http://www.freevbcode.com/ShowCode.asp?ID=6221).
+    Dim invMatrix() As Double, srcMatrix() As Double
+    ReDim invMatrix(0 To 2, 0 To 2) As Double
+    ReDim srcMatrix(0 To 2, 0 To 2) As Double
+        
+    srcMatrix(0, 0) = Xr
+    srcMatrix(0, 1) = Yr
+    srcMatrix(0, 2) = Zr
+    srcMatrix(1, 0) = Xg
+    srcMatrix(1, 1) = Yg
+    srcMatrix(1, 2) = Zg
+    srcMatrix(2, 0) = Xb
+    srcMatrix(2, 1) = Yb
+    srcMatrix(2, 2) = Zb
+    
+    'Apply the inversion.  Note that *not all matrices are invertible*!  Image-encoded endpoints should be valid, but if they are not,
+    ' matrix inversion will fail.
+    If invert3x3Matrix(invMatrix, srcMatrix) Then
+    
+        'Calculate the S conversion vector by multiplying the inverse matrix by the white point vector
+        Dim Sr As Double, Sg As Double, Sb As Double
+        Sr = invMatrix(0, 0) * Xw + invMatrix(0, 1) * Yw + invMatrix(0, 2) * Zw
+        Sg = invMatrix(1, 0) * Xw + invMatrix(1, 1) * Yw + invMatrix(1, 2) * Zw
+        Sb = invMatrix(2, 0) * Xw + invMatrix(2, 1) * Yw + invMatrix(2, 2) * Zw
+        
+        'We now have everything we need to calculate the primary transformation matrix [M], which is used as follows:
+        ' [X Y Z] = [M][R G B]
+        Dim mFinal() As Double
+        ReDim mFinal(0 To 2, 0 To 2) As Double
+        mFinal(0, 0) = Sr * Xr
+        mFinal(0, 1) = Sg * Xg
+        mFinal(0, 2) = Sb * Xb
+        mFinal(1, 0) = Sr * Yr
+        mFinal(1, 1) = Sg * Yg
+        mFinal(1, 2) = Sb * Yb
+        mFinal(2, 0) = Sr * Zr
+        mFinal(2, 1) = Sg * Zg
+        mFinal(2, 2) = Sb * Zb
+        
+        'We now have everything we need to convert the DIB.  PARTY TIME!
+        Dim x As Long, y As Long
+        
+        'The actual XYZ transform is actually pretty simple.  We convert each source pixel to XYZ, using the supplied endpoints.
+        ' We then convert the XYZ coordinates into the sRGB space, which uses a hard-coded transform.
+        '
+        'Note that we also pre-linearize the incoming values, using the following look-up table.  If the user specified an incoming gamma,
+        ' we use it; otherwise, we use the sRGB gamma definition.
+        Dim gammaLookup(0 To 255) As Double, tmpCalc As Double
+        For x = 0 To 255
+            tmpCalc = x / 255
+            
+            If srcGamma = 0 Then
+                
+                If tmpCalc > 0.04045 Then
+                    gammaLookup(x) = ((tmpCalc + 0.055) / (1.055)) ^ 2.4
+                Else
+                    gammaLookup(x) = tmpCalc / 12.92
+                End If
+                
+            Else
+                gammaLookup(x) = tmpCalc ^ (1 / srcGamma)
+            End If
+            
+        Next x
+        
+        Dim tmpX As Double, tmpY As Double, tmpZ As Double
+        
+        'Create a local array and point it at the pixel data we want to operate on
+        Dim ImageData() As Byte
+        Dim tmpSA As SAFEARRAY2D
+        prepSafeArray tmpSA, srcDIB
+        CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+            
+        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        Dim initX As Long, initY As Long, finalX As Long, finaly As Long
+        initX = 0
+        initY = 0
+        finalX = srcDIB.getDIBWidth - 1
+        finaly = srcDIB.getDIBHeight - 1
+                
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim QuickVal As Long, qvDepth As Long
+        qvDepth = srcDIB.getDIBColorDepth \ 8
+        
+        'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+        ' based on the size of the area to be processed.
+        Dim progBarCheck As Long
+        If Not suppressMessages Then
+            If modifyProgBarMax = -1 Then
+                SetProgBarMax finalX
+            Else
+                SetProgBarMax modifyProgBarMax
+            End If
+            progBarCheck = findBestProgBarValue()
+        End If
+        
+        'Color values
+        Dim r As Long, g As Long, b As Long
+        Dim fR As Double, fG As Double, fB As Double
+                
+        'Now we can loop through each pixel in the image, converting values as we go
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finaly
+                
+            'Get the source pixel color values
+            r = ImageData(QuickVal + 2, y)
+            g = ImageData(QuickVal + 1, y)
+            b = ImageData(QuickVal, y)
+            
+            'Convert to compressed gamma representation
+            fR = gammaLookup(r)
+            fG = gammaLookup(g)
+            fB = gammaLookup(b)
+            
+            'Convert to XYZ
+            tmpX = mFinal(0, 0) * fR + mFinal(0, 1) * fG + mFinal(0, 2) * fB
+            tmpY = mFinal(1, 0) * fR + mFinal(1, 1) * fG + mFinal(1, 2) * fB
+            tmpZ = mFinal(2, 0) * fR + mFinal(2, 1) * fG + mFinal(2, 2) * fB
+            
+            'Convert back to sRGB
+            Color_Functions.XYZtoRGB tmpX, tmpY, tmpZ, r, g, b
+            
+            'Assign the new colors and continue
+            ImageData(QuickVal, y) = r
+            ImageData(QuickVal + 1, y) = g
+            ImageData(QuickVal + 2, y) = b
+            
+        Next y
+            If Not suppressMessages Then
+                If (x And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal x + modifyProgBarOffset
+                End If
+            End If
+        Next x
+        
+        'With our work complete, point ImageData() away from the DIB and deallocate it
+        CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+        Erase ImageData
+        
+        If cancelCurrentAction Then convertRGBUsingCustomEndpoints = False Else convertRGBUsingCustomEndpoints = True
+        
+    Else
+        convertRGBUsingCustomEndpoints = False
+        Exit Function
+    End If
+    
+End Function
+
+'Invert a 3x3 matrix of double-type.  The matrices MUST BE DIMMED PROPERLY PRIOR TO CALLING THIS FUNCTION.
+' Failure returns FALSE; success, TRUE.
+'
+'Thanks to Vagelis Plevris of Greece, whose FreeVBCode project provided a nice refresher on how one might
+' tackle this in VB (http://www.freevbcode.com/ShowCode.asp?ID=6221).
+Private Function invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() As Double) As Boolean
+
+    'Some matrices are not invertible.  If color endpoints are calculated correctly, this shouldn't be a problem,
+    ' but we need to have a failsafe for the case of determinant = 0
+    On Error GoTo cantCreateMatrix
+    
+    'Gaussian elimination will use an intermediate array, at double the width of the incoming srcMatrix()
+    Dim intMatrix() As Double
+    ReDim intMatrix(0 To 2, 0 To 5) As Double
+    
+    'Gaussian elimination works by using simple row operations to solve a system of linear equations.  This is computationally slow,
+    ' but algorithmically simple, and for a single 3x3 matrix no one cares about performance.
+    ' To visualize what happens, see how we put the source matrix on the left and the identity matrix on the right, like so:
+    '
+    ' [ src11 src12 src13 | 1 0 0 ]
+    ' [ src21 src22 src23 | 0 1 0 ]
+    ' [ src31 src32 src33 | 0 0 1 ]
+    '
+    'When we're done, we will have constructed the inverse on the right, as a result of our row operations:
+    ' [ 1 0 0 | inv11 inv12 inv13 ]
+    ' [ 0 1 0 | inv21 inv22 inv23 ]
+    ' [ 0 0 1 | inv31 inv32 inv33 ]
+    
+    'Start by filling our calculation array with the input values
+    Dim x As Long, y As Long
+    For x = 0 To 2
+    For y = 0 To 2
+        intMatrix(x, y) = srcMatrix(x, y)
+    Next y
+    Next x
+    
+    'Populate the identity matrix on the right
+    intMatrix(0, 3) = 1
+    intMatrix(1, 4) = 1
+    intMatrix(2, 5) = 1
+    
+    'Start performing row operations that move us toward an identity matrix on the left
+    Dim k As Long, n As Long, m As Long, nonZeroLine As Long, tmpValue As Double
+    
+    For k = 0 To 2
+        
+        'A non-zero element is required.  Change lines if necessary to make this happen.
+        If intMatrix(k, k) = 0 Then
+            
+            'Find the first line with a non-zero element
+            For n = k To 2
+                If intMatrix(n, k) <> 0 Then
+                    nonZeroLine = n
+                    Exit For
+                End If
+            Next n
+            
+            'Swap line k and nonZeroLine
+            For m = k To 5
+                tmpValue = intMatrix(k, m)
+                intMatrix(k, m) = intMatrix(nonZeroLine, m)
+                intMatrix(nonZeroLine, m) = tmpValue
+            Next m
+            
+        End If
+            
+        tmpValue = intMatrix(k, k)
+        For n = k To 5
+            intMatrix(k, n) = intMatrix(k, n) / tmpValue
+        Next n
+        
+        'For other lines, make a zero element using the formula:
+        ' Ai1 = Aij - A11 * (Aij / A11)
+        For n = 0 To 2
+            
+            'Check finishing position
+            If (n = k) And (n = 2) Then Exit For
+            
+            'Check for elements already equal to one; it's not really good form to update a loop element like this,
+            ' but it's helpful in the absence of an easy way to tell VB to "Goto Next"
+            If (n = k) And (n < 2) Then n = n + 1
+            
+            'Do not touch elements that are already zero
+            If intMatrix(n, k) <> 0 Then
+            
+                If intMatrix(k, k) <> 0 Then
+                    
+                    tmpValue = intMatrix(n, k) / intMatrix(k, k)
+                    For m = k To 5
+                        intMatrix(n, m) = intMatrix(n, m) - intMatrix(k, m) * tmpValue
+                    Next m
+                    
+                'Failed determinant; exit function
+                Else
+                
+                    GoTo cantCreateMatrix
+                
+                End If
+                
+            End If
+            
+        Next n
+        
+    Next k
+    
+    'Inversion complete!  (Barring any divide-by-zero errors, which indicate an un-invertible matrix.)
+    
+    'Copy the solved section of the intermediate matrix into the destination
+    For n = 0 To 2
+    For k = 0 To 2
+        newMatrix(n, k) = intMatrix(n, 3 + k)
+    Next k
+    Next n
+    
+    'Report the successful inversion to the user, then exit
+    invert3x3Matrix = True
+    Exit Function
+
+cantCreateMatrix:
+    Debug.Print "Matrix is not invertible; function cancelled."
+    invert3x3Matrix = False
+
+End Function
