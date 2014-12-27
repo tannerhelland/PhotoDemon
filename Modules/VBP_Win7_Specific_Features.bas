@@ -159,9 +159,9 @@ End Function
 Public Sub prepWin7Features()
 
     'Note that Win 7 features are allowed
-    win7FeaturesAllowed = False     'True
+    win7FeaturesAllowed = False 'True
     
-    Dim CLSID As Guid, InterfaceGuid As Guid
+    'Dim CLSID As Guid, InterfaceGuid As Guid
     'Call CLSIDFromString(StrConv(CLSID_TaskbarList, vbUnicode), CLSID)
     'Call IIDFromString(StrConv(IID_ITaskbarList3, vbUnicode), InterfaceGuid)
     'Call CoCreateInstance(CLSID, 0, 1, InterfaceGuid, objHandle)
