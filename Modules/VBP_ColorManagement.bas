@@ -680,7 +680,15 @@ End Function
 
 'RGB to XYZ conversion using custom endpoints requires a special transform.  We cannot use Microsoft's built-in transform methods as they do
 ' not support variable white space endpoints (WTF, MICROSOFT).
-Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal redX As Double, ByVal redY As Double, ByVal greenX As Double, ByVal greenY As Double, ByVal blueX As Double, ByVal blueY As Double, ByVal whiteX As Double, ByVal whiteY As Double, Optional ByRef srcGamma As Double = 0#, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+'
+'Note that this function supports transforms in *both* directions!  The optional treatEndpointsAsForwardValues can be set to TRUE to use the
+' endpoint math when converting TO the XYZ space; if false, sRGB will be used for the RGB -> XYZ conversion, then the optional parameters
+' will be used for the XYZ -> RGB conversion.  Directionality is important when working with filetypes (like PNG) that specify their own
+' endpoints, as the endpoints define the reverse transform, not the forward one.  (Found this out the hard way, ugh.)
+'
+'Gamma is also optional; if none is specified, the default sRGB gamma transform value will be used.  Note that sRGB uses a two-part curve
+' constructed around 2.4 - *not* a simple one-part 2.2 curve - so if you want 2.2 gamma, make sure you specify it!
+Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX As Double, ByVal RedY As Double, ByVal GreenX As Double, ByVal GreenY As Double, ByVal BlueX As Double, ByVal BlueY As Double, ByVal WhiteX As Double, ByVal WhiteY As Double, Optional ByRef srcGamma As Double = 0#, Optional ByVal treatEndpointsAsForwardValues As Boolean = False, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
 
     'As always, Bruce Lindbloom provides very helpful conversion functions here:
     ' http://brucelindbloom.com/index.html?Eqn_RGB_to_XYZ.html
@@ -690,26 +698,26 @@ Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal redX
     
     'Start by calculating an XYZ triplet that corresponds to the incoming white point value
     Dim Xw As Double, Yw As Double, Zw As Double
-    Xw = whiteX / whiteY
+    Xw = WhiteX / WhiteY
     Yw = 1
-    Zw = (1 - whiteX - whiteY) / whiteY
+    Zw = (1 - WhiteX - WhiteY) / WhiteY
     
     'Next, calculate xyz triplets that correspond to the incoming RGB endpoints, using the same xyz to XYZ conversion as the white point.
     Dim Xr As Double, Yr As Double, Zr As Double
     Dim Xg As Double, Yg As Double, Zg As Double
     Dim Xb As Double, Yb As Double, Zb As Double
     
-    Xr = redX / redY
+    Xr = RedX / RedY
     Yr = 1
-    Zr = (1 - redX - redY) / redY
+    Zr = (1 - RedX - RedY) / RedY
     
-    Xg = greenX / greenY
+    Xg = GreenX / GreenY
     Yg = 1
-    Zg = (1 - greenX - greenY) / greenY
+    Zg = (1 - GreenX - GreenY) / GreenY
     
-    Xb = blueX / blueY
+    Xb = BlueX / BlueY
     Yb = 1
-    Zb = (1 - blueX - blueY) / blueY
+    Zb = (1 - BlueX - BlueY) / BlueY
     
     'Now comes the ugly stuff.  We can think of the calculated XYZ values (for each of RGB) as a conversion matrix, which looks like this:
     ' [Xr Xg Xb
@@ -726,21 +734,21 @@ Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal redX
     Dim invMatrix() As Double, srcMatrix() As Double
     ReDim invMatrix(0 To 2, 0 To 2) As Double
     ReDim srcMatrix(0 To 2, 0 To 2) As Double
-        
+    
     srcMatrix(0, 0) = Xr
-    srcMatrix(0, 1) = Yr
-    srcMatrix(0, 2) = Zr
-    srcMatrix(1, 0) = Xg
+    srcMatrix(0, 1) = Xg
+    srcMatrix(0, 2) = Xb
+    srcMatrix(1, 0) = Yr
     srcMatrix(1, 1) = Yg
-    srcMatrix(1, 2) = Zg
-    srcMatrix(2, 0) = Xb
-    srcMatrix(2, 1) = Yb
+    srcMatrix(1, 2) = Yb
+    srcMatrix(2, 0) = Zr
+    srcMatrix(2, 1) = Zg
     srcMatrix(2, 2) = Zb
     
     'Apply the inversion.  Note that *not all matrices are invertible*!  Image-encoded endpoints should be valid, but if they are not,
     ' matrix inversion will fail.
     If invert3x3Matrix(invMatrix, srcMatrix) Then
-    
+        
         'Calculate the S conversion vector by multiplying the inverse matrix by the white point vector
         Dim Sr As Double, Sg As Double, Sb As Double
         Sr = invMatrix(0, 0) * Xw + invMatrix(0, 1) * Yw + invMatrix(0, 2) * Zw
@@ -761,31 +769,68 @@ Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal redX
         mFinal(2, 1) = Sg * Zg
         mFinal(2, 2) = Sb * Zb
         
+        'Debug.Print "Forward matrix: "
+        'Debug.Print mFinal(0, 0), mFinal(0, 1), mFinal(0, 2)
+        'Debug.Print mFinal(1, 0), mFinal(1, 1), mFinal(1, 2)
+        'Debug.Print mFinal(2, 0), mFinal(2, 1), mFinal(2, 2)
+        
+        'Want to convert from XYZ to RGB?  Use the inverse matrix!  This is required for PNG files, because their endpoints specify
+        ' the reverse transform.  I'm not sure why this is.  My matrix math is rusty, but it's possible that we could skip the
+        ' first inversion, and simply multiply the S vector to the original source matrix, but I haven't tried this to see if it works
+        ' and my math skills are too rusty to know if that's a totally invalid operation.  As such, I just invert the matrix manually,
+        ' to be safe.
+        '
+        'Note that we don't have to check for a fail state here, as we know the matrix is invertible (because we inverted it ourselves
+        ' earlier on.  It's technically possible for faulty white point values to prevent this inversion, but PD doesn't provide a way
+        ' for users to enter faulty values, so I don't check that possibility here.
+        Dim mFinalInvert() As Double
+        ReDim mFinalInvert(0 To 2, 0 To 2) As Double
+        If Not treatEndpointsAsForwardValues Then invert3x3Matrix mFinalInvert, mFinal
+        
+        'Debug.Print "Reverse matrix: "
+        'Debug.Print mFinalInvert(0, 0), mFinalInvert(0, 1), mFinalInvert(0, 2)
+        'Debug.Print mFinalInvert(1, 0), mFinalInvert(1, 1), mFinalInvert(1, 2)
+        'Debug.Print mFinalInvert(2, 0), mFinalInvert(2, 1), mFinalInvert(2, 2)
+        
         'We now have everything we need to convert the DIB.  PARTY TIME!
         Dim x As Long, y As Long
         
-        'The actual XYZ transform is actually pretty simple.  We convert each source pixel to XYZ, using the supplied endpoints.
-        ' We then convert the XYZ coordinates into the sRGB space, which uses a hard-coded transform.
+        'The actual XYZ transform is actually pretty simple.  Using the supplied endpoints, we use our custom matrix either during the
+        ' RGB -> XYZ step (forward transform), or XYZ -> RGB step (reverse transform).  The unused stage uses hard-coded sRGB values,
+        ' including hard-coded sRGB gamma (unless another gamma was specified).
         '
-        'Note that we also pre-linearize the incoming values, using the following look-up table.  If the user specified an incoming gamma,
-        ' we use it; otherwise, we use the sRGB gamma definition.
+        'For forward transforms, we must pre-linearize the RGB values, using the supplied gamma.  Because the gamma is applied to the
+        ' [0, 255] range RGB values, we can use a look-up table to accelerate the process.
         Dim gammaLookup(0 To 255) As Double, tmpCalc As Double
-        For x = 0 To 255
-            tmpCalc = x / 255
+        If treatEndpointsAsForwardValues Then
             
-            If srcGamma = 0 Then
+            'Invert gamma if it was specified
+            If srcGamma <> 0 Then srcGamma = 1 / srcGamma
+            
+            For x = 0 To 255
+                tmpCalc = x / 255
                 
-                If tmpCalc > 0.04045 Then
-                    gammaLookup(x) = ((tmpCalc + 0.055) / (1.055)) ^ 2.4
+                If srcGamma = 0 Then
+                    
+                    If tmpCalc > 0.04045 Then
+                        gammaLookup(x) = ((tmpCalc + 0.055) / (1.055)) ^ 2.4
+                    Else
+                        gammaLookup(x) = tmpCalc / 12.92
+                    End If
+                    
                 Else
-                    gammaLookup(x) = tmpCalc / 12.92
+                    gammaLookup(x) = tmpCalc ^ srcGamma
                 End If
                 
-            Else
-                gammaLookup(x) = tmpCalc ^ (1 / srcGamma)
-            End If
+            Next x
+        
+        'Reverse transforms apply gamma directly to the floating-point RGB values, to reduce data loss due to clamping.
+        Else
+        
+            'Do nothing for reverse transforms, except to invert gamma as appropriate.
+            If srcGamma <> 0 Then srcGamma = 1 / srcGamma
             
-        Next x
+        End If
         
         Dim tmpX As Double, tmpY As Double, tmpZ As Double
         
@@ -796,11 +841,11 @@ Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal redX
         CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
             
         'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-        Dim initX As Long, initY As Long, finalX As Long, finaly As Long
+        Dim initX As Long, initY As Long, finalX As Long, finalY As Long
         initX = 0
         initY = 0
         finalX = srcDIB.getDIBWidth - 1
-        finaly = srcDIB.getDIBHeight - 1
+        finalY = srcDIB.getDIBHeight - 1
                 
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -826,30 +871,111 @@ Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal redX
         'Now we can loop through each pixel in the image, converting values as we go
         For x = initX To finalX
             QuickVal = x * qvDepth
-        For y = initY To finaly
+        For y = initY To finalY
                 
             'Get the source pixel color values
             r = ImageData(QuickVal + 2, y)
             g = ImageData(QuickVal + 1, y)
             b = ImageData(QuickVal, y)
             
-            'Convert to compressed gamma representation
-            fR = gammaLookup(r)
-            fG = gammaLookup(g)
-            fB = gammaLookup(b)
+            'Branch now according to forward/reverse transforms.
             
-            'Convert to XYZ
-            tmpX = mFinal(0, 0) * fR + mFinal(0, 1) * fG + mFinal(0, 2) * fB
-            tmpY = mFinal(1, 0) * fR + mFinal(1, 1) * fG + mFinal(1, 2) * fB
-            tmpZ = mFinal(2, 0) * fR + mFinal(2, 1) * fG + mFinal(2, 2) * fB
+            'Forward transform
+            If treatEndpointsAsForwardValues Then
             
-            'Convert back to sRGB
-            Color_Functions.XYZtoRGB tmpX, tmpY, tmpZ, r, g, b
+                'Convert to compressed gamma representation
+                fR = gammaLookup(r)
+                fG = gammaLookup(g)
+                fB = gammaLookup(b)
+                
+                'Convert to XYZ
+                tmpX = mFinal(0, 0) * fR + mFinal(0, 1) * fG + mFinal(0, 2) * fB
+                tmpY = mFinal(1, 0) * fR + mFinal(1, 1) * fG + mFinal(1, 2) * fB
+                tmpZ = mFinal(2, 0) * fR + mFinal(2, 1) * fG + mFinal(2, 2) * fB
+                
+                'Convert back to sRGB
+                Color_Functions.XYZtoRGB tmpX, tmpY, tmpZ, r, g, b
+            
+            'Reverse transform
+            Else
+            
+                'Use sRGB for the initial XYZ conversion
+                Color_Functions.RGBtoXYZ r, g, b, tmpX, tmpY, tmpZ
+            
+                'Convert back to [0, 1] RGB, using our custom endpoints
+                fR = mFinalInvert(0, 0) * tmpX + mFinalInvert(0, 1) * tmpY + mFinalInvert(0, 2) * tmpZ
+                fG = mFinalInvert(1, 0) * tmpX + mFinalInvert(1, 1) * tmpY + mFinalInvert(1, 2) * tmpZ
+                fB = mFinalInvert(2, 0) * tmpX + mFinalInvert(2, 1) * tmpY + mFinalInvert(2, 2) * tmpZ
+            
+                'Convert to linear RGB, accounting for gamma
+                If srcGamma = 0 Then
+                
+                    'If the user didn't specify gamma, use a default sRGB transform.
+                    If (fR > 0.0031308) Then
+                        fR = 1.055 * (fR ^ (1 / 2.4)) - 0.055
+                    Else
+                        fR = 12.92 * fR
+                    End If
+                    
+                    If (fG > 0.0031308) Then
+                        fG = 1.055 * (fG ^ (1 / 2.4)) - 0.055
+                    Else
+                        fG = 12.92 * fG
+                    End If
+                    
+                    If (fB > 0.0031308) Then
+                        fB = 1.055 * (fB ^ (1 / 2.4)) - 0.055
+                    Else
+                        fB = 12.92 * fB
+                    End If
+                
+                Else
+                
+                    If fR > 0 Then
+                        r = (fR ^ srcGamma) * 255
+                    Else
+                        r = 0
+                    End If
+                    
+                    If fG > 0 Then
+                        g = (fG ^ srcGamma) * 255
+                    Else
+                        g = 0
+                    End If
+                    
+                    If fB > 0 Then
+                        b = (fB ^ srcGamma) * 255
+                    Else
+                        b = 0
+                    End If
+                
+                End If
+                
+                'Apply RGB clamping now
+                If r > 255 Then
+                    r = 255
+                ElseIf r < 0 Then
+                    r = 0
+                End If
+                
+                If g > 255 Then
+                    g = 255
+                ElseIf g < 0 Then
+                    g = 0
+                End If
+                
+                If b > 255 Then
+                    b = 255
+                ElseIf b < 0 Then
+                    b = 0
+                End If
+                
+            End If
             
             'Assign the new colors and continue
-            ImageData(QuickVal, y) = r
+            ImageData(QuickVal, y) = b
             ImageData(QuickVal + 1, y) = g
-            ImageData(QuickVal + 2, y) = b
+            ImageData(QuickVal + 2, y) = r
             
         Next y
             If Not suppressMessages Then
@@ -859,7 +985,7 @@ Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal redX
                 End If
             End If
         Next x
-        
+                
         'With our work complete, point ImageData() away from the DIB and deallocate it
         CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
         Erase ImageData
@@ -915,7 +1041,7 @@ Private Function invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() 
     intMatrix(2, 5) = 1
     
     'Start performing row operations that move us toward an identity matrix on the left
-    Dim k As Long, n As Long, m As Long, nonZeroLine As Long, tmpValue As Double
+    Dim k As Long, n As Long, M As Long, nonZeroLine As Long, tmpValue As Double
     
     For k = 0 To 2
         
@@ -931,11 +1057,11 @@ Private Function invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() 
             Next n
             
             'Swap line k and nonZeroLine
-            For m = k To 5
-                tmpValue = intMatrix(k, m)
-                intMatrix(k, m) = intMatrix(nonZeroLine, m)
-                intMatrix(nonZeroLine, m) = tmpValue
-            Next m
+            For M = k To 5
+                tmpValue = intMatrix(k, M)
+                intMatrix(k, M) = intMatrix(nonZeroLine, M)
+                intMatrix(nonZeroLine, M) = tmpValue
+            Next M
             
         End If
             
@@ -961,9 +1087,9 @@ Private Function invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() 
                 If intMatrix(k, k) <> 0 Then
                     
                     tmpValue = intMatrix(n, k) / intMatrix(k, k)
-                    For m = k To 5
-                        intMatrix(n, m) = intMatrix(n, m) - intMatrix(k, m) * tmpValue
-                    Next m
+                    For M = k To 5
+                        intMatrix(n, M) = intMatrix(n, M) - intMatrix(k, M) * tmpValue
+                    Next M
                     
                 'Failed determinant; exit function
                 Else
