@@ -40,11 +40,11 @@ Public Sub fillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -77,7 +77,7 @@ Public Sub fillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     'Run a quick loop through the image, gathering what we need to calculate our histogram
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
     
         'We have to gather the red, green, and blue in order to calculate luminance
         r = ImageData(QuickVal + 2, y)
@@ -180,11 +180,11 @@ Public Sub MenuHeatMap()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -211,7 +211,7 @@ Public Sub MenuHeatMap()
     'Apply the filter
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
         
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
@@ -295,13 +295,13 @@ Public Sub MenuComicBook()
     gaussDIB.createFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
     
-    CreateGaussianBlurDIB gRadius, srcDIB, gaussDIB, False, finalY + finalY + finalX + finalX
+    CreateGaussianBlurDIB gRadius, srcDIB, gaussDIB, False, finaly + finaly + finalX + finalX
     
     If cancelCurrentAction Then
         srcDIB.eraseDIB
@@ -342,7 +342,7 @@ Public Sub MenuComicBook()
     'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
         
         'Retrieve the original image's pixels
         r = srcImageData(QuickVal + 2, y)
@@ -372,7 +372,7 @@ Public Sub MenuComicBook()
     Next y
         If (x And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x + (finalY * 2)
+            SetProgBarVal x + (finaly * 2)
         End If
     Next x
         
@@ -400,7 +400,7 @@ Public Sub MenuComicBook()
     initX = initX + 1
     initY = initY + 1
     finalX = finalX - 1
-    finalY = finalY - 1
+    finaly = finaly - 1
     
     Dim QuickValRight As Long, QuickValLeft As Long, tmpColor As Long, tMin As Long
     Dim z As Long
@@ -410,7 +410,7 @@ Public Sub MenuComicBook()
         QuickVal = x * qvDepth
         QuickValRight = (x + 1) * qvDepth
         QuickValLeft = (x - 1) * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
         For z = 0 To 2
     
             tMin = 255
@@ -466,7 +466,7 @@ Public Sub MenuComicBook()
     Next y
         If (x And progBarCheck) = 0 Then
             If userPressedESC() Then Exit For
-            SetProgBarVal x + finalX + (finalY * 2)
+            SetProgBarVal x + finalX + (finaly * 2)
         End If
     Next x
     
@@ -493,11 +493,11 @@ Public Sub MenuSynthesize()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -522,7 +522,7 @@ Public Sub MenuSynthesize()
     'Apply the filter
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
         
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
@@ -573,11 +573,11 @@ Public Sub MenuAlien()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -596,7 +596,7 @@ Public Sub MenuAlien()
     'Apply the filter
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
         
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
@@ -646,11 +646,11 @@ Public Sub MenuAntique()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -669,7 +669,7 @@ Public Sub MenuAntique()
     Next x
     
     'We're going to use gamma conversion as part of the effect; gamma is easily optimized via a look-up table
-    Dim gammaLookUp(0 To 255) As Byte
+    Dim gammaLookup(0 To 255) As Byte
     Dim tmpVal As Double
     For x = 0 To 255
         tmpVal = x / 255
@@ -677,7 +677,7 @@ Public Sub MenuAntique()
         tmpVal = tmpVal * 255
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
-        gammaLookUp(x) = CByte(tmpVal)
+        gammaLookup(x) = CByte(tmpVal)
     Next x
     
     'Finally, we also need to adjust brightness.  A look-up table is once again invaluable
@@ -696,7 +696,7 @@ Public Sub MenuAntique()
     'Apply the filter
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
     
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
@@ -716,9 +716,9 @@ Public Sub MenuAntique()
         newG = bLookup(g)
         newB = bLookup(b)
         
-        newR = gammaLookUp(newR)
-        newG = gammaLookUp(newG)
-        newB = gammaLookUp(newB)
+        newR = gammaLookup(newR)
+        newG = gammaLookup(newG)
+        newB = gammaLookup(newB)
         
         ImageData(QuickVal + 2, y) = newR
         ImageData(QuickVal + 1, y) = newG
@@ -753,11 +753,11 @@ Public Sub MenuSepia()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -776,7 +776,7 @@ Public Sub MenuSepia()
     'Apply the filter
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
     
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
@@ -852,11 +852,11 @@ Public Sub MenuDream()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -882,7 +882,7 @@ Public Sub MenuDream()
     'Apply the filter
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
         
         newR = ImageData(QuickVal + 2, y)
         newG = ImageData(QuickVal + 1, y)
@@ -933,11 +933,11 @@ Public Sub MenuRadioactive()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -956,7 +956,7 @@ Public Sub MenuRadioactive()
     'Apply the filter
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
         
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
@@ -1008,11 +1008,11 @@ Public Sub MenuFilmNoir()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -1047,7 +1047,7 @@ Public Sub MenuFilmNoir()
     'Apply the filter
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
         
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
@@ -1104,11 +1104,11 @@ Public Sub MenuCountColors()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finaly As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    finaly = curDIBValues.Bottom
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -1135,7 +1135,7 @@ Public Sub MenuCountColors()
     'Apply the filter
     For x = initX To finalX
         QuickVal = x * qvDepth
-    For y = initY To finalY
+    For y = initY To finaly
         
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
@@ -1173,81 +1173,12 @@ Public Sub MenuTest()
     
     pdMsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, " PhotoDemon Pro Tip"
     
+    'Apply fake color correction, as a test
+    'Color_Management.convertRGBUsingCustomEndpoints pdImages(g_CurrentImage).getActiveDIB, 0.15, 0.06, 0.3, 0.6, 0.64, 0.33, 0.3127, 0.329
+    
+    'Reflect any image changes on the screen.
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
     Exit Sub
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
-    
-    'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookUp(0 To 765) As Byte
-    For x = 0 To 765
-        gLookUp(x) = CByte(x \ 3)
-    Next x
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long, grayVal As Long
-    Dim newR As Long, newG As Long, newB As Long
-    Dim hVal As Double, sVal As Double, lVal As Double
-    Dim h As Double, s As Double, l As Double
-        
-    'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-        
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        
-        grayVal = gLookUp(r + g + b)
-        
-        'Put interesting color transformations here.  As an example, here's one possible sepia formula.
-        newR = grayVal + 40
-        newG = grayVal + 20
-        newB = grayVal - 30
-                                
-        If newR < 0 Then newR = 0
-        If newG < 0 Then newG = 0
-        If newB < 0 Then newB = 0
-        
-        If newR > 255 Then newR = 255
-        If newG > 255 Then newG = 255
-        If newB > 255 Then newB = 255
-                
-        ImageData(QuickVal + 2, y) = newR
-        ImageData(QuickVal + 1, y) = newG
-        ImageData(QuickVal, y) = newB
-                
-    Next y
-        If (x And progBarCheck) = 0 Then SetProgBarVal x
-    Next x
-        
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
-
-    
 End Sub

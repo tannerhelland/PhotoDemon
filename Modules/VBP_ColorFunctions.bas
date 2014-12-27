@@ -40,17 +40,17 @@ Public Function convertEntireDIBToLabColor(ByRef srcDIB As pdDIB, ByRef dstArray
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Iterate through the image, converting colors as we go
-    Dim x As Long, y As Long, finalX As Long, finalY As Long, QuickX As Long
+    Dim x As Long, y As Long, finalX As Long, finaly As Long, QuickX As Long
     
     finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finaly = srcDIB.getDIBHeight - 1
     
     Dim r As Long, g As Long, b As Long
     Dim labL As Double, labA As Double, labB As Double
     
     For x = 0 To finalX
         QuickX = x * 3
-    For y = 0 To finalY
+    For y = 0 To finaly
     
         'Get the source pixel color values
         r = ImageData(QuickX + 2, y)
@@ -152,9 +152,9 @@ Public Function getQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, finalX As Long, finaly As Long
     finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
+    finaly = srcDIB.getDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -183,7 +183,7 @@ Public Function getQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID
     'Apply the filter
     For x = 0 To finalX
         QuickVal = x * qvDepth
-    For y = 0 To finalY
+    For y = 0 To finaly
         
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)
@@ -798,10 +798,66 @@ Public Sub RGBtoXYZ(ByVal r As Long, ByVal g As Long, ByVal b As Long, ByRef x A
         bFloat = bFloat / 12.92
     End If
     
-    'Calculate XYZ using D65 correction
+    'Calculate XYZ using hard-coded values corresponding to sRGB endpoints
     x = rFloat * 0.4124 + gFloat * 0.3576 + bFloat * 0.1805
     y = rFloat * 0.2126 + gFloat * 0.7152 + bFloat * 0.0722
     z = rFloat * 0.0193 + gFloat * 0.1192 + bFloat * 0.9505
+    
+End Sub
+
+'Convert XYZ to RGB, assuming sRGB endpoints.
+Public Sub XYZtoRGB(ByRef x As Double, ByRef y As Double, ByRef z As Double, ByVal r As Long, ByVal g As Long, ByVal b As Long)
+
+    Dim vX As Double, vY As Double, vZ As Double
+    vX = x / 100
+    vY = y / 100
+    vZ = z / 100
+
+    Dim vR As Double, vG As Double, vB As Double
+    vR = vX * 3.2406 + vY * -1.5372 + vZ * -0.4986
+    vG = vX * -0.9689 + vY * 1.8758 + vZ * 0.0415
+    vB = vX * 0.0557 + vY * -0.204 + vZ * 1.057
+    
+    If (vR > 0.0031308) Then
+        vR = 1.055 * (vR ^ (1 / 2.4)) - 0.055
+    Else
+        vR = 12.92 * vR
+    End If
+    
+    If (vG > 0.0031308) Then
+        vG = 1.055 * (vG ^ (1 / 2.4)) - 0.055
+    Else
+        vG = 12.92 * vG
+    End If
+    
+    If (vB > 0.0031308) Then
+        vB = 1.055 * (vB ^ (1 / 2.4)) - 0.055
+    Else
+        vB = 12.92 * vB
+    End If
+    
+    r = vR * 255
+    g = vG * 255
+    b = vB * 255
+    
+    'Clamp to [0,255] to prevent output errors
+    If r > 255 Then
+        r = 255
+    ElseIf r < 0 Then
+        r = 0
+    End If
+    
+    If g > 255 Then
+        g = 255
+    ElseIf g < 0 Then
+        g = 0
+    End If
+    
+    If b > 255 Then
+        b = 255
+    ElseIf b < 0 Then
+        b = 0
+    End If
     
 End Sub
 
