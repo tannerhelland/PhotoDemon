@@ -500,9 +500,23 @@ Public Function ListCount() As Long
     'We do not track ListCount persistently.  It is requested on-demand from the combo box.
     If m_ComboBoxHwnd <> 0 Then
         ListCount = SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&)
+    Else
+        ListCount = m_NumBackupEntries
     End If
     
 End Function
+
+'Retrieve a specified list item
+Public Property Get List(ByVal indexOfItem As Long) As String
+    
+    'We do not track ListCount persistently.  It is requested on-demand from the combo box.
+    If (indexOfItem >= 0) And (indexOfItem < m_NumBackupEntries) Then
+        List = m_BackupEntries(indexOfItem).entryString
+    Else
+        List = ""
+    End If
+    
+End Property
 
 'Get/set the currently active item.
 ' NB: unlike the default VB combo box, we do not raise an error if an invalid index is requested.
@@ -527,6 +541,9 @@ Public Property Let ListIndex(ByVal newIndex As Long)
             
             'Request the new list index
             SendMessage m_ComboBoxHwnd, CB_SETCURSEL, newIndex, ByVal 0&
+            
+            'Request an immediate repaint; without this, there may be a delay, based on the caller's handling of the Click event
+            cPainterBox.requestRepaint
             
             'Notify the user of the change
             RaiseEvent Click
@@ -584,10 +601,23 @@ Public Property Get FontSize() As Single
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
+    
     If newSize <> m_FontSize Then
         m_FontSize = newSize
-        refreshFont
+        
+        If Not (curFont Is Nothing) Then
+            curFont.releaseFromDC
+            curFont.setFontSize m_FontSize
+            curFont.createFontObject
+            
+            createComboBox
+            
+        End If
+        
+        PropertyChanged "FontSize"
+        
     End If
+    
 End Property
 
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -660,8 +690,7 @@ Private Sub UserControl_Initialize()
     m_ComboBoxHwnd = 0
     
     Set curFont = New pdFont
-    m_FontSize = 10
-    
+        
     'Note that we are not currently responsible for any resize events
     m_InternalResizeState = False
     
@@ -762,6 +791,32 @@ Private Sub createComboBoxBrush()
 
 End Sub
 
+'After curFont has been created, this function can be used to return the "ideal" height of a string rendered via the current font.
+Private Function getIdealStringHeight() As Long
+
+    Dim attachedDC As Long
+    attachedDC = curFont.getAttachedDC
+    curFont.releaseFromDC
+    
+    'Create a temporary DC
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createBlank 1, 1, 24
+    
+    'Select the current font into that DC
+    curFont.attachToDC tmpDIB.getDIBDC
+    
+    'Determine a standard string height
+    getIdealStringHeight = curFont.getHeightOfString("abc123")
+    
+    'Remove the font and release our temporary DIB
+    curFont.releaseFromDC
+    curFont.attachToDC attachedDC
+    
+    'tmpDIB will be automatically released
+    
+End Function
+
 'As the wrapped system combo box may need to be recreated when certain properties are changed, this function is used to
 ' automate the process of destroying an existing window (if any) and recreating it anew.
 Private Function createComboBox() As Boolean
@@ -787,18 +842,9 @@ Private Function createComboBox() As Boolean
     ' using the current font as our guide.  We check for this here, prior to creating the combo box, as we can't easily
     ' access our font object once we assign it to the combo box.
     If Not (curFont Is Nothing) Then
-            
-        'Create a temporary DC
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.createBlank 1, 1, 24
         
-        'Select the current font into that DC
-        curFont.attachToDC tmpDIB.getDIBDC
-        
-        'Determine a standard string height
         Dim idealHeight As Long
-        idealHeight = curFont.getHeightOfString("abc123")
+        idealHeight = getIdealStringHeight()
         
         'Cache this value at module-level; we will need it for subsequent WM_MEASUREITEM requests sent to the parent
         m_ItemHeight = idealHeight
@@ -810,18 +856,14 @@ Private Function createComboBox() As Boolean
         'If it's design-time, resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
         ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
         ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
-        If g_IsProgramRunning Then
+        If g_IsProgramCompiled Then
             MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, UserControl.ScaleWidth, idealHeight + 6, 1
         Else
             UserControl.Height = ScaleY(idealHeight + 8, vbPixels, vbTwips)
         End If
-        
+                
         m_InternalResizeState = False
-        
-        'Remove the font and release our temporary DIB
-        curFont.releaseFromDC
-        Set tmpDIB = Nothing
-            
+                    
     End If
     
     'Determine a unique ID for this combo box instance.  This is needed to identify this control against other owner-drawn controls on the same parent.
@@ -842,9 +884,12 @@ Private Function createComboBox() As Boolean
         End If
     End If
     
-    'Retrieve the combo box's window rect, which is generated relative to the underlying DC
+    'Generate the combo box's window rect, which is positioned relative to the underlying DC
     Dim tmpRect As winRect
-    getComboBoxRect tmpRect
+    tmpRect.x1 = 0
+    tmpRect.y1 = 0
+    tmpRect.x2 = UserControl.ScaleWidth
+    tmpRect.y2 = idealHeight + 6
     
     'Creating a combo box window is a little different from other windows, because the drop-down height must be factored into the initial
     ' size calculation.  We start at zero, then increase the combo box size as additional items are added.
@@ -863,7 +908,8 @@ Private Function createComboBox() As Boolean
             
             'Subclass the combo box
             cSubclass.ssc_Subclass m_ComboBoxHwnd, 0, 1, Me, True, True, True
-            cSubclass.ssc_AddMsg m_ComboBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_MOUSEACTIVATE, WM_SIZE
+            cSubclass.ssc_AddMsg m_ComboBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_MOUSEACTIVATE
+            cSubclass.ssc_AddMsg m_ComboBoxHwnd, MSG_AFTER, WM_SIZE
             
             'Subclass the user control as well.  This is necessary for handling update messages from the edit box
             If Not m_ParentHasBeenSubclassed Then
@@ -953,7 +999,7 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
     'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
     
     'Font face is always set automatically, to match the current program-wide font
-    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
+    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbTextCompare) <> 0) Then
         fontRefreshRequired = True
         curFont.setFontFace g_InterfaceFont
     End If
@@ -970,12 +1016,9 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
         
         curFont.createFontObject
         
-        'Whenever the font is recreated, we need to reassign it to the text box.  This is done via the WM_SETFONT message.
+        'Whenever the font is recreated, we need to reassign it to the combo box.  This is done via the WM_SETFONT message.
         If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, WM_SETFONT, curFont.getFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
-            
-        'Also, the back buffer needs to be rebuilt to reflect the new font metrics
-        ' TODO??
-            
+                    
     End If
     
 End Sub
@@ -1428,18 +1471,18 @@ Private Sub syncUserControlSizeToComboSize()
     'Get the window rect of the combo box
     Dim comboRect As RECTL
     GetWindowRect m_ComboBoxHwnd, comboRect
-                
+    
     'Resize the user control, as necessary
     With UserControl
     
         If g_IsProgramCompiled Then
             MoveWindow UserControl.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, comboRect.Right - comboRect.Left, comboRect.Bottom - comboRect.Top, 1
         Else
-    
+   
             If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
                 .Size .ScaleX((comboRect.Right - comboRect.Left), vbPixels, vbTwips), .ScaleY((comboRect.Bottom - comboRect.Top), vbPixels, vbTwips)
             End If
-        
+   
         End If
     
     End With
@@ -1684,10 +1727,19 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 If MIS.CtlType = ODT_COMBOBOX Then
                     
                     'If the ItemID is -1, the edit box is the source of the measure item.  Otherwise, it is the dropdown.
-                    ' (We shouldn't have to worry about this case, because we have specified integral height for the control; however, we
-                    '  could technically override the measurement and provide our own size for the edit area.)
                     If MIS.itemID = -1 Then
-                        'Debug.Print "Edit box ItemID!"
+                        
+                        'Fill the height parameter; note that m_ItemHeight is the literal height of a string using the current font.
+                        ' Any padding values must be added here.  (I've gone with 1px on either side.)
+                        MIS.itemHeight = m_ItemHeight + 2
+                        
+                        'Copy the pointer to our modified MEASUREITEMSTRUCT back into lParam
+                        CopyMemory ByVal lParam, MIS, LenB(MIS)
+                        
+                        'Note that we have handled the message successfully
+                        bHandled = True
+                        lReturn = 1
+                        
                     Else
                     
                         'Fill the height parameter; note that m_ItemHeight is the literal height of a string using the current font.
