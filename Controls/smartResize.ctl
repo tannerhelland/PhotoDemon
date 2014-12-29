@@ -19,18 +19,40 @@ Begin VB.UserControl smartResize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   566
    ToolboxBitmap   =   "smartResize.ctx":0000
-   Begin VB.ComboBox cmbResolution 
+   Begin PhotoDemon.pdComboBox cmbResolution 
       Height          =   360
       Left            =   3600
-      Style           =   2  'Dropdown List
-      TabIndex        =   11
+      TabIndex        =   13
       Top             =   1215
       Width           =   4695
+      _ExtentX        =   8281
+      _ExtentY        =   635
+      FontSize        =   11
+   End
+   Begin PhotoDemon.pdComboBox cmbHeightUnit 
+      Height          =   360
+      Left            =   3600
+      TabIndex        =   12
+      Top             =   615
+      Width           =   4695
+      _ExtentX        =   8281
+      _ExtentY        =   635
+      FontSize        =   11
+   End
+   Begin PhotoDemon.pdComboBox cmbWidthUnit 
+      Height          =   360
+      Left            =   3600
+      TabIndex        =   11
+      Top             =   15
+      Width           =   4695
+      _ExtentX        =   8281
+      _ExtentY        =   635
+      FontSize        =   14
    End
    Begin PhotoDemon.jcbutton cmdAspectRatio 
       Height          =   630
       Left            =   420
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   180
       Width           =   630
       _ExtentX        =   1111
@@ -55,22 +77,6 @@ Begin VB.UserControl smartResize
       PictureEffectOnDown=   0
       CaptionEffects  =   0
       ColorScheme     =   3
-   End
-   Begin VB.ComboBox cmbHeightUnit 
-      Height          =   360
-      Left            =   3600
-      Style           =   2  'Dropdown List
-      TabIndex        =   7
-      Top             =   615
-      Width           =   4695
-   End
-   Begin VB.ComboBox cmbWidthUnit 
-      Height          =   360
-      Left            =   3600
-      Style           =   2  'Dropdown List
-      TabIndex        =   6
-      Top             =   15
-      Width           =   4695
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   435
@@ -99,7 +105,7 @@ Begin VB.UserControl smartResize
    Begin PhotoDemon.textUpDown tudResolution 
       Height          =   435
       Left            =   2280
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   1200
       Width           =   1200
       _ExtentX        =   2117
@@ -127,7 +133,7 @@ Begin VB.UserControl smartResize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   1050
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   1260
       Width           =   1140
    End
@@ -174,7 +180,7 @@ Begin VB.UserControl smartResize
       Height          =   285
       Index           =   1
       Left            =   2280
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   1830
       Width           =   900
    End
@@ -197,7 +203,7 @@ Begin VB.UserControl smartResize
       Height          =   285
       Index           =   1
       Left            =   2280
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   2400
       Width           =   900
    End
@@ -281,8 +287,10 @@ Attribute VB_Exposed = False
 'Image Resize User Control
 'Copyright ©2001-2014 by Tanner Helland
 'Created: 6/12/01 (original resize dialog), 24/Jan/14 (conversion to user control)
-'Last updated: 10/February/14
-'Last update: finish adding full support for resolution, inches, and cm measurements
+'Last updated: 29/December/14
+'Last update: add a new property for disabling the percent option.  This is relevant in the New Image dialog,
+'              as there is no base size to use as a percent.  A number of functions throughout the control had
+'              to be updated to account for this new property.
 '
 'Many tools in PD relate to resizing: image size, canvas size, (soon) layer size, content-aware rescaling,
 ' perhaps a more advanced autocrop tool, plus dedicated resize options in the batch converter...
@@ -291,7 +299,7 @@ Attribute VB_Exposed = False
 ' resize-centric user control?  As an added bonus, that would allow me to update the user control to extend
 ' new capabilities to all of PD's resize tools.
 '
-'Thus this UC was born.  All resize-related dialogs in the project now use it, and any newfeatures can now
+'Thus this UC was born.  All resize-related dialogs in the project now use it, and any new features can now
 ' automatically propagate across them.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -337,6 +345,17 @@ Private m_UnknownSizeMode As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
+
+'If percentage measurements are disabled, this will be set to TRUE.
+Private m_PercentDisabled As Boolean
+
+
+'If the owner does not want percentage available as an option, set this property to TRUE.
+Public Property Let disablePercentOption(newMode As Boolean)
+
+    m_PercentDisabled = newMode
+
+End Property
 
 'If any text value is NOT valid, this will return FALSE
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
@@ -426,15 +445,15 @@ Private Sub mFont_FontChanged(ByVal PropertyName As String)
     
     Set lblWidth.Font = UserControl.Font
     tudWidth.FontSize = UserControl.Font.Size
-    Set cmbWidthUnit.Font = UserControl.Font
+    cmbWidthUnit.FontSize = UserControl.Font.Size
     
     Set lblHeight.Font = UserControl.Font
     tudHeight.FontSize = UserControl.Font.Size
-    Set cmbHeightUnit.Font = UserControl.Font
+    cmbHeightUnit.FontSize = UserControl.Font.Size
     
     Set lblResolution.Font = UserControl.Font
     tudResolution.FontSize = UserControl.Font.Size
-    Set cmbResolution.Font = UserControl.Font
+    cmbResolution.FontSize = UserControl.Font.Size
     
     Set lblAspectRatio(0).Font = UserControl.Font
     Set lblAspectRatio(1).Font = UserControl.Font
@@ -837,11 +856,6 @@ Private Sub tudWidth_Change()
     If Not unitSyncingSuspended Then syncDimensions True
 End Sub
 
-'If the preserve aspect ratio button is pressed, update the height box to reflect the image's current aspect ratio
-Private Sub ChkRatio_Click()
-    syncDimensions True
-End Sub
-
 Private Sub UserControl_Terminate()
     
     'When the control is terminated, release the subclassing used for transparent backgrounds
@@ -944,7 +958,9 @@ Private Sub updateAspectRatio()
         imgHeightPixels = convertUnitToPixels(cmbHeightUnit.ListIndex, tudHeight, getResolutionAsPPI(), initHeight)
         
         'Convert the floating-point aspect ratio to a fraction
-        convertToFraction imgWidthPixels / imgHeightPixels, wholeNumber, Numerator, Denominator, 4, 99.9
+        If imgHeightPixels > 0 Then
+            convertToFraction imgWidthPixels / imgHeightPixels, wholeNumber, Numerator, Denominator, 4, 99.9
+        End If
         
         'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
         If CLng(Denominator) = 5 Then
@@ -960,7 +976,9 @@ Private Sub updateAspectRatio()
         
         Else
         
-            lblAspectRatio(1).Caption = " " & Numerator & ":" & Denominator & "  (" & Format$(imgWidthPixels / imgHeightPixels, "######0.0#####") & ")"
+            If imgHeightPixels > 0 Then
+                lblAspectRatio(1).Caption = " " & Numerator & ":" & Denominator & "  (" & Format$(imgWidthPixels / imgHeightPixels, "######0.0#####") & ")"
+            End If
             
             'While we're here, also update the dimensions caption
             lblDimensions(1).Caption = " " & Int(imgWidthPixels) & " px   X   " & Int(imgHeightPixels) & " px"
