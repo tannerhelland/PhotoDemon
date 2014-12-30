@@ -20,6 +20,15 @@ Begin VB.UserControl textUpDown
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   75
    ToolboxBitmap   =   "textUpDown.ctx":0000
+   Begin PhotoDemon.pdTextBox txtPrimary 
+      Height          =   315
+      Left            =   15
+      TabIndex        =   1
+      Top             =   15
+      Width           =   750
+      _ExtentX        =   1323
+      _ExtentY        =   556
+   End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -30,29 +39,9 @@ Begin VB.UserControl textUpDown
       ScaleHeight     =   25
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   17
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   0
       Width           =   255
-   End
-   Begin VB.TextBox txtPrimary 
-      Alignment       =   2  'Center
-      CausesValidation=   0   'False
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   15
-      TabIndex        =   0
-      Text            =   "0"
-      Top             =   15
-      Width           =   735
    End
    Begin VB.Shape shpError 
       BorderColor     =   &H000000FF&
@@ -136,7 +125,7 @@ Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boole
     
     'If the current text value is not valid, highlight the problem and optionally display an error message box
     If Not retVal Then
-        AutoSelectText txtPrimary
+        txtPrimary.selectAll
         If showError Then IsTextEntryValid True
     End If
     
@@ -153,6 +142,8 @@ End Property
 Public Property Let Enabled(ByVal NewValue As Boolean)
     UserControl.Enabled = NewValue
     txtPrimary.Enabled = NewValue
+    txtPrimary = getFormattedStringValue(controlVal)
+    vsPrimary.Enabled = NewValue
     PropertyChanged "Enabled"
 End Property
 
@@ -170,8 +161,29 @@ Public Property Let FontSize(ByVal newSize As Single)
     End If
 End Property
 
+Private Sub txtPrimary_Change()
+    
+    If IsTextEntryValid() Then
+        If shpError.Visible Then shpError.Visible = False
+        textBoxInitiated = True
+        vsPrimary.Value = CDblCustom(txtPrimary) * -1 * (10 ^ significantDigits)
+        textBoxInitiated = False
+    Else
+        If Me.Enabled Then shpError.Visible = True
+    End If
+    
+End Sub
+
+Private Sub txtPrimary_Resize()
+    
+    If UserControl.ScaleHeight <> txtPrimary.Height + 2 Then
+        UserControl.Extender.Height = txtPrimary.Height + 2
+    End If
+    
+End Sub
+
 Private Sub vsPrimary_Scroll()
-    If Not textBoxInitiated Then copyValToTextBox -1 * vsPrimary.Value
+    If Not textBoxInitiated Then copyValToTextBox -1 * vsPrimary.Value, True
     Value = -1 * (vsPrimary.Value / (10 ^ significantDigits))
 End Sub
 
@@ -226,7 +238,9 @@ Public Property Let Value(ByVal NewValue As Double)
                 txtPrimary = getFormattedStringValue(controlVal)
                 shpError.Visible = False
             Else
-                If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = getFormattedStringValue(controlVal)
+                If Len(txtPrimary) > 0 Then
+                    If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = getFormattedStringValue(controlVal)
+                End If
             End If
         End If
         
@@ -320,6 +334,9 @@ Public Property Let SigDigits(ByVal NewValue As Long)
         vsPrimary.Min = newMin
     End If
     
+    'Update the text display to reflect the new significant digit amount, including any decimal places
+    txtPrimary = getFormattedStringValue(controlVal)
+    
     PropertyChanged "SigDigits"
     
 End Property
@@ -335,28 +352,10 @@ Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
 End Property
 
 Private Sub txtPrimary_GotFocus()
-    AutoSelectText txtPrimary
-End Sub
-
-Private Sub txtPrimary_KeyUp(KeyCode As Integer, Shift As Integer)
-    
-    If IsTextEntryValid() Then
-        If shpError.Visible Then shpError.Visible = False
-        textBoxInitiated = True
-        vsPrimary.Value = CDblCustom(txtPrimary) * -1 * (10 ^ significantDigits)
-        textBoxInitiated = False
-    Else
-        shpError.Visible = True
-    End If
-    
+    txtPrimary.selectAll
 End Sub
 
 Private Sub UserControl_Initialize()
-    
-    'When compiled, manifest-themed controls need to be further subclassed so they can have transparent backgrounds.
-    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then
-        g_Themer.requestContainerSubclass UserControl.hWnd
-    End If
     
     origForecolor = ForeColor
         
@@ -408,23 +407,26 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
+    resizeControl
+End Sub
+
+Private Sub resizeControl()
 
     'Keep the text box and scroll bar nicely aligned, with a 1px border for the red "error" box
     If g_IsProgramCompiled And g_IsVistaOrLater And g_IsThemingEnabled Then
         picScroll.Width = fixDPI(19)
-        picScroll.Top = -1
-        picScroll.Height = UserControl.ScaleHeight + 1
+        picScroll.Top = 0
+        picScroll.Height = UserControl.ScaleHeight
     Else
         picScroll.Width = fixDPI(17)
-        picScroll.Top = 0 'fixDPI(1)
-        picScroll.Height = UserControl.ScaleHeight - fixDPI(2)
+        picScroll.Top = 0
+        picScroll.Height = UserControl.ScaleHeight
     End If
     
     'Leave a 1px border around the text box, to be used for displaying red during range and numeric errors
     txtPrimary.Left = 1
     txtPrimary.Top = 1
     txtPrimary.Width = UserControl.ScaleWidth - 2 - picScroll.Width
-    txtPrimary.Height = UserControl.ScaleHeight - 2
     
     'Align the scroll bar container to the right of the text box
     picScroll.Left = txtPrimary.Left + txtPrimary.Width
@@ -435,6 +437,7 @@ Private Sub UserControl_Resize()
     shpError.Height = UserControl.ScaleHeight
     If g_IsProgramCompiled And g_IsVistaOrLater And g_IsThemingEnabled Then shpError.Width = UserControl.ScaleWidth - 2 Else shpError.Width = UserControl.ScaleWidth
     
+
 End Sub
 
 Private Sub UserControl_Show()
@@ -502,23 +505,25 @@ Private Function getFormattedStringValue(ByVal srcValue As Double) As String
             getFormattedStringValue = Format(CStr(srcValue), "#0.000")
     
     End Select
+    
+    'Perform a final check for control enablement.  If the control is disabled, we do not (currently) display anything.
+    If Not Me.Enabled Then getFormattedStringValue = ""
 
 End Function
 
-'Populate the text box with a given integer value.
-Private Sub copyValToTextBox(ByVal srcValue As Double)
+'Populate the text box with a properly formatted version of the current control value
+Private Sub copyValToTextBox(ByVal srcValue As Double, Optional ByVal ignoreCaretPosition As Boolean = False)
 
     'Remember the current cursor position
     Dim cursorPos As Long
     cursorPos = txtPrimary.SelStart
-
+    
     'Overwrite the current text box value with the new value
     txtPrimary = getFormattedStringValue(srcValue / (10 ^ significantDigits))
-    txtPrimary.Refresh
     
     'Restore the cursor to its original position
     If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
-    txtPrimary.SelStart = cursorPos
+    If Not ignoreCaretPosition Then txtPrimary.SelStart = cursorPos
     
     'Hide the error box - we know it's not needed, as the value has been set via scroll bar
     If shpError.Visible Then shpError.Visible = False
@@ -567,7 +572,8 @@ End Function
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
     
-    txtPrimary.FontName = g_InterfaceFont
+    'txtPrimary.FontName = g_InterfaceFont
+    txtPrimary.updateAgainstCurrentTheme
     
     'In the future, additional drawing instructions can be added here.
     
