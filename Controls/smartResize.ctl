@@ -23,7 +23,7 @@ Begin VB.UserControl smartResize
       Height          =   360
       Left            =   3600
       TabIndex        =   13
-      Top             =   1215
+      Top             =   1200
       Width           =   4695
       _ExtentX        =   8281
       _ExtentY        =   635
@@ -33,7 +33,7 @@ Begin VB.UserControl smartResize
       Height          =   360
       Left            =   3600
       TabIndex        =   12
-      Top             =   615
+      Top             =   600
       Width           =   4695
       _ExtentX        =   8281
       _ExtentY        =   635
@@ -43,7 +43,7 @@ Begin VB.UserControl smartResize
       Height          =   360
       Left            =   3600
       TabIndex        =   11
-      Top             =   15
+      Top             =   0
       Width           =   4695
       _ExtentX        =   8281
       _ExtentY        =   635
@@ -79,7 +79,7 @@ Begin VB.UserControl smartResize
       ColorScheme     =   3
    End
    Begin PhotoDemon.textUpDown tudWidth 
-      Height          =   435
+      Height          =   345
       Left            =   2280
       TabIndex        =   0
       Top             =   0
@@ -91,7 +91,7 @@ Begin VB.UserControl smartResize
       Value           =   1
    End
    Begin PhotoDemon.textUpDown tudHeight 
-      Height          =   435
+      Height          =   345
       Left            =   2280
       TabIndex        =   1
       Top             =   600
@@ -103,7 +103,7 @@ Begin VB.UserControl smartResize
       Value           =   1
    End
    Begin PhotoDemon.textUpDown tudResolution 
-      Height          =   435
+      Height          =   345
       Left            =   2280
       TabIndex        =   9
       Top             =   1200

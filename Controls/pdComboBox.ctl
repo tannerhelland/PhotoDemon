@@ -1789,6 +1789,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         ' Note that focus changes also force a repaint of the control.
         Case WM_SETFOCUS
             InstallHookConditional
+            cPainterBox.requestRepaint
             
         Case WM_KILLFOCUS
             If m_InHookNow Then
@@ -1796,6 +1797,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             Else
                 RemoveHookConditional
             End If
+            cPainterBox.requestRepaint
             
         'Resize messages must be handled manually for the combo box, as we need to dynamically sync the resize state of both parent and child window
         Case WM_SIZE
