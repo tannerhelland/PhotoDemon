@@ -349,11 +349,15 @@ Dim m_ToolTip As clsToolTip
 'If percentage measurements are disabled, this will be set to TRUE.
 Private m_PercentDisabled As Boolean
 
-
 'If the owner does not want percentage available as an option, set this property to TRUE.
 Public Property Let disablePercentOption(newMode As Boolean)
 
     m_PercentDisabled = newMode
+    
+    'All dropdowns need to be repopulated if percent mode has been de/activated
+    populateDropdowns
+
+    PropertyChanged "DisablePercentOption"
 
 End Property
 
@@ -481,11 +485,15 @@ End Property
 'Width and height in pixels can be set/retrieved from these properties.  Note that if the current text value for either dimension
 ' is invalid, this function will simply return the image's original width/height (in pixels, obviously).
 Public Property Get imgWidthInPixels() As Long
-    imgWidth = convertUnitToPixels(cmbWidthUnit.ListIndex, tudWidth, getResolutionAsPPI(), initWidth)
+    imgWidth = convertUnitToPixels(getCurrentWidthUnit, tudWidth, getResolutionAsPPI(), initWidth)
 End Property
 
 Public Property Let imgWidthInPixels(newWidth As Long)
-    cmbWidthUnit.ListIndex = MU_PIXELS
+    If m_PercentDisabled Then
+        cmbWidthUnit.ListIndex = MU_PIXELS - 1
+    Else
+        cmbWidthUnit.ListIndex = MU_PIXELS
+    End If
     unitSyncingSuspended = True
     tudWidth = newWidth
     unitSyncingSuspended = False
@@ -493,11 +501,15 @@ Public Property Let imgWidthInPixels(newWidth As Long)
 End Property
 
 Public Property Get imgHeightInPixels() As Long
-    imgHeight = convertUnitToPixels(cmbHeightUnit.ListIndex, tudHeight, getResolutionAsPPI(), initHeight)
+    imgHeight = convertUnitToPixels(getCurrentHeightUnit, tudHeight, getResolutionAsPPI(), initHeight)
 End Property
 
 Public Property Let imgHeightInPixels(newHeight As Long)
-    cmbWidthUnit.ListIndex = MU_PIXELS
+    If m_PercentDisabled Then
+        cmbWidthUnit.ListIndex = MU_PIXELS - 1
+    Else
+        cmbWidthUnit.ListIndex = MU_PIXELS
+    End If
     unitSyncingSuspended = True
     tudHeight = newHeight
     unitSyncingSuspended = False
@@ -511,7 +523,7 @@ Public Property Get imgWidth() As Double
     If tudWidth.IsValid(False) Then
         imgWidth = tudWidth
     Else
-        imgWidth = convertOtherUnitToPixels(cmbWidthUnit.ListIndex, initWidth, getResolutionAsPPI(), initWidth)
+        imgWidth = convertOtherUnitToPixels(getCurrentWidthUnit, initWidth, getResolutionAsPPI(), initWidth)
     End If
 End Property
 
@@ -524,7 +536,7 @@ Public Property Get imgHeight() As Double
     If tudHeight.IsValid(False) Then
         imgHeight = tudHeight
     Else
-        imgHeight = convertOtherUnitToPixels(cmbHeightUnit.ListIndex, initHeight, getResolutionAsPPI(), initHeight)
+        imgHeight = convertOtherUnitToPixels(getCurrentHeightUnit, initHeight, getResolutionAsPPI(), initHeight)
     End If
 End Property
 
@@ -563,11 +575,22 @@ End Property
 
 'The current unit of measurement can also be retrieved.  Note that these values are kept in sync for both width/height.
 Public Property Get unitOfMeasurement() As MeasurementUnit
-    unitOfMeasurement = cmbWidthUnit.ListIndex
+    unitOfMeasurement = getCurrentWidthUnit
 End Property
 
 Public Property Let unitOfMeasurement(newUnit As MeasurementUnit)
-    cmbWidthUnit.ListIndex = newUnit
+    
+    If m_PercentDisabled Then
+        cmbWidthUnit.ListIndex = newUnit - 1
+    Else
+        cmbWidthUnit.ListIndex = newUnit
+    End If
+    
+    'As a failsafe, make sure significant digits and everything else are properly synchronized.
+    ' (This is necessary because the .ListIndex assignment, above, won't trigger a _Click event unless the
+    '  new measurement differs from the old measurement.)
+    convertUnitsToNewValue previousUnitOfMeasurement, newUnit
+    
 End Property
 
 'The current unit of resolution (e.g. PPI).
@@ -590,12 +613,12 @@ Private Sub cmbHeightUnit_Click()
     cmbWidthUnit.ListIndex = cmbHeightUnit.ListIndex
     
     'Convert the current measurements to the new ones.
-    convertUnitsToNewValue previousUnitOfMeasurement, cmbHeightUnit.ListIndex
+    convertUnitsToNewValue previousUnitOfMeasurement, getCurrentHeightUnit
     
     'Mark the new unit as the previous unit of measurement.  Future unit conversions will rely on this value to know how
     ' to convert their values.  (We must store this separately, because clicking a combo box will instantly change the
     ' ListIndex, erasing the previous value.)
-    previousUnitOfMeasurement = cmbHeightUnit.ListIndex
+    previousUnitOfMeasurement = getCurrentHeightUnit
     
     'Restore automatic synchronization
     unitSyncingSuspended = False
@@ -616,10 +639,10 @@ Private Sub cmbWidthUnit_Click()
     cmbHeightUnit.ListIndex = cmbWidthUnit.ListIndex
     
     'Convert the current measurements to the new ones.
-    convertUnitsToNewValue previousUnitOfMeasurement, cmbWidthUnit.ListIndex
+    convertUnitsToNewValue previousUnitOfMeasurement, getCurrentWidthUnit
     
     'Mark this as the previous unit of measurement.  Future unit conversions will rely on this value to know how to convert the present values.
-    previousUnitOfMeasurement = cmbWidthUnit.ListIndex
+    previousUnitOfMeasurement = getCurrentWidthUnit
     
     'Restore automatic synchronization
     unitSyncingSuspended = False
@@ -645,7 +668,7 @@ Private Sub convertUnitsToNewValue(ByVal oldUnit As MeasurementUnit, ByVal newUn
     Dim newWidth As Double, newHeight As Double
     newWidth = convertPixelToOtherUnit(newUnit, imgWidthPixels, getResolutionAsPPI(), initWidth)
     newHeight = convertPixelToOtherUnit(newUnit, imgHeightPixels, getResolutionAsPPI(), initHeight)
-    
+        
     'Depending on the unit of measurement, change the significant digits and upper limit of the text up/down boxes
     Select Case newUnit
     
@@ -738,6 +761,20 @@ Private Sub UserControl_Initialize()
     allowedToUpdateWidth = True
     allowedToUpdateHeight = True
     
+    'Populate all dropdowns
+    populateDropdowns
+    
+    'Default all interface elements to pixels
+    convertUnitsToNewValue MU_PIXELS, MU_PIXELS
+        
+    'Prepare a font object for use
+    Set mFont = New StdFont
+    Set UserControl.Font = mFont
+
+End Sub
+
+Private Sub populateDropdowns()
+    
     'Prevent unit syncing until the combo boxes have been populated
     unitSyncingSuspended = True
     
@@ -745,11 +782,15 @@ Private Sub UserControl_Initialize()
     cmbWidthUnit.Clear
     
     If g_IsProgramRunning Then
-        cmbWidthUnit.AddItem g_Language.TranslateMessage(" percent"), 0
-        cmbWidthUnit.AddItem g_Language.TranslateMessage(" pixels"), 1
-        cmbWidthUnit.AddItem g_Language.TranslateMessage(" inches"), 2
-        cmbWidthUnit.AddItem g_Language.TranslateMessage(" centimeters"), 3
-        cmbWidthUnit.ListIndex = MU_PIXELS
+        If Not m_PercentDisabled Then cmbWidthUnit.AddItem g_Language.TranslateMessage(" percent"), 0
+        cmbWidthUnit.AddItem g_Language.TranslateMessage(" pixels")
+        cmbWidthUnit.AddItem g_Language.TranslateMessage(" inches")
+        cmbWidthUnit.AddItem g_Language.TranslateMessage(" centimeters")
+        If Not m_PercentDisabled Then
+            cmbWidthUnit.ListIndex = MU_PIXELS
+        Else
+            cmbWidthUnit.ListIndex = MU_PIXELS - 1
+        End If
     End If
     
     'Rather than manually populate the height unit box, just copy whatever entries we've set for the width box
@@ -773,10 +814,6 @@ Private Sub UserControl_Initialize()
     
     'Restore automatic unit syncing
     unitSyncingSuspended = False
-    
-    'Prepare a font object for use
-    Set mFont = New StdFont
-    Set UserControl.Font = mFont
 
 End Sub
 
@@ -788,6 +825,8 @@ Private Sub UserControl_InitProperties()
     mFont_FontChanged ("")
     
     UnknownSizeMode = False
+    
+    disablePercentOption = False
 
 End Sub
 
@@ -796,6 +835,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Set Font = .ReadProperty("Font", Ambient.Font)
         UnknownSizeMode = .ReadProperty("UnknownSizeMode", False)
+        disablePercentOption = .ReadProperty("DisablePercentOption", False)
     End With
     
 End Sub
@@ -859,7 +899,7 @@ End Sub
 Private Sub UserControl_Terminate()
     
     'When the control is terminated, release the subclassing used for transparent backgrounds
-    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.releaseContainerSubclass UserControl.hWnd
+    'If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.releaseContainerSubclass UserControl.hWnd
     
 End Sub
 
@@ -877,8 +917,8 @@ Private Sub syncDimensions(ByVal useWidthAsSource As Boolean)
     ' equivalent, in case subsequent conversion functions needs it.
     Dim imgWidthPixels As Double, imgHeightPixels As Double
     
-    imgWidthPixels = convertUnitToPixels(cmbWidthUnit.ListIndex, tudWidth, getResolutionAsPPI(), initWidth)
-    imgHeightPixels = convertUnitToPixels(cmbHeightUnit.ListIndex, tudHeight, getResolutionAsPPI(), initHeight)
+    imgWidthPixels = convertUnitToPixels(getCurrentWidthUnit, tudWidth, getResolutionAsPPI(), initWidth)
+    imgHeightPixels = convertUnitToPixels(getCurrentHeightUnit, tudHeight, getResolutionAsPPI(), initHeight)
     
     'Synchronization is divided into two possible code paths: synchronizing height to match width, and width to match height.
     ' These could technically be merged down to a single path, but I find it more intuitive to handle them separately (despite
@@ -889,7 +929,7 @@ Private Sub syncDimensions(ByVal useWidthAsSource As Boolean)
         If cmdAspectRatio.Value And allowedToUpdateHeight Then
             
             'The HEIGHT text value needs to be synched to the WIDTH text value.  How we do this depends on the current resize unit.
-            Select Case cmbWidthUnit.ListIndex
+            Select Case getCurrentWidthUnit
             
                 'Percent
                 Case MU_PERCENT
@@ -900,7 +940,7 @@ Private Sub syncDimensions(ByVal useWidthAsSource As Boolean)
                 
                     'For all other conversions, we simply want to calculate an aspect-ratio preserved height value (in pixels),
                     ' which we can then use to populate the height up/down box.
-                    tudHeight = convertPixelToOtherUnit(cmbWidthUnit.ListIndex, Int((imgWidthPixels * hRatio) + 0.5), getResolutionAsPPI(), initWidth)
+                    tudHeight = convertPixelToOtherUnit(getCurrentWidthUnit, Int((imgWidthPixels * hRatio) + 0.5), getResolutionAsPPI(), initWidth)
             
             End Select
             
@@ -912,7 +952,7 @@ Private Sub syncDimensions(ByVal useWidthAsSource As Boolean)
         If cmdAspectRatio.Value And allowedToUpdateWidth Then
         
             'The WIDTH text value needs to be synched to the HEIGHT text value.  How we do this depends on the current resize unit.
-            Select Case cmbWidthUnit.ListIndex
+            Select Case getCurrentHeightUnit
         
                 'Percent
                 Case MU_PERCENT
@@ -920,7 +960,7 @@ Private Sub syncDimensions(ByVal useWidthAsSource As Boolean)
                 
                 'Anything else
                 Case Else
-                    tudWidth = convertPixelToOtherUnit(cmbHeightUnit.ListIndex, Int((imgHeightPixels * wRatio) + 0.5), getResolutionAsPPI(), initWidth)
+                    tudWidth = convertPixelToOtherUnit(getCurrentHeightUnit, Int((imgHeightPixels * wRatio) + 0.5), getResolutionAsPPI(), initWidth)
                 
             End Select
             
@@ -935,8 +975,8 @@ Private Sub syncDimensions(ByVal useWidthAsSource As Boolean)
     updateAspectRatio
     
     'Update our image width/height in pixel values, so we can raise them as part of the control's Change event
-    imgWidthPixels = convertUnitToPixels(cmbWidthUnit.ListIndex, tudWidth, getResolutionAsPPI(), initWidth)
-    imgHeightPixels = convertUnitToPixels(cmbHeightUnit.ListIndex, tudHeight, getResolutionAsPPI(), initHeight)
+    imgWidthPixels = convertUnitToPixels(getCurrentWidthUnit, tudWidth, getResolutionAsPPI(), initWidth)
+    imgHeightPixels = convertUnitToPixels(getCurrentHeightUnit, tudHeight, getResolutionAsPPI(), initHeight)
     
     RaiseEvent Change(imgWidthPixels, imgHeightPixels, tudWidth, tudHeight)
 
@@ -954,8 +994,8 @@ Private Sub updateAspectRatio()
     
         'Retrieve width and height values in pixel amounts
         Dim imgWidthPixels As Double, imgHeightPixels As Double
-        imgWidthPixels = convertUnitToPixels(cmbWidthUnit.ListIndex, tudWidth, getResolutionAsPPI(), initWidth)
-        imgHeightPixels = convertUnitToPixels(cmbHeightUnit.ListIndex, tudHeight, getResolutionAsPPI(), initHeight)
+        imgWidthPixels = convertUnitToPixels(getCurrentWidthUnit, tudWidth, getResolutionAsPPI(), initWidth)
+        imgHeightPixels = convertUnitToPixels(getCurrentHeightUnit, tudHeight, getResolutionAsPPI(), initHeight)
         
         'Convert the floating-point aspect ratio to a fraction
         If imgHeightPixels > 0 Then
@@ -969,7 +1009,7 @@ Private Sub updateAspectRatio()
         End If
         
         'In "unknown size mode", we can't display exact dimensions for PERCENT mode, so don't even try.
-        If m_UnknownSizeMode And (cmbWidthUnit.ListIndex = MU_PERCENT) Then
+        If m_UnknownSizeMode And (getCurrentWidthUnit = MU_PERCENT) Then
         
             lblAspectRatio(1).Caption = " " & g_Language.TranslateMessage("exact aspect ratio will vary by image")
             lblDimensions(1).Caption = " " & g_Language.TranslateMessage("exact size will vary by image")
@@ -998,6 +1038,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Font", mFont, "Tahoma"
         .WriteProperty "UnknownSizeMode", m_UnknownSizeMode, False
+        .WriteProperty "DisablePercentOption", m_PercentDisabled, False
     End With
 
 End Sub
@@ -1031,4 +1072,22 @@ Private Function getResolutionAsPPI() As Double
         getResolutionAsPPI = initDPI
     End If
     
+End Function
+
+'Percent mode may be disabled on some controls.  To ensure proper control behavior, this wrapper should be be used,
+' instead of accessing cmbWidth/HeightUnit.ListIndex directly.
+Private Function getCurrentWidthUnit() As Long
+    If m_PercentDisabled Then
+        getCurrentWidthUnit = cmbWidthUnit.ListIndex + 1
+    Else
+        getCurrentWidthUnit = cmbWidthUnit.ListIndex
+    End If
+End Function
+
+Private Function getCurrentHeightUnit() As Long
+    If m_PercentDisabled Then
+        getCurrentHeightUnit = cmbHeightUnit.ListIndex + 1
+    Else
+        getCurrentHeightUnit = cmbHeightUnit.ListIndex
+    End If
 End Function
