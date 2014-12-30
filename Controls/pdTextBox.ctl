@@ -994,11 +994,14 @@ Private Sub forwardFocusManually(ByVal focusDirectionForward As Boolean)
             newIndex = myIndex
         End If
         
-        'Some controls may not have a TabStop property.  That's okay - just keep iterating if it happens.
-        On Error GoTo NextControlCheck
+        'When sited on a UC, we may not be able to iterate a controls collection.  Simply exit if this occurs.
+        On Error GoTo ParentHasNoControls
         
         Dim Ctl As Control, targetControl As Control
         For Each Ctl In Parent.Controls
+        
+        'Some controls may not have a TabStop property.  That's okay - just keep iterating if it happens.
+        On Error GoTo NextControlCheck
             
             'Hypothetically, our error handler should remove the need for this kind of check.  That said, I prefer to handle the
             ' non-focusable objects like this, although this requires any outside user to complete the list with their own potentially
@@ -1033,7 +1036,9 @@ Private Sub forwardFocusManually(ByVal focusDirectionForward As Boolean)
             
 NextControlCheck:
         Next
-        
+
+ParentHasNoControls:
+
         'When moving focus forward, we now have one of two possibilites:
         ' 1) NewIndex represents the tab index of a valid control whose index is higher than us.
         ' 2) NewIndex is still MAX_INDEX, because no control with a valid tab index was found.
