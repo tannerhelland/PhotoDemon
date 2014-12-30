@@ -3,8 +3,8 @@ Attribute VB_Name = "Unit_Conversion_Functions"
 'Unit Conversion Functions
 'Copyright ©2013-2014 by Tanner Helland
 'Created: 10/February/14
-'Last updated: 10/February/14
-'Last update: abstracted measurement conversion code from smartResize UC to this standalone module
+'Last updated: 30/December/14
+'Last update: harden code against potential divide-by-zero errors
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
 ' until February '14.  This module is now used to store all the random bits of unit conversion math required by the
@@ -48,16 +48,16 @@ Public Function convertPixelToOtherUnit(ByVal unitOfMeasurement As MeasurementUn
     Select Case unitOfMeasurement
     
         Case MU_PERCENT
-            convertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100
+            If initPixelValue <> 0 Then convertPixelToOtherUnit = (srcPixelValue / initPixelValue) * 100
             
         Case MU_PIXELS
             convertPixelToOtherUnit = srcPixelValue
             
         Case MU_INCHES
-            convertPixelToOtherUnit = srcPixelValue / srcPixelResolution
+            If srcPixelResolution <> 0 Then convertPixelToOtherUnit = srcPixelValue / srcPixelResolution
         
         Case MU_CENTIMETERS
-            convertPixelToOtherUnit = getCMFromInches(srcPixelValue / srcPixelResolution)
+            If srcPixelResolution <> 0 Then convertPixelToOtherUnit = getCMFromInches(srcPixelValue / srcPixelResolution)
     
     End Select
 
