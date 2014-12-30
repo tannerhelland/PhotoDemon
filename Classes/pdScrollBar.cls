@@ -479,7 +479,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             GetClientRect m_OwnerHwnd, curWinRect
             
             'Resize the scroll bar accordingly
-            SetWindowPos m_ScrollHwnd, 0, curWinRect.x1 + 1, curWinRect.y1 + 1, curWinRect.x2 - 1, curWinRect.y2 - 1, SWP_NOZORDER Or SWP_NOACTIVATE 'Or SWP_NOSENDCHANGING
+            SetWindowPos m_ScrollHwnd, 0, curWinRect.x1 + 1, curWinRect.y1 + 1, curWinRect.x2 - 2, curWinRect.y2 - 2, SWP_NOZORDER Or SWP_NOACTIVATE 'Or SWP_NOSENDCHANGING
             
         'Scroll bar event!
         Case WM_HSCROLL, WM_VSCROLL
