@@ -70,7 +70,7 @@ Option Explicit
 'By design, this textbox raises fewer events than a standard text box
 Public Event Change()
 Public Event KeyPress(ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
-
+Public Event Resize()
 
 'Window styles
 Private Enum enWindowStyles
@@ -238,6 +238,7 @@ Private Const WM_MOUSEACTIVATE As Long = &H21
 Private Const WM_CTLCOLOREDIT As Long = &H133
 
 Private Const EN_UPDATE As Long = &H400
+Private Const EM_GETSEL As Long = &HB0
 Private Const EM_SETSEL As Long = &HB1
 
 Private Const VK_SHIFT As Long = &H10
@@ -374,10 +375,24 @@ Public Property Get FontSize() As Single
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
+    
     If newSize <> m_FontSize Then
         m_FontSize = newSize
-        refreshFont
+        
+        If Not (curFont Is Nothing) Then
+            
+            'Recreate the font object
+            curFont.releaseFromDC
+            curFont.setFontSize m_FontSize
+            curFont.createFontObject
+            
+            'Edit box sizes are ideally set by the system, at creation time, so we don't have a choice but to recreate the box now
+            createEditBox
+            
+        End If
+        
     End If
+    
 End Property
 
 Public Property Get Multiline() As Boolean
@@ -395,6 +410,26 @@ Public Property Let Multiline(ByVal NewState As Boolean)
         
         PropertyChanged "Multiline"
         
+    End If
+    
+End Property
+
+'SelStart is used by some PD functions to control caret positioning after automatic text updates (as used in the text up/down)
+Public Property Get SelStart() As Long
+    
+    Dim startPos As Long, endPos As Long, retVal As Long
+    
+    If m_EditBoxHwnd <> 0 Then
+        retVal = SendMessage(m_EditBoxHwnd, EM_GETSEL, startPos, endPos)
+        SelStart = startPos
+    End If
+    
+End Property
+
+Public Property Let SelStart(ByVal newPosition As Long)
+    
+    If m_EditBoxHwnd <> 0 Then
+        SendMessage m_EditBoxHwnd, EM_SETSEL, newPosition, newPosition
     End If
     
 End Property
@@ -468,6 +503,32 @@ Public Sub selectAll()
     End If
 
 End Sub
+
+'After curFont has been created, this function can be used to return the "ideal" height of a string rendered via the current font.
+Private Function getIdealStringHeight() As Long
+
+    Dim attachedDC As Long
+    attachedDC = curFont.getAttachedDC
+    curFont.releaseFromDC
+    
+    'Create a temporary DC
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createBlank 1, 1, 24
+    
+    'Select the current font into that DC
+    curFont.attachToDC tmpDIB.getDIBDC
+    
+    'Determine a standard string height
+    getIdealStringHeight = curFont.getHeightOfString("abc123")
+    
+    'Remove the font and release our temporary DIB
+    curFont.releaseFromDC
+    curFont.attachToDC attachedDC
+    
+    'tmpDIB will be automatically released
+    
+End Function
 
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
@@ -577,8 +638,10 @@ Private Sub UserControl_Resize()
         
         'Redraw the control background
         updateControlSize
-        
+                
     End If
+    
+    RaiseEvent Resize
 
 End Sub
 
@@ -670,9 +733,9 @@ Private Function createEditBox() As Boolean
     
     If m_Multiline Then
         flagsWinStyle = flagsWinStyle Or WS_VSCROLL
-        flagsEditControl = flagsEditControl Or ES_MULTILINE Or ES_WANTRETURN Or ES_AUTOVSCROLL Or ES_NOHIDESEL
+        flagsEditControl = flagsEditControl Or ES_MULTILINE Or ES_WANTRETURN Or ES_AUTOVSCROLL 'Or ES_NOHIDESEL
     Else
-        flagsEditControl = flagsEditControl Or ES_AUTOHSCROLL Or ES_NOHIDESEL
+        flagsEditControl = flagsEditControl Or ES_AUTOHSCROLL 'Or ES_NOHIDESEL
     End If
     
     'Multiline text boxes can have any height.  Single-line text boxes cannot; they are forced to an ideal height,
@@ -681,36 +744,21 @@ Private Function createEditBox() As Boolean
     If Not m_Multiline Then
         If Not (curFont Is Nothing) Then
             
-            'Create a temporary DC
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.createBlank 1, 1, 24
-            
-            'Select the current font into that DC
-            curFont.attachToDC tmpDIB.getDIBDC
-            
             'Determine a standard string height
             Dim idealHeight As Long
-            idealHeight = curFont.getHeightOfString("abc123")
+            idealHeight = getIdealStringHeight()
             
             'Resize the user control accordingly; the formula for height is the string height + 5px of borders.
             ' (5px = 2px on top, 3px on bottom.)  User control width is not changed.
             m_InternalResizeState = True
             
-            'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
-            ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
-            ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
+            'If the program is running (e.g. NOT design-time) resize the user control to match.  This improves compile-time performance, as there
+            ' are a lot of instances in this control, and their size events will be fired during compilation.
             If g_IsProgramRunning Then
-                MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, UserControl.ScaleWidth, idealHeight + 5, 1
-            Else
                 UserControl.Height = ScaleY(idealHeight + 5, vbPixels, vbTwips)
             End If
             
             m_InternalResizeState = False
-            
-            'Remove the font and release our temporary DIB
-            curFont.releaseFromDC
-            Set tmpDIB = Nothing
             
         End If
     End If

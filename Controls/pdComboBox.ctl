@@ -606,10 +606,13 @@ Public Property Let FontSize(ByVal newSize As Single)
         m_FontSize = newSize
         
         If Not (curFont Is Nothing) Then
+            
+            'Recreate the font object
             curFont.releaseFromDC
             curFont.setFontSize m_FontSize
             curFont.createFontObject
             
+            'Combo box sizes are set by the system, at creation time, so we don't have a choice but to recreate the box now
             createComboBox
             
         End If
@@ -853,12 +856,9 @@ Private Function createComboBox() As Boolean
         ' (5px = 2px on top, 3px on bottom.)  User control width is not changed.
         m_InternalResizeState = True
         
-        'If it's design-time, resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
-        ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
-        ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
-        If g_IsProgramCompiled Then
-            MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, UserControl.ScaleWidth, idealHeight + 6, 1
-        Else
+        'If the program is running (e.g. NOT design-time) resize the user control to match.  This improves compile-time performance, as there
+        ' are a lot of instances in this control, and their size events will be fired during compilation.
+        If g_IsProgramRunning Then
             UserControl.Height = ScaleY(idealHeight + 8, vbPixels, vbTwips)
         End If
                 
