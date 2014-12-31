@@ -490,7 +490,7 @@ End Property
 'Width and height in pixels can be set/retrieved from these properties.  Note that if the current text value for either dimension
 ' is invalid, this function will simply return the image's original width/height (in pixels, obviously).
 Public Property Get imgWidthInPixels() As Long
-    imgWidth = convertUnitToPixels(getCurrentWidthUnit, tudWidth, getResolutionAsPPI(), initWidth)
+    imgWidthInPixels = convertUnitToPixels(getCurrentWidthUnit, tudWidth, getResolutionAsPPI(), initWidth)
 End Property
 
 Public Property Let imgWidthInPixels(newWidth As Long)
@@ -506,7 +506,7 @@ Public Property Let imgWidthInPixels(newWidth As Long)
 End Property
 
 Public Property Get imgHeightInPixels() As Long
-    imgHeight = convertUnitToPixels(getCurrentHeightUnit, tudHeight, getResolutionAsPPI(), initHeight)
+    imgHeightInPixels = convertUnitToPixels(getCurrentHeightUnit, tudHeight, getResolutionAsPPI(), initHeight)
 End Property
 
 Public Property Let imgHeightInPixels(newHeight As Long)
