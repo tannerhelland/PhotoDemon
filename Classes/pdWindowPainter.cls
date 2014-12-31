@@ -86,6 +86,11 @@ Public Sub startPainter(ByVal srcHwnd As Long)
     m_hWnd = srcHwnd
     
     'Subclass all necessary messages for proper window painting
+    If Not (cSubclass Is Nothing) And (m_hWnd <> 0) Then
+        cSubclass.ssc_UnSubclass m_hWnd
+        cSubclass.ssc_Terminate
+    End If
+    
     Set cSubclass = New cSelfSubHookCallback
     cSubclass.ssc_Subclass m_hWnd, , , Me
     cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
