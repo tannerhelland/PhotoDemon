@@ -59,15 +59,6 @@ Begin VB.Form FormWhiteBalance
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   0.01
       Max             =   5
       SigDigits       =   2
@@ -103,7 +94,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'White Balance Handler
-'Copyright ©2012-2014 by Tanner Helland
+'Copyright 2012-2014 by Tanner Helland
 'Created: 03/July/12
 'Last updated: 24/August/13
 'Last update: added command bar

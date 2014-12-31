@@ -642,15 +642,6 @@ Begin VB.Form FormPluginManager
          Width           =   6855
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   1
          Max             =   11
          SliderTrackStyle=   1
@@ -1798,7 +1789,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Plugin Manager
-'Copyright ©2012-2014 by Tanner Helland
+'Copyright 2012-2014 by Tanner Helland
 'Created: 21/December/12
 'Last updated: 02/July/14
 'Last update: replaced all pngnq-s9 interactions with PNGQuant

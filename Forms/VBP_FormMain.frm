@@ -1512,13 +1512,13 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Please see the included README.txt file for additional information regarding licensing and redistribution.
 
-'PhotoDemon is Copyright ©1999-2014 by Tanner Helland, tannerhelland.com
+'PhotoDemon is Copyright 1999-2014 by Tanner Helland, tannerhelland.com
 
 'Please visit photodemon.org for updates and additional downloads
 
 '***************************************************************************
 'Main Program Form
-'Copyright ©2002-2014 by Tanner Helland
+'Copyright 2002-2014 by Tanner Helland
 'Created: 15/September/02
 'Last updated: 13/June/14
 'Last update: solve remaining asynchronicity problems when metadata parsing is delayed or full-on interrupted
@@ -1914,15 +1914,15 @@ Private Sub MnuLayerOrientation_Click(Index As Integer)
         
         'Rotate 90
         Case 2
-            Process "Rotate layer 90° clockwise", , , UNDO_LAYER
+            Process "Rotate layer 90 clockwise", , , UNDO_LAYER
         
         'Rotate 270
         Case 3
-            Process "Rotate layer 90° counter-clockwise", , , UNDO_LAYER
+            Process "Rotate layer 90 counter-clockwise", , , UNDO_LAYER
         
         'Rotate 180
         Case 4
-            Process "Rotate layer 180°", , , UNDO_LAYER
+            Process "Rotate layer 180", , , UNDO_LAYER
         
         'Rotate arbitrary
         Case 5
@@ -3854,15 +3854,15 @@ Private Sub MnuRotate_Click(Index As Integer)
         
         'Rotate 90
         Case 2
-            Process "Rotate image 90° clockwise", , , UNDO_IMAGE
+            Process "Rotate image 90 clockwise", , , UNDO_IMAGE
         
         'Rotate 270
         Case 3
-            Process "Rotate image 90° counter-clockwise", , , UNDO_IMAGE
+            Process "Rotate image 90 counter-clockwise", , , UNDO_IMAGE
         
         'Rotate 180
         Case 4
-            Process "Rotate image 180°", , , UNDO_IMAGE
+            Process "Rotate image 180", , , UNDO_IMAGE
         
         'Rotate arbitrary
         Case 5

@@ -45,7 +45,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Selection ("Tab") Toolbar
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 15/October/13
 'Last updated: 31/May/14
 'Last update: rewrite all custom mouse code against pdInput

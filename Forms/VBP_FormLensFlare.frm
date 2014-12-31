@@ -94,15 +94,6 @@ Begin VB.Form FormLensFlare
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   0.01
          Max             =   3
          SigDigits       =   2
@@ -119,15 +110,6 @@ Begin VB.Form FormLensFlare
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   0.01
          Max             =   3
          SigDigits       =   2
@@ -239,15 +221,6 @@ Begin VB.Form FormLensFlare
          Width           =   2895
          _ExtentX        =   5106
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Max             =   1
          SigDigits       =   2
          Value           =   0.5
@@ -262,15 +235,6 @@ Begin VB.Form FormLensFlare
          Width           =   2895
          _ExtentX        =   5106
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Max             =   1
          SigDigits       =   2
          Value           =   0.5
@@ -286,15 +250,6 @@ Begin VB.Form FormLensFlare
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   0.01
          Max             =   3
          SigDigits       =   2
@@ -310,15 +265,6 @@ Begin VB.Form FormLensFlare
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   1
          Max             =   200
          Value           =   100
@@ -333,15 +279,6 @@ Begin VB.Form FormLensFlare
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Max             =   359
          SliderTrackStyle=   4
       End
@@ -480,7 +417,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Lens Flare Form
-'Copyright ©2014 by Audioglider
+'Copyright 2014 by Audioglider
 'Created: 12/June/14
 'Last updated: 12/June/14
 'Last update: expand options exposed to the user.  Flare radius, intensity, and hue offset are now settable.

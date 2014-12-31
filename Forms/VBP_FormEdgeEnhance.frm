@@ -117,15 +117,6 @@ Begin VB.Form FormEdgeEnhance
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   100
       NotchPosition   =   2
       NotchValueCustom=   50
@@ -201,7 +192,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Edge Enhancement Interface
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: sometimes 2002
 'Last updated: 12/June/14
 'Last update: give tool its own form, and open it up to all available edge detection techniques

@@ -32,7 +32,7 @@ Begin VB.Form dialog_IDEWarning
       Top             =   5520
       Width           =   6675
       _ExtentX        =   11774
-      _ExtentY        =   529
+      _ExtentY        =   582
       Caption         =   "Do not display this warning again"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -164,7 +164,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'IDE Warning Dialog
-'Copyright ©2011-2014 by Tanner Helland
+'Copyright 2011-2014 by Tanner Helland
 'Created: 15/December/12
 'Last updated: 15/December/12
 'Last update: initial build; this replaces the generic message box previously used

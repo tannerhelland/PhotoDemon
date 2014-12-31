@@ -594,7 +594,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Handler
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 30/September/13
 'Last update: when drawing cubic spline histograms, cache various GDI+ handles to improve performance.
@@ -931,7 +931,7 @@ Private Sub DrawHistogramGradient(ByRef dstObject As PictureBox, ByVal Color1 As
     b2 = (Color2 \ 65536) And 255
     
     'Calculation variables for the gradiency
-    Dim VR As Double, VG As Double, VB As Double
+    Dim vR As Double, vG As Double, vB As Double
     
     'Size of the picture box we'll be drawing to
     Dim iWidth As Long, iHeight As Long
@@ -940,22 +940,22 @@ Private Sub DrawHistogramGradient(ByRef dstObject As PictureBox, ByVal Color1 As
     
     'Here, create a calculation variable for determining the step between
     'each level of the gradient
-    VR = Abs(r - r2) / iWidth
-    VG = Abs(g - g2) / iWidth
-    VB = Abs(b - b2) / iWidth
+    vR = Abs(r - r2) / iWidth
+    vG = Abs(g - g2) / iWidth
+    vB = Abs(b - b2) / iWidth
     
     'If the second value is lower then the first value, make the step negative
-    If r2 < r Then VR = -VR
-    If g2 < g Then VG = -VG
-    If b2 < b Then VB = -VB
+    If r2 < r Then vR = -vR
+    If g2 < g Then vG = -vG
+    If b2 < b Then vB = -vB
     
     'Last, run a loop through the width of the picture box, incrementing the color as
     'we go (thus creating a gradient effect)
     Dim x As Long
     For x = 0 To iWidth
-        r2 = r + VR * x
-        g2 = g + VG * x
-        b2 = b + VB * x
+        r2 = r + vR * x
+        g2 = g + vG * x
+        b2 = b + vB * x
         dstObject.Line (x, 0)-(x, iHeight), RGB(r2, g2, b2)
     Next x
     

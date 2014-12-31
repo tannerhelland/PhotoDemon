@@ -30,7 +30,7 @@ Begin VB.Form FormResize
       Top             =   5640
       Width           =   7935
       _ExtentX        =   13996
-      _ExtentY        =   661
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdComboBox cboResampleFriendly 
       Height          =   375
@@ -38,8 +38,8 @@ Begin VB.Form FormResize
       TabIndex        =   7
       Top             =   3960
       Width           =   7935
-      _extentx        =   13996
-      _extenty        =   661
+      _ExtentX        =   13996
+      _ExtentY        =   635
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -48,9 +48,17 @@ Begin VB.Form FormResize
       TabIndex        =   0
       Top             =   6750
       Width           =   9630
-      _extentx        =   16986
-      _extenty        =   1323
-      font            =   "VBP_FormResize.frx":0000
+      _ExtentX        =   16986
+      _ExtentY        =   1323
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
@@ -58,9 +66,17 @@ Begin VB.Form FormResize
       TabIndex        =   1
       Top             =   480
       Width           =   8775
-      _extentx        =   15478
-      _extenty        =   5027
-      font            =   "VBP_FormResize.frx":0028
+      _ExtentX        =   15478
+      _ExtentY        =   5027
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkNames 
       Height          =   300
@@ -68,10 +84,18 @@ Begin VB.Form FormResize
       TabIndex        =   2
       Top             =   4440
       Width           =   7905
-      _extentx        =   13944
-      _extenty        =   582
-      caption         =   "show technical names"
-      font            =   "VBP_FormResize.frx":0050
+      _ExtentX        =   13944
+      _ExtentY        =   582
+      Caption         =   "show technical names"
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
@@ -81,8 +105,8 @@ Begin VB.Form FormResize
       Top             =   6120
       Visible         =   0   'False
       Width           =   7935
-      _extentx        =   13996
-      _extenty        =   873
+      _ExtentX        =   13996
+      _ExtentY        =   873
    End
    Begin PhotoDemon.pdComboBox cboResampleTechnical 
       Height          =   375
@@ -90,8 +114,8 @@ Begin VB.Form FormResize
       TabIndex        =   8
       Top             =   3960
       Width           =   7935
-      _extentx        =   13996
-      _extenty        =   635
+      _ExtentX        =   13996
+      _ExtentY        =   635
    End
    Begin VB.Label lblSize 
       Appearance      =   0  'Flat
@@ -167,7 +191,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 09/May/14
 'Last update: allow resizing of the entire image, or a single layer

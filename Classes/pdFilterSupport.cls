@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Filter Support Class
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 15/January/13
 'Last updated: 21/May/14
 'Last update: add new getColorsFromSource function, which can be used to RGB values from anywhere in the image,

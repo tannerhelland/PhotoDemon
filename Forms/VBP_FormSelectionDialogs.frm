@@ -54,15 +54,6 @@ Begin VB.Form FormSelectionDialogs
       Min             =   1
       Max             =   500
       Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -102,7 +93,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Multi-purpose Selection Dialog
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 11/July/13
 'Last updated: 11/July/13
 'Last update: initial build

@@ -122,15 +122,6 @@ Begin VB.Form FormRotateDistort
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -360
       Max             =   360
       SigDigits       =   1
@@ -143,15 +134,6 @@ Begin VB.Form FormRotateDistort
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
@@ -166,15 +148,6 @@ Begin VB.Form FormRotateDistort
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
@@ -310,7 +283,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rotate Distort Effect Interface (separate from image rotation for a reason - see below)
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 22/August/13
 'Last updated: 10/January/14
 'Last update: new feature allows the user to select a custom center point for the rotation

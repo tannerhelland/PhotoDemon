@@ -53,15 +53,6 @@ Begin VB.Form FormSharpen
       Min             =   0.1
       SigDigits       =   1
       Value           =   0.1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -101,7 +92,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Sharpen Tool
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 09/August/13 (actually, a naive version was built years ago, but didn't offer variable strength)
 'Last updated: 22/August/13
 'Last update: rewrote the ApplyConvolutionFilter call against the new paramString implementation

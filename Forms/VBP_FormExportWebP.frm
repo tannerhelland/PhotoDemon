@@ -153,7 +153,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Google WebP Export Dialog
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 14/February/14
 'Last updated: 14/February/14
 'Last update: initial build

@@ -4,8 +4,8 @@ Begin VB.Form FormSoftwareUpdate
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Update Notifier"
-   ClientHeight    =   5313
-   ClientLeft      =   42
+   ClientHeight    =   5310
+   ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   10710
    BeginProperty Font 
@@ -20,9 +20,9 @@ Begin VB.Form FormSoftwareUpdate
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   759
+   ScaleHeight     =   354
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1530
+   ScaleWidth      =   714
    ShowInTaskbar   =   0   'False
    Begin VB.CommandButton cmdOKNo 
       Caption         =   "&OK"
@@ -41,9 +41,9 @@ Begin VB.Form FormSoftwareUpdate
       Height          =   5295
       Left            =   0
       MousePointer    =   1  'Arrow
-      ScaleHeight     =   756
+      ScaleHeight     =   353
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1545
+      ScaleWidth      =   721
       TabIndex        =   11
       Top             =   5520
       Visible         =   0   'False
@@ -333,7 +333,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Automatic Software Updater (note: it doesn't do the actual updating, it just CHECKS for updates!)
-'Copyright ©2012-2014 by Tanner Helland
+'Copyright 2012-2014 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 19/August/12
 'Last update: initial build

@@ -79,15 +79,6 @@ Begin VB.Form FormPixelate
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   64
       Value           =   2
@@ -100,15 +91,6 @@ Begin VB.Form FormPixelate
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   64
       Value           =   2
@@ -161,7 +143,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pixelate filter interface (formerly "mosaic")
-'Copyright ©2000-2014 by Tanner Helland
+'Copyright 2000-2014 by Tanner Helland
 'Created: 8/5/00
 'Last updated: 05/June/14
 'Last update: fix to work with 32bpp images

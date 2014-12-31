@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Natural"
 '***************************************************************************
 '"Natural" Filters
-'Copyright ©2002-2014 by Tanner Helland
+'Copyright 2002-2014 by Tanner Helland
 'Created: 8/April/02
 'Last updated: Summer '14
 'Last update: see comments below

@@ -59,15 +59,6 @@ Begin VB.Form FormColorTemp
       Width           =   6135
       _ExtentX        =   10821
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   100
       Value           =   50
@@ -82,15 +73,6 @@ Begin VB.Form FormColorTemp
       Width           =   6135
       _ExtentX        =   10821
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1000
       Max             =   15000
       SliderTrackStyle=   3
@@ -184,7 +166,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Temperature Adjustment Form
-'Copyright ©2012-2014 by Tanner Helland
+'Copyright 2012-2014 by Tanner Helland
 'Created: 16/September/12
 'Last updated: 22/June/14
 'Last update: add background gradient support for the temperature slider

@@ -73,7 +73,7 @@ Begin VB.Form FormTile
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.textUpDown tudWidth 
-      Height          =   405
+      Height          =   345
       Left            =   8040
       TabIndex        =   5
       Top             =   2400
@@ -83,18 +83,9 @@ Begin VB.Form FormTile
       Min             =   1
       Max             =   32767
       Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudHeight 
-      Height          =   405
+      Height          =   345
       Left            =   8040
       TabIndex        =   6
       Top             =   3030
@@ -104,15 +95,6 @@ Begin VB.Form FormTile
       Min             =   1
       Max             =   32767
       Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblFlatten 
       Alignment       =   2  'Center
@@ -280,7 +262,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tile Rendering Interface
-'Copyright ©2012-2014 by Tanner Helland
+'Copyright 2012-2014 by Tanner Helland
 'Created: 25/August/12
 'Last updated: 24/August/13
 'Last update: clean up and modernize all code; install new text up/down user controls, add command bar

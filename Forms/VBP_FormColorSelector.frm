@@ -363,7 +363,7 @@ Begin VB.Form dialog_ColorSelector
       Width           =   3975
    End
    Begin PhotoDemon.textUpDown tudRGB 
-      Height          =   405
+      Height          =   345
       Index           =   0
       Left            =   10320
       TabIndex        =   15
@@ -374,7 +374,7 @@ Begin VB.Form dialog_ColorSelector
       Max             =   255
    End
    Begin PhotoDemon.textUpDown tudRGB 
-      Height          =   405
+      Height          =   345
       Index           =   1
       Left            =   10320
       TabIndex        =   17
@@ -385,7 +385,7 @@ Begin VB.Form dialog_ColorSelector
       Max             =   255
    End
    Begin PhotoDemon.textUpDown tudRGB 
-      Height          =   405
+      Height          =   345
       Index           =   2
       Left            =   10320
       TabIndex        =   19
@@ -396,7 +396,7 @@ Begin VB.Form dialog_ColorSelector
       Max             =   255
    End
    Begin PhotoDemon.textUpDown tudHSV 
-      Height          =   405
+      Height          =   345
       Index           =   0
       Left            =   10320
       TabIndex        =   22
@@ -407,7 +407,7 @@ Begin VB.Form dialog_ColorSelector
       Max             =   359
    End
    Begin PhotoDemon.textUpDown tudHSV 
-      Height          =   405
+      Height          =   345
       Index           =   1
       Left            =   10320
       TabIndex        =   24
@@ -418,7 +418,7 @@ Begin VB.Form dialog_ColorSelector
       Max             =   100
    End
    Begin PhotoDemon.textUpDown tudHSV 
-      Height          =   405
+      Height          =   345
       Index           =   2
       Left            =   10320
       TabIndex        =   26
@@ -683,7 +683,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Selection Dialog
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 11/November/13
 'Last updated: 11/February/14
 'Last update: allow color selection from anywhere on the screen

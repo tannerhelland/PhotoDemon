@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_PNGQuant_Interface"
 '***************************************************************************
 'PNGQuant Interface (formerly pngnq-s9 interface)
-'Copyright ©2012-2014 by Tanner Helland
+'Copyright 2012-2014 by Tanner Helland
 'Created: 19/December/12
 'Last updated: 02/July/14
 'Last update: migrate all plugin support to the official pngquant library.  Work on pngnq-s9 has pretty much

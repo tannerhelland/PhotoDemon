@@ -115,7 +115,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Content-Aware Resize (e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 06/January/14
 'Last updated: 29/July/14
 'Last update: fixed some 32bpp issues, added serpentine scanning for ideal treatment of images on uniform backgrounds

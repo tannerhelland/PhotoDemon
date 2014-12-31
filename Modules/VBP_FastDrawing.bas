@@ -1,7 +1,7 @@
 Attribute VB_Name = "FastDrawing"
 '***************************************************************************
 'Fast API Graphics Routines Interface
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 05/June/14
 'Last update: add support for individual filters and adjustments to override alpha premultiplication handling

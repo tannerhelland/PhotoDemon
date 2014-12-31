@@ -1,7 +1,7 @@
 Attribute VB_Name = "Unit_Conversion_Functions"
 '***************************************************************************
 'Unit Conversion Functions
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 10/February/14
 'Last updated: 30/December/14
 'Last update: harden code against potential divide-by-zero errors

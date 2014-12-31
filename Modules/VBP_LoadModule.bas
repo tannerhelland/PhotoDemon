@@ -1,7 +1,7 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'Program/File Loading Handler
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 06/August/14
 'Last update: greatly improve robustness against any asynchronous metadata issues that may arise
@@ -2420,8 +2420,8 @@ Public Sub LoadAccelerators()
         .AddAccelerator 188, vbCtrlMask Or vbAltMask, "Reduce colors", FormMain.MnuImage(16), True, True, False, UNDO_IMAGE
         
             'Image -> Rotate submenu
-            .AddAccelerator vbKeyR, 0, "Rotate image 90° clockwise", FormMain.MnuRotate(2), True, True, False, UNDO_IMAGE
-            .AddAccelerator vbKeyL, 0, "Rotate image 90° counter-clockwise", FormMain.MnuRotate(3), True, True, False, UNDO_IMAGE
+            .AddAccelerator vbKeyR, 0, "Rotate image 90 clockwise", FormMain.MnuRotate(2), True, True, False, UNDO_IMAGE
+            .AddAccelerator vbKeyL, 0, "Rotate image 90 counter-clockwise", FormMain.MnuRotate(3), True, True, False, UNDO_IMAGE
             .AddAccelerator vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "Arbitrary image rotation", FormMain.MnuRotate(5), True, True, True, UNDO_NOTHING
         
         'Layer Menu

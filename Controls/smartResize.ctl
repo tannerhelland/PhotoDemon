@@ -286,7 +286,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Resize User Control
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 6/12/01 (original resize dialog), 24/Jan/14 (conversion to user control)
 'Last updated: 29/December/14
 'Last update: add a new property for disabling the percent option.  This is relevant in the New Image dialog,

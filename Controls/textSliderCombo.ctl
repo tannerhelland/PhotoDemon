@@ -21,7 +21,7 @@ Begin VB.UserControl sliderTextCombo
    ScaleWidth      =   400
    ToolboxBitmap   =   "textSliderCombo.ctx":0000
    Begin PhotoDemon.textUpDown tudPrimary 
-      Height          =   420
+      Height          =   345
       Left            =   5040
       TabIndex        =   1
       Top             =   45
@@ -52,7 +52,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Text / Slider custom control
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 31/October/14
 'Last update: drop AutoRedraw and move to our own flicker-free rendering solution

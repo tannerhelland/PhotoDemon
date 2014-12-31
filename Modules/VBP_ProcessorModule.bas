@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 02/June/14
 'Last update: minimize use of the busy cursor; it should now only be triggered for actions that affect DIBs directly
@@ -141,10 +141,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 Case "Fit canvas to layer", "Fit canvas to all layers", "Trim empty borders"
                     removeSelectionInAdvance = True
                     
-                Case "Rotate image 90° clockwise", "Rotate 90° clockwise", "Rotate image 180°", "Rotate 180°"
+                Case "Rotate image 90 clockwise", "Rotate 90 clockwise", "Rotate image 180", "Rotate 180"
                     removeSelectionInAdvance = True
                     
-                Case "Rotate image 90° counter-clockwise", "Rotate 90° counter-clockwise", "Arbitrary image rotation", "Arbitrary rotation"
+                Case "Rotate image 90 counter-clockwise", "Rotate 90 counter-clockwise", "Arbitrary image rotation", "Arbitrary rotation"
                     removeSelectionInAdvance = True
                     
                 Case "Flip image vertically", "Flip vertically", "Flip image horizontally", "Flip horizontally", "Tile"
@@ -516,13 +516,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
             End If
         
-        Case "Rotate image 90° clockwise", "Rotate 90° clockwise"
+        Case "Rotate image 90 clockwise", "Rotate 90 clockwise"
             MenuRotate90Clockwise
             
-        Case "Rotate image 180°", "Rotate 180°"
+        Case "Rotate image 180", "Rotate 180"
             MenuRotate180
             
-        Case "Rotate image 90° counter-clockwise", "Rotate 90° counter-clockwise"
+        Case "Rotate image 90 counter-clockwise", "Rotate 90 counter-clockwise"
             MenuRotate270Clockwise
             
         Case "Arbitrary image rotation", "Arbitrary rotation"
@@ -620,13 +620,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
             End If
             
-        Case "Rotate layer 90° clockwise"
+        Case "Rotate layer 90 clockwise"
             MenuRotate90Clockwise pdImages(g_CurrentImage).getActiveLayerIndex
             
-        Case "Rotate layer 180°"
+        Case "Rotate layer 180"
             MenuRotate180 pdImages(g_CurrentImage).getActiveLayerIndex
             
-        Case "Rotate layer 90° counter-clockwise"
+        Case "Rotate layer 90 counter-clockwise"
             MenuRotate270Clockwise pdImages(g_CurrentImage).getActiveLayerIndex
             
         Case "Arbitrary layer rotation"

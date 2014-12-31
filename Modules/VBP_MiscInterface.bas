@@ -1,7 +1,7 @@
 Attribute VB_Name = "Interface"
 '***************************************************************************
 'Miscellaneous Functions Related to the User Interface
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 20/June/14
 'Last update: add interface-syncing functions for non-destructive edit tools

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_ExifTool_Interface"
 '***************************************************************************
 'ExifTool Plugin Interface
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 24/May/13
 'Last updated: 22/October/14
 'Last update: many technical improvements to metadata writing.  Formats that support only XMP or Exif will now have

@@ -93,15 +93,6 @@ Begin VB.Form FormGamma
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   0
       Min             =   0.01
       Max             =   3
@@ -119,15 +110,6 @@ Begin VB.Form FormGamma
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   0
       Min             =   0.01
       Max             =   3
@@ -145,15 +127,6 @@ Begin VB.Form FormGamma
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   0
       Min             =   0.01
       Max             =   3
@@ -254,7 +227,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gamma Correction Handler
-'Copyright ©2000-2014 by Tanner Helland
+'Copyright 2000-2014 by Tanner Helland
 'Created: 12/May/01
 'Last updated: 23/April/13
 'Last update: replaced all scroll bars and text boxes with my new combo text/scroll control.  Floating-point entry is
@@ -339,7 +312,7 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -367,10 +340,10 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
     Dim gLookUp(0 To 2, 0 To 255) As Byte
     Dim tmpVal As Double
     
-    For Y = 0 To 2
-    For X = 0 To 255
-        tmpVal = X / 255
-        Select Case Y
+    For y = 0 To 2
+    For x = 0 To 255
+        tmpVal = x / 255
+        Select Case y
             Case 0
                 tmpVal = tmpVal ^ (1 / rGamma)
             Case 1
@@ -383,33 +356,33 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
         
-        gLookUp(Y, X) = tmpVal
-    Next X
-    Next Y
+        gLookUp(y, x) = tmpVal
+    Next x
+    Next y
         
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
                 
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, Y) = gLookUp(0, r)
-        ImageData(QuickVal + 1, Y) = gLookUp(1, g)
-        ImageData(QuickVal, Y) = gLookUp(2, b)
+        ImageData(QuickVal + 2, y) = gLookUp(0, r)
+        ImageData(QuickVal + 1, y) = gLookUp(1, g)
+        ImageData(QuickVal, y) = gLookUp(2, b)
         
-    Next Y
+    Next y
         If toPreview = False Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -431,7 +404,7 @@ Private Sub updatePreview()
     
         Dim prevX As Double, prevY As Double
         Dim curX As Double, curY As Double
-        Dim X As Long, Y As Long
+        Dim x As Long, y As Long
         
         Dim xWidth As Long, yHeight As Long
         xWidth = picChart.ScaleWidth
@@ -445,15 +418,15 @@ Private Sub updatePreview()
         Dim gamVal As Double, tmpVal As Double
         
         'Draw each of the current gamma curves for the user's reference
-        For Y = 0 To 2
+        For y = 0 To 2
             
             'If all channels are in sync, draw only blue; otherwise, color each channel individually
-            gamVal = sltGamma(Y)
+            gamVal = sltGamma(y)
             If (sltGamma(0) = sltGamma(1)) And (sltGamma(1) = sltGamma(2)) Then
                 picChart.ForeColor = RGB(0, 0, 255)
             Else
             
-                Select Case Y
+                Select Case y
                     Case 0
                         picChart.ForeColor = RGB(255, 0, 0)
                     Case 1
@@ -470,18 +443,18 @@ Private Sub updatePreview()
             curY = yHeight
         
             'Draw the next channel (with antialiasing!)
-            For X = 0 To xWidth
-                tmpVal = X / xWidth
+            For x = 0 To xWidth
+                tmpVal = x / xWidth
                 tmpVal = tmpVal ^ (1 / gamVal)
                 tmpVal = yHeight - (tmpVal * yHeight)
                 curY = tmpVal
-                curX = X
+                curX = x
                 GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
                 prevX = curX
                 prevY = curY
-            Next X
+            Next x
             
-        Next Y
+        Next y
         
         picChart.Picture = picChart.Image
         picChart.Refresh

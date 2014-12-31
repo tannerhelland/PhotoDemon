@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 
 '***************************************************************************
 'Google Translate Interface
-'Copyright ©2013-2014 by Frank Donckers
+'Copyright 2013-2014 by Frank Donckers
 'Created: 19/February/13
 'Last updated: 10/September/13
 'Last update: (by Tanner) moved all relevant code into this singular class, various minor modifications
@@ -161,14 +161,12 @@ RetryTranslation:
     If InStr(processedHTML, " .") <> 0 Then processedHTML = Replace(processedHTML, " .", ".", 1, , vbTextCompare)
     If InStr(processedHTML, " \") <> 0 Then processedHTML = Replace(processedHTML, " \ ", "\", 1, , vbTextCompare)
     If InStr(processedHTML, " /") <> 0 Then processedHTML = Replace(processedHTML, " / ", "/", 1, , vbTextCompare)
-    If InStr(processedHTML, "»") <> 0 Then processedHTML = Replace(processedHTML, "»", "'", 1, , vbTextCompare)
-    If InStr(processedHTML, "«") <> 0 Then processedHTML = Replace(processedHTML, "«", "'", 1, , vbTextCompare)
     If InStr(processedHTML, "% ") <> 0 Then processedHTML = Replace(processedHTML, "% ", " %", 1, , vbTextCompare)
     
     'Thanks to Zhu JY for pointing out that «/» are not handled properly under some localizations, so use their
     ' character codes instead.
-    If InStr(processedHTML, Chr$(174)) <> 0 Then processedHTML = Replace(processedHTML, Chr$(174), "'", 1, , vbTextCompare)
-    If InStr(processedHTML, Chr$(175)) <> 0 Then processedHTML = Replace(processedHTML, Chr$(175), "'", 1, , vbTextCompare)
+    If InStr(processedHTML, ChrW$(174)) <> 0 Then processedHTML = Replace(processedHTML, ChrW$(174), "'", 1, , vbTextCompare)
+    If InStr(processedHTML, ChrW$(175)) <> 0 Then processedHTML = Replace(processedHTML, ChrW$(175), "'", 1, , vbTextCompare)
     
     'Return the translated data
     getGoogleTranslation = processedHTML

@@ -68,7 +68,7 @@ Begin VB.Form dialog_MultiImage
       Top             =   3120
       Width           =   5055
       _ExtentX        =   8916
-      _ExtentY        =   529
+      _ExtentY        =   582
       Caption         =   "always apply this action to multi-image files"
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -108,7 +108,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Multi-Image Load Dialog
-'Copyright ©2011-2014 by Tanner Helland
+'Copyright 2011-2014 by Tanner Helland
 'Created: 01/December/12
 'Last updated: 27/December/12
 'Last update: add support for icon files, which may contain many embedded icons.

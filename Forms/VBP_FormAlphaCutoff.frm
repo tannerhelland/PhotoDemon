@@ -190,7 +190,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Alpha Cut-Off Dialog
-'Copyright ©2012-2014 by Tanner Helland
+'Copyright 2012-2014 by Tanner Helland
 'Created: 15/December/12
 'Last updated: 29/January/14
 'Last update: add an option for composite background color; with thanks to Kroc of camendesign.com for the suggestion

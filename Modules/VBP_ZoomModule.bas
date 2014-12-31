@@ -1,7 +1,7 @@
 Attribute VB_Name = "Viewport_Engine"
 '***************************************************************************
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 30/May/14
 'Last update: add support for "preserve relative canvas position under cursor while mousewheel zooming"

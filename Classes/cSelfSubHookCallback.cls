@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 'Note: this file has been modified for use within PhotoDemon.
 
-'To my knowledge, this class is ©2007 Paul Caton and LaVolpe
+'To my knowledge, this class is Copyright 2007 Paul Caton and LaVolpe
 
 'You may download the original version of this code from the following link (good as of February '13):
 ' http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=68737&lngWId=1
@@ -396,13 +396,13 @@ Public Sub ssc_DelMsg(ByVal lng_hWnd As Long, ByVal When As eMsgWhen, ParamArray
 End Sub
 
 'Let the subclasser lParamUser callback parameter
-Public Sub zSet_lParamUser(ByVal hWnd_Hook_ID As Long, ByVal vType As eThunkType, ByVal newValue As Long)
+Public Sub zSet_lParamUser(ByVal hWnd_Hook_ID As Long, ByVal vType As eThunkType, ByVal NewValue As Long)
     ' can be removed if you never will retrieve or replace the user-defined parameter
     If vType <> CallbackThunk Then
         Dim z_ScMem       As Long         'Thunk base address
         z_ScMem = zMap_VFunction(hWnd_Hook_ID, vType)
         If z_ScMem Then                 'Ensure that the thunk hasn't already released its memory
-          zData(IDX_PARM_USER, z_ScMem) = newValue                                         'Set the lParamUser callback parameter
+          zData(IDX_PARM_USER, z_ScMem) = NewValue                                         'Set the lParamUser callback parameter
         End If
     End If
 End Sub

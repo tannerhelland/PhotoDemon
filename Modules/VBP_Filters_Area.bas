@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Area"
 '***************************************************************************
 'Filter (Area) Interface
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 10/June/14
 'Last update: rewrite central convolution function to accept source/destination layers; this will allow us to use it from

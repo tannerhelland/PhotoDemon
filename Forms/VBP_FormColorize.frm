@@ -78,15 +78,6 @@ Begin VB.Form FormColorize
       Width           =   6015
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   359
       SliderTrackStyle=   4
       Value           =   180
@@ -120,7 +111,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Colorize Form
-'Copyright ©2006-2014 by Tanner Helland
+'Copyright 2006-2014 by Tanner Helland
 'Created: 12/January/07
 'Last updated: 22/June/14
 'Last update: replace old scroll bar with slider/text combo
@@ -168,7 +159,7 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -189,14 +180,14 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
     Dim h As Double, s As Double, l As Double
         
     'Loop through each pixel in the image, converting values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
         
         'Get the hue and saturation
         tRGBToHSL r, g, b, h, s, l
@@ -209,18 +200,18 @@ Public Sub ColorizeImage(ByVal hToUse As Double, Optional ByVal maintainSaturati
         End If
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, Y) = r
-        ImageData(QuickVal + 1, Y) = g
-        ImageData(QuickVal, Y) = b
+        ImageData(QuickVal + 2, y) = r
+        ImageData(QuickVal + 1, y) = g
+        ImageData(QuickVal, y) = b
         
-    Next Y
+    Next y
         If Not toPreview Then
-            If (X And progBarCheck) = 0 Then
+            If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
-                SetProgBarVal X
+                SetProgBarVal x
             End If
         End If
-    Next X
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4

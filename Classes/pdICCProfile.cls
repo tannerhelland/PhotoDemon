@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon ICC (International Color Consortium) Profile Manager
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 05/November/13
 'Last updated: 31/January/14
 'Last update: retrieve the rendering intent from embedded ICC profiles, and use that for the first stage of color

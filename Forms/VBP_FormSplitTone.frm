@@ -60,15 +60,6 @@ Begin VB.Form FormSplitTone
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   3
@@ -102,15 +93,6 @@ Begin VB.Form FormSplitTone
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   100
       Value           =   50
       NotchPosition   =   2
@@ -204,7 +186,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Split Toning Dialog
-'Copyright ©2014 by Audioglider and Tanner Helland
+'Copyright 2014 by Audioglider and Tanner Helland
 'Created: 07/May/14
 'Last updated: 09/May/14
 'Last update: tweak the split toning algorithm to perfection (I hope?)

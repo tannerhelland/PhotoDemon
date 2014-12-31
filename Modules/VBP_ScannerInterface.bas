@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_Scanner_Interface"
 '***************************************************************************
 'Scanner Interface
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 1/10/01
 'Last updated: 10/May/13
 'Last update: add trailing parentheses to suggested scanner filename (e.g. "Scanned Image (dd MM YY)")
@@ -139,7 +139,7 @@ Public Sub Twain32Scan()
     ScanCheck = -5
     
     'A temporary file is required by the scanner; we will place it in the project folder, then delete it when finished
-    ScannerCaptureFile = g_UserPreferences.getTempPath & "PDScanInterface.tmp"
+    ScannerCaptureFile = g_UserPreferences.GetTempPath & "PDScanInterface.tmp"
     
     'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
     ' appear over the top of the scanner dialog.

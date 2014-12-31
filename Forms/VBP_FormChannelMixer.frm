@@ -40,15 +40,6 @@ Begin VB.Form FormChannelMixer
       Width           =   6015
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -200
       Max             =   200
       SliderTrackStyle=   3
@@ -62,15 +53,6 @@ Begin VB.Form FormChannelMixer
       Width           =   6015
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -200
       Max             =   200
       SliderTrackStyle=   3
@@ -84,15 +66,6 @@ Begin VB.Form FormChannelMixer
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -200
       Max             =   200
       SliderTrackStyle=   3
@@ -125,15 +98,6 @@ Begin VB.Form FormChannelMixer
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -255
       Max             =   255
       SliderTrackStyle=   2
@@ -364,7 +328,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Channel Mixer Form
-'Copyright ©2013-2014 by Audioglider and Tanner Helland
+'Copyright 2013-2014 by Audioglider and Tanner Helland
 'Created: 08/June/13
 'Last updated: 23/September/14
 'Last update: rework the interface a bit; add a button strip, increase white space, improve title labels

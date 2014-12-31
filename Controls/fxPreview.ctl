@@ -111,7 +111,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Effect Preview custom control
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 10/January/13
 'Last updated: 31/May/14
 'Last update: convert custom mouse handling code to use pdInput

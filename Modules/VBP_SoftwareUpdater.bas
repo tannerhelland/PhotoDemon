@@ -1,7 +1,7 @@
 Attribute VB_Name = "Software_Updater"
 '***************************************************************************
 'Automatic Software Updater (note: at present this doesn't techincally DO the updating (e.g. overwriting program files), it just CHECKS for updates)
-'Copyright ©2012-2014 by Tanner Helland
+'Copyright 2012-2014 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 14/August/13
 'Last update: rewrote all update code against XML instead of INI.  This was the last INI fix needed, so now PD is 100% free of INI files.  Yay!

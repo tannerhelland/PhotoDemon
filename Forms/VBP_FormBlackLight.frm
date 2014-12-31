@@ -31,19 +31,10 @@ Begin VB.Form FormBlackLight
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
+      ForeColor       =   0
       Min             =   1
       SigDigits       =   2
       Value           =   2
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   0
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -101,7 +92,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Blacklight Form
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: some time 2001
 'Last updated: 01/October/13
 'Last update: use a floating-point slider for more precise results

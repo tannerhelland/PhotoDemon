@@ -30,7 +30,7 @@ Begin VB.Form FormColorBalance
       TabIndex        =   0
       Top             =   5790
       Width           =   12360
-      _ExtentX        =   21325
+      _ExtentX        =   21802
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -59,15 +59,6 @@ Begin VB.Form FormColorBalance
       Width           =   6255
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   3
@@ -83,15 +74,6 @@ Begin VB.Form FormColorBalance
       Width           =   6255
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   3
@@ -106,15 +88,6 @@ Begin VB.Form FormColorBalance
       Width           =   6255
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   3
@@ -331,7 +304,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Balance Adjustment Form
-'Copyright ©2012-2014 by Tanner Helland & Audioglider
+'Copyright 2012-2014 by Tanner Helland & Audioglider
 'Created: 31/January/13
 'Last updated: 16/June/14
 'Last update: Rewrote the color balance formula to allow the adjustment of

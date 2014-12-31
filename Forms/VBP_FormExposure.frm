@@ -64,15 +64,6 @@ Begin VB.Form FormExposure
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   0
       Min             =   -5
       Max             =   5
@@ -137,7 +128,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Exposure Dialog
-'Copyright ©2013-2014 by audioglider and Tanner Helland
+'Copyright 2013-2014 by audioglider and Tanner Helland
 'Created: 13/July/13
 'Last updated: 09/August/13
 'Last update: rewrote the exposure calculation to operate on a "stops" (power-of-2) scale
@@ -202,7 +193,7 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
     Dim r As Long, g As Long, b As Long
     
     'Exposure can be easily applied using a look-up table
-    Dim gLookup(0 To 255) As Byte
+    Dim gLookUp(0 To 255) As Byte
     Dim tmpVal As Double
     
     For x = 0 To 255
@@ -213,7 +204,7 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
         If tmpVal > 255 Then tmpVal = 255
         If tmpVal < 0 Then tmpVal = 0
         
-        gLookup(x) = tmpVal
+        gLookUp(x) = tmpVal
     Next x
     
     'Loop through each pixel in the image, converting values as we go
@@ -227,9 +218,9 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
         b = ImageData(QuickVal, y)
         
         'Apply a new value based on the lookup table
-        ImageData(QuickVal + 2, y) = gLookup(r)
-        ImageData(QuickVal + 1, y) = gLookup(g)
-        ImageData(QuickVal, y) = gLookup(b)
+        ImageData(QuickVal + 2, y) = gLookUp(r)
+        ImageData(QuickVal + 1, y) = gLookUp(g)
+        ImageData(QuickVal, y) = gLookUp(b)
         
     Next y
         If Not toPreview Then

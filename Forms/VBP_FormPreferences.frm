@@ -1232,7 +1232,7 @@ Begin VB.Form FormPreferences
       Top             =   240
       Width           =   8295
       Begin PhotoDemon.textUpDown tudRecentFiles 
-         Height          =   420
+         Height          =   345
          Left            =   3900
          TabIndex        =   99
          Top             =   4245
@@ -2607,7 +2607,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Program Preferences Handler
-'Copyright ©2002-2014 by Tanner Helland
+'Copyright 2002-2014 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 22/October/14
 'Last update: add "batch" preference update mode, which suspends all file read/write operations for the duration of the mode.
@@ -2873,7 +2873,7 @@ Private Sub CmdOK_Click()
     
             'Check to see if the new caption length setting matches the old one.  If it does not, rewrite all form captions to match
             If cmbImageCaption.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) Then
-                For Each tForm In VB.Forms
+                For Each tForm In vB.Forms
                     If tForm.Name = "FormImage" Then
                         If cmbImageCaption.ListIndex = 0 Then
                             tForm.Caption = pdImages(tForm.Tag).originalFileNameAndExtension
@@ -3448,8 +3448,8 @@ Private Sub LoadAllPreferences()
             'Load a list of all available monitors
             cmbMonitors.Clear
             
-            Dim primaryMonitor As String, secondaryMonitor As String
-            primaryMonitor = g_Language.TranslateMessage("Primary monitor") & ": "
+            Dim PrimaryMonitor As String, secondaryMonitor As String
+            PrimaryMonitor = g_Language.TranslateMessage("Primary monitor") & ": "
             secondaryMonitor = g_Language.TranslateMessage("Secondary monitor") & ": "
             
             Dim primaryIndex As Long
@@ -3461,7 +3461,7 @@ Private Sub LoadAllPreferences()
                 
                 'Explicitly label the primary monitor
                 If g_cMonitors.Monitors(i).isPrimary Then
-                    monitorEntry = primaryMonitor
+                    monitorEntry = PrimaryMonitor
                     primaryIndex = i - 1
                 Else
                     monitorEntry = secondaryMonitor

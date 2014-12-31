@@ -156,7 +156,7 @@ Begin VB.Form toolbar_Options
             Value           =   1
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   8
             Left            =   2820
             TabIndex        =   53
@@ -168,7 +168,7 @@ Begin VB.Form toolbar_Options
             Max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   9
             Left            =   2820
             TabIndex        =   54
@@ -180,7 +180,7 @@ Begin VB.Form toolbar_Options
             Max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   10
             Left            =   4380
             TabIndex        =   55
@@ -192,7 +192,7 @@ Begin VB.Form toolbar_Options
             Max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   11
             Left            =   4380
             TabIndex        =   56
@@ -361,7 +361,7 @@ Begin VB.Form toolbar_Options
             Value           =   1
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   4
             Left            =   2820
             TabIndex        =   43
@@ -373,7 +373,7 @@ Begin VB.Form toolbar_Options
             Max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   5
             Left            =   2820
             TabIndex        =   44
@@ -385,7 +385,7 @@ Begin VB.Form toolbar_Options
             Max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   6
             Left            =   4380
             TabIndex        =   45
@@ -397,7 +397,7 @@ Begin VB.Form toolbar_Options
             Max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   7
             Left            =   4380
             TabIndex        =   46
@@ -530,7 +530,7 @@ Begin VB.Form toolbar_Options
             Value           =   1
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   0
             Left            =   2820
             TabIndex        =   34
@@ -542,7 +542,7 @@ Begin VB.Form toolbar_Options
             Max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   1
             Left            =   2820
             TabIndex        =   35
@@ -554,7 +554,7 @@ Begin VB.Form toolbar_Options
             Max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   2
             Left            =   4380
             TabIndex        =   36
@@ -566,7 +566,7 @@ Begin VB.Form toolbar_Options
             Max             =   30000
          End
          Begin PhotoDemon.textUpDown tudSel 
-            Height          =   405
+            Height          =   345
             Index           =   3
             Left            =   4380
             TabIndex        =   37
@@ -1589,7 +1589,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Tools Toolbox
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 03/October/13
 'Last updated: 16/October/14
 'Last update: rework all selection interface code to use the new property dictionary functions

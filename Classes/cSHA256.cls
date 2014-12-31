@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 'Note: this file has been modified for use within PhotoDemon.
 
-'This class is ©2001 Phil Fresle, http://www.frez.co.uk/
+'This class is Copyright 2001 Phil Fresle, http://www.frez.co.uk/
 
 'This class was originally written by Phil Fresle.
 
@@ -68,7 +68,7 @@ Option Explicit
 
 Private m_lOnBits(30)   As Long
 Private m_l2Power(30)   As Long
-Private K(63)           As Long
+Private k(63)           As Long
 
 Private Const BITS_TO_A_BYTE  As Long = 8
 Private Const BYTES_TO_A_WORD As Long = 4
@@ -147,70 +147,70 @@ Private Sub Class_Initialize()
     m_l2Power(30) = 1073741824  ' 01000000000000000000000000000000
     
     ' Just put together the K array once
-    K(0) = &H428A2F98
-    K(1) = &H71374491
-    K(2) = &HB5C0FBCF
-    K(3) = &HE9B5DBA5
-    K(4) = &H3956C25B
-    K(5) = &H59F111F1
-    K(6) = &H923F82A4
-    K(7) = &HAB1C5ED5
-    K(8) = &HD807AA98
-    K(9) = &H12835B01
-    K(10) = &H243185BE
-    K(11) = &H550C7DC3
-    K(12) = &H72BE5D74
-    K(13) = &H80DEB1FE
-    K(14) = &H9BDC06A7
-    K(15) = &HC19BF174
-    K(16) = &HE49B69C1
-    K(17) = &HEFBE4786
-    K(18) = &HFC19DC6
-    K(19) = &H240CA1CC
-    K(20) = &H2DE92C6F
-    K(21) = &H4A7484AA
-    K(22) = &H5CB0A9DC
-    K(23) = &H76F988DA
-    K(24) = &H983E5152
-    K(25) = &HA831C66D
-    K(26) = &HB00327C8
-    K(27) = &HBF597FC7
-    K(28) = &HC6E00BF3
-    K(29) = &HD5A79147
-    K(30) = &H6CA6351
-    K(31) = &H14292967
-    K(32) = &H27B70A85
-    K(33) = &H2E1B2138
-    K(34) = &H4D2C6DFC
-    K(35) = &H53380D13
-    K(36) = &H650A7354
-    K(37) = &H766A0ABB
-    K(38) = &H81C2C92E
-    K(39) = &H92722C85
-    K(40) = &HA2BFE8A1
-    K(41) = &HA81A664B
-    K(42) = &HC24B8B70
-    K(43) = &HC76C51A3
-    K(44) = &HD192E819
-    K(45) = &HD6990624
-    K(46) = &HF40E3585
-    K(47) = &H106AA070
-    K(48) = &H19A4C116
-    K(49) = &H1E376C08
-    K(50) = &H2748774C
-    K(51) = &H34B0BCB5
-    K(52) = &H391C0CB3
-    K(53) = &H4ED8AA4A
-    K(54) = &H5B9CCA4F
-    K(55) = &H682E6FF3
-    K(56) = &H748F82EE
-    K(57) = &H78A5636F
-    K(58) = &H84C87814
-    K(59) = &H8CC70208
-    K(60) = &H90BEFFFA
-    K(61) = &HA4506CEB
-    K(62) = &HBEF9A3F7
-    K(63) = &HC67178F2
+    k(0) = &H428A2F98
+    k(1) = &H71374491
+    k(2) = &HB5C0FBCF
+    k(3) = &HE9B5DBA5
+    k(4) = &H3956C25B
+    k(5) = &H59F111F1
+    k(6) = &H923F82A4
+    k(7) = &HAB1C5ED5
+    k(8) = &HD807AA98
+    k(9) = &H12835B01
+    k(10) = &H243185BE
+    k(11) = &H550C7DC3
+    k(12) = &H72BE5D74
+    k(13) = &H80DEB1FE
+    k(14) = &H9BDC06A7
+    k(15) = &HC19BF174
+    k(16) = &HE49B69C1
+    k(17) = &HEFBE4786
+    k(18) = &HFC19DC6
+    k(19) = &H240CA1CC
+    k(20) = &H2DE92C6F
+    k(21) = &H4A7484AA
+    k(22) = &H5CB0A9DC
+    k(23) = &H76F988DA
+    k(24) = &H983E5152
+    k(25) = &HA831C66D
+    k(26) = &HB00327C8
+    k(27) = &HBF597FC7
+    k(28) = &HC6E00BF3
+    k(29) = &HD5A79147
+    k(30) = &H6CA6351
+    k(31) = &H14292967
+    k(32) = &H27B70A85
+    k(33) = &H2E1B2138
+    k(34) = &H4D2C6DFC
+    k(35) = &H53380D13
+    k(36) = &H650A7354
+    k(37) = &H766A0ABB
+    k(38) = &H81C2C92E
+    k(39) = &H92722C85
+    k(40) = &HA2BFE8A1
+    k(41) = &HA81A664B
+    k(42) = &HC24B8B70
+    k(43) = &HC76C51A3
+    k(44) = &HD192E819
+    k(45) = &HD6990624
+    k(46) = &HF40E3585
+    k(47) = &H106AA070
+    k(48) = &H19A4C116
+    k(49) = &H1E376C08
+    k(50) = &H2748774C
+    k(51) = &H34B0BCB5
+    k(52) = &H391C0CB3
+    k(53) = &H4ED8AA4A
+    k(54) = &H5B9CCA4F
+    k(55) = &H682E6FF3
+    k(56) = &H748F82EE
+    k(57) = &H78A5636F
+    k(58) = &H84C87814
+    k(59) = &H8CC70208
+    k(60) = &H90BEFFFA
+    k(61) = &HA4506CEB
+    k(62) = &HBEF9A3F7
+    k(63) = &HC67178F2
 End Sub
 
 '*******************************************************************************
@@ -621,7 +621,7 @@ Public Function SHA256(sMessage As String) As String
             End If
                 
             T1 = AddUnsigned(AddUnsigned(AddUnsigned(AddUnsigned(h, Sigma1(e)), _
-                Ch(e, f, g)), K(j)), w(j))
+                Ch(e, f, g)), k(j)), w(j))
             T2 = AddUnsigned(Sigma0(a), Maj(a, b, c))
             
             h = g

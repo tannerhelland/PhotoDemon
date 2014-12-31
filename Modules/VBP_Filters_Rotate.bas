@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Transform"
 '***************************************************************************
 'Image Transformations Interface (including flip/mirror/rotation/crop/etc)
-'Copyright ©2003-2014 by Tanner Helland
+'Copyright 2003-2014 by Tanner Helland
 'Created: 25/January/03
 'Last updated: 08/May/14
 'Last update: convert rotate 90/270 functions to use GDI+; this gives a small but welcome speed improvement
@@ -513,7 +513,7 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
     
 End Sub
 
-'Rotate an image 90° clockwise
+'Rotate an image 90 clockwise
 ' TODO: test PlgBlt as an alternative implementation (PD currently uses GDI+, which is not the fastest kid on the block)
 Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
@@ -610,7 +610,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
 End Sub
 
-'Rotate an image 180°
+'Rotate an image 180
 Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
 
     Dim flipAllLayers As Boolean
@@ -666,7 +666,7 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
     
 End Sub
 
-'Rotate an image 90° counter-clockwise
+'Rotate an image 90 counter-clockwise
 ' TODO: test PlgBlt as an alternative implementation (PD currently uses GDI+, which is not the fastest kid on the block)
 Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
