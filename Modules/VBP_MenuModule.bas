@@ -474,3 +474,124 @@ Public Sub MenuCloseAll()
     g_DealWithAllUnsavedImages = False
 
 End Sub
+
+'Create a new, blank image from scratch
+Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal imgDPI As Long, ByVal defaultBackground As Long, ByVal backgroundColor As Long)
+
+    'Display a busy cursor
+    If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
+    
+    'To prevent re-entry problems, forcibly disable the main form
+    FormMain.Enabled = False
+    
+    'Create a new entry in the pdImages() array.  This will update g_CurrentImage as well.
+    CreateNewPDImage
+    
+    'We can now address our new image via pdImages(g_CurrentImage).  Create a blank layer.
+    Dim newLayerID As Long
+    newLayerID = pdImages(g_CurrentImage).createBlankLayer()
+    
+    'The parameters passed to the new DIB vary according to layer type.  Use the specified type to determine how we
+    ' initialize the new layer.
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    Select Case defaultBackground
+    
+        'Transparent (blank)
+        Case 0
+            tmpDIB.createBlank imgWidth, imgHeight, 32, 0, 0
+        
+        'Black
+        Case 1
+            tmpDIB.createBlank imgWidth, imgHeight, 32, vbBlack, 255
+        
+        'White
+        Case 2
+            tmpDIB.createBlank imgWidth, imgHeight, 32, vbWhite, 255
+        
+        'Custom color
+        Case 3
+            tmpDIB.createBlank imgWidth, imgHeight, 32, backgroundColor, 255
+    
+    End Select
+    
+    'Assign the newly created DIB to the layer object
+    pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer tmpDIB, , g_Language.TranslateMessage("Background")
+    
+    'Make the newly created layer the active layer
+    setActiveLayerByID newLayerID, False
+    
+    'Update the pdImage container to be the same size as its (newly created) base layer
+    pdImages(g_CurrentImage).updateSize
+    
+    'Assign the requested DPI to the new image
+    pdImages(g_CurrentImage).setDPI imgDPI, imgDPI, False
+    
+    'Disable viewport rendering, then reset the main viewport
+    g_AllowViewportRendering = False
+    FormMain.mainCanvas(0).setScrollValue PD_BOTH, 0
+    
+    'By default, set this image to use the program's default metadata setting (settable from Tools -> Options).
+    ' The user may override this setting later, but by default we always start with the user's program-wide setting.
+    pdImages(g_CurrentImage).imgMetadata.setMetadataExportPreference g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 1)
+    
+    'Default to JPEGs, for convenience.  Note that a different format will be suggested at save-time, contingent on the image's state,
+    pdImages(g_CurrentImage).originalFileFormat = FIF_JPEG
+    pdImages(g_CurrentImage).currentFileFormat = pdImages(g_CurrentImage).originalFileFormat
+    pdImages(g_CurrentImage).originalColorDepth = 32
+    
+    'Because this image does not exist on the user's hard-drive, we will force use of a full Save As dialog in the future.
+    ' (PD detects this state if a pdImage object does not supply a location on disk)
+    pdImages(g_CurrentImage).locationOnDisk = ""
+    pdImages(g_CurrentImage).originalFileNameAndExtension = g_Language.TranslateMessage("New image")
+    pdImages(g_CurrentImage).originalFileName = pdImages(g_CurrentImage).originalFileNameAndExtension
+    pdImages(g_CurrentImage).setSaveState False, pdSE_AnySave
+    
+    'Create an icon-sized version of this image, which we will use as form's taskbar icon
+    createCustomFormIcon pdImages(g_CurrentImage)
+    
+    'Register this image with the image tab bar
+    toolbar_ImageTabs.registerNewImage g_CurrentImage
+    
+    'Just to be safe, update the color management profile of the current monitor
+    checkParentMonitor True
+    
+    'If the user wants us to resize the image to fit on-screen, do that now
+    If g_AutozoomLargeImages = 0 Then FitImageToViewport True
+    
+    'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
+    ' update the zoom combo box to match the zoom assigned by the window-fit function.
+    g_AllowViewportRendering = False
+    FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = pdImages(g_CurrentImage).currentZoomValue
+
+    'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
+    g_AllowViewportRendering = True
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "CreateNewImage"
+    
+    'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
+    FormMain.mainCanvas(0).fixChromeLayout
+    
+    'Force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our baseline for calculating future
+    ' Undo/Redo diffs, and it can be used to recover the original file if something goes wrong before the user performs a
+    ' manual save (e.g. AutoSave).
+    pdImages(g_CurrentImage).undoManager.createUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
+    
+    'Also, set an initial image checkpoint, in case the user decides to immediately start applying non-destructive
+    ' edits to the image.
+    Processor.setImageCheckpoint
+    
+    'Re-enable the main form
+    FormMain.Enabled = True
+    
+    'Synchronize all interface elements to match the newly created image
+    syncInterfaceToCurrentImage
+    toolbar_ImageTabs.forceRedraw
+    
+    'Restore the default cursor
+    Screen.MousePointer = vbNormal
+    
+    'Report success!
+    CreateNewImage = True
+
+End Function

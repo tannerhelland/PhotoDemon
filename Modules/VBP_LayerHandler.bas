@@ -123,12 +123,10 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVa
         
     End If
     
-    'Make the newly created layer the active layer; this will also redraw the interface to match
+    'Make the newly created layer the active layer
     If dLayerAutoSelect Then
-        Debug.Print "newlayerid"
         setActiveLayerByID newLayerID, False
     Else
-        Debug.Print "prevlayerid"
         setActiveLayerByID prevActiveLayerID, False
     End If
     
