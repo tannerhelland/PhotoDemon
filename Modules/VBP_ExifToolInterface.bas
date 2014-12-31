@@ -659,7 +659,10 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     cmdParams = cmdParams & "-" & tagGroupPrefix & "YResolution=" & srcPDImage.getDPI() & vbCrLf
     cmdParams = cmdParams & "-" & tagGroupPrefix & "ResolutionUnit=inches" & vbCrLf
     
-    cmdParams = cmdParams & "-" & tagGroupPrefix & "ColorSpace=sRGB" & vbCrLf
+    'Various specs are unclear on the meaning of sRGB checks, and browser developers also have varying views on what an sRGB chunk means
+    ' (see https://code.google.com/p/chromium/issues/detail?id=354883)
+    ' Until such point as I can resolve these ambiguities, sRGB flags are now skipped for all formats.
+    'cmdParams = cmdParams & "-" & tagGroupPrefix & "ColorSpace=sRGB" & vbCrLf
     
     'Size tags are written to different areas based on the type of metadata being written.  JPEGs require special rules; see the spec
     ' for details: http://www.cipa.jp/std/documents/e/DC-008-2012_E.pdf
