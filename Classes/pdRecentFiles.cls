@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'MRU (Most Recently Used) List Handler
-'Copyright ©2005-2014 by Tanner Helland
+'Copyright 2005-2014 by Tanner Helland
 'Created: 22/May/05
 'Last updated: 29/August/14
 'Last update: convert path truncation code to Unicode variant

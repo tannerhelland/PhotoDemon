@@ -60,15 +60,6 @@ Begin VB.Form FormTransparency_FromColor
       Width           =   5565
       _ExtentX        =   9816
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   199
       Value           =   15
    End
@@ -80,15 +71,6 @@ Begin VB.Form FormTransparency_FromColor
       Width           =   5565
       _ExtentX        =   9816
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   200
       Value           =   15
    End
@@ -173,7 +155,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Make color transparent ("green screen") tool dialog
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 13/August/13
 'Last updated: 21/August/13
 'Last update: gave this tool its own dialog, in keeping with the "do one thing and do it well" philosophy of PD dialogs

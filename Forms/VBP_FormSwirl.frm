@@ -81,15 +81,6 @@ Begin VB.Form FormSwirl
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -180
       Max             =   180
       SigDigits       =   1
@@ -102,15 +93,6 @@ Begin VB.Form FormSwirl
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   100
       Value           =   100
@@ -125,15 +107,6 @@ Begin VB.Form FormSwirl
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   5
       Value           =   2
@@ -148,15 +121,6 @@ Begin VB.Form FormSwirl
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
@@ -171,15 +135,6 @@ Begin VB.Form FormSwirl
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
@@ -313,7 +268,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Swirl" Distortion
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 05/January/13
 'Last updated: 27/September/14
 'Last update: add supersampling support, and allow the user to set an arbitrary center point for the transform.

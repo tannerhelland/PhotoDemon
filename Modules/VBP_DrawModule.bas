@@ -1,7 +1,7 @@
 Attribute VB_Name = "Drawing"
 '***************************************************************************
 'PhotoDemon Drawing Routines
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 4/3/01
 'Last updated: 01/December/12
 'Last update: Added DrawSystemIcon function (previously used for only the "unsaved changes" dialog
@@ -246,7 +246,7 @@ End Sub
 Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal Color2 As Long, Optional ByVal drawHorizontal As Boolean = False)
 
     'Calculation variables (used to interpolate between the gradient colors)
-    Dim VR As Double, VG As Double, VB As Double
+    Dim vR As Double, vG As Double, vB As Double
     Dim x As Long, y As Long
     
     'Red, green, and blue variables for each gradient color
@@ -270,33 +270,33 @@ Public Sub DrawGradient(ByVal DstPicBox As Object, ByVal Color1 As Long, ByVal C
     'Create a calculation variable, which will be used to determine the interpolation step between
     ' each gradient color
     If drawHorizontal Then
-        VR = Abs(r - r2) / tmpWidth
-        VG = Abs(g - g2) / tmpWidth
-        VB = Abs(b - b2) / tmpWidth
+        vR = Abs(r - r2) / tmpWidth
+        vG = Abs(g - g2) / tmpWidth
+        vB = Abs(b - b2) / tmpWidth
     Else
-        VR = Abs(r - r2) / tmpHeight
-        VG = Abs(g - g2) / tmpHeight
-        VB = Abs(b - b2) / tmpHeight
+        vR = Abs(r - r2) / tmpHeight
+        vG = Abs(g - g2) / tmpHeight
+        vB = Abs(b - b2) / tmpHeight
     End If
     
     'If a component of the right color is less than the matching component of the left color, make the step negative
-    If r2 < r Then VR = -VR
-    If g2 < g Then VG = -VG
-    If b2 < b Then VB = -VB
+    If r2 < r Then vR = -vR
+    If g2 < g Then vG = -vG
+    If b2 < b Then vB = -vB
     
     'Run a loop across the picture box, changing the gradient color according to the step calculated earlier
     If drawHorizontal Then
         For x = 0 To tmpWidth
-            r2 = r + VR * x
-            g2 = g + VG * x
-            b2 = b + VB * x
+            r2 = r + vR * x
+            g2 = g + vG * x
+            b2 = b + vB * x
             DstPicBox.Line (x, 0)-(x, tmpHeight), RGB(r2, g2, b2)
         Next x
     Else
         For y = 0 To tmpHeight
-            r2 = r + VR * y
-            g2 = g + VG * y
-            b2 = b + VB * y
+            r2 = r + vR * y
+            g2 = g + vG * y
+            b2 = b + vB * y
             DstPicBox.Line (0, y)-(tmpWidth, y), RGB(r2, g2, b2)
         Next y
     End If

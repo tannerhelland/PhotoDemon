@@ -78,15 +78,6 @@ Begin VB.Form FormPencil
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   100
       Value           =   5
@@ -99,15 +90,6 @@ Begin VB.Form FormPencil
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   -100
       Max             =   200
    End
@@ -202,7 +184,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pencil Sketch Image Effect
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: sometime 2001
 'Last updated: 23/July/14
 'Last update: overhauled algorithm, gave tool its own dialog

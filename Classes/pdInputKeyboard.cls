@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Keyboard Input Handler class
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
 'Last updated: 30/September/14
 'Last update: separate keyboard tracking into its own class, as it requires a lot of extra work

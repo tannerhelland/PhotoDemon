@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_zLib_Interface"
 '***************************************************************************
 'File Compression Interface (via zLib)
-'Copyright ©2002-2014 by Tanner Helland
+'Copyright 2002-2014 by Tanner Helland
 'Created: 3/02/02
 'Last updated: 05/August/13
 'Last update: standalone functions for compressing and decompressing arrays.  I still need to tie the compress/decompress file
@@ -26,7 +26,7 @@ Private Declare Function zlibVersion Lib "zlibwapi.dll" () As Long
 Type CompressionHeader
     Verification As String * 4
     OriginalExt As String * 3
-    OriginalSize As Long
+    originalSize As Long
 End Type
 
 'Actual header variable
@@ -36,7 +36,7 @@ Private FileHeader As CompressionHeader
 Private dstFilename As String
 
 'Used to compare compression ratios
-Private OriginalSize As Long, compressedSize As Long
+Private originalSize As Long, compressedSize As Long
 
 'Is zLib available as a plugin?  (NOTE: this is now determined separately from g_ZLibEnabled.)
 Public Function isZLibAvailable() As Boolean
@@ -90,7 +90,7 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
     Close #fileNum
 
     'Track the original size
-    OriginalSize = UBound(DataBytes) + 1
+    originalSize = UBound(DataBytes) + 1
 
     'Allocate memory for a temporary compression array
     Dim bufferSize As Long
@@ -126,7 +126,7 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
     'Build our custom compressed file header
     FileHeader.Verification = "THZC"
     FileHeader.OriginalExt = fExtension
-    FileHeader.OriginalSize = OriginalSize
+    FileHeader.originalSize = originalSize
     'Write the header and then the compressed data
     Open dstFilename For Binary Access Write As #fileNum
         Put #fileNum, 1, FileHeader
@@ -143,7 +143,7 @@ Public Function CompressFile(ByVal srcFilename As String, Optional ByVal DispRes
     'If SrcFilename <> DstFilename Then Kill SrcFilename
 
     'Report the compression ratio
-    If DispResults Then pdMsgBox "File compressed from %1 bytes to %2 bytes.  Ratio: %3 %", vbInformation + vbOKOnly, "Compression results", OriginalSize, compressedSize, CStr(100 - (100 * (CDbl(compressedSize) / CDbl(OriginalSize))))
+    If DispResults Then pdMsgBox "File compressed from %1 bytes to %2 bytes.  Ratio: %3 %", vbInformation + vbOKOnly, "Compression results", originalSize, compressedSize, CStr(100 - (100 * (CDbl(compressedSize) / CDbl(originalSize))))
 
     'Return
     CompressFile = True
@@ -180,12 +180,12 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
     Close #fileNum
     
     'Get the compressed size
-    OriginalSize = UBound(DataBytes) + 1
+    originalSize = UBound(DataBytes) + 1
     
     'Allocate memory for buffers
     Dim bufferSize As Long
     Dim TempBuffer() As Byte
-    bufferSize = FileHeader.OriginalSize
+    bufferSize = FileHeader.originalSize
     bufferSize = bufferSize + (bufferSize * 0.01) + 12
     ReDim TempBuffer(bufferSize)
     
@@ -230,7 +230,7 @@ Public Function DecompressFile(ByVal srcFilename As String, Optional ByVal DispR
     If srcFilename <> dstFilename Then Kill srcFilename
     
     'Display decompression results
-    If DispResults Then pdMsgBox "File decompressed from %1 bytes to %2 bytes.", vbInformation + vbOKOnly, "Compression results", OriginalSize, compressedSize
+    If DispResults Then pdMsgBox "File decompressed from %1 bytes to %2 bytes.", vbInformation + vbOKOnly, "Compression results", originalSize, compressedSize
     
     'Return
     DecompressFile = True

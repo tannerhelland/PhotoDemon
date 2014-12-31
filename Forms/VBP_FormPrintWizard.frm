@@ -139,7 +139,7 @@ Begin VB.Form FormPrintNew
          EndProperty
       End
       Begin PhotoDemon.textUpDown tudCopies 
-         Height          =   375
+         Height          =   345
          Left            =   5280
          TabIndex        =   14
          Top             =   1440
@@ -149,15 +149,6 @@ Begin VB.Form FormPrintNew
          Min             =   1
          Max             =   256
          Value           =   1
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.ComboBox cmbQuality 
          BeginProperty Font 
@@ -425,7 +416,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Combined Print / Print Preview Interface
-'Copyright ©2003-2014 by Tanner Helland
+'Copyright 2003-2014 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 12/November/13
 'Last update: rewritten from scratch.  Literally.

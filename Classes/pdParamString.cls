@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Specialized String Parameter Handler
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 25/March/13
 'Last updated: 03/July/14
 'Last update: added failsafe conversions for variable decimal characters in values retrieved as Longs.  (Just because a
@@ -101,11 +101,11 @@ Public Function doesParamExist(ByVal pIndex As Long) As Boolean
 End Function
 
 'Change the value at a given location.  (This assumes setParamString has already been called, obviously.)
-Public Sub setNewValueAtLocation(ByVal pIndex As Long, ByVal newValue As String)
+Public Sub setNewValueAtLocation(ByVal pIndex As Long, ByVal NewValue As String)
     
     'Replace the entry at pIndex with the new string value
     If pIndex <= m_numOfParams Then
-        m_Params(pIndex - 1) = newValue
+        m_Params(pIndex - 1) = NewValue
     End If
 
 End Sub

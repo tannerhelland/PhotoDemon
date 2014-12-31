@@ -79,15 +79,6 @@ Begin VB.Form FormShadowHighlight
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   30
       SigDigits       =   2
       Value           =   0.05
@@ -100,15 +91,6 @@ Begin VB.Form FormShadowHighlight
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   30
       SigDigits       =   2
       Value           =   0.05
@@ -197,7 +179,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Shadow / Midtone / Highlight Adjustment Tool
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 17/February/13
 'Last updated: 24/August/13
 'Last update: add command bar
@@ -307,7 +289,7 @@ Private Sub CalculateOptimalMidtone()
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
                 
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
@@ -326,14 +308,14 @@ Private Sub CalculateOptimalMidtone()
     Dim NumOfPixels As Long
                 
     'Loop through each pixel in the image, tallying values as we go
-    For X = initX To finalX
-        QuickVal = X * qvDepth
-    For Y = initY To finalY
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
             
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, Y)
-        g = ImageData(QuickVal + 1, Y)
-        b = ImageData(QuickVal, Y)
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
                 
         rLookup(r) = rLookup(r) + 1
         gLookUp(g) = gLookUp(g) + 1
@@ -342,8 +324,8 @@ Private Sub CalculateOptimalMidtone()
         'Increment the pixel count
         NumOfPixels = NumOfPixels + 1
         
-    Next Y
-    Next X
+    Next y
+    Next x
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -355,33 +337,33 @@ Private Sub CalculateOptimalMidtone()
     NumOfPixels = NumOfPixels \ 2
                        
     Dim rCount As Long, gCount As Long, bCount As Long
-    X = 0
+    x = 0
                     
     'Find the median value for each color channel
     Do
-        rCount = rCount + rLookup(X)
-        X = X + 1
+        rCount = rCount + rLookup(x)
+        x = x + 1
     Loop While rCount < NumOfPixels
     
-    rCount = X - 1
+    rCount = x - 1
     
-    X = 0
+    x = 0
     
     Do
-        gCount = gCount + gLookUp(X)
-        X = X + 1
+        gCount = gCount + gLookUp(x)
+        x = x + 1
     Loop While gCount < NumOfPixels
     
-    gCount = X - 1
+    gCount = x - 1
     
-    X = 0
+    x = 0
     
     Do
-        bCount = bCount + bLookup(X)
-        X = X + 1
+        bCount = bCount + bLookup(x)
+        x = x + 1
     Loop While bCount < NumOfPixels
     
-    bCount = X - 1
+    bCount = x - 1
     
     colorPicker.Color = RGB(255 - rCount, 255 - gCount, 255 - bCount)
         

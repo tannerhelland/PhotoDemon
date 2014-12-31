@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon XML Interface (reading, writing, parsing, etc)
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 30/July/13
 'Last updated: 18/August/14
 'Last update: make the text comparison mode user-settable; some PD-centric XML files adhere to strict formatting,

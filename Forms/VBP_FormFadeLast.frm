@@ -134,7 +134,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fade Previous Action Dialog
-'Copyright ©2000-2014 by Tanner Helland
+'Copyright 2000-2014 by Tanner Helland
 'Created: 13/October/00
 'Last updated: 14/April/14
 'Last update: give function a full dialog, with variable opacity and blend modes of the user's choosing

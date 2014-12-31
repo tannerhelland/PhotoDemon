@@ -62,15 +62,6 @@ Begin VB.Form FormLens
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   100
       Value           =   50
@@ -85,15 +76,6 @@ Begin VB.Form FormLens
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   5
       SigDigits       =   2
@@ -107,15 +89,6 @@ Begin VB.Form FormLens
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
@@ -130,15 +103,6 @@ Begin VB.Form FormLens
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
@@ -153,15 +117,6 @@ Begin VB.Form FormLens
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   5
       Value           =   2
@@ -273,7 +228,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Lens Correction and Distortion
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 05/January/13
 'Last updated: 25/September/14
 'Last update: added adaptive subpixel supersampling support.  This was my test filter for the rest of PD, so it received

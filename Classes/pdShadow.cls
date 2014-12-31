@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Drop Shadow class
-'Copyright ©2011-2014 by Tanner Helland
+'Copyright 2011-2014 by Tanner Helland
 'Created: 24/October/12
 'Last updated: 24/October/12
 'Last update: initial build

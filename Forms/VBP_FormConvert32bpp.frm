@@ -119,15 +119,6 @@ Begin VB.Form FormTransparency_Basic
       Width           =   5205
       _ExtentX        =   9181
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   254
       Value           =   127
@@ -161,7 +152,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Add basic transparency" (e.g. constant alpha channel) interface
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 13/August/13
 'Last updated: 21/August/13
 'Last update: moved "make color transparent" to its own form.  This dialog is now much simpler.

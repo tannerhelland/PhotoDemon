@@ -2036,7 +2036,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Batch Conversion Form
-'Copyright ©2007-2014 by Tanner Helland
+'Copyright 2007-2014 by Tanner Helland
 'Created: 3/Nov/07
 'Last updated: 16/August/14
 'Last update: minor bugfixes to prepare for 6.4 release
@@ -2423,7 +2423,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                 'If the user wants us to apply a macro, ensure that the macro text box has a macro file specified
                 If CBool(chkActions(2)) And ((txtMacro.Text = "no macro selected") Or (Len(txtMacro.Text) = 0)) Then
                     pdMsgBox "You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.", vbExclamation + vbOKOnly + vbApplicationModal, "No macro file selected"
-                    txtMacro.SelectAll
+                    txtMacro.selectAll
                     Exit Sub
                 End If
                 
@@ -2543,7 +2543,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                     MkDir txtOutputPath
                 Else
                     pdMsgBox "PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.", vbExclamation + vbOKOnly + vbApplicationModal, "Folder access unavailable"
-                    txtOutputPath.SelectAll
+                    txtOutputPath.selectAll
                     Exit Sub
                 End If
             End If

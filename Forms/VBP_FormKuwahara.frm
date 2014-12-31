@@ -50,15 +50,6 @@ Begin VB.Form FormKuwahara
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   1
       Max             =   20
       Value           =   5
@@ -120,7 +111,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Kuwahara Blur Dialog
-'Copyright ©2014 by Audioglider
+'Copyright 2014 by Audioglider
 'Created: 22/June/14
 'Last updated: 22/June/14
 'Last update: Initial build

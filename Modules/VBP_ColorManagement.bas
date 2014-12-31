@@ -1,7 +1,7 @@
 Attribute VB_Name = "Color_Management"
 '***************************************************************************
 'PhotoDemon ICC (International Color Consortium) Profile Support Module
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 05/November/13
 'Last updated: 05/September/14
 'Last update: tie the multiprofile transform quality to the new Color Management Performance preference

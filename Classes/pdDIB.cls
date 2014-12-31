@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
-'Copyright ©2012-2014 by Tanner Helland
+'Copyright 2012-2014 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 14/August/14
 'Last update: clarify process of 32bpp conversion when the DIB is already 32bpp

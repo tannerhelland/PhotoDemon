@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Flicker-Free Window Painter class
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 20/October/14  (but built from many parts existing earlier)
 'Last updated: 20/October/14
 'Last update: abstract flicker-free painting bits into this class, so I don't have to keep copying the code into new UCs

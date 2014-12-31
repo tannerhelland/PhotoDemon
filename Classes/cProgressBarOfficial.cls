@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 'Note: this file has been modified for use within PhotoDemon.
 
-'To the best of my knowledge, this class is ©2011 LaVolpe, but released into the public domain.
+'To the best of my knowledge, this class is Copyright 2011 LaVolpe, but released into the public domain.
 
 'You may download the original version of this code from the following link (good as of September '13):
 ' http://www.vbforums.com/showthread.php?462116-Marquee-Progressbar
@@ -179,12 +179,12 @@ Public Property Get Left() As Long          ' returns/sets Left position in pixe
     ScreenToClient GetParent(m_hWnd), tPt
     Left = tPt.x
 End Property
-Public Property Let Left(newValue As Long)
+Public Property Let Left(NewValue As Long)
     Dim wRect As RECT, tPt As POINTAPI
     GetWindowRect m_hWnd, wRect
     tPt.x = wRect.Left: tPt.y = wRect.Top
     ScreenToClient GetParent(m_hWnd), tPt
-    MoveWindow m_hWnd, newValue, tPt.y, wRect.Right - wRect.Left, wRect.Bottom - wRect.Top, True
+    MoveWindow m_hWnd, NewValue, tPt.y, wRect.Right - wRect.Left, wRect.Bottom - wRect.Top, True
 End Property
 
 Public Property Get Top() As Long           ' returns/sets Top position in pixels
@@ -194,12 +194,12 @@ Public Property Get Top() As Long           ' returns/sets Top position in pixel
     ScreenToClient GetParent(m_hWnd), tPt
     Top = tPt.y
 End Property
-Public Property Let Top(newValue As Long)
+Public Property Let Top(NewValue As Long)
     Dim wRect As RECT, tPt As POINTAPI
     GetWindowRect m_hWnd, wRect
     tPt.x = wRect.Left: tPt.y = wRect.Top
     ScreenToClient GetParent(m_hWnd), tPt
-    MoveWindow m_hWnd, tPt.x, newValue, wRect.Right - wRect.Left, wRect.Bottom - wRect.Top, True
+    MoveWindow m_hWnd, tPt.x, NewValue, wRect.Right - wRect.Left, wRect.Bottom - wRect.Top, True
 End Property
 
 Public Property Get Height() As Long        ' returns/sets Height in pixels
@@ -207,10 +207,10 @@ Public Property Get Height() As Long        ' returns/sets Height in pixels
     GetWindowRect m_hWnd, wRect
     Height = wRect.Bottom - wRect.Top
 End Property
-Public Property Let Height(newValue As Long)
+Public Property Let Height(NewValue As Long)
     Dim wRect As RECT
     GetWindowRect m_hWnd, wRect
-    MoveWindow m_hWnd, wRect.Left, wRect.Top, wRect.Right - wRect.Left, newValue, True
+    MoveWindow m_hWnd, wRect.Left, wRect.Top, wRect.Right - wRect.Left, NewValue, True
 End Property
 
 Public Property Get Width() As Long         ' returns/sets Width in pixels
@@ -218,10 +218,10 @@ Public Property Get Width() As Long         ' returns/sets Width in pixels
     GetWindowRect m_hWnd, wRect
     Width = wRect.Right - wRect.Left
 End Property
-Public Property Let Width(newValue As Long)
+Public Property Let Width(NewValue As Long)
     Dim wRect As RECT
     GetWindowRect m_hWnd, wRect
-    MoveWindow m_hWnd, wRect.Left, wRect.Top, newValue, wRect.Bottom - wRect.Top, True
+    MoveWindow m_hWnd, wRect.Left, wRect.Top, NewValue, wRect.Bottom - wRect.Top, True
 End Property
 
 Public Sub Move(ByVal Left As Long, ByVal Top As Long, Optional ByVal Width As Long, Optional ByVal Height As Long)
@@ -249,9 +249,9 @@ Public Property Get Marquee() As Boolean
     Marquee = ((GetWindowLong(m_hWnd, GWL_STYLE) And PBS_MARQUEE) = PBS_MARQUEE)
 End Property
 
-Public Property Let MarqueeScrollRate(newValue As Long) ' pauses or resets/restarts marquee
-    If newValue <> m_Speed And newValue >= 0& Then
-        m_Speed = newValue
+Public Property Let MarqueeScrollRate(NewValue As Long) ' pauses or resets/restarts marquee
+    If NewValue <> m_Speed And NewValue >= 0& Then
+        m_Speed = NewValue
         If Me.Marquee Then SendMessage m_hWnd, PBM_SETMARQUEE, CLng(Abs(m_Speed > 0&)), ByVal m_Speed
     End If
 End Property
@@ -266,22 +266,22 @@ Public Property Get MarqueePaused() As Boolean
     MarqueePaused = (SendMessage(m_hWnd, PBM_GETSTATE, 0&, ByVal 0&) = PBST_PAUSED)
 End Property
 
-Public Property Let Min(newValue As Long)   ' sets minimum bar value
-    SendMessage m_hWnd, PBM_SETRANGE32, newValue, ByVal Me.Max
+Public Property Let Min(NewValue As Long)   ' sets minimum bar value
+    SendMessage m_hWnd, PBM_SETRANGE32, NewValue, ByVal Me.Max
 End Property
 Public Property Get Min() As Long
     Min = SendMessage(m_hWnd, PBM_GETRANGE, 1&, ByVal 0&)
 End Property
 
-Public Property Let Max(newValue As Long)   ' sets maximum bar value
-    SendMessage m_hWnd, PBM_SETRANGE32, Me.Min, ByVal newValue
+Public Property Let Max(NewValue As Long)   ' sets maximum bar value
+    SendMessage m_hWnd, PBM_SETRANGE32, Me.Min, ByVal NewValue
 End Property
 Public Property Get Max() As Long
     Max = SendMessage(m_hWnd, PBM_GETRANGE, 0&, ByVal 0&)
 End Property
 
-Public Property Let Value(newValue As Long) ' returns/sets bar value
-    SendMessage m_hWnd, PBM_SETPOS, newValue, ByVal 0&
+Public Property Let Value(NewValue As Long) ' returns/sets bar value
+    SendMessage m_hWnd, PBM_SETPOS, NewValue, ByVal 0&
 End Property
 Public Property Get Value() As Long
     Value = SendMessage(m_hWnd, PBM_GETPOS, 0&, ByVal 0&)
@@ -295,8 +295,8 @@ Public Property Get hWnd() As Long          ' returns window handle
     hWnd = m_hWnd
 End Property
 
-Public Property Let StepValue(newValue As Long) ' sets/returns the current step value
-    SendMessage m_hWnd, PBM_SETSTEP, newValue, ByVal 0&
+Public Property Let StepValue(NewValue As Long) ' sets/returns the current step value
+    SendMessage m_hWnd, PBM_SETSTEP, NewValue, ByVal 0&
 End Property
 Public Property Get StepValue() As Long
     StepValue = SendMessage(m_hWnd, PBM_GETSTEP, 0&, ByVal 0&)

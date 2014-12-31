@@ -1,7 +1,7 @@
 Attribute VB_Name = "OS_Win7_8_Features"
 '***************************************************************************
 'Handler for features specific to Windows 7+
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 21/November/13
 'Last updated: 21/November/13
 'Last update: initial build

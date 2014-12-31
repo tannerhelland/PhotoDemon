@@ -59,15 +59,6 @@ Begin VB.Form FormUnsharpMask
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Max             =   255
    End
    Begin PhotoDemon.sliderTextCombo sltAmount 
@@ -78,15 +69,6 @@ Begin VB.Form FormUnsharpMask
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   0.1
       SigDigits       =   1
       Value           =   1
@@ -101,15 +83,6 @@ Begin VB.Form FormUnsharpMask
       Width           =   5925
       _ExtentX        =   10398
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   0.1
       Max             =   200
       SigDigits       =   1
@@ -206,7 +179,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Unsharp Masking Tool
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 03/March/01
 'Last updated: 17/January/13
 'Last update: rewrote as a full tool, instead of a single hard-coded 5x5 implementation

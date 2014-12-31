@@ -50,18 +50,9 @@ Begin VB.Form FormVibrance
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
+      ForeColor       =   0
       Min             =   -100
       Max             =   200
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   0
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -100,7 +91,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Vibrance Adjustment Tool
-'Copyright ©2013-2014 by audioglider and Tanner Helland
+'Copyright 2013-2014 by audioglider and Tanner Helland
 'Created: 26/June/13
 'Last updated: 24/August/13
 'Last update: added command bar

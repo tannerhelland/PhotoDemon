@@ -1,7 +1,7 @@
 Attribute VB_Name = "Color_Functions"
 '***************************************************************************
 'Miscellaneous Color Functions
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 13/August/13
 'Last update: added XYZ and CieLAB color conversions
@@ -40,17 +40,17 @@ Public Function convertEntireDIBToLabColor(ByRef srcDIB As pdDIB, ByRef dstArray
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Iterate through the image, converting colors as we go
-    Dim x As Long, y As Long, finalX As Long, finaly As Long, QuickX As Long
+    Dim x As Long, y As Long, finalX As Long, finalY As Long, QuickX As Long
     
     finalX = srcDIB.getDIBWidth - 1
-    finaly = srcDIB.getDIBHeight - 1
+    finalY = srcDIB.getDIBHeight - 1
     
     Dim r As Long, g As Long, b As Long
     Dim labL As Double, labA As Double, labB As Double
     
     For x = 0 To finalX
         QuickX = x * 3
-    For y = 0 To finaly
+    For y = 0 To finalY
     
         'Get the source pixel color values
         r = ImageData(QuickX + 2, y)
@@ -152,9 +152,9 @@ Public Function getQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, finalX As Long, finaly As Long
+    Dim x As Long, y As Long, finalX As Long, finalY As Long
     finalX = srcDIB.getDIBWidth - 1
-    finaly = srcDIB.getDIBHeight - 1
+    finalY = srcDIB.getDIBHeight - 1
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -183,7 +183,7 @@ Public Function getQuickColorCount(ByRef srcDIB As pdDIB, Optional ByVal imageID
     'Apply the filter
     For x = 0 To finalX
         QuickVal = x * qvDepth
-    For y = 0 To finaly
+    For y = 0 To finalY
         
         r = ImageData(QuickVal + 2, y)
         g = ImageData(QuickVal + 1, y)

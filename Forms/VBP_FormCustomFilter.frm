@@ -43,7 +43,7 @@ Begin VB.Form FormCustomFilter
       EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   0
       Left            =   6000
       TabIndex        =   1
@@ -54,15 +54,6 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkNormalize 
       Height          =   330
@@ -93,7 +84,7 @@ Begin VB.Form FormCustomFilter
       _ExtentY        =   9922
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   1
       Left            =   7320
       TabIndex        =   2
@@ -104,18 +95,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   2
       Left            =   8640
       TabIndex        =   3
@@ -126,18 +108,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   3
       Left            =   9960
       TabIndex        =   4
@@ -148,18 +121,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   4
       Left            =   11280
       TabIndex        =   5
@@ -170,18 +134,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   5
       Left            =   6000
       TabIndex        =   6
@@ -192,18 +147,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   6
       Left            =   7320
       TabIndex        =   7
@@ -214,18 +160,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   7
       Left            =   8640
       TabIndex        =   8
@@ -236,18 +173,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   8
       Left            =   9960
       TabIndex        =   9
@@ -258,18 +186,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   9
       Left            =   11280
       TabIndex        =   10
@@ -280,18 +199,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   10
       Left            =   6000
       TabIndex        =   11
@@ -302,18 +212,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   11
       Left            =   7320
       TabIndex        =   12
@@ -324,18 +225,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   12
       Left            =   8640
       TabIndex        =   13
@@ -347,18 +239,9 @@ Begin VB.Form FormCustomFilter
       Max             =   1000
       SigDigits       =   1
       Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   13
       Left            =   9960
       TabIndex        =   14
@@ -369,18 +252,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   14
       Left            =   11280
       TabIndex        =   15
@@ -391,18 +265,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   15
       Left            =   6000
       TabIndex        =   16
@@ -413,18 +278,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   16
       Left            =   7320
       TabIndex        =   17
@@ -435,18 +291,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   17
       Left            =   8640
       TabIndex        =   18
@@ -457,18 +304,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   18
       Left            =   9960
       TabIndex        =   19
@@ -479,18 +317,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   19
       Left            =   11280
       TabIndex        =   20
@@ -501,18 +330,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   20
       Left            =   6000
       TabIndex        =   21
@@ -523,18 +343,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   21
       Left            =   7320
       TabIndex        =   22
@@ -545,18 +356,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   22
       Left            =   8640
       TabIndex        =   23
@@ -567,18 +369,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   23
       Left            =   9960
       TabIndex        =   24
@@ -589,18 +382,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudF 
-      Height          =   375
+      Height          =   345
       Index           =   24
       Left            =   11280
       TabIndex        =   25
@@ -611,18 +395,9 @@ Begin VB.Form FormCustomFilter
       Min             =   -1000
       Max             =   1000
       SigDigits       =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudDivisor 
-      Height          =   375
+      Height          =   345
       Left            =   7560
       TabIndex        =   27
       Top             =   4440
@@ -633,18 +408,9 @@ Begin VB.Form FormCustomFilter
       Max             =   1000
       SigDigits       =   1
       Value           =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudOffset 
-      Height          =   375
+      Height          =   345
       Left            =   9600
       TabIndex        =   28
       Top             =   4440
@@ -653,15 +419,6 @@ Begin VB.Form FormCustomFilter
       _ExtentY        =   661
       Min             =   -255
       Max             =   255
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblOffset 
       AutoSize        =   -1  'True
@@ -734,7 +491,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Filter Handler
-'Copyright ©2001-2014 by Tanner Helland
+'Copyright 2001-2014 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 21/August/13
 'Last update: rebuilt the entire form due to the new command bar.  Custom load/save buttons and functions are now gone, as the

@@ -321,7 +321,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Browser
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 27/May/13
 'Last updated: 25/October/14
 'Last update: clean up render code, improve mousewheel behavior, use button strip for some interface elements
@@ -380,6 +380,7 @@ Dim m_ToolTip As clsToolTip
 
 'API scrollbar allows for larger scroll values
 Private WithEvents vsMetadata As pdScrollAPI
+Attribute vsMetadata.VB_VarHelpID = -1
 
 'When a new metadata category is selected, redraw all the metadata text currently on screen
 Private Sub btsGroup_Click(ByVal buttonIndex As Long)

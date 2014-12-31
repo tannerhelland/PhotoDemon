@@ -80,15 +80,6 @@ Begin VB.Form FormFragment
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   0
       Max             =   200
       SigDigits       =   1
@@ -102,15 +93,6 @@ Begin VB.Form FormFragment
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   0
       Min             =   1
       Max             =   25
@@ -124,15 +106,6 @@ Begin VB.Form FormFragment
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       ForeColor       =   0
       Max             =   360
       SigDigits       =   2
@@ -290,7 +263,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fragment Filter Dialog
-'Copyright ©2014 by Audioglider and Tanner Helland
+'Copyright 2014 by Audioglider and Tanner Helland
 'Created: 10/May/14
 'Last updated: 10/May/14
 'Last update: lots of minor updates, fixes, and optimizations

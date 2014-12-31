@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Window Manager class
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 02/October/13
 'Last updated: 18/July/14
 'Last update: give the options toolbox preference over the primary toolbox.  This makes the main window symmetrical.

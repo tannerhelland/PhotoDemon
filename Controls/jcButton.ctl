@@ -45,7 +45,7 @@ Option Explicit
 '*  Dedicated:  To my Parents and my Teachers :-)
 '*  Contact me: juned.chhipa@yahoo.com
 '*
-'*  Copyright ©2008-2009 Juned Chhipa. All rights reserved.
+'*  Copyright 2008-2009 Juned Chhipa. All rights reserved.
 '****************************************************************************
 '* This control can be used as an alternative to Command Button. It is      *
 '* a lightweight button control which will emulate new button styles.       *
@@ -584,10 +584,10 @@ Private m_lDY           As Single
 Private m_bPopupEnabled As Boolean              'Popus is enabled
 Private m_bPopupShown   As Boolean              'Popupmenu is shown
 Private m_bPopupInit    As Boolean              'Flag to prevent WM_MOUSLEAVE to redraw the button
-Private DropDownMenu    As VB.Menu              'Popupmenu to be shown
+Private DropDownMenu    As vB.Menu              'Popupmenu to be shown
 Private MenuAlign       As enumMenuAlign        'PopupMenu Alignments
 Private MenuFlags       As Long                 'PopupMenu Flags
-Private DefaultMenu     As VB.Menu              'Default menu in the popupmenu
+Private DefaultMenu     As vB.Menu              'Default menu in the popupmenu
 
 ' --Tooltip variables
 Private m_sTooltipText  As String
@@ -2494,10 +2494,10 @@ Private Sub ShowPopupMenu()
 
 Const TPM_BOTTOMALIGN As Long = &H20&
 
-Dim Menu             As VB.Menu
+Dim Menu             As vB.Menu
 Dim Align            As enumMenuAlign
 Dim Flags            As Long
-Dim DefaultMenu      As VB.Menu
+Dim DefaultMenu      As vB.Menu
 
 Dim x                As Long
 Dim y                As Long
@@ -3457,7 +3457,7 @@ Public Sub SetPopupMenu(Menu As Object, Optional Align As enumMenuAlign, Optiona
 Attribute SetPopupMenu.VB_Description = "Sets a dropdown menu to the button."
 
     If Not (Menu Is Nothing) Then
-        If (TypeOf Menu Is VB.Menu) Then
+        If (TypeOf Menu Is vB.Menu) Then
 
             Set DropDownMenu = Menu
             MenuAlign = Align
@@ -3485,7 +3485,7 @@ Public Sub About()
 Attribute About.VB_Description = "Displays information about the control and its author."
 Attribute About.VB_UserMemId = -552
 
-    'MsgBox "JCButton v 1.02" & vbCrLf & "Author: Juned S. Chhipa" & vbCrLf & "Contact: juned.chhipa@yahoo.com" & vbCrLf & vbCrLf & "Copyright ©2008-2009 Juned Chhipa. All rights reserved.", vbInformation + vbOKOnly, "About"
+    'MsgBox "JCButton v 1.02" & vbCrLf & "Author: Juned S. Chhipa" & vbCrLf & "Contact: juned.chhipa@yahoo.com" & vbCrLf & vbCrLf & "Copyright 2008-2009 Juned Chhipa. All rights reserved.", vbInformation + vbOKOnly, "About"
 
 End Sub
 

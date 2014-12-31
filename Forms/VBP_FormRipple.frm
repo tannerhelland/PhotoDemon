@@ -94,15 +94,6 @@ Begin VB.Form FormRipple
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Max             =   100
          Value           =   80
       End
@@ -114,15 +105,6 @@ Begin VB.Form FormRipple
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   1
          Max             =   200
          Value           =   16
@@ -135,15 +117,6 @@ Begin VB.Form FormRipple
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   1
          Max             =   5
          Value           =   2
@@ -158,15 +131,6 @@ Begin VB.Form FormRipple
          Width           =   2895
          _ExtentX        =   5106
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Max             =   1
          SigDigits       =   2
          Value           =   0.5
@@ -181,15 +145,6 @@ Begin VB.Form FormRipple
          Width           =   2895
          _ExtentX        =   5106
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Max             =   1
          SigDigits       =   2
          Value           =   0.5
@@ -337,15 +292,6 @@ Begin VB.Form FormRipple
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Min             =   1
          Max             =   100
          Value           =   100
@@ -360,15 +306,6 @@ Begin VB.Form FormRipple
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Max             =   360
       End
       Begin VB.Label lblTitle 
@@ -464,7 +401,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Ripple" Distortion
-'Copyright ©2000-2014 by Tanner Helland
+'Copyright 2000-2014 by Tanner Helland
 'Created: 06/January/13
 'Last updated: 10/January/14
 'Last update: added user-editable center point for the ripple

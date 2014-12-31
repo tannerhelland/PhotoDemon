@@ -53,15 +53,6 @@ Begin VB.Form FormFilmGrain
       Min             =   1
       Max             =   50
       Value           =   10
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -83,15 +74,6 @@ Begin VB.Form FormFilmGrain
       Max             =   25
       SigDigits       =   1
       Value           =   5
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -142,7 +124,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Add Film Grain Tool
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 11/January/14
 'Last update: convert softness to floating point; minor performance improvements

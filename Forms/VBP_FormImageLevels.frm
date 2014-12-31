@@ -139,7 +139,7 @@ Begin VB.Form FormLevels
       Width           =   6690
    End
    Begin PhotoDemon.textUpDown tudLevels 
-      Height          =   405
+      Height          =   345
       Index           =   0
       Left            =   6000
       TabIndex        =   4
@@ -148,15 +148,6 @@ Begin VB.Form FormLevels
       _ExtentX        =   2117
       _ExtentY        =   714
       Max             =   253
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -188,7 +179,7 @@ Begin VB.Form FormLevels
       ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.textUpDown tudLevels 
-      Height          =   405
+      Height          =   345
       Index           =   1
       Left            =   8760
       TabIndex        =   5
@@ -200,18 +191,9 @@ Begin VB.Form FormLevels
       Max             =   0.99
       SigDigits       =   2
       Value           =   0.5
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudLevels 
-      Height          =   405
+      Height          =   345
       Index           =   2
       Left            =   11490
       TabIndex        =   6
@@ -222,18 +204,9 @@ Begin VB.Form FormLevels
       Min             =   2
       Max             =   255
       Value           =   255
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudLevels 
-      Height          =   405
+      Height          =   345
       Index           =   3
       Left            =   6000
       TabIndex        =   7
@@ -242,18 +215,9 @@ Begin VB.Form FormLevels
       _ExtentX        =   2355
       _ExtentY        =   714
       Max             =   255
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.textUpDown tudLevels 
-      Height          =   405
+      Height          =   345
       Index           =   4
       Left            =   11355
       TabIndex        =   8
@@ -263,15 +227,6 @@ Begin VB.Form FormLevels
       _ExtentY        =   714
       Max             =   255
       Value           =   255
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.colorSelector csHighlight 
       Height          =   375
@@ -397,7 +352,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Levels
-'Copyright ©2006-2014 by Tanner Helland
+'Copyright 2006-2014 by Tanner Helland
 'Created: 22/July/06
 'Last updated: 19/September/14
 'Last update: further improvements to the interface, including increasing whitespace, fixing small layout annoyances,

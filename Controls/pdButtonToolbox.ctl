@@ -26,7 +26,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Toolbox Button control
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 19/October/14
 'Last updated: 19/October/14
 'Last update: initial build, using the button strip's code as a starting point

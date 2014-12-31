@@ -70,15 +70,6 @@ Begin VB.Form FormGrayscale
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Min             =   2
       Max             =   256
       Value           =   4
@@ -311,7 +302,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Grayscale Conversion Handler
-'Copyright ©2002-2014 by Tanner Helland
+'Copyright 2002-2014 by Tanner Helland
 'Created: 1/12/02
 'Last updated: 16/February/14
 'Last update: rewrite code so that all conversion methods provide an option for specific # of gray shades and/or dithering,

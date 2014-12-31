@@ -28,7 +28,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Checkbox control
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 28/January/13
 'Last updated: 20/October/14
 'Last update: move control to new flicker-free painting class

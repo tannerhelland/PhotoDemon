@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Preferences Interface
-'Copyright ©2012-2014 by Tanner Helland
+'Copyright 2012-2014 by Tanner Helland
 'Created: 03/November/12
 'Last updated: 06/February/14
 'Last update: added new failsafes against the possibility of settings corruption.  If the program feels compelled to rewrite the

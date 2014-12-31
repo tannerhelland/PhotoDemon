@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 'Note: this file has been modified for use within PhotoDemon, including fixing of several critical bugs.
 
-'To my knowledge, this class is ©2010 Dipak Auddy, with modifications by Roger Gilchrist
+'To my knowledge, this class is Copyright 2010 Dipak Auddy, with modifications by Roger Gilchrist
 
 'You may download the original version of this code from the following link (good as of March '13):
 ' http://www.vb-helper.com/howto_multi_line_tooltip.html

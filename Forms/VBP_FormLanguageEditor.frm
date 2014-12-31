@@ -833,7 +833,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Interactive Language (Translation) Editor
-'Copyright ©2013-2014 by Frank Donckers and Tanner Helland
+'Copyright 2013-2014 by Frank Donckers and Tanner Helland
 'Created: 28/August/13
 'Last updated: 22/February/14
 'Last update: add "automatic machine translation" option so I can include at least basic language files for popular
@@ -861,7 +861,7 @@ Attribute VB_Exposed = False
 ' 22 February 2014, I have added an option to perform a full automatic translation of all untranslated phrases.  This
 ' is helpful for creating a translation file from scratch, which can then be reviewed by a human at their own leisure.
 '
-'Note: for the Google Translate© Terms of Use, please visit http://www.google.com/policies/terms/
+'Note: for the Google Translate Terms of Use, please visit http://www.google.com/policies/terms/
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/

@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Color Selector custom control
-'Copyright ©2013-2014 by Tanner Helland
+'Copyright 2013-2014 by Tanner Helland
 'Created: 17/August/13
 'Last updated: 08/May/14
 'Last update: allow a raised selection dialog to pass changes backward to the control, so it can raise Change
@@ -58,6 +58,7 @@ Public Event ColorChanged()
 
 'A specialized mouse class is used to handle the hand cursor for this control
 Private WithEvents cMouseEvents As pdInputMouse
+Attribute cMouseEvents.VB_VarHelpID = -1
 
 'The control's current color
 Private curColor As OLE_COLOR
