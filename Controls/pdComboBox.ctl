@@ -486,12 +486,12 @@ End Sub
 
 'Clear all entries from the combo box
 Public Sub Clear()
-    If m_ComboBoxHwnd <> 0 Then
-        SendMessage m_ComboBoxHwnd, CB_RESETCONTENT, 0, ByVal 0&
-    Else
-        m_NumBackupEntries = 0
-        ReDim m_BackupEntries(0) As backupComboEntry
-    End If
+
+    If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, CB_RESETCONTENT, 0, ByVal 0&
+    
+    m_NumBackupEntries = 0
+    ReDim m_BackupEntries(0) As backupComboEntry
+    
 End Sub
 
 'Number of items currently in the combo box list
@@ -543,7 +543,7 @@ Public Property Let ListIndex(ByVal newIndex As Long)
             SendMessage m_ComboBoxHwnd, CB_SETCURSEL, newIndex, ByVal 0&
             
             'Request an immediate repaint; without this, there may be a delay, based on the caller's handling of the Click event
-            cPainterBox.requestRepaint
+            If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
             
             'Notify the user of the change
             RaiseEvent Click
