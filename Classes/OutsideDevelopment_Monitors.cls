@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 'Note: this file has been heavily modified for use within PhotoDemon.
 
-'This class was originally written by Mike Dixon.
+'The original version of this class was created by Mike Dixon.
 
 'You may download the original version of this code from the following link (good as of November '12):
 ' http://support.microsoft.com/kb/194578
@@ -544,5 +544,20 @@ registryFetchError:
 
     'Return the API fail state, or an arbitrary number if no fail state occurred but something else went wrong
     If successCheck <> 0 Then retrieveEDIDFromRegistry = successCheck Else retrieveEDIDFromRegistry = 13
+
+End Function
+
+'Shortcut to retrieve the primary monitor
+Public Function PrimaryMonitor() As clsMonitor
+    
+    Dim i As Long
+    For i = 1 To Monitors.Count
+            
+        If Monitors(i).isPrimary Then
+            Set PrimaryMonitor = Monitors(i)
+            Exit For
+        End If
+            
+    Next i
 
 End Function
