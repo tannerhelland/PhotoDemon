@@ -57,7 +57,7 @@ Option Explicit
 Public Event ColorChanged()
 
 'A specialized mouse class is used to handle the hand cursor for this control
-Private cMouseEvents As pdInputMouse
+Private WithEvents cMouseEvents As pdInputMouse
 
 'The control's current color
 Private curColor As OLE_COLOR
@@ -85,6 +85,14 @@ End Property
 'Outside functions can call this to force a display of the color window
 Public Sub displayColorSelection()
     UserControl_Click
+End Sub
+
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.setSystemCursor IDC_HAND
+End Sub
+
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.setSystemCursor IDC_DEFAULT
 End Sub
 
 Private Sub UserControl_Click()
