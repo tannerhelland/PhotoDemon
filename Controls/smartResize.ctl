@@ -1,6 +1,7 @@
 VERSION 5.00
 Begin VB.UserControl smartResize 
    Appearance      =   0  'Flat
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   2850
    ClientLeft      =   0
@@ -25,9 +26,9 @@ Begin VB.UserControl smartResize
       TabIndex        =   13
       Top             =   1200
       Width           =   4695
-      _extentx        =   8281
-      _extenty        =   635
-      fontsize        =   11
+      _ExtentX        =   8281
+      _ExtentY        =   635
+      FontSize        =   11
    End
    Begin PhotoDemon.pdComboBox cmbHeightUnit 
       Height          =   360
@@ -35,9 +36,9 @@ Begin VB.UserControl smartResize
       TabIndex        =   12
       Top             =   600
       Width           =   4695
-      _extentx        =   8281
-      _extenty        =   635
-      fontsize        =   11
+      _ExtentX        =   8281
+      _ExtentY        =   635
+      FontSize        =   11
    End
    Begin PhotoDemon.pdComboBox cmbWidthUnit 
       Height          =   360
@@ -45,9 +46,9 @@ Begin VB.UserControl smartResize
       TabIndex        =   11
       Top             =   0
       Width           =   4695
-      _extentx        =   8281
-      _extenty        =   635
-      fontsize        =   14
+      _ExtentX        =   8281
+      _ExtentY        =   635
+      FontSize        =   14
    End
    Begin PhotoDemon.jcbutton cmdAspectRatio 
       Height          =   630
@@ -55,20 +56,28 @@ Begin VB.UserControl smartResize
       TabIndex        =   8
       Top             =   180
       Width           =   630
-      _extentx        =   1111
-      _extenty        =   1111
-      buttonstyle     =   7
-      font            =   "smartResize.ctx":0312
-      backcolor       =   -2147483643
-      caption         =   ""
-      value           =   -1
-      handpointer     =   -1
-      picturenormal   =   "smartResize.ctx":033A
-      picturedown     =   "smartResize.ctx":178C
-      pictureeffectondown=   0
-      captioneffects  =   0
-      mode            =   1
-      colorscheme     =   3
+      _ExtentX        =   1111
+      _ExtentY        =   1111
+      ButtonStyle     =   7
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   -2147483643
+      Caption         =   ""
+      Mode            =   1
+      Value           =   -1  'True
+      HandPointer     =   -1  'True
+      PictureNormal   =   "smartResize.ctx":0312
+      PictureDown     =   "smartResize.ctx":1764
+      PictureEffectOnDown=   0
+      CaptionEffects  =   0
+      ColorScheme     =   3
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   345
@@ -76,11 +85,11 @@ Begin VB.UserControl smartResize
       TabIndex        =   0
       Top             =   0
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   767
-      max             =   32767
-      min             =   1
-      value           =   1
+      _ExtentX        =   2117
+      _ExtentY        =   767
+      Min             =   1
+      Max             =   32767
+      Value           =   1
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   345
@@ -88,11 +97,11 @@ Begin VB.UserControl smartResize
       TabIndex        =   1
       Top             =   600
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   767
-      max             =   32767
-      min             =   1
-      value           =   1
+      _ExtentX        =   2117
+      _ExtentY        =   767
+      Min             =   1
+      Max             =   32767
+      Value           =   1
    End
    Begin PhotoDemon.textUpDown tudResolution 
       Height          =   345
@@ -100,11 +109,11 @@ Begin VB.UserControl smartResize
       TabIndex        =   9
       Top             =   1200
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   767
-      max             =   32767
-      min             =   1
-      value           =   1
+      _ExtentX        =   2117
+      _ExtentY        =   767
+      Min             =   1
+      Max             =   32767
+      Value           =   1
    End
    Begin VB.Label lblResolution 
       Alignment       =   1  'Right Justify
@@ -750,9 +759,9 @@ End Sub
 Private Sub UserControl_Initialize()
     
     'When compiled, manifest-themed controls need to be further subclassed so they can have transparent backgrounds.
-    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then
-        g_Themer.requestContainerSubclass UserControl.hWnd
-    End If
+    'If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then
+    '    g_Themer.requestContainerSubclass UserControl.hWnd
+    'End If
     
     allowedToUpdateWidth = True
     allowedToUpdateHeight = True
