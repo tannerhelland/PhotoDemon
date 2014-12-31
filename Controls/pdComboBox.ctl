@@ -627,10 +627,10 @@ Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVa
     
     m_MouseOverComboBox = True
     cPainterBox.requestRepaint
-    
+        
     'Set a hand cursor
     cMouseEvents.setSystemCursor IDC_HAND
-    
+        
 End Sub
 
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -926,11 +926,9 @@ Private Function createComboBox() As Boolean
         End If
         
         '...and a third subclasser for mouse events
-        If (cMouseEvents Is Nothing) Then
-            Set cMouseEvents = New pdInputMouse
-            cMouseEvents.addInputTracker m_ComboBoxHwnd, True, , , True, True
-            cMouseEvents.setSystemCursor IDC_HAND
-        End If
+        Set cMouseEvents = New pdInputMouse
+        cMouseEvents.addInputTracker m_ComboBoxHwnd, True, , , True, True
+        cMouseEvents.setSystemCursor IDC_HAND
         
     End If
     
@@ -1283,6 +1281,12 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                     Else
                         cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
                         cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
+                    End If
+                    
+                    'Apply an additional check for mouse over and a srcIsWMPAINT request; this handles hover behavior for
+                    ' text in the main combo box (which is handled a little differently).
+                    If m_MouseOverComboBox And Not m_HasFocus Then
+                        cboTextColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
                     End If
                     
                 Else
