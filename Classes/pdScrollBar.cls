@@ -165,8 +165,11 @@ Private m_Enabled As Boolean
 'Scroll event (note that no distinction is made between horizontal and vertical scroll events)
 Public Event Scroll()
 
-'TEST!!
+'LBUTTONUP messages are part of a rather elaborate fix for annoying Windows behavior; see the wndProc for details
 Private Const WM_LBUTTONUP As Long = &H202
+
+'The scrollbar's orientation is cached at creation time, in case subsequent functions need it
+Private m_OrientationHorizontal As Boolean
 
 'INITIALIZE scroll bar interface.  You must also specify an initial set of min/max/value/small change/large change
 ' values.  I've done this so that scroll bars can be created using a single line of code, rather than having to
@@ -186,6 +189,8 @@ Public Sub initializeScrollBarWindow(ByVal ownerHwnd As Long, ByVal OrientationH
     cSubclass.ssc_AddMsg ownerHwnd, MSG_AFTER, WM_SIZING, WM_SIZE, WM_LBUTTONUP
     
     'To keep subclassing to a minimum, only request scroll events that we actually need for this type of bar
+    m_OrientationHorizontal = OrientationHorizontal
+    
     If OrientationHorizontal Then
         cSubclass.ssc_AddMsg ownerHwnd, MSG_AFTER, WM_HSCROLL
     Else
@@ -479,7 +484,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             GetClientRect m_OwnerHwnd, curWinRect
             
             'Resize the scroll bar accordingly
-            SetWindowPos m_ScrollHwnd, 0, curWinRect.x1 + 1, curWinRect.y1 + 1, curWinRect.x2 - 2, curWinRect.y2 - 2, SWP_NOZORDER Or SWP_NOACTIVATE 'Or SWP_NOSENDCHANGING
+            If m_OrientationHorizontal Then
+                SetWindowPos m_ScrollHwnd, 0, curWinRect.x1 + 1, curWinRect.y1, curWinRect.x2 - 2, curWinRect.y2, SWP_NOZORDER Or SWP_NOACTIVATE   'Or SWP_NOSENDCHANGING
+            Else
+                SetWindowPos m_ScrollHwnd, 0, curWinRect.x1, curWinRect.y1 + 1, curWinRect.x2, curWinRect.y2 - 2, SWP_NOZORDER Or SWP_NOACTIVATE   'Or SWP_NOSENDCHANGING
+            End If
             
         'Scroll bar event!
         Case WM_HSCROLL, WM_VSCROLL
