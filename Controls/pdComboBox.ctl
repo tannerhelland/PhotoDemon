@@ -1382,7 +1382,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
 
     Dim drawSuccess As Boolean
     drawSuccess = False
-    
+        
     'The control type should always be combo box, but it doesn't hurt to check
     If srcDIS.CtlType = ODT_COMBOBOX Then
         
@@ -1396,22 +1396,14 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             isMouseOverItem = ((srcDIS.ItemState And ODS_SELECTED) <> 0)
             
             'If the current entry is also the ListIndex, and the control has focus, render it inversely
-            If (srcDIS.itemID = m_CurrentListIndex) And m_HasFocus Then
+            If isMouseOverItem And m_HasFocus Then
                 itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
                 itemBackColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
             
             'If this entry is not the ListIndex, or the control does not have focus, render the item normally.
             Else
-                
-                'If the mouse is currently over this item, highlight the text.  This is in keeping with other hover behavior in PD.
-                If isMouseOverItem And m_HasFocus Then
-                    itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_HYPERLINK)
-                Else
-                    itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
-                End If
-                
+                itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
                 itemBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                
             End If
             
             'Fill the background
@@ -1426,7 +1418,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             tmpString = m_BackupEntries(stringIndex).entryString
             
             'Prepare a font renderer, then render the text
-            If Not curFont Is Nothing Then
+            If Not (curFont Is Nothing) Then
                 
                 curFont.releaseFromDC
                 curFont.setFontColor itemTextColor
@@ -1768,7 +1760,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
             'Check the control ID (specified by wParam) before proceeding
             If wParam = m_ComboBoxWindowID Then
-            
+                
+                m_CurrentListIndex = SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&)
+                
                 'Retrieve the DrawItemStruct pointed to by lParam
                 Dim DIS As DRAWITEMSTRUCT
                 CopyMemory DIS, ByVal lParam, LenB(DIS)
