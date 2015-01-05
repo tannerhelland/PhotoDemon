@@ -94,10 +94,15 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     'For JPEGs, specify a preference for accuracy and quality over load speed.
     If fileFIF = FIF_JPEG Then
-        fi_ImportFlags = FILO_JPEG_ACCURATE
+        fi_ImportFlags = fi_ImportFlags Or FILO_JPEG_ACCURATE
         
         'If the user has not suspended EXIF auto-rotation, request it from FreeImage
         If g_UserPreferences.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then fi_ImportFlags = fi_ImportFlags Or FILO_JPEG_EXIFROTATE
+    End If
+    
+    'For PNG files, request that gamma is ignored (we will handle it ourselves, later in the load process)
+    If fileFIF = FIF_PNG Then
+        fi_ImportFlags = fi_ImportFlags Or FILO_PNG_IGNOREGAMMA
     End If
     
     'Check for CMYK JPEGs, TIFFs, and PSD files.  If an image is CMYK and an ICC profile is present, ask FreeImage to load the
@@ -164,7 +169,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     If fileFIF = FIF_RAW Then
         
         'If this is not a primary image, RAW format files can load just their thumbnail
-        If (Not showMessages) Then fi_ImportFlags = FILO_RAW_PREVIEW
+        If (Not showMessages) Then fi_ImportFlags = fi_ImportFlags Or FILO_RAW_PREVIEW
         
     End If
         
