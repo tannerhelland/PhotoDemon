@@ -645,100 +645,184 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     'PD supports handling of some esoteric metadata elements, which can affect the RGB/A data of the image.  Look for any such tags now,
     ' and if found, apply any changes immediately.
     If maxMetadataCount > 0 Then
-    
+        
         Dim tagIndex As Long
         
-        'The first tags we're going to look for are the "PNG:WhitePointX/Y" pair.  These are found in the cHRM chunk of the
-        ' PNG file, and they specify a custom white point to be used as part of color management.  These days, cHRM has largely
-        ' been superceded by use of ICC profiles, but cHRM is much more compact and may still be used by websites obsessed with
-        ' file size.  (The chunk also provides a nice way to test our custom gamut code, which is why I pursued this feature
-        ' in the first place!)
-        If doesTagExistFullName("PNG:WhitePointX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:WhitePointY", tagIndex, vbBinaryCompare) Then
+        'First up are some PNG chunks that require special handling.  The PNG spec (http://www.libpng.org/pub/png/spec/1.2/png-1.2-pdg.html)
+        ' provides instructions on which color modification chunks should be given preference, and we mirror that behavior here.  PD's order
+        ' of operations for PNG chunk processing is: ICC, sRGB, cHRM, gAMA.  ICC handling will happen separately, away from the load process,
+        ' and if an ICC profile was found, this whole section can be skipped.
+        If (pdImages(parentImageID).originalFileFormat = FIF_PNG) And (Not pdImages(parentImageID).getActiveDIB.ICCProfile.hasICCData) Then
         
-            'Those two tags were found.  Use of an sRGB tag or ICC profile supercedes the use of specific cHRM values, so check for
-            ' those next.  If either are found, ignore further processing.
-            If (Not doesTagExistFullName("PNG:ProfileName", tagIndex, vbBinaryCompare)) And (Not doesTagExistFullName("PNG:SRGBRendering", tagIndex, vbBinaryCompare)) Then
+            Dim srcGamma As Double
+            srcGamma = 0
             
-                'White point values alone are not enough to properly handle color conversion.  We also need RGB tags.
-                If doesTagExistFullName("PNG:RedX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:RedY", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:GreenX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:GreenY", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:BlueX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:BlueY", tagIndex, vbBinaryCompare) Then
+            Dim cHRMHandled As Boolean, gAMAHandled As Boolean, sRGBHandled As Boolean
+            cHRMHandled = False: gAMAHandled = False: sRGBHandled = False
+            
+            'First, we check for an sRGB chunk.  Technically, we should use the transform requested by the chunk value, but I don't have
+            ' source code for all possible transform modes, so we're just going to do the default one (absolute colorimetric).
+            If doesTagExistFullName("PNG:SRGBRendering", tagIndex, vbBinaryCompare) Then
+            
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "PNG file contains sRGB chunk. Applying color conversion now..."
+                #End If
                 
-                    'All tags exist.  Retrieve their values now.
-                    Dim WhiteX As Double, WhiteY As Double, RedX As Double, RedY As Double, GreenX As Double, GreenY As Double, BlueX As Double, BlueY As Double
-                    WhiteX = CDblCustom(getTagValue("PNG:WhitePointX", vbBinaryCompare))
-                    WhiteY = CDblCustom(getTagValue("PNG:WhitePointY", vbBinaryCompare))
-                    RedX = CDblCustom(getTagValue("PNG:RedX", vbBinaryCompare))
-                    RedY = CDblCustom(getTagValue("PNG:RedY", vbBinaryCompare))
-                    GreenX = CDblCustom(getTagValue("PNG:GreenX", vbBinaryCompare))
-                    GreenY = CDblCustom(getTagValue("PNG:GreenY", vbBinaryCompare))
-                    BlueX = CDblCustom(getTagValue("PNG:BlueX", vbBinaryCompare))
-                    BlueY = CDblCustom(getTagValue("PNG:BlueY", vbBinaryCompare))
+                Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
+                
+                sRGBHandled = True
+            
+            End If
+            
+            'Next, we're going to look for the "PNG:WhitePointX/Y" pair of tags.  These are found in the cHRM chunk of the
+            ' PNG file, and they specify a custom white point to be used as part of color management.  These days, cHRM has largely
+            ' been superceded by use of ICC profiles and/or sRGB identifiers, but cHRM is much more compact and may still be used by
+            ' websites obsessed with file size.  (The chunk also provides a nice way to test our custom gamut code, which is why I
+            ' implemented this feature in the first place!)
+            If (Not sRGBHandled) And doesTagExistFullName("PNG:WhitePointX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:WhitePointY", tagIndex, vbBinaryCompare) Then
+            
+                'Those two tags were found.  Use of an sRGB tag or ICC profile supercedes the use of specific cHRM values, so check for
+                ' those next.  If either are found, ignore further processing.
+                If (Not doesTagExistFullName("PNG:ProfileName", tagIndex, vbBinaryCompare)) And (Not doesTagExistFullName("PNG:SRGBRendering", tagIndex, vbBinaryCompare)) Then
+                
+                    'White point values alone are not enough to properly handle color conversion.  We also need RGB tags.
+                    If doesTagExistFullName("PNG:RedX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:RedY", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:GreenX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:GreenY", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:BlueX", tagIndex, vbBinaryCompare) And doesTagExistFullName("PNG:BlueY", tagIndex, vbBinaryCompare) Then
                     
-                    'Check for matching inputs, including zeroes.  These indicate a writer error.
-                    If (WhiteX = WhiteY) Or (RedX = RedY) Or (GreenX = GreenY) Or (BlueX = BlueY) Then
+                        'All tags exist.  Retrieve their values now.
+                        Dim WhiteX As Double, WhiteY As Double, RedX As Double, RedY As Double, GreenX As Double, GreenY As Double, BlueX As Double, BlueY As Double
+                        WhiteX = CDblCustom(getTagValue("PNG:WhitePointX", vbBinaryCompare))
+                        WhiteY = CDblCustom(getTagValue("PNG:WhitePointY", vbBinaryCompare))
+                        RedX = CDblCustom(getTagValue("PNG:RedX", vbBinaryCompare))
+                        RedY = CDblCustom(getTagValue("PNG:RedY", vbBinaryCompare))
+                        GreenX = CDblCustom(getTagValue("PNG:GreenX", vbBinaryCompare))
+                        GreenY = CDblCustom(getTagValue("PNG:GreenY", vbBinaryCompare))
+                        BlueX = CDblCustom(getTagValue("PNG:BlueX", vbBinaryCompare))
+                        BlueY = CDblCustom(getTagValue("PNG:BlueY", vbBinaryCompare))
                         
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "FYI: custom cHRM data appears to be invalid; ignoring custom conversion.  (List of values follows, in ExifTool order.)"
-                            pdDebug.LogAction WhiteX & ", " & WhiteY & ", " & RedX & ", " & RedY & ", " & GreenX & ", " & GreenY & ", " & BlueX & ", " & BlueY
-                        #End If
-                        
-                    'End points appear to be valid!  Continue with the transform.
-                    Else
-                    
-                        'Per the spec, files using the cHRM chunk are also supposed to provide a gamma value.  Without it, we have to
-                        ' guess at the right gamma value, which defeats the whole purpose of providing color correction data.
-                        ' Look for gamma now.
-                        Dim srcGamma As Double
-                        srcGamma = 0
-                        
-                        If doesTagExistFullName("PNG:Gamma", tagIndex, vbBinaryCompare) Then srcGamma = CDblCustom(getTagValue("PNG:Gamma", vbBinaryCompare))
-                        
-                        'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we'll still proceed with
-                        ' the conversion, but we have no choice but to assume a default gamma value.
-                        If srcGamma = 0 Then
-                        
+                        'Check for matching inputs, including zeroes.  These indicate a writer error.
+                        If ((WhiteX = 0) And (WhiteY = 0)) Or ((RedX = 0) And (RedY = 0)) Or ((GreenX = 0) And (GreenY = 0)) Or ((BlueX = 0) And (BlueY = 0)) Then
+                            
                             #If DEBUGMODE = 1 Then
-                                pdDebug.LogAction "WARNING! PNG file has cHRM but not gAMA. Default sRGB gamma transform will be used."
+                                pdDebug.LogAction "FYI: custom cHRM data appears to be invalid; ignoring custom conversion.  (List of values follows, in ExifTool order.)"
+                                pdDebug.LogAction WhiteX & ", " & WhiteY & ", " & RedX & ", " & RedY & ", " & GreenX & ", " & GreenY & ", " & BlueX & ", " & BlueY
                             #End If
+                            
+                        'End points appear to be valid!  Continue with the transform.
+                        Else
                         
+                            'Per the spec, files using the cHRM chunk are also supposed to provide a gamma value.  Without it, we have to
+                            ' guess at the right gamma value, which defeats the whole purpose of providing color correction data.
+                            ' Look for gamma now.
+                            If doesTagExistFullName("PNG:Gamma", tagIndex, vbBinaryCompare) Then srcGamma = CDblCustom(getTagValue("PNG:Gamma", vbBinaryCompare))
+                            
+                            'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we'll still proceed with
+                            ' the conversion, but we have no choice but to assume a default gamma value.
+                            If srcGamma = 0 Then
+                            
+                                #If DEBUGMODE = 1 Then
+                                    pdDebug.LogAction "WARNING! PNG file has cHRM but not gAMA. Default sRGB gamma transform will be used."
+                                #End If
+                            
+                            End If
+                            
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "PNG file with custom cHRM data found. Applying color conversion now..."
+                            #End If
+                            
+                            'We're now going to do something weird.  If the reported cHRM endpoints match sRGB endpoints, we're going to pass 0 to the
+                            ' gamut conversion function.  This enables the sRGB gamma function, which is a rather complicated two-part ramp (instead of
+                            ' a standard gamma function).  It also produces results identical to Firefox for libpng's test image library.
+                            '
+                            'If the cHRM chunk is any other color space, we'll use the supplied gamma value, per the PNG spec
+                            If (RedX = 0.64) And (RedY = 0.33) And (GreenX = 0.3) And (GreenY = 0.6) And (BlueX = 0.15) And (BlueY = 0.06) And (WhiteX = 0.3127) And (WhiteY = 0.329) Then
+                                Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, 0, False, True
+                            Else
+                                Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, srcGamma, False, True
+                            End If
+                            
+                            'FOR TESTING PURPOSES: this sample line of code uses hard-coded sRGB values
+                            'Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
+                            
+                            'FOR TESTING PURPOSES: this sample line of code uses had-coded Adobe RGB values
+                            'Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.21, 0.71, 0.15, 0.06, 0.3127, 0.329, 2.2, False, True
+                            
+                            'Note that cHRM has been handled; this prevents subsequent gAMA checks from applying a second round of
+                            ' corrections to the image.
+                            cHRMHandled = True
+                            
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "Custom cHRM data analysis complete."
+                            #End If
+                            
+                            'Refresh the screen to reflect the new colors
+                            If parentImageID = g_CurrentImage Then
+                                Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0), "Custom PNG chunk found"
+                                toolbar_ImageTabs.notifyUpdatedImage parentImageID
+                            End If
+                            
                         End If
-                        
+                    
+                    Else
                         #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "PNG file with custom cHRM data found. Applying color conversion now..."
+                            pdDebug.LogAction "FYI: custom cHRM data has been ignored because not all endpoint values exist!"
                         #End If
-                        
-                        Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, 2.2, False, True
-                        
-                        'TESTING!  Use sRGB values to test our matrix math
-                        'Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
-                        
-                        'TESTING!  Use fake Adobe RGB values to test our matrix math
-                        'Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.21, 0.71, 0.15, 0.06, 0.3127, 0.329, 2.2, False, True
-                        
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "Custom cHRM data analysis complete."
-                        #End If
-                        
-                        'Refresh the screen to reflect the new colors
-                        If parentImageID = g_CurrentImage Then
-                            Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0), "Custom PNG chunk found"
-                            toolbar_ImageTabs.notifyUpdatedImage parentImageID
-                        End If
-                        
                     End If
                 
                 Else
-                    #If DEBUGMODE = 1 Then
-                        pdDebug.LogAction "FYI: custom cHRM data has been ignored because not all endpoint values exist!"
-                    #End If
+                    If sRGBHandled Then
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "FYI: custom cHRM data has been ignored in favor of sRGB data."
+                        #End If
+                    End If
                 End If
             
-            Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "FYI: custom cHRM data has been ignored in favor of sRGB or ICC data."
-                #End If
+            'End cHRM chunk handling for PNG files
             End If
-        
-        'End cHRM chunk handling for PNG files
+            
+            'The next tag we're going to look for is the "PNG:Gamma" value.  FreeImage provides an option for handling this value,
+            ' but they do not handle it correctly (by "correctly" I mean, "like web browsers, for better or worse").  Handling gamma
+            ' here also allows us to provide gamma correction when GDI+ is used.  Note that this behavior should probably be tied to
+            ' a preference, because gamma handling may screw up some images that were encoded incorrectly.
+            If (Not cHRMHandled) And (Not sRGBHandled) And doesTagExistFullName("PNG:Gamma", tagIndex, vbBinaryCompare) Then
+            
+                srcGamma = CDblCustom(getTagValue("PNG:Gamma", vbBinaryCompare))
+                
+                'If gamma does not exist in the file, or it does exist but it is encoded incorrectly, we obviously won't make use of it.
+                If srcGamma <= 0 Then
+                
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING! PNG file has gAMA, but the reported value is invalid.  No gamma correction applied."
+                    #End If
+                
+                'If gamma does exist, and it is encoded correctly (as far as we can tell), apply it now
+                Else
+                
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "PNG file with custom gAMA data found. Applying gamma correction now..."
+                    #End If
+                    
+                    Filters_Layers.GammaCorrectDIB pdImages(parentImageID).getActiveDIB, 2.2 / srcGamma, True
+                    
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Custom cHRM data analysis complete."
+                    #End If
+                    
+                    'Note that gAMA has been handled; this prevents subsequent checks from possibly applying a second round of
+                    ' corrections to the image.
+                    gAMAHandled = True
+                    
+                    'Refresh the screen to reflect the new colors
+                    If parentImageID = g_CurrentImage Then
+                        Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0), "Custom PNG chunk found"
+                        toolbar_ImageTabs.notifyUpdatedImage parentImageID
+                    End If
+                    
+                End If
+            
+            'END gAMA chunk handling
+            End If
+            
+        'END special PNG format handling
         End If
 
     
