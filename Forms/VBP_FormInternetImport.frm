@@ -220,6 +220,9 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
     StripFilename tmpFilename
     makeValidWindowsFilename tmpFilename
     
+    'As an added convenience, replace %20 indicators in the filename with actual spaces
+    If InStr(1, tmpFilename, "%20", vbBinaryCompare) Then tmpFilename = Replace$(tmpFilename, "%20", " ")
+    
     Dim tmpFile As String
     tmpFile = g_UserPreferences.GetTempPath & tmpFilename
     
