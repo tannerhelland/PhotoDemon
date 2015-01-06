@@ -20,6 +20,16 @@ Begin VB.UserControl textUpDown
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   75
    ToolboxBitmap   =   "textUpDown.ctx":0000
+   Begin VB.Timer tmrDownButton 
+      Enabled         =   0   'False
+      Left            =   1080
+      Top             =   0
+   End
+   Begin VB.Timer tmrUpButton 
+      Enabled         =   0   'False
+      Left            =   1080
+      Top             =   120
+   End
    Begin PhotoDemon.pdTextBox txtPrimary 
       Height          =   315
       Left            =   15
@@ -61,9 +71,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / UpDown custom control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 12/February/14
-'Last update: replace inherent VB scrollbar with new pdScrollAPI class.  This should finally let us use huge
-'              values with many significant digits - yay!
+'Last updated: 06/January/15
+'Last update: replace scroll bar with custom buttons that behave like a scroll bar
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -113,9 +122,27 @@ Private significantDigits As Long
 'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
 Private textBoxInitiated As Boolean
 
-'API scroll bars are used in place of VB ones
-Private WithEvents vsPrimary As pdScrollAPI
-Attribute vsPrimary.VB_VarHelpID = -1
+'To simplify mouse_down handling, size events fill two rects: one for the "up" spin button, and another for the "down" spin button.
+' These are relative to the picScroll object - not the underlying usercontrol!  (This is necessary due to the way VB handles focus
+' for user controls with child objects on them.)
+Private upRect As RECT, downRect As RECT
+
+'Flicker-free painter for the spin button area
+Private WithEvents cPainter As pdWindowPainter
+Attribute cPainter.VB_VarHelpID = -1
+
+'All spin button painting is performed on this DIB
+Private buttonDIB As pdDIB
+
+'Mouse handler for the spin button area
+Private WithEvents cMouseEvents As pdInputMouse
+Attribute cMouseEvents.VB_VarHelpID = -1
+
+'Mouse state for the spin button area
+Private m_MouseDownUpButton As Boolean, m_MouseDownDownButton As Boolean
+Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean
+
+Private Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECTL, ByRef lpSrc1Rect As RECTL, ByRef lpSrc2Rect As RECTL) As Long
 
 'If the current text value is NOT valid, this will return FALSE
 Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
@@ -140,11 +167,17 @@ Attribute Enabled.VB_UserMemId = -514
 End Property
 
 Public Property Let Enabled(ByVal NewValue As Boolean)
+    
+    'Mirror the new enabled setting across child controls
     UserControl.Enabled = NewValue
     txtPrimary.Enabled = NewValue
     txtPrimary = getFormattedStringValue(controlVal)
-    vsPrimary.Enabled = NewValue
+    
+    'Request a button redraw
+    RedrawButton
+    
     PropertyChanged "Enabled"
+    
 End Property
 
 Public Property Get FontSize() As Single
@@ -161,13 +194,144 @@ Public Property Let FontSize(ByVal newSize As Single)
     End If
 End Property
 
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'Determine mouse button state for the up and down button areas
+    If (Button = pdLeftButton) And Me.Enabled Then
+    
+        If isPointInRect(x, y, upRect) Then
+            m_MouseDownUpButton = True
+            
+            'Adjust the value immediately
+            moveValueDown
+            
+            'Start the repeat timer as well
+            tmrUpButton.Interval = Interface.getKeyboardDelay() * 1000
+            tmrUpButton.Enabled = True
+            
+        Else
+            m_MouseDownUpButton = False
+        End If
+        
+        If isPointInRect(x, y, downRect) Then
+            m_MouseDownDownButton = True
+            moveValueUp
+            tmrDownButton.Interval = Interface.getKeyboardDelay() * 1000
+            tmrDownButton.Enabled = True
+        Else
+            m_MouseDownDownButton = False
+        End If
+        
+        'Request a button redraw
+        RedrawButton
+        
+    End If
+    
+End Sub
+
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.setSystemCursor IDC_HAND
+End Sub
+
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    cMouseEvents.setSystemCursor IDC_DEFAULT
+    
+    m_MouseOverUpButton = False
+    m_MouseOverDownButton = False
+    
+    'Request a button redraw
+    RedrawButton
+    
+End Sub
+
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'Determine mouse hover state for the up and down button areas
+    If isPointInRect(x, y, upRect) Then
+        m_MouseOverUpButton = True
+    Else
+        m_MouseOverUpButton = False
+    End If
+    
+    If isPointInRect(x, y, downRect) Then
+        m_MouseOverDownButton = True
+    Else
+        m_MouseOverDownButton = False
+    End If
+    
+    'Request a button redraw
+    RedrawButton
+    
+End Sub
+
+'Reset spin control button state on a mouse up event
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    
+    If Button = pdLeftButton Then
+        
+        m_MouseDownUpButton = False
+        m_MouseDownDownButton = False
+        tmrUpButton.Enabled = False
+        tmrDownButton.Enabled = False
+    
+        'Request a button redraw
+        RedrawButton
+        
+    End If
+        
+End Sub
+
+Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+    
+    'Flip the button back buffer to the screen
+    If Not (buttonDIB Is Nothing) Then
+        BitBlt cPainter.getPaintStructDC, 0, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonDIB.getDIBDC, 0, 0, vbSrcCopy
+    End If
+    
+End Sub
+
+Private Sub tmrDownButton_Timer()
+
+    'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
+    ' of the delay rate.
+    If tmrDownButton.Interval = Interface.getKeyboardDelay * 1000 Then
+        tmrDownButton.Interval = Interface.getKeyboardRepeatRate * 1000
+    End If
+    
+    'It's a little counter-intuitive, but the DOWN button actually moves the control value UP
+    moveValueUp
+
+End Sub
+
+Private Sub tmrUpButton_Timer()
+    
+    'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
+    ' of the delay rate.
+    If tmrUpButton.Interval = Interface.getKeyboardDelay * 1000 Then
+        tmrUpButton.Interval = Interface.getKeyboardRepeatRate * 1000
+    End If
+    
+    'It's a little counter-intuitive, but the UP button actually moves the control value DOWN
+    moveValueDown
+    
+End Sub
+
+'When the control value is moved UP via button, this function is called
+Private Sub moveValueUp()
+    Value = controlVal - (1 / (10 ^ significantDigits))
+End Sub
+
+'When the control value is moved DOWN via button, this function is called
+Private Sub moveValueDown()
+    Value = controlVal + (1 / (10 ^ significantDigits))
+End Sub
+
 Private Sub txtPrimary_Change()
     
     If IsTextEntryValid() Then
         If shpError.Visible Then shpError.Visible = False
-        textBoxInitiated = True
-        vsPrimary.Value = CDblCustom(txtPrimary) * -1 * (10 ^ significantDigits)
-        textBoxInitiated = False
+        Value = CDblCustom(txtPrimary)
     Else
         If Me.Enabled Then shpError.Visible = True
     End If
@@ -180,11 +344,6 @@ Private Sub txtPrimary_Resize()
         UserControl.Extender.Height = txtPrimary.Height + 2
     End If
     
-End Sub
-
-Private Sub vsPrimary_Scroll()
-    If Not textBoxInitiated Then copyValToTextBox -1 * vsPrimary.Value, True
-    Value = -1 * (vsPrimary.Value / (10 ^ significantDigits))
 End Sub
 
 Public Property Get hWnd() As Long
@@ -201,37 +360,25 @@ Public Property Let Value(ByVal NewValue As Double)
         
     'Don't make any changes unless the new value deviates from the existing one
     If (NewValue <> controlVal) Or (Not IsValid(False)) Then
-    
-        'Internally track the value of the control
-        controlVal = NewValue
-        
-        'Assign the scroll bar the "same" value.  This will vary based on the number of significant digits in use; because
-        ' scroll bars cannot hold float values, we have to multiple by 10^n where n is the number of significant digits
-        ' in use for this control.
-        Dim newScrollVal As Long
-        newScrollVal = -1 * CLng(controlVal * (10 ^ significantDigits))
-        
+                
         If g_IsProgramRunning Then
         
-            If vsPrimary.Value <> newScrollVal Then
+            'Perform bounds-checking
+            controlVal = NewValue
                 
-                'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
-                If newScrollVal < vsPrimary.Min Then
-                    Debug.Print "Control value forcibly changed to bring it in-bounds (too low)"
-                    newScrollVal = vsPrimary.Min
-                End If
-                
-                If newScrollVal > vsPrimary.Max Then
-                    Debug.Print "Control value forcibly changed to bring it in-bounds (too high)"
-                    newScrollVal = vsPrimary.Max
-                End If
-                
-                vsPrimary.Value = newScrollVal
-                
+            'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
+            If controlVal < controlMin Then
+                Debug.Print "Control value forcibly changed to bring it in-bounds (too low)"
+                controlVal = controlMin
+            End If
+            
+            If controlVal > controlMax Then
+                Debug.Print "Control value forcibly changed to bring it in-bounds (too high)"
+                controlVal = controlMax
             End If
             
         End If
-        
+                
         'Mirror the value to the text box
         If Not textBoxInitiated Then
             If (Not IsValid(False)) Then
@@ -242,14 +389,15 @@ Public Property Let Value(ByVal NewValue As Double)
                     If StrComp(getFormattedStringValue(txtPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then txtPrimary.Text = getFormattedStringValue(controlVal)
                 End If
             End If
+            
         End If
-        
+    
         'Mark the value property as being changed, and raise the corresponding event.
         PropertyChanged "Value"
         RaiseEvent Change
         
     End If
-    
+                
 End Property
 
 'Note: the control's minimum value is settable at run-time
@@ -261,18 +409,9 @@ Public Property Let Min(ByVal NewValue As Double)
         
     controlMin = NewValue
     
-    'Calculate a new scroll bar limit
-    Dim newScrollLimit As Long
-    newScrollLimit = -1 * controlMin * (10 ^ significantDigits)
-    
-    'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
-    ' it automatically.
-    If Not (vsPrimary Is Nothing) Then vsPrimary.Max = newScrollLimit
-    
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
         controlVal = controlMin
-        If Not (vsPrimary Is Nothing) Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
     End If
@@ -290,23 +429,11 @@ Public Property Let Max(ByVal NewValue As Double)
         
     controlMax = NewValue
     
-    'Calculate a new scroll bar limit
-    Dim newScrollLimit As Long
-    newScrollLimit = -1 * controlMax * (10 ^ significantDigits)
-    
-    'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
-    ' it automatically.
-    If Not (vsPrimary Is Nothing) Then vsPrimary.Min = newScrollLimit
-    
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
-        
         controlVal = controlMax
-        If Not (vsPrimary Is Nothing) Then vsPrimary.Value = -1 * controlVal * (10 ^ significantDigits)
-        
         txtPrimary = CStr(controlVal)
         RaiseEvent Change
-        
     End If
     
     PropertyChanged "Max"
@@ -321,19 +448,7 @@ End Property
 Public Property Let SigDigits(ByVal NewValue As Long)
         
     significantDigits = NewValue
-    
-    'Calculate a new scroll bar limit
-    Dim newMin As Long, newMax As Long
-    newMax = -1 * controlMin * (10 ^ significantDigits)
-    newMin = -1 * controlMax * (10 ^ significantDigits)
-    
-    'Note that we no longer need to validate the current scroll bar value, as our custom scroll bar class does
-    ' it automatically.
-    If Not (vsPrimary Is Nothing) Then
-        vsPrimary.Max = newMax
-        vsPrimary.Min = newMin
-    End If
-    
+        
     'Update the text display to reflect the new significant digit amount, including any decimal places
     txtPrimary = getFormattedStringValue(controlVal)
     
@@ -362,12 +477,18 @@ Private Sub UserControl_Initialize()
     'Prepare a default font size
     m_FontSize = 10
     txtPrimary.FontSize = m_FontSize
+        
+    'Prep the spin button back buffer
+    Set buttonDIB = New pdDIB
+    If g_IsProgramRunning Then buttonDIB.createBlank picScroll.ScaleWidth, picScroll.ScaleHeight, 24
     
-    'Prepare an API scroll bar
-    If g_IsProgramRunning Then
-        Set vsPrimary = New pdScrollAPI
-        vsPrimary.initializeScrollBarWindow picScroll.hWnd, False, 0, 10, 0, 1, 1
-    End If
+    'Prepare a window painter for the spin button area
+    Set cPainter = New pdWindowPainter
+    If g_IsProgramRunning Then cPainter.startPainter picScroll.hWnd
+    
+    'Prepare an input handler for the spin button area
+    Set cMouseEvents = New pdInputMouse
+    If g_IsProgramRunning Then cMouseEvents.addInputTracker picScroll.hWnd, True, True, False, True, False
                     
 End Sub
 
@@ -412,16 +533,10 @@ End Sub
 
 Private Sub resizeControl()
 
-    'Keep the text box and scroll bar nicely aligned, with a 1px border for the red "error" box
-    If g_IsProgramCompiled And g_IsVistaOrLater And g_IsThemingEnabled Then
-        picScroll.Width = fixDPI(19)
-        picScroll.Top = 0
-        picScroll.Height = UserControl.ScaleHeight
-    Else
-        picScroll.Width = fixDPI(17)
-        picScroll.Top = 0
-        picScroll.Height = UserControl.ScaleHeight
-    End If
+    'The goal here is to keep the text box and scroll bar nicely aligned, with a 1px border for the red "error" box
+    picScroll.Width = fixDPI(18)
+    picScroll.Top = 1
+    picScroll.Height = txtPrimary.Height
     
     'Leave a 1px border around the text box, to be used for displaying red during range and numeric errors
     txtPrimary.Left = 1
@@ -431,12 +546,149 @@ Private Sub resizeControl()
     'Align the scroll bar container to the right of the text box
     picScroll.Left = txtPrimary.Left + txtPrimary.Width
     
+    'Calculate new rects for the up/down buttons
+    With upRect
+        .Left = 0
+        .Right = picScroll.ScaleWidth - 1
+        .Top = 0
+        .Bottom = (picScroll.ScaleHeight \ 2) - 1
+    End With
+    
+    With downRect
+        .Left = 0
+        .Right = picScroll.ScaleWidth - 1
+        .Top = upRect.Bottom + 1
+        .Bottom = picScroll.ScaleHeight - 1
+    End With
+    
     'Make the shape control (used for errors) the size of the user control
     shpError.Left = 0
     shpError.Top = 0
     shpError.Height = UserControl.ScaleHeight
-    If g_IsProgramCompiled And g_IsVistaOrLater And g_IsThemingEnabled Then shpError.Width = UserControl.ScaleWidth - 2 Else shpError.Width = UserControl.ScaleWidth
+    shpError.Width = UserControl.ScaleWidth
     
+    'Resize the button back buffer to match
+    If Not (buttonDIB Is Nothing) Then
+        If (buttonDIB.getDIBWidth <> picScroll.ScaleWidth) Or (buttonDIB.getDIBHeight <> picScroll.ScaleHeight) Then
+            buttonDIB.createBlank picScroll.ScaleWidth, picScroll.ScaleHeight, 24
+        End If
+    End If
+    
+    'Request a redraw of the button
+    RedrawButton
+    
+End Sub
+
+'Redraw the spin button area of the control
+Private Sub RedrawButton()
+    
+    'Start by determining what color to use for the background.  (In the IDE, we have to supply all colors manually.)
+    Dim buttonBackColor As Long, buttonBorderColor As Long
+    
+    Dim upButtonBorderColor As Long, downButtonBorderColor As Long
+    Dim upButtonFillColor As Long, downButtonFillColor As Long
+    Dim upButtonArrowColor As Long, downButtonArrowColor As Long
+    
+    If Not (g_Themer Is Nothing) Then
+        buttonBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        buttonBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+    Else
+        buttonBackColor = vbWindowBackground
+        buttonBorderColor = RGB(128, 128, 128)
+    End If
+    
+    'Start by erasing the buffer (which will have already been sized correctly by a previous function) and drawing
+    ' a default border around the entire control.
+    GDI_Plus.GDIPlusFillDIBRect buttonDIB, 0, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonBackColor
+    'GDI_Plus.GDIPlusDrawRectOutlineToDC buttonDIB.getDIBDC, -1, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonBorderColor
+    
+    'Next, figure out button colors.  These are affected by hover and press state.
+    If m_MouseOverUpButton And Me.Enabled And (Not (g_Themer Is Nothing)) Then
+    
+        If m_MouseDownUpButton Then
+            upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            upButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+            upButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+        Else
+            upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            upButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        End If
+    
+    Else
+        If Not (g_Themer Is Nothing) Then
+            upButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            If Me.Enabled Then upButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT) Else upButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+            upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        Else
+            upButtonBorderColor = vbWindowBackground
+            upButtonArrowColor = RGB(128, 128, 128)
+            upButtonFillColor = vbWindowBackground
+        End If
+    End If
+    
+    If m_MouseOverDownButton And Me.Enabled And (Not (g_Themer Is Nothing)) Then
+    
+        If m_MouseDownDownButton Then
+            downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            downButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+            downButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+        Else
+            downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            downButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        End If
+    
+    Else
+        If Not (g_Themer Is Nothing) Then
+            downButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            If Me.Enabled Then downButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT) Else downButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+            downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        Else
+            downButtonBorderColor = vbWindowBackground
+            downButtonArrowColor = RGB(128, 128, 128)
+            downButtonFillColor = vbWindowBackground
+        End If
+    End If
+    
+    'Paint both button backgrounds and borders
+    GDI_Plus.GDIPlusFillDIBRect buttonDIB, upRect.Left, upRect.Top, upRect.Right - upRect.Left, upRect.Bottom - upRect.Top, upButtonFillColor
+    GDI_Plus.GDIPlusDrawRectOutlineToDC buttonDIB.getDIBDC, upRect.Left, upRect.Top, upRect.Right, upRect.Bottom, upButtonBorderColor
+    
+    GDI_Plus.GDIPlusFillDIBRect buttonDIB, downRect.Left, downRect.Top, downRect.Right - downRect.Left, downRect.Bottom - downRect.Top, downButtonFillColor
+    GDI_Plus.GDIPlusDrawRectOutlineToDC buttonDIB.getDIBDC, downRect.Left, downRect.Top, downRect.Right, downRect.Bottom, downButtonBorderColor
+    
+    'Finally, paint the arrows themselves
+    Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
+                
+    'Start with the up-pointing arrow
+    buttonPt1.x = upRect.Left + fixDPIFloat(5)
+    buttonPt1.y = (upRect.Bottom - upRect.Top) / 2 + fixDPIFloat(2)
+    
+    buttonPt3.x = upRect.Right - fixDPIFloat(5)
+    buttonPt3.y = buttonPt1.y
+    
+    buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
+    buttonPt2.y = buttonPt1.y - fixDPIFloat(3)
+    
+    GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, LineCapRound
+    GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, LineCapRound
+                
+    'Next, the down-pointing arrow
+    buttonPt1.x = downRect.Left + fixDPIFloat(5)
+    buttonPt1.y = downRect.Top + (downRect.Bottom - downRect.Top) / 2 - fixDPIFloat(1)
+    
+    buttonPt3.x = downRect.Right - fixDPIFloat(5)
+    buttonPt3.y = buttonPt1.y
+    
+    buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
+    buttonPt2.y = buttonPt1.y + fixDPIFloat(3)
+    
+    GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, LineCapRound
+    GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
+    
+    'As a final step, request a repaint onto the button's container
+    cPainter.requestRepaint
 
 End Sub
 
@@ -453,7 +705,7 @@ Private Sub UserControl_Show()
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool vsPrimary, m_ToolString
+            .AddTool picScroll, m_ToolString
             .AddTool txtPrimary, m_ToolString
             
         End With
@@ -463,13 +715,6 @@ Private Sub UserControl_Show()
     'Also, force a resize to modify its layout
     UserControl_Resize
         
-End Sub
-
-Private Sub UserControl_Terminate()
-    
-    'When the control is terminated, release the subclassing used for transparent backgrounds
-    If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.releaseContainerSubclass UserControl.hWnd
-    
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -510,25 +755,6 @@ Private Function getFormattedStringValue(ByVal srcValue As Double) As String
     If Not Me.Enabled Then getFormattedStringValue = ""
 
 End Function
-
-'Populate the text box with a properly formatted version of the current control value
-Private Sub copyValToTextBox(ByVal srcValue As Double, Optional ByVal ignoreCaretPosition As Boolean = False)
-
-    'Remember the current cursor position
-    Dim cursorPos As Long
-    cursorPos = txtPrimary.SelStart
-    
-    'Overwrite the current text box value with the new value
-    txtPrimary = getFormattedStringValue(srcValue / (10 ^ significantDigits))
-    
-    'Restore the cursor to its original position
-    If cursorPos >= Len(txtPrimary) Then cursorPos = Len(txtPrimary)
-    If Not ignoreCaretPosition Then txtPrimary.SelStart = cursorPos
-    
-    'Hide the error box - we know it's not needed, as the value has been set via scroll bar
-    If shpError.Visible Then shpError.Visible = False
-
-End Sub
 
 'Check a passed value against a min and max value to see if it is valid.  Additionally, make sure the value is
 ' numeric, and allow the user to display a warning message if necessary.
