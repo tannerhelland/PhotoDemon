@@ -491,7 +491,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Filter Handler
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 21/August/13
 'Last update: rebuilt the entire form due to the new command bar.  Custom load/save buttons and functions are now gone, as the

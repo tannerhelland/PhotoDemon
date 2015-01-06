@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 
 '***************************************************************************
 'Google Translate Interface
-'Copyright 2013-2014 by Frank Donckers
+'Copyright 2013-2015 by Frank Donckers
 'Created: 19/February/13
 'Last updated: 10/September/13
 'Last update: (by Tanner) moved all relevant code into this singular class, various minor modifications

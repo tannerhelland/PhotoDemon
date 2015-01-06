@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Internet Interface (for importing images directly from a URL)
-'Copyright 2011-2014 by Tanner Helland
+'Copyright 2011-2015 by Tanner Helland
 'Created: 08/June/12
 'Last updated: 03/December/12
 'Last update: made some slight modifications to ImportImageFromInternet so it can be used by external callers.

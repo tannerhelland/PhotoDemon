@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Central Language and Translation Handler
-'Copyright 2012-2014 by Frank Donckers and Tanner Helland
+'Copyright 2012-2015 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
 'Last updated: 03/September/13
 'Last update: replace all custom XML code with the new pdXML class

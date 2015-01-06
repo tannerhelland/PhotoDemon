@@ -683,7 +683,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Selection Dialog
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 11/November/13
 'Last updated: 11/February/14
 'Last update: allow color selection from anywhere on the screen

@@ -327,7 +327,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rechannel Interface
-'Copyright 2000-2014 by Tanner Helland
+'Copyright 2000-2015 by Tanner Helland
 'Created: original rechannel algorithm - sometimes 2001, this form 28/September/12
 'Last updated: 24/August/13
 'Last update: added command bar

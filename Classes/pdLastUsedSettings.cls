@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Auto-Save Form Settings custom class
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 14/September/13
 'Last updated: 26/June/14
 'Last update: add recent localization fixes from the command bar UC version of this code

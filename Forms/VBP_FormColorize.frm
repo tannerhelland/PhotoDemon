@@ -111,7 +111,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Colorize Form
-'Copyright 2006-2014 by Tanner Helland
+'Copyright 2006-2015 by Tanner Helland
 'Created: 12/January/07
 'Last updated: 22/June/14
 'Last update: replace old scroll bar with slider/text combo

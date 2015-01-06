@@ -1,7 +1,7 @@
 Attribute VB_Name = "GDI_Plus"
 '***************************************************************************
 'GDI+ Interface
-'Copyright 2012-2014 by Tanner Helland
+'Copyright 2012-2015 by Tanner Helland
 'Created: 1/September/12
 'Last updated: 11/October/14
 'Last update: added a bunch of support functions for new selection tools

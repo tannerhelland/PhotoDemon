@@ -13,14 +13,11 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Handler
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 23/May/13
-'Last updated: 15/January/14
-'Last update: perform special checks for multiline EXIF comments.  It's actually a violation of the EXIF spec to write
-'              comments spanning multiple lines (the spec unambiguously states: "Comments are written in ASCII text
-'              terminated with NULL. If there are two or more comments, each statement ends with a period. A carriage
-'              return or line feed character shall not be used.")  However, as with most specs, some software chooses
-'              to violate this.  I have now added special checks for multiline comments.
+'Last updated: 05/January/15
+'Last update: perform special checks for certain PNG chunks (sRGB, cHRM, gAMA).  PD now processes the data in these
+'              chunks, if present, which allows us to provide identical rendering to Firefox and Chrome.
 '
 'As of version 6.0, PhotoDemon now provides support for loading and saving image metadata.  What is metadata, you ask?
 ' See http://en.wikipedia.org/wiki/Metadata#Photographs for more details.

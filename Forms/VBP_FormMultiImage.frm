@@ -108,7 +108,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Multi-Image Load Dialog
-'Copyright 2011-2014 by Tanner Helland
+'Copyright 2011-2015 by Tanner Helland
 'Created: 01/December/12
 'Last updated: 27/December/12
 'Last update: add support for icon files, which may contain many embedded icons.

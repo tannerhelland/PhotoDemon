@@ -217,7 +217,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Canvas Size Handler
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 14/April/14
 'Last update: rewrite everything against layers

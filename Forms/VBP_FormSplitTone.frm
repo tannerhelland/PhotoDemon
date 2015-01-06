@@ -186,7 +186,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Split Toning Dialog
-'Copyright 2014 by Audioglider and Tanner Helland
+'Copyright 2014-2015 by Audioglider and Tanner Helland
 'Created: 07/May/14
 'Last updated: 09/May/14
 'Last update: tweak the split toning algorithm to perfection (I hope?)

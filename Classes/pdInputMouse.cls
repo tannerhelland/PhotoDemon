@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Mouse Input Handler (mouse, pen, etc) class
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
 'Last updated: 02/October/14
 'Last update: implement high-resolution mouse tracking via GetMouseMovePointsEx and enable by default.  Also, implement

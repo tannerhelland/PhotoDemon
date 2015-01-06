@@ -1,7 +1,7 @@
 Attribute VB_Name = "Image_Canvas_Handler"
 '***************************************************************************
 'Image Canvas Handler (formerly Image Window Handler)
-'Copyright 2002-2014 by Tanner Helland
+'Copyright 2002-2015 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 04/February/14
 'Last update: rework all code to operate on Canvas user controls instead of standalone forms

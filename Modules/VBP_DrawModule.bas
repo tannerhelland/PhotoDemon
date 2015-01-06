@@ -1,7 +1,7 @@
 Attribute VB_Name = "Drawing"
 '***************************************************************************
 'PhotoDemon Drawing Routines
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 4/3/01
 'Last updated: 01/December/12
 'Last update: Added DrawSystemIcon function (previously used for only the "unsaved changes" dialog

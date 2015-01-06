@@ -352,7 +352,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Levels
-'Copyright 2006-2014 by Tanner Helland
+'Copyright 2006-2015 by Tanner Helland
 'Created: 22/July/06
 'Last updated: 19/September/14
 'Last update: further improvements to the interface, including increasing whitespace, fixing small layout annoyances,

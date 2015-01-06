@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image class
-'Copyright 2006-2014 by Tanner Helland
+'Copyright 2006-2015 by Tanner Helland
 'Created: sometime 2006
 'Last updated: 11/June/14
 'Last update: start migrating public variables into the imgStorage scripting dictionary

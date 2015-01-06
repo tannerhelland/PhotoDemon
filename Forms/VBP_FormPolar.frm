@@ -258,7 +258,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Polar Coordinate Conversion Tool
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 14/January/13
 'Last updated: 23/August/13
 'Last update: added command bar, converted the polar coordinate routine itself to operate on any two DIBs

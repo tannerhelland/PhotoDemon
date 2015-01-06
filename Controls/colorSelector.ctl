@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Color Selector custom control
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 17/August/13
 'Last updated: 08/May/14
 'Last update: allow a raised selection dialog to pass changes backward to the control, so it can raise Change

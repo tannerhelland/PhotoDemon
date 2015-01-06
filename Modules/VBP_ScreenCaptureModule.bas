@@ -1,7 +1,7 @@
 Attribute VB_Name = "Screen_Capture"
 '***************************************************************************
 'Screen Capture Interface
-'Copyright 1999-2014 by Tanner Helland
+'Copyright 1999-2015 by Tanner Helland
 'Created: 12/June/99
 'Last updated: 27/June/14
 'Last update: sanitize window titles before converting them to filenames; otherwise, subsequent Save/Save As functions may fail

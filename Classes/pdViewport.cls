@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Viewport Support Class
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 05/December/13
 'Last update: started migrating certain viewport functions and tracking code into this standalone class.  The long-term

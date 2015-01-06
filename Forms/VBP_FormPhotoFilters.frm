@@ -140,7 +140,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Photo Filter Application Tool
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 06/June/13
 'Last updated: 18/June/14
 'Last update: add arrow key nav support to the custom list

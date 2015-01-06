@@ -59,7 +59,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Text / UpDown custom control
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 12/February/14
 'Last update: replace inherent VB scrollbar with new pdScrollAPI class.  This should finally let us use huge

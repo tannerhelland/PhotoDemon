@@ -1,7 +1,7 @@
 Attribute VB_Name = "Icon_and_Cursor_Handler"
 '***************************************************************************
 'PhotoDemon Icon and Cursor Handler
-'Copyright 2012-2014 by Tanner Helland
+'Copyright 2012-2015 by Tanner Helland
 'Created: 24/June/12
 'Last updated: 13/October/13
 'Last update: rework custom form icon code to be much cleaner and self-contained

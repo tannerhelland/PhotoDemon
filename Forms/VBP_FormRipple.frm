@@ -401,7 +401,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Ripple" Distortion
-'Copyright 2000-2014 by Tanner Helland
+'Copyright 2000-2015 by Tanner Helland
 'Created: 06/January/13
 'Last updated: 10/January/14
 'Last update: added user-editable center point for the ripple

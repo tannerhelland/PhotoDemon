@@ -235,7 +235,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pan and Zoom Effect Interface
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 28/May/13
 'Last updated: 25/September/14
 'Last update: integrate new adaptive supersampling engine

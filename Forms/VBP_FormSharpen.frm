@@ -92,7 +92,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Sharpen Tool
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 09/August/13 (actually, a naive version was built years ago, but didn't offer variable strength)
 'Last updated: 22/August/13
 'Last update: rewrote the ApplyConvolutionFilter call against the new paramString implementation

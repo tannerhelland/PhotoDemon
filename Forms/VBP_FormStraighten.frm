@@ -95,7 +95,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Straightening Interface
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 11/May/14
 'Last updated: 11/May/14
 'Last update: initial build, based heavily off PD's existing Rotate dialog

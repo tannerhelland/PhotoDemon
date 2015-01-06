@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Font Manager (and Renderer)
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 31/May/13
 'Last updated: 29/October/14
 'Last update: many small improvements to make this class work better with the new pdLabel control.

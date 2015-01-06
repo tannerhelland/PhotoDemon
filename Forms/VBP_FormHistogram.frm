@@ -594,7 +594,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Handler
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 30/September/13
 'Last update: when drawing cubic spline histograms, cache various GDI+ handles to improve performance.
@@ -885,7 +885,7 @@ Private Sub Form_Resize()
     picH.Width = Me.ScaleWidth - picH.Left - fixDPI(8)
     picGradient.Width = Me.ScaleWidth - picGradient.Left - fixDPI(8)
     lblBackground.Width = Abs(lblBackground.Left) + Me.ScaleWidth
-    CmdOK.Left = Me.ScaleWidth - CmdOK.Width - fixDPI(8)
+    cmdOK.Left = Me.ScaleWidth - cmdOK.Width - fixDPI(8)
     
     'Now draw a little gradient below the histogram window, to help orient the user
     DrawHistogramGradient picGradient, RGB(0, 0, 0), RGB(255, 255, 255)

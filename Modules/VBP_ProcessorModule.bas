@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 02/June/14
 'Last update: minimize use of the busy cursor; it should now only be triggered for actions that affect DIBs directly

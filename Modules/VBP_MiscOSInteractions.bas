@@ -1,7 +1,7 @@
 Attribute VB_Name = "OS_Interactions"
 '***************************************************************************
 'Miscellaneous OS Interaction Handler
-'Copyright 2011-2014 by Tanner Helland
+'Copyright 2011-2015 by Tanner Helland
 'Created: 27/November/12
 'Last updated: 02/April/14
 'Last update: added getArbitraryGUID function, for generating unique strings at run-time.  (PD will use this to

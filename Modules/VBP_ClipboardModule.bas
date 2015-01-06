@@ -1,7 +1,7 @@
 Attribute VB_Name = "Clipboard_Handler"
 '***************************************************************************
 'Clipboard Interface
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 14/June/14
 'Last update: add "paste as new layer" actions to Undo stack

@@ -179,7 +179,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Shadow / Midtone / Highlight Adjustment Tool
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 17/February/13
 'Last updated: 24/August/13
 'Last update: add command bar

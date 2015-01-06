@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Specialized String Parameter Handler
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 25/March/13
 'Last updated: 03/July/14
 'Last update: added failsafe conversions for variable decimal characters in values retrieved as Longs.  (Just because a

@@ -152,7 +152,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Add basic transparency" (e.g. constant alpha channel) interface
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 13/August/13
 'Last updated: 21/August/13
 'Last update: moved "make color transparent" to its own form.  This dialog is now much simpler.

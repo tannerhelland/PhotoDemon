@@ -93,7 +93,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Multi-purpose Selection Dialog
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 11/July/13
 'Last updated: 11/July/13
 'Last update: initial build

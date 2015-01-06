@@ -228,7 +228,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Lens Correction and Distortion
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 05/January/13
 'Last updated: 25/September/14
 'Last update: added adaptive subpixel supersampling support.  This was my test filter for the rest of PD, so it received

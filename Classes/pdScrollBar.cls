@@ -13,10 +13,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon API Scroll bar interface
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 12/February/14
-'Last updated: 12/February/14
-'Last update: initial build
+'Last updated: 05/January/15
+'Last update: modify some window size decisions to better reflect the container's size and orientation
 '
 'VB's inherent scroll bar controls are an unpleasant piece of UI, for a whole host of reasons: 16-bit limit,
 ' terrible "has focus" behavior, frequently losing track of the mouse if other events are processing simultaneously,

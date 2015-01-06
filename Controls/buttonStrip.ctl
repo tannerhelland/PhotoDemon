@@ -26,7 +26,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Button Strip" control
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 13/September/14
 'Last updated: 25/October/14
 'Last update: expose mousewheel events to the user; while not useful for this class, it can be useful to forward those events to some

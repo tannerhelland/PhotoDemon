@@ -268,7 +268,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Swirl" Distortion
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 05/January/13
 'Last updated: 27/September/14
 'Last update: add supersampling support, and allow the user to set an arbitrary center point for the transform.

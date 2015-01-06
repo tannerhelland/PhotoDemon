@@ -27,7 +27,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Label control
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 28/October/14
 'Last updated: 30/October/14
 'Last update: many rendering improvements to cater to the odd requirements of the main canvas UC's status bar

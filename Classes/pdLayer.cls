@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layers class
-'Copyright 2012-2014 by Tanner Helland
+'Copyright 2012-2015 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 06/July/14
 'Last update: add variable performance/quality options to the thumbnail request functions

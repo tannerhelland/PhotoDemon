@@ -165,7 +165,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Reduction Form
-'Copyright 2000-2014 by Tanner Helland
+'Copyright 2000-2015 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 14/April/14
 'Last update: rewrite function against layers; note that this will now flatten a layered image before proceeding

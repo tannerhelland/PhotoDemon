@@ -260,7 +260,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layers Toolbar
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 25/March/14
 'Last updated: 01/June/14
 'Last update: implement drag/drop layer reordering

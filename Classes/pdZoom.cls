@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Zoom Handler - calculates and tracks zoom values for a given image
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 01/October/14
 'Last update: add support for "fit width", "fit height", and "fit all" zoom values, which are calculated dynamically.
