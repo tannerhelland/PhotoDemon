@@ -1,7 +1,7 @@
 Attribute VB_Name = "File_Menu"
 '***************************************************************************
 'File Menu Handler
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 15/Apr/01
 'Last updated: 22/May/14
 'Last update: add a failsafe check for an image filename prior to requesting a common dialog; unbeknownst to me,

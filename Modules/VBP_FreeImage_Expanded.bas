@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_FreeImage_Expanded_Interface"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright 2012-2014 by Tanner Helland
+'Copyright 2012-2015 by Tanner Helland
 'Created: 3/September/12
 'Last updated: 04/December/14
 'Last update: overhaul all code related to high bit-depth images

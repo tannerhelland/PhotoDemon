@@ -192,7 +192,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Monochrome Conversion Form
-'Copyright 2002-2014 by Tanner Helland
+'Copyright 2002-2015 by Tanner Helland
 'Created: some time 2002
 'Last updated: 17/August/13
 'Last update: greatly simplify code by using new command bar custom control

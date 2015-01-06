@@ -1,7 +1,7 @@
 Attribute VB_Name = "Printing"
 '***************************************************************************
 'Printer support functions
-'Copyright 2003-2014 by Tanner Helland
+'Copyright 2003-2015 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 09/August/14
 'Last update: perform necessary cleanup for printer temp files in Vista+

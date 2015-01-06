@@ -131,7 +131,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Zoom Blur Tool
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 27/August/13
 'Last updated: 25/September/14
 'Last update: improve traditional mode output, and allow negative zoom values

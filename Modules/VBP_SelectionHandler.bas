@@ -1,7 +1,7 @@
 Attribute VB_Name = "Selection_Handler"
 '***************************************************************************
 'Selection Interface
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 16/May/14
 'Last update: remove a bunch of functions no longer necessary due to the Undo/Redo engine overhaul

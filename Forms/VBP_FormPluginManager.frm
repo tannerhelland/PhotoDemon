@@ -1789,7 +1789,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Plugin Manager
-'Copyright 2012-2014 by Tanner Helland
+'Copyright 2012-2015 by Tanner Helland
 'Created: 21/December/12
 'Last updated: 02/July/14
 'Last update: replaced all pngnq-s9 interactions with PNGQuant

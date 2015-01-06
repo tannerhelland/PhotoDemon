@@ -1,7 +1,7 @@
 Attribute VB_Name = "Dialog_Handler"
 '***************************************************************************
 'Custom Dialog Interface
-'Copyright 2012-2014 by Tanner Helland
+'Copyright 2012-2015 by Tanner Helland
 'Created: 30/November/12
 'Last updated: 05/December/14
 'Last update: finish support for the new tone-mapping dialog

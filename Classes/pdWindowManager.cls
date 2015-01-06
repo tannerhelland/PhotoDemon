@@ -13,13 +13,13 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Window Manager class
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 02/October/13
 'Last updated: 18/July/14
 'Last update: give the options toolbox preference over the primary toolbox.  This makes the main window symmetrical.
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
-' 2014, it became time to rewrite its window method once again - this time, to a tabbed interface in line with the major
+' 2013, it became time to rewrite its window method once again - this time, to a tabbed interface in line with the major
 ' UI trends and research of the past decade.  (MDI has a lot of interaction problems, not to mention a host of known bugs
 ' that will never be fixed because Microsoft is - rightfully - moving away from the MDI model.)
 '

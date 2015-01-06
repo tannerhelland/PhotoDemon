@@ -191,7 +191,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 09/May/14
 'Last update: allow resizing of the entire image, or a single layer

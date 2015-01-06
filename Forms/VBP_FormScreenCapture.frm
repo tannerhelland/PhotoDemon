@@ -228,8 +228,8 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Screen Capture Dialog
-'Copyright 2012-2014 by Tanner Helland
-'Created: 01/January/14 (approx)
+'Copyright 2012-2015 by Tanner Helland
+'Created: 01/January/12 (approx)
 'Last updated: 15/January/14
 'Last update: minor bugfixes to account for delays caused by window animations
 '

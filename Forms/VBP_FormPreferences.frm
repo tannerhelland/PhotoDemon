@@ -2607,7 +2607,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Program Preferences Handler
-'Copyright 2002-2014 by Tanner Helland
+'Copyright 2002-2015 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 22/October/14
 'Last update: add "batch" preference update mode, which suspends all file read/write operations for the duration of the mode.

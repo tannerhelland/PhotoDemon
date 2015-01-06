@@ -321,7 +321,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Browser
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 27/May/13
 'Last updated: 25/October/14
 'Last update: clean up render code, improve mousewheel behavior, use button strip for some interface elements

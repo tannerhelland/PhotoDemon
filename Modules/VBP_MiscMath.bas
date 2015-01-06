@@ -1,7 +1,7 @@
 Attribute VB_Name = "Math_Functions"
 '***************************************************************************
 'Specialized Math Routines
-'Copyright 2013-2014 by Tanner Helland and Audioglider
+'Copyright 2013-2015 by Tanner Helland and Audioglider
 'Created: 13/June/13
 'Last updated: 22/May/14
 'Last update: fixed convertToFraction() function to work with non-English locales

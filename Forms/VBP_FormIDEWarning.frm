@@ -164,7 +164,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'IDE Warning Dialog
-'Copyright 2011-2014 by Tanner Helland
+'Copyright 2011-2015 by Tanner Helland
 'Created: 15/December/12
 'Last updated: 15/December/12
 'Last update: initial build; this replaces the generic message box previously used

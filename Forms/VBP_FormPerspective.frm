@@ -191,7 +191,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Perspective Distortion
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 08/April/13
 'Last updated: 26/September/14
 'Last update: add supersampling support

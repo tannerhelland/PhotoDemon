@@ -1589,7 +1589,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Tools Toolbox
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 03/October/13
 'Last updated: 16/October/14
 'Last update: rework all selection interface code to use the new property dictionary functions

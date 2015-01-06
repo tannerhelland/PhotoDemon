@@ -201,7 +201,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Autosave (unsafe shutdown) Prompt/Dialog
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 19/January/14
 'Last updated: 21/May/14
 'Last update: rewrote the entire dialog against the new Undo/Redo engine

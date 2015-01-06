@@ -283,7 +283,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rotate Distort Effect Interface (separate from image rotation for a reason - see below)
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 22/August/13
 'Last updated: 10/January/14
 'Last update: new feature allows the user to select a custom center point for the rotation

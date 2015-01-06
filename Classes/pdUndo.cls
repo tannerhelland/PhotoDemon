@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Undo/Redo Handler
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 2/April/01
 'Last updated: 15/October/14
 'Last update: add new forceLastUndoDataToIncludeEverything() to work around some Crop tool issues.

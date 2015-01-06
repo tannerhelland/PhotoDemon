@@ -467,7 +467,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG Export Dialog
-'Copyright 2000-2014 by Tanner Helland
+'Copyright 2000-2015 by Tanner Helland
 'Created: 5/8/00
 'Last updated: 17/January/14
 'Last update: separate metadata panel.  (See issue #113 on GitHub.)  Users can use this to override program-wide

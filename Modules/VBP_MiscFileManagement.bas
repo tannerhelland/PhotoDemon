@@ -1,7 +1,7 @@
 Attribute VB_Name = "File_And_Path_Handling"
 '***************************************************************************
 'Miscellaneous Functions Related to File and Folder Interactions
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 27/June/14
 'Last update: update makeValidWindowsFilename() function with missing characters

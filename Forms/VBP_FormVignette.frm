@@ -312,7 +312,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Vignette tool
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 09/January/14
 'Last update: added center-point selection capabilities

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Performance Profiler
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 19/June/14
 'Last updated: 21/July/14
 'Last update: add support for timing databases, so we can track performance (and associated metrics, like stddevs)

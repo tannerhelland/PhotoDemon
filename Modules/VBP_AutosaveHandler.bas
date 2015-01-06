@@ -1,7 +1,7 @@
 Attribute VB_Name = "Autosave_Handler"
 '***************************************************************************
 'Image Autosave Handler
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 18/January/14
 'Last updated: 08/August/14
 'Last update: forcibly mark Autosaved images as "unsaved".  After recovery, the user should treat all images as unsaved,

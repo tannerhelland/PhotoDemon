@@ -1,7 +1,7 @@
 Attribute VB_Name = "Saving"
 '***************************************************************************
 'File Saving Interface
-'Copyright 2001-2014 by Tanner Helland
+'Copyright 2001-2015 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 05/October/14
 'Last update: fix a rare bug involving BMP format and binary alpha channels

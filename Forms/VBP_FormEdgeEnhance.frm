@@ -192,7 +192,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Edge Enhancement Interface
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2002-2015 by Tanner Helland
 'Created: sometimes 2002
 'Last updated: 12/June/14
 'Last update: give tool its own form, and open it up to all available edge detection techniques

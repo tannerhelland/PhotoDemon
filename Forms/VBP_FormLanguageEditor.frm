@@ -833,7 +833,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Interactive Language (Translation) Editor
-'Copyright 2013-2014 by Frank Donckers and Tanner Helland
+'Copyright 2013-2015 by Frank Donckers and Tanner Helland
 'Created: 28/August/13
 'Last updated: 22/February/14
 'Last update: add "automatic machine translation" option so I can include at least basic language files for popular

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "pdPackage" Interface (e.g. Zip-like archive handler)
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 05/April/14
 'Last updated: 24/October/14
 'Last update: add support for second-pass directory chunk and data chunk compression

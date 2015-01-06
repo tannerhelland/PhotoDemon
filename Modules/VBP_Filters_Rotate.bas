@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Transform"
 '***************************************************************************
 'Image Transformations Interface (including flip/mirror/rotation/crop/etc)
-'Copyright 2003-2014 by Tanner Helland
+'Copyright 2003-2015 by Tanner Helland
 'Created: 25/January/03
 'Last updated: 08/May/14
 'Last update: convert rotate 90/270 functions to use GDI+; this gives a small but welcome speed improvement

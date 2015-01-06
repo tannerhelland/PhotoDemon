@@ -33,7 +33,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Text Box control
-'Copyright 2013-2014 by Tanner Helland
+'Copyright 2014-2015 by Tanner Helland
 'Created: 03/November/14
 'Last updated: 21/November/14
 'Last update: incorporate many fixes from Zhu JY's testing

@@ -2036,7 +2036,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Batch Conversion Form
-'Copyright 2007-2014 by Tanner Helland
+'Copyright 2007-2015 by Tanner Helland
 'Created: 3/Nov/07
 'Last updated: 16/August/14
 'Last update: minor bugfixes to prepare for 6.4 release
@@ -3735,7 +3735,7 @@ Private Sub prepareForBatchConversion()
     Screen.MousePointer = vbDefault
     
     'Change the "Cancel" button to "Exit"
-    CmdCancel.Caption = g_Language.TranslateMessage("Exit")
+    cmdCancel.Caption = g_Language.TranslateMessage("Exit")
     
     'Max out the progess bar and display a success message
     sysProgBar.Value = sysProgBar.Max
@@ -3773,7 +3773,7 @@ MacroCanceled:
     batchConvertMessage cancelMsg
     
     'Change the "Cancel" button to "Exit"
-    CmdCancel.Caption = g_Language.TranslateMessage("Exit")
+    cmdCancel.Caption = g_Language.TranslateMessage("Exit")
     
     m_ImageListSaved = True
     

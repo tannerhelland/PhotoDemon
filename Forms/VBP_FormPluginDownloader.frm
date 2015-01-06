@@ -511,7 +511,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Automatic Plugin Downloader (for downloading core plugins that were not found at program start)
-'Copyright 2012-2014 by Tanner Helland
+'Copyright 2012-2015 by Tanner Helland
 'Created: 10/June/12
 'Last updated: 24/May/13
 'Last update: interface overhaul due to inclusion of ExifTool as official plugin #5
