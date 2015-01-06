@@ -43,6 +43,7 @@ Private Const SmoothingClearType As Long = &H2
 Private Const SmoothingStandardType As Long = &H1
 Private Const SmoothingNone As Long = &H0
 Private Const SPI_GETKEYBOARDDELAY As Long = &H16
+Private Const SPI_GETKEYBOARDSPEED As Long = &HA
 
 'Constants that define single meta-level actions that require certain controls to be en/disabled.  (For example, use tSave to disable
 ' the File -> Save menu, file toolbar Save button, and Ctrl+S hotkey.)  Constants are listed in roughly the order they appear in the
@@ -855,6 +856,23 @@ Public Function getKeyboardDelay() As Double
     Dim keyDelayIndex As Long
     SystemParametersInfo SPI_GETKEYBOARDDELAY, 0, keyDelayIndex, 0
     getKeyboardDelay = (keyDelayIndex + 1) * 0.25
+End Function
+
+'Return the system keyboard repeat rate, in seconds.  This isn't an exact science because the delay is actually hardware dependent
+' (e.g. the system returns a value from 0 to 31), but we can use a "good enough" approximation.
+Public Function getKeyboardRepeatRate() As Double
+    
+    Dim keyRepeatIndex As Long
+    SystemParametersInfo SPI_GETKEYBOARDSPEED, 0, keyRepeatIndex, 0
+    
+    'Per MSDN (http://msdn.microsoft.com/en-us/library/windows/desktop/ms724947%28v=vs.85%29.aspx#Input)
+    ' "Retrieves the keyboard repeat-speed setting, which is a value in the range from 0 (approximately 2.5 repetitions per second)
+    ' through 31 (approximately 30 repetitions per second). The actual repeat rates are hardware-dependent and may vary from a linear
+    ' scale by as much as 20%. The pvParam parameter must point to a DWORD variable that receives the setting."
+    '
+    'The formula below mimics this behavior pretty closely (35 repetitions per second at the high-end, but identical at the low end)
+    getKeyboardRepeatRate = (400 - (keyRepeatIndex * 12)) / 1000
+    
 End Function
 
 Public Sub toggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Optional ByVal suppressInterfaceSync As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
