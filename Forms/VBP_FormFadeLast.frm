@@ -23,24 +23,14 @@ Begin VB.Form FormFadeLast
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   821
    ShowInTaskbar   =   0   'False
-   Begin VB.ComboBox cboBlendMode 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
+   Begin PhotoDemon.pdComboBox cboBlendMode 
+      Height          =   375
       Left            =   6240
-      Style           =   2  'Dropdown List
-      TabIndex        =   3
+      TabIndex        =   5
       Top             =   3240
-      Width           =   5775
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   635
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -73,14 +63,14 @@ Begin VB.Form FormFadeLast
    Begin PhotoDemon.sliderTextCombo sltOpacity 
       Height          =   495
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   2010
       Width           =   6015
       _ExtentX        =   10610
       _ExtentY        =   873
       Min             =   1
       Max             =   100
-      Value           =   50
+      Value           =   1
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -99,7 +89,7 @@ Begin VB.Form FormFadeLast
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   1680
       Width           =   840
    End
