@@ -26,10 +26,20 @@ Begin VB.Form toolbar_Layers
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdComboBox cboBlendMode 
+      Height          =   360
+      Left            =   960
+      TabIndex        =   9
+      Top             =   675
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   635
+      FontSize        =   9
+   End
    Begin PhotoDemon.pdTextBox txtLayerName 
       Height          =   315
       Left            =   120
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   6360
       Visible         =   0   'False
       Width           =   3255
@@ -47,31 +57,12 @@ Begin VB.Form toolbar_Layers
       Alignment       =   1
       Caption         =   "opacity:"
    End
-   Begin VB.ComboBox cboBlendMode 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   330
-      Left            =   960
-      Style           =   2  'Dropdown List
-      TabIndex        =   1
-      Top             =   675
-      Width           =   2655
-   End
    Begin VB.VScrollBar vsLayer 
       Height          =   4905
       LargeChange     =   32
       Left            =   3360
       Max             =   100
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   1320
       Width           =   285
    End
@@ -86,7 +77,7 @@ Begin VB.Form toolbar_Layers
       ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   249
-      TabIndex        =   8
+      TabIndex        =   7
       TabStop         =   0   'False
       Top             =   6750
       Width           =   3735
@@ -94,7 +85,7 @@ Begin VB.Form toolbar_Layers
          Height          =   480
          Index           =   2
          Left            =   1920
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -122,7 +113,7 @@ Begin VB.Form toolbar_Layers
          Height          =   480
          Index           =   3
          Left            =   2640
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -150,7 +141,7 @@ Begin VB.Form toolbar_Layers
          Height          =   480
          Index           =   1
          Left            =   1200
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -178,7 +169,7 @@ Begin VB.Form toolbar_Layers
          Height          =   480
          Index           =   0
          Left            =   480
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   0
          Width           =   540
          _ExtentX        =   953
@@ -215,7 +206,7 @@ Begin VB.Form toolbar_Layers
       ScaleHeight     =   327
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   215
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   1320
       Width           =   3255
    End
@@ -229,7 +220,6 @@ Begin VB.Form toolbar_Layers
       _ExtentX        =   4868
       _ExtentY        =   873
       Max             =   100
-      Value           =   100
       NotchPosition   =   2
       NotchValueCustom=   100
    End
@@ -1598,7 +1588,7 @@ Private Sub reflowInterface()
     
     'Horizontally stretch the opacity and blend mode UI objects
     sltLayerOpacity.Width = Me.ScaleWidth - (sltLayerOpacity.Left + fixDPI(2))
-    cboBlendMode.Width = Me.ScaleWidth - (cboBlendMode.Left + fixDPI(8))
+    cboBlendMode.requestNewWidth Me.ScaleWidth - (cboBlendMode.Left + fixDPI(8))
     lnSeparator(0).x2 = Me.ScaleWidth - lnSeparator(0).x1
     
     'Resize the layer box and associated scrollbar
