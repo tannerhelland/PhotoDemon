@@ -34,7 +34,6 @@ Begin VB.Form toolbar_Layers
       Width           =   2775
       _ExtentX        =   4895
       _ExtentY        =   635
-      FontSize        =   9
    End
    Begin PhotoDemon.pdTextBox txtLayerName 
       Height          =   315
