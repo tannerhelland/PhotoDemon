@@ -1461,6 +1461,19 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
 
 End Function
 
+'Due to some complexities with the way combo box sizes are handled, adjustments to height require recreating the combo box.  Adjustments to width,
+' however, are no problem at all.  They can be requested via this function.
+Public Sub requestNewWidth(ByVal newWidth As Long)
+
+    'Get the window rect of the current combo box
+    Dim comboRect As RECTL
+    GetWindowRect m_ComboBoxHwnd, comboRect
+    
+    'Request a new size
+    MoveWindow m_ComboBoxHwnd, 0, 0, newWidth, comboRect.Bottom - comboRect.Top, 1
+
+End Sub
+
 'When creating the combo box (or when the combo box is resized due to some external event), use this function to sync the underlying usercontrol size
 Private Sub syncUserControlSizeToComboSize()
 

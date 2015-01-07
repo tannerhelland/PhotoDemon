@@ -1577,7 +1577,7 @@ Public Sub enableUserInput()
 End Sub
 
 'Given a combo box, populate it with all currently supported blend modes
-Public Sub populateBlendModeComboBox(ByRef dstCombo As ComboBox, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
+Public Sub populateBlendModeComboBox(ByRef dstCombo As pdComboBox, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
     
     dstCombo.Clear
     
