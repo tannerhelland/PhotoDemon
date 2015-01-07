@@ -35,7 +35,7 @@ Private Const WM_PAINT As Long = &HF&
 'I have no idea what colors will actually be used in the final theme format; these are just placeholders for now,
 ' to enable centralized coloration of a few UCs.  The end goal is to provide the smallest possible subset of colors
 ' necessary to render PD's various UI elements.
-Private Const numThemeColors As Long = 22
+Private Const numThemeColors As Long = 23
 
 Public Enum PD_THEME_COLOR
     
@@ -48,6 +48,7 @@ Public Enum PD_THEME_COLOR
     'Non-interactive variations (used to render control outlines, etc)
     PDTC_GRAY_DEFAULT
     PDTC_GRAY_HIGHLIGHT
+    PDTC_GRAY_ULTRALIGHT
     PDTC_GRAY_SHADOW
     
     'Background variations
@@ -76,7 +77,7 @@ End Enum
 
 #If False Then
     Private Const PDTC_ACCENT_DEFAULT = 0, PDTC_ACCENT_HIGHLIGHT = 0, PDTC_ACCENT_ULTRALIGHT = 0, PDTC_ACCENT_SHADOW = 0
-    Private Const PDTC_GRAY_DEFAULT = 0, PDTC_GRAY_HIGHLIGHT = 0, PDTC_GRAY_SHADOW = 0
+    Private Const PDTC_GRAY_DEFAULT = 0, PDTC_GRAY_HIGHLIGHT = 0, PDTC_GRAY_ULTRALIGHT = 0, PDTC_GRAY_SHADOW = 0
     Private Const PDTC_BACKGROUND_DEFAULT = 0, PDTC_BACKGROUND_CANVAS = 0, PDTC_BACKGROUND_COMMANDBAR = 0
     Private Const PDTC_TEXT_DEFAULT = 0, PDTC_TEXT_EDITBOX = 0, PDTC_TEXT_HYPERLINK = 0, PDTC_TEXT_TITLE = 0, PDTC_TEXT_INVERT = 0
     Private Const PDTC_DISABLED = 0, PDTC_OK_GREEN = 0, PDTC_CANCEL_RED = 0, PDTC_FOCUS_RECT = 0
@@ -241,6 +242,9 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
                 
             Case PDTC_GRAY_HIGHLIGHT
                 getDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
+            
+            Case PDTC_GRAY_ULTRALIGHT
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#d1dae2")
             
             Case PDTC_GRAY_SHADOW
             

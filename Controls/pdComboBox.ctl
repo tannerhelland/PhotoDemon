@@ -247,12 +247,20 @@ Private m_InHookNow As Boolean
 ' items to this string.  When the combo box is created, this list will be automatically be added to the control.
 Private Type backupComboEntry
     entryIndex As Long
+    apiIndex As Long
+    followedByDivider As Boolean
     entryString As String
 End Type
 
 Private m_BackupEntries() As backupComboEntry
 Private m_NumBackupEntries As Long
 Private m_BackupListIndex As Long
+
+'The combo box now supports dividing lines between categories.  The number of dividers must be counted so we can calculate an accurate
+' total drop-down size.
+Private m_NumDividers As Long
+Private Const COMBO_BOX_DIVIDER_HEIGHT As Long = 10
+Private m_InsideAddString As Boolean, m_LastInternalIndex As Long
 
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
@@ -361,7 +369,7 @@ Private m_MouseOverComboBox As Boolean
 'Basic combo box interaction functions
 
 'Add an item to the combo box
-Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -1)
+Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -1, Optional ByVal addDivider As Boolean = False)
     
     'Because Windows automatically converts to ANSI the Unicode contents of a Unicode combo box inside an ANSI project, we cannot simply add
     ' Unicode strings directly to the combo box.  Instead, we manage our own Unicode-friendly copies of the combo box contents, as a backup.
@@ -375,6 +383,13 @@ Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -
     'Add this item to the backup array
     m_BackupEntries(m_NumBackupEntries).entryIndex = itemIndex
     m_BackupEntries(m_NumBackupEntries).entryString = srcItem
+    
+    'Check for a divider line request.  Now that we custom draw our own combo boxes, we are able to add dividing lines between combo categories,
+    ' as relevant.  (The blend mode box uses this, for example.)
+    m_BackupEntries(m_NumBackupEntries).followedByDivider = addDivider
+    If addDivider Then m_NumDividers = m_NumDividers + 1
+    m_LastInternalIndex = m_NumBackupEntries
+    
     m_NumBackupEntries = m_NumBackupEntries + 1
     
     'Add this item to the API combo box.
@@ -391,7 +406,10 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
         'Cache the current .ListIndex; we will need this later on, to prevent the "-1" .ListIndex scenario
         Dim priorListIndex As Long
         priorListIndex = Me.ListIndex
-    
+        
+        'If the current entry had a divider, modify that tracker now
+        If m_BackupEntries(itemIndex).followedByDivider Then m_NumDividers = m_NumDividers - 1
+        
         'Modify our internal string storage first
         Dim i As Long
         For i = itemIndex To m_NumBackupEntries - 1
@@ -413,13 +431,7 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
         SendMessage m_ComboBoxHwnd, CB_DELETESTRING, itemIndex, ByVal 0&
         
         'Resize the drop-down portion to match; see copyStringToComboBox, below, for details on how this works
-        If g_IsProgramCompiled And g_IsVistaOrLater Then
-            SendMessage m_ComboBoxHwnd, CB_SETMINVISIBLE, SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&), ByVal 0&
-        Else
-            Dim comboRect As RECTL
-            GetClientRect Me.hWnd, comboRect
-            MoveWindow m_ComboBoxHwnd, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, (comboRect.Bottom - comboRect.Top) + ((SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&) + 1) * SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, 0, ByVal 0&)), 1
-        End If
+        dynamicallyFitDropDownHeight
         
         'If the removal affected the current ListIndex, update it to match
         If itemIndex <= priorListIndex Then
@@ -441,6 +453,21 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
     
 End Sub
 
+'Because VB's main wndproc is ANSI-only, we have to use some trickery to provide full Unicode support for combo boxes.  Specifically, we must track
+' all string entries internally, rather than relying on the API to manage them for us.  If you need to retrieve an internal index from an API index
+' (for example, in response to a wndproc call), use this function.
+Private Function getInternalIndexFromAPIIndex(ByVal apiIndex As Long) As Long
+
+    Dim i As Long
+    For i = 0 To m_NumBackupEntries - 1
+        If m_BackupEntries(i).apiIndex = apiIndex Then
+            getInternalIndexFromAPIIndex = i
+            Exit Function
+        End If
+    Next i
+
+End Function
+
 'Duplicate a given string inside the API combo box.  We don't actually use this copy of the string (we use our own, so we can support Unicode),
 ' but this provides a fallback for accessibility technology.
 Private Sub copyStringToComboBox(ByVal strIndex As Long)
@@ -451,36 +478,59 @@ Private Sub copyStringToComboBox(ByVal strIndex As Long)
         'If no index is specified, let the default combo box handler decide order; otherwise, request the placement we were given.
         Dim newIndex As Long
         
+        'Because the SendMessage() below will instantly trigger a WM_MEASUREITEM message, the wndproc needs a way to identify the internal
+        ' storage index of the measure item.  By setting a module-level flag, it will knows to retrieve the last-added index via
+        ' m_NumBackupEntries, rather than relying on the ItemData of the MIS object (which hasn't been set by the time the WM_MEASUREITEM
+        ' notification is fired).
+        m_InsideAddString = True
+        
         If m_BackupEntries(strIndex).entryIndex = -1 Then
             newIndex = SendMessage(m_ComboBoxHwnd, CB_ADDSTRING, 0, ByVal StrPtr(m_BackupEntries(strIndex).entryString))
         Else
             newIndex = SendMessage(m_ComboBoxHwnd, CB_INSERTSTRING, m_BackupEntries(strIndex).entryIndex, ByVal StrPtr(m_BackupEntries(strIndex).entryString))
         End If
         
+        'Track the API index as well, to simplify interacting with window messages that use that value.
+        m_BackupEntries(strIndex).apiIndex = newIndex
+        
         'Copy the index value of our backup array (for this string) into the itemdata slot.  This allows us to retrieve the Unicode
         ' version of the string, if any, at render time.
         SendMessage m_ComboBoxHwnd, CB_SETITEMDATA, newIndex, ByVal strIndex
         
-        'Set the combo box to always display the full list amount in the drop-down; this is only applicable if a manifest is present,
-        ' so it will have no effect in the IDE.
-        If g_IsProgramCompiled And g_IsVistaOrLater Then
-            SendMessage m_ComboBoxHwnd, CB_SETMINVISIBLE, SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&), ByVal 0&
+        m_InsideAddString = False
         
-        'If a manifest is not present, we can achieve the same thing by manually setting the window size to match the number of
-        ' entries in the combo box.
-        Else
-        
-            'Rather than forcing combo boxes to a predetermined size, we dynamically adjust their size as items are added.
-            ' To do this, we must start by getting the window rect of the current combo box.
-            Dim comboRect As RECTL
-            GetClientRect Me.hWnd, comboRect
-            
-            'Next, resize the combo box to match the number of items currently in the box.
-            MoveWindow m_ComboBoxHwnd, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, (comboRect.Bottom - comboRect.Top) + ((SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&) + 1) * SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, 0, ByVal 0&)), 1
-            
-        End If
+        'Set the combo box to always display the full list amount in the drop-down.  (This may need to be revisited if PD ever contains
+        ' a combo box with an enormous list of entries.)
+        dynamicallyFitDropDownHeight
         
     End If
+
+End Sub
+
+'When the list's contents change, use this function to reset the dropdown height
+Private Sub dynamicallyFitDropDownHeight()
+
+    'Rather than forcing combo boxes to a predetermined size, we dynamically adjust their size as items are added.
+    ' To do this, we must start by getting the window rect of the current combo box.
+    Dim comboRect As RECTL
+    GetClientRect Me.hWnd, comboRect
+    
+    'Next, resize the combo box to match the number of items currently in the box.
+    Dim totalHeight As Long
+    totalHeight = 0
+    
+    'Dividers introduce some funny business into the measurement technique, so we have no choice but to manually tally the reported
+    ' height of all available combo box entries
+    Dim i As Long
+    For i = 0 To m_NumBackupEntries - 1
+        totalHeight = totalHeight + SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, ByVal i, ByVal 0&)
+    Next i
+    
+    'The final height measurement includes the user control itself (which is always visible), plus two pixels for the border of the drop-down
+    totalHeight = totalHeight + (comboRect.Bottom - comboRect.Top) + 2
+    
+    'Apply the final resize!
+    MoveWindow m_ComboBoxHwnd, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, totalHeight, 1
 
 End Sub
 
@@ -489,6 +539,7 @@ Public Sub Clear()
 
     If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, CB_RESETCONTENT, 0, ByVal 0&
     
+    m_NumDividers = 0
     m_NumBackupEntries = 0
     ReDim m_BackupEntries(0) As backupComboEntry
     
@@ -810,7 +861,7 @@ Private Function getIdealStringHeight() As Long
     curFont.attachToDC tmpDIB.getDIBDC
     
     'Determine a standard string height
-    getIdealStringHeight = curFont.getHeightOfString("abc123")
+    getIdealStringHeight = curFont.getHeightOfString("tbpj1234567890")
     
     'Remove the font and release our temporary DIB
     curFont.releaseFromDC
@@ -839,7 +890,7 @@ Private Function createComboBox() As Boolean
     'PhotoDemon only supports simple drop-downs.  Similarly, all drop-down entries are coerced into strings, so we can use the CBS_HASSTRINGS
     ' setting, which instructs the drop-down to manage its own string memory (instead of us doing it manually).  This is a much better solution
     ' for accessibility interoperability; see http://msdn.microsoft.com/en-us/library/windows/desktop/dd318073%28v=vs.85%29.aspx
-    flagsComboControl = CBS_DROPDOWNLIST Or CBS_HASSTRINGS Or CBS_OWNERDRAWFIXED
+    flagsComboControl = CBS_DROPDOWNLIST Or CBS_HASSTRINGS Or CBS_OWNERDRAWVARIABLE Or CBS_NOINTEGRALHEIGHT
     
     'The underlying user control should ignore any height values set from the IDE; instead, it should be forced to an ideal height,
     ' using the current font as our guide.  We check for this here, prior to creating the combo box, as we can't easily
@@ -940,6 +991,7 @@ Private Function createComboBox() As Boolean
         
         Dim i As Long
         For i = 0 To m_NumBackupEntries - 1
+            m_LastInternalIndex = i
             copyStringToComboBox i
         Next i
         
@@ -1390,6 +1442,9 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
         ' so attempting to retrieve text entries will fail.
         If (srcDIS.itemID <> -1) Then
             
+            'Forcibly set a highlight area.  This is important for entries with variable spacing (e.g. those followed by dividers).
+            srcDIS.rcItem.Bottom = srcDIS.rcItem.Top + m_ItemHeight + 2
+            
             'Determine colors.  Obviously these vary depending on the selection state of the current entry
             Dim itemBackColor As Long, itemTextColor As Long
             Dim isMouseOverItem As Boolean
@@ -1437,6 +1492,16 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 tmpBackBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_ACCENT_SHADOW))
                 FrameRect srcDIS.hDC, srcDIS.rcItem, tmpBackBrush
                 DeleteObject tmpBackBrush
+            End If
+            
+            'If the item occurs right before a dividing line, draw the divider now
+            If m_BackupEntries(stringIndex).followedByDivider Then
+            
+                Dim lineY As Long
+                lineY = srcDIS.rcItem.Bottom + (COMBO_BOX_DIVIDER_HEIGHT / 2)
+                
+                GDI_Plus.GDIPlusDrawLineToDC srcDIS.hDC, srcDIS.rcItem.Left + fixDPI(12), lineY, srcDIS.rcItem.Right - fixDPI(12), lineY, g_Themer.getThemeColor(PDTC_GRAY_ULTRALIGHT), 255
+            
             End If
             
             'Note that we have handled the draw request successfully
@@ -1755,6 +1820,21 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         ' Any padding values must be added here.  (I've gone with 1px on either side.)
                         MIS.itemHeight = m_ItemHeight + 2
                         
+                        'If a divider line is in use, add those pixels as well
+                        Dim itemIndex As Long, entryIndexRetrieval As Long
+                        
+                        If m_InsideAddString Then
+                            itemIndex = m_LastInternalIndex
+                        Else
+                            itemIndex = getInternalIndexFromAPIIndex(MIS.itemID)
+                        End If
+                                                
+                        If itemIndex < m_NumBackupEntries Then
+                            If m_BackupEntries(itemIndex).followedByDivider Then
+                                MIS.itemHeight = MIS.itemHeight + COMBO_BOX_DIVIDER_HEIGHT
+                            End If
+                        End If
+                                                
                         'Copy the pointer to our modified MEASUREITEMSTRUCT back into lParam
                         CopyMemory ByVal lParam, MIS, LenB(MIS)
                         
