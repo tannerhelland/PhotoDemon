@@ -259,7 +259,7 @@ Private m_BackupListIndex As Long
 'The combo box now supports dividing lines between categories.  The number of dividers must be counted so we can calculate an accurate
 ' total drop-down size.
 Private m_NumDividers As Long
-Private Const COMBO_BOX_DIVIDER_HEIGHT As Long = 10
+Private Const COMBO_BOX_DIVIDER_HEIGHT As Long = 14
 Private m_InsideAddString As Boolean, m_LastInternalIndex As Long
 
 'Additional helpers for rendering themed and multiline tooltips
@@ -1831,7 +1831,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                                                 
                         If itemIndex < m_NumBackupEntries Then
                             If m_BackupEntries(itemIndex).followedByDivider Then
-                                MIS.itemHeight = MIS.itemHeight + COMBO_BOX_DIVIDER_HEIGHT
+                                MIS.itemHeight = MIS.itemHeight + fixDPI(COMBO_BOX_DIVIDER_HEIGHT)
                             End If
                         End If
                                                 

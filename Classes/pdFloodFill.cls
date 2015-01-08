@@ -62,15 +62,17 @@ Private m_Tolerance As Double
 'Different compare modes can be used to obtain better results.
 Public Enum PD_FLOOD_COMPARE
     PDFC_COMPOSITE = 0
-    PDFC_LUMINANCE = 1
-    PDFC_RED = 2
-    PDFC_GREEN = 3
-    PDFC_BLUE = 4
-    PDFC_ALPHA = 5
+    PDFC_COLOR = 1
+    PDFC_LUMINANCE = 2
+    PDFC_RED = 3
+    PDFC_GREEN = 4
+    PDFC_BLUE = 5
+    PDFC_ALPHA = 6
 End Enum
 
 #If False Then
-    Const PDFC_COMPOSITE = 0, PDFC_LUMINANCE = 1, PDFC_RED = 2, PDFC_GREEN = 3, PDFC_BLUE = 4, PDFC_ALPHA = 5
+    Const PDFC_COMPOSITE = 0, PDFC_COLOR = 1, PDFC_LUMINANCE = 2
+    Const PDFC_RED = 3, PDFC_GREEN = 4, PDFC_BLUE = 5, PDFC_ALPHA = 6
 #End If
 
 Private m_CompareMode As PD_FLOOD_COMPARE
@@ -247,6 +249,9 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
                 modifiedTolerance = m_Tolerance * 3
             End If
         
+        Case PDFC_COLOR
+            modifiedTolerance = m_Tolerance * 3
+        
         Case PDFC_LUMINANCE
         
             'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
@@ -289,6 +294,10 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
             Case PDFC_COMPOSITE
                 thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
                 If hasAlpha Then thisValue = thisValue + Abs(a - refA)
+                If thisValue <= modifiedTolerance Then isWithinTolerance = True
+            
+            Case PDFC_COLOR
+                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
                 If thisValue <= modifiedTolerance Then isWithinTolerance = True
             
             Case PDFC_LUMINANCE
@@ -394,6 +403,9 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
                 modifiedTolerance = m_Tolerance * 3
             End If
         
+        Case PDFC_COLOR
+            modifiedTolerance = m_Tolerance * 3
+        
         Case PDFC_LUMINANCE
         
             'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
@@ -434,6 +446,10 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
             Case PDFC_COMPOSITE
                 thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
                 If hasAlpha Then thisValue = thisValue + Abs(a - refA)
+                If thisValue <= modifiedTolerance Then isWithinTolerance = True
+            
+            Case PDFC_COLOR
+                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
                 If thisValue <= modifiedTolerance Then isWithinTolerance = True
             
             Case PDFC_LUMINANCE
