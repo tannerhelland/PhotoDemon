@@ -214,7 +214,7 @@ Begin VB.Form toolbar_Options
             _ExtentY        =   873
             Min             =   1
             Max             =   10000
-            Value           =   10
+            Value           =   1
          End
          Begin VB.Label lblSelection 
             Appearance      =   0  'Flat
@@ -1841,12 +1841,13 @@ Private Sub Form_Load()
         
         cboWandCompare.Clear
         cboWandCompare.AddItem " Composite", 0
-        cboWandCompare.AddItem " Luminance", 1
-        cboWandCompare.AddItem " Red", 2
-        cboWandCompare.AddItem " Green", 3
-        cboWandCompare.AddItem " Blue", 4
-        cboWandCompare.AddItem " Alpha", 5
-        cboWandCompare.ListIndex = 0
+        cboWandCompare.AddItem " Color", 1
+        cboWandCompare.AddItem " Luminance", 2
+        cboWandCompare.AddItem " Red", 3
+        cboWandCompare.AddItem " Green", 4
+        cboWandCompare.AddItem " Blue", 5
+        cboWandCompare.AddItem " Alpha", 6
+        cboWandCompare.ListIndex = 1
         cboWandCompare.ToolTipText = g_Language.TranslateMessage("This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.")
         
         'Quick-fix tools
