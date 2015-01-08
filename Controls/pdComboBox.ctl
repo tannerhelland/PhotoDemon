@@ -522,7 +522,7 @@ Private Sub dynamicallyFitDropDownHeight()
     'Dividers introduce some funny business into the measurement technique, so we have no choice but to manually tally the reported
     ' height of all available combo box entries
     Dim i As Long
-    For i = 0 To m_NumBackupEntries - 1
+    For i = 0 To SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&) - 1
         totalHeight = totalHeight + SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, ByVal i, ByVal 0&)
     Next i
     
@@ -998,6 +998,9 @@ Private Function createComboBox() As Boolean
         'Also set a list index, if any.  (If none were specifed, the first entry in the list wil be selected.)
         Me.ListIndex = m_BackupListIndex
         
+    'If entries don't need to be restored, we should still make sure the drop-down height is correct.
+    Else
+        dynamicallyFitDropDownHeight
     End If
     
     'Finally, synchronize the underlying user control to whatever size the system has created the combo box at
