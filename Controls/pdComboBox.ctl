@@ -163,6 +163,21 @@ Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, 
 Private Declare Function SetFocus Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Const SWP_ASYNCWINDOWPOS As Long = &H4000
+Private Const SWP_FRAMECHANGED As Long = &H20
+Private Const SWP_NOACTIVATE As Long = &H10
+Private Const SWP_NOMOVE As Long = &H2
+Private Const SWP_NOOWNERZORDER As Long = &H200
+Private Const SWP_NOREDRAW As Long = &H8
+Private Const SWP_NOSENDCHANGING As Long = &H400
+Private Const SWP_NOSIZE As Long = &H1
+Private Const SWP_HIDEWINDOW As Long = &H80
+Private Const SWP_SHOWWINDOW As Long = &H40
+Private Const SWP_NOZORDER As Long = &H4
+Private Const SWP_DRAWFRAME As Long = &H20
+Private Const SWP_NOCOPYBITS As Long = &H100
+Private Const WM_WINDOWPOSCHANGED As Long = &H47
 
 'Getting/setting window data
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpStringPointer As Long, ByVal nMaxCount As Long) As Long
@@ -194,6 +209,7 @@ Private Const WM_NEXTDLGCTL As Long = &H28
 Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_MOUSEACTIVATE As Long = &H21
 Private Const WM_CTLCOLOREDIT As Long = &H133
+Private Const WM_CTLCOLORLISTBOX As Long = &H134
 Private Const WM_SIZE As Long = &H5
 Private Const WM_MEASUREITEM As Long = &H2C
 Private Const WM_DRAWITEM As Long = &H2B
@@ -212,8 +228,6 @@ Private cSubclass As cSelfSubHookCallback
 'Mouse input handler helps with things like enter/leave behavior
 Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
-Private WithEvents cMouseEventsListBox As pdInputMouse
-Attribute cMouseEventsListBox.VB_VarHelpID = -1
 
 'Unlike the combo box, which may be recreated multiple times as properties change, we only need to subclass the parent window once.
 ' After it has been subclassed, this will be set to TRUE.
@@ -258,9 +272,9 @@ Private m_BackupListIndex As Long
 
 'The combo box now supports dividing lines between categories.  The number of dividers must be counted so we can calculate an accurate
 ' total drop-down size.
-Private m_NumDividers As Long
-Private Const COMBO_BOX_DIVIDER_HEIGHT As Long = 14
+Private Const COMBO_BOX_DIVIDER_HEIGHT As Double = 0.75
 Private m_InsideAddString As Boolean, m_LastInternalIndex As Long
+Private m_DropDownCalculatedHeight As Long  'This value is for debugging purposes only
 
 'Additional helpers for rendering themed and multiline tooltips
 Private m_ToolTip As clsToolTip
@@ -288,11 +302,11 @@ Private Const CBS_SIMPLE As Long = &H1
 Private Const CBS_DROPDOWN As Long = &H2
 Private Const CBS_DROPDOWNLIST As Long = &H3
 
-Private Const CBS_AUTOHSCROLL As Long = &H40&
-Private Const CBS_HASSTRINGS As Long = &H200&
-Private Const CBS_NOINTEGRALHEIGHT As Long = &H400&
-Private Const CBS_OWNERDRAWFIXED As Long = &H10&
-Private Const CBS_OWNERDRAWVARIABLE As Long = &H20&
+Private Const CBS_AUTOHSCROLL As Long = &H40
+Private Const CBS_HASSTRINGS As Long = &H200
+Private Const CBS_NOINTEGRALHEIGHT As Long = &H400
+Private Const CBS_OWNERDRAWFIXED As Long = &H10
+Private Const CBS_OWNERDRAWVARIABLE As Long = &H20
 
 'Owner-drawn combo boxes require us to fill and/or use these structs during painting
 Private Type MEASUREITEMSTRUCT
@@ -366,6 +380,25 @@ Private m_CurrentListIndex As Long
 'If the mouse is currently over the combo box area, this will be set to TRUE
 Private m_MouseOverComboBox As Boolean
 
+'Debugging functions
+Public Sub dumpSizeToDebugWindow()
+    
+    Dim comboRect As RECTL
+    GetClientRect Me.hWnd, comboRect
+        
+    Debug.Print m_DropDownCalculatedHeight, comboRect.Bottom - comboRect.Top, UserControl.ScaleHeight, (m_ItemHeight + 2), (m_ItemHeight + 2) + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT)
+    
+    Dim i As Long
+    For i = 0 To m_NumBackupEntries - 1
+        If m_BackupEntries(i).followedByDivider Then
+            Debug.Print "i: " & i & ", " & (m_ItemHeight + 2) + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT) & ", " & SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, i, ByVal 0&)
+        Else
+            Debug.Print "i: " & i & ", " & (m_ItemHeight + 2) & ", " & SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, i, ByVal 0&)
+        End If
+    Next i
+    
+End Sub
+
 'Basic combo box interaction functions
 
 'Add an item to the combo box
@@ -377,7 +410,7 @@ Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -
     ' we handle that part ourselves.
     
     'Resize the backup array as necessary
-    If m_NumBackupEntries = 0 Then ReDim m_BackupEntries(0 To 15) As backupComboEntry
+    'If m_NumBackupEntries = 0 Then ReDim m_BackupEntries(0 To 15) As backupComboEntry
     If m_NumBackupEntries > UBound(m_BackupEntries) Then ReDim Preserve m_BackupEntries(0 To m_NumBackupEntries * 2 - 1) As backupComboEntry
     
     'Add this item to the backup array
@@ -387,7 +420,6 @@ Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -
     'Check for a divider line request.  Now that we custom draw our own combo boxes, we are able to add dividing lines between combo categories,
     ' as relevant.  (The blend mode box uses this, for example.)
     m_BackupEntries(m_NumBackupEntries).followedByDivider = addDivider
-    If addDivider Then m_NumDividers = m_NumDividers + 1
     m_LastInternalIndex = m_NumBackupEntries
     
     m_NumBackupEntries = m_NumBackupEntries + 1
@@ -406,10 +438,7 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
         'Cache the current .ListIndex; we will need this later on, to prevent the "-1" .ListIndex scenario
         Dim priorListIndex As Long
         priorListIndex = Me.ListIndex
-        
-        'If the current entry had a divider, modify that tracker now
-        If m_BackupEntries(itemIndex).followedByDivider Then m_NumDividers = m_NumDividers - 1
-        
+                
         'Modify our internal string storage first
         Dim i As Long
         For i = itemIndex To m_NumBackupEntries - 1
@@ -498,11 +527,7 @@ Private Sub copyStringToComboBox(ByVal strIndex As Long)
         SendMessage m_ComboBoxHwnd, CB_SETITEMDATA, newIndex, ByVal strIndex
         
         m_InsideAddString = False
-        
-        'Set the combo box to always display the full list amount in the drop-down.  (This may need to be revisited if PD ever contains
-        ' a combo box with an enormous list of entries.)
-        dynamicallyFitDropDownHeight
-        
+                
     End If
 
 End Sub
@@ -510,6 +535,9 @@ End Sub
 'When the list's contents change, use this function to reset the dropdown height
 Private Sub dynamicallyFitDropDownHeight()
 
+    'Exit if the combo box hasn't been created yet
+    If m_ComboBoxHwnd = 0 Then Exit Sub
+    
     'Rather than forcing combo boxes to a predetermined size, we dynamically adjust their size as items are added.
     ' To do this, we must start by getting the window rect of the current combo box.
     Dim comboRect As RECTL
@@ -522,16 +550,56 @@ Private Sub dynamicallyFitDropDownHeight()
     'Dividers introduce some funny business into the measurement technique, so we have no choice but to manually tally the reported
     ' height of all available combo box entries
     Dim i As Long
-    For i = 0 To SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&) - 1
-        totalHeight = totalHeight + SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, ByVal i, ByVal 0&)
-    Next i
+    'For i = 0 To SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&) '- 1
+    '    totalHeight = totalHeight + SendMessage(m_ComboBoxHwnd, CB_GETITEMHEIGHT, i, ByVal 0&)
+    'Next i
+    
+    'DEBUG ONLY!
+    Dim numDividers As Long
+    numDividers = 0
+    totalHeight = 0
+    
+    If m_NumBackupEntries > 0 Then
+    
+        For i = 0 To m_NumBackupEntries - 1
+            
+            If m_BackupEntries(i).followedByDivider Then
+                numDividers = numDividers + 1
+                totalHeight = totalHeight + (m_ItemHeight + 2) + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT)
+            Else
+                totalHeight = totalHeight + (m_ItemHeight + 2)
+            End If
+            
+        Next i
+        
+    End If
     
     'The final height measurement includes the user control itself (which is always visible), plus two pixels for the border of the drop-down
-    totalHeight = totalHeight + (comboRect.Bottom - comboRect.Top) + 2
+    totalHeight = totalHeight + 2 '+ (comboRect.Bottom - comboRect.Top)
+    
+    'Here's where I'm running into inexplicable trouble.
+    ' If the first item in the drop-down has a divider (e.g. a larger-than-normal height), the drop-down is sized perfectly.
+    ' If the first item does NOT have a divider, but there are other dividers in the list, a vertical scroll bar is always shown.
+    ' I have no idea why this is, because the size is still calculated just fine.
+    ' I have tried every possible workaround, including forcibly setting the size larger under those conditions, but they are always ignored
+    ' by the system.
+    ' I remain at a loss.
+    If (Not m_BackupEntries(getInternalIndexFromAPIIndex(0)).followedByDivider) And (numDividers > 0) Then
+        'Me.ListIndex = 0
+        'Const CB_SETITEMHEIGHT = 339
+        'SendMessage m_ComboBoxHwnd, CB_SETITEMHEIGHT, 0, ByVal (m_ItemHeight + 2)
+        'totalHeight = totalHeight + 50  'CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT)
+        'Debug.Print "fudging height"
+    End If
+        
+    'For debugging purposes, cache the calculated value
+    m_DropDownCalculatedHeight = totalHeight
     
     'Apply the final resize!
-    MoveWindow m_ComboBoxHwnd, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, totalHeight, 1
-
+    SetWindowPos m_ComboBoxHwnd, 0, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, m_ItemHeight + 9, SWP_FRAMECHANGED Or SWP_NOZORDER Or SWP_NOOWNERZORDER Or SWP_NOACTIVATE
+    'MoveWindow m_ComboBoxHwnd, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, totalHeight, 1
+    'MoveWindow m_ComboBoxHwnd, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, 100, 1
+        
 End Sub
 
 'Clear all entries from the combo box
@@ -539,9 +607,8 @@ Public Sub Clear()
 
     If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, CB_RESETCONTENT, 0, ByVal 0&
     
-    m_NumDividers = 0
     m_NumBackupEntries = 0
-    ReDim m_BackupEntries(0) As backupComboEntry
+    ReDim m_BackupEntries(0 To 15) As backupComboEntry
     
 End Sub
 
@@ -620,7 +687,6 @@ Public Property Get containerHwnd() As Long
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
-' TODO: disable API box as well
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
@@ -631,7 +697,7 @@ Public Property Let Enabled(ByVal NewValue As Boolean)
     'If the control is disabled, the BackColor property actually becomes relevant (because the edit box will allow the back color
     ' to "show through").  As such, set it now, and note that we can use VB's internal property, because it simply wraps the
     ' matching GDI function(s).
-    If g_IsProgramRunning Then
+    If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
         If NewValue Then
             UserControl.BackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
         Else
@@ -640,7 +706,9 @@ Public Property Let Enabled(ByVal NewValue As Boolean)
     End If
     
     If m_ComboBoxHwnd <> 0 Then EnableWindow m_ComboBoxHwnd, IIf(NewValue, 1, 0)
+    
     UserControl.Enabled = NewValue
+    If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
     
     PropertyChanged "Enabled"
     
@@ -654,6 +722,7 @@ End Property
 Public Property Let FontSize(ByVal newSize As Single)
     
     If newSize <> m_FontSize Then
+        
         m_FontSize = newSize
         
         If Not (curFont Is Nothing) Then
@@ -667,10 +736,10 @@ Public Property Let FontSize(ByVal newSize As Single)
             createComboBox
             
         End If
-        
-        PropertyChanged "FontSize"
-        
+                
     End If
+    
+    PropertyChanged "FontSize"
     
 End Property
 
@@ -694,16 +763,17 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     
 End Sub
 
-Private Sub cMouseEventsListBox_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEventsListBox.setSystemCursor IDC_HAND
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.ignoreLastMessage
 End Sub
 
-Private Sub cMouseEventsListBox_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEventsListBox.setSystemCursor IDC_ARROW
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    'cMouseEvents.setSystemCursor IDC_HAND
+    cMouseEvents.ignoreLastMessage
 End Sub
 
-Private Sub cMouseEventsListBox_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEventsListBox.setSystemCursor IDC_HAND
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    cMouseEvents.ignoreLastMessage
 End Sub
 
 'Flicker-free paint requests for the main control box (e.g. NOT the drop-down list portion)
@@ -742,6 +812,7 @@ End Sub
 Private Sub UserControl_Initialize()
 
     m_ComboBoxHwnd = 0
+    ReDim m_BackupEntries(0 To 15) As backupComboEntry
     
     Set curFont = New pdFont
         
@@ -837,7 +908,7 @@ Private Sub createComboBoxBrush()
 
     If m_ComboBoxBrush <> 0 Then DeleteObject m_ComboBoxBrush
     
-    If g_IsProgramRunning Then
+    If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
         m_ComboBoxBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT))
     Else
         m_ComboBoxBrush = CreateSolidBrush(RGB(128, 255, 255))
@@ -874,9 +945,8 @@ End Function
 'As the wrapped system combo box may need to be recreated when certain properties are changed, this function is used to
 ' automate the process of destroying an existing window (if any) and recreating it anew.
 Private Function createComboBox() As Boolean
-    
+        
     'If the combo box already exists, kill it
-    ' TODO: do we ever actually need to do this, or can we get away with a single creation??
     destroyComboBox
     
     'Create a brush for drawing the box background
@@ -884,7 +954,7 @@ Private Function createComboBox() As Boolean
     
     'Figure out which flags to use, based on the control's properties
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsComboControl As Long
-    flagsWinStyle = WS_VISIBLE Or WS_CHILD Or WS_VSCROLL Or WS_HSCROLL
+    flagsWinStyle = WS_VISIBLE Or WS_CHILD Or WS_VSCROLL
     flagsWinStyleExtended = 0
     
     'PhotoDemon only supports simple drop-downs.  Similarly, all drop-down entries are coerced into strings, so we can use the CBS_HASSTRINGS
@@ -928,7 +998,8 @@ Private Function createComboBox() As Boolean
             'Subclass the parent user control.
             If Not m_ParentHasBeenSubclassed Then
                 cSubclass.ssc_Subclass UserControl.hWnd, 0, 1, Me, True, True, False
-                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_COMMAND, WM_MEASUREITEM, WM_DRAWITEM
+                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_MEASUREITEM, WM_DRAWITEM
+                cSubclass.ssc_AddMsg UserControl.hWnd, MSG_BEFORE, WM_COMMAND
                 m_ParentHasBeenSubclassed = True
             End If
             
@@ -959,7 +1030,7 @@ Private Function createComboBox() As Boolean
             
             'Subclass the combo box
             cSubclass.ssc_Subclass m_ComboBoxHwnd, 0, 1, Me, True, True, True
-            cSubclass.ssc_AddMsg m_ComboBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_MOUSEACTIVATE
+            cSubclass.ssc_AddMsg m_ComboBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_MOUSEACTIVATE, WM_CTLCOLORLISTBOX
             cSubclass.ssc_AddMsg m_ComboBoxHwnd, MSG_AFTER, WM_SIZE
             
             'Subclass the user control as well.  This is necessary for handling update messages from the edit box
@@ -978,8 +1049,9 @@ Private Function createComboBox() As Boolean
         
         '...and a third subclasser for mouse events
         Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker m_ComboBoxHwnd, True, , , True, True
+        cMouseEvents.addInputTracker m_ComboBoxHwnd, True, True, , True, True
         cMouseEvents.setSystemCursor IDC_HAND
+        cMouseEvents.setCaptureOverride True
         
     End If
     
@@ -997,15 +1069,12 @@ Private Function createComboBox() As Boolean
         
         'Also set a list index, if any.  (If none were specifed, the first entry in the list wil be selected.)
         Me.ListIndex = m_BackupListIndex
-        
-    'If entries don't need to be restored, we should still make sure the drop-down height is correct.
-    Else
-        dynamicallyFitDropDownHeight
+    
     End If
     
     'Finally, synchronize the underlying user control to whatever size the system has created the combo box at
     syncUserControlSizeToComboSize
-    
+        
     'Return TRUE if successful
     createComboBox = (m_ComboBoxHwnd <> 0)
 
@@ -1021,7 +1090,11 @@ Private Function destroyComboBox() As Boolean
             cSubclass.shk_TerminateHooks
         End If
         
-        DestroyWindow m_ComboBoxHwnd
+        If DestroyWindow(m_ComboBoxHwnd) <> 0 Then
+            Debug.Print "Combo box destroyed successfully."
+        Else
+            Debug.Print "Failed to destroy combo box."
+        End If
         
     End If
     
@@ -1091,11 +1164,12 @@ Public Sub updateAgainstCurrentTheme()
     
     If g_IsProgramRunning Then
         
-        'Create a brush for drawing the box background
-        createComboBoxBrush
-        
-        'Update the current font, as necessary
+        'Update the current font, as necessary.  We must do this prior to creating the combo box, as the font object's size determines
+        ' the height of individual combo box entries.
         refreshFont
+        
+        'Recreate the combo box entirely
+        createComboBox
         
         'Force an immediate repaint
         cPainterBox.requestRepaint
@@ -1500,8 +1574,8 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             'If the item occurs right before a dividing line, draw the divider now
             If m_BackupEntries(stringIndex).followedByDivider Then
             
-                Dim lineY As Long
-                lineY = srcDIS.rcItem.Bottom + (COMBO_BOX_DIVIDER_HEIGHT / 2)
+                Dim lineY As Single
+                lineY = srcDIS.rcItem.Bottom + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT) \ 2
                 
                 GDI_Plus.GDIPlusDrawLineToDC srcDIS.hDC, srcDIS.rcItem.Left + fixDPI(12), lineY, srcDIS.rcItem.Right - fixDPI(12), lineY, g_Themer.getThemeColor(PDTC_GRAY_ULTRALIGHT), 255
             
@@ -1547,23 +1621,23 @@ Private Sub syncUserControlSizeToComboSize()
 
     'Get the window rect of the combo box
     Dim comboRect As RECTL
-    GetWindowRect m_ComboBoxHwnd, comboRect
+    GetClientRect m_ComboBoxHwnd, comboRect
     
     'Resize the user control, as necessary
     With UserControl
     
-        If g_IsProgramCompiled Then
-            MoveWindow UserControl.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, comboRect.Right - comboRect.Left, comboRect.Bottom - comboRect.Top, 1
-        Else
-   
-            If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
+        If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
+        
+            If g_IsProgramCompiled Then
+                MoveWindow UserControl.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, comboRect.Right - comboRect.Left, comboRect.Bottom - comboRect.Top, 1
+            Else
                 .Size .ScaleX((comboRect.Right - comboRect.Left), vbPixels, vbTwips), .ScaleY((comboRect.Bottom - comboRect.Top), vbPixels, vbTwips)
             End If
-   
+            
         End If
     
     End With
-    
+        
     'Repaint the control
     If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
 
@@ -1738,38 +1812,86 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_ComboBoxHwnd Then
         
                 'Check for the CBN_SELCHANGE flag; if present, raise the CLICK event
-                If (wParam \ &H10000) = CBN_SELCHANGE Then
+                If ((wParam \ &H10000) = CBN_SELCHANGE) Then
                     m_CurrentListIndex = SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&)
                     cPainterBox.requestRepaint
                     RaiseEvent Click
                     bHandled = True
                 End If
                 
-                'Check for the DROPDOWN flag; if present, we need to assign a hand cursor to the list box
-                If (wParam \ &H10000) = CBN_DROPDOWN Then
+                'Check for the DROPDOWN flag; this signifies that the dropdown box is opening
+                If ((wParam \ &H10000) = CBN_DROPDOWN) Then
                     
                     'Retrieve the hWnd of the dropdown
                     Dim cbiCombo As COMBOBOXINFO
                     cbiCombo.cbSize = LenB(cbiCombo)
                     If GetComboBoxInfo(m_ComboBoxHwnd, cbiCombo) <> 0 Then
-                        
-                        'Note: this does not actually set a hand cursor when compiled.  No idea why.  TODO!
-                        Set cMouseEventsListBox = New pdInputMouse
-                        cMouseEventsListBox.addInputTracker cbiCombo.hWndList, True, , , True, True
-                        cMouseEventsListBox.setSystemCursor IDC_HAND
+                    
+                        'Any actions that rely on the cbiCombo item can be applied here, as necessary
+                        cMouseEvents.setSystemCursor IDC_HAND
                         
                     End If
                     
+                    'Set the combo box to always display the full list amount in the drop-down.  (This may need to be revisited if PD ever contains
+                    ' a combo box with an enormous list of entries, e.g. a size large enough to extend past the edges of the screen.)
+                    dynamicallyFitDropDownHeight
+                                        
                 End If
                 
-                'Check for the CLOSEUP flag; if present, we need to kill our mouse handler
-                If (wParam \ &H10000) = CBN_CLOSEUP Then
-                    cMouseEventsListBox.setSystemCursor IDC_ARROW
-                    Set cMouseEventsListBox = Nothing
+                'Check for the CLOSEUP flag; this signifies that the dropdown box is closing
+                If ((wParam \ &H10000) = CBN_CLOSEUP) Then
+                    
+                    'No actions necessary at present
+                    
                 End If
                 
             End If
         
+        Case WM_CTLCOLORLISTBOX
+            
+            'Figure out the size of the drop down.  (The calculated value will lie inside m_dropdowncalculated height.)
+            dynamicallyFitDropDownHeight
+            
+            'Find the position of the edit box
+            Dim editRect As RECTL
+            GetWindowRect m_ComboBoxHwnd, editRect
+            
+            'Find the position of the dropdown
+            Dim listRect As RECTL
+            GetWindowRect lParam, listRect
+            listRect.Bottom = listRect.Top + m_DropDownCalculatedHeight
+            
+            With editRect
+            Debug.Print .Top, .Left, .Right, .Bottom
+            End With
+            
+            With listRect
+            Debug.Print .Top, .Left, .Right, .Bottom
+            End With
+            
+            'If the combo box is gonna extend past the edge of the screen, display it above the edit box
+            If editRect.Bottom + m_DropDownCalculatedHeight > g_cMonitors.DesktopHeight Then
+                listRect.Top = editRect.Top - m_DropDownCalculatedHeight
+            Else
+                listRect.Top = editRect.Bottom
+            End If
+            
+            'Also, make sure we don't overhang the right edge of the virtual desktop
+            'If listRect.Right > g_cMonitors.DesktopLeft + g_cMonitors.DesktopWidth Then
+            '    listRect.Left = (g_cMonitors.DesktopLeft + g_cMonitors.DesktopWidth) - (editRect.Right - editRect.Left)
+            '    listRect.Right = listRect.Left + (editRect.Right - editRect.Left)
+            'Else
+            '    listRect.Left = editRect.Left
+            '    listRect.Right = listRect.Left + (editRect.Right - editRect.Left)
+            'End If
+            
+            'Apply the position rect
+            With listRect
+                SetWindowPos lParam, 0, .Left, .Top, (.Right - .Left), m_DropDownCalculatedHeight, SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
+            End With
+            
+            'SetWindowPos m_ComboBoxHwnd, 0, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, totalHeight, SWP_FRAMECHANGED Or SWP_NOZORDER Or SWP_NOOWNERZORDER Or SWP_NOACTIVATE
+            
         'The parent receives this message, prior to the edit box being drawn.  The parent can use this to assign text and
         ' background colors to the edit box.
         Case WM_CTLCOLOREDIT
@@ -1810,15 +1932,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         ' Any padding values must be added here.  (I've gone with 1px on either side.)
                         MIS.itemHeight = m_ItemHeight + 2
                         
-                        'Copy the pointer to our modified MEASUREITEMSTRUCT back into lParam
-                        CopyMemory ByVal lParam, MIS, LenB(MIS)
-                        
-                        'Note that we have handled the message successfully
-                        bHandled = True
-                        lReturn = 1
-                        
                     Else
-                    
+                        
                         'Fill the height parameter; note that m_ItemHeight is the literal height of a string using the current font.
                         ' Any padding values must be added here.  (I've gone with 1px on either side.)
                         MIS.itemHeight = m_ItemHeight + 2
@@ -1831,22 +1946,26 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         Else
                             itemIndex = getInternalIndexFromAPIIndex(MIS.itemID)
                         End If
-                                                
+                        
                         If itemIndex < m_NumBackupEntries Then
                             If m_BackupEntries(itemIndex).followedByDivider Then
-                                MIS.itemHeight = MIS.itemHeight + fixDPI(COMBO_BOX_DIVIDER_HEIGHT)
+                                MIS.itemHeight = m_ItemHeight + 2 + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT)
                             End If
                         End If
-                                                
-                        'Copy the pointer to our modified MEASUREITEMSTRUCT back into lParam
-                        CopyMemory ByVal lParam, MIS, LenB(MIS)
                         
-                        'Note that we have handled the message successfully
-                        bHandled = True
-                        lReturn = 1
+                        Debug.Print "ITEMID: " & MIS.itemID & ", " & MIS.itemHeight
                         
                     End If
                     
+                    'Copy the pointer to our modified MEASUREITEMSTRUCT back into lParam
+                    CopyMemory ByVal lParam, MIS, LenB(MIS)
+                    
+                    'Note that we have handled the message successfully
+                    bHandled = True
+                    lReturn = 1
+                    
+                Else
+                    Debug.Print "not a combo box???"
                 End If
                 
             End If
@@ -1898,7 +2017,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         
             'Disable VB resize handling prior to synchronizing size
             m_InternalResizeState = True
-            
+                        
             'Sync the underlying user control to the combo box's dimensions
             syncUserControlSizeToComboSize
             
