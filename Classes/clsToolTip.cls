@@ -599,6 +599,20 @@ Public Function RemoveTool(ByRef ctrl As Object) As Boolean
 
 End Function
 
+Public Function RemoveToolByHwnd(ByVal srcHwnd As Long) As Boolean
+
+  Dim ti As TOOLINFO
+
+  If (mnlgHwndTT = 0) Then
+    Exit Function
+  End If
+  If fGetToolInfo(srcHwnd, ti) Then
+    Call SendMessageT(mnlgHwndTT, TTM_DELTOOL, 0, ti)
+    RemoveToolByHwnd = True
+  End If
+
+End Function
+
 Public Property Get ToolCount() As Long
 
   If (mnlgHwndTT = 0) Then
