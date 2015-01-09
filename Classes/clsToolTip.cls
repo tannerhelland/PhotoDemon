@@ -281,6 +281,51 @@ Public Function AddTool(ByRef ctrl As Object, Optional ByVal strText As String) 
 
 End Function
 
+Public Function AddToolFromHwnd(ByVal srcHwnd As Long, Optional ByVal strText As String) As Boolean
+
+    Dim ti As TOOLINFO
+    
+    'Ignore hWnds of 0
+    If (srcHwnd = 0) Then Exit Function
+    
+    If (fGetToolInfo(srcHwnd, ti) = False) Then
+    
+        With ti
+            .cbSize = Len(ti)
+            '
+            ' TTF_IDISHWND must be set to tell the tooltip
+            ' control to retrieve the control's rect from
+            ' it's hWnd specified in uId.
+            '
+            .uFlags = TTF_SUBCLASS Or TTF_IDIShWnd
+            .hWnd = srcHwnd
+            .uId = srcHwnd
+            
+            If Len(strText) <> 0 Then
+
+                'MODIFICATION
+                'sending a blank string to ToolText deletes the control from the collection
+                'MODIFICATION
+                'add ToolTipHeader to strText if requested
+                
+                If m_ShowHeader Then
+                    If LenB(m_TTHeader) Then strText = m_TTHeader & vbNewLine & strText
+                End If
+                
+                .lpszText = strText
+            End If
+            
+            mnlgMaxTip = fMax(mnlgMaxTip, Len(.lpszText) + 1)
+    
+        End With
+        
+        ' Returns 1 on success, 0 on failure
+        AddToolFromHwnd = SendMessageT(mnlgHwndTT, TTM_ADDTOOL, 0, ti)
+        
+    End If
+
+End Function
+
 Public Property Get BackColor() As OLE_COLOR
 
   If (mnlgHwndTT = 0) Then

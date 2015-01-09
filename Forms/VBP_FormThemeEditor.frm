@@ -61,7 +61,7 @@ Begin VB.Form FormThemeEditor
       Width           =   2055
    End
    Begin PhotoDemon.pdComboBox pdComboBox1 
-      Height          =   360
+      Height          =   375
       Left            =   4800
       TabIndex        =   6
       Top             =   6000
@@ -247,7 +247,7 @@ Begin VB.Form FormThemeEditor
       Enabled         =   0   'False
    End
    Begin PhotoDemon.pdComboBox pdComboBox2 
-      Height          =   360
+      Height          =   375
       Index           =   0
       Left            =   4800
       TabIndex        =   10
@@ -257,7 +257,7 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   635
    End
    Begin PhotoDemon.pdComboBox pdComboBox2 
-      Height          =   360
+      Height          =   375
       Index           =   1
       Left            =   4800
       TabIndex        =   11
@@ -310,8 +310,8 @@ Private Sub cmdTextBoxTesting_Click(Index As Integer)
             
         '4 - add new drop-down entries
         Case 4
-            pdComboBox1.AddItem pdComboBox1.ListCount
-        
+            pdComboBox1.AddItem pdComboBox1.ListCount, , True
+                    
         '5 - delete drop-down entries
         Case 5
             pdComboBox1.RemoveItem pdComboBox1.ListCount - 1

@@ -304,14 +304,24 @@ Public Sub initializeViewportEngine()
 End Sub
 
 'Populate an arbitrary combo box with the current list of handled zoom values
-Public Sub populateZoomComboBox(ByRef dstComboBox As ComboBox, Optional ByVal initialListIndex As Long = -1)
+Public Sub populateZoomComboBox(ByRef dstComboBox As pdComboBox, Optional ByVal initialListIndex As Long = -1)
 
     dstComboBox.Clear
     
     Dim i As Long
     
     For i = 0 To zoomCountFixed + zoomCountDynamic
-        dstComboBox.AddItem zoomStrings(i), i
+        
+        Select Case i
+        
+            Case 10, 11, 25
+                dstComboBox.AddItem zoomStrings(i), i, True
+                
+            Case Else
+                dstComboBox.AddItem zoomStrings(i), i
+        
+        End Select
+        
     Next i
     
     If initialListIndex = -1 Then
