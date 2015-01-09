@@ -195,6 +195,7 @@ End Enum
 
 Private Declare Function GetMouseMovePointsEx Lib "user32" (ByVal sizeOfMouseMoveStruct As Long, ByRef currentMouseMovePoint As MOUSEMOVEPOINT, ByVal ptrToMouseMovePointArray As Long, ByVal numOfPointsToRetrieve As Long, ByVal resolutionFlag As mouseResolution) As Long
 Private Declare Function GetMessageTime Lib "user32" () As Long
+Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 'Weird legacy desktop issues require us to transform points passed to/from GetMouseMovePointsEx, relative to the current monitor system
 Private Const SM_XVIRTUALSCREEN = 76
@@ -279,6 +280,23 @@ Private Const DEFAULT_DELAY_THRESHOLD_MS = 120
 ' this internal capture counter.  When a button is released, the capture counter is decremented.  When all buttons have been released,
 ' the mouse capture is released.
 Private m_CaptureCounter As Long
+
+'In some cases, the users may want to deal with mouse events only under certain circumstances.  If they test an event and realize that it's
+' useless to them, they can set this parameter to TRUE via the ignoreLastMessage() sub.  Upon returning from an event, that parameter
+' notifies the subclasser to not mark the event as handled, so DefWindowProc can have a swing at it.
+Private m_IgnoreLastMessage As Boolean
+
+'By default, PD forcibly captures the mouse when a button is pressed.  To disable this behavior, set this value to TRUE.
+Private m_DoNotCaptureOnButtonPress As Boolean
+
+Public Sub setCaptureOverride(ByVal newCaptureMode As Boolean)
+    m_DoNotCaptureOnButtonPress = newCaptureMode
+End Sub
+
+'For details, see the declaration for m_IgnoreLastMessage
+Public Sub ignoreLastMessage()
+    m_IgnoreLastMessage = True
+End Sub
 
 'Use this function enable/disable automatic dropping of severely delayed events
 Public Sub setAutoDropOfDelayedEvents(ByVal newMode As Boolean)
@@ -974,7 +992,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 m_CaptureCounter = m_CaptureCounter + 1
                 
                 'If we have not captured the mouse, capture it now
-                If m_CaptureCounter = 1 Then SetCapture lng_hWnd
+                If (m_CaptureCounter = 1) And (Not m_DoNotCaptureOnButtonPress) Then SetCapture lng_hWnd
                 
                 'Reset the mouse move counter
                 m_MouseMoveCount = 0
@@ -1007,6 +1025,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 End If
                 
                 RaiseEvent MouseDownCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                
+                If m_IgnoreLastMessage Then
+                    bHandled = False
+                    lReturn = DefWindowProc(lng_hWnd, uMsg, wParam, lParam)
+                    m_IgnoreLastMessage = False
+                End If
             
             'Mouse up
             Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
@@ -1015,7 +1039,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'Decrement the capture counter; if all buttons have been released, release our capture entirely
                 m_CaptureCounter = m_CaptureCounter - 1
-                If m_CaptureCounter <= 0 Then
+                If (m_CaptureCounter <= 0) And (Not m_DoNotCaptureOnButtonPress) Then
                     m_CaptureCounter = 0
                     ReleaseCapture
                 End If
@@ -1076,6 +1100,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt, False)
                 End If
                 
+                If m_IgnoreLastMessage Then
+                    bHandled = False
+                    lReturn = DefWindowProc(lng_hWnd, uMsg, wParam, ByVal lParam)
+                    m_IgnoreLastMessage = False
+                End If
+                
             'Double-clicks
             Case WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
             
@@ -1109,6 +1139,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 RaiseEvent DoubleClickCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
                 
+                If m_IgnoreLastMessage Then
+                    bHandled = False
+                    lReturn = DefWindowProc(lng_hWnd, uMsg, wParam, lParam)
+                    m_IgnoreLastMessage = False
+                End If
             
             'Mouse leaving the client area
             Case WM_MOUSELEAVE
@@ -1211,8 +1246,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 End If
                 
-                lReturn = 1
-                bHandled = True
+                If m_IgnoreLastMessage Then
+                    bHandled = False
+                    m_IgnoreLastMessage = False
+                Else
+                    lReturn = 1
+                    bHandled = True
+                End If
                 
             'App commands are meta functions like "back" or "increase volume" or "media rewind".  They can be triggered
             ' by a variety of actions, depending on system configuration: mouse gestures, dedicated keyboard keys,
