@@ -1930,7 +1930,7 @@ Private Sub UserControl_Show()
         cmbZoom.updateAgainstCurrentTheme
         
         'Add a tooltip to the zoom box
-        cmbZoom.setToolTip g_Language.TranslateMessage("Click to adjust image zoom")
+        cmbZoom.assignTooltip "Click to adjust image zoom"
         
 CanvasShowError:
         

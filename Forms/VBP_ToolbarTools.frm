@@ -1690,7 +1690,7 @@ Private Sub Form_Load()
     'INITIALIZE ALL TOOLS
     
         'Selection visual styles (Highlight, Lightbox, or Outline)
-        toolbar_Options.cboSelRender.setToolTip g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
+        toolbar_Options.cboSelRender.assignTooltip "Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing."
         toolbar_Options.cboSelRender.AddItem " Highlight", 0
         toolbar_Options.cboSelRender.AddItem " Lightbox", 1
         toolbar_Options.cboSelRender.AddItem " Outline", 2
@@ -1700,7 +1700,7 @@ Private Sub Form_Load()
         csSelectionHighlight.Visible = True
         
         'Selection smoothing (currently none, antialiased, fully feathered)
-        toolbar_Options.cboSelSmoothing.setToolTip g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
+        toolbar_Options.cboSelSmoothing.assignTooltip "This option controls how smoothly a selection blends with its surroundings."
         toolbar_Options.cboSelSmoothing.AddItem " None", 0
         toolbar_Options.cboSelSmoothing.AddItem " Antialiased", 1
         toolbar_Options.cboSelSmoothing.AddItem " Feathered", 2
@@ -1713,7 +1713,7 @@ Private Sub Form_Load()
             toolbar_Options.cboSelArea(i).AddItem " Border", 2
             toolbar_Options.cboSelArea(i).ListIndex = 0
             
-            toolbar_Options.cboSelArea(i).setToolTip g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
+            toolbar_Options.cboSelArea(i).assignTooltip "These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu."
             toolbar_Options.sltSelectionBorder(i).assignTooltip "This option adjusts the width of the selection border."
         Next i
         
@@ -1739,13 +1739,13 @@ Private Sub Form_Load()
         cboWandCompare.Clear
         cboWandCompare.AddItem " Composite", 0
         cboWandCompare.AddItem " Color", 1
-        cboWandCompare.AddItem " Luminance", 2
+        cboWandCompare.AddItem " Luminance", 2, True
         cboWandCompare.AddItem " Red", 3
         cboWandCompare.AddItem " Green", 4
         cboWandCompare.AddItem " Blue", 5
         cboWandCompare.AddItem " Alpha", 6
         cboWandCompare.ListIndex = 1
-        cboWandCompare.setToolTip g_Language.TranslateMessage("This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.")
+        cboWandCompare.assignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
         
         'Quick-fix tools
         cmdQuickFix(0).ToolTip = g_Language.TranslateMessage("Reset all quick-fix adjustment values")

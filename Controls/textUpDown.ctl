@@ -713,7 +713,7 @@ Private Sub UserControl_Show()
     End If
         
     'Also, force a resize to modify its layout
-    UserControl_Resize
+    If g_IsProgramRunning Then UserControl_Resize
         
 End Sub
 

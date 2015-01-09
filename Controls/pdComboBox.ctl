@@ -816,22 +816,24 @@ End Sub
 'Show the control and the combo box.  (This is the first place the combo box is typically created, as well.)
 Private Sub UserControl_Show()
     
-    'If we have not yet created the combo box, do so now.
-    If m_ComboBoxHwnd = 0 Then
-        
-        createComboBox
-        
-    'The combo box has already been created, so we just need to show it.  Note that we explicitly set flags to NOT activate
-    ' the window, as we don't want it stealing focus.
-    Else
-        If m_ComboBoxHwnd <> 0 Then ShowWindow m_ComboBoxHwnd, SW_SHOWNA
-    End If
+    If g_IsProgramRunning Then
     
-    'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
-    ' using a custom solution (which allows for linebreaks and theming).  Note that this has the ugly side-effect of
-    ' permanently erasing the extender's tooltip, so FOR THIS CONTROL, TOOLTIPS MUST BE SET AT RUN-TIME!
-    m_ToolString = Extender.ToolTipText
-    refreshTooltipObject
+        'If we have not yet created the combo box, do so now.
+        If m_ComboBoxHwnd = 0 Then
+            
+            createComboBox
+            
+        'The combo box has already been created, so we just need to show it.  Note that we explicitly set flags to NOT activate
+        ' the window, as we don't want it stealing focus.
+        Else
+            If m_ComboBoxHwnd <> 0 Then ShowWindow m_ComboBoxHwnd, SW_SHOWNA
+        End If
+        
+        'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
+        ' using a custom solution (which allows for linebreaks and theming).
+        If Len(Extender.ToolTipText) <> 0 Then assignTooltip Extender.ToolTipText
+        
+    End If
     
 End Sub
 
@@ -898,7 +900,7 @@ Private Function createComboBox() As Boolean
     
     'Figure out which flags to use, based on the control's properties
     Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsComboControl As Long
-    flagsWinStyle = WS_VISIBLE Or WS_CHILD Or WS_VSCROLL
+    flagsWinStyle = WS_VISIBLE Or WS_CHILD Or WS_VSCROLL Or WS_HSCROLL
     flagsWinStyleExtended = 0
     
     'PhotoDemon only supports simple drop-downs.  Similarly, all drop-down entries are coerced into strings, so we can use the CBS_HASSTRINGS
@@ -1017,7 +1019,7 @@ Private Function createComboBox() As Boolean
     End If
     
     'Mirror the tooltip (if any) to the API box
-    refreshTooltipObject
+    If g_IsProgramRunning Then refreshTooltipObject
     
     'Finally, synchronize the underlying user control to whatever size the system has created the combo box at
     syncUserControlSizeToComboSize
@@ -1051,10 +1053,9 @@ End Function
 
 'Due to the complex interactions between the underlying user control and the API combo box, setting tooltips at run-time requires
 ' the use of a dedicated function.
-Public Sub setToolTip(ByVal newTip As String)
-    m_ToolString = newTip
-    Extender.ToolTipText = ""
-    refreshTooltipObject
+Public Sub assignTooltip(ByVal newTooltip As String)
+    m_ToolString = newTooltip
+    If Len(m_ToolString) <> 0 Then refreshTooltipObject
 End Sub
 
 'When the program language is changed, the object's tooltip must be retranslated to match.  External functions can
@@ -1063,22 +1064,28 @@ Public Sub refreshTooltipObject()
     
     If Not (m_ToolTip Is Nothing) Then
         m_ToolTip.RemoveTool Me
+        m_ToolTip.RemoveToolByHwnd m_ComboBoxHwnd
     End If
     
     Set m_ToolTip = New clsToolTip
     With m_ToolTip
+    
         .Create Me
         .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
         .DelayTime(ttDelayShow) = 10000
+        
         If Not (g_Language Is Nothing) Then
+        
             If g_Language.translationActive Then
                 .AddTool Me, g_Language.TranslateMessage(m_ToolString)
-                If (m_ComboBoxHwnd <> 0) Then .AddToolFromHwnd m_ComboBoxHwnd, g_Language.TranslateMessage(m_ToolString)
+                .AddToolFromHwnd m_ComboBoxHwnd, g_Language.TranslateMessage(m_ToolString)
             Else
                 .AddTool Me, m_ToolString
-                If (m_ComboBoxHwnd <> 0) Then m_ToolTip.AddToolFromHwnd m_ComboBoxHwnd, m_ToolString
+                .AddToolFromHwnd m_ComboBoxHwnd, m_ToolString
             End If
+            
         End If
+        
     End With
         
 End Sub
@@ -1151,7 +1158,7 @@ Public Sub updateAgainstCurrentTheme()
         
         'Recreate the combo box entirely
         createComboBox
-        
+                
         'Force an immediate repaint
         cPainterBox.requestRepaint
                 
@@ -1833,7 +1840,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
         Case WM_CTLCOLORLISTBOX
             
-            If Not m_ListPositionSet Then
+            If (Not m_ListPositionSet) And g_IsProgramRunning Then
             
                 m_HwndListBox = lParam
                 

@@ -1174,7 +1174,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
             eControl.Font.Name = g_InterfaceFont
         End If
         
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is pdComboBox) Then
             eControl.updateAgainstCurrentTheme
         End If
                         
@@ -1193,7 +1193,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
     Next
     
     'FORM STEP 2: subclass this form and force controls to render transparent borders properly.
-    g_Themer.requestContainerSubclass tForm.hWnd
+    'g_Themer.requestContainerSubclass tForm.hWnd
     
     'FORM STEP 3: translate the form (and all controls on it)
     If g_Language.translationActive And tForm.Enabled Then
@@ -1308,7 +1308,7 @@ End Sub
 'When a themed form is unloaded, it may be desirable to release certain changes made to it - or in our case, unsubclass it.
 ' This function should be called when any themed form is unloaded.
 Public Sub ReleaseFormTheming(ByRef tForm As Object)
-    g_Themer.releaseContainerSubclass tForm.hWnd
+    'g_Themer.releaseContainerSubclass tForm.hWnd
     Set tForm = Nothing
 End Sub
 
