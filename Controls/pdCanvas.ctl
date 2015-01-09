@@ -100,6 +100,16 @@ Begin VB.UserControl pdCanvas
       TabStop         =   0   'False
       Top             =   7350
       Width           =   13290
+      Begin PhotoDemon.pdComboBox cmbZoom 
+         Height          =   360
+         Left            =   840
+         TabIndex        =   10
+         Top             =   15
+         Width           =   1290
+         _ExtentX        =   2275
+         _ExtentY        =   635
+         FontSize        =   9
+      End
       Begin PhotoDemon.pdLabel lblImgSize 
          Height          =   210
          Left            =   3240
@@ -116,7 +126,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
          Height          =   345
          Left            =   0
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -130,25 +140,14 @@ Begin VB.UserControl pdCanvas
          Left            =   3630
          List            =   "pdCanvas.ctx":0314
          Style           =   2  'Dropdown List
-         TabIndex        =   6
-         Top             =   15
-         Width           =   600
-      End
-      Begin VB.ComboBox cmbZoom 
-         CausesValidation=   0   'False
-         Height          =   315
-         ItemData        =   "pdCanvas.ctx":0316
-         Left            =   840
-         List            =   "pdCanvas.ctx":0318
-         Style           =   2  'Dropdown List
          TabIndex        =   5
          Top             =   15
-         Width           =   1110
+         Width           =   600
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
          Height          =   345
          Left            =   390
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -158,8 +157,8 @@ Begin VB.UserControl pdCanvas
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
          Height          =   345
-         Left            =   1980
-         TabIndex        =   9
+         Left            =   2190
+         TabIndex        =   8
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -170,7 +169,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdImgSize 
          Height          =   345
          Left            =   2790
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -682,7 +681,7 @@ Public Sub enableZoomFit(ByVal isEnabled As Boolean)
     cmdZoomFit.Value = (cmbZoom.ListIndex = g_Zoom.getZoomFitAllIndex)
 End Sub
 
-Public Function getZoomDropDownReference() As ComboBox
+Public Function getZoomDropDownReference() As pdComboBox
     Set getZoomDropDownReference = cmbZoom
 End Function
 
@@ -1808,9 +1807,7 @@ Private Sub UserControl_Initialize()
         m_ToolTip.Create Me
         m_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
         m_ToolTip.DelayTime(ttDelayShow) = 10000
-        
-        m_ToolTip.AddTool cmbZoom, "Click to adjust image zoom"
-        
+                
         'Allow the control to generate its own redraw requests
         m_suspendRedraws = False
         
@@ -1904,7 +1901,6 @@ Private Sub UserControl_Show()
         cmdZoomIn.AssignImage "SB_ZOOM_IN"
         cmdZoomOut.AssignImage "SB_ZOOM_OUT"
         cmdImgSize.AssignImage "SB_IMG_SIZE"
-        
                 
         'Load various status bar icons from the resource file
         Set sbIconSize = New pdDIB
@@ -1931,6 +1927,10 @@ Private Sub UserControl_Show()
         lblCoordinates.updateAgainstCurrentTheme
         lblImgSize.updateAgainstCurrentTheme
         lblMessages.updateAgainstCurrentTheme
+        cmbZoom.updateAgainstCurrentTheme
+        
+        'Add a tooltip to the zoom box
+        cmbZoom.setToolTip g_Language.TranslateMessage("Click to adjust image zoom")
         
 CanvasShowError:
         
