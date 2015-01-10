@@ -99,8 +99,9 @@ Private m_BackColor As OLE_COLOR
 Private m_AutoToggle As Boolean
 
 'Additional helpers for rendering themed and multiline tooltips
-Private m_ToolTip As clsToolTip
+Private toolTipManager As pdToolTip
 Private m_ToolString As String
+Private m_ToolTitleString As String
 
 'This toolbox button control is designed to be used in a "radio button"-like system, where buttons exist in a group, and the
 ' pressing of one results in the unpressing of any others.  For the rare circumstances where this behavior is undesirable
@@ -328,6 +329,9 @@ Private Sub UserControl_Initialize()
         Set cPainter = New pdWindowPainter
         cPainter.startPainter Me.hWnd
         
+        'Create a tooltip engine
+        Set toolTipManager = New pdToolTip
+        
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
         Set g_Themer = New pdVisualThemes
@@ -393,29 +397,6 @@ End Sub
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
     updateControlSize
-End Sub
-
-Private Sub UserControl_Show()
-
-    'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
-    ' using a custom solution (which allows for linebreaks and theming).  Note that this has the ugly side-effect of
-    ' permanently erasing the extender's tooltip, so FOR THIS CONTROL, TOOLTIPS MUST BE SET AT RUN-TIME!
-    m_ToolString = Extender.ToolTipText
-
-    If m_ToolString <> "" Then
-
-        Set m_ToolTip = New clsToolTip
-        With m_ToolTip
-
-            .Create Me
-            .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool Me, m_ToolString
-            Extender.ToolTipText = ""
-
-        End With
-
-    End If
-    
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
@@ -512,11 +493,6 @@ Private Sub redrawBackBuffer()
     'A single-pixel border is always drawn around the control
     GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, btnColorBorder, 255, 1
     
-    'TODO: if this button has received focus via keyboard, paint it with some special marker
-    'If m_FocusRectActive Then
-    '    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 2, .btBounds.Bottom - 3, btnColorActiveBorder, 255, 1
-    'End If
-                    
     'Paint the image, if any
     If Not (btImage Is Nothing) Then
         
@@ -552,4 +528,10 @@ Private Sub redrawBackBuffer()
     'Paint the buffer to the screen
     If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
+End Sub
+
+'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
+' (IMPORTANT NOTE: the CALLER is responsible for performing any necessary translations PRIOR to calling this function.)
+Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
