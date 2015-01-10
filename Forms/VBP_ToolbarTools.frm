@@ -40,7 +40,7 @@ Begin VB.Form toolbar_Options
       Top             =   15
       Visible         =   0   'False
       Width           =   18450
-      Begin PhotoDemon.pdComboBox cboSelSmoothing 
+	  Begin PhotoDemon.pdComboBox cboSelSmoothing 
          Height          =   375
          Left            =   2760
          TabIndex        =   77

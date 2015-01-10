@@ -302,7 +302,7 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 Private m_WeAreResponsibleForResize As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Private toolTipManager As pdToolTip
 
 'The user has various options for how this toolbox is displayed.  When changed, those options need to update these
 ' module-level values, then manually reflow the interface.
@@ -380,15 +380,16 @@ Private Sub Form_Load()
     cmdFile(FILE_REDO).AssignImage "TF_REDO"
     
     'Initialize file tool button tooltips
-    cmdFile(FILE_NEW).ToolTipText = g_Language.TranslateMessage("Create new image")
-    cmdFile(FILE_OPEN).ToolTipText = g_Language.TranslateMessage("Open one or more images")
-    cmdFile(FILE_CLOSE).ToolTipText = g_Language.TranslateMessage("Close current image")
-    cmdFile(FILE_SAVE).ToolTipText = g_Language.TranslateMessage("Save image in current format")
-    cmdFile(FILE_SAVEAS_LAYERS).ToolTipText = g_Language.TranslateMessage("Save lossless image copy")
-    cmdFile(FILE_SAVEAS_FLAT).ToolTipText = g_Language.TranslateMessage("Save As (export to new format or filename)")
-    cmdFile(FILE_UNDO).ToolTipText = g_Language.TranslateMessage("Undo last action")
-    cmdFile(FILE_FADE).ToolTipText = g_Language.TranslateMessage("Fade last action")
-    cmdFile(FILE_REDO).ToolTipText = g_Language.TranslateMessage("Redo previous action")
+    Set toolTipManager = New pdToolTip
+    toolTipManager.setTooltip cmdFile(FILE_NEW).hWnd, Me.hWnd, g_Language.TranslateMessage("Create new image")
+    toolTipManager.setTooltip cmdFile(FILE_OPEN).hWnd, Me.hWnd, g_Language.TranslateMessage("Open one or more images")
+    toolTipManager.setTooltip cmdFile(FILE_CLOSE).hWnd, Me.hWnd, g_Language.TranslateMessage("Close current image")
+    toolTipManager.setTooltip cmdFile(FILE_SAVE).hWnd, Me.hWnd, g_Language.TranslateMessage("Save image in current format")
+    toolTipManager.setTooltip cmdFile(FILE_SAVEAS_LAYERS).hWnd, Me.hWnd, g_Language.TranslateMessage("Save lossless image copy")
+    toolTipManager.setTooltip cmdFile(FILE_SAVEAS_FLAT).hWnd, Me.hWnd, g_Language.TranslateMessage("Save As (export to new format or filename)")
+    toolTipManager.setTooltip cmdFile(FILE_UNDO).hWnd, Me.hWnd, g_Language.TranslateMessage("Undo last action")
+    toolTipManager.setTooltip cmdFile(FILE_FADE).hWnd, Me.hWnd, g_Language.TranslateMessage("Fade last action")
+    toolTipManager.setTooltip cmdFile(FILE_REDO).hWnd, Me.hWnd, g_Language.TranslateMessage("Redo previous action")
     
     'Initialize canvas tool button images
     cmdTools(NAV_DRAG).AssignImage "T_HAND"
@@ -400,26 +401,25 @@ Private Sub Form_Load()
     cmdTools(SELECT_POLYGON).AssignImage "T_SELPOLYGON"
     cmdTools(SELECT_LASSO).AssignImage "T_SELLASSO"
     cmdTools(SELECT_WAND).AssignImage "T_SELWAND"
-        
-    'Initialize tool button tooltips
-    cmdTools(NAV_DRAG).ToolTipText = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
-    cmdTools(NAV_MOVE).ToolTipText = g_Language.TranslateMessage("Move and resize image layers")
-    cmdTools(QUICK_FIX_LIGHTING).ToolTipText = g_Language.TranslateMessage("Apply non-destructive lighting adjustments")
-    cmdTools(SELECT_RECT).ToolTipText = g_Language.TranslateMessage("Rectangular Selection")
-    cmdTools(SELECT_CIRC).ToolTipText = g_Language.TranslateMessage("Elliptical (Oval) Selection")
-    cmdTools(SELECT_LINE).ToolTipText = g_Language.TranslateMessage("Line Selection")
-    cmdTools(SELECT_POLYGON).ToolTipText = g_Language.TranslateMessage("Polygon Selection")
-    cmdTools(SELECT_LASSO).ToolTipText = g_Language.TranslateMessage("Lasso (Freehand) Selection")
-    cmdTools(SELECT_WAND).ToolTipText = g_Language.TranslateMessage("Magic Wand Selection")
-        
+    
+    'Initialize the rest of the tool button tooltips
+    toolTipManager.setTooltip cmdTools(NAV_DRAG).hWnd, Me.hWnd, g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
+    toolTipManager.setTooltip cmdTools(NAV_MOVE).hWnd, Me.hWnd, g_Language.TranslateMessage("Move and resize image layers")
+    toolTipManager.setTooltip cmdTools(QUICK_FIX_LIGHTING).hWnd, Me.hWnd, g_Language.TranslateMessage("Apply non-destructive lighting adjustments")
+    toolTipManager.setTooltip cmdTools(SELECT_RECT).hWnd, Me.hWnd, g_Language.TranslateMessage("Rectangular Selection")
+    toolTipManager.setTooltip cmdTools(SELECT_CIRC).hWnd, Me.hWnd, g_Language.TranslateMessage("Elliptical (Oval) Selection")
+    toolTipManager.setTooltip cmdTools(SELECT_LINE).hWnd, Me.hWnd, g_Language.TranslateMessage("Line Selection")
+    toolTipManager.setTooltip cmdTools(SELECT_POLYGON).hWnd, Me.hWnd, g_Language.TranslateMessage("Polygon Selection")
+    toolTipManager.setTooltip cmdTools(SELECT_LASSO).hWnd, Me.hWnd, g_Language.TranslateMessage("Lasso (Freehand) Selection")
+    toolTipManager.setTooltip cmdTools(SELECT_WAND).hWnd, Me.hWnd, g_Language.TranslateMessage("Magic Wand Selection")
+    
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.setParentForm Me
     lastUsedSettings.loadAllControlValues
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
     
     'Retrieve any relevant toolbox display settings from the user's preferences file
     m_ShowCategoryLabels = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
@@ -672,7 +672,7 @@ End Sub
 
 'External functions can use this to re-theme this form at run-time (important when changing languages, for example)
 Public Sub requestMakeFormPretty()
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
 End Sub
 
 'When a new tool is selected, we may need to initialize certain values.

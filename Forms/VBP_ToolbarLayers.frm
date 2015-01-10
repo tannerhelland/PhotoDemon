@@ -280,7 +280,7 @@ Private thumbWidth As Long, thumbHeight As Long
 Private Const thumbBorder As Long = 3
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Private toolTipManager As pdToolTip
 
 'An outside class provides access to mousewheel events for scrolling the layer view
 Private WithEvents cMouseEvents As pdInputMouse
@@ -851,7 +851,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     End If
     
     'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
-    If StrComp(m_PreviousTooltip, toolString, vbBinaryCompare) <> 0 Then m_ToolTip.ToolText(picLayers) = toolString
+    If StrComp(m_PreviousTooltip, toolString, vbBinaryCompare) <> 0 Then toolTipManager.setTooltip picLayers.hWnd, Me.hWnd, toolString
     m_PreviousTooltip = toolString
     
 End Sub
@@ -951,18 +951,15 @@ Private Sub Form_Load()
     ReDim layerThumbnails(0 To numOfThumbnails) As thumbEntry
 
     'Activate the custom tooltip handler
-    Set m_ToolTip = New clsToolTip
-    m_ToolTip.Create Me
-    m_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-    m_ToolTip.DelayTime(ttDelayShow) = 10000
-    m_ToolTip.AddTool picLayers, ""
+    Set toolTipManager = New pdToolTip
+    toolTipManager.setTooltip picLayers.hWnd, Me.hWnd, ""
     
     'Add helpful tooltips to the layer action buttons at the bottom of the toolbox
-    With m_ToolTip
-        .AddTool cmdLayerAction(0), g_Language.TranslateMessage("Add a blank layer to the image.")
-        .AddTool cmdLayerAction(1), g_Language.TranslateMessage("Delete the currently selected layer.")
-        .AddTool cmdLayerAction(2), g_Language.TranslateMessage("Move the current layer upward in the layer stack.")
-        .AddTool cmdLayerAction(3), g_Language.TranslateMessage("Move the current layer downward in the layer stack.")
+    With toolTipManager
+        .setTooltip cmdLayerAction(0).hWnd, Me.hWnd, g_Language.TranslateMessage("Add a blank layer to the image."), g_Language.TranslateMessage("New layer")
+        .setTooltip cmdLayerAction(1).hWnd, Me.hWnd, g_Language.TranslateMessage("Delete the currently selected layer."), g_Language.TranslateMessage("Delete layer")
+        .setTooltip cmdLayerAction(2).hWnd, Me.hWnd, g_Language.TranslateMessage("Move the current layer upward in the layer stack."), g_Language.TranslateMessage("Move layer up")
+        .setTooltip cmdLayerAction(3).hWnd, Me.hWnd, g_Language.TranslateMessage("Move the current layer downward in the layer stack."), g_Language.TranslateMessage("Move layer down")
     End With
     
     'Theme the form
@@ -1593,7 +1590,7 @@ Private Sub reflowInterface()
     'Resize the layer box and associated scrollbar
     vsLayer.Left = Me.ScaleWidth - vsLayer.Width - fixDPI(8)
     updateLayerScrollbarVisibility
-       
+    
     'Reflow the bottom button box; this is inevitably more complicated, owing to the spacing requirements of the buttons
     picLayerButtons.Left = picLayers.Left
     picLayerButtons.Width = picLayers.Width
@@ -1616,5 +1613,5 @@ End Sub
 
 'External functions can use this to re-theme this form at run-time (important when changing languages, for example)
 Public Sub requestMakeFormPretty()
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
 End Sub
