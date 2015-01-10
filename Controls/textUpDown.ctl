@@ -600,7 +600,6 @@ Private Sub RedrawButton()
     'Start by erasing the buffer (which will have already been sized correctly by a previous function) and drawing
     ' a default border around the entire control.
     GDI_Plus.GDIPlusFillDIBRect buttonDIB, 0, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonBackColor
-    'GDI_Plus.GDIPlusDrawRectOutlineToDC buttonDIB.getDIBDC, -1, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonBorderColor
     
     'Next, figure out button colors.  These are affected by hover and press state.
     If m_MouseOverUpButton And Me.Enabled And (Not (g_Themer Is Nothing)) Then
@@ -798,9 +797,10 @@ End Function
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
     
-    'txtPrimary.FontName = g_InterfaceFont
-    txtPrimary.updateAgainstCurrentTheme
+    'Text boxes handle their own updating
+    If g_IsProgramRunning Then txtPrimary.updateAgainstCurrentTheme
     
-    'In the future, additional drawing instructions can be added here.
+    'Request a repaint
+    If Not cPainter Is Nothing Then cPainter.requestRepaint
     
 End Sub

@@ -445,7 +445,7 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
                 
                 'Copy the index value of our backup array (for this string) into the new itemdata slot.  This allows us to retrieve the Unicode
                 ' version of the string, if any, at render time.
-                SendMessage m_ComboBoxHwnd, CB_SETITEMDATA, i, ByVal i
+                If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, CB_SETITEMDATA, i, ByVal i
                 
             End If
             
@@ -454,7 +454,7 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
         m_NumBackupEntries = m_NumBackupEntries - 1
         
         'Forward the request to the API box as well
-        SendMessage m_ComboBoxHwnd, CB_DELETESTRING, itemIndex, ByVal 0&
+        If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, CB_DELETESTRING, itemIndex, ByVal 0&
         
         'Note that the dropdown size is dirty, because the list's contents have changed
         m_DropDownSizeIsClean = False
@@ -532,46 +532,46 @@ End Sub
 'When the list's contents change, use this function to reset the dropdown height
 Private Sub dynamicallyFitDropDownHeight()
 
-    'Exit if the combo box hasn't been created yet
-    If m_ComboBoxHwnd = 0 Then Exit Sub
+    'Only proceed if the combo box has been created
+    If m_ComboBoxHwnd <> 0 Then
     
-    'Rather than forcing combo boxes to a predetermined size, we dynamically adjust their size as items are added.
-    ' To do this, we must start by getting the window rect of the current combo box.
-    Dim comboRect As RECTL
-    GetClientRect Me.hWnd, comboRect
-    
-    'Next, resize the combo box to match the number of items currently in the box.
-    Dim totalHeight As Long
-    totalHeight = 0
-    
-    'Dividers introduce some funny business into the measurement technique, so we have no choice but to manually tally the reported
-    ' height of all available combo box entries
-    If m_NumBackupEntries > 0 Then
-   
-        Dim i As Long
-        For i = 0 To m_NumBackupEntries - 1
-            
-            'All entries have the same base size
-            totalHeight = totalHeight + (m_ItemHeight + 2)
-   
-            'Dividers add an extra chunk of padding
-            If m_BackupEntries(i).followedByDivider Then totalHeight = totalHeight + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT)
-            
-        Next i
-   
+        'Rather than forcing combo boxes to a predetermined size, we dynamically adjust their size as items are added.
+        ' To do this, we must start by getting the window rect of the current combo box.
+        Dim comboRect As RECTL
+        GetClientRect Me.hWnd, comboRect
+        
+        'Next, resize the combo box to match the number of items currently in the box.
+        Dim totalHeight As Long
+        totalHeight = 0
+        
+        'Dividers introduce some funny business into the measurement technique, so we have no choice but to manually tally the reported
+        ' height of all available combo box entries
+        If m_NumBackupEntries > 0 Then
+        
+            Dim i As Long
+            For i = 0 To m_NumBackupEntries - 1
+                
+                'All entries have the same base size
+                totalHeight = totalHeight + (m_ItemHeight + 2)
+                        'Dividers add an extra chunk of padding
+                If m_BackupEntries(i).followedByDivider Then totalHeight = totalHeight + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT)
+                
+            Next i
+        End If
+        
+        'The final height measurement includes two pixels for the non-client border of the drop-down
+        totalHeight = totalHeight + 2
+        
+        'Cache the calculated value; the wndProc will use this to set the actual dropdown size, whenever the dropdown is raised.
+        m_DropDownCalculatedHeight = totalHeight
+        
+        'Apply a temporary resize.  Windows's internal combo box handler checks to see if the total combo box height (edit + dropdown)
+        ' is larger than the edit box itself.  If it isn't, the dropdown isn't raised at all.  As such, we specify a size 1px larger than
+        ' the edit box itself.  This seems to convince the combo box handler to raise the dropdown.  The actual size is set when the
+        ' dropdown actually appears, inside the wndProc.
+        SetWindowPos m_ComboBoxHwnd, 0, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, m_ItemHeight + 9, SWP_FRAMECHANGED Or SWP_NOZORDER Or SWP_NOOWNERZORDER Or SWP_NOACTIVATE
+         
     End If
-    
-    'The final height measurement includes two pixels for the non-client border of the drop-down
-    totalHeight = totalHeight + 2
-    
-    'Cache the calculated value; the wndProc will use this to set the actual dropdown size, whenever the dropdown is raised.
-    m_DropDownCalculatedHeight = totalHeight
-    
-    'Apply a temporary resize.  Windows's internal combo box handler checks to see if the total combo box height (edit + dropdown)
-    ' is larger than the edit box itself.  If it isn't, the dropdown isn't raised at all.  As such, we specify a size 1px larger than
-    ' the edit box itself.  This seems to convince the combo box handler to raise the dropdown.  The actual size is set when the
-    ' dropdown actually appears, inside the wndProc.
-    SetWindowPos m_ComboBoxHwnd, 0, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, m_ItemHeight + 9, SWP_FRAMECHANGED Or SWP_NOZORDER Or SWP_NOOWNERZORDER Or SWP_NOACTIVATE
     
 End Sub
 
@@ -701,7 +701,7 @@ Public Property Let FontSize(ByVal newSize As Single)
         
         m_FontSize = newSize
         
-        If Not (curFont Is Nothing) Then
+        If Not (curFont Is Nothing) And g_IsProgramRunning Then
             
             'Recreate the font object
             curFont.releaseFromDC
@@ -837,7 +837,7 @@ Private Sub UserControl_Show()
     
 End Sub
 
-'TODO: solve drawing for the combo box.  We probably don't need a border, like we used for the edit box...
+'Short-hand function for filling a winRect object with the dimensions of the user control (using VB's internal methods)
 Private Sub getComboBoxRect(ByRef targetRect As winRect)
 
     With targetRect
@@ -864,25 +864,32 @@ End Sub
 
 'After curFont has been created, this function can be used to return the "ideal" height of a string rendered via the current font.
 Private Function getIdealStringHeight() As Long
-
-    Dim attachedDC As Long
-    attachedDC = curFont.getAttachedDC
-    curFont.releaseFromDC
     
-    'Create a temporary DC
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.createBlank 1, 1, 24
+    If g_IsProgramRunning Then
     
-    'Select the current font into that DC
-    curFont.attachToDC tmpDIB.getDIBDC
-    
-    'Determine a standard string height
-    getIdealStringHeight = curFont.getHeightOfString("tbpj1234567890")
-    
-    'Remove the font and release our temporary DIB
-    curFont.releaseFromDC
-    curFont.attachToDC attachedDC
+        Dim attachedDC As Long
+        attachedDC = curFont.getAttachedDC
+        curFont.releaseFromDC
+        
+        'Create a temporary DC
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank 1, 1, 24
+        
+        'Select the current font into that DC
+        curFont.attachToDC tmpDIB.getDIBDC
+        
+        'Determine a standard string height
+        getIdealStringHeight = curFont.getHeightOfString("tbpj1234567890")
+        
+        'Remove the font and release our temporary DIB
+        curFont.releaseFromDC
+        curFont.attachToDC attachedDC
+        
+    'Return a dummy value in the IDE
+    Else
+        getIdealStringHeight = 20
+    End If
     
     'tmpDIB will be automatically released
     
@@ -961,14 +968,18 @@ Private Function createComboBox() As Boolean
     
     'Creating a combo box window is a little different from other windows, because the drop-down height must be factored into the initial
     ' size calculation.  We start at zero, then increase the combo box size as additional items are added.
-    With tmpRect
-        m_ComboBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("COMBOBOX"), ByVal StrPtr(""), flagsWinStyle Or flagsComboControl, _
-        .x1, .y1, .x2, .y2, UserControl.hWnd, m_ComboBoxWindowID, App.hInstance, ByVal 0&)
-    End With
+    If g_IsProgramRunning Then
+        
+        With tmpRect
+            m_ComboBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("COMBOBOX"), ByVal StrPtr(""), flagsWinStyle Or flagsComboControl, _
+            .x1, .y1, .x2, .y2, UserControl.hWnd, m_ComboBoxWindowID, App.hInstance, ByVal 0&)
+        End With
+        
+        'Enable the window per the current UserControl's extender setting
+        EnableWindow m_ComboBoxHwnd, IIf(Me.Enabled, 1, 0)
     
-    'Enable the window per the current UserControl's extender setting
-    EnableWindow m_ComboBoxHwnd, IIf(Me.Enabled, 1, 0)
-    
+    End If
+        
     'Assign a subclasser to enable proper tab and arrow key support
     If g_IsProgramRunning Then
     
@@ -1126,7 +1137,7 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
     End If
         
     'Request a new font, if one or more settings have changed
-    If fontRefreshRequired Or forceRefresh Then
+    If (fontRefreshRequired Or forceRefresh) And g_IsProgramRunning Then
         
         curFont.createFontObject
         
@@ -1607,27 +1618,31 @@ End Sub
 'When creating the combo box (or when the combo box is resized due to some external event), use this function to sync the underlying usercontrol size
 Private Sub syncUserControlSizeToComboSize()
 
-    'Get the window rect of the combo box
-    Dim comboRect As RECTL
-    GetClientRect m_ComboBoxHwnd, comboRect
+    If m_ComboBoxHwnd <> 0 Then
     
-    'Resize the user control, as necessary
-    With UserControl
-    
-        If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
+        'Get the window rect of the combo box
+        Dim comboRect As RECTL
+        GetClientRect m_ComboBoxHwnd, comboRect
         
-            If g_IsProgramCompiled Then
-                MoveWindow UserControl.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, comboRect.Right - comboRect.Left, comboRect.Bottom - comboRect.Top, 1
-            Else
-                .Size .ScaleX((comboRect.Right - comboRect.Left), vbPixels, vbTwips), .ScaleY((comboRect.Bottom - comboRect.Top), vbPixels, vbTwips)
-            End If
+        'Resize the user control, as necessary
+        With UserControl
+        
+            If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
             
-        End If
-    
-    End With
+                If g_IsProgramCompiled Then
+                    MoveWindow UserControl.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, comboRect.Right - comboRect.Left, comboRect.Bottom - comboRect.Top, 1
+                Else
+                    .Size .ScaleX((comboRect.Right - comboRect.Left), vbPixels, vbTwips), .ScaleY((comboRect.Bottom - comboRect.Top), vbPixels, vbTwips)
+                End If
+                
+            End If
         
-    'Repaint the control
-    If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
+        End With
+            
+        'Repaint the control
+        If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
+        
+    End If
 
 End Sub
 

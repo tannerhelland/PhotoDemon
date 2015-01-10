@@ -91,9 +91,11 @@ Public Sub startPainter(ByVal srcHwnd As Long)
         cSubclass.ssc_Terminate
     End If
     
-    Set cSubclass = New cSelfSubHookCallback
-    cSubclass.ssc_Subclass m_hWnd, , , Me
-    cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
+    If (m_hWnd <> 0) Then
+        Set cSubclass = New cSelfSubHookCallback
+        cSubclass.ssc_Subclass m_hWnd, , , Me
+        cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
+    End If
     
 End Sub
 
@@ -102,10 +104,14 @@ End Sub
 ' as it's assumed that a manually requested paint affects the entire client area of the window.
 Public Sub requestRepaint()
     
-    'Invalidate the client rect, which will automatically trigger the addition of a WM_PAINT message to the window queue.
-    Dim tmpRect As RECT
-    GetClientRect m_hWnd, tmpRect
-    InvalidateRect m_hWnd, tmpRect, 0
+    If (m_hWnd <> 0) Then
+    
+        'Invalidate the client rect, which will automatically trigger the addition of a WM_PAINT message to the window queue.
+        Dim tmpRect As RECT
+        GetClientRect m_hWnd, tmpRect
+        InvalidateRect m_hWnd, tmpRect, 0
+        
+    End If
     
 End Sub
 
@@ -117,17 +123,21 @@ End Function
 'Thin wrapper for the PaintWindow() event.  This is used to keep the actual subclassing function as small as possible.
 Public Sub prepPaintEvent()
 
-    'Start painting
-    m_WindowDC = BeginPaint(m_hWnd, m_PaintStruct)
+    If (m_hWnd <> 0) Then
     
-    'Notify the child that it's time for painting
-    With m_UpdateRect
-        RaiseEvent PaintWindow(.Left, .Top, .Right - .Left, .Bottom - .Top)
-    End With
-    
-    'End painting (note: BeginPaint automatically validated the window's contents, so we don't need to do any
-    ' additional validation here)
-    EndPaint m_hWnd, m_PaintStruct
+        'Start painting
+        m_WindowDC = BeginPaint(m_hWnd, m_PaintStruct)
+        
+        'Notify the child that it's time for painting
+        With m_UpdateRect
+            RaiseEvent PaintWindow(.Left, .Top, .Right - .Left, .Bottom - .Top)
+        End With
+        
+        'End painting (note: BeginPaint automatically validated the window's contents, so we don't need to do any
+        ' additional validation here)
+        EndPaint m_hWnd, m_PaintStruct
+        
+    End If
         
 End Sub
 
