@@ -106,7 +106,6 @@ Private unsavedChangesDIB As pdDIB
 Private shadowBlurRadius As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-'Dim m_ToolTip As clsToolTip
 Private toolTipManager As pdToolTip
 
 'If the user loads tons of images, the tabstrip may overflow the available area.  We now allow them to drag-scroll the list.
@@ -631,20 +630,14 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
             If curThumbHover <> -1 Then
                         
                 If Len(pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk) <> 0 Then
-                    'm_ToolTip.ToolTipHeader = pdImages(imgThumbnails(curThumbHover).indexInPDImages).originalFileNameAndExtension
-                    'm_ToolTip.ToolText(Me) = pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk
                     toolTipManager.setTooltip Me.hWnd, Me.hWnd, pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk, pdImages(imgThumbnails(curThumbHover).indexInPDImages).originalFileNameAndExtension
                 Else
-                    'm_ToolTip.ToolTipHeader = g_Language.TranslateMessage("This image does not have a filename.")
-                    'm_ToolTip.ToolText(Me) = g_Language.TranslateMessage("Once this image has been saved to disk, its filename will appear here.")
                     toolTipManager.setTooltip Me.hWnd, Me.hWnd, g_Language.TranslateMessage("Once this image has been saved to disk, its filename will appear here."), g_Language.TranslateMessage("This image does not have a filename.")
                 End If
             
             'The cursor is not over a thumbnail; let the user know they can hover if they want more information.
             Else
             
-                'm_ToolTip.ToolTipHeader = ""
-                'm_ToolTip.ToolText(Me) = "Hover an image thumbnail to see its name and current file location."
                 toolTipManager.setTooltip Me.hWnd, Me.hWnd, g_Language.TranslateMessage("Hover an image thumbnail to see its name and current file location."), ""
             
             End If
