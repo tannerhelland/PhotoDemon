@@ -67,7 +67,7 @@ Private Type TOOLINFO
 End Type
 
 Public Enum TT_Flags
-    TTF_IDIShWnd = &H1
+    TTF_IDISHWND = &H1
     TTF_CENTERTIP = &H2
     TTF_RTLREADING = &H4
     TTF_SUBCLASS = &H10
@@ -80,7 +80,7 @@ Public Enum TT_Flags
 End Enum
 
 #If False Then 'Trick preserves Case of Enums when typing in IDE
-    Private TTF_IDIShWnd, TTF_CENTERTIP, TTF_RTLREADING, TTF_SUBCLASS, TTF_TRACK, TTF_ABSOLUTE, TTF_TRANSPARENT, TTF_DI_SETITEM
+    Private TTF_IDISHWND, TTF_CENTERTIP, TTF_RTLREADING, TTF_SUBCLASS, TTF_TRACK, TTF_ABSOLUTE, TTF_TRANSPARENT, TTF_DI_SETITEM
 #End If
 
 Public Enum TT_DelayTime
@@ -235,7 +235,7 @@ Public Function AddTool(ByRef ctrl As Object, Optional ByVal strText As String) 
             ' control to retrieve the control's rect from
             ' it's hWnd specified in uId.
             '
-            .uFlags = TTF_SUBCLASS Or TTF_IDIShWnd
+            .uFlags = TTF_SUBCLASS Or TTF_IDISHWND
             If TypeOf ctrl Is Form Then
                 .hWnd = ctrl.hWnd
             Else
@@ -297,7 +297,7 @@ Public Function AddToolFromHwnd(ByVal srcHwnd As Long, Optional ByVal strText As
             ' control to retrieve the control's rect from
             ' it's hWnd specified in uId.
             '
-            .uFlags = TTF_SUBCLASS Or TTF_IDIShWnd
+            .uFlags = TTF_SUBCLASS Or TTF_IDISHWND
             .hWnd = srcHwnd
             .uId = srcHwnd
             

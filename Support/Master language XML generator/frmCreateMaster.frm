@@ -743,8 +743,22 @@ Private Sub processFile(ByVal srcFile As String)
     m_FileName = getFilename(srcFile)
     
     'Certain files can be ignored.  I generate this list manually, on account of knowing which files (classes, mostly) contain
-    ' no special text.
-    If (m_FileName = "clsToolTip.cls") Or (m_FileName = "clsControlImages.cls") Or (m_FileName = "pdFilterSupport.cls") Or (m_FileName = "cSelfSubHookCallback.cls") Or (m_FileName = "jcButton.ctl") Or (m_FileName = "VBP_PublicVariables.bas") Or (m_FileName = "pdParamString.cls") Then Exit Sub
+    ' no special text.  I could probably add many more files to this list, but I primarily want to blacklist those that create
+    ' parsing problems.  (The tooltip classes are particularly bad, since they use the phrase "tooltip" frequently, which messes
+    ' up the parser as it thinks it's found hundreds of tooltips in each file.)
+    Select Case m_FileName
+    
+        Case "clsToolTip.cls", "pdToolTip.cls", "clsControlImages.cls"
+            Exit Sub
+            
+        Case "pdFilterSupport.cls", "cSelfSubHookCallback.cls", "jcButton.ctl"
+            Exit Sub
+            
+        Case "VBP_PublicVariables.bas", "pdParamString.cls"
+            Exit Sub
+    
+    End Select
+            
     
     'Start by copying all text from the file into a line-by-line array
     Dim fileContents As String
@@ -828,8 +842,14 @@ Private Sub processFile(ByVal srcFile As String)
         ElseIf InStr(1, UCase$(curLineText), "TOOLTIPTEXT", vbBinaryCompare) And (InStr(1, UCase$(curLineText), ".TOOLTIPTEXT", vbBinaryCompare) = 0) Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
                         
-        ElseIf (InStr(1, UCase$(curLineText), "TOOLTIP", vbBinaryCompare) > 0) And (InStr(1, UCase$(curLineText), ".TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTITLE", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTEXT", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPBACKCOLOR", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTYPE", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "M_TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "CLSTOOLTIP", vbBinaryCompare) = 0) And (Not m_FileName = "jcButton.ctl") And (InStr(1, curLineText, "=") > 0) And (InStr(1, curLineText, "PD_MAX_TOOLTIP_WIDTH") = 0) And (InStr(1, UCase$(curLineText), "DELAYTIME", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "ECONTROL.TOOLTIPTEXT", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPBACKUP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "NEWTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "SETTHUMBNAILTOOLTIP", vbBinaryCompare) = 0) Then
-            processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
+        ElseIf (InStr(1, UCase$(curLineText), "TOOLTIP", vbBinaryCompare) > 0) And (InStr(1, UCase$(curLineText), ".TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTITLE", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTEXT", vbBinaryCompare) = 0) Then
+            If (InStr(1, UCase$(curLineText), "TOOLTIPBACKCOLOR", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTYPE", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "M_TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "CLSTOOLTIP", vbBinaryCompare) = 0) Then
+            If (Not m_FileName = "jcButton.ctl") And (InStr(1, curLineText, "=") > 0) And (InStr(1, curLineText, "PD_MAX_TOOLTIP_WIDTH") = 0) And (InStr(1, UCase$(curLineText), "DELAYTIME", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "ECONTROL.TOOLTIPTEXT", vbBinaryCompare) = 0) Then
+            If (InStr(1, UCase$(curLineText), "TOOLTIPBACKUP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "NEWTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "SETTHUMBNAILTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPMANAGER", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "M_PREVIOUSTOOLTIP", vbBinaryCompare) = 0) Then
+                processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
+            End If
+            End If
+            End If
         
         ElseIf InStr(1, UCase$(curLineText), "TOOLTIPTITLE", vbBinaryCompare) And (InStr(1, curLineText, ".TooltipTitle") = 0) And (Not m_FileName = "jcButton.ctl") Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
