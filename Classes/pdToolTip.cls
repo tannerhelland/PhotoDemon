@@ -287,7 +287,7 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
             .cbSize = LenB(currentToolInfo_Compiled)
             .hWnd = m_ToolCollection(toolIndex).childHwnd
             .uId = m_ToolCollection(toolIndex).childHwnd
-            .uFlags = TTF_SUBCLASS Or TTF_IDISHWND
+            .uFlags = TTF_SUBCLASS Or TTF_IDISHWND Or TTF_PARSELINKS
             .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textString)
         End With
     
@@ -308,10 +308,7 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
         
     'If a title string has been specified, create that now
     If Len(m_ToolCollection(toolIndex).titleString) > 0 Then
-        
-        'DEBUG ONLY (for testing Unicode chars)
-        'm_ToolCollection(toolIndex).titleString = m_ToolCollection(toolIndex).titleString & ChrW$(&H6B22) & ChrW$(&H8FCE) & ChrW$(&H6B22)
-        
+                
         'Titles are limited to 100 chars, including null terminator, so ensure that now as a failsafe
         If Len(m_ToolCollection(toolIndex).titleString) > 99 Then m_ToolCollection(toolIndex).titleString = Left$(m_ToolCollection(toolIndex).titleString, 99)
         SendMessage m_ToolCollection(toolIndex).toolHwnd, TTM_SETTITLE, 0&, ByVal StrPtr(m_ToolCollection(toolIndex).titleString)
@@ -332,6 +329,7 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
         End If
         
     Else
+        
         If g_IsProgramCompiled Then
             toolMsgSuccess = CBool(SendMessage(m_ToolCollection(toolIndex).toolHwnd, TTM_UPDATETIPTEXT, 0&, currentToolInfo_Compiled))
         Else
@@ -344,10 +342,10 @@ End Function
 
 'Look for a tooltip in the current collection.  If found, the tooltip's index will be returned.
 ' If not found, -1 will be returned.
-Private Function findTooltipByChildHwnd(ByVal targetHwnd As Long) As Long
+Private Function findTooltipByChildHwnd(ByVal targetHWnd As Long) As Long
     
     'Check for empty hWnds
-    If targetHwnd = 0 Then
+    If targetHWnd = 0 Then
         Debug.Print "WARNING! findTooltipByChildHwnd was given 0 as an hWnd.  Don't do that!"
         findTooltipByChildHwnd = -1
         Exit Function
@@ -358,7 +356,7 @@ Private Function findTooltipByChildHwnd(ByVal targetHwnd As Long) As Long
     
     Dim i As Long
     For i = 0 To m_NumOfTooltips
-        If m_ToolCollection(i).childHwnd = targetHwnd Then
+        If m_ToolCollection(i).childHwnd = targetHWnd Then
             findTooltipByChildHwnd = i
             Exit For
         End If
