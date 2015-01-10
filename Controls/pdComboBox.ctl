@@ -159,11 +159,11 @@ Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (By
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As RECTL) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As RECTL) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECTL, ByVal bErase As Long) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECTL, ByVal bErase As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Const SWP_ASYNCWINDOWPOS As Long = &H4000
 Private Const SWP_FRAMECHANGED As Long = &H20
 Private Const SWP_NOACTIVATE As Long = &H10
@@ -277,8 +277,8 @@ Private m_InsideAddString As Boolean, m_LastInternalIndex As Long
 Private m_DropDownCalculatedHeight As Long
 
 'Additional helpers for rendering themed and multiline tooltips
-Private m_ToolTip As clsToolTip
-Private m_ToolString As String
+Private toolTipManager As pdToolTip
+Private m_ToolString As String, m_ToolTitleString As String, m_ToolTipIcon As TT_ICON_TYPE
 
 'Combo box interaction functions
 Private Const CB_ADDSTRING As Long = &H143
@@ -785,14 +785,16 @@ Private Sub UserControl_Initialize()
     'Note that we are not currently responsible for any resize events
     m_InternalResizeState = False
     
-    'At run-time, initialize a subclasser
+    'At run-time, initialize various subclassers
     If g_IsProgramRunning Then
         Set cSubclass = New cSelfSubHookCallback
         Set cPainterBox = New pdWindowPainter
-    End If
+        Set toolTipManager = New pdToolTip
     
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    If Not g_IsProgramRunning Then Set g_Themer = New pdVisualThemes
+    'In design mode, we initialize a dummy theming class, so various paitn functions don't fail
+    Else
+        Set g_Themer = New pdVisualThemes
+    End If
     
     'Create an initial font object
     refreshFont
@@ -977,6 +979,9 @@ Private Function createComboBox() As Boolean
         
         'Enable the window per the current UserControl's extender setting
         EnableWindow m_ComboBoxHwnd, IIf(Me.Enabled, 1, 0)
+        
+        'Mirror the tooltip (if any) to the API box
+        If Len(m_ToolString) > 0 Then toolTipManager.setTooltip m_ComboBoxHwnd, Me.containerHwnd, m_ToolString, m_ToolTitleString, m_ToolTipIcon
     
     End If
         
@@ -1028,10 +1033,7 @@ Private Function createComboBox() As Boolean
         Me.ListIndex = m_BackupListIndex
     
     End If
-    
-    'Mirror the tooltip (if any) to the API box
-    If g_IsProgramRunning Then refreshTooltipObject
-    
+        
     'Finally, synchronize the underlying user control to whatever size the system has created the combo box at
     syncUserControlSizeToComboSize
         
@@ -1050,11 +1052,18 @@ Private Function destroyComboBox() As Boolean
             cSubclass.shk_TerminateHooks
         End If
         
+        'If a tooltip is active, forcibly kill its window now.
+        If Len(m_ToolString) > 0 Then toolTipManager.killTooltip m_ComboBoxHwnd
+        
+        'Destroy the actual combo box last
         If DestroyWindow(m_ComboBoxHwnd) <> 0 Then
             Debug.Print "Combo box destroyed successfully."
         Else
             Debug.Print "Failed to destroy combo box."
         End If
+                
+        'Reset the hWnd to 0
+        m_ComboBoxHwnd = 0
         
     End If
     
@@ -1062,55 +1071,31 @@ Private Function destroyComboBox() As Boolean
 
 End Function
 
-'Due to the complex interactions between the underlying user control and the API combo box, setting tooltips at run-time requires
-' the use of a dedicated function.
-Public Sub assignTooltip(ByVal newTooltip As String)
+'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
+' (IMPORTANT NOTE: the CALLER is responsible for performing any necessary translations PRIOR to calling this function.)
+Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    
+    'If the tooltip is assigned prior to key components being created (or if a property change results in hWnd changes),
+    ' we need to cache the tooltip string, so we can reassign it in the future.
     m_ToolString = newTooltip
-    If Len(m_ToolString) <> 0 Then refreshTooltipObject
-End Sub
-
-'When the program language is changed, the object's tooltip must be retranslated to match.  External functions can
-' call this sub to have it automatically fixed.
-Public Sub refreshTooltipObject()
+    m_ToolTitleString = newTooltipTitle
+    m_ToolTipIcon = newTooltipIcon
     
-    If Not (m_ToolTip Is Nothing) Then
-        m_ToolTip.RemoveTool Me
-        m_ToolTip.RemoveToolByHwnd m_ComboBoxHwnd
-    End If
+    'Assign the tooltip immediately, if we can; if we can't, the assignment will happen when the relevant hWnd is obtained.
+    If (m_ComboBoxHwnd) <> 0 Then toolTipManager.setTooltip m_ComboBoxHwnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
     
-    Set m_ToolTip = New clsToolTip
-    With m_ToolTip
-    
-        .Create Me
-        .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-        .DelayTime(ttDelayShow) = 10000
-        
-        If Not (g_Language Is Nothing) Then
-        
-            If g_Language.translationActive Then
-                .AddTool Me, g_Language.TranslateMessage(m_ToolString)
-                .AddToolFromHwnd m_ComboBoxHwnd, g_Language.TranslateMessage(m_ToolString)
-            Else
-                .AddTool Me, m_ToolString
-                .AddToolFromHwnd m_ComboBoxHwnd, m_ToolString
-            End If
-            
-        End If
-        
-    End With
-        
 End Sub
 
 Private Sub UserControl_Terminate()
     
     'Release the edit box background brush
     If m_ComboBoxBrush <> 0 Then DeleteObject m_ComboBoxBrush
-    
+        
     'Destroy the edit box, as necessary
     destroyComboBox
     
     'Release any extra subclasser(s)
-    If Not cSubclass Is Nothing Then cSubclass.ssc_Terminate
+    If Not (cSubclass Is Nothing) Then cSubclass.ssc_Terminate
     
 End Sub
 
@@ -1169,10 +1154,10 @@ Public Sub updateAgainstCurrentTheme()
         
         'Recreate the combo box entirely
         createComboBox
-                
+        
         'Force an immediate repaint
         cPainterBox.requestRepaint
-                
+        
     End If
     
 End Sub
