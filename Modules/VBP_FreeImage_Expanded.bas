@@ -288,8 +288,8 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         dstDIB.ICCProfile.loadICCFromFreeImage fi_hDIB
         
     End If
-    
-        
+            
+            
     '****************************************************************************
     ' Retrieve format-specific information, like PNG background color
     '****************************************************************************
