@@ -1516,7 +1516,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     GdipGetImagePixelFormat hImage, iPixelFormat
     If (iPixelFormat And PixelFormatAlpha) <> 0 Then hasAlpha = True
     If (iPixelFormat And PixelFormatPremultipliedAlpha) <> 0 Then hasAlpha = True
-        
+    
     'Make a note of the image's specific color depth, as relevant to PD
     Dim imgColorDepth As Long
     imgColorDepth = getColorDepthFromPixelFormat(iPixelFormat)
@@ -1661,21 +1661,21 @@ End Function
 'Given a GDI+ pixel format value, return a numeric color depth (e.g. 24, 32, etc)
 Private Function getColorDepthFromPixelFormat(ByVal gdipPixelFormat As Long) As Long
 
-    If (gdipPixelFormat And PixelFormat1bppIndexed) <> 0 Then
+    If (gdipPixelFormat = PixelFormat1bppIndexed) Then
         getColorDepthFromPixelFormat = 1
-    ElseIf (gdipPixelFormat And PixelFormat4bppIndexed) <> 0 Then
+    ElseIf (gdipPixelFormat = PixelFormat4bppIndexed) Then
         getColorDepthFromPixelFormat = 4
-    ElseIf (gdipPixelFormat And PixelFormat8bppIndexed) <> 0 Then
+    ElseIf (gdipPixelFormat = PixelFormat8bppIndexed) Then
         getColorDepthFromPixelFormat = 8
-    ElseIf ((gdipPixelFormat And PixelFormat16bppGreyscale) <> 0) Or ((gdipPixelFormat And PixelFormat16bppRGB555) <> 0) Or ((gdipPixelFormat And PixelFormat16bppRGB565) <> 0) Or ((gdipPixelFormat And PixelFormat16bppARGB1555) <> 0) Then
+    ElseIf (gdipPixelFormat = PixelFormat16bppGreyscale) Or (gdipPixelFormat = PixelFormat16bppRGB555) Or (gdipPixelFormat = PixelFormat16bppRGB565) Or (gdipPixelFormat = PixelFormat16bppARGB1555) Then
         getColorDepthFromPixelFormat = 16
-    ElseIf ((gdipPixelFormat And PixelFormat24bppRGB) <> 0) Or ((gdipPixelFormat And PixelFormat32bppRGB) <> 0) Then
+    ElseIf (gdipPixelFormat = PixelFormat24bppRGB) Or (gdipPixelFormat = PixelFormat32bppRGB) Then
         getColorDepthFromPixelFormat = 24
-    ElseIf ((gdipPixelFormat And PixelFormat32bppARGB) <> 0) Or ((gdipPixelFormat And PixelFormat32bppPARGB) <> 0) Then
+    ElseIf (gdipPixelFormat = PixelFormat32bppARGB) Or (gdipPixelFormat = PixelFormat32bppPARGB) Then
         getColorDepthFromPixelFormat = 32
-    ElseIf ((gdipPixelFormat And PixelFormat48bppRGB) <> 0) Then
+    ElseIf (gdipPixelFormat = PixelFormat48bppRGB) Then
         getColorDepthFromPixelFormat = 48
-    ElseIf ((gdipPixelFormat And PixelFormat64bppARGB) <> 0) Or ((gdipPixelFormat And PixelFormat64bppPARGB) <> 0) Then
+    ElseIf (gdipPixelFormat = PixelFormat64bppARGB) Or (gdipPixelFormat = PixelFormat64bppPARGB) Then
         getColorDepthFromPixelFormat = 64
     Else
         getColorDepthFromPixelFormat = 24
