@@ -644,11 +644,6 @@ Private Sub Form_Unload(Cancel As Integer)
     
 End Sub
 
-'External functions can use this to re-theme this form at run-time (important when changing languages, for example)
-Public Sub requestMakeFormPretty()
-    makeFormPretty Me
-End Sub
-
 'When a new tool is selected, we may need to initialize certain values.
 Private Sub newToolSelected()
     
@@ -956,37 +951,39 @@ Public Sub updateAgainstCurrentTheme()
     ' between two non-English languages at run-time.
     
     'File tool buttons come first
-    cmdFile(FILE_NEW).assignTooltip g_Language.TranslateMessage("This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu."), g_Language.TranslateMessage("New Image")
-    cmdFile(FILE_OPEN).assignTooltip g_Language.TranslateMessage("Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon."), g_Language.TranslateMessage("Open one or more images for editing")
+    cmdFile(FILE_NEW).assignTooltip "This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.", "New Image"
+    cmdFile(FILE_OPEN).assignTooltip "Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.", "Open one or more images for editing"
     
     If g_ConfirmClosingUnsaved Then
-        cmdFile(FILE_CLOSE).assignTooltip g_Language.TranslateMessage("If the current image has not been saved, you will receive a prompt to save it before it closes."), g_Language.TranslateMessage("Close the current image")
+        cmdFile(FILE_CLOSE).assignTooltip "If the current image has not been saved, you will receive a prompt to save it before it closes.", "Close the current image"
     Else
-        cmdFile(FILE_CLOSE).assignTooltip g_Language.TranslateMessage("Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes."), g_Language.TranslateMessage("Close the current image")
+        cmdFile(FILE_CLOSE).assignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
     End If
     
     If g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) = 0 Then
-        cmdFile(FILE_SAVE).assignTooltip g_Language.TranslateMessage("WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button."), g_Language.TranslateMessage("Save image in current format")
+        cmdFile(FILE_SAVE).assignTooltip "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.", "Save image in current format"
     Else
-        cmdFile(FILE_SAVE).assignTooltip g_Language.TranslateMessage("You have specified ""safe"" save mode, which means that each save will create a new file with an auto-incremented filename."), g_Language.TranslateMessage("Save image in current format")
+        cmdFile(FILE_SAVE).assignTooltip "You have specified ""safe"" save mode, which means that each save will create a new file with an auto-incremented filename.", "Save image in current format"
     End If
     
-    cmdFile(FILE_SAVEAS_LAYERS).assignTooltip g_Language.TranslateMessage("Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary)."), g_Language.TranslateMessage("Save lossless copy")
-    cmdFile(FILE_SAVEAS_FLAT).assignTooltip g_Language.TranslateMessage("The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image."), g_Language.TranslateMessage("Save As (export to new format or filename)")
+    cmdFile(FILE_SAVEAS_LAYERS).assignTooltip "Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).", "Save lossless copy"
+    cmdFile(FILE_SAVEAS_FLAT).assignTooltip "The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.", "Save As (export to new format or filename)"
     
-    cmdFile(FILE_UNDO).assignTooltip g_Language.TranslateMessage("Undo last action")
-    cmdFile(FILE_FADE).assignTooltip g_Language.TranslateMessage("Fade last action")
-    cmdFile(FILE_REDO).assignTooltip g_Language.TranslateMessage("Redo previous action")
+    'The Undo, Fade, and Redo buttons have their tooltips assigned in the master syncInterface function.  It generates custom tooltips
+    ' based on past actions.
+    'cmdFile(FILE_UNDO).assignTooltip "Undo last action"
+    'cmdFile(FILE_FADE).assignTooltip "Fade last action"
+    'cmdFile(FILE_REDO).assignTooltip "Redo previous action"
     
     'Painting tool buttons are next
-    cmdTools(NAV_DRAG).assignTooltip g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
-    cmdTools(NAV_MOVE).assignTooltip g_Language.TranslateMessage("Move and resize image layers")
-    cmdTools(QUICK_FIX_LIGHTING).assignTooltip g_Language.TranslateMessage("Apply non-destructive lighting adjustments")
-    cmdTools(SELECT_RECT).assignTooltip g_Language.TranslateMessage("Rectangular Selection")
-    cmdTools(SELECT_CIRC).assignTooltip g_Language.TranslateMessage("Elliptical (Oval) Selection")
-    cmdTools(SELECT_LINE).assignTooltip g_Language.TranslateMessage("Line Selection")
-    cmdTools(SELECT_POLYGON).assignTooltip g_Language.TranslateMessage("Polygon Selection")
-    cmdTools(SELECT_LASSO).assignTooltip g_Language.TranslateMessage("Lasso (Freehand) Selection")
-    cmdTools(SELECT_WAND).assignTooltip g_Language.TranslateMessage("Magic Wand Selection")
+    cmdTools(NAV_DRAG).assignTooltip "Hand (click-and-drag image scrolling)"
+    cmdTools(NAV_MOVE).assignTooltip "Move and resize image layers"
+    cmdTools(QUICK_FIX_LIGHTING).assignTooltip "Apply non-destructive lighting adjustments"
+    cmdTools(SELECT_RECT).assignTooltip "Rectangular Selection"
+    cmdTools(SELECT_CIRC).assignTooltip "Elliptical (Oval) Selection"
+    cmdTools(SELECT_LINE).assignTooltip "Line Selection"
+    cmdTools(SELECT_POLYGON).assignTooltip "Polygon Selection"
+    cmdTools(SELECT_LASSO).assignTooltip "Lasso (Freehand) Selection"
+    cmdTools(SELECT_WAND).assignTooltip "Magic Wand Selection"
     
 End Sub
