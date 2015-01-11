@@ -126,9 +126,11 @@ Public Sub syncInterfaceToCurrentImage()
         '"Repeat..." and "Fade..." in the Edit menu are disabled when no images are loaded
         FormMain.MnuEdit(4).Enabled = False
         FormMain.MnuEdit(5).Enabled = False
+        toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
         
         FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
         FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
+        toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip g_Language.TranslateMessage("Fade last action")
         
         'All relevant menu icons can now be redrawn.  (This must be redone after menu captions change, as icons are associated
         ' with captions.)
@@ -228,13 +230,17 @@ Public Sub syncInterfaceToCurrentImage()
                 If pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
                     FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
                     FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
+                    toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, g_Language.TranslateMessage("Fade last action")
                     
+                    toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = True
                     FormMain.MnuEdit(4).Enabled = True
                     FormMain.MnuEdit(5).Enabled = True
                 Else
                     FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
                     FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
+                    toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip g_Language.TranslateMessage("Fade last action")
                     
+                    toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
                     FormMain.MnuEdit(4).Enabled = False
                     FormMain.MnuEdit(5).Enabled = False
                 End If
@@ -495,7 +501,6 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         ' for enablement (e.g. disabled if no images are loaded, always enabled otherwise)
         Case tSaveAs
             If FormMain.MnuFile(10).Enabled <> NewState Then
-                
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_LAYERS).Enabled = NewState
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_FLAT).Enabled = NewState
                 
@@ -517,18 +522,15 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         
             If FormMain.MnuEdit(0).Enabled <> NewState Then
                 toolbar_Toolbox.cmdFile(FILE_UNDO).Enabled = NewState
-                toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = NewState
                 FormMain.MnuEdit(0).Enabled = NewState
             End If
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If NewState Then
-                toolbar_Toolbox.cmdFile(FILE_UNDO).ToolTipText = g_Language.TranslateMessage("Undo:" & " " & pdImages(g_CurrentImage).undoManager.getUndoProcessID)
-                toolbar_Toolbox.cmdFile(FILE_FADE).ToolTipText = g_Language.TranslateMessage("Fade:" & " " & pdImages(g_CurrentImage).undoManager.getUndoProcessID)
+                toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, g_Language.TranslateMessage("Undo")
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID) & vbTab & "Ctrl+Z"
             Else
-                toolbar_Toolbox.cmdFile(FILE_UNDO).ToolTipText = ""
-                toolbar_Toolbox.cmdFile(FILE_FADE).ToolTipText = ""
+                toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip g_Language.TranslateMessage("Undo last action")
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
             End If
             
@@ -544,10 +546,10 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If NewState Then
-                toolbar_Toolbox.cmdFile(FILE_REDO).ToolTipText = g_Language.TranslateMessage("Redo:" & " " & pdImages(g_CurrentImage).undoManager.getRedoProcessID)
+                toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip pdImages(g_CurrentImage).undoManager.getRedoProcessID, g_Language.TranslateMessage("Redo")
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID) & vbTab & "Ctrl+Y"
             Else
-                toolbar_Toolbox.cmdFile(FILE_REDO).ToolTipText = ""
+                toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip g_Language.TranslateMessage("Redo previous action")
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
             End If
             
