@@ -36,8 +36,8 @@ Begin VB.UserControl textUpDown
       TabIndex        =   1
       Top             =   15
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   556
+      _extentx        =   1323
+      _extenty        =   556
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -360,11 +360,11 @@ Public Property Let Value(ByVal NewValue As Double)
         
     'Don't make any changes unless the new value deviates from the existing one
     If (NewValue <> controlVal) Or (Not IsValid(False)) Then
-                
-        If g_IsProgramRunning Then
         
-            'Perform bounds-checking
-            controlVal = NewValue
+        controlVal = NewValue
+                
+        'While running, perform bounds-checking.  I disable this in the IDE to improve performance a bit.
+        If g_IsProgramRunning Then
                 
             'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
             If controlVal < controlMin Then
