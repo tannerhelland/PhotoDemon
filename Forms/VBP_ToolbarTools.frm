@@ -1501,9 +1501,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
@@ -1687,10 +1684,12 @@ Private Sub Form_Load()
 
     Dim i As Long
         
-    'INITIALIZE ALL TOOLS
+    'Tool initialization happens in a few different steps.
+        
+    'First, we must manually populate the many dropdowns contained in the dialog.  Note that as of v6.6, PD's custom drop down
+    ' control manages its own translations.  As such, we don't need to manually handle translations; the dropdown does that for us.
     
         'Selection visual styles (Highlight, Lightbox, or Outline)
-        toolbar_Options.cboSelRender.assignTooltip g_Language.TranslateMessage("Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.")
         toolbar_Options.cboSelRender.Clear
         toolbar_Options.cboSelRender.AddItem " Highlight", 0
         toolbar_Options.cboSelRender.AddItem " Lightbox", 1
@@ -1701,8 +1700,6 @@ Private Sub Form_Load()
         csSelectionHighlight.Visible = True
         
         'Selection smoothing (currently none, antialiased, fully feathered)
-        toolbar_Options.cboSelSmoothing.assignTooltip g_Language.TranslateMessage("This option controls how smoothly a selection blends with its surroundings.")
-        
         toolbar_Options.cboSelSmoothing.Clear
         toolbar_Options.cboSelSmoothing.AddItem " None", 0
         toolbar_Options.cboSelSmoothing.AddItem " Antialiased", 1
@@ -1715,29 +1712,16 @@ Private Sub Form_Load()
             toolbar_Options.cboSelArea(i).AddItem " Exterior", 1
             toolbar_Options.cboSelArea(i).AddItem " Border", 2
             toolbar_Options.cboSelArea(i).ListIndex = 0
-            
-            toolbar_Options.cboSelArea(i).assignTooltip g_Language.TranslateMessage("These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.")
-            toolbar_Options.sltSelectionBorder(i).assignTooltip "This option adjusts the width of the selection border."
         Next i
-        
-        toolbar_Options.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
-        toolbar_Options.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
-        toolbar_Options.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
-                
-        toolbar_Options.sltPolygonCurvature.assignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
-        toolbar_Options.sltSmoothStroke.assignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
-        toolbar_Options.sltWandTolerance.assignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
         
         'Magic wand options
         btsWandMerge.AddItem "image", 0
         btsWandMerge.AddItem "layer", 1
         btsWandMerge.ListIndex = 0
-        btsWandMerge.ToolTipText = g_Language.TranslateMessage("The magic wand can operate on the entire image, or just the active layer.")
         
         btsWandArea.AddItem "contiguous", 0
         btsWandArea.AddItem "global", 1
         btsWandArea.ListIndex = 0
-        btsWandArea.ToolTipText = g_Language.TranslateMessage("Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuuity.")
         
         cboWandCompare.Clear
         cboWandCompare.AddItem " Composite", 0
@@ -1748,9 +1732,9 @@ Private Sub Form_Load()
         cboWandCompare.AddItem " Blue", 5
         cboWandCompare.AddItem " Alpha", 6
         cboWandCompare.ListIndex = 1
-        cboWandCompare.assignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
         
         'Quick-fix tools
+        ' TODO: swap these to custom PD buttons that self-manage translations
         cmdQuickFix(0).ToolTip = g_Language.TranslateMessage("Reset all quick-fix adjustment values")
         cmdQuickFix(1).ToolTip = g_Language.TranslateMessage("Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.")
         
@@ -1759,9 +1743,8 @@ Private Sub Form_Load()
     lastUsedSettings.setParentForm Me
     lastUsedSettings.loadAllControlValues
         
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    'Update everything against the current theme.  This will also set tooltips for various controls.
+    updateAgainstCurrentTheme
     
     'Allow non-destructive effects
     m_NonDestructiveFXAllowed = True
@@ -1951,7 +1934,41 @@ Private Sub updateSelectionsValuesViaText()
     End If
 End Sub
 
-'External functions can use this to re-theme this form at run-time (important when changing languages, for example)
-Public Sub requestMakeFormPretty()
-    makeFormPretty Me, m_ToolTip
+'Updating against the current theme accomplishes a number of things:
+' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
+' 2) All tooltips and captions are translated according to the current language.
+' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
+'
+'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
+Public Sub updateAgainstCurrentTheme()
+
+    'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
+    ' any common controls that may still exist in the program.)
+    makeFormPretty Me
+    
+    'Tooltips must be manually re-assigned according to the current language.  This is a necessary evil, if the user switches
+    ' between two non-English languages at run-time.
+    toolbar_Options.cboSelRender.assignTooltip "Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing."
+    toolbar_Options.cboSelSmoothing.assignTooltip "This option controls how smoothly a selection blends with its surroundings."
+        
+    Dim i As Long
+    For i = 0 To cboSelArea.Count - 1
+        toolbar_Options.cboSelArea(i).assignTooltip "These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu."
+        toolbar_Options.sltSelectionBorder(i).assignTooltip "This option adjusts the width of the selection border."
+    Next i
+    
+    toolbar_Options.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+    toolbar_Options.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
+    toolbar_Options.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
+            
+    toolbar_Options.sltPolygonCurvature.assignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
+    toolbar_Options.sltSmoothStroke.assignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
+    toolbar_Options.sltWandTolerance.assignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
+            
+    'TODO: make button strips self-manage tooltips
+    btsWandMerge.ToolTipText = g_Language.TranslateMessage("The magic wand can operate on the entire image, or just the active layer.")
+    btsWandArea.ToolTipText = g_Language.TranslateMessage("Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuuity.")
+    
+    cboWandCompare.assignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
+    
 End Sub
