@@ -808,7 +808,7 @@ Private Sub processFile(ByVal srcFile As String)
         curLineText = fileLines(curLineNumber)
         
         'Before processing this line, make sure is isn't a comment.  (Comments are always ignored.)
-        If Left(Trim(curLineText), 1) = "'" Then GoTo nextLine
+        If Left$(Trim$(curLineText), 1) = "'" Then GoTo nextLine
         
         'There are many ways that translatable text may appear in a VB source file.
         ' 1) As a form caption
@@ -843,17 +843,46 @@ Private Sub processFile(ByVal srcFile As String)
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
                         
         ElseIf (InStr(1, UCase$(curLineText), "TOOLTIP", vbBinaryCompare) > 0) And (InStr(1, UCase$(curLineText), ".TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTITLE", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTEXT", vbBinaryCompare) = 0) Then
+            
+            'Tooltips represent a complicated situation in PD.  They can appear in several forms, such as being set via the standard property dialog,
+            ' or being manually assigned to a custom pdToolTip object.  Because the term "tooltip" appears so frequently, I have to go to rather elaborate
+            ' lengths to make sure only valid tooltip text is parsed, and not false-positive lines that simply happen to contain the word "tooltip" in them.
+            
+            'The massive chunk of text below is designed to address this problem, when checking for tooltips set via VB's property window.
+            
+            '3a) Check for tooltip text embedded as a VB property
             If (InStr(1, UCase$(curLineText), "TOOLTIPBACKCOLOR", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPTYPE", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "M_TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "CLSTOOLTIP", vbBinaryCompare) = 0) Then
             If (Not m_FileName = "jcButton.ctl") And (InStr(1, curLineText, "=") > 0) And (InStr(1, curLineText, "PD_MAX_TOOLTIP_WIDTH") = 0) And (InStr(1, UCase$(curLineText), "DELAYTIME", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "ECONTROL.TOOLTIPTEXT", vbBinaryCompare) = 0) Then
-            If (InStr(1, UCase$(curLineText), "TOOLTIPBACKUP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "NEWTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "SETTHUMBNAILTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPMANAGER", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "M_PREVIOUSTOOLTIP", vbBinaryCompare) = 0) Then
+            If (InStr(1, UCase$(curLineText), "TOOLTIPBACKUP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "NEWTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "SETTHUMBNAILTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "TOOLTIPMANAGER", vbBinaryCompare) = 0) Then
+            If (InStr(1, UCase$(curLineText), "M_PREVIOUSTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "ASSIGNTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "SETTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, UCase$(curLineText), "PDTOOLTIP", vbBinaryCompare) = 0) Then
                 processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
+                If InStr(1, processedText, "MANUAL FIX REQUIRED") Then Debug.Print "Tooltip error occurred on line " & curLineNumber & " of m_filename"
             End If
             End If
             End If
+            End If
+            
+            'In current builds, the more likely place for tooltip text is assignment via a pdToolTip object.  These are much simpler to detect, as they
+            ' will rely exclusively on an .assignToolTip request.  Note, however, that we must search for two pieces of translated text: the tooltip text,
+            ' and a potential title.
+            
+            '3b) Check for tooltip text that has been manually assigned to a custom PhotoDemon object.  Note that we (obviously) avoid .assignToolTip
+            '     function declarations themselves.
+            If (InStr(1, curLineText, ".assignTooltip """) > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
+                
+                'Process the tooltip text itself
+                processedText = findTooltipMessage(fileLines, curLineNumber, False)
+                
+                'Process the title, if any
+                processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
+            
+            End If
+            
+            
         
-        ElseIf InStr(1, UCase$(curLineText), "TOOLTIPTITLE", vbBinaryCompare) And (InStr(1, curLineText, ".TooltipTitle") = 0) And (Not m_FileName = "jcButton.ctl") Then
+        ElseIf InStr(1, UCase$(curLineText), "TOOLTIPTITLE", vbBinaryCompare) And (InStr(1, curLineText, ".TooltipTitle") = 0) And (InStr(1, UCase$(curLineText), "NEWTOOLTIPTITLE") = 0) And (Not m_FileName = "jcButton.ctl") Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
-                        
+        
         '4) Check for text added to a combo box or list box control at run-time
         ElseIf InStr(1, curLineText, ".AddItem """) Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber)
@@ -876,11 +905,7 @@ Private Sub processFile(ByVal srcFile As String)
         ElseIf InStr(1, curLineText, "g_Language.TranslateMessage(""") Then
             processedText = findMessage(fileLines, curLineNumber)
             processedTextSecondary = findMessage(fileLines, curLineNumber, True)
-        
-        '9) Check for tooltip text that has been manually assigned to a custom PhotoDemon object
-        ElseIf InStr(1, curLineText, ".assignTooltip """) Then
-            processedText = findTooltipMessage(fileLines, curLineNumber)
-            
+                    
         '10) And finally, specific to PhotoDemon - check for action names that may not be present elsewhere
         'ElseIf InStr(1, curLineText, "GetNameOfProcess =") Then
         ElseIf InStr(1, curLineText, "Process """) Then
@@ -1257,7 +1282,7 @@ Private Function findCaptionInComplexQuotes(ByRef srcLines() As String, ByRef li
     
     If isTooltip Then
         If InStr(1, srcLines(lineNumber), ".frx") > 0 Then
-            findCaptionInComplexQuotes = "MANUAL FIX REQUIRED FOR TOOLTIP OF " & m_ObjectName & " IN " & m_FormName
+            findCaptionInComplexQuotes = "MANUAL FIX REQUIRED FOR TOOLTIP (FRX REFERENCE) OF " & m_ObjectName & " IN " & m_FormName
             'MsgBox srcLines(lineNumber)
             Exit Function
         End If
