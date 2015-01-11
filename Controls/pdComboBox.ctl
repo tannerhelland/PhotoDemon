@@ -263,7 +263,8 @@ Private Type backupComboEntry
     entryIndex As Long
     apiIndex As Long
     followedByDivider As Boolean
-    entryString As String
+    entryStringEn As String
+    entryStringTranslated As String
 End Type
 
 Private m_BackupEntries() As backupComboEntry
@@ -409,7 +410,18 @@ Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -
     
     'Add this item to the backup array
     m_BackupEntries(m_NumBackupEntries).entryIndex = itemIndex
-    m_BackupEntries(m_NumBackupEntries).entryString = srcItem
+    m_BackupEntries(m_NumBackupEntries).entryStringEn = srcItem
+    
+    'Add a translated copy as well; this will be the string actually rendered onto the screen.
+    If Not g_Language Is Nothing Then
+        If g_Language.translationActive Then
+            m_BackupEntries(m_NumBackupEntries).entryStringTranslated = g_Language.TranslateMessage(srcItem)
+        Else
+            m_BackupEntries(m_NumBackupEntries).entryStringTranslated = srcItem
+        End If
+    Else
+        m_BackupEntries(m_NumBackupEntries).entryStringTranslated = srcItem
+    End If
     
     'Check for a divider line request.  Now that we custom draw our own combo boxes, we are able to add dividing lines between combo categories,
     ' as relevant.  (The blend mode box uses this, for example.)
@@ -511,9 +523,9 @@ Private Sub copyStringToComboBox(ByVal strIndex As Long)
         m_InsideAddString = True
         
         If m_BackupEntries(strIndex).entryIndex = -1 Then
-            newIndex = SendMessage(m_ComboBoxHwnd, CB_ADDSTRING, 0, ByVal StrPtr(m_BackupEntries(strIndex).entryString))
+            newIndex = SendMessage(m_ComboBoxHwnd, CB_ADDSTRING, 0, ByVal StrPtr(m_BackupEntries(strIndex).entryStringTranslated))
         Else
-            newIndex = SendMessage(m_ComboBoxHwnd, CB_INSERTSTRING, m_BackupEntries(strIndex).entryIndex, ByVal StrPtr(m_BackupEntries(strIndex).entryString))
+            newIndex = SendMessage(m_ComboBoxHwnd, CB_INSERTSTRING, m_BackupEntries(strIndex).entryIndex, ByVal StrPtr(m_BackupEntries(strIndex).entryStringTranslated))
         End If
         
         'Track the API index as well, to simplify interacting with window messages that use that value.
@@ -601,11 +613,17 @@ Public Function ListCount() As Long
 End Function
 
 'Retrieve a specified list item
-Public Property Get List(ByVal indexOfItem As Long) As String
+Public Property Get List(ByVal indexOfItem As Long, Optional ByVal returnTranslatedText As Boolean = False) As String
     
     'We do not track ListCount persistently.  It is requested on-demand from the combo box.
     If (indexOfItem >= 0) And (indexOfItem < m_NumBackupEntries) Then
-        List = m_BackupEntries(indexOfItem).entryString
+        
+        If returnTranslatedText Then
+            List = m_BackupEntries(indexOfItem).entryStringTranslated
+        Else
+            List = m_BackupEntries(indexOfItem).entryStringEn
+        End If
+        
     Else
         List = ""
     End If
@@ -781,7 +799,7 @@ Private Sub UserControl_Initialize()
     ReDim m_BackupEntries(0 To 15) As backupComboEntry
     
     Set curFont = New pdFont
-        
+    
     'Note that we are not currently responsible for any resize events
     m_InternalResizeState = False
     
@@ -1148,6 +1166,32 @@ Public Sub updateAgainstCurrentTheme()
     
     If g_IsProgramRunning Then
         
+        'Regenerate translated text for all entries, as the active language may have changed.
+        If m_NumBackupEntries > 0 Then
+        
+            Dim isTranslationActive As Boolean
+            
+            If Not (g_Language Is Nothing) Then
+                If g_Language.translationActive Then
+                    isTranslationActive = True
+                Else
+                    isTranslationActive = False
+                End If
+            Else
+                isTranslationActive = False
+            End If
+            
+            Dim i As Long
+            For i = 0 To m_NumBackupEntries - 1
+                If isTranslationActive Then
+                    m_BackupEntries(i).entryStringTranslated = g_Language.TranslateMessage(m_BackupEntries(i).entryStringEn)
+                Else
+                    m_BackupEntries(i).entryStringTranslated = m_BackupEntries(i).entryStringEn
+                End If
+            Next i
+            
+        End If
+        
         'Update the current font, as necessary.  We must do this prior to creating the combo box, as the font object's size determines
         ' the height of individual combo box entries.
         refreshFont
@@ -1433,7 +1477,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 Dim stringIndex As Long, tmpString As String
                 stringIndex = SendMessage(m_ComboBoxHwnd, CB_GETITEMDATA, m_CurrentListIndex, ByVal 0&)
                 If stringIndex >= 0 Then
-                    tmpString = m_BackupEntries(stringIndex).entryString
+                    tmpString = m_BackupEntries(stringIndex).entryStringTranslated
                 End If
                 
                 'Prepare a font renderer, then render the text
@@ -1531,7 +1575,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             'Retrieve the string for the active combo box entry.
             Dim stringIndex As Long, tmpString As String
             stringIndex = SendMessage(m_ComboBoxHwnd, CB_GETITEMDATA, srcDIS.itemID, ByVal 0&)
-            tmpString = m_BackupEntries(stringIndex).entryString
+            tmpString = m_BackupEntries(stringIndex).entryStringTranslated
             
             'Prepare a font renderer, then render the text
             If Not (curFont Is Nothing) Then

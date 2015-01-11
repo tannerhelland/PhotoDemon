@@ -303,8 +303,8 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         
         'Redraw any/all toolbars as well
         toolbar_Toolbox.updateAgainstCurrentTheme
+        toolbar_Options.updateAgainstCurrentTheme
         toolbar_ImageTabs.requestMakeFormPretty
-        toolbar_Options.requestMakeFormPretty
         toolbar_Layers.requestMakeFormPretty
         
     End If
@@ -907,6 +907,10 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
             If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
             
         End If
+        
+        'PD's custom-built controls self-manage translations.  Simply ask them to update against the current theme, and they'll take
+        ' care of the rest.
+        If (TypeOf eControl Is pdComboBox) Then eControl.updateAgainstCurrentTheme
         
         Dim curFontSize As Long
         
