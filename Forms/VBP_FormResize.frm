@@ -493,10 +493,10 @@ Private Sub Form_Load()
     End Select
     
     'Add some tooltips
-    cboResampleFriendly.assignTooltip "Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia."
-    cboResampleTechnical.assignTooltip "Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia."
+    cboResampleFriendly.assignTooltip g_Language.TranslateMessage("Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.")
+    cboResampleTechnical.assignTooltip g_Language.TranslateMessage("Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.")
     chkNames.ToolTipText = g_Language.TranslateMessage("By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.")
-    cmbFit.assignTooltip "When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead."
+    cmbFit.assignTooltip g_Language.TranslateMessage("When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.")
     
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
