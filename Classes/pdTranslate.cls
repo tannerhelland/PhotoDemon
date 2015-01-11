@@ -302,7 +302,7 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         syncInterfaceToCurrentImage
         
         'Redraw any/all toolbars as well
-        toolbar_Toolbox.requestMakeFormPretty
+        toolbar_Toolbox.updateAgainstCurrentTheme
         toolbar_ImageTabs.requestMakeFormPretty
         toolbar_Options.requestMakeFormPretty
         toolbar_Layers.requestMakeFormPretty
