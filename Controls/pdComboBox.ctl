@@ -1072,7 +1072,7 @@ Private Function destroyComboBox() As Boolean
 End Function
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
-' (IMPORTANT NOTE: the CALLER is responsible for performing any necessary translations PRIOR to calling this function.)
+' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     
     'If the tooltip is assigned prior to key components being created (or if a property change results in hWnd changes),
@@ -2028,6 +2028,3 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '   add this warning banner to the last routine in your class
 ' *************************************************************
 End Sub
-
-
-

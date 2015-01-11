@@ -197,8 +197,10 @@ Private Type pdTooltipItem
     childHwnd As Long
     parentHwnd As Long
     toolHwnd As Long
-    textString As String
-    titleString As String
+    textStringEn As String
+    titleStringEn As String
+    textStringTranslated As String
+    titleStringTranslated As String
     toolIcon As TT_ICON_TYPE
 End Type
 
@@ -240,6 +242,18 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
         If m_ToolCollection(toolIndex).toolHwnd = 0 Then toolDoesNotExist = True
     End If
     
+    'See if a translation is currently active.  If it is, we will auto-translate both the tooltip text and title automatically.
+    Dim isTranslationActive As Boolean
+    If Not (g_Language Is Nothing) Then
+        If g_Language.translationActive Then
+            isTranslationActive = True
+        Else
+            isTranslationActive = False
+        End If
+    Else
+        isTranslationActive = False
+    End If
+    
     If toolDoesNotExist Then
         
         'Assign a tool index, as necessary
@@ -257,8 +271,17 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
         With m_ToolCollection(toolIndex)
             .childHwnd = childWindowHwnd
             .parentHwnd = parentWindowHwnd
-            .textString = textString
-            .titleString = titleString
+            .textStringEn = textString
+            .titleStringEn = titleString
+            
+            If isTranslationActive Then
+                .textStringTranslated = g_Language.TranslateMessage(.textStringEn)
+                .titleStringTranslated = g_Language.TranslateMessage(.titleStringEn)
+            Else
+                .textStringTranslated = .textStringEn
+                .titleStringTranslated = .titleStringEn
+            End If
+            
             .toolIcon = toolTipIcon
         End With
                 
@@ -283,8 +306,17 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
     
         'Fill the current tool collection entry with the passed parameters
         With m_ToolCollection(toolIndex)
-            .textString = textString
-            .titleString = titleString
+            .textStringEn = textString
+            .titleStringEn = titleString
+            
+            If isTranslationActive Then
+                .textStringTranslated = g_Language.TranslateMessage(.textStringEn)
+                .titleStringTranslated = g_Language.TranslateMessage(.titleStringEn)
+            Else
+                .textStringTranslated = .textStringEn
+                .titleStringTranslated = .titleStringEn
+            End If
+            
         End With
     
     End If
@@ -301,7 +333,7 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
             .hWnd = m_ToolCollection(toolIndex).childHwnd
             .uId = m_ToolCollection(toolIndex).childHwnd
             .uFlags = TTF_SUBCLASS Or TTF_IDISHWND Or TTF_PARSELINKS
-            .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textString)
+            .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textStringTranslated)
         End With
     
     Else
@@ -311,23 +343,24 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
             .hWnd = m_ToolCollection(toolIndex).childHwnd
             .uId = m_ToolCollection(toolIndex).childHwnd
             .uFlags = TTF_SUBCLASS Or TTF_IDISHWND
-            .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textString)
+            .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textStringTranslated)
         End With
         
     End If
         
     'If a title string or icon has been specified, create them now.  (Both are set by the same message.)
-    ' IMPORTANT CAVEAT!  Title and icon are ignored if the tooltip itself is blank.  This is unavoidable Windows behavior.
+    ' IMPORTANT CAVEAT!  Title and icon are ignored if the tooltip itself is blank.  This behavior is set by Windows,
+    ' and cannot be changed short of rendering tooltips manually.
     
     'Titles are limited to 100 chars, including null terminator, so ensure that now as a failsafe
-    If Len(m_ToolCollection(toolIndex).titleString) > 99 Then m_ToolCollection(toolIndex).titleString = Left$(m_ToolCollection(toolIndex).titleString, 99)
+    If Len(m_ToolCollection(toolIndex).titleStringTranslated) > 99 Then m_ToolCollection(toolIndex).titleStringTranslated = Left$(m_ToolCollection(toolIndex).titleStringTranslated, 99)
     
     'Null strings are not valid; check for this case, and if found, replace with a blank string.
     ' (MSDN specifically states that a valid pointer *must* be passed; see http://msdn.microsoft.com/en-us/library/windows/desktop/bb760414%28v=vs.85%29.aspx)
-    If m_ToolCollection(toolIndex).titleString = vbNullString Then m_ToolCollection(toolIndex).titleString = ""
+    If m_ToolCollection(toolIndex).titleStringTranslated = vbNullString Then m_ToolCollection(toolIndex).titleStringTranslated = ""
     
     'Apply the title and icon settings, if any
-    SendMessage m_ToolCollection(toolIndex).toolHwnd, TTM_SETTITLE, m_ToolCollection(toolIndex).toolIcon, ByVal StrPtr(m_ToolCollection(toolIndex).titleString)
+    SendMessage m_ToolCollection(toolIndex).toolHwnd, TTM_SETTITLE, m_ToolCollection(toolIndex).toolIcon, ByVal StrPtr(m_ToolCollection(toolIndex).titleStringTranslated)
     
     'We now have two choices: adding the tooltip text anew, or simply updating it.
     Dim toolMsgSuccess As Boolean
@@ -414,8 +447,10 @@ Public Sub killTooltip(ByVal targetHwnd As Long)
                     
                     DestroyWindow .toolHwnd
                     .toolHwnd = 0
-                    .textString = ""
-                    .titleString = ""
+                    .textStringEn = ""
+                    .titleStringEn = ""
+                    .textStringTranslated = ""
+                    .titleStringTranslated = ""
                     .toolIcon = TTI_NONE
                     
                 End With
@@ -427,5 +462,22 @@ Public Sub killTooltip(ByVal targetHwnd As Long)
         Next i
     
     End If
+
+End Sub
+
+'If the theme or language is changed at run-time, the caller should call this function.  It will refresh all tooltips in
+' its collection against the current language and theme, without requiring any special input or parameters.
+Public Sub updateAgainstCurrentTheme()
+
+    'This function is simple: just iterate through all tooltips, and re-add them to the collection.  This will automatically
+    ' trigger re-translation as necessary.
+    Dim i As Long
+    For i = 0 To m_NumOfTooltips - 1
+        
+        With m_ToolCollection(i)
+            If (.toolHwnd <> 0) Then setTooltip .childHwnd, .parentHwnd, .textStringEn, .titleStringEn, .toolIcon
+        End With
+        
+    Next i
 
 End Sub
