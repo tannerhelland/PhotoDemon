@@ -301,9 +301,6 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 ' This variable is then checked before requesting additional redraws during our resize event.
 Private m_WeAreResponsibleForResize As Boolean
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Private toolTipManager As pdToolTip
-
 'The user has various options for how this toolbox is displayed.  When changed, those options need to update these
 ' module-level values, then manually reflow the interface.
 Private m_ShowCategoryLabels As Boolean
@@ -378,19 +375,7 @@ Private Sub Form_Load()
     cmdFile(FILE_UNDO).AssignImage "TF_UNDO", , 50
     cmdFile(FILE_FADE).AssignImage "TF_FADE", , 50
     cmdFile(FILE_REDO).AssignImage "TF_REDO"
-    
-    'Initialize file tool button tooltips
-    Set toolTipManager = New pdToolTip
-    toolTipManager.setTooltip cmdFile(FILE_NEW).hWnd, Me.hWnd, g_Language.TranslateMessage("Create new image")
-    toolTipManager.setTooltip cmdFile(FILE_OPEN).hWnd, Me.hWnd, g_Language.TranslateMessage("Open one or more images")
-    toolTipManager.setTooltip cmdFile(FILE_CLOSE).hWnd, Me.hWnd, g_Language.TranslateMessage("Close current image")
-    toolTipManager.setTooltip cmdFile(FILE_SAVE).hWnd, Me.hWnd, g_Language.TranslateMessage("Save image in current format")
-    toolTipManager.setTooltip cmdFile(FILE_SAVEAS_LAYERS).hWnd, Me.hWnd, g_Language.TranslateMessage("Save lossless image copy")
-    toolTipManager.setTooltip cmdFile(FILE_SAVEAS_FLAT).hWnd, Me.hWnd, g_Language.TranslateMessage("Save As (export to new format or filename)")
-    toolTipManager.setTooltip cmdFile(FILE_UNDO).hWnd, Me.hWnd, g_Language.TranslateMessage("Undo last action")
-    toolTipManager.setTooltip cmdFile(FILE_FADE).hWnd, Me.hWnd, g_Language.TranslateMessage("Fade last action")
-    toolTipManager.setTooltip cmdFile(FILE_REDO).hWnd, Me.hWnd, g_Language.TranslateMessage("Redo previous action")
-    
+            
     'Initialize canvas tool button images
     cmdTools(NAV_DRAG).AssignImage "T_HAND"
     cmdTools(NAV_MOVE).AssignImage "T_MOVE"
@@ -401,32 +386,21 @@ Private Sub Form_Load()
     cmdTools(SELECT_POLYGON).AssignImage "T_SELPOLYGON"
     cmdTools(SELECT_LASSO).AssignImage "T_SELLASSO"
     cmdTools(SELECT_WAND).AssignImage "T_SELWAND"
-    
-    'Initialize the rest of the tool button tooltips
-    toolTipManager.setTooltip cmdTools(NAV_DRAG).hWnd, Me.hWnd, g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
-    toolTipManager.setTooltip cmdTools(NAV_MOVE).hWnd, Me.hWnd, g_Language.TranslateMessage("Move and resize image layers")
-    toolTipManager.setTooltip cmdTools(QUICK_FIX_LIGHTING).hWnd, Me.hWnd, g_Language.TranslateMessage("Apply non-destructive lighting adjustments")
-    toolTipManager.setTooltip cmdTools(SELECT_RECT).hWnd, Me.hWnd, g_Language.TranslateMessage("Rectangular Selection")
-    toolTipManager.setTooltip cmdTools(SELECT_CIRC).hWnd, Me.hWnd, g_Language.TranslateMessage("Elliptical (Oval) Selection")
-    toolTipManager.setTooltip cmdTools(SELECT_LINE).hWnd, Me.hWnd, g_Language.TranslateMessage("Line Selection")
-    toolTipManager.setTooltip cmdTools(SELECT_POLYGON).hWnd, Me.hWnd, g_Language.TranslateMessage("Polygon Selection")
-    toolTipManager.setTooltip cmdTools(SELECT_LASSO).hWnd, Me.hWnd, g_Language.TranslateMessage("Lasso (Freehand) Selection")
-    toolTipManager.setTooltip cmdTools(SELECT_WAND).hWnd, Me.hWnd, g_Language.TranslateMessage("Magic Wand Selection")
-    
+        
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.setParentForm Me
     lastUsedSettings.loadAllControlValues
-    
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
-    
+        
     'Retrieve any relevant toolbox display settings from the user's preferences file
     m_ShowCategoryLabels = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
     m_ButtonSize = g_UserPreferences.GetPref_Long("Core", "Toolbox Button Size", 1)
     
-    'Note that we don't actually reflow the form here; that will happen later, when the form's previous size and position
-    ' is loaded from the user's preference file.
+    'Note that we don't actually reflow the interface here; that will happen later, when the form's previous size and
+    ' position are loaded from the user's preference file.
+    
+    'As a final step, redraw everything against the current theme.
+    updateAgainstCurrentTheme
     
 End Sub
 
@@ -966,3 +940,53 @@ Public Sub updateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
     
 End Sub
 
+'Updating against the current theme accomplishes a number of things:
+' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
+' 2) All tooltips and captions are translated according to the current language.
+' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
+'
+'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
+Public Sub updateAgainstCurrentTheme()
+
+    'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
+    ' any common controls that may still exist in the program.)
+    makeFormPretty Me
+    
+    'Tooltips must be manually re-assigned according to the current language.  This is a necessary evil, if the user switches
+    ' between two non-English languages at run-time.
+    
+    'File tool buttons come first
+    cmdFile(FILE_NEW).assignTooltip g_Language.TranslateMessage("This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu."), g_Language.TranslateMessage("New Image")
+    cmdFile(FILE_OPEN).assignTooltip g_Language.TranslateMessage("Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon."), g_Language.TranslateMessage("Open one or more images for editing")
+    
+    If g_ConfirmClosingUnsaved Then
+        cmdFile(FILE_CLOSE).assignTooltip g_Language.TranslateMessage("If the current image has not been saved, you will receive a prompt to save it before it closes."), g_Language.TranslateMessage("Close the current image")
+    Else
+        cmdFile(FILE_CLOSE).assignTooltip g_Language.TranslateMessage("Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes."), g_Language.TranslateMessage("Close the current image")
+    End If
+    
+    If g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) = 0 Then
+        cmdFile(FILE_SAVE).assignTooltip g_Language.TranslateMessage("WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button."), g_Language.TranslateMessage("Save image in current format")
+    Else
+        cmdFile(FILE_SAVE).assignTooltip g_Language.TranslateMessage("You have specified ""safe"" save mode, which means that each save will create a new file with an auto-incremented filename."), g_Language.TranslateMessage("Save image in current format")
+    End If
+    
+    cmdFile(FILE_SAVEAS_LAYERS).assignTooltip g_Language.TranslateMessage("Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary)."), g_Language.TranslateMessage("Save lossless copy")
+    cmdFile(FILE_SAVEAS_FLAT).assignTooltip g_Language.TranslateMessage("The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image."), g_Language.TranslateMessage("Save As (export to new format or filename)")
+    
+    cmdFile(FILE_UNDO).assignTooltip g_Language.TranslateMessage("Undo last action")
+    cmdFile(FILE_FADE).assignTooltip g_Language.TranslateMessage("Fade last action")
+    cmdFile(FILE_REDO).assignTooltip g_Language.TranslateMessage("Redo previous action")
+    
+    'Painting tool buttons are next
+    cmdTools(NAV_DRAG).assignTooltip g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
+    cmdTools(NAV_MOVE).assignTooltip g_Language.TranslateMessage("Move and resize image layers")
+    cmdTools(QUICK_FIX_LIGHTING).assignTooltip g_Language.TranslateMessage("Apply non-destructive lighting adjustments")
+    cmdTools(SELECT_RECT).assignTooltip g_Language.TranslateMessage("Rectangular Selection")
+    cmdTools(SELECT_CIRC).assignTooltip g_Language.TranslateMessage("Elliptical (Oval) Selection")
+    cmdTools(SELECT_LINE).assignTooltip g_Language.TranslateMessage("Line Selection")
+    cmdTools(SELECT_POLYGON).assignTooltip g_Language.TranslateMessage("Polygon Selection")
+    cmdTools(SELECT_LASSO).assignTooltip g_Language.TranslateMessage("Lasso (Freehand) Selection")
+    cmdTools(SELECT_WAND).assignTooltip g_Language.TranslateMessage("Magic Wand Selection")
+    
+End Sub
