@@ -100,8 +100,6 @@ Private m_AutoToggle As Boolean
 
 'Additional helpers for rendering themed and multiline tooltips
 Private toolTipManager As pdToolTip
-Private m_ToolString As String
-Private m_ToolTitleString As String
 
 'This toolbox button control is designed to be used in a "radio button"-like system, where buttons exist in a group, and the
 ' pressing of one results in the unpressing of any others.  For the rare circumstances where this behavior is undesirable
