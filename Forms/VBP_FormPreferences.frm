@@ -3224,7 +3224,7 @@ Private Sub LoadAllPreferences()
     
         'START count unique colors at load time
             If g_UserPreferences.GetPref_Boolean("Loading", "Verify Initial Color Depth", True) Then chkInitialColorDepth.Value = vbChecked Else chkInitialColorDepth.Value = vbUnchecked
-            chkInitialColorDepth.ToolTipText = g_Language.TranslateMessage("This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily).")
+            chkInitialColorDepth.assignTooltip "This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily)."
         'END count unique colors at load time
         
         'START tone-mapping HDR images at load time
@@ -3237,12 +3237,12 @@ Private Sub LoadAllPreferences()
                 chkToneMapping.Enabled = False
             End If
             
-            chkToneMapping.ToolTipText = g_Language.TranslateMessage("HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.")
+            chkToneMapping.assignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
         'END tone-mapping HDR images at load time
         
         'START auto-rotate according to EXIF data
             If g_UserPreferences.GetPref_Boolean("Loading", "EXIF Auto Rotate", True) Then chkLoadingOrientation.Value = vbChecked Else chkLoadingOrientation.Value = vbUnchecked
-            chkLoadingOrientation.ToolTipText = g_Language.TranslateMessage("Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.")
+            chkLoadingOrientation.assignTooltip "Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature."
         'END auto-rotate according to EXIF data
         
         'START initial image zoom
@@ -3329,7 +3329,7 @@ Private Sub LoadAllPreferences()
         
             'START/END RLE encoding for bitmaps
                 If g_UserPreferences.GetPref_Boolean("File Formats", "Bitmap RLE", False) Then chkBMPRLE.Value = vbChecked Else chkBMPRLE.Value = vbUnchecked
-                chkBMPRLE.ToolTipText = g_Language.TranslateMessage("Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.")
+                chkBMPRLE.assignTooltip "Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images."
         
         'PNG
         
@@ -3338,11 +3338,11 @@ Private Sub LoadAllPreferences()
     
             'START/END interlacing
                 If g_UserPreferences.GetPref_Boolean("File Formats", "PNG Interlacing", False) Then chkPNGInterlacing.Value = vbChecked Else chkPNGInterlacing.Value = vbUnchecked
-                chkPNGInterlacing.ToolTipText = g_Language.TranslateMessage("PNG interlacing is similar to ""progressive scan"" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can ""fade-in"" while it downloads.")
+                chkPNGInterlacing.assignTooltip "PNG interlacing is similar to ""progressive scan"" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can ""fade-in"" while it downloads."
             
             'START/END background color preservation
                 If g_UserPreferences.GetPref_Boolean("File Formats", "PNG Background Color", True) Then chkPNGBackground.Value = vbChecked Else chkPNGBackground.Value = vbUnchecked
-                chkPNGBackground.ToolTipText = g_Language.TranslateMessage("PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors.")
+                chkPNGBackground.assignTooltip "PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors."
         
         'PPM
     
@@ -3359,7 +3359,7 @@ Private Sub LoadAllPreferences()
     
             'START/END TGA RLE encoding
                 If g_UserPreferences.GetPref_Boolean("File Formats", "TGA RLE", False) Then chkTGARLE.Value = vbChecked Else chkTGARLE.Value = vbUnchecked
-                chkTGARLE.ToolTipText = g_Language.TranslateMessage("TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.")
+                chkTGARLE.assignTooltip "TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images."
         
         'TIFF
     
@@ -3382,7 +3382,7 @@ Private Sub LoadAllPreferences()
                 
             'START/END TIFF CMYK encoding
                 If g_UserPreferences.GetPref_Boolean("File Formats", "TIFF CMYK", False) Then chkTIFFCMYK.Value = vbChecked Else chkTIFFCMYK.Value = vbUnchecked
-                chkTIFFCMYK.ToolTipText = g_Language.TranslateMessage("TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required.")
+                chkTIFFCMYK.assignTooltip "TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required."
         
     'END File format preferences
     
@@ -3530,7 +3530,7 @@ Private Sub LoadAllPreferences()
         
         'START/END validate incoming alpha channels
             If g_UserPreferences.GetPref_Boolean("Transparency", "Validate Alpha Channels", True) Then chkValidateAlpha.Value = vbChecked Else chkValidateAlpha.Value = vbUnchecked
-            chkValidateAlpha.ToolTipText = g_Language.TranslateMessage("When checked, this option allows PhotoDemon to automatically remove empty alpha channels from imported images. This improves program performance, reduces RAM usage, and improves file size on exported files.")
+            chkValidateAlpha.assignTooltip "When checked, this option allows PhotoDemon to automatically remove empty alpha channels from imported images. This improves program performance, reduces RAM usage, and improves file size on exported files."
 
     'END Color and Transparency preferences
     
@@ -3543,7 +3543,7 @@ Private Sub LoadAllPreferences()
             
         'START prompt for missing plugin download
             If g_UserPreferences.GetPref_Boolean("Updates", "Prompt For Plugin Download", True) Then chkPromptPluginDownload.Value = vbChecked Else chkPromptPluginDownload.Value = vbUnchecked
-            chkPromptPluginDownload.ToolTipText = g_Language.TranslateMessage("PhotoDemon relies on several free, open-source plugins for full functionality. If any of these plugins are missing (for example, if you downloaded PhotoDemon from a 3rd-party site), this option will offer to download the missing plugins for you.")
+            chkPromptPluginDownload.assignTooltip "PhotoDemon relies on several free, open-source plugins for full functionality. If any of these plugins are missing (for example, if you downloaded PhotoDemon from a 3rd-party site), this option will offer to download the missing plugins for you."
         'END prompt for missing plugin download
     
         'Populate the network access disclaimer in the "Update" panel

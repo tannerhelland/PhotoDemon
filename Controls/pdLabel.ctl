@@ -154,10 +154,10 @@ Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     End If
 End Property
 
-'Caption is handled just like VB's internal label caption property.  It is valid at design-time, and any translation,
+'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
 ' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
-'                  but maybe I can revisit in the future if relevant.
+'                  but I can revisit in the future if that ever becomes relevant.
 Public Property Get Caption() As String
 Attribute Caption.VB_UserMemId = -518
     Caption = m_CaptionEn
@@ -192,12 +192,16 @@ Public Property Let Caption(ByRef newCaption As String)
                 m_CaptionTranslated = m_CaptionEn
             End If
         
+        Else
+            m_CaptionTranslated = m_CaptionEn
         End If
+        
+        PropertyChanged "Caption"
         
         updateControlSize
         
     End If
-    
+        
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx

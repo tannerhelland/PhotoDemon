@@ -1074,12 +1074,8 @@ Private Function destroyComboBox() As Boolean
         If Len(m_ToolString) > 0 Then toolTipManager.killTooltip m_ComboBoxHwnd
         
         'Destroy the actual combo box last
-        If DestroyWindow(m_ComboBoxHwnd) <> 0 Then
-            Debug.Print "Combo box destroyed successfully."
-        Else
-            Debug.Print "Failed to destroy combo box."
-        End If
-                
+        DestroyWindow m_ComboBoxHwnd
+        
         'Reset the hWnd to 0
         m_ComboBoxHwnd = 0
         
@@ -1986,9 +1982,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                                 MIS.itemHeight = m_ItemHeight + 2 + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT)
                             End If
                         End If
-                        
-                        Debug.Print "ITEMID: " & MIS.itemID & ", " & MIS.itemHeight
-                        
+                                                
                     End If
                     
                     'Copy the pointer to our modified MEASUREITEMSTRUCT back into lParam
