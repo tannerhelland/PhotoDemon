@@ -1960,14 +1960,13 @@ Public Sub updateAgainstCurrentTheme()
     toolbar_Options.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
     toolbar_Options.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
     toolbar_Options.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
-            
+    
     toolbar_Options.sltPolygonCurvature.assignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
     toolbar_Options.sltSmoothStroke.assignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
     toolbar_Options.sltWandTolerance.assignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
-            
-    'TODO: make button strips self-manage tooltips
-    btsWandMerge.ToolTipText = g_Language.TranslateMessage("The magic wand can operate on the entire image, or just the active layer.")
-    btsWandArea.ToolTipText = g_Language.TranslateMessage("Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuuity.")
+    
+    toolbar_Options.btsWandMerge.assignTooltip "The magic wand can operate on the entire image, or just the active layer."
+    toolbar_Options.btsWandArea.assignTooltip "Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuuity."
     
     cboWandCompare.assignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
     
