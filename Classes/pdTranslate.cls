@@ -843,7 +843,7 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         'The goal is to apply translations to any object with a non-blank, non-numeric caption property
         
         'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Or (TypeOf eControl Is pdLabel) Then
+        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is jcbutton) Then
             
             'TESTING ONLY
             'If srcForm.Name <> "FormMain" Then MsgBox eControl.Caption
@@ -905,15 +905,15 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         
         'PD's custom-built controls self-manage translations.  Simply ask them to update against the current theme, and they'll take
         ' care of the rest.
-        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is buttonStrip) Then
+        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Then
             eControl.updateAgainstCurrentTheme
         End If
         
         Dim curFontSize As Long
         
-        'Labels receive a bit of extra attention.  Because translations can be longer than their original English text, a translated
-        ' label may extend beyond the edge of its container.  If this happens, attempt to shrink the label's font size until it fits.
-        ' (In the future, PD will have a custom label UC that handles this automatically.)
+        'Old common control labels receive a bit of extra attention.  Because translations can be longer than their original English text,
+        ' a translated label may extend beyond the edge of its container.  If this happens, attempt to shrink the label's font size until
+        ' it fits.  (This is only necessary until all labels are switched over to the new pdLabel object.)
         If (TypeOf eControl Is Label) Then
             If (eControl.Left + eControl.Width > eControl.Container.ScaleWidth) And eControl.AutoSize Then
             
