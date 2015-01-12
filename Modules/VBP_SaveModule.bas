@@ -2542,9 +2542,14 @@ Public Sub fillDIBWithWebPVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     fi_DIB = FreeImage_LoadFromMemoryEx(webPArray, , , FIF_WEBP)
     
+    'Random fact: the WebP encoder will automatically downsample 32-bit images with pointless alpha channels to 24-bit.  This causes problems when
+    ' we try to preview WebP files prior to encoding, as it may randomly change the bit-depth on us.  Check for this case, and recreate the target
+    ' DIB as necessary.
+    If FreeImage_GetBPP(fi_DIB) <> dstDIB.getDIBColorDepth Then dstDIB.createBlank dstDIB.getDIBWidth, dstDIB.getDIBHeight, FreeImage_GetBPP(fi_DIB)
+        
     'Copy the newly decompressed image into the destination pdDIB object.
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
-    
+        
     'Release the FreeImage copy of the DIB.
     FreeImage_Unload fi_DIB
     Erase webPArray
@@ -2564,11 +2569,11 @@ Public Sub fillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     Dim jxrArray() As Byte
     Dim fi_Check As Boolean
     fi_Check = FreeImage_SaveToMemoryEx(FIF_JXR, fi_DIB, jxrArray, jxrQuality, True)
+    Debug.Print "JXR live previews have been problematic; size of returned array is: " & UBound(jxrArray)
     
     If fi_Check Then
     
         fi_DIB = FreeImage_LoadFromMemoryEx(jxrArray, 0, UBound(jxrArray) + 1, FIF_JXR, VarPtr(jxrArray(0)))
-        'Debug.Print UBound(jxrArray)
         
         'Copy the newly decompressed image into the destination pdDIB object.
         If fi_DIB <> 0 Then

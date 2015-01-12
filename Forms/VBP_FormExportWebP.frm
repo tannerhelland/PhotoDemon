@@ -326,7 +326,7 @@ Private Sub updatePreview()
         'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
         ' obtain a JPEG-ified version of the image data.
         fillDIBWithWebPVersion workingDIB, workingDIB, Abs(sltQuality.Value)
-        
+                
         'Paint the final image to screen and release all temporary objects
         finalizeNonstandardPreview fxPreview
         
