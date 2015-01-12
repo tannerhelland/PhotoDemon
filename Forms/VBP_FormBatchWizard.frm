@@ -2950,9 +2950,9 @@ Private Sub Form_Load()
             End If
         
             'Apply some tooltips manually (so the translation engine can find them)
-            chkOptimize.ToolTipText = g_Language.TranslateMessage("Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size.")
-            chkThumbnail.ToolTipText = g_Language.TranslateMessage("Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).")
-            chkProgressive.ToolTipText = g_Language.TranslateMessage("Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.")
+            chkOptimize.assignTooltip "Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size."
+            chkThumbnail.assignTooltip "Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer)."
+            chkProgressive.assignTooltip "Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection."
             
         'PPM export
         
@@ -2977,12 +2977,12 @@ Private Sub Form_Load()
         
         'Misc file-related tooltips that are too long to add at design-time
         
-            chkBMPRLE.ToolTipText = g_Language.TranslateMessage("Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.")
-            chkTGARLE.ToolTipText = g_Language.TranslateMessage("TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.")
-            chkTIFFCMYK.ToolTipText = g_Language.TranslateMessage("TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required.")
+            chkBMPRLE.assignTooltip "Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images."
+            chkTGARLE.assignTooltip "TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images."
+            chkTIFFCMYK.assignTooltip "TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required."
             cmbTIFFCompression.ToolTipText = g_Language.TranslateMessage("TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.")
-            chkPNGInterlacing.ToolTipText = g_Language.TranslateMessage("PNG interlacing is similar to ""progressive scan"" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can ""fade-in"" while it downloads.")
-            chkPNGBackground.ToolTipText = g_Language.TranslateMessage("PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors.")
+            chkPNGInterlacing.assignTooltip "PNG interlacing is similar to ""progressive scan"" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can ""fade-in"" while it downloads."
+            chkPNGBackground.assignTooltip "PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors."
             cmbPPMFormat.ToolTipText = g_Language.TranslateMessage("Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)")
             
     'Build default paths from preference file values
