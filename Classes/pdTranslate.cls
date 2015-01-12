@@ -858,15 +858,7 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
             End If
             
         End If
-        
-        'PD's internal radio button and check box controls handle translations internally
-        If (TypeOf eControl Is smartOptionButton) Then
-        
-            eControl.translateCaption
-            If (Len(Trim(eControl.ToolTipText)) <> 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
-        
-        End If
-                
+                        
         'Picture boxes and text boxes can have tooltips.  Translate those too.
         If (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Then
             If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
@@ -905,7 +897,7 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         
         'PD's custom-built controls self-manage translations.  Simply ask them to update against the current theme, and they'll take
         ' care of the rest.
-        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is smartCheckBox) Then
+        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is smartOptionButton) Then
             eControl.updateAgainstCurrentTheme
         End If
         

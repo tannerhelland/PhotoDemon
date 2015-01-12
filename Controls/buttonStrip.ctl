@@ -28,9 +28,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Button Strip" control
 'Copyright 2014-2015 by Tanner Helland
 'Created: 13/September/14
-'Last updated: 25/October/14
-'Last update: expose mousewheel events to the user; while not useful for this class, it can be useful to forward those events to some
-'              other control on a form.  (The metadata browser prompted this change.)
+'Last updated: 12/January/15
+'Last update: rewrite control to handle its own caption and tooltip translations
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for

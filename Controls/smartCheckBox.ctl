@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Checkbox control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 20/October/14
-'Last update: move control to new flicker-free painting class
+'Last updated: 12/January/15
+'Last update: rewrite control to handle its own caption and tooltip translations
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
