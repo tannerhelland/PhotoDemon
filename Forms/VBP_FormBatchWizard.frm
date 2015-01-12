@@ -2448,11 +2448,11 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                 Select Case g_ImageFormats.getOutputFIF(cmbOutputFormat.ListIndex)
                 
                     Case FIF_BMP
-                        m_FormatParams = Str(CBool(chkBMPRLE))
+                        m_FormatParams = buildParams(CBool(chkBMPRLE))
                     
                     Case FIF_GIF
                         If sltThreshold.IsValid Then
-                            m_FormatParams = Str(sltThreshold.Value)
+                            m_FormatParams = buildParams(sltThreshold.Value)
                         Else
                             Exit Sub
                         End If
@@ -2460,7 +2460,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                     Case FIF_JP2
                             'Determine the compression ratio for the JPEG-2000 wavelet transformation
                             If sltJP2Quality.IsValid Then
-                                m_FormatParams = Str(sltQuality.Value)
+                                m_FormatParams = buildParams(sltQuality.Value)
                             Else
                                 Exit Sub
                             End If
@@ -2471,7 +2471,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                         
                         'First, determine the compression quality for the quantization tables
                         If sltQuality.IsValid Then
-                            m_FormatParams = Str(sltQuality)
+                            m_FormatParams = buildParams(sltQuality)
                         Else
                             Exit Sub
                         End If
@@ -2502,7 +2502,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
             
                         End If
                         
-                        m_FormatParams = m_FormatParams & "|" & Str(tmpJPEGFlags)
+                        m_FormatParams = m_FormatParams & "|" & Trim$(Str(tmpJPEGFlags))
         
                         'Finally, determine whether or not a thumbnail version of the file should be embedded inside
                         If CBool(chkThumbnail) Then
@@ -2515,19 +2515,19 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
                         m_FormatParams = m_FormatParams & "|0"
                                         
                     Case FIF_PNG
-                        m_FormatParams = Str(hsPNGCompression)
-                        m_FormatParams = m_FormatParams & "|" & Str(chkPNGInterlacing)
-                        m_FormatParams = m_FormatParams & "|" & (chkPNGBackground)
+                        m_FormatParams = Trim$(Str(hsPNGCompression))
+                        m_FormatParams = m_FormatParams & "|" & Trim$(Str(chkPNGInterlacing))
+                        m_FormatParams = m_FormatParams & "|" & Trim$(Str(chkPNGBackground))
                     
                     Case FIF_PPM
-                        m_FormatParams = Str(cmbPPMFormat.ListIndex)
+                        m_FormatParams = Trim$(Str(cmbPPMFormat.ListIndex))
                         
                     Case FIF_TARGA
-                        m_FormatParams = Str(CBool(chkTGARLE))
+                        m_FormatParams = Trim$(Str(CBool(chkTGARLE)))
                     
                     Case FIF_TIFF
-                        m_FormatParams = Str(cmbTIFFCompression.ListIndex)
-                        m_FormatParams = m_FormatParams & "|" & Str(CBool(chkTIFFCMYK))
+                        m_FormatParams = Trim$(Str(cmbTIFFCompression.ListIndex))
+                        m_FormatParams = m_FormatParams & "|" & Trim$(Str(CBool(chkTIFFCMYK)))
                 
                 End Select
             

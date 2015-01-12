@@ -2904,10 +2904,12 @@ Dim lDataPtr As Long
 
 End Function
 
+'NOTE: modified by Tanner to support direct pointer retrieval
 Public Function FreeImage_LoadFromMemoryEx(ByRef Data As Variant, _
-                                  Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, _
+                                  Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS = 0, _
                                   Optional ByRef SizeInBytes As Long, _
-                                  Optional ByRef Format As FREE_IMAGE_FORMAT = FIF_UNKNOWN) As Long
+                                  Optional ByRef Format As FREE_IMAGE_FORMAT = FIF_UNKNOWN, _
+                                  Optional ByVal ptrToDataInstead As Long = 0) As Long
 
 Dim hStream As Long
 Dim lDataPtr As Long
@@ -2935,14 +2937,23 @@ Dim lDataPtr As Long
 
    ' get both pointer and size in bytes of the memory block provided
    ' through the Variant parameter 'data'.
-   lDataPtr = pGetMemoryBlockPtrFromVariant(Data, SizeInBytes)
+   
+    'EDIT BY TANNER: use the pointer directly, if provided
+    If ptrToDataInstead <> 0 Then
+        lDataPtr = ptrToDataInstead
+    Else
+        lDataPtr = pGetMemoryBlockPtrFromVariant(Data, SizeInBytes)
+    End If
    
    ' open the memory stream
    hStream = FreeImage_OpenMemoryByPtr(lDataPtr, SizeInBytes)
    If (hStream) Then
    
-      ' on success, detect image type
-      If Format = FIF_UNKNOWN Then Format = FreeImage_GetFileTypeFromMemory(hStream)
+        ' on success, detect image type
+        If Format = FIF_UNKNOWN Then
+            Format = FreeImage_GetFileTypeFromMemory(hStream)
+            Debug.Print "FreeImage_LoadFromMemoryEx auto-detected format " & Format
+        End If
       
       If (Format <> FIF_UNKNOWN) Then
          ' load the image from memory stream only, if known image type
@@ -2951,6 +2962,8 @@ Dim lDataPtr As Long
       
       ' close the memory stream when open
       Call FreeImage_CloseMemory(hStream)
+   Else
+        Debug.Print "Couldn't obtain hStream pointer in FreeImage_LoadFromMemoryEx; sorry!"
    End If
 
 End Function

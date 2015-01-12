@@ -347,7 +347,7 @@ Private Sub updatePreview()
         
         'The public workingDIB object now contains the relevant portion of the preview window.  Use that to
         ' obtain a compressed version of the image data.
-        fillDIBWithJXRVersion workingDIB, workingDIB, sltQuality.Value
+        fillDIBWithJXRVersion workingDIB, workingDIB, Abs(sltQuality.Value)
         
         'Paint the final image to screen and release all temporary objects
         finalizeNonstandardPreview fxPreview
