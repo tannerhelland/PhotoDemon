@@ -112,18 +112,14 @@ Attribute cKeyEvents.VB_VarHelpID = -1
 Private WithEvents mFont As StdFont
 Attribute mFont.VB_VarHelpID = -1
 
-'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_Caption
-' is the ENGLISH CAPTION ONLY.  A translated caption, if one exists, will be stored in m_TranslatedCaption, after PD's
-' central themer invokes the translateCaption function.
-Private m_Caption As String
-
 'Current button indices
 Private m_ButtonIndex As Long
 Private m_ButtonHoverIndex As Long
 
 'Array of current button entries
 Private Type buttonEntry
-    btCaption As String             'Current button caption
+    btCaptionEn As String           'Current button caption, in its original English
+    btCaptionTranslated As String   'Current button caption, translated into the active language (if English is active, this is a copy of btCaptionEn)
     btBounds As RECT                'Boundaries of this button (full clickable area, inclusive - meaning 1px border NOT included)
     btCaptionRect As RECT           'Bounding rect of the caption.  This is dynamically calculated by the updateControlSize function
     btImage As pdDIB                'Optional image to use with the button.
@@ -408,7 +404,20 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     End If
     
     'Copy the new button into place
-    m_Buttons(itemIndex).btCaption = srcString
+    m_Buttons(itemIndex).btCaptionEn = srcString
+    
+    'We must also determine a translated caption, if any
+    If Not (g_Language Is Nothing) Then
+    
+        If g_Language.translationActive Then
+            m_Buttons(itemIndex).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(itemIndex).btCaptionEn)
+        Else
+            m_Buttons(itemIndex).btCaptionTranslated = m_Buttons(itemIndex).btCaptionEn
+        End If
+    
+    Else
+        m_Buttons(itemIndex).btCaptionTranslated = m_Buttons(itemIndex).btCaptionEn
+    End If
     
     'Erase any button references
     Set m_Buttons(i).btImage = Nothing
@@ -446,19 +455,37 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
 
 End Sub
 
-'External functions must manually call this if they want the control to translate its captions.
-Public Sub translateButtonText()
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
+' and/or retranslating all button captions against the current language.
+Public Sub updateAgainstCurrentTheme()
     
-    'Translations are active.  Retrieve a translated caption, and make sure it fits within the control.
-    If g_Language.translationActive And (m_numOfButtons > 0) Then
-    
-        'Loop through all buttons, translating captions as we go
+    'Determine if translations are active.  If they are, retrieve translated captions for all buttons within the control.
+    If g_IsProgramRunning Then
+        
+        'See if translations are necessary.
+        Dim isTranslationActive As Boolean
+            
+        If Not (g_Language Is Nothing) Then
+            If g_Language.translationActive Then
+                isTranslationActive = True
+            Else
+                isTranslationActive = False
+            End If
+        Else
+            isTranslationActive = False
+        End If
+        
+        'Apply the new translations, if any.
         Dim i As Long
         For i = 0 To m_numOfButtons - 1
-            m_Buttons(i).btCaption = g_Language.TranslateMessage(m_Buttons(i).btCaption)
+            If isTranslationActive Then
+                m_Buttons(i).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(i).btCaptionEn)
+            Else
+                m_Buttons(i).btCaptionTranslated = m_Buttons(i).btCaptionEn
+            End If
         Next i
         
-        'Recalculate font metrics and redraw the button
+        'Because translations will change text layout, we need to recalculate font metrics prior to redrawing the button
         updateControlSize
         
     End If
@@ -662,19 +689,19 @@ Private Sub updateControlSize()
         End If
         
         'Retrieve the expected size of the string, in pixels
-        strWidth = curFont.getWidthOfString(m_Buttons(i).btCaption)
+        strWidth = curFont.getWidthOfString(m_Buttons(i).btCaptionTranslated)
                 
         'If the string is too long for its containing button, activate word wrap and measure again
         If strWidth > buttonWidth Then
             
             strWidth = buttonWidth
-            strHeight = curFont.getHeightOfWordwrapString(m_Buttons(i).btCaption, strWidth)
+            strHeight = curFont.getHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
             
             'As a failsafe for ultra-long captions, restrict their size to the button size.  Truncation will (necessarily) occur.
             If strHeight > buttonHeight Then strHeight = buttonHeight
             
         Else
-            strHeight = curFont.getHeightOfString(m_Buttons(i).btCaption)
+            strHeight = curFont.getHeightOfString(m_Buttons(i).btCaptionTranslated)
         End If
         
         'Use the size of the string, the size of the button's image (if any), and the size of the button itself to determine
@@ -844,7 +871,7 @@ Private Sub redrawBackBuffer()
                 End If
                 
                 curFont.setFontColor curColor
-                curFont.drawCenteredTextToRect .btCaption, .btCaptionRect
+                curFont.drawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
                 
                 'Paint the image, if any
                 If Not (.btImage Is Nothing) Then

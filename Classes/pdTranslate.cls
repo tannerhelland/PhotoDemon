@@ -866,12 +866,7 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
             If (Len(Trim(eControl.ToolTipText)) <> 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
         
         End If
-        
-        'PD's internal button strip also handles translations internally
-        If (TypeOf eControl Is buttonStrip) Then
-            eControl.translateButtonText
-        End If
-        
+                
         'Picture boxes and text boxes can have tooltips.  Translate those too.
         If (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Then
             If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
@@ -910,7 +905,9 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         
         'PD's custom-built controls self-manage translations.  Simply ask them to update against the current theme, and they'll take
         ' care of the rest.
-        If (TypeOf eControl Is pdComboBox) Then eControl.updateAgainstCurrentTheme
+        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is buttonStrip) Then
+            eControl.updateAgainstCurrentTheme
+        End If
         
         Dim curFontSize As Long
         
