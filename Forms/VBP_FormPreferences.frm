@@ -3489,8 +3489,8 @@ Private Sub LoadAllPreferences()
             cmbMonitors.ListIndex = primaryIndex
             
             'Add tooltips to all color-profile-related controls
-            optColorManagement(0).ToolTipText = g_Language.TranslateMessage("This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.")
-            optColorManagement(1).ToolTipText = g_Language.TranslateMessage("To configure custom color profiles on a per-monitor basis, please use this setting.")
+            optColorManagement(0).assignTooltip "This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting."
+            optColorManagement(1).assignTooltip "To configure custom color profiles on a per-monitor basis, please use this setting."
             
             cmbMonitors.ToolTipText = g_Language.TranslateMessage("Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.")
             cmdColorProfilePath.ToolTipText = g_Language.TranslateMessage("Click this button to bring up a ""browse for color profile"" dialog.")

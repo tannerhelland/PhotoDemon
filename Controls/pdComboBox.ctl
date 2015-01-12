@@ -38,8 +38,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Combo Box control
 'Copyright 2014-2015 by Tanner Helland
 'Created: 14/November/14
-'Last updated: 14/November/14
-'Last update: continued work on initial build
+'Last updated: 12/January/15
+'Last update: rewrite control to handle its own caption and tooltip translations
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for

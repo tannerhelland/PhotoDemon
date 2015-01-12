@@ -33,8 +33,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Radio Button control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 20/October/14
-'Last update: move the control to the new flicker-free window painting class
+'Last updated: 12/January/15
+'Last update: rewrite control to handle its own caption and tooltip translations
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -109,11 +109,11 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 Private WithEvents mFont As StdFont
 Attribute mFont.VB_VarHelpID = -1
 
-'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_Caption
-' is the ENGLISH CAPTION ONLY.  A translated caption, if one exists, will be stored in m_TranslatedCaption, after PD's
-' central themer invokes the translateCaption function.
-Private m_Caption As String
-Private m_TranslatedCaption As String
+'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_CaptionEn
+' is the ENGLISH CAPTION ONLY.  A translated caption will be stored in m_CaptionTranslated; the translated copy will be updated
+' by any caption change, or by a call to updateAgainstCurrentTheme.
+Private m_CaptionEn As String
+Private m_CaptionTranslated As String
 
 'Current control value
 Private m_Value As Boolean
@@ -130,11 +130,8 @@ Private m_FocusRectActive As Boolean
 'Whenever the control is repainted, the clickable rect will be updated to reflect the relevant portion of the control's interior
 Private clickableRect As RECT
 
-Private m_HasBeenShown As Boolean
-
-'Additional helpers for rendering themed and multiline tooltips
-Private m_ToolTip As clsToolTip
-Private m_ToolString As String
+'Additional helper for rendering themed and multiline tooltips
+Private toolTipManager As pdToolTip
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
@@ -296,18 +293,55 @@ Public Property Let Value(ByVal NewValue As Boolean)
     
 End Property
 
+'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
+' if present, will not be processed until run-time.
+' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
+'                  but I can revisit in the future if that ever becomes relevant.
 Public Property Get Caption() As String
-Attribute Caption.VB_UserMemId = -518
-    Caption = m_Caption
+    Caption = m_CaptionEn
 End Property
 
 Public Property Let Caption(ByVal newCaption As String)
+Attribute Caption.VB_UserMemId = -518
     
-    m_Caption = newCaption
-    PropertyChanged "Caption"
+    If StrComp(newCaption, m_CaptionEn, vbBinaryCompare) <> 0 Then
+        
+        m_CaptionEn = newCaption
+        
+        'During run-time, apply translations as necessary
+        If g_IsProgramRunning Then
+        
+            'See if translations are necessary.
+            Dim isTranslationActive As Boolean
+                
+            If Not (g_Language Is Nothing) Then
+                If g_Language.translationActive Then
+                    isTranslationActive = True
+                Else
+                    isTranslationActive = False
+                End If
+            Else
+                isTranslationActive = False
+            End If
+            
+            'Update the translated caption accordingly
+            If isTranslationActive Then
+                m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn)
+            Else
+                m_CaptionTranslated = m_CaptionEn
+            End If
+        
+        Else
+            m_CaptionTranslated = m_CaptionEn
+        End If
     
-    'Captions are a bit strange; because the control is auto-sized, changing the caption requires a full redraw
-    updateControlSize
+        PropertyChanged "Caption"
+        
+        'Captions are a bit strange; because the caption is auto-fitted to the control's width, changing the caption requires
+        ' us to recalculate a number of layout metrics.
+        updateControlSize
+        
+    End If
     
 End Property
 
@@ -337,6 +371,9 @@ Private Sub UserControl_Initialize()
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
         cPainter.startPainter Me.hWnd
+        
+        'Create a tooltip engine
+        Set toolTipManager = New pdToolTip
         
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
@@ -408,33 +445,6 @@ Private Sub UserControl_Resize()
     updateControlSize
 End Sub
 
-Private Sub UserControl_Show()
-
-    'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
-    ' using a custom solution (which allows for linebreaks and theming).  Note that this has the ugly side-effect of
-    ' permanently erasing the extender's tooltip, so FOR THIS CONTROL, TOOLTIPS MUST BE SET AT RUN-TIME!
-    m_ToolString = Extender.ToolTipText
-
-    If m_ToolString <> "" Then
-
-        Set m_ToolTip = New clsToolTip
-        With m_ToolTip
-
-            .Create Me
-            .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool Me, m_ToolString
-            Extender.ToolTipText = ""
-
-        End With
-
-    End If
-    
-    'Also, redraw the back buffer as necessary
-    m_HasBeenShown = True
-    redrawBackBuffer
-    
-End Sub
-
 'Whenever the size of the control changes (because the control is auto-sized, this is typically from font or caption changes),
 ' we must recalculate some internal rendering metrics.
 Private Sub updateControlSize()
@@ -448,7 +458,7 @@ Private Sub updateControlSize()
     
     If Not m_BackBuffer Is Nothing Then
         
-        GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_Caption), Len(m_Caption), txtSize
+        GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_CaptionTranslated), Len(m_CaptionTranslated), txtSize
         captionHeight = txtSize.y
     
     'Failsafe if a Resize event is fired before we've initialized our back buffer DC
@@ -513,74 +523,41 @@ Public Sub updateAgainstCurrentTheme()
     curFont.setFontFace g_InterfaceFont
     curFont.createFontObject
     
-    'Redraw the control to match
-    updateControlSize
+    'Calculate a new translation, as necessary
+    If g_IsProgramRunning Then
     
-End Sub
-
-'External functions must call this if a caption translation is required.
-Public Sub translateCaption()
-    
-    Dim newCaption As String
-    
-    'Translations are active.  Retrieve a translated caption, and make sure it fits within the control.
-    If g_Language.translationActive Then
-    
-        'Only proceed if our caption requires translation (e.g. it's non-null and non-numeric)
-        If (Len(Trim(m_Caption)) <> 0) And (Not IsNumeric(m_Caption)) Then
-    
-            'Retrieve the translated text
-            newCaption = g_Language.TranslateMessage(m_Caption)
+        'See if translations are necessary.
+        Dim isTranslationActive As Boolean
             
-            'Check the size of the translated text, using the current font settings
-            Dim fullControlWidth As Long
-            fullControlWidth = getRadioButtonPlusCaptionWidth(newCaption)
-            
-            Dim curFontSize As Single
-            curFontSize = mFont.Size
-            
-            'If the size of the caption is wider than the control itself, repeatedly shrink the font size until we
-            ' find a size that fits the entire caption.
-            Do While (fullControlWidth > UserControl.ScaleWidth - fixDPI(2)) And (curFontSize >= 8)
-                
-                'Shrink the font size
-                curFontSize = curFontSize - 0.25
-                curFont.setFontSize curFontSize
-                
-                'Recreate the font object
-                curFont.releaseFromDC
-                curFont.createFontObject
-                curFont.attachToDC m_BackBuffer.getDIBDC
-                
-                'Calculate a new width
-                fullControlWidth = getRadioButtonPlusCaptionWidth(newCaption)
-            
-            Loop
-            
+        If Not (g_Language Is Nothing) Then
+            If g_Language.translationActive Then
+                isTranslationActive = True
+            Else
+                isTranslationActive = False
+            End If
         Else
-            newCaption = ""
+            isTranslationActive = False
+        End If
+        
+        'Update the translated caption accordingly
+        If isTranslationActive Then
+            m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn)
+        Else
+            m_CaptionTranslated = m_CaptionEn
         End If
     
-    'If translations are not active, skip this step entirely
     Else
-        newCaption = ""
+        m_CaptionTranslated = m_CaptionEn
     End If
     
-    'Redraw the control if the caption has changed
-    If StrComp(newCaption, m_TranslatedCaption, vbBinaryCompare) <> 0 Then
-        
-        m_TranslatedCaption = newCaption
-        redrawBackBuffer
-        
-    End If
+    'Redraw the control to match
+    updateControlSize
     
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
 Private Sub redrawBackBuffer()
-    
-    If Not m_HasBeenShown Then Exit Sub
     
     'Start by erasing the back buffer
     If g_IsProgramRunning Then
@@ -604,8 +581,8 @@ Private Sub redrawBackBuffer()
     'Next, determine the precise size of our caption, including all internal metrics.  (We need those so we can properly
     ' align the radio button with the baseline of the font and the caps (not ascender!) height.
     Dim captionWidth As Long, captionHeight As Long
-    captionWidth = curFont.getWidthOfString(m_Caption)
-    captionHeight = curFont.getHeightOfString(m_Caption)
+    captionWidth = curFont.getWidthOfString(m_CaptionTranslated)
+    captionHeight = curFont.getHeightOfString(m_CaptionTranslated)
     
     'Retrieve the descent of the current font.
     Dim fontDescent As Long, fontMetrics As TEXTMETRIC
@@ -654,21 +631,13 @@ Private Sub redrawBackBuffer()
     End If
     
     'Render the text
-    If Len(m_TranslatedCaption) <> 0 Then
-        curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_TranslatedCaption
-    Else
-        curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_Caption
-    End If
+    curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_CaptionTranslated
     
     'Update the clickable rect using the measurements from the final render
     With clickableRect
         .Left = 0
         .Top = 0
-        If Len(m_TranslatedCaption) <> 0 Then
-            .Right = offsetX * 2 + optCircleSize + fixDPI(6) + curFont.getWidthOfString(m_TranslatedCaption) + fixDPI(6)
-        Else
-            .Right = offsetX * 2 + optCircleSize + fixDPI(6) + curFont.getWidthOfString(m_Caption) + fixDPI(6)
-        End If
+        .Right = offsetX * 2 + optCircleSize + fixDPI(6) + curFont.getWidthOfString(m_CaptionTranslated) + fixDPI(6)
         .Bottom = m_BackBuffer.getDIBHeight
     End With
     
@@ -703,7 +672,7 @@ End Sub
 ' arbitrary caption, which it uses to determine auto-shrinking of font size for lengthy translated captions.
 Private Function getRadioButtonPlusCaptionWidth(Optional ByVal relevantCaption As String = "") As Long
 
-    If Len(relevantCaption) = 0 Then relevantCaption = m_Caption
+    If Len(relevantCaption) = 0 Then relevantCaption = m_CaptionTranslated
 
     'Start by retrieving caption width and height.  (Checkbox size is proportional to these values.)
     Dim captionWidth As Long, captionHeight As Long
@@ -734,3 +703,9 @@ Private Function getRadioButtonPlusCaptionWidth(Optional ByVal relevantCaption A
     getRadioButtonPlusCaptionWidth = offsetX * 2 + optCircleSize + fixDPI(6) + captionWidth
 
 End Function
+
+'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
+' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
+Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+End Sub
