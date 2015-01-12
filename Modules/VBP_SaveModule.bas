@@ -248,11 +248,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 End If
                 
                 'If the user clicked OK, replace the function's save parameters with the ones set by the user
-                cParams.setParamString Str(g_JPEGQuality)
-                cParams.setParamString cParams.getParamString & "|" & Str(g_JPEGFlags)
-                cParams.setParamString cParams.getParamString & "|" & Str(g_JPEGThumbnail)
-                cParams.setParamString cParams.getParamString & "|" & Str(g_JPEGAutoQuality)
-                cParams.setParamString cParams.getParamString & "|" & Str(g_JPEGAdvancedColorMatching)
+                cParams.setParamString buildParams(g_JPEGQuality, g_JPEGFlags, g_JPEGThumbnail, g_JPEGAutoQuality, g_JPEGAdvancedColorMatching)
                 
             End If
             
@@ -331,9 +327,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             'PNGs support a number of specialized parameters.  If we weren't passed any, retrieve corresponding values from the preferences
             ' file (specifically, the parameters include: PNG compression level (0-9), interlacing (bool), BKGD preservation (bool).)
             If Not cParams.doesParamExist(1) Then
-                cParams.setParamString Str(g_UserPreferences.GetPref_Long("File Formats", "PNG Compression", 9))
-                cParams.setParamString cParams.getParamString() & "|" & Str(g_UserPreferences.GetPref_Boolean("File Formats", "PNG Interlacing", False))
-                cParams.setParamString cParams.getParamString() & "|" & Str(g_UserPreferences.GetPref_Boolean("File Formats", "PNG Background Color", True))
+                cParams.setParamString buildParams(g_UserPreferences.GetPref_Long("File Formats", "PNG Compression", 9), g_UserPreferences.GetPref_Boolean("File Formats", "PNG Interlacing", False), g_UserPreferences.GetPref_Boolean("File Formats", "PNG Background Color", True))
             End If
             
             'PNGs are preferentially exported by FreeImage, then GDI+ (if available)
@@ -356,13 +350,13 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         'PPM
         Case FIF_PPM
             beginSaveProcess
-            If Not cParams.doesParamExist(1) Then cParams.setParamString Str(g_UserPreferences.GetPref_Long("File Formats", "PPM Export Format", 0))
+            If Not cParams.doesParamExist(1) Then cParams.setParamString buildParams(g_UserPreferences.GetPref_Long("File Formats", "PPM Export Format", 0))
             updateMRU = SavePPMImage(srcPDImage, dstPath, cParams.getParamString)
                 
         'TGA
         Case FIF_TARGA
             beginSaveProcess
-            If Not cParams.doesParamExist(1) Then cParams.setParamString Str(g_UserPreferences.GetPref_Boolean("File Formats", "TGA RLE", False))
+            If Not cParams.doesParamExist(1) Then cParams.setParamString buildParams(g_UserPreferences.GetPref_Boolean("File Formats", "TGA RLE", False))
             updateMRU = SaveTGAImage(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
             
         'JPEG-2000
@@ -388,7 +382,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 End If
                 
                 'If the user clicked OK, replace the functions save parameters with the ones set by the user
-                cParams.setParamString Str(g_JP2Compression)
+                cParams.setParamString buildParams(g_JP2Compression)
                 
             End If
             
@@ -403,7 +397,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             
             'TIFFs use two parameters - compression type, and CMYK encoding (true/false)
             If Not cParams.doesParamExist(1) Then
-                cParams.setParamString Str(g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0)) & "|" & Str(g_UserPreferences.GetPref_Boolean("File Formats", "TIFF CMYK", False))
+                cParams.setParamString buildParams(g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0), g_UserPreferences.GetPref_Boolean("File Formats", "TIFF CMYK", False))
             End If
             
             'TIFFs are preferentially exported by FreeImage, then GDI+ (if available)
@@ -446,7 +440,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 End If
                 
                 'If the user clicked OK, replace the functions save parameters with the ones set by the user
-                cParams.setParamString Str(g_WebPCompression)
+                cParams.setParamString buildParams(g_WebPCompression)
                 
             End If
             
@@ -479,7 +473,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 End If
                 
                 'If the user clicked OK, replace the functions save parameters with the ones set by the user
-                cParams.setParamString Str(g_JXRCompression) & "|" & Str(g_JXRProgressive)
+                cParams.setParamString buildParams(g_JXRCompression, g_JXRProgressive)
                 
             End If
             
@@ -493,7 +487,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
         Case FIF_BMP
             
             'If the user has not provided explicit BMP parameters, load their default values from the preferences file
-            If Not cParams.doesParamExist(1) Then cParams.setParamString Str(g_UserPreferences.GetPref_Boolean("File Formats", "Bitmap RLE", False))
+            If Not cParams.doesParamExist(1) Then cParams.setParamString buildParams(g_UserPreferences.GetPref_Boolean("File Formats", "Bitmap RLE", False))
             
             beginSaveProcess
             updateMRU = SaveBMP(srcPDImage, dstPath, outputColorDepth, cParams.getParamString)
@@ -2568,16 +2562,27 @@ Public Sub fillDIBWithJXRVersion(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, B
     'Now comes the actual JPEG XR conversion, which is handled exclusively by FreeImage.  Basically, we ask it to save
     ' the image in JPEG XR format to a byte array; we then hand that byte array back to it and request a decompression.
     Dim jxrArray() As Byte
-    Dim fi_Check As Long
+    Dim fi_Check As Boolean
     fi_Check = FreeImage_SaveToMemoryEx(FIF_JXR, fi_DIB, jxrArray, jxrQuality, True)
     
-    fi_DIB = FreeImage_LoadFromMemoryEx(jxrArray, 0, , FIF_JXR)
+    If fi_Check Then
     
-    'Copy the newly decompressed image into the destination pdDIB object.
-    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
+        fi_DIB = FreeImage_LoadFromMemoryEx(jxrArray, 0, UBound(jxrArray) + 1, FIF_JXR, VarPtr(jxrArray(0)))
+        'Debug.Print UBound(jxrArray)
+        
+        'Copy the newly decompressed image into the destination pdDIB object.
+        If fi_DIB <> 0 Then
+            SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, 0, 0, 0, dstDIB.getDIBHeight, ByVal FreeImage_GetBits(fi_DIB), ByVal FreeImage_GetInfo(fi_DIB), 0&
+        Else
+            Debug.Print "Failed to load JXR from memory; FreeImage didn't return a DIB from FreeImage_LoadFromMemoryEx()"
+        End If
+    
+    Else
+        Debug.Print "Failed to save JXR to memory; FreeImage returned FALSE for FreeImage_SaveToMemoryEx()"
+    End If
     
     'Release the FreeImage copy of the DIB.
-    FreeImage_Unload fi_DIB
+    If fi_DIB <> 0 Then FreeImage_Unload fi_DIB
     Erase jxrArray
 
 End Sub

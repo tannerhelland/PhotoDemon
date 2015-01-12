@@ -154,7 +154,7 @@ Public Function GetBool(ByVal pIndex As Long, Optional ByVal defaultReturn As Bo
         GetBool = CBool(m_ParamString)
     Else
         If doesParamExist(pIndex) Then
-            GetBool = CBool(m_Params(pIndex - 1))
+            GetBool = CBool(Trim$(m_Params(pIndex - 1)))
         Else
             GetBool = defaultReturn
         End If
