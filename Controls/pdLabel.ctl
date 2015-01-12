@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.UserControl pdLabel 
    BackColor       =   &H80000005&
    CanGetFocus     =   0   'False
-   ClientHeight    =   450
+   ClientHeight    =   690
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   1395
+   ClientWidth     =   3945
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -15,9 +15,9 @@ Begin VB.UserControl pdLabel
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   ScaleHeight     =   30
+   ScaleHeight     =   46
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   93
+   ScaleWidth      =   263
    ToolboxBitmap   =   "pdLabel.ctx":0000
 End
 Attribute VB_Name = "pdLabel"
@@ -58,8 +58,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This control raises no events, by design.  Interactive labels must use the (not yet built) Interactive Label variant
-' of pdLabel.
+'This control raises no events, by design.
 
 'Rather than handle autosize and wordwrap separately, this control combines them into a single "Layout" property.
 ' All four possible layout approaches are covered by this enum.
@@ -91,11 +90,11 @@ Private m_FontSize As Single
 ' until an acceptable value is reached.  This variable represents the *currently in-use font size*, not the font size property.
 Private m_CurFontSize As Long
 
-'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_Caption
-' is the ENGLISH CAPTION ONLY.  A translated caption, if one exists, will be stored in m_TranslatedCaption, after PD's
-' central themer invokes the translateCaption function.
-Private m_Caption As String
-Private m_TranslatedCaption As String
+'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_CaptionEn
+' is the ENGLISH CAPTION ONLY.  A translated caption will be stored in m_CaptionTranslated; the translated copy will be updated
+' by any caption change, or by a call to updateAgainstCurrentTheme.
+Private m_CaptionEn As String
+Private m_CaptionTranslated As String
 
 'Caption alignment
 Private m_Alignment As AlignmentConstants
@@ -131,9 +130,8 @@ Private m_UseCustomForeColor As Boolean
 ' the control caption.
 Private m_FitFailure As Boolean
 
-'Additional helpers for rendering themed and multiline tooltips
-Private m_ToolTip As clsToolTip
-Private m_ToolString As String
+'Additional helper for rendering themed and multiline tooltips
+Private toolTipManager As pdToolTip
 
 'Alignment is handled just like VB's internal label alignment property.
 Public Property Get Alignment() As AlignmentConstants
@@ -158,17 +156,48 @@ End Property
 
 'Caption is handled just like VB's internal label caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
+' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
+'                  but maybe I can revisit in the future if relevant.
 Public Property Get Caption() As String
 Attribute Caption.VB_UserMemId = -518
-    Caption = m_Caption
+    Caption = m_CaptionEn
 End Property
 
 Public Property Let Caption(ByRef newCaption As String)
-    If StrComp(newCaption, m_Caption, vbBinaryCompare) <> 0 Then
-        m_Caption = newCaption
-        'If g_IsProgramRunning Then m_BufferDirty = True Else updateControlSize
+
+    If StrComp(newCaption, m_CaptionEn, vbBinaryCompare) <> 0 Then
+        
+        m_CaptionEn = newCaption
+        
+        'During run-time, apply translations as necessary
+        If g_IsProgramRunning Then
+        
+            'See if translations are necessary.
+            Dim isTranslationActive As Boolean
+                
+            If Not (g_Language Is Nothing) Then
+                If g_Language.translationActive Then
+                    isTranslationActive = True
+                Else
+                    isTranslationActive = False
+                End If
+            Else
+                isTranslationActive = False
+            End If
+            
+            'Update the translated caption accordingly
+            If isTranslationActive Then
+                m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn)
+            Else
+                m_CaptionTranslated = m_CaptionEn
+            End If
+        
+        End If
+        
         updateControlSize
+        
     End If
+    
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -353,6 +382,9 @@ Private Sub UserControl_Initialize()
         'Start a flicker-free window painter
         Set cPainter = New pdWindowPainter
         cPainter.startPainter Me.hWnd
+        
+        'Create a tooltip engine
+        Set toolTipManager = New pdToolTip
                 
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
@@ -364,10 +396,7 @@ Private Sub UserControl_Initialize()
     
     'Mark the back buffer as dirty
     m_BufferDirty = True
-    
-    'Update the control size parameters at least once
-    ' updateControlSize "initialize"
-                
+                    
 End Sub
 
 'Set default properties
@@ -420,29 +449,6 @@ End Sub
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
     If (Not m_InternalResizeState) Then updateControlSize
-End Sub
-
-Private Sub UserControl_Show()
-
-    'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
-    ' using a custom solution (which allows for linebreaks and theming).  Note that this has the ugly side-effect of
-    ' permanently erasing the extender's tooltip, so FOR THIS CONTROL, TOOLTIPS MUST BE SET AT RUN-TIME!
-    m_ToolString = Extender.ToolTipText
-
-    If m_ToolString <> "" Then
-
-        Set m_ToolTip = New clsToolTip
-        With m_ToolTip
-
-            .Create Me
-            .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool Me, m_ToolString
-            Extender.ToolTipText = ""
-
-        End With
-
-    End If
-    
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
@@ -501,7 +507,7 @@ Private Sub updateControlSize()
         Case AutoFitCaption
             
             'Measure the font relative to the current control size
-            stringWidth = curFont.getWidthOfString(m_Caption)
+            stringWidth = curFont.getWidthOfString(m_CaptionTranslated)
             
             'If the string does not fit within the control size, shrink the font accordingly.
             Do While (stringWidth > origWidth) And (m_CurFontSize >= 8)
@@ -516,14 +522,14 @@ Private Sub updateControlSize()
                 curFont.attachToDC m_BackBuffer.getDIBDC
                 
                 'Measure the new size
-                stringWidth = curFont.getWidthOfString(m_Caption)
+                stringWidth = curFont.getWidthOfString(m_CaptionTranslated)
                 
             Loop
             
             'If the font is at normal size, there is a small chance that the label will not be tall enough (vertically)
             ' to hold it.  This is due to rendering differences between Tahoma (on XP) and Segoe UI (on Vista+).  As such,
             ' perform a failsafe check on the label's height, and increase it as necessary.
-            stringHeight = curFont.getHeightOfString(m_Caption)
+            stringHeight = curFont.getHeightOfString(m_CaptionTranslated)
             
             If (stringHeight > origHeight) Then
                 
@@ -574,7 +580,7 @@ Private Sub updateControlSize()
         Case AutoFitCaptionPlusWordWrap
             
             'Measure the font relative to the current control size
-            stringHeight = curFont.getHeightOfWordwrapString(m_Caption, origWidth)
+            stringHeight = curFont.getHeightOfWordwrapString(m_CaptionTranslated, origWidth)
             
             'If the string does not fit within the control size, shrink the font accordingly.
             Do While (stringHeight > origHeight) And (m_CurFontSize >= 8)
@@ -589,7 +595,7 @@ Private Sub updateControlSize()
                 curFont.attachToDC m_BackBuffer.getDIBDC
                 
                 'Measure the new size
-                stringHeight = curFont.getHeightOfWordwrapString(m_Caption, origWidth)
+                stringHeight = curFont.getHeightOfWordwrapString(m_CaptionTranslated, origWidth)
                 
             Loop
             
@@ -608,8 +614,8 @@ Private Sub updateControlSize()
             m_InternalResizeState = True
         
             'Measure the font relative to the current control size
-            stringWidth = curFont.getWidthOfString(m_Caption)
-            stringHeight = curFont.getHeightOfString(m_Caption)
+            stringWidth = curFont.getWidthOfString(m_CaptionTranslated)
+            stringHeight = curFont.getHeightOfString(m_CaptionTranslated)
             
             'We must make the back buffer fit the control's caption precisely.  stringWidth should be accurate;
             ' however, antialiasing may require us to add an additional pixel to the caption, in the event
@@ -646,7 +652,7 @@ Private Sub updateControlSize()
             m_InternalResizeState = True
         
             'Measure the font relative to the current control size
-            stringHeight = curFont.getHeightOfWordwrapString(m_Caption, m_BackBuffer.getDIBWidth)
+            stringHeight = curFont.getHeightOfWordwrapString(m_CaptionTranslated, m_BackBuffer.getDIBWidth)
             
             'We must make the back buffer fit the control's caption precisely.  stringWidth should be accurate;
             ' however, antialiasing may require us to add an additional pixel to the caption, in the event
@@ -693,7 +699,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Alignment", m_Alignment, vbLeftJustify
         .WriteProperty "BackColor", m_BackColor, vbWindowBackground
-        .WriteProperty "Caption", m_Caption, "caption"
+        .WriteProperty "Caption", m_CaptionEn, "caption"
         .WriteProperty "FontBold", m_FontBold, False
         .WriteProperty "FontItalic", m_FontItalic, False
         .WriteProperty "FontSize", m_FontSize, 10
@@ -709,6 +715,26 @@ End Sub
 Public Sub updateAgainstCurrentTheme()
     
     If g_IsProgramRunning Then
+        
+        'See if translations are necessary.
+        Dim isTranslationActive As Boolean
+            
+        If Not (g_Language Is Nothing) Then
+            If g_Language.translationActive Then
+                isTranslationActive = True
+            Else
+                isTranslationActive = False
+            End If
+        Else
+            isTranslationActive = False
+        End If
+        
+        'Update the translated caption accordingly
+        If isTranslationActive Then
+            m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn)
+        Else
+            m_CaptionTranslated = m_CaptionEn
+        End If
         
         'Update the current font, as necessary
         refreshFont
@@ -766,13 +792,13 @@ Private Sub redrawBackBuffer()
         Case AutoFitCaption, AutoSizeControl
             
             If (m_Layout = AutoFitCaption) And m_FitFailure Then
-                curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption, True
+                curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_CaptionTranslated, True
             Else
-                curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption, False
+                curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_CaptionTranslated, False
             End If
             
         Case AutoFitCaptionPlusWordWrap, AutoSizeControlPlusWordWrap
-            curFont.fastRenderMultilineTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_Caption
+            curFont.fastRenderMultilineTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_CaptionTranslated
         
     End Select
     
@@ -784,4 +810,10 @@ End Sub
 'Post-translation, we can request an immediate refresh
 Public Sub requestRefresh()
     cPainter.requestRepaint
+End Sub
+
+'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
+' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
+Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
