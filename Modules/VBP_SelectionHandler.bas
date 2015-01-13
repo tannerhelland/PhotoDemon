@@ -3,8 +3,9 @@ Attribute VB_Name = "Selection_Handler"
 'Selection Interface
 'Copyright 2013-2015 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 16/May/14
-'Last update: remove a bunch of functions no longer necessary due to the Undo/Redo engine overhaul
+'Last updated: 13/January/15
+'Last update: fix selection export to file functions to work with layers.  (Not sure how I missed that prior to 6.4's
+'              launch, ugh!)  Thanks to Frans van Beers for reporting the issue.
 '
 'Selection tools have existed in PhotoDemon for awhile, but this module is the first to support Process varieties of
 ' selection operations - e.g. internal actions like "Process "Create Selection"".  Selection commands must be passed
@@ -228,9 +229,7 @@ End Sub
 ' or copy-paste the selected area in order to save it.  The selected area is also checked for bit-depth; 24bpp is recommended as
 ' JPEG, while 32bpp is recommended as PNG (but the user can select any supported PD save format from the common dialog).
 Public Function ExportSelectedAreaAsImage() As Boolean
-
-    'TODO: make this function work with layers
-
+    
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
     If Not pdImages(g_CurrentImage).selectionActive Then
         Message "This action requires an active selection.  Please create a selection before continuing."
@@ -245,18 +244,20 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     'Mark the image "for internal use only"; this prevents it from doing things like updating the interface to match its status
     tmpImage.forInternalUseOnly = True
     
-    'Copy the current selection DIB into the temporary image's main DIB.  (NOTE: for reasons known, I can't provide tmpImage.mainDIB
-    ' directly without the function failing.  No idea why.  Hence the need for creating a temporary DIB first.)
+    'Copy the current selection DIB into a temporary DIB.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    
     pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, True
-    'Set tmpImage.mainDIB = tmpDIB
-    tmpImage.updateSize
     
     'If the selected area has a blank alpha channel, convert it to 24bpp
-    'If Not tmpImage.mainDIB.verifyAlphaChannel Then tmpImage.mainDIB.convertTo24bpp
+    If Not tmpDIB.verifyAlphaChannel Then tmpDIB.convertTo24bpp
     
+    'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
+    Dim newLayerID As Long
+    newLayerID = tmpImage.createBlankLayer
+    tmpImage.getLayerByID(newLayerID).CreateNewImageLayer tmpDIB
+    tmpImage.updateSize
+        
     'Give the selection a basic filename
     tmpImage.originalFileName = g_Language.TranslateMessage("PhotoDemon selection")
     
@@ -270,7 +271,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
     Dim saveFormat As Long
-    If tmpImage.getCompositeImageColorDepth = 24 Then
+    If tmpDIB.getDIBColorDepth = 24 Then
         saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_JPEG) + 1
     Else
         saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
@@ -304,9 +305,7 @@ End Function
 
 'Export the current selection mask as an image.  PNG is recommended by default, but the user can choose from any of PD's available formats.
 Public Function ExportSelectionMaskAsImage() As Boolean
-
-    'TODO: make this function work with layers
-
+    
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
     If Not pdImages(g_CurrentImage).selectionActive Then
         Message "This action requires an active selection.  Please create a selection before continuing."
@@ -321,8 +320,19 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'Mark the image "for internal use only"; this prevents it from doing things like updating the interface to match its status
     tmpImage.forInternalUseOnly = True
     
-    'Copy the current selection DIB into the temporary image's main DIB
-    tmpImage.getActiveDIB().createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+    'Create a temporary DIB, then retrieve the current selection into it
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
+    
+    'Due to the way selections work, it's easier for us to forcibly up-sample the selection mask to 32bpp.  This prevents
+    ' some issues with saving to exotic file formats.
+    tmpDIB.convertTo32bpp
+    
+    'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
+    Dim newLayerID As Long
+    newLayerID = tmpImage.createBlankLayer
+    tmpImage.getLayerByID(newLayerID).CreateNewImageLayer tmpDIB
     tmpImage.updateSize
     
     'Give the selection a basic filename
