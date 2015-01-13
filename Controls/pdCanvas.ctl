@@ -100,10 +100,20 @@ Begin VB.UserControl pdCanvas
       TabStop         =   0   'False
       Top             =   7350
       Width           =   13290
+      Begin PhotoDemon.pdComboBox cmbSizeUnit 
+         Height          =   315
+         Left            =   3630
+         TabIndex        =   10
+         Top             =   15
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   556
+         FontSize        =   9
+      End
       Begin PhotoDemon.pdComboBox cmbZoom 
          Height          =   360
          Left            =   840
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   15
          Width           =   1290
          _ExtentX        =   2275
@@ -126,28 +136,17 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
          Height          =   345
          Left            =   0
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   0
          Width           =   390
          _ExtentX        =   688
          _ExtentY        =   609
          BackColor       =   -2147483626
       End
-      Begin VB.ComboBox cmbSizeUnit 
-         CausesValidation=   0   'False
-         Height          =   315
-         ItemData        =   "pdCanvas.ctx":0312
-         Left            =   3630
-         List            =   "pdCanvas.ctx":0314
-         Style           =   2  'Dropdown List
-         TabIndex        =   5
-         Top             =   15
-         Width           =   600
-      End
       Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
          Height          =   345
          Left            =   390
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -158,7 +157,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
          Height          =   345
          Left            =   2190
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -169,7 +168,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdImgSize 
          Height          =   345
          Left            =   2790
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -339,16 +338,53 @@ Private m_LayerAutoActivateIndex As Long
 ' be erased.
 Private m_SelectionActiveBeforeMouseEvents As Boolean
 
-'Because this control is loaded so early in the program's load process, it is initialized before the translation engine.  To make sure
-' that non-English speakers have functional tooltips, this sub is called after the translation engine has loaded.
-Public Sub createTooltips()
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
+' and/or retranslating all button captions against the current language.
+Public Sub updateAgainstCurrentTheme()
     
-    'Assign tooltips to any relevant controls
-    cmdZoomFit.ToolTipText = g_Language.TranslateMessage("Fit the image on-screen")
-    cmdZoomIn.ToolTipText = g_Language.TranslateMessage("Zoom in")
-    cmdZoomOut.ToolTipText = g_Language.TranslateMessage("Zoom out")
-    cmdImgSize.ToolTipText = g_Language.TranslateMessage("Resize image")
+    'Suspend redraws until all theme updates are complete
+    m_suspendRedraws = True
     
+    'Rebuild all drop-down boxes (so that translations can be applied)
+    Dim backupZoomIndex As Long, backupSizeIndex As Long
+    backupZoomIndex = cmbZoom.ListIndex
+    backupSizeIndex = cmbSizeUnit.ListIndex
+    
+    If Not (g_Zoom Is Nothing) Then g_Zoom.populateZoomComboBox cmbZoom, backupZoomIndex
+    Me.populateSizeUnits
+    
+    'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
+    cmdZoomFit.assignTooltip "Fit the image on-screen"
+    cmdZoomIn.assignTooltip "Zoom in"
+    cmdZoomOut.assignTooltip "Zoom out"
+    cmdImgSize.assignTooltip "Resize image"
+    cmbZoom.assignTooltip "Change viewport zoom"
+    cmbSizeUnit.assignTooltip "Change the image size unit displayed to the left of this box"
+    
+    'Request visual updates from all supported controls
+    lblCoordinates.updateAgainstCurrentTheme
+    lblImgSize.updateAgainstCurrentTheme
+    lblMessages.updateAgainstCurrentTheme
+    
+    cmdZoomFit.updateAgainstCurrentTheme
+    cmdZoomIn.updateAgainstCurrentTheme
+    cmdZoomOut.updateAgainstCurrentTheme
+    cmdImgSize.updateAgainstCurrentTheme
+    
+    cmbZoom.updateAgainstCurrentTheme
+    cmbSizeUnit.updateAgainstCurrentTheme
+    
+    'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
+    cmbZoom.Top = ScaleY((picStatusBar.ScaleHeight - cmbZoom.Height) \ 2, vbPixels, vbTwips)
+    cmbSizeUnit.Top = ScaleY((picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2, vbPixels, vbTwips)
+    
+    'Restore zoom and size unit indices
+    cmbZoom.ListIndex = backupZoomIndex
+    cmbSizeUnit.ListIndex = backupSizeIndex
+    
+    'Restore redraws until all theme updates are complete
+    m_suspendRedraws = False
+        
 End Sub
 
 'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
@@ -1924,13 +1960,8 @@ Private Sub UserControl_Show()
         'Convert all labels to the current interface font
         If Len(g_InterfaceFont) = 0 Then g_InterfaceFont = "Segoe UI"
         
-        lblCoordinates.updateAgainstCurrentTheme
-        lblImgSize.updateAgainstCurrentTheme
-        lblMessages.updateAgainstCurrentTheme
-        cmbZoom.updateAgainstCurrentTheme
-        
-        'Add a tooltip to the zoom box
-        cmbZoom.assignTooltip "Click to adjust image zoom"
+        'Request an update against the current theme
+        Me.updateAgainstCurrentTheme
         
 CanvasShowError:
         
@@ -2101,9 +2132,9 @@ Public Function populateSizeUnits()
 
     'Add size units to the size unit drop-down box
     cmbSizeUnit.Clear
-    cmbSizeUnit.AddItem g_Language.TranslateMessage(" px"), 0
-    cmbSizeUnit.AddItem g_Language.TranslateMessage(" in"), 1
-    cmbSizeUnit.AddItem g_Language.TranslateMessage(" cm"), 2
+    cmbSizeUnit.AddItem "px", 0
+    cmbSizeUnit.AddItem "in", 1
+    cmbSizeUnit.AddItem "cm", 2
     cmbSizeUnit.ListIndex = 0
 
 End Function
@@ -2314,6 +2345,9 @@ Private Function isCanvasInteractionAllowed() As Boolean
     
     'If no images have been loaded, exit
     If g_OpenImageCount = 0 Then isCanvasInteractionAllowed = False
+    
+    'If our own internal redraw suspension flag is set, exit
+    If m_suspendRedraws Then isCanvasInteractionAllowed = False
     
     'If the current image does not exist, exit
     If pdImages(g_CurrentImage) Is Nothing Then

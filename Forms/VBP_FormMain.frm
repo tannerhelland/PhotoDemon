@@ -50,29 +50,29 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      _extentx        =   847
+      _extenty        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   3360
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   5
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0   'False
+      pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1533,15 +1533,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Private m_ToolTip As clsToolTip
-
-'A weird situation arises on the main form if the language is changed at run-time.  All tooltips will have already been moved to
-' a custom tooltip class, so the controls themselves will not contain any tooltips.  Thus they will also not be re-translated to
-' a new language.  To remedy this, we make a backup of all tooltips when the program is first run.  We then re-apply this backup
-' collection whenever we need tooltips replaced.
-Private tooltipBackup As Collection
-
 'An outside class provides access to specialized mouse events (like mousewheel and forward/back keys)
 Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
@@ -2342,10 +2333,7 @@ Private Sub Form_Load()
 
     'Use a global variable to store any command line parameters we may have been passed
     g_CommandLine = Command$
-    
-    'Instantiate the themed tooltip class
-    Set m_ToolTip = New clsToolTip
-    
+        
     'Create a blank pdImages() array, to avoid errors
     ReDim pdImages(0) As pdImage
     
@@ -4305,65 +4293,9 @@ Private Sub MnuZoomOut_Click()
     End If
 End Sub
 
-'Because we want tooltips preserved, outside functions should use THIS sub to request FormMain rethemes
-Public Sub requestMakeFormPretty(Optional ByVal useDoEvents As Boolean = False)
-    
-    Dim eControl As Control
-    
-    'If we have not made a backup yet, do so now
-    If tooltipBackup Is Nothing Then
-        Set tooltipBackup = New Collection
-        
-        'Enumerate through every control on the form.  Store a copy of its tooltip inside our collection.
-        For Each eControl In Me.Controls
-            
-            'If this is a control that has a tooltip, backup the tooltip now
-            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is colorSelector) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
-                
-                Dim tmpString As String
-                tmpString = eControl.ToolTipText
-                
-                'If a translation is already active, we want to back up the ENGLISH tooltip - not a translated one.
-                If g_Language.translationActive Then tmpString = g_Language.RestoreMessage(tmpString)
-                
-                If InControlArray(eControl) Then
-                    tooltipBackup.Add tmpString, eControl.Name & "_" & eControl.Index
-                Else
-                    tooltipBackup.Add tmpString, eControl.Name
-                End If
-            End If
-            
-        Next
-    
-    'If we HAVE made a backup and this function is being called, restore all tooltips now.  That way, when they are passed to the
-    ' makeFormPretty function, all tooltips will be available for translation.
-    Else
-    
-        'Enumerate through every control on the form.  Restore its tooltip if found.
-        For Each eControl In Me.Controls
-            
-            'If this is a control that has a tooltip, backup the tooltip now
-            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is colorSelector) Or (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then
-                
-                If InControlArray(eControl) Then
-                    eControl.ToolTipText = tooltipBackup.Item(eControl.Name & "_" & eControl.Index)
-                Else
-                    eControl.ToolTipText = tooltipBackup.Item(eControl.Name)
-                End If
-                
-            End If
-            'Or (TypeOf eControl Is textUpDown)
-            If (TypeOf eControl Is sliderTextCombo) Then
-                eControl.refreshTooltipObject
-            End If
-            
-        Next
-        
-        Set m_ToolTip = New clsToolTip
-    
-    End If
-    
-    makeFormPretty Me, m_ToolTip, , useDoEvents
-    
+'Update the main form against the current theme.  At present, this is just a thin wrapper against the public makeFormPretty() function,
+' but once the form's menu is owner-drawn, we will likely need some custom code to handle menu redraws and translations.
+Public Sub updateAgainstCurrentTheme(Optional ByVal useDoEvents As Boolean = False)
+    makeFormPretty Me, , , useDoEvents
 End Sub
 

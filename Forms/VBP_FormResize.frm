@@ -230,9 +230,6 @@ End Enum
 ' and can be externally accessed by the ResizeTarget property.
 Private m_ResizeTarget As PD_ACTION_TARGET
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 Public Property Let ResizeTarget(newTarget As PD_ACTION_TARGET)
     m_ResizeTarget = newTarget
 End Property
@@ -493,14 +490,13 @@ Private Sub Form_Load()
     End Select
     
     'Add some tooltips
-    cboResampleFriendly.assignTooltip g_Language.TranslateMessage("Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.")
-    cboResampleTechnical.assignTooltip g_Language.TranslateMessage("Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.")
-    chkNames.ToolTipText = g_Language.TranslateMessage("By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.")
-    cmbFit.assignTooltip g_Language.TranslateMessage("When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.")
+    cboResampleFriendly.assignTooltip "Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia."
+    cboResampleTechnical.assignTooltip "Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia."
+    chkNames.assignTooltip "By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques."
+    cmbFit.assignTooltip "When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead."
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
     
 End Sub
 
