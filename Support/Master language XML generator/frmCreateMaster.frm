@@ -1679,6 +1679,7 @@ Private Sub Form_Load()
     addBlacklist "photodemon.org/about/contact/"
     addBlacklist "HTML / CSS"
     addBlacklist "jcbutton"
+    addBlacklist "while it downloads."
     
 End Sub
 
