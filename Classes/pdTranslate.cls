@@ -294,7 +294,7 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
     'Redraw all text on the main form using the new language
     If FormMain.Visible Then
     
-        FormMain.requestMakeFormPretty useDoEvents
+        FormMain.updateAgainstCurrentTheme useDoEvents
         DrawAccelerators
         applyAllMenuIcons True
         

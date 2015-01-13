@@ -388,9 +388,7 @@ Public Sub LoadTheProgram()
     'Initialize the drop shadow engine
     Set g_CanvasShadow = New pdShadow
     g_CanvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, g_CanvasBackground
-    
-    FormMain.mainCanvas(0).createTooltips
-    
+        
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
     SetIcon FormMain.hWnd, "AAA", True
     
@@ -423,7 +421,7 @@ Public Sub LoadTheProgram()
     g_MouseAccuracy = fixDPIFloat(6)
     
     'Apply visual styles
-    FormMain.requestMakeFormPretty
+    FormMain.updateAgainstCurrentTheme False
     
     
     '*************************************************************************************************************************************

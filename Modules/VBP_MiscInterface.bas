@@ -1176,7 +1176,10 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
             eControl.Font.Name = g_InterfaceFont
         End If
         
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is pdComboBox) Then
+        'PhotoDemon's custom controls now provide universal support for an updateAgainstCurrentTheme function.  This updates two things:
+        ' 1) The control's visual appearance (to reflect any changes to visual themes)
+        ' 2) The translated caption, or other text (to reflect any changes to the active language)
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdCanvas) Then
             eControl.updateAgainstCurrentTheme
         End If
                         
@@ -1184,7 +1187,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         ' at design-time.
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
         
-        'STEP 4: make drop-down boxes display their full drop-down contents, without a scroll bar.
+        'STEP 4: make common control drop-down boxes display their full drop-down contents, without a scroll bar.
         '         (This behavior requires a manifest, so useless in the IDE.)
         If (TypeOf eControl Is ComboBox) Then SendMessage eControl.hWnd, CB_SETMINVISIBLE, CLng(eControl.ListCount), ByVal 0&
         
