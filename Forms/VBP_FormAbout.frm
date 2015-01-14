@@ -370,6 +370,7 @@ Private Sub Form_Load()
     GenerateThankyou "Easy RGB", "http://www.easyrgb.com/", True
     GenerateThankyou "Everaldo Coelho", "http://www.everaldo.com/", True
     GenerateThankyou "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers", True
+    GenerateThankyou "Frans van Beers", "https://plus.google.com/+FransvanBeers/", True
     GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/", True
     GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html", True
     GenerateThankyou "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock", True
