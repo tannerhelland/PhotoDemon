@@ -245,6 +245,12 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
    End
+   Begin VB.Line lnRightSeparator 
+      X1              =   136
+      X2              =   136
+      Y1              =   0
+      Y2              =   648
+   End
    Begin VB.Label lblRecording 
       Alignment       =   2  'Center
       Appearance      =   0  'Flat
@@ -478,12 +484,22 @@ Private Sub reflowToolboxLayout()
 
     Dim i As Long
     
+    'Before doing anything complicated, right-align the line separator
+    lnRightSeparator.x1 = Me.ScaleWidth - 1
+    lnRightSeparator.y1 = 0
+    lnRightSeparator.x2 = lnRightSeparator.x1
+    lnRightSeparator.y2 = Me.ScaleHeight
+    
+    'We're also going to mark the right boundary for images, which allows for some padding when reflowing the interface
+    Dim rightBoundary As Long
+    rightBoundary = Me.ScaleWidth - 1
+    
     'Reflow label width first; they are easy because they simply match the width of the form
     For i = 0 To lblCategories.UBound
-        lblCategories(i).Width = Me.ScaleWidth - (lblCategories(i).Left + fixDPI(2))
+        lblCategories(i).Width = rightBoundary - (lblCategories(i).Left + fixDPI(2))
     Next i
     
-    lblRecording.Width = Me.ScaleWidth - (lblRecording.Left + fixDPI(2))
+    lblRecording.Width = rightBoundary - (lblRecording.Left + fixDPI(2))
     
     'Next, we are going to reflow the interface in two segments: the "file" buttons (which are handled separately, since
     ' they are actual buttons and not persistent toggles), then the toolbox buttons.
@@ -528,7 +544,7 @@ Private Sub reflowToolboxLayout()
         
         'Calculate a new offset for the next button
         hOffset = hOffset + cmdFile(i).Width + buttonMarginRight
-        If hOffset + cmdFile(i).Width > Me.ScaleWidth Then
+        If hOffset + cmdFile(i).Width > rightBoundary Then
             hOffset = hOffsetDefaultButton
             vOffset = vOffset + cmdFile(i).Height + buttonMarginBottom
         End If
@@ -556,7 +572,7 @@ Private Sub reflowToolboxLayout()
         
         'Calculate a new offset for the next button
         hOffset = hOffset + cmdFile(i).Width + buttonMarginRight
-        If hOffset + cmdFile(i).Width > Me.ScaleWidth Then
+        If hOffset + cmdFile(i).Width > rightBoundary Then
             hOffset = hOffsetDefaultButton
             vOffset = vOffset + cmdFile(i).Height + buttonMarginBottom
         End If
@@ -584,7 +600,7 @@ Private Sub reflowToolboxLayout()
         
         'Calculate a new offset for the next button
         hOffset = hOffset + cmdTools(i).Width + buttonMarginRight
-        If hOffset + cmdTools(i).Width > Me.ScaleWidth Then
+        If hOffset + cmdTools(i).Width > rightBoundary Then
             hOffset = hOffsetDefaultButton
             vOffset = vOffset + cmdTools(i).Height + buttonMarginBottom
         End If
@@ -612,7 +628,7 @@ Private Sub reflowToolboxLayout()
         
         'Calculate a new offset for the next button
         hOffset = hOffset + cmdTools(i).Width + buttonMarginRight
-        If hOffset + cmdTools(i).Width > Me.ScaleWidth Then
+        If hOffset + cmdTools(i).Width > rightBoundary Then
             hOffset = hOffsetDefaultButton
             vOffset = vOffset + cmdTools(i).Height + buttonMarginBottom
         End If
@@ -985,5 +1001,12 @@ Public Sub updateAgainstCurrentTheme()
     cmdTools(SELECT_POLYGON).assignTooltip "Polygon Selection"
     cmdTools(SELECT_LASSO).assignTooltip "Lasso (Freehand) Selection"
     cmdTools(SELECT_WAND).assignTooltip "Magic Wand Selection"
+    
+    'The right separator line is colored according to the current shadow accent color
+    If Not g_Themer Is Nothing Then
+        lnRightSeparator.BorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+    Else
+        lnRightSeparator.BorderColor = vbHighlight
+    End If
     
 End Sub

@@ -304,8 +304,8 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         'Redraw any/all toolbars as well
         toolbar_Toolbox.updateAgainstCurrentTheme
         toolbar_Options.updateAgainstCurrentTheme
+        toolbar_Layers.updateAgainstCurrentTheme
         toolbar_ImageTabs.requestMakeFormPretty
-        toolbar_Layers.requestMakeFormPretty
         
     End If
         
