@@ -91,6 +91,8 @@ PhotoDemon would not be possible without the help of many talented contributors,
 (http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66273&lngWId=1)
 * The portablefreeware.com team for helping me debug a nasty Windows 7 crash
 (http://www.portablefreeware.com/forums/viewtopic.php?t=21652)
+* Frans van Beers for many detailed bug reports and testing
+ (https://plus.google.com/+FransvanBeers/)
 * Frank Donckers for extensive help with the translation engine. Frank also maintains the Dutch and French language files.
 (http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=2213335741)
 * GioRock for the Italian language file and extensive debugging (http://www.planet-source-code.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&blnAuthorSearch=TRUE&lngAuthorId=77440558266)
