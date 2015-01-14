@@ -247,6 +247,7 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
                 getDefaultPDColor = Color_Functions.getRGBLongFromHex("#d1dae2")
             
             Case PDTC_GRAY_SHADOW
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#525a5b")
             
             'Background variations
             Case PDTC_BACKGROUND_DEFAULT

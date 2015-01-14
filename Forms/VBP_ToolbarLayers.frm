@@ -48,7 +48,7 @@ Begin VB.Form toolbar_Layers
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
       Index           =   0
-      Left            =   0
+      Left            =   15
       Top             =   240
       Width           =   885
       _ExtentX        =   1561
@@ -62,7 +62,7 @@ Begin VB.Form toolbar_Layers
       Left            =   3360
       Max             =   100
       TabIndex        =   2
-      Top             =   1320
+      Top             =   1200
       Width           =   285
    End
    Begin VB.PictureBox picLayerButtons 
@@ -72,7 +72,7 @@ Begin VB.Form toolbar_Layers
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   495
-      Left            =   0
+      Left            =   15
       ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   249
@@ -206,7 +206,7 @@ Begin VB.Form toolbar_Layers
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   215
       TabIndex        =   1
-      Top             =   1320
+      Top             =   1200
       Width           =   3255
    End
    Begin PhotoDemon.sliderTextCombo sltLayerOpacity 
@@ -225,7 +225,7 @@ Begin VB.Form toolbar_Layers
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
       Index           =   1
-      Left            =   0
+      Left            =   15
       Top             =   720
       Width           =   885
       _ExtentX        =   1561
@@ -233,13 +233,11 @@ Begin VB.Form toolbar_Layers
       Alignment       =   1
       Caption         =   "blend:"
    End
-   Begin VB.Line lnSeparator 
-      BorderColor     =   &H8000000D&
-      Index           =   0
-      X1              =   8
-      X2              =   240
-      Y1              =   80
-      Y2              =   80
+   Begin VB.Line lnSeparatorLeft 
+      X1              =   0
+      X2              =   0
+      Y1              =   8
+      Y2              =   448
    End
 End
 Attribute VB_Name = "toolbar_Layers"
@@ -961,10 +959,7 @@ Private Sub Form_Load()
         .setTooltip cmdLayerAction(2).hWnd, Me.hWnd, g_Language.TranslateMessage("Move the current layer upward in the layer stack."), g_Language.TranslateMessage("Move layer up")
         .setTooltip cmdLayerAction(3).hWnd, Me.hWnd, g_Language.TranslateMessage("Move the current layer downward in the layer stack."), g_Language.TranslateMessage("Move layer down")
     End With
-    
-    'Theme the form
-    makeFormPretty Me
-    
+        
     'Enable custom input handling for the layer box
     Set cMouseEvents = New pdInputMouse
     cMouseEvents.addInputTracker picLayers.hWnd, True, True, , True
@@ -1018,7 +1013,10 @@ Private Sub Form_Load()
     'If a UI image can be disabled, make a grayscale copy of it in advance
     Filters_Layers.GrayscaleDIB img_MergeUpDisabled, True
     Filters_Layers.GrayscaleDIB img_MergeDownDisabled, True
-        
+    
+    'Theme everything
+    updateAgainstCurrentTheme
+    
     'Reflow the interface to match its current size
     reflowInterface
     
@@ -1566,6 +1564,12 @@ Private Sub reflowInterface()
     'When the parent form is resized, resize the layer list (and other items) to properly fill the
     ' available horizontal and vertical space.
     
+    'Before doing anything complicated, left-align the separator line between the canvas area and the toolbox
+    lnSeparatorLeft.x1 = 0
+    lnSeparatorLeft.y1 = 0
+    lnSeparatorLeft.x2 = 0
+    lnSeparatorLeft.y2 = Me.ScaleHeight
+    
     'This value will be used to check for minimizing.  If the window is going down, we do not want to attempt a resize!
     Dim sizeCheck As Long
     
@@ -1585,7 +1589,6 @@ Private Sub reflowInterface()
     'Horizontally stretch the opacity and blend mode UI objects
     sltLayerOpacity.Width = Me.ScaleWidth - (sltLayerOpacity.Left + fixDPI(2))
     cboBlendMode.requestNewWidth Me.ScaleWidth - (cboBlendMode.Left + fixDPI(8))
-    lnSeparator(0).x2 = Me.ScaleWidth - lnSeparator(0).x1
     
     'Resize the layer box and associated scrollbar
     vsLayer.Left = Me.ScaleWidth - vsLayer.Width - fixDPI(8)
@@ -1611,7 +1614,23 @@ Private Sub reflowInterface()
 
 End Sub
 
-'External functions can use this to re-theme this form at run-time (important when changing languages, for example)
-Public Sub requestMakeFormPretty()
+'Updating against the current theme accomplishes a number of things:
+' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
+' 2) All tooltips and captions are translated according to the current language.
+' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
+'
+'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
+Public Sub updateAgainstCurrentTheme()
+    
+    'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
+    ' any common controls that may still exist in the program.)
     makeFormPretty Me
+    
+    'The left separator line is colored according to the current shadow accent color
+    If Not (g_Themer Is Nothing) Then
+        lnSeparatorLeft.BorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+    Else
+        lnSeparatorLeft.BorderColor = vbHighlight
+    End If
+    
 End Sub
