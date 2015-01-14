@@ -443,7 +443,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         FontSize = .ReadProperty("FontSize", 10)
         ForeColor = .ReadProperty("ForeColor", RGB(96, 96, 96))
         Layout = .ReadProperty("Layout", AutoFitCaption)
-        Set Font = .ReadProperty("Font", Ambient.Font)
         UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
         UseCustomForeColor = .ReadProperty("UseCustomForeColor", False)
     End With
