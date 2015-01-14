@@ -20,6 +20,14 @@ Begin VB.Form frmCreateMaster
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   969
    StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton cmdConvertLabels 
+      Caption         =   "Convert labels in selected file to pdLabel format"
+      Height          =   450
+      Left            =   6360
+      TabIndex        =   15
+      Top             =   3825
+      Width           =   7935
+   End
    Begin VB.CommandButton cmdMergeAll 
       Caption         =   "2a (Optional) Automatically merge all language files in default PhotoDemon folder with newest Master XML file..."
       Height          =   735
@@ -80,10 +88,11 @@ Begin VB.Form frmCreateMaster
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   1950
+      Height          =   2370
       Left            =   4200
+      Sorted          =   -1  'True
       TabIndex        =   4
-      Top             =   1920
+      Top             =   1440
       Width           =   10095
    End
    Begin VB.CommandButton cmdSelectVBP 
@@ -93,6 +102,27 @@ Begin VB.Form frmCreateMaster
       TabIndex        =   1
       Top             =   1920
       Width           =   3015
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "other support tools:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   2
+      Left            =   4200
+      TabIndex        =   14
+      Top             =   3960
+      Width           =   2115
    End
    Begin VB.Label lblWarning 
       Appearance      =   0  'Flat
@@ -283,6 +313,146 @@ Dim m_numOfBlacklistEntries As Long
 
 'String to store the version of the current VBP file (which will be written out to the master XML file for guidance)
 Dim versionString As String
+
+'New support function for auto-converting old common control labels to PD's new pdLabel object.  If successful, this will save me a ton of time
+' manually converting all the labels in the program.
+Private Sub cmdConvertLabels_Click()
+
+    'Make sure a file has been selected
+    If lstProjectFiles.ListIndex <> -1 Then
+
+        'Read the file into a string array
+        Dim srcFileName As String
+        srcFileName = lstProjectFiles.List(lstProjectFiles.ListIndex)
+        
+        Dim fileContents As String
+        fileContents = getFileAsString(srcFileName)
+        
+        Dim fileLines() As String
+        fileLines = Split(fileContents, vbCrLf)
+        
+        Dim curLineNumber As Long, curLineText As String
+        curLineNumber = 0
+        
+        Dim startLine As Long, endLine As Long, i As Long, numLabelsReplaced As Long
+        numLabelsReplaced = 0
+        
+        Dim ignoreThisLine As Boolean
+                
+        'Now, start processing the file one line at a time, searching for label entries as we go
+        Do
+        
+            curLineText = fileLines(curLineNumber)
+            
+            'Before processing this line, make sure is isn't a comment.
+            If Left$(Trim$(curLineText), 1) = "'" Then GoTo nextLine
+            
+            'Check for a VB label identifier.  The format of these declarations is always the same.
+            If (InStr(1, UCase$(curLineText), "BEGIN VB.LABEL", vbBinaryCompare) > 0) Then
+            
+                'This line is the start of a VB label identifier.
+                startLine = curLineNumber
+                numLabelsReplaced = numLabelsReplaced + 1
+                
+                'Next, we are going to continue looping through the file, looking for the End identifier that marks the end of this label's properties.
+                Do While (StrComp(Trim$(curLineText), "End", vbBinaryCompare) = 0)
+                    curLineNumber = curLineNumber + 1
+                    curLineText = fileLines(curLineNumber)
+                Loop
+                
+                'curLineNumber now contains the index of the last line of this label's properties.  Mark it.
+                endLine = curLineNumber
+                
+                'Convert the starting line to represent a pdLabel instead of a VB label
+                fileLines(startLine) = Replace$(fileLines(startLine), "VB.Label", "PhotoDemon.pdLabel")
+                
+                'Now, we need to iterate through the properties this label might have.  pdLabel objects have a much smaller property
+                ' list than standard VB labels.  Incompatible properties must be removed, or the IDE will throw errors.
+                For i = startLine + 1 To endLine - 1
+                    
+                    'See if this line contains a valid pdLabel property
+                    ignoreThisLine = isValidPDLabelProperty(fileLines(i))
+                    
+                    'If this line does not contain a valid pdLabel property, perform some special checks for compatible properties
+                    ' with different names.
+                    If Not ignoreThisLine Then
+                        
+                        'Font size descriptions should be renamed from Size to FontSize
+                        If InStr(1, Trim$(fileLines(i)), vbTab & "Size") Then
+                            fileLines(i) = Replace$(fileLines(i), "Size", "FontSize")
+                            ignoreThisLine = True
+                        End If
+                    
+                    End If
+                    
+                    'If the line is still not compatible, replace its contents with a uniquely identifiable string
+                    If Not ignoreThisLine Then fileLines(i) = "INVALID PROPERTY LINE"
+                    
+                Next i
+            
+            End If
+            
+            
+        'Continue to the next line in the file
+nextLine:
+            curLineNumber = curLineNumber + 1
+    
+        Loop While curLineNumber < UBound(fileLines)
+        
+        'The fileLines array now contains the original file's contents, but with all invalid lines marked for removal.
+        ' We are now going to overwrite the original file (gasp) with these new contents.
+        
+        'Start by killing the original copy
+        If FileExist(srcFileName) Then Kill srcFileName
+        
+        'Open the file anew
+        Dim fHandle As Integer
+        fHandle = FreeFile
+        
+        Open srcFileName For Output As #fHandle
+        
+            'Write the modified file contents out to file
+            For i = LBound(fileLines) To UBound(fileLines)
+                
+                If StrComp(fileLines(i), "INVALID PROPERTY LINE", vbBinaryCompare) <> 0 Then
+                    Print #fHandle, fileLines(i)
+                End If
+                
+            Next i
+        
+        Close #fHandle
+        
+        MsgBox numLabelsReplaced & " labels replaced successfully.", vbOKOnly + vbApplicationModal + vbInformation, "Label replacement complete"
+            
+    Else
+        MsgBox "Select a file first.", vbOKOnly + vbApplicationModal + vbInformation, "No file selected"
+    End If
+    
+End Sub
+
+'See if a given line from a VB Form contains a valid pdLabel property
+Private Function isValidPDLabelProperty(ByVal srcString As String) As Boolean
+    
+    isValidPDLabelProperty = False
+    
+    'Trim the source string to make comparisons easier
+    srcString = Trim$(LCase$(srcString))
+    
+    'The list of valid properties is hardcoded.
+    If InStr(1, srcString, "Alignment", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "BackColor", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "Caption", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "Enabled", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "ForeColor", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "Height", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "Index", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "Layout", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "Left", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "TabIndex", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "Top", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "Width", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    
+End Function
 
 Private Sub cmdMaster_Click()
 
