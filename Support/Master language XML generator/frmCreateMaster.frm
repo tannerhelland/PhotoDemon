@@ -448,7 +448,6 @@ Private Function isValidPDLabelProperty(ByVal srcString As String) As Boolean
     If InStr(1, srcString, "Index", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
     If InStr(1, srcString, "Layout", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
     If InStr(1, srcString, "Left", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "TabIndex", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
     If InStr(1, srcString, "Top", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
     If InStr(1, srcString, "Width", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
     
