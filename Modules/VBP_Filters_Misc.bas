@@ -1176,7 +1176,29 @@ Public Sub MenuTest()
     'Apply fake color correction, as a test
     'Color_Management.convertRGBUsingCustomEndpoints pdImages(g_CurrentImage).getActiveDIB, 0.15, 0.06, 0.3, 0.6, 0.64, 0.33, 0.3127, 0.329
     
+    'Create a LUT class for testing
+    Dim cLUT As pdFilterLUT
+    Set cLUT = New pdFilterLUT
+    
+    Dim rLUT() As Byte, gLUT() As Byte, bLUT() As Byte
+    Dim curvePoints() As POINTFLOAT
+    
+    'Give red a slight curve
+    cLUT.helper_QuickCreateCurveArray curvePoints, 0, 0, 93, 76, 232, 226, 255, 255
+    cLUT.fillLUT_Curve rLUT, curvePoints
+    
+    'No curve on G
+    cLUT.fillLUT_Default gLUT
+    
+    'Slight curve on B
+    cLUT.helper_QuickCreateCurveArray curvePoints, 0, 0, 57, 59, 220, 202, 255, 255
+    cLUT.fillLUT_Curve bLUT, curvePoints
+    
+    'Apply the test LUTs to the image
+    cLUT.applyLUTsToDIB pdImages(g_CurrentImage).getActiveDIB, rLUT, gLUT, bLUT
+        
     'Reflect any image changes on the screen.
+    releaseProgressBar
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     Exit Sub
