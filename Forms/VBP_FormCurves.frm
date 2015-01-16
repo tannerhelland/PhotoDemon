@@ -321,8 +321,9 @@ Attribute VB_Exposed = False
 'Image Curves Adjustment Dialog
 'Copyright 2008-2015 by Tanner Helland
 'Created: sometime 2008
-'Last updated: 19/September/14
-'Last update: interface improvements
+'Last updated: 16/January/15
+'Last update: switch from gamma-based correction to a pure transfer map.  This makes the tool behave slightly different
+'              from PhotoShop's Curves tool, but it simplifies the code and IMO produces a more visually pleasing result.
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -467,8 +468,8 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     
     'Our curves correction can be easily applied using a look-up table; the processed param string will be stored
     ' in this table.
-    Dim newGamma(0 To 3, 0 To 255) As Byte
-    Dim tmpGamma As Double
+    Dim transferMap(0 To 3, 0 To 255) As Byte
+    Dim tmpTransfer As Long
     
     Dim cParams As pdParamString
     Set cParams = New pdParamString
@@ -485,25 +486,16 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
         Next x
         
         For x = 0 To 255
-        
-            tmpGamma = CDbl(x) / 255
             
-            'This 'if' statement is necessary to match a weird trend with Photoshop's Curves dialog.  For darker gamma
-            ' values, Photoshop increases the force of the gamma conversion.  This is good for emphasizing subtle dark
-            ' shades that the human eye doesn't normally pick up... I think.  If this 'if' statement is removed and
-            ' only the TRUE condition is kept, the function will yield more mathematically correct results.
-            If cHistogram(i, x) <= (256 - x) Then
-                tmpGamma = tmpGamma ^ (1 / ((256 - x) / (cHistogram(i, x) + 1)))
-            Else
-                tmpGamma = tmpGamma ^ ((1 / ((256 - x) / (cHistogram(i, x) + 1))) ^ 1.5)
+            'Perform one final failsafe clamp check
+            tmpTransfer = Int(cHistogram(i, x))
+            If tmpTransfer < 0 Then
+                tmpTransfer = 0
+            ElseIf tmpTransfer > 255 Then
+                tmpTransfer = 255
             End If
             
-            tmpGamma = tmpGamma * 255
-            
-            If tmpGamma > 255 Then tmpGamma = 255
-            If tmpGamma < 0 Then tmpGamma = 0
-            
-            newGamma(i, x) = CByte(tmpGamma)
+            transferMap(i, x) = tmpTransfer
             
         Next x
         
@@ -515,14 +507,14 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = newGamma(0, ImageData(QuickVal + 2, y))
-        g = newGamma(1, ImageData(QuickVal + 1, y))
-        b = newGamma(2, ImageData(QuickVal, y))
+        r = transferMap(0, ImageData(QuickVal + 2, y))
+        g = transferMap(1, ImageData(QuickVal + 1, y))
+        b = transferMap(2, ImageData(QuickVal, y))
                 
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = newGamma(3, r)
-        ImageData(QuickVal + 1, y) = newGamma(3, g)
-        ImageData(QuickVal, y) = newGamma(3, b)
+        ImageData(QuickVal + 2, y) = transferMap(3, r)
+        ImageData(QuickVal + 1, y) = transferMap(3, g)
+        ImageData(QuickVal, y) = transferMap(3, b)
         
     Next y
         If Not toPreview Then
