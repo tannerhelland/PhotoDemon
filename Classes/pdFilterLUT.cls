@@ -25,16 +25,17 @@ Attribute VB_Exposed = False
 '
 'The class is presently designed to simplify three tasks:
 ' 1) Generating LUTs for you, based on various input parameters.  These functions are generally color channel agnostic,
-'     meaning you simply provide input parameters and a blank byte array [0, 255], and the LUT generator will fill the
-'     byte array for you.  What you do with that array - including what channels you apply it to - is up to you.
+'     meaning you simply provide input parameters and a blank byte array, and the LUT generator will fill the byte array
+'     for you.  What you do with that array - including what channels you apply it to - is up to you.
 ' 2) Chaining together existing LUTs.  Say you want to apply both brightness and contrast to an image, in one fell swoop.
-'     The MergeLUT function takes two source LUTs and a destination LUT, and applies the two in turn to give you a single
-'     LUT that encompasses both modifications.  IMPORTANT NOTE: order is important when generating LUTs, as most LUT
-'     filters are unlikely to be associative.  Take care when using this function.
+'     The MergeLUT function takes two source LUTs and a destination LUT, and passes the second table through the first,
+'     resulting in a single LUT that represents both modifications.
+'     *IMPORTANT NOTE*  Order is important when generating LUTs, as most LUT transfers are unlikely to be associative.
+'     Take care when using this function.
 ' 3) Applying LUTs to an image.
 '
 'Though this class is initially focused on producing LUTs from Curve data, my goal is to move many other LUT-based filters
-' (Levels, gamma, brightness/contrast, etc) to this class.  This would not only simplify a lot of PD's dialogs, but would
+' (levels, gamma, brightness/contrast, etc) to this class.  This would not only simplify a lot of PD's dialogs, but would
 ' also make it much easier to add LUT-based remapping to future filters, without needing to add a bunch of custom code.
 '
 'Another future goal for this class - on Vista+, anyway - is to try and wrap the "ApplyToDIB" class function around the GDI+
@@ -114,15 +115,10 @@ Friend Sub fillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTF
     numOfPoints = UBound(curvePoints) + 1
     
     'To prevent errors in the curve generation function, we will actually pad the curve point array with some dummy entries.
+    ' These entries will be removed at the end of the function.
     ReDim Preserve curvePoints(0 To numOfPoints + 1) As POINTFLOAT
     
-    'Next, as weird as it sounds, we actually invert the y values of the curve.  This is because our internal curve function
-    ' is designed to operate on points coming from a user interface, where y=0 is the top of the curve, and y=255 is the base.
     Dim i As Long
-    For i = 0 To numOfPoints - 1
-        curvePoints(i).y = 255 - curvePoints(i).y
-    Next i
-    
     Dim p() As Double, u() As Double
     ReDim p(0 To numOfPoints) As Double
     ReDim u(0 To numOfPoints) As Double
@@ -136,7 +132,7 @@ Friend Sub fillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTF
     minX = 256
     maxX = -1
     
-    For i = 1 To numOfPoints - 1
+    For i = 0 To numOfPoints - 1
         For xPos = curvePoints(i).x To curvePoints(i + 1).x
             yPos = getCurvePoint(i, xPos, curvePoints, p, u)
             If xPos < minX Then minX = xPos
@@ -150,7 +146,6 @@ Friend Sub fillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTF
     'cResults() now contains the y-coordinate of the spline for every x-coordinate that falls between the initial
     ' point and the final point.  Points outside this range are treated as flat lines with values matching the nearest
     ' end point, and we fill those values now.
-    
     For i = -1 To minX - 1
         cResults(i) = cResults(minX)
     Next i
@@ -161,36 +156,9 @@ Friend Sub fillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTF
     
     'cResults is now complete.  Its primary dimension can be treated as [0, 255], and each entry in the array
     ' contains the y-value of the spline at that x-position.  This can be used to easily render the spline on-screen,
-    ' or in our case, apply the curve to the image.
-    
-    'Look-up table calculation for new gamma values
-    
-    Dim tmpGamma As Double
-    
+    ' or in our case, treat the curve data as remap instructions for pixel data.
     For i = 0 To 255
-    
-        tmpGamma = CDbl(i) / 255
-        
-        'This 'if' statement is necessary to match a weird trend with Photoshop's Curves dialog.  For darker gamma
-        ' values, Photoshop increases the force of the gamma conversion.  This is good for emphasizing subtle dark
-        ' shades that the human eye doesn't normally pick up... I think.  If this 'if' statement is removed and
-        ' only the TRUE condition is kept, the function will yield more mathematically correct results.
-        If cResults(i) <= (256 - i) Then
-            tmpGamma = tmpGamma ^ (1 / ((256 - i) / (cResults(i) + 1)))
-        Else
-            tmpGamma = tmpGamma ^ ((1 / ((256 - i) / (cResults(i) + 1))) ^ 1.5)
-        End If
-        
-        tmpGamma = tmpGamma * 255
-        
-        If tmpGamma > 255 Then
-            tmpGamma = 255
-        ElseIf tmpGamma < 0 Then
-            tmpGamma = 0
-        End If
-        
-        srcArray(i) = tmpGamma
-        
+        srcArray(i) = Int(cResults(i))
     Next i
     
     'Restore the original array bounds before exiting
@@ -219,7 +187,7 @@ Private Sub SetPandU(ByVal numOfPoints As Long, ByRef srcPoints() As POINTFLOAT,
         d(i) = 2 * (srcPoints(i + 1).x - srcPoints(i - 1).x)
     Next
     
-    For i = 1 To numOfPoints - 1
+    For i = 0 To numOfPoints - 1
         u(i) = srcPoints(i + 1).x - srcPoints(i).x
     Next
     
