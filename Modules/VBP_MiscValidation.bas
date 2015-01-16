@@ -211,7 +211,7 @@ Public Function buildParams(ParamArray allParams() As Variant) As String
 
     buildParams = ""
 
-    If Not IsMissing(allParams) Then
+    If UBound(allParams) >= LBound(allParams) Then
     
         Dim tmpString As String
         

@@ -1402,7 +1402,7 @@ Public Function pdMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxSty
     End If
     
     'Once the message is translated, we can add back in any optional parameters
-    If Not IsMissing(ExtraText) Then
+    If UBound(ExtraText) >= LBound(ExtraText) Then
     
         Dim i As Long
         For i = LBound(ExtraText) To UBound(ExtraText)
@@ -1427,7 +1427,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     Dim tmpDupeCheckString As String
     tmpDupeCheckString = mString
     
-    If Not IsMissing(ExtraText) Then
+    If UBound(ExtraText) >= LBound(ExtraText) Then
                     
         For i = LBound(ExtraText) To UBound(ExtraText)
             tmpDupeCheckString = Replace$(tmpDupeCheckString, "%" & i + 1, CStr(ExtraText(i)))
@@ -1442,7 +1442,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         'In debug mode, mirror the message output to PD's central Debugger.  Note that this behavior can be overridden by
         ' supplying the string "DONOTLOG" as the final entry in the ParamArray.
         #If DEBUGMODE = 1 Then
-            If IsMissing(ExtraText) Then
+            If UBound(ExtraText) < LBound(ExtraText) Then
                 pdDebug.LogAction tmpDupeCheckString, PDM_USER_MESSAGE
             Else
             
@@ -1471,7 +1471,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         End If
         
         'Once the message is translated, we can add back in any optional text supplied in the ParamArray
-        If Not IsMissing(ExtraText) Then
+        If UBound(ExtraText) >= LBound(ExtraText) Then
         
             For i = LBound(ExtraText) To UBound(ExtraText)
                 newString = Replace$(newString, "%" & i + 1, CStr(ExtraText(i)))

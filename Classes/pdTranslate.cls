@@ -645,7 +645,7 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     'newString now contains the translated message (or the original text, if no translation was found).
     
     'The last step is to replace any optional parameters in the text
-    If Not IsMissing(ExtraText) Then
+    If UBound(ExtraText) >= LBound(ExtraText) Then
     
         Dim i As Long
         For i = LBound(ExtraText) To UBound(ExtraText)
