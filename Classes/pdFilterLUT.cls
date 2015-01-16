@@ -70,7 +70,7 @@ End Sub
 ' clsLUT.helper_QuickCreateCurveArray curvePoints, 0, 0, 93, 76, 232, 226, 255, 255
 Friend Sub helper_QuickCreateCurveArray(ByRef curvePoints() As POINTFLOAT, ParamArray listOfPoints() As Variant)
 
-    If Not IsMissing(listOfPoints) Then
+    If UBound(listOfPoints) >= LBound(listOfPoints) Then
                     
         Dim i As Long, numOfPoints As Long
         

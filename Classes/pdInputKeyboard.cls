@@ -130,17 +130,17 @@ Private Sub Class_Initialize()
 End Sub
 
 'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
-Public Function createKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHWnd As Long, ParamArray listOfKeys() As Variant) As Boolean
+Public Function createKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHwnd As Long, ParamArray listOfKeys() As Variant) As Boolean
     
     m_HookedControlName = nameOfTarget
     
-    If targetHWnd <> 0 Then
+    If targetHwnd <> 0 Then
         
         'Make a module-level note of the hWnd; this value will dictate all hooking and subclassing behavior
-        m_targetHwnd = targetHWnd
+        m_targetHwnd = targetHwnd
         
         'Attach the subclasser to this hWnd
-        If Not cSubclass.ssc_Subclass(targetHWnd, , 1, Me) Then
+        If Not cSubclass.ssc_Subclass(targetHwnd, , 1, Me) Then
             
             Debug.Print "WARNING: keyboard subclasser failed to subclass " & m_HookedControlName & ".  Fix it!"
             createKeyboardTracker = False
@@ -171,12 +171,12 @@ Public Function createKeyboardTracker(ByVal nameOfTarget As String, ByVal target
         ' also generate some subclassing bits as well, so we can track focus of our individual windows.
         
         'Subclass two messages: WM_ACTIVATE (for floating windows) and WM_SETFOCUS/KILLFOCUS (for docked windows)
-        cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_ACTIVATE, WM_SETFOCUS, WM_KILLFOCUS
+        cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_ACTIVATE, WM_SETFOCUS, WM_KILLFOCUS
         
         'We now want to copy the list of keycodes we have been passed.  If our hook encounters a keycode that was not specifically
         ' requested, we're going to let the default window proc handle it.  This allows things like the Tab key to behave normally,
         ' unless a control specifically requests otherwise.
-        If Not IsMissing(listOfKeys) Then
+        If UBound(listOfKeys) >= LBound(listOfKeys) Then
             
             'Resize our tracked keycode array
             m_NumOfTrackedKeys = UBound(listOfKeys) - LBound(listOfKeys) + 1
