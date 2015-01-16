@@ -1181,19 +1181,48 @@ Public Sub MenuTest()
     Set cLUT = New pdFilterLUT
     
     Dim rLUT() As Byte, gLUT() As Byte, bLUT() As Byte
+    Dim rLUT2() As Byte, gLUT2() As Byte, bLUT2() As Byte
+    Dim rLUT3() As Byte, gLUT3() As Byte, bLUT3() As Byte
     Dim curvePoints() As POINTFLOAT
     
-    'Test curves below
-    cLUT.helper_QuickCreateCurveArray curvePoints, 0, 0, 93, 76, 232, 226, 255, 255
-    cLUT.fillLUT_Curve rLUT, curvePoints
-    cLUT.fillLUT_Default gLUT
-    cLUT.helper_QuickCreateCurveArray curvePoints, 0, 0, 57, 59, 220, 202, 255, 255
-    cLUT.fillLUT_Curve bLUT, curvePoints
+    '*******************************
+    'Brightness/contrast test (use Merge to combine the two results)
+    'cLUT.fillLUT_Brightness rLUT2, -20
+    'cLUT.fillLUT_Brightness gLUT2, -20
+    'cLUT.fillLUT_Brightness bLUT2, -20
+    '
+    'cLUT.fillLUT_Contrast rLUT3, -50
+    'cLUT.fillLUT_Contrast gLUT3, -50
+    'cLUT.fillLUT_Contrast bLUT3, -50
+    '*******************************
     
+    '*******************************
+    'Gamma test
+    cLUT.fillLUT_Gamma rLUT, 2.2
+    cLUT.fillLUT_Gamma gLUT, 2.2
+    cLUT.fillLUT_Gamma bLUT, 2.2
+    '*******************************
+    
+    '*******************************
+    'Merge test
+    ' 3 after 2...
+    'cLUT.MergeLUTs rLUT2, rLUT3, rLUT
+    'cLUT.MergeLUTs gLUT2, gLUT3, gLUT
+    'cLUT.MergeLUTs bLUT2, bLUT3, bLUT
+    
+    ' ...or 2 after 3...
+    'cLUT.MergeLUTs rLUT3, rLUT2, rLUT
+    'cLUT.MergeLUTs gLUT3, gLUT2, gLUT
+    'cLUT.MergeLUTs bLUT3, bLUT2, bLUT
+    '*******************************
+    
+    '*******************************
+    'Curve test
     'cLUT.helper_QuickCreateCurveArray curvePoints, 0, 255, 255, 0
     'cLUT.fillLUT_Curve rLUT, curvePoints
     'cLUT.fillLUT_Curve gLUT, curvePoints
     'cLUT.fillLUT_Curve bLUT, curvePoints
+    '*******************************
     
     'Apply the test LUTs to the image
     cLUT.applyLUTsToDIB pdImages(g_CurrentImage).getActiveDIB, rLUT, gLUT, bLUT
