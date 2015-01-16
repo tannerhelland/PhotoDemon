@@ -15,10 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Filter LUT (Look Up Table) Support Class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 15/January/15
-'Last updated: 15/January/15
-'Last update: initial build
-'
-'DISCLAIMER: This class is currently under heavy construction.  Many features are still missing.
+'Last updated: 16/January/15
+'Last update: continue fleshing out features
 '
 'Per its name, this class provides support routines for LUT-based image filters.  The goal is to make LUT-based filters
 ' easy to create and chain together, without needing to know the details of how the various filters are implemented.
@@ -63,43 +61,168 @@ Public Sub fillLUT_Default(ByRef srcArray() As Byte)
 
 End Sub
 
-'Helper function for generating curves.  Given a param array of points, return a valid POINTFLOAT array (as required by
-' the fillLUT_Curve function, below).
+'Given an arbitrary byte array, ReDim it to [0, 255] and fill each index with a corresponding brightness-adjusted LUT value
+' (standard additive calculation).  The passed adjustment value should be on the range [-255, 255].
 '
-'Sample usage would be something like:
-' Dim curvePoints() As POINTFLOAT
-' clsLUT.helper_QuickCreateCurveArray curvePoints, 0, 0, 93, 76, 232, 226, 255, 255
-Friend Sub helper_QuickCreateCurveArray(ByRef curvePoints() As POINTFLOAT, ParamArray listOfPoints() As Variant)
-
-    If UBound(listOfPoints) >= LBound(listOfPoints) Then
-                    
-        Dim i As Long, numOfPoints As Long
-        
-        numOfPoints = (UBound(listOfPoints) - LBound(listOfPoints) + 1) \ 2
-        ReDim curvePoints(0 To numOfPoints - 1) As POINTFLOAT
-        
-        For i = 0 To numOfPoints - 1
-            curvePoints(i).x = listOfPoints(i * 2)
-            curvePoints(i).y = listOfPoints(i * 2 + 1)
-        Next i
-        
-    Else
-        Debug.Print "No points provided - helper_QuickCreateCurveArray function failed!"
+'The Optional keyword is only used to demonstrate the default value (e.g. the value that returns the Identity LUT).
+' You should pass an actual value if you want this function to do anything useful!
+Public Sub fillLUT_Brightness(ByRef srcArray() As Byte, Optional ByVal brightnessAdjustment As Long = 0)
+    
+    'Prep the source array
+    ReDim srcArray(0 To 255) As Byte
+    
+    'Apply basic bounds-checking to the input parameter
+    If (brightnessAdjustment < -255) Or (brightnessAdjustment > 255) Then
+        Debug.Print "WARNING: Invalid adjustment passed to fillLUT_Brightness().  Fix it!"
+        Exit Sub
     End If
+    
+    Dim i As Long, newValue As Long
+    
+    'Generate the LUT
+    For i = 0 To 255
+        
+        newValue = i + brightnessAdjustment
+        
+        'Clamp to byte range, as necessary
+        If newValue > 255 Then
+            newValue = 255
+        ElseIf newValue < 0 Then
+            newValue = 0
+        End If
+        
+        srcArray(i) = newValue
+        
+    Next i
 
 End Sub
 
+'Given an arbitrary byte array, ReDim it to [0, 255] and fill each index with a corresponding brightness-adjusted LUT value,
+' using non-standard multiplicative scaling (e.g. New_Value = Old_Value * Input_Parameter).  The passed adjustment value should be
+' on the range [0, 2 or 3], but the upper bound isn't actually checked - just don't make it enormous.
+'
+'The Optional keyword is only used to demonstrate the default value (e.g. the value that returns the Identity LUT).
+' You should pass an actual value if you want this function to do anything useful!
+Public Sub fillLUT_BrightnessMultiplicative(ByRef srcArray() As Byte, Optional ByVal brightnessScale As Double = 1#)
+    
+    'Prep the source array
+    ReDim srcArray(0 To 255) As Byte
+    
+    'Apply basic bounds-checking to the input parameter
+    If (brightnessScale < 0) Then
+        Debug.Print "WARNING: Invalid adjustment passed to fillLUT_BrightnessMultiplicative().  Fix it!"
+        Exit Sub
+    End If
+    
+    Dim i As Long, newValue As Long
+    
+    'Generate the LUT
+    For i = 0 To 255
+        
+        newValue = i * brightnessScale
+        
+        'Clamp to byte range, as necessary
+        If newValue > 255 Then
+            newValue = 255
+        ElseIf newValue < 0 Then
+            newValue = 0
+        End If
+        
+        srcArray(i) = newValue
+        
+    Next i
+
+End Sub
+
+'Given an arbitrary byte array, ReDim it to [0, 255] and fill each index with a corresponding contrast-adjusted LUT value.
+' The passed adjustment value should be on the range [-100, 100].
+'
+'The Optional keyword is only used to demonstrate the default value (e.g. the value that returns the Identity LUT).
+' You should pass an actual value if you want this function to do anything useful!
+Public Sub fillLUT_Contrast(ByRef srcArray() As Byte, Optional ByVal contrastAdjustment As Long = 0)
+    
+    'Prep the source array
+    ReDim srcArray(0 To 255) As Byte
+    
+    'Apply basic bounds-checking to the input parameter
+    If (contrastAdjustment < -100) Or (contrastAdjustment > 100) Then
+        Debug.Print "WARNING: Invalid adjustment passed to fillLUT_Contrast().  Fix it!"
+        Exit Sub
+    End If
+    
+    Dim i As Long, newValue As Long
+    
+    'Generate the LUT
+    For i = 0 To 255
+        
+        'Calculate contrast
+        newValue = i + (((i - 127) * contrastAdjustment) \ 100)
+        
+        'Clamp to byte range, as necessary
+        If newValue > 255 Then
+            newValue = 255
+        ElseIf newValue < 0 Then
+            newValue = 0
+        End If
+        
+        srcArray(i) = newValue
+        
+    Next i
+
+End Sub
+
+'Given an arbitrary byte array, ReDim it to [0, 255] and fill each index with a corresponding gamma-adjusted LUT value.
+' The passed adjustment value should be on the range [>0, ~4 or 5], but the upper bound isn't actually checked - just don't
+' make it enormous, since it's used as part of an exponent function.  (Similarly, don't make it 0.)
+'
+'The Optional keyword is only used to demonstrate the default value (e.g. the value that returns the Identity LUT).
+' You should pass an actual value if you want this function to do anything useful!
+Public Sub fillLUT_Gamma(ByRef srcArray() As Byte, Optional ByVal gammaAdjustment As Double = 1#)
+    
+    'Prep the source array
+    ReDim srcArray(0 To 255) As Byte
+    
+    'Apply basic bounds-checking to the input parameter
+    If (gammaAdjustment <= 0) Then
+        Debug.Print "WARNING: Invalid adjustment passed to fillLUT_Gamma().  Fix it!"
+        Exit Sub
+    End If
+    
+    Dim i As Long, newValue As Long, tmpGammaCalc As Double
+        
+    'Generate the LUT
+    For i = 0 To 255
+        
+        'Calculate gamma
+        tmpGammaCalc = i / 255
+        tmpGammaCalc = tmpGammaCalc ^ (1 / gammaAdjustment)
+        tmpGammaCalc = tmpGammaCalc * 255
+        
+        newValue = Int(tmpGammaCalc)
+        
+        'Clamp to byte range, as necessary
+        If newValue > 255 Then
+            newValue = 255
+        ElseIf newValue < 0 Then
+            newValue = 0
+        End If
+        
+        srcArray(i) = newValue
+        
+    Next i
+
+End Sub
 
 'Given an arbitrary byte array and an array of curve points, generate a Curve LUT using the same formula as PD's Curve tool.
 '
 ' IMPORTANT DETAILS:
 ' 1) The input curvePoints() array is assumed to be 0-based, dimmed to its exact size, with at least two points present,
 '     and all points on the range 0-255, presorted by their x-coordinate.  (While I could rig this function to sort the
-'     input points for the caller, that's a hassle and a lot of extra code, so please - sort your points in advance.
+'     input points for the caller, that's a hassle and a lot of extra code, so please - sort your points in advance.)
 '
-' 2) This function will change the upper bound of the curvePoints array.  This is required to prevent OOB issues when
-'     generating pixels that may lay beyond the last point of the curve.  It will restore the original bound before exiting,
-'     but note that this may cause unsafe pointers to the array to be invalid.
+' 2) This function will temporarily change the upper bound of the curvePoints array.  This is required to prevent OOB issues
+'     when calculating values near the start and end points in the curve.   This function will restore the original bound
+'     before exiting, but I mention this because it will cause any cached unsafe array pointers (e.g. VarPtr) to be invalid.
 '
 ' 3) srcArray doesn't have to be initialized.  This function will do it for you.
 Friend Sub fillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTFLOAT)
@@ -221,10 +344,66 @@ Private Function f(ByRef x As Double) As Double
         f = x * x * x - x
 End Function
 
-'Given four LUTs - one for each channel - apply them to a given DIB.
-' IMPORTANT NOTE: alpha LUTs are not currently implemented.
+'Helper function for generating curves to be used as LUT input parameters.  Given a param array of points (in x/y order), this function
+' will return an assembled POINTFLOAT array (as required by the fillLUT_Curve function, above).
 '
-'Returns 1 if successful, 0 if unsuccessful or canceled by the user.
+'Sample usage would be something like this, for a dramatic S-curve:
+' Dim curvePoints() As POINTFLOAT
+' pdFilterLUTInstance.helper_QuickCreateCurveArray curvePoints, 0, 0, 96, 72, 192, 160, 255, 255
+Friend Sub helper_QuickCreateCurveArray(ByRef curvePoints() As POINTFLOAT, ParamArray listOfPoints() As Variant)
+
+    If UBound(listOfPoints) >= LBound(listOfPoints) Then
+                    
+        Dim i As Long, numOfPoints As Long
+        
+        numOfPoints = (UBound(listOfPoints) - LBound(listOfPoints) + 1) \ 2
+        ReDim curvePoints(0 To numOfPoints - 1) As POINTFLOAT
+        
+        For i = 0 To numOfPoints - 1
+            curvePoints(i).x = listOfPoints(i * 2)
+            curvePoints(i).y = listOfPoints(i * 2 + 1)
+        Next i
+        
+    Else
+        Debug.Print "No points provided - helper_QuickCreateCurveArray function failed!"
+    End If
+
+End Sub
+
+'Given two source LUTs and a destination LUT, merge the two sources and place the composite result into the destination.
+' IMPORTANT NOTE: order is crucial when using this function.  Consider the standard case of applying different LUTs to each individual
+'                 RGB channel, then applying a second, luminance-based LUT to all channels equally.  In a situation like this, you'd
+'                 want to specify the channel-specific LUTs as the FIRST LUT, then the uniform luminance LUT as the SECOND LUT.
+'                 (The primary concern is always clamping, so in general terms, try to save the "most prone to cause clamping" LUT
+'                  as the final LUT in the merge.)
+'
+' ANOTHER IMPORTANT NOTE: the destination LUT must NEVER be one of the source LUTs.  Otherwise, you risk source entries being
+'                         overwritten early in the copy phase, which can result in screwed up subsequent values (because they get
+'                         remapped according to look-up values that have already been remapped!).
+'
+'Finally, note that the destination LUT will be automatically sized for you, but the source LUTs must (obviously) be already sized
+' and filled appropriately.
+Public Sub MergeLUTs(ByRef firstSourceLUT() As Byte, ByRef secondSourceLUT() As Byte, ByRef dstLUT() As Byte)
+    
+    'Prep the source array
+    ReDim dstLUT(0 To 255) As Byte
+    
+    Dim i As Long, newVal As Long
+    
+    'Fill the destination LUT with the values of firstSourceLUT, as passed through secondSourceLUT
+    For i = 0 To 255
+        dstLUT(i) = secondSourceLUT(firstSourceLUT(i))
+    Next i
+
+End Sub
+
+'Given three LUTs - one for each color channel - apply them to a given DIB.
+' IMPORTANT NOTE: alpha LUTs are not currently implemented.  What I might do is create a separate function that takes four LUT inputs.
+'                  That would keep this function speedy, since alpha could be address on an as-needed basis.
+'
+' TODO: try wrapping GDI+ on Vista and later, and do some performance profiling to compare results.
+'
+' RETURNS: 1 if successful, 0 if unsuccessful or canceled by the user.
 Public Function applyLUTsToDIB(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte, ByRef gLUT() As Byte, ByRef bLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Unpremultiply the source DIB, as necessary
