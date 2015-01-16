@@ -1183,16 +1183,17 @@ Public Sub MenuTest()
     Dim rLUT() As Byte, gLUT() As Byte, bLUT() As Byte
     Dim curvePoints() As POINTFLOAT
     
-    'Give red a slight curve
+    'Test curves below
     cLUT.helper_QuickCreateCurveArray curvePoints, 0, 0, 93, 76, 232, 226, 255, 255
     cLUT.fillLUT_Curve rLUT, curvePoints
-    
-    'No curve on G
     cLUT.fillLUT_Default gLUT
-    
-    'Slight curve on B
     cLUT.helper_QuickCreateCurveArray curvePoints, 0, 0, 57, 59, 220, 202, 255, 255
     cLUT.fillLUT_Curve bLUT, curvePoints
+    
+    'cLUT.helper_QuickCreateCurveArray curvePoints, 0, 255, 255, 0
+    'cLUT.fillLUT_Curve rLUT, curvePoints
+    'cLUT.fillLUT_Curve gLUT, curvePoints
+    'cLUT.fillLUT_Curve bLUT, curvePoints
     
     'Apply the test LUTs to the image
     cLUT.applyLUTsToDIB pdImages(g_CurrentImage).getActiveDIB, rLUT, gLUT, bLUT
