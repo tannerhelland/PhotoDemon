@@ -38,8 +38,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Combo Box control
 'Copyright 2014-2015 by Tanner Helland
 'Created: 14/November/14
-'Last updated: 12/January/15
-'Last update: rewrite control to handle its own caption and tooltip translations
+'Last updated: 18/January/15
+'Last update: fix drop-down size calculation to use a scroll bar if the box can't physically fit on-screen
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -637,6 +637,8 @@ Public Property Get ListIndex() As Long
     'We do not track ListIndex persistently.  It is requested on-demand from the combo box.
     If m_ComboBoxHwnd <> 0 Then
         ListIndex = SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&)
+    Else
+        ListIndex = m_BackupListIndex
     End If
     
 End Property
@@ -686,22 +688,22 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
+Public Property Let Enabled(ByVal newValue As Boolean)
     
     'If the control is disabled, the BackColor property actually becomes relevant (because the edit box will allow the back color
     ' to "show through").  As such, set it now, and note that we can use VB's internal property, because it simply wraps the
     ' matching GDI function(s).
     If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
-        If NewValue Then
+        If newValue Then
             UserControl.BackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
         Else
             UserControl.BackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
         End If
     End If
     
-    If m_ComboBoxHwnd <> 0 Then EnableWindow m_ComboBoxHwnd, IIf(NewValue, 1, 0)
+    If m_ComboBoxHwnd <> 0 Then EnableWindow m_ComboBoxHwnd, IIf(newValue, 1, 0)
     
-    UserControl.Enabled = NewValue
+    UserControl.Enabled = newValue
     If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
     
     PropertyChanged "Enabled"
@@ -809,7 +811,7 @@ Private Sub UserControl_Initialize()
         Set cPainterBox = New pdWindowPainter
         Set toolTipManager = New pdToolTip
     
-    'In design mode, we initialize a dummy theming class, so various paitn functions don't fail
+    'In design mode, we initialize a dummy theming class, so various paint functions don't fail
     Else
         Set g_Themer = New pdVisualThemes
     End If
@@ -918,7 +920,10 @@ End Function
 'As the wrapped system combo box may need to be recreated when certain properties are changed, this function is used to
 ' automate the process of destroying an existing window (if any) and recreating it anew.
 Private Function createComboBox() As Boolean
-        
+    
+    'Cache the current listindex
+    m_BackupListIndex = ListIndex
+    
     'If the combo box already exists, kill it
     destroyComboBox
     
@@ -1898,17 +1903,42 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Find the position of the dropdown
                 Dim listRect As RECTL
                 GetWindowRect m_HwndListBox, listRect
-                            
+                
+                Dim finalReportedHeight As Long
+                finalReportedHeight = m_DropDownCalculatedHeight
+                
                 'If the combo box is gonna extend past the edge of the screen, display it above the edit box (instead of below).
                 If editRect.Bottom + m_DropDownCalculatedHeight > g_cMonitors.DesktopHeight Then
                     listRect.Top = editRect.Top - m_DropDownCalculatedHeight + 1
+                    
+                    'Perform a second check; if the box *still* extends past the edge of the screen, we have no choice but to shrink it
+                    ' and display a scroll bar.
+                    If listRect.Top < 0 Then
+                    
+                        'Find the greater available area, up or down, and use that as our extension dimension.
+                        If Abs(listRect.Top) < Abs(g_cMonitors.DesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
+                            
+                            'Top is larger; use it
+                            listRect.Top = 0
+                            finalReportedHeight = editRect.Top
+                            
+                        Else
+                        
+                            'Bottom is larger; use it
+                            listRect.Top = editRect.Bottom
+                            finalReportedHeight = g_cMonitors.DesktopHeight - listRect.Top
+                            
+                        End If
+                    
+                    End If
+                    
                 Else
                     listRect.Top = editRect.Bottom
                 End If
                                         
                 'Move the window into position
                 With listRect
-                    SetWindowPos m_HwndListBox, 0, .Left, .Top, (.Right - .Left), m_DropDownCalculatedHeight, SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
+                    SetWindowPos m_HwndListBox, 0, .Left, .Top, (.Right - .Left), finalReportedHeight, SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
                 End With
                 
                 m_ListPositionSet = True
