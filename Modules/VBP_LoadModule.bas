@@ -137,7 +137,19 @@ Public Sub LoadTheProgram()
     LoadMessage "Loading all user settings..."
     
     g_UserPreferences.loadUserSettings
-            
+    
+    'Mark the Macro recorder as "not recording"
+    MacroStatus = MacroSTOP
+    
+    'Note that no images have been loaded yet
+    g_NumOfImagesLoaded = 0
+    
+    'Set the default active image index to 0
+    g_CurrentImage = 0
+    
+    'Set the number of open image windows to 0
+    g_OpenImageCount = 0
+    
     'While here, also initialize the image format handler (as plugins and other load functions interact with it)
     Set g_ImageFormats = New pdFormats
     
