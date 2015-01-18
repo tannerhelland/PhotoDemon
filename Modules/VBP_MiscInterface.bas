@@ -230,7 +230,7 @@ Public Sub syncInterfaceToCurrentImage()
                 If pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
                     FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
                     FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
-                    toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, g_Language.TranslateMessage("Fade last action")
+                    toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Fade last action"
                     
                     toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = True
                     FormMain.MnuEdit(4).Enabled = True
@@ -238,7 +238,7 @@ Public Sub syncInterfaceToCurrentImage()
                 Else
                     FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
                     FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
-                    toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip g_Language.TranslateMessage("Fade last action")
+                    toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip "Fade last action"
                     
                     toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
                     FormMain.MnuEdit(4).Enabled = False
@@ -527,10 +527,10 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If NewState Then
-                toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, g_Language.TranslateMessage("Undo")
+                toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Undo"
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID) & vbTab & "Ctrl+Z"
             Else
-                toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip g_Language.TranslateMessage("Undo last action")
+                toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip "Undo last action"
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
             End If
             
@@ -546,10 +546,10 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If NewState Then
-                toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip pdImages(g_CurrentImage).undoManager.getRedoProcessID, g_Language.TranslateMessage("Redo")
+                toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip pdImages(g_CurrentImage).undoManager.getRedoProcessID, "Redo"
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID) & vbTab & "Ctrl+Y"
             Else
-                toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip g_Language.TranslateMessage("Redo previous action")
+                toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip "Redo previous action"
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
             End If
             
