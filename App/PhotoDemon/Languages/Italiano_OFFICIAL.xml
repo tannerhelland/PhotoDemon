@@ -8853,7 +8853,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>Se "conserva le immagini nel loro formato originale" è selezionato, PhotoDemon tenterà di salvare ogni immagine nel formato originale.  Se il formato originale non è supportato, verrà utilizzato un formato standard (JPEG o PNG, a seconda della profondità del colore).</translation>
+<translation>Se "mantieni le immagini nel loro formato originale" è selezionato, PhotoDemon tenterà di salvare ogni immagine nel formato originale.  Se il formato originale non è supportato, verrà utilizzato un formato standard (JPEG o PNG, a seconda della profondità del colore).</translation>
 </phrase>
 
 <phrase>
@@ -10930,7 +10930,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>Open one or more images for editing</original>
-<translation>Aprire una o più immagini per la modifica</translation>
+<translation>Apri una o più immagini per la modifica</translation>
 </phrase>
 
 <phrase>
@@ -11020,7 +11020,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>Lasso (Freehand) Selection</original>
-<translation>Selection Lazo (a mano libera)</translation>
+<translation>Selezione Lazo (a mano libera)</translation>
 </phrase>
 
 <phrase>
@@ -12848,7 +12848,7 @@ o il menù File > Apri e File > Importa.</translation>
 
 <phrase>
 <original>Other Unicode controls for testing output</original>
-<translation>Altri controlli Unicode di uscita per i test</translation>
+<translation>Altri controlli Unicode per testarne il rendimento</translation>
 </phrase>
 
 <phrase>
