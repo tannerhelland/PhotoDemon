@@ -2869,34 +2869,19 @@ Private Sub CmdOK_Click()
         'START/END canvas background color
             g_UserPreferences.SetPref_Long "Interface", "Canvas Background", g_CanvasBackground
         
-        'START image window caption length
-    
-            'Check to see if the new caption length setting matches the old one.  If it does not, rewrite all form captions to match
-            If cmbImageCaption.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) Then
-                For Each tForm In vB.Forms
-                    If tForm.Name = "FormImage" Then
-                        If cmbImageCaption.ListIndex = 0 Then
-                            tForm.Caption = pdImages(tForm.Tag).originalFileNameAndExtension
-                        Else
-                            If pdImages(tForm.Tag).locationOnDisk <> "" Then tForm.Caption = pdImages(tForm.Tag).locationOnDisk Else tForm.Caption = pdImages(tForm.Tag).originalFileNameAndExtension
-                        End If
-                    End If
-                Next
-            End If
+        'START/END image window caption length
             g_UserPreferences.SetPref_Long "Interface", "Window Caption Length", cmbImageCaption.ListIndex
         
-        'END image window caption length
+        
+        Dim mruNeedsToBeRebuilt As Boolean
+        mruNeedsToBeRebuilt = False
         
         'START MRU caption length
         
-            'Similarly, check to see if the new MRU caption setting matches the old one.  If it doesn't, reload the MRU.
-            If cmbMRUCaption.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0) Then
-                g_UserPreferences.SetPref_Long "Interface", "MRU Caption Length", cmbMRUCaption.ListIndex
-                g_RecentFiles.MRU_SaveToFile
-                g_RecentFiles.MRU_LoadFromFile
-                resetMenuIcons
-            End If
-        
+            'Check to see if the new MRU caption setting matches the old one.  If it doesn't, reload the MRU.
+            If cmbMRUCaption.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0) Then mruNeedsToBeRebuilt = True
+            g_UserPreferences.SetPref_Long "Interface", "MRU Caption Length", cmbMRUCaption.ListIndex
+            
         'END MRU caption length
         
         'START maximum MRU count
@@ -2910,12 +2895,13 @@ Private Sub CmdOK_Click()
             End If
             
             'If the max number of recent files has changed, update the MRU list to match
-            If newMaxRecentFiles <> g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
-                g_UserPreferences.SetPref_Long "Interface", "Recent Files Limit", tudRecentFiles.Value
-                g_RecentFiles.MRU_NotifyNewMaxLimit
-            End If
+            If newMaxRecentFiles <> g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then mruNeedsToBeRebuilt = True
+            g_UserPreferences.SetPref_Long "Interface", "Recent Files Limit", tudRecentFiles.Value
             
         'END maximum MRU count
+        
+        'If the MRU needs to be rebuilt, do so now
+        If mruNeedsToBeRebuilt Then g_RecentFiles.MRU_NotifyNewMaxLimit
         
     
     'END Interface preferences
@@ -2954,10 +2940,11 @@ Private Sub CmdOK_Click()
             g_UserPreferences.SetPref_Boolean "Saving", "Confirm Closing Unsaved", g_ConfirmClosingUnsaved
     
             If g_ConfirmClosingUnsaved Then
-                toolbar_Toolbox.cmdFile(FILE_CLOSE).ToolTipText = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "If the current image has not been saved, you will receive a prompt to save it before it closes.")
+                toolbar_Toolbox.cmdFile(FILE_CLOSE).assignTooltip "If the current image has not been saved, you will receive a prompt to save it before it closes.", "Close the current image"
             Else
-                toolbar_Toolbox.cmdFile(FILE_CLOSE).ToolTipText = g_Language.TranslateMessage("Close the current image." & vbCrLf & vbCrLf & "Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.")
+                toolbar_Toolbox.cmdFile(FILE_CLOSE).assignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
             End If
+    
         'END prompt on unsaved images
     
         'START/END outgoing color depth selection
@@ -3101,11 +3088,7 @@ Private Sub CmdOK_Click()
     'Because some preferences affect the program's interface, redraw the active image.
     FormMain.refreshAllCanvases
     FormMain.mainCanvas(0).BackColor = g_CanvasBackground
-    
-    If g_OpenImageCount > 0 Then
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    End If
-    
+        
     toolbar_ImageTabs.forceRedraw
     
     SetProgBarVal 0
@@ -3130,6 +3113,11 @@ Private Sub cmdReset_Click()
     If confirmReset = vbYes Then
         g_UserPreferences.resetPreferences
         LoadAllPreferences
+        
+        'Restore the currently active language to the preferences file; this prevents the language from resetting to English
+        ' (a behavior that isn't made clear by this action).
+        g_Language.writeLanguagePreferencesToFile
+        
     End If
 
 End Sub

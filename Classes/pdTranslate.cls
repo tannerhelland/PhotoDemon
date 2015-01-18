@@ -114,6 +114,11 @@ Public Function getCurrentLanguage() As String
     
 End Function
 
+'This function will return PD's internal language index (curLanguage), which matches the language's index in the Language menu.
+Public Function getCurrentLanguageIndex() As Long
+    getCurrentLanguageIndex = curLanguage
+End Function
+
 'External function for asking the translator if a language selection dialog is needed
 Public Function isLanguageDialogNeeded(Optional ByRef reasonForDialog As Long = -1) As Boolean
     If reasonForDialog <> -1 Then reasonForDialog = m_reasonForLanguageDialog
@@ -123,7 +128,7 @@ End Function
 'If a translation file has been requested and successfully loaded, this function will return TRUE
 Public Function readyToTranslate() As Boolean
     
-    If Not xmlEngine Is Nothing Then
+    If Not (xmlEngine Is Nothing) Then
         readyToTranslate = m_isReady
     Else
         readyToTranslate = False
@@ -142,11 +147,15 @@ Public Function translationActive() As Boolean
 
 End Function
 
+Public Sub writeLanguagePreferencesToFile()
+    g_UserPreferences.SetPref_String "Language", "Current Language File", availableLanguages(curLanguage).FileName
+End Sub
+
 'Given an index in the availableLanguages array, mark that as the new language (including saving it to the preferences file)
 Public Sub activateNewLanguage(ByVal newLangIndex As Long, Optional ByVal useDoEvents As Boolean = False)
 
     curLanguage = newLangIndex
-    g_UserPreferences.SetPref_String "Language", "Current Language File", availableLanguages(newLangIndex).FileName
+    writeLanguagePreferencesToFile
     ApplyLanguage useDoEvents
 
 End Sub

@@ -335,18 +335,6 @@ Public Sub loadUserSettings()
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
         
-    'Mark the Macro recorder as "not recording"
-    MacroStatus = MacroSTOP
-    
-    'Note that no images have been loaded yet
-    g_NumOfImagesLoaded = 0
-    
-    'Set the default active image index to 0
-    g_CurrentImage = 0
-    
-    'Set the number of open image windows to 0
-    g_OpenImageCount = 0
-    
     'Terminate batch preference mode before exiting
     endBatchPreferenceMode
         

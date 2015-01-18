@@ -1524,9 +1524,7 @@ End Function
 
 'When the mouse is moved outside the primary image, clear the image coordinates display
 Public Sub ClearImageCoordinatesDisplay()
-    'If g_OpenImageCount > 0 Then
     FormMain.mainCanvas(0).displayCanvasCoordinates 0, 0, True
-    'End If
 End Sub
 
 'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.
