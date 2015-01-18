@@ -130,6 +130,11 @@ Private m_UseCustomForeColor As Boolean
 ' the control caption.
 Private m_FitFailure As Boolean
 
+'Because there is sometimes a delay between updating a VB extender property (e.g. width, height) and VB actually reporting
+' that property when queried, this control will manually cache its size calculations.  These values can be retrieved when
+' manually aligning controls, to guarantee that any size calculations are accurate, even if VB fails to report them correctly.
+Private m_ControlWidth As Long, m_ControlHeight As Long
+
 'Additional helper for rendering themed and multiline tooltips
 Private toolTipManager As pdToolTip
 
@@ -210,9 +215,9 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
+Public Property Let Enabled(ByVal newValue As Boolean)
     
-    UserControl.Enabled = NewValue
+    UserControl.Enabled = newValue
     PropertyChanged "Enabled"
     
     'Redraw the control
@@ -262,6 +267,14 @@ Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
         m_ForeColor = newColor
         If m_UseCustomForeColor Then m_BufferDirty = True
     End If
+End Property
+
+Public Property Get InternalWidth() As Long
+    InternalWidth = m_ControlWidth
+End Property
+
+Public Property Get InternalHeight() As Long
+    InternalHeight = m_ControlHeight
 End Property
 
 Public Property Get Layout() As PD_LABEL_LAYOUT
@@ -741,6 +754,10 @@ Public Sub updateAgainstCurrentTheme()
         
         'Update the current font, as necessary
         refreshFont
+        
+        'Cache the calculated size value
+        m_ControlWidth = m_BackBuffer.getDIBWidth
+        m_ControlHeight = m_BackBuffer.getDIBHeight
         
         'Force an immediate repaint
         updateControlSize
