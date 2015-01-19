@@ -137,9 +137,9 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
+Public Property Let Enabled(ByVal newValue As Boolean)
     
-    UserControl.Enabled = NewValue
+    UserControl.Enabled = newValue
     PropertyChanged "Enabled"
     
     'Redraw the control
@@ -267,13 +267,12 @@ Attribute Value.VB_UserMemId = 0
     Value = m_Value
 End Property
 
-Public Property Let Value(ByVal NewValue As CheckBoxConstants)
+Public Property Let Value(ByVal newValue As CheckBoxConstants)
     
     'Update our internal value tracker
-    If m_Value <> NewValue Then
+    If m_Value <> newValue Then
     
-        m_Value = NewValue
-        PropertyChanged "Value"
+        m_Value = newValue
         
         'Redraw the control; it's important to do this *before* raising the associated event, to maintain an impression of max responsiveness
         redrawBackBuffer
@@ -282,6 +281,8 @@ Public Property Let Value(ByVal NewValue As CheckBoxConstants)
         RaiseEvent Click
         
     End If
+    
+    If Not g_IsProgramRunning Then PropertyChanged "Value"
     
 End Property
 
