@@ -364,6 +364,10 @@ T_SELWAND    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_wand_24.png
 //Layer toolbox (note that other layer toolbox entries are in the Layer Menu section, above
 EYE_OPEN     CUSTOM  MOVEABLE        LOADONCALL      eye.png
 EYE_CLOSE    CUSTOM  MOVEABLE        LOADONCALL      eye_close.png
+LAYER_UP_32  CUSTOM  MOVEABLE        LOADONCALL      arrowhead_up_32.png
+LAYER_DOWN_32 CUSTOM MOVEABLE        LOADONCALL      arrowhead_down_32.png
+LAYER_ADD_32 CUSTOM  MOVEABLE        LOADONCALL      layer_add_32.png
+LAYER_REMOVE_32 CUSTOM MOVEABLE      LOADONCALL      layer_remove_32.png
 
 //Cursors
 HANDOPEN     CUSTOM  MOVEABLE        LOADONCALL      openhand.png

@@ -252,7 +252,6 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     'debugUndo "new Undo entry created"
-    
     Debug.Print "Undo created successfully."
     
 End Sub
