@@ -46,6 +46,7 @@ Begin VB.Form FormMonochrome
       _ExtentX        =   10213
       _ExtentY        =   582
       Caption         =   "automatically calculate threshold"
+      Value           =   0
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   9.75
@@ -219,11 +220,12 @@ End Sub
 Private Sub chkAutoThreshold_Click()
     
     If CBool(chkAutoThreshold.Value) Then
+        cmdBar.markPreviewStatus False
         sltThreshold = calculateOptimalThreshold()
-        sltThreshold.Enabled = False
-    Else
-        sltThreshold.Enabled = True
+        cmdBar.markPreviewStatus True
     End If
+    
+    sltThreshold.Enabled = Not CBool(chkAutoThreshold.Value)
     
     updatePreview
     
@@ -268,6 +270,8 @@ End Sub
 
 Private Sub Form_Load()
     
+    cmdBar.markPreviewStatus False
+    
     'Populate the dither combobox
     cboDither.Clear
     cboDither.AddItem "None", 0
@@ -283,6 +287,8 @@ Private Sub Form_Load()
     cboDither.AddItem "Sierra Lite", 10
     cboDither.AddItem "Atkinson / Classic Macintosh", 11
     cboDither.ListIndex = 6
+    
+    cmdBar.markPreviewStatus True
     
 End Sub
 
