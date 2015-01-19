@@ -263,13 +263,15 @@ End Property
 
 'Used to retrieve a string representation of a shorcut
 Public Function stringRep(ByVal nIndex As Long) As String
+
     If Index(nIndex) > 0 Then
         Dim tmpString As String
-        If m_tAccel(nIndex).eShift And vbCtrlMask Then tmpString = "Ctrl+"
-        If m_tAccel(nIndex).eShift And vbAltMask Then tmpString = tmpString & "Alt+"
-        If m_tAccel(nIndex).eShift And vbShiftMask Then tmpString = tmpString & "Shift+"
+        If m_tAccel(nIndex).eShift And vbCtrlMask Then tmpString = g_Language.TranslateMessage("Ctrl") & "+"
+        If m_tAccel(nIndex).eShift And vbAltMask Then tmpString = tmpString & g_Language.TranslateMessage("Alt") & "+"
+        If m_tAccel(nIndex).eShift And vbShiftMask Then tmpString = tmpString & g_Language.TranslateMessage("Shift") & "+"
         
-        'Processing the string itself takes a bit of extra work, as some keyboard keys won't automatically map to a string
+        'Processing the string itself takes a bit of extra work, as some keyboard keys don't automatically map to a
+        ' string equivalent.  (Also, translations need to be considered.)
         Select Case m_tAccel(nIndex).eKeyCode
         
             Case vbKeyAdd
@@ -279,18 +281,18 @@ Public Function stringRep(ByVal nIndex As Long) As String
                 tmpString = tmpString & "-"
             
             Case vbKeyReturn
-                tmpString = tmpString & "Enter"
+                tmpString = tmpString & g_Language.TranslateMessage("Enter")
             
             Case vbKeyPageUp
-                tmpString = tmpString & "Page Up"
+                tmpString = tmpString & g_Language.TranslateMessage("Page Up")
             
             Case vbKeyPageDown
-                tmpString = tmpString & "Page Down"
+                tmpString = tmpString & g_Language.TranslateMessage("Page Down")
                 
             Case vbKeyF1 To vbKeyF16
                 tmpString = tmpString & "F" & (CLng(m_tAccel(nIndex).eKeyCode) - 111)
             
-            'In the future I will enumerate virtual key bindings properly, using the data at this link:
+            'In the future I would like to enumerate virtual key bindings properly, using the data at this link:
             ' http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
             'For this quick-and-dirty 6.0 fix, however, I'm implementing them as magic numbers.
             Case 188
@@ -312,6 +314,7 @@ Public Function stringRep(ByVal nIndex As Long) As String
         
         stringRep = tmpString
     End If
+    
 End Function
 
 Public Property Get Enabled() As Boolean
