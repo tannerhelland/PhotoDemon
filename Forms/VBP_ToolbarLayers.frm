@@ -29,21 +29,21 @@ Begin VB.Form toolbar_Layers
    Begin PhotoDemon.pdComboBox cboBlendMode 
       Height          =   360
       Left            =   960
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   675
       Width           =   2775
-      _extentx        =   4895
-      _extenty        =   635
+      _ExtentX        =   4895
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdTextBox txtLayerName 
       Height          =   315
       Left            =   120
-      TabIndex        =   8
+      TabIndex        =   4
       Top             =   6360
       Visible         =   0   'False
       Width           =   3255
-      _extentx        =   5741
-      _extenty        =   556
+      _ExtentX        =   5741
+      _ExtentY        =   556
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -51,10 +51,10 @@ Begin VB.Form toolbar_Layers
       Left            =   120
       Top             =   240
       Width           =   675
-      _extentx        =   1191
-      _extenty        =   423
-      caption         =   "opacity:"
-      layout          =   2
+      _ExtentX        =   1191
+      _ExtentY        =   423
+      Caption         =   "opacity:"
+      Layout          =   2
    End
    Begin VB.VScrollBar vsLayer 
       Height          =   4905
@@ -71,94 +71,58 @@ Begin VB.Form toolbar_Layers
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   495
+      Height          =   525
       Left            =   15
-      ScaleHeight     =   33
+      ScaleHeight     =   35
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   249
-      TabIndex        =   7
+      TabIndex        =   3
       TabStop         =   0   'False
-      Top             =   6750
+      Top             =   6720
       Width           =   3735
-      Begin PhotoDemon.jcbutton cmdLayerAction 
-         Height          =   480
-         Index           =   2
-         Left            =   1920
-         TabIndex        =   5
-         Top             =   0
-         Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   7
-         font            =   "VBP_ToolbarLayers.frx":0000
-         backcolor       =   -2147483643
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_ToolbarLayers.frx":0028
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
-         colorscheme     =   3
-      End
-      Begin PhotoDemon.jcbutton cmdLayerAction 
-         Height          =   480
-         Index           =   3
-         Left            =   2640
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
+         Height          =   510
+         Index           =   0
+         Left            =   0
          TabIndex        =   6
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   7
-         font            =   "VBP_ToolbarLayers.frx":0D7A
-         backcolor       =   -2147483643
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_ToolbarLayers.frx":0DA2
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
-         colorscheme     =   3
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
-      Begin PhotoDemon.jcbutton cmdLayerAction 
-         Height          =   480
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
+         Height          =   510
          Index           =   1
-         Left            =   1200
-         TabIndex        =   4
+         Left            =   720
+         TabIndex        =   7
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   7
-         font            =   "VBP_ToolbarLayers.frx":1AF4
-         backcolor       =   -2147483643
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_ToolbarLayers.frx":1B1C
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
-         colorscheme     =   3
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
-      Begin PhotoDemon.jcbutton cmdLayerAction 
-         Height          =   480
-         Index           =   0
-         Left            =   480
-         TabIndex        =   3
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
+         Height          =   510
+         Index           =   2
+         Left            =   1440
+         TabIndex        =   8
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   847
-         buttonstyle     =   7
-         font            =   "VBP_ToolbarLayers.frx":286E
-         backcolor       =   -2147483643
-         caption         =   ""
-         handpointer     =   -1  'True
-         picturenormal   =   "VBP_ToolbarLayers.frx":2896
-         disabledpicturemode=   1
-         captioneffects  =   0
-         tooltiptitle    =   "Open"
-         colorscheme     =   3
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
+         Height          =   510
+         Index           =   3
+         Left            =   2160
+         TabIndex        =   9
+         Top             =   0
+         Width           =   540
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
    End
    Begin VB.PictureBox picLayers 
@@ -184,11 +148,11 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   0
       Top             =   120
       Width           =   2760
-      _extentx        =   4868
-      _extenty        =   873
-      max             =   100
-      notchposition   =   2
-      notchvaluecustom=   100
+      _ExtentX        =   4868
+      _ExtentY        =   873
+      Max             =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -196,10 +160,10 @@ Begin VB.Form toolbar_Layers
       Left            =   120
       Top             =   720
       Width           =   540
-      _extentx        =   953
-      _extenty        =   423
-      caption         =   "blend:"
-      layout          =   2
+      _ExtentX        =   953
+      _ExtentY        =   423
+      Caption         =   "blend:"
+      Layout          =   2
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
@@ -920,14 +884,12 @@ Private Sub Form_Load()
     Set toolTipManager = New pdToolTip
     toolTipManager.setTooltip picLayers.hWnd, Me.hWnd, ""
     
-    'Add helpful tooltips to the layer action buttons at the bottom of the toolbox
-    With toolTipManager
-        .setTooltip cmdLayerAction(0).hWnd, Me.hWnd, g_Language.TranslateMessage("Add a blank layer to the image."), g_Language.TranslateMessage("New layer")
-        .setTooltip cmdLayerAction(1).hWnd, Me.hWnd, g_Language.TranslateMessage("Delete the currently selected layer."), g_Language.TranslateMessage("Delete layer")
-        .setTooltip cmdLayerAction(2).hWnd, Me.hWnd, g_Language.TranslateMessage("Move the current layer upward in the layer stack."), g_Language.TranslateMessage("Move layer up")
-        .setTooltip cmdLayerAction(3).hWnd, Me.hWnd, g_Language.TranslateMessage("Move the current layer downward in the layer stack."), g_Language.TranslateMessage("Move layer down")
-    End With
-        
+    'Add images to the layer action buttons at the bottom of the toolbox
+    cmdLayerAction(0).AssignImage "LAYER_ADD_32", , 50
+    cmdLayerAction(1).AssignImage "LAYER_REMOVE_32", , 50
+    cmdLayerAction(2).AssignImage "LAYER_UP_32", , 50
+    cmdLayerAction(3).AssignImage "LAYER_DOWN_32", , 50
+            
     'Enable custom input handling for the layer box
     Set cMouseEvents = New pdInputMouse
     cMouseEvents.addInputTracker picLayers.hWnd, True, True, , True
@@ -1604,6 +1566,13 @@ Public Sub updateAgainstCurrentTheme()
     Else
         lnSeparatorLeft.BorderColor = vbHighlight
     End If
+    
+    'Recreate tooltips (necessary to support run-time language changes)
+    'Add helpful tooltips to the layer action buttons at the bottom of the toolbox
+    cmdLayerAction(0).assignTooltip "Add a blank layer to the image.", "New layer"
+    cmdLayerAction(1).assignTooltip "Delete the currently selected layer.", "Delete layer"
+    cmdLayerAction(2).assignTooltip "Move the current layer upward in the layer stack.", "Move layer up"
+    cmdLayerAction(3).assignTooltip "Move the current layer downward in the layer stack.", "Move layer down"
     
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)
     reflowInterface
