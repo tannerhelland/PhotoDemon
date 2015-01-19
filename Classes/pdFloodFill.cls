@@ -23,7 +23,7 @@ Attribute VB_Exposed = False
 ' is used to minimize the amount of pixel checks that take place.
 '
 'As a convenience to calling functions, this class exposes a number of options.  Fills can be contiguous (default)
-' or global, meaning the entire image is searched without regard to continuuity.  The comparison mode used between
+' or global, meaning the entire image is searched without regard to continuity.  The comparison mode used between
 ' pixels can also be specified; individual channels (including alpha), luminosity, or a full composite check of all
 ' channels can be specified.  Finally, antialiasing can also be requested.  A custom AA solution is used for
 ' contiguous fills, and it's extremely fast as we know in advance which pixels should be examined for AA.  For
