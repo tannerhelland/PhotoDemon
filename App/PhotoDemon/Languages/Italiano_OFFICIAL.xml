@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1252"?>
 
-
 <pdData>
+
 <pdDataType>Translation</pdDataType>
 
 <langid>it-IT</langid>
@@ -4681,21 +4681,18 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>Close the current image.
-
-If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
-<translation>Chiude l'immagine corrente. 
-
-Se l'immagine corrente non è salvata, riceverai un avviso per salvarla prima di chiuderla.</translation>
+<original>If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
+<translation>Se l'immagine corrente non è stata salvata, si riceverà una richiesta di salvarla prima di chiuderla.</translation>
 </phrase>
 
 <phrase>
-<original>Close the current image.
+<original>Close the current image</original>
+<translation>Chiudi l'immagine corrente</translation>
+</phrase>
 
-Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>Chiudi l'immagine corrente.
-
- Poiché non hai attivato la richiesta di salvataggio (via Utilità -> Opzioni), non riceverai l'avvertimento di salvare questa immagine prima di chiuderla.</translation>
+<phrase>
+<original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
+<translation>Siccome hai disattivato gli avvisi di salvataggio (via Modifica -> Preferenze), non riceverai nessun avviso prima che si chiuda.</translation>
 </phrase>
 
 <phrase>
@@ -5210,7 +5207,7 @@ Se si sceglie di disattivare queste funzioni, potete sempre visitare photodemon.
 <translation>ATTENZIONE: questa cartella non è valida (accesso proibito).  Per favore assegna una cartella valida. Se nessuna nuova cartella è assegnata, PhotoDemon utilizzerà la cartella predefinita per i file temporanei.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 267 phrases. 69 were duplicates of existing phrases, so only 198 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 267 phrases. 68 were duplicates of existing phrases, so only 199 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -6087,11 +6084,41 @@ Per migliorare l'esperienza dell'utente, si prega di lasciare che il programma s
 <!-- BEGIN text for vbalHookControl.ctl -->
 
 <phrase>
+<original>Ctrl</original>
+<translation>Ctrl</translation>
+</phrase>
+
+<phrase>
+<original>Alt</original>
+<translation>Alt</translation>
+</phrase>
+
+<phrase>
+<original>Shift</original>
+<translation>Maiusc</translation>
+</phrase>
+
+<phrase>
+<original>Enter</original>
+<translation>Invio</translation>
+</phrase>
+
+<phrase>
+<original>Page Up</original>
+<translation>Pag Up</translation>
+</phrase>
+
+<phrase>
+<original>Page Down</original>
+<translation>Pag Giù</translation>
+</phrase>
+
+<phrase>
 <original>Failed to initialize custom hotkey handler.</original>
 <translation>Impossibile inizializzare il gestore dei tasti a scelta rapida personalizzati.</translation>
 </phrase>
 
-<!-- vbalHookControl.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- vbalHookControl.ctl contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for vbalHookControl.ctl-->
 
@@ -6562,6 +6589,21 @@ Per favore inserisci un valore numerico.</translation>
 </phrase>
 
 <phrase>
+<original>Fade last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Undo last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Redo previous action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>[untitled image]</original>
 <translation>[immagine non titolata]</translation>
 </phrase>
@@ -6711,7 +6753,7 @@ Per favore inserisci un valore numerico.</translation>
 <translation>Luminosità</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 54 phrases. 20 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 60 phrases. 23 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -10934,21 +10976,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
-<original>If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
-<translation>Se l'immagine corrente non è stata salvata, si riceverà una richiesta di salvarla prima di chiuderla.</translation>
-</phrase>
-
-<phrase>
-<original>Close the current image</original>
-<translation>Chiudi l'immagine corrente</translation>
-</phrase>
-
-<phrase>
-<original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>Siccome hai disattivato gli avvisi di salvataggio (via Modifica -> Preferenze), non riceverai nessun avviso prima che si chiuda.</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
 <translation>ATTENZIONE: questo sovrasciverà l'immagine corrente.  Per salvarla in un file differente, usa il bottone "Salva con nome".</translation>
 </phrase>
@@ -11028,7 +11055,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Selezione Bacchetta Magica</translation>
 </phrase>
 
-<!-- VBP_ToolbarPrimary.frm contains 51 phrases. 23 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
+<!-- VBP_ToolbarPrimary.frm contains 51 phrases. 26 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarPrimary.frm-->
 
@@ -12148,7 +12175,42 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>(nascosto)</translation>
 </phrase>
 
-<!-- VBP_ToolbarLayers.frm contains 37 phrases. 24 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<phrase>
+<original>Add a blank layer to the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>New layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Delete the currently selected layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer upward in the layer stack.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move layer up</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer downward in the layer stack.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolbarLayers.frm contains 41 phrases. 21 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarLayers.frm-->
 
@@ -12834,63 +12896,11 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for pdWindowPainter.cls-->
 
-<!-- BEGIN text for VBP_FormThemeEditor.frm (FormThemeEditor) -->
-
-<phrase>
-<original>Unicode text box for testing</original>
-<translation>Casella di testo Unicode per i test</translation>
-</phrase>
-
-<phrase>
-<original>testing options</original>
-<translation>opzioni per i test</translation>
-</phrase>
-
-<phrase>
-<original>Other Unicode controls for testing output</original>
-<translation>Altri controlli Unicode per testarne il rendimento</translation>
-</phrase>
-
-<phrase>
-<original>1 - added at Form_Load</original>
-<translation>1 - aggiunto alla Form_Load</translation>
-</phrase>
-
-<phrase>
-<original>2 - added at Form_Load</original>
-<translation>2 - aggiunto alla Form_Load</translation>
-</phrase>
-
-<phrase>
-<original>3 - added at Form_Load</original>
-<translation>3 - aggiunto alla Form_Load</translation>
-</phrase>
-
-<phrase>
-<original>4 - added at Form_Load, also ListIndex</original>
-<translation>4 - aggiunto alla Form_Load, anche nell'indice della lista</translation>
-</phrase>
-
-<!-- VBP_FormThemeEditor.frm contains 8 phrases.  One was a duplicate of an existing phrase, so only 7 new phrases were written to file. -->
-
-<!-- END text for VBP_FormThemeEditor.frm-->
-
 <!-- BEGIN text for pdLabel.ctl -->
 
 <!-- pdLabel.ctl contains 0 phrases. -->
 
 <!-- END text for pdLabel.ctl-->
-
-<!-- BEGIN text for VBP_ToolbarDebug.frm (toolbar_Debug) -->
-
-<phrase>
-<original>Debug</original>
-<translation>Debug</translation>
-</phrase>
-
-<!-- VBP_ToolbarDebug.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<!-- END text for VBP_ToolbarDebug.frm-->
 
 <!-- BEGIN text for pdTextBox.ctl -->
 
@@ -13006,13 +13016,19 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for VBP_FormNewImage.frm-->
 
+<!-- BEGIN text for pdFilterLUT.cls -->
+
+<!-- pdFilterLUT.cls contains 0 phrases. -->
+
+<!-- END text for pdFilterLUT.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2271</phrasecount>
+<phrasecount>2277</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3930 phrases. -->
-<!-- 1659 are duplicates, so only 2271 unique phrases have been written to file. -->
-<!-- These 2271 phrases contain approximately 13083 total words. -->
+<!-- As of this build, PhotoDemon contains 3943 phrases. -->
+<!-- 1666 are duplicates, so only 2277 unique phrases have been written to file. -->
+<!-- These 2277 phrases contain approximately 13068 total words. -->
 
 </pdData>
 

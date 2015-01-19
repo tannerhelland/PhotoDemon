@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form frmCreateMaster 
    BackColor       =   &H80000005&
    Caption         =   " PhotoDemon Master Language XML Generator"
-   ClientHeight    =   7665
+   ClientHeight    =   8100
    ClientLeft      =   120
    ClientTop       =   450
    ClientWidth     =   14535
@@ -16,24 +16,24 @@ Begin VB.Form frmCreateMaster
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   511
+   ScaleHeight     =   540
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   969
    StartUpPosition =   3  'Windows Default
    Begin VB.CommandButton cmdConvertLabels 
-      Caption         =   "Convert labels in selected file to pdLabel format"
+      Caption         =   "Convert labels in selected project file to pdLabel format.  (This cannot be undone; use cautiously!)"
       Height          =   450
-      Left            =   6360
+      Left            =   2520
       TabIndex        =   15
-      Top             =   3825
-      Width           =   7935
+      Top             =   4440
+      Width           =   11775
    End
    Begin VB.CommandButton cmdMergeAll 
       Caption         =   "2a (Optional) Automatically merge all language files in default PhotoDemon folder with newest Master XML file..."
       Height          =   735
       Left            =   4800
       TabIndex        =   13
-      Top             =   6600
+      Top             =   7320
       Width           =   9495
    End
    Begin VB.CheckBox chkRemoveDuplicates 
@@ -51,7 +51,7 @@ Begin VB.Form frmCreateMaster
       Height          =   735
       Left            =   8520
       TabIndex        =   7
-      Top             =   5640
+      Top             =   6360
       Width           =   5775
    End
    Begin VB.CommandButton cmdOldLanguage 
@@ -59,7 +59,7 @@ Begin VB.Form frmCreateMaster
       Height          =   735
       Left            =   4800
       TabIndex        =   6
-      Top             =   5640
+      Top             =   6360
       Width           =   3255
    End
    Begin VB.CommandButton cmdMaster 
@@ -67,7 +67,7 @@ Begin VB.Form frmCreateMaster
       Height          =   735
       Left            =   1080
       TabIndex        =   5
-      Top             =   5640
+      Top             =   6360
       Width           =   3255
    End
    Begin VB.CommandButton cmdProcess 
@@ -92,7 +92,7 @@ Begin VB.Form frmCreateMaster
       Left            =   4200
       Sorted          =   -1  'True
       TabIndex        =   4
-      Top             =   1440
+      Top             =   1920
       Width           =   10095
    End
    Begin VB.CommandButton cmdSelectVBP 
@@ -119,9 +119,9 @@ Begin VB.Form frmCreateMaster
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   2
-      Left            =   4200
+      Left            =   240
       TabIndex        =   14
-      Top             =   3960
+      Top             =   4500
       Width           =   2115
    End
    Begin VB.Label lblWarning 
@@ -161,7 +161,7 @@ Begin VB.Form frmCreateMaster
       Height          =   495
       Left            =   4080
       TabIndex        =   11
-      Top             =   4560
+      Top             =   5280
       Width           =   10215
    End
    Begin VB.Label lblTitle 
@@ -182,7 +182,7 @@ Begin VB.Form frmCreateMaster
       Index           =   1
       Left            =   720
       TabIndex        =   10
-      Top             =   5160
+      Top             =   5880
       Width           =   4410
    End
    Begin VB.Label lblTitle 
@@ -203,15 +203,15 @@ Begin VB.Form frmCreateMaster
       Index           =   0
       Left            =   240
       TabIndex        =   9
-      Top             =   4560
+      Top             =   5280
       Width           =   3030
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
       X1              =   8
       X2              =   960
-      Y1              =   288
-      Y2              =   288
+      Y1              =   336
+      Y2              =   336
    End
    Begin VB.Label lblExtract 
       AutoSize        =   -1  'True
@@ -923,7 +923,12 @@ Private Sub processFile(ByVal srcFile As String)
         Case "pdFilterSupport.cls", "cSelfSubHookCallback.cls", "jcButton.ctl"
             Exit Sub
             
-        Case "VBP_PublicVariables.bas", "pdParamString.cls"
+        Case "VBP_PublicVariables.bas", "pdParamString.cls", "VBP_ToolbarDebug.frm"
+            Exit Sub
+            
+        'TEMPORARILY: I am disabling the Theme Editor, as it only contains debug text at present.
+        ' When PD has an actual theme editor, the form *will* need to be translated.
+        Case "VBP_FormThemeEditor.frm"
             Exit Sub
     
     End Select
@@ -1686,7 +1691,7 @@ Private Sub cmdSelectVBP_Click()
     lstProjectFiles.Clear
     
     For i = 0 To UBound(vbpFiles)
-        lstProjectFiles.AddItem vbpFiles(i)
+        If Len(vbpFiles(i)) > 0 Then lstProjectFiles.AddItem vbpFiles(i)
     Next i
     
     'Build a complete version string
@@ -1907,3 +1912,4 @@ Private Function IsAlpha(ByRef srcString As String) As Boolean
     Next i
     
 End Function
+
