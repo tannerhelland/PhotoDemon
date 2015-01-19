@@ -166,11 +166,11 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
+Public Property Let Enabled(ByVal newValue As Boolean)
     
     'Mirror the new enabled setting across child controls
-    UserControl.Enabled = NewValue
-    txtPrimary.Enabled = NewValue
+    UserControl.Enabled = newValue
+    txtPrimary.Enabled = newValue
     txtPrimary = getFormattedStringValue(controlVal)
     
     'Request a button redraw
@@ -331,7 +331,9 @@ Private Sub txtPrimary_Change()
     
     If IsTextEntryValid() Then
         If shpError.Visible Then shpError.Visible = False
+        textBoxInitiated = True
         Value = CDblCustom(txtPrimary)
+        textBoxInitiated = False
     Else
         If Me.Enabled Then shpError.Visible = True
     End If
@@ -356,12 +358,12 @@ Attribute Value.VB_UserMemId = 0
     Value = controlVal
 End Property
 
-Public Property Let Value(ByVal NewValue As Double)
+Public Property Let Value(ByVal newValue As Double)
         
     'Don't make any changes unless the new value deviates from the existing one
-    If (NewValue <> controlVal) Or (Not IsValid(False)) Then
+    If (newValue <> controlVal) Or (Not IsValid(False)) Then
         
-        controlVal = NewValue
+        controlVal = newValue
                 
         'While running, perform bounds-checking.  I disable this in the IDE to improve performance a bit.
         If g_IsProgramRunning Then
@@ -405,9 +407,9 @@ Public Property Get Min() As Double
     Min = controlMin
 End Property
 
-Public Property Let Min(ByVal NewValue As Double)
+Public Property Let Min(ByVal newValue As Double)
         
-    controlMin = NewValue
+    controlMin = newValue
     
     'If the current control .Value is less than the new minimum, change it to match
     If controlVal < controlMin Then
@@ -425,9 +427,9 @@ Public Property Get Max() As Double
     Max = controlMax
 End Property
 
-Public Property Let Max(ByVal NewValue As Double)
+Public Property Let Max(ByVal newValue As Double)
         
-    controlMax = NewValue
+    controlMax = newValue
     
     'If the current control .Value is greater than the new max, change it to match
     If controlVal > controlMax Then
@@ -445,9 +447,9 @@ Public Property Get SigDigits() As Long
     SigDigits = significantDigits
 End Property
 
-Public Property Let SigDigits(ByVal NewValue As Long)
+Public Property Let SigDigits(ByVal newValue As Long)
         
-    significantDigits = NewValue
+    significantDigits = newValue
         
     'Update the text display to reflect the new significant digit amount, including any decimal places
     txtPrimary = getFormattedStringValue(controlVal)
@@ -468,6 +470,16 @@ End Property
 
 Private Sub txtPrimary_GotFocus()
     txtPrimary.selectAll
+End Sub
+
+'Mirror the code from the change event, but force a formatted text sync
+Private Sub txtPrimary_Validate(Cancel As Boolean)
+    If IsTextEntryValid() Then
+        If shpError.Visible Then shpError.Visible = False
+        Value = CDblCustom(txtPrimary)
+    Else
+        If Me.Enabled Then shpError.Visible = True
+    End If
 End Sub
 
 Private Sub UserControl_Initialize()
