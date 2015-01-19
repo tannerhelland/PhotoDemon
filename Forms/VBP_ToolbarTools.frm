@@ -223,7 +223,7 @@ Begin VB.Form toolbar_Options
             Top             =   60
             Width           =   1395
             _ExtentX        =   2461
-            _ExtentY        =   423
+            _ExtentY        =   503
             Caption         =   "size (w, h)"
          End
          Begin PhotoDemon.pdLabel lblSelection 
@@ -726,7 +726,7 @@ Begin VB.Form toolbar_Options
             Top             =   60
             Width           =   3435
             _ExtentX        =   6059
-            _ExtentY        =   423
+            _ExtentY        =   503
             Caption         =   "size (w, h)"
          End
          Begin PhotoDemon.pdLabel lblSelection 
@@ -921,7 +921,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   7
-         Left            =   8295
+         Left            =   8235
          Top             =   195
          Width           =   1500
          _ExtentX        =   0
@@ -932,7 +932,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   6
-         Left            =   8250
+         Left            =   8190
          Top             =   810
          Width           =   1545
          _ExtentX        =   0
@@ -943,7 +943,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   5
-         Left            =   4080
+         Left            =   4020
          Top             =   810
          Width           =   1395
          _ExtentX        =   0
@@ -954,7 +954,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   4
-         Left            =   4050
+         Left            =   3990
          Top             =   195
          Width           =   1425
          _ExtentX        =   0
@@ -965,7 +965,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   3
-         Left            =   -120
+         Left            =   -180
          Top             =   810
          Width           =   1335
          _ExtentX        =   0
@@ -976,7 +976,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   2
-         Left            =   -120
+         Left            =   -180
          Top             =   195
          Width           =   1335
          _ExtentX        =   0
@@ -1595,7 +1595,7 @@ Public Sub updateAgainstCurrentTheme()
     toolbar_Options.sltWandTolerance.assignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
     
     toolbar_Options.btsWandMerge.assignTooltip "The magic wand can operate on the entire image, or just the active layer."
-    toolbar_Options.btsWandArea.assignTooltip "Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuuity."
+    toolbar_Options.btsWandArea.assignTooltip "Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity."
     
     cboWandCompare.assignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
     
