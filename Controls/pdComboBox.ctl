@@ -917,6 +917,39 @@ Private Function getIdealStringHeight() As Long
     
 End Function
 
+'Same idea as the above function, but for width
+Private Function getIdealStringWidth(ByVal srcString As String) As Long
+    
+    If g_IsProgramRunning Then
+    
+        Dim attachedDC As Long
+        attachedDC = curFont.getAttachedDC
+        curFont.releaseFromDC
+        
+        'Create a temporary DC
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank 1, 1, 24
+        
+        'Select the current font into that DC
+        curFont.attachToDC tmpDIB.getDIBDC
+        
+        'Determine a standard string height
+        getIdealStringWidth = curFont.getWidthOfString(srcString)
+        
+        'Remove the font and release our temporary DIB
+        curFont.releaseFromDC
+        curFont.attachToDC attachedDC
+        
+    'Return a dummy value in the IDE
+    Else
+        getIdealStringWidth = 100
+    End If
+    
+    'tmpDIB will be automatically released
+    
+End Function
+
 'As the wrapped system combo box may need to be recreated when certain properties are changed, this function is used to
 ' automate the process of destroying an existing window (if any) and recreating it anew.
 Private Function createComboBox() As Boolean
@@ -1634,14 +1667,44 @@ End Function
 
 'Due to some complexities with the way combo box sizes are handled, adjustments to height require recreating the combo box.  Adjustments to width,
 ' however, are no problem at all.  They can be requested via this function.
-Public Sub requestNewWidth(ByVal newWidth As Long)
+Public Sub requestNewWidth(Optional ByVal newWidth As Long = 100, Optional ByVal autoCalculateWidth As Boolean = False)
 
     'Get the window rect of the current combo box
     Dim comboRect As RECTL
     GetWindowRect m_ComboBoxHwnd, comboRect
     
-    'Request a new size
+    'If the user wants us to calculate width for them, this function becomes more involved
+    If autoCalculateWidth Then
+    
+        Dim maxTextWidth As Long, testWidth As Long
+        maxTextWidth = 0
+        
+        If m_NumBackupEntries > 0 Then
+        
+            Dim i As Long
+            For i = 0 To m_NumBackupEntries - 1
+                
+                'Calculate an ideal width for this string, using the current font
+                testWidth = getIdealStringWidth(m_BackupEntries(i).entryStringTranslated)
+                
+                'Track the largest encountered width
+                If testWidth > maxTextWidth Then maxTextWidth = testWidth
+                
+            Next i
+        
+        Else
+            maxTextWidth = 100
+        End If
+        
+        'Add some padding for the drop-down arrow, then exit
+        newWidth = maxTextWidth + fixDPI(30)
+    
+    End If
+    
+    'Apply the new width to the API combo box; the underlying user control will automatically catch the event,
+    ' and resize itself to match.
     MoveWindow m_ComboBoxHwnd, 0, 0, newWidth, comboRect.Bottom - comboRect.Top, 1
+    syncUserControlSizeToComboSize
 
 End Sub
 
@@ -1658,13 +1721,7 @@ Private Sub syncUserControlSizeToComboSize()
         With UserControl
         
             If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
-            
-                If g_IsProgramCompiled Then
-                    MoveWindow UserControl.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, comboRect.Right - comboRect.Left, comboRect.Bottom - comboRect.Top, 1
-                Else
-                    .Size .ScaleX((comboRect.Right - comboRect.Left), vbPixels, vbTwips), .ScaleY((comboRect.Bottom - comboRect.Top), vbPixels, vbTwips)
-                End If
-                
+                .Size .ScaleX((comboRect.Right - comboRect.Left), vbPixels, vbTwips), .ScaleY((comboRect.Bottom - comboRect.Top), vbPixels, vbTwips)
             End If
         
         End With

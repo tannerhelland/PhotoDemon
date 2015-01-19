@@ -350,8 +350,14 @@ Public Sub updateAgainstCurrentTheme()
     backupZoomIndex = cmbZoom.ListIndex
     backupSizeIndex = cmbSizeUnit.ListIndex
     
+    'Repopulate zoom dropdown text
+    If Not (g_Zoom Is Nothing) Then g_Zoom.initializeViewportEngine
     If Not (g_Zoom Is Nothing) Then g_Zoom.populateZoomComboBox cmbZoom, backupZoomIndex
     Me.populateSizeUnits
+    
+    'Auto-size the newly populated combo boxes, according to the width of their longest entries
+    cmbZoom.requestNewWidth 0, True
+    cmbSizeUnit.requestNewWidth 0, True
     
     'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
     cmdZoomFit.assignTooltip "Fit the image on-screen"
@@ -382,7 +388,19 @@ Public Sub updateAgainstCurrentTheme()
     cmbZoom.ListIndex = backupZoomIndex
     cmbSizeUnit.ListIndex = backupSizeIndex
     
-    'Restore redraws until all theme updates are complete
+    'Reflow any dynamically positioned status bar elements
+    'drawStatusBarIcons (g_OpenImageCount > 0)
+    
+    'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
+    If g_OpenImageCount > 0 Then
+        displayImageSize pdImages(g_CurrentImage), False
+    Else
+        displayImageSize Nothing, True
+    End If
+    
+    displayCanvasCoordinates 0, 0, True
+    
+    'Restore redraw capabilities
     m_suspendRedraws = False
         
 End Sub
@@ -474,19 +492,19 @@ Public Function getScrollValue(ByVal barType As PD_ORIENTATION) As Long
 
 End Function
 
-Public Sub setScrollValue(ByVal barType As PD_ORIENTATION, ByVal NewValue As Long)
+Public Sub setScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Long)
     
     Select Case barType
     
         Case PD_HORIZONTAL
-            HScroll.Value = NewValue
+            HScroll.Value = newValue
             
         Case PD_VERTICAL
-            VScroll.Value = NewValue
+            VScroll.Value = newValue
         
         Case PD_BOTH
-            HScroll.Value = NewValue
-            VScroll.Value = NewValue
+            HScroll.Value = newValue
+            VScroll.Value = newValue
         
     End Select
     
@@ -600,8 +618,12 @@ End Sub
 
 Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize As Boolean = False)
     
+    'If the source image is irrelevant, forcibly specify a ClearSize operation
+    If (srcImage Is Nothing) Then clearSize = True
+    
     'The size display is cleared whenever the user has no images loaded
     If clearSize Then
+    
         lblImgSize.Caption = ""
         
         'Also, clear the back of the canvas
@@ -610,37 +632,33 @@ Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
     'When size IS displayed, we must also refresh the status bar (now that it dynamically aligns its contents)
     Else
         
-        If Not srcImage Is Nothing Then
+        Dim iWidth As Double, iHeight As Double
+        Dim sizeString As String
         
-            Dim iWidth As Double, iHeight As Double
-            Dim sizeString As String
+        'Convert the image size (in pixels) to whatever unit the user has currently selected from the drop-down
+        Select Case cmbSizeUnit.ListIndex
             
-            'Convert the image size (in pixels) to whatever unit the user has currently selected from the drop-down
-            Select Case cmbSizeUnit.ListIndex
+            'Pixels
+            Case 0
+                sizeString = srcImage.Width & " x " & srcImage.Height
                 
-                'Pixels
-                Case 0
-                    sizeString = srcImage.Width & " x " & srcImage.Height
-                    
-                'Inches
-                Case 1
-                    iWidth = convertPixelToOtherUnit(MU_INCHES, srcImage.Width, srcImage.getDPI(), srcImage.Width)
-                    iHeight = convertPixelToOtherUnit(MU_INCHES, srcImage.Height, srcImage.getDPI(), srcImage.Height)
-                    sizeString = Format(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
-                
-                'CM
-                Case 2
-                    iWidth = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Width, srcImage.getDPI(), srcImage.Width)
-                    iHeight = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Height, srcImage.getDPI(), srcImage.Height)
-                    sizeString = Format(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
-                
-            End Select
+            'Inches
+            Case 1
+                iWidth = convertPixelToOtherUnit(MU_INCHES, srcImage.Width, srcImage.getDPI(), srcImage.Width)
+                iHeight = convertPixelToOtherUnit(MU_INCHES, srcImage.Height, srcImage.getDPI(), srcImage.Height)
+                sizeString = Format(iWidth, "0.0##") & " x " & Format(iHeight, "0.0##")
             
-            lblImgSize.Caption = sizeString
-            lblImgSize.updateAgainstCurrentTheme
-            drawStatusBarIcons True
+            'CM
+            Case 2
+                iWidth = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Width, srcImage.getDPI(), srcImage.Width)
+                iHeight = convertPixelToOtherUnit(MU_CENTIMETERS, srcImage.Height, srcImage.getDPI(), srcImage.Height)
+                sizeString = Format(iWidth, "0.0#") & " x " & Format(iHeight, "0.0#")
             
-        End If
+        End Select
+        
+        lblImgSize.Caption = sizeString
+        lblImgSize.updateAgainstCurrentTheme
+        drawStatusBarIcons True
         
     End If
         
@@ -2048,7 +2066,9 @@ Public Sub fixChromeLayout()
                 modifiedHeight = tmpDIB.getDIBHeight + (iconLoadAnImage.getDIBHeight / 2) + fixDPI(24)
                 
                 Dim loadImageMessage As String
-                loadImageMessage = g_Language.TranslateMessage("Drag an image onto this space to begin editing." & vbCrLf & vbCrLf & "You can also use the Open Image button on the left," & vbCrLf & "or the File > Open and File > Import menus.")
+                If Not (g_Language Is Nothing) Then
+                    loadImageMessage = g_Language.TranslateMessage("Drag an image onto this space to begin editing." & vbCrLf & vbCrLf & "You can also use the Open Image button on the left," & vbCrLf & "or the File > Open and File > Import menus.")
+                End If
                 notifyFont.drawCenteredText loadImageMessage, tmpDIB.getDIBWidth, modifiedHeight
                 
                 'Just above the text instructions, add a generic image icon
@@ -2072,14 +2092,19 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
     'Start by clearing the status bar
     picStatusBar.Picture = LoadPicture("")
     
-    'If no images are loaded, do not draw status bar icons.
+    'Some elements must always be reflowed dynamically
+    
+    'The zoom drop-down can now change width if a translation is active.  Make sure the zoom-in button is positioned accordingly.
+    cmdZoomIn.Left = cmbZoom.Left + cmbZoom.Width + fixDPI(3)
+    
+    'Move the left-most line into position.  (This must be done dynamically, or it will be mispositioned
+    ' on high-DPI displays)
+    lineStatusBar(0).Visible = True
+    lineStatusBar(0).x1 = (cmdZoomIn.Left + cmdZoomIn.Width) + fixDPI(6)
+    lineStatusBar(0).x2 = lineStatusBar(0).x1
+    
+    'We will only draw subsequent interface elements if at least one image is currently loaded.
     If enabledState Then
-        
-        'Move the left-most line into position.  (This must be done dynamically, or it will be mispositioned
-        ' on high-DPI displays)
-        lineStatusBar(0).Visible = True
-        lineStatusBar(0).x1 = (cmdZoomIn.Left + cmdZoomIn.Width) + fixDPI(6)
-        lineStatusBar(0).x2 = lineStatusBar(0).x1
         
         'Start with the "image size" button
         cmdImgSize.Left = lineStatusBar(0).x1 + fixDPI(4)
@@ -2108,8 +2133,6 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + fixDPI(10)
         lineStatusBar(2).x2 = lineStatusBar(2).x1
         
-        'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
-        
     'Images are not loaded.  Hide the lines and other items.
     Else
     
@@ -2122,8 +2145,8 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
     End If
     
     'Make our painting persistent
-    picStatusBar.Picture = picStatusBar.Image
-    picStatusBar.Refresh
+    'picStatusBar.Picture = picStatusBar.Image
+    'picStatusBar.Refresh
     
 End Sub
 

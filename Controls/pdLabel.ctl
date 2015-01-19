@@ -641,12 +641,9 @@ Private Sub updateControlSize()
                 'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
-                If g_IsProgramRunning Then
-                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, stringWidth, stringHeight, 1
-                Else
-                    UserControl.Width = ScaleX(stringWidth, vbPixels, vbTwips)
-                    UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
-                End If
+                With UserControl
+                    .Size .ScaleX(stringWidth, vbPixels, vbTwips), .ScaleY(stringHeight, vbPixels, vbTwips)
+                End With
                 
                 'Recreate the backbuffer
                 If (stringWidth <> m_BackBuffer.getDIBWidth) Or (stringHeight <> m_BackBuffer.getDIBHeight) Then
@@ -759,8 +756,9 @@ Public Sub updateAgainstCurrentTheme()
         m_ControlWidth = m_BackBuffer.getDIBWidth
         m_ControlHeight = m_BackBuffer.getDIBHeight
         
-        'Force an immediate repaint
-        updateControlSize
+        'Force an immediate repaint.  (I think we can avoid this manual size request, because refreshFont will prompt one already
+        ' if the font settings have changed in any way.)
+        ' updateControlSize
                 
     End If
     
