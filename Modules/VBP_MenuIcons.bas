@@ -429,11 +429,12 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "SUNSHINE", 7, 4        'Lights and shadows
         '--> Lights and shadows sub-menu
         addMenuIcon "BLACKLIGHT", 7, 4, 0     'Blacklight
-        addMenuIcon "LENSFLARE", 7, 4, 1      'Lens flare
-        addMenuIcon "RAINBOW", 7, 4, 2        'Rainbow
-        addMenuIcon "SUNSHINE", 7, 4, 3       'Sunshine
-        addMenuIcon "DILATE", 7, 4, 5         'Dilate
-        addMenuIcon "ERODE", 7, 4, 6          'Erode
+        'addMenuIcon "CROSSSCREEN", 7, 4, 1    'TODO: Cross-screen (stars)
+        addMenuIcon "LENSFLARE", 7, 4, 2      'Lens flare
+        addMenuIcon "RAINBOW", 7, 4, 3        'Rainbow
+        addMenuIcon "SUNSHINE", 7, 4, 4       'Sunshine
+        addMenuIcon "DILATE", 7, 4, 6         'Dilate
+        addMenuIcon "ERODE", 7, 4, 7          'Erode
     
     addMenuIcon "NATURAL", 7, 5         'Natural
         '--> Natural sub-menu

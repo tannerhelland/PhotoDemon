@@ -1098,28 +1098,33 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Lens flare..."
+            Caption         =   "Cross-screen..."
+            Enabled         =   0   'False
             Index           =   1
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Rainbow..."
+            Caption         =   "Lens flare..."
             Index           =   2
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Sunshine..."
+            Caption         =   "Rainbow..."
             Index           =   3
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "-"
+            Caption         =   "Sunshine..."
             Index           =   4
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Dilate..."
+            Caption         =   "-"
             Index           =   5
          End
          Begin VB.Menu MnuLightShadow 
-            Caption         =   "Erode..."
+            Caption         =   "Dilate..."
             Index           =   6
+         End
+         Begin VB.Menu MnuLightShadow 
+            Caption         =   "Erode..."
+            Index           =   7
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1966,27 +1971,31 @@ Private Sub MnuLightShadow_Click(Index As Integer)
         Case 0
             Process "Black light", True
         
-        'Lens flare
+        'Cross-screen (stars)
         Case 1
+            Process "Cross-screen", True
+        
+        'Lens flare
+        Case 2
             Process "Lens flare", True
         
         'Rainbow
-        Case 2
+        Case 3
             Process "Rainbow", True
             
         'Sunshine
-        Case 3
+        Case 4
             Process "Sunshine", True
         
         '<separator>
-        Case 4
+        Case 5
         
         'Dilate (maximum rank)
-        Case 5
+        Case 6
             Process "Dilate (maximum rank)", True
         
         'Erode (minimum rank)
-        Case 6
+        Case 7
             Process "Erode (minimum rank)", True
         
     

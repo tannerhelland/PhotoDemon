@@ -1328,7 +1328,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormBlackLight.fxBlackLight cParams.GetDouble(1)
             End If
-                   
+        
+        Case "Cross-screen"
+            If showDialog Then
+                showPDDialog vbModal, FormCrossScreen
+            Else
+                'TODO: formcrossscreen.
+            End If
+        
         Case "Lens flare"
             If showDialog Then
                 showPDDialog vbModal, FormLensFlare
