@@ -61,7 +61,6 @@ Begin VB.Form FormHDR
       _ExtentY        =   873
       Min             =   1
       Max             =   100
-      SigDigits       =   1
       Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
@@ -149,8 +148,10 @@ Attribute VB_Exposed = False
 'Imitation HDR Tool
 'Copyright 2014-2015 by Tanner Helland
 'Created: 09/July/14
-'Last updated: 09/July/14
-'Last update: initial build
+'Last updated: 19/January/15
+'Last update: introduce new experimental approach; it's way faster, but it cannot reproduce fine details as sharply.
+'              If testers find this new option preferable, I may look at introducing it as a side-by-side option with
+'              the old CLAHE method, or possibly retiring CLAHE entirely.
 '
 'This is a heavily optimized imiation HDR function.  An accumulation technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
@@ -584,6 +585,164 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
 
 End Sub
 
+'New test approach to HDR.  Unsharp masking can produce an HDR-like image, and it can do it a hell of a lot faster
+' than the CLAHE-based method we've been using.  I'm going to have some testers experiment with the new method, to see
+' if they prefer it.
+Public Sub ApplyImitationHDR_2(ByVal fxQuality As Double, ByVal blendStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+        
+    If Not toPreview Then Message "Generating HDR map for image..."
+        
+    'Create a local array and point it at the pixel data of the current image
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA, toPreview, dstPic
+    
+    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
+    Dim srcDIB As pdDIB
+    Set srcDIB = New pdDIB
+    srcDIB.createFromExistingDIB workingDIB
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
+    
+    'fxQuality represents an HDR radius.  We actually treat this as a percentage of the current image size, using the
+    ' largest dimension.  Max quality is 20% of the image.
+    Dim largestDimension As Long
+    If (finalX - initX) > (finalY - initY) Then largestDimension = (finalX - initX) Else largestDimension = (finalY - initY)
+    
+    Dim hdrRadius As Long
+    hdrRadius = ((fxQuality / 100) * largestDimension) * 0.2
+    
+    'Strength is presented to the user on a [1, 100] scale, but we actually boost this to a literal value of [1, 200]
+    blendStrength = (blendStrength * 2) / 100
+    
+    'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
+    'If toPreview Then hdrRadius = hdrRadius * curDIBValues.previewModifier
+    If hdrRadius = 0 Then hdrRadius = 1
+    
+    'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
+    ' and the results so indistinguishable (3% different according to the Central Limit Theorem:
+    ' https://www.khanacademy.org/math/probability/statistics-inferential/sampling_distribution/v/central-limit-theorem?playlist=Statistics
+    ' ), that I use the faster method instead.
+    Dim gaussBlurSuccess As Long
+    gaussBlurSuccess = 0
+    
+    Dim progBarCalculation As Long
+    progBarCalculation = finalY * 3 + finalX * 3
+    gaussBlurSuccess = CreateApproximateGaussianBlurDIB(hdrRadius, workingDIB, srcDIB, 3, toPreview, progBarCalculation + finalX)
+    
+    'Assuming the blur was created successfully, proceed with the masking portion of the filter.
+    If (gaussBlurSuccess <> 0) Then
+    
+        'Now that we have a gaussian DIB created in workingDIB, we can point arrays toward it and the source DIB
+        Dim dstImageData() As Byte
+        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+        
+        Dim srcImageData() As Byte
+        Dim srcSA As SAFEARRAY2D
+        prepSafeArray srcSA, srcDIB
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim QuickVal As Long, qvDepth As Long
+        qvDepth = curDIBValues.BytesPerPixel
+        
+        'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+        ' based on the size of the area to be processed.
+        Dim progBarCheck As Long
+        progBarCheck = findBestProgBarValue()
+            
+        'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
+        Dim scaleFactor As Double, invScaleFactor As Double
+        scaleFactor = blendStrength + 1
+        invScaleFactor = 1 - scaleFactor
+    
+        Dim blendVal As Double
+        
+        'More color variables - in this case, sums for each color component
+        Dim r As Long, g As Long, b As Long, a As Long
+        Dim r2 As Long, g2 As Long, b2 As Long, a2 As Long
+        Dim newR As Long, newG As Long, newB As Long, newA As Long
+        Dim tLumDelta As Long
+        
+        'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
+            
+            'Retrieve the original image's pixels
+            r = dstImageData(QuickVal + 2, y)
+            g = dstImageData(QuickVal + 1, y)
+            b = dstImageData(QuickVal, y)
+            
+            'Now, retrieve the gaussian pixels
+            r2 = srcImageData(QuickVal + 2, y)
+            g2 = srcImageData(QuickVal + 1, y)
+            b2 = srcImageData(QuickVal, y)
+            
+            tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
+            
+            newR = (scaleFactor * r) + (invScaleFactor * r2)
+            If newR > 255 Then newR = 255
+            If newR < 0 Then newR = 0
+            
+            newG = (scaleFactor * g) + (invScaleFactor * g2)
+            If newG > 255 Then newG = 255
+            If newG < 0 Then newG = 0
+            
+            newB = (scaleFactor * b) + (invScaleFactor * b2)
+            If newB > 255 Then newB = 255
+            If newB < 0 Then newB = 0
+            
+            blendVal = tLumDelta / 255
+            
+            newR = BlendColors(newR, r, blendVal)
+            newG = BlendColors(newG, g, blendVal)
+            newB = BlendColors(newB, b, blendVal)
+            
+            dstImageData(QuickVal + 2, y) = newR
+            dstImageData(QuickVal + 1, y) = newG
+            dstImageData(QuickVal, y) = newB
+            
+            If qvDepth = 4 Then
+                a2 = srcImageData(QuickVal + 3, y)
+                a = dstImageData(QuickVal + 3, y)
+                newA = (scaleFactor * a) + (invScaleFactor * a2)
+                If newA > 255 Then newA = 255
+                If newA < 0 Then newA = 0
+                dstImageData(QuickVal + 3, y) = BlendColors(newA, a, blendVal)
+            End If
+                                    
+        Next y
+            If Not toPreview Then
+                If (x And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal progBarCalculation + x
+                End If
+            End If
+        Next x
+        
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        Erase srcImageData
+        
+        srcDIB.eraseDIB
+        Set srcDIB = Nothing
+        
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        Erase dstImageData
+        
+    End If
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData toPreview, dstPic
+        
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
     Process "HDR", , buildParams(sltRadius.Value, sltStrength.Value), UNDO_LAYER
@@ -632,7 +791,7 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyImitationHDR sltRadius.Value, sltStrength.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyImitationHDR_2 sltRadius.Value, sltStrength.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
