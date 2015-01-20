@@ -617,6 +617,11 @@ Public Sub ApplyImitationHDR_2(ByVal fxQuality As Double, ByVal blendStrength As
     Dim hdrRadius As Long
     hdrRadius = ((fxQuality / 100) * largestDimension) * 0.2
     
+    'Strength is used as an analog for multiple parameters.  Here, we use it to calculate a saturation modifier,
+    ' which is applied linearly to the final RGB values, as a way to further pop colors.
+    Dim satBoost As Double
+    satBoost = 1# + (blendStrength / 100) * 0.3
+    
     'Strength is presented to the user on a [1, 100] scale, but we actually boost this to a literal value of [1, 200]
     blendStrength = (blendStrength * 2) / 100
     
@@ -668,6 +673,7 @@ Public Sub ApplyImitationHDR_2(ByVal fxQuality As Double, ByVal blendStrength As
         Dim r As Long, g As Long, b As Long, a As Long
         Dim r2 As Long, g2 As Long, b2 As Long, a2 As Long
         Dim newR As Long, newG As Long, newB As Long, newA As Long
+        Dim h As Double, s As Double, l As Double
         Dim tLumDelta As Long
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
@@ -704,6 +710,12 @@ Public Sub ApplyImitationHDR_2(ByVal fxQuality As Double, ByVal blendStrength As
             newR = BlendColors(newR, r, blendVal)
             newG = BlendColors(newG, g, blendVal)
             newB = BlendColors(newB, b, blendVal)
+            
+            'Finally, apply a saturation boost proportional to the final calculated strength
+            tRGBToHSL newR, newG, newB, h, s, l
+            s = s * satBoost
+            If s > 1 Then s = 1
+            tHSLToRGB h, s, l, newR, newG, newB
             
             dstImageData(QuickVal + 2, y) = newR
             dstImageData(QuickVal + 1, y) = newG
