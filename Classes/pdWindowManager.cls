@@ -293,20 +293,20 @@ Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
 
 'API calls for changing window style
-Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHWnd As Long, ByVal TransColor As Long, ByVal newAlpha As Byte, ByVal fFlags As Long) As Boolean
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal targetHwnd As Long, ByVal TransColor As Long, ByVal newAlpha As Byte, ByVal fFlags As Long) As Boolean
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Long) As Long
 Private Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long, ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Long) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
-Private Declare Function UpdateWindow Lib "user32" (ByVal targetHWnd As Long) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
+Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function AdjustWindowRect Lib "user32" (ByRef lpRect As winRect, ByVal dwStyle As Long, ByVal bMenu As Long) As Long
-Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal targetHWnd As Long, ByVal lpString As String) As Long
-Private Declare Function AnimateWindow Lib "user32" (ByVal targetHWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
-Private Declare Function SetFocus Lib "user32" (ByVal targetHWnd As Long) As Long
+Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal targetHwnd As Long, ByVal lpString As String) As Long
+Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
+Private Declare Function SetFocus Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdateRectPtr As Long, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
 
@@ -887,50 +887,50 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
 End Sub
 
 'Given a window, return its horizontal (or vertical) client size, in pixels.
-Public Function getClientWidth(ByVal targetHWnd As Long) As Long
+Public Function getClientWidth(ByVal targetHwnd As Long) As Long
     Dim tmpRect As winRect
-    GetClientRect targetHWnd, tmpRect
+    GetClientRect targetHwnd, tmpRect
     getClientWidth = tmpRect.x2
 End Function
 
-Public Function getClientHeight(ByVal targetHWnd As Long) As Long
+Public Function getClientHeight(ByVal targetHwnd As Long) As Long
     Dim tmpRect As winRect
-    GetClientRect targetHWnd, tmpRect
+    GetClientRect targetHwnd, tmpRect
     getClientHeight = tmpRect.y2
 End Function
 
 'Given a window, return its horizontal (or vertical) size, in pixels.
-Private Function getWindowWidth(ByVal targetHWnd As Long) As Long
+Private Function getWindowWidth(ByVal targetHwnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect targetHWnd, tmpRect
+    GetWindowRect targetHwnd, tmpRect
     getWindowWidth = tmpRect.x2 - tmpRect.x1
 End Function
 
-Private Function getWindowHeight(ByVal targetHWnd As Long) As Long
+Private Function getWindowHeight(ByVal targetHwnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect targetHWnd, tmpRect
+    GetWindowRect targetHwnd, tmpRect
     getWindowHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
 'Given a window, find the size differential between the window and client areas.
 ' These two functions *should* return accurate results regardless of OS visual settings.
-Public Function getHorizontalChromeSize(ByVal targetHWnd As Long) As Long
+Public Function getHorizontalChromeSize(ByVal targetHwnd As Long) As Long
 
     'Ask the OS to report window and client size
     Dim WindowRECT As winRect, clientRect As winRect
-    GetWindowRect targetHWnd, WindowRECT
-    GetClientRect targetHWnd, clientRect
+    GetWindowRect targetHwnd, WindowRECT
+    GetClientRect targetHwnd, clientRect
     
     getHorizontalChromeSize = (WindowRECT.x2 - WindowRECT.x1) - clientRect.x2
     
 End Function
 
-Public Function getVerticalChromeSize(ByVal targetHWnd As Long) As Long
+Public Function getVerticalChromeSize(ByVal targetHwnd As Long) As Long
 
     'Ask the OS to report window and client size
     Dim WindowRECT As winRect, clientRect As winRect
-    GetWindowRect targetHWnd, WindowRECT
-    GetClientRect targetHWnd, clientRect
+    GetWindowRect targetHwnd, WindowRECT
+    GetClientRect targetHwnd, clientRect
     
     getVerticalChromeSize = (WindowRECT.y2 - WindowRECT.y1) - clientRect.y2
     
@@ -943,21 +943,21 @@ Private Sub forceFullWindowRefresh(ByVal winIndex As Long)
 End Sub
 
 'Retrieve the client coordinates of a window, but relative to the *screen* (e.g. with the top-left set to screen coords instead of the default (0,0)
-Private Sub getClientCoordsRelativeToScreen(ByVal targetHWnd As Long, ByRef rectToFill As winRect)
+Private Sub getClientCoordsRelativeToScreen(ByVal targetHwnd As Long, ByRef rectToFill As winRect)
 
     Dim curClientRect As winRect
-    GetClientRect targetHWnd, curClientRect
+    GetClientRect targetHwnd, curClientRect
     
     'Client rect is always based at (0,0); to convert it to screen coordinates, we use the ClientToScreen API function.
     Dim clientLeft As POINTAPI, clientRight As POINTAPI
     
     'Retrieve the top-left corner first.  Note that we don't have to fill clientLeft, because the top-left client coordinates are always (0,0)
-    ClientToScreen targetHWnd, clientLeft
+    ClientToScreen targetHwnd, clientLeft
     
     'Fill the bottom-right coord object, then convert it to screen coords
     clientRight.x = curClientRect.x2
     clientRight.y = curClientRect.y2
-    ClientToScreen targetHWnd, clientRight
+    ClientToScreen targetHwnd, clientRight
     
     'Fill the rect object we were passed.
     rectToFill.x1 = clientLeft.x
