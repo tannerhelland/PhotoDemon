@@ -55,7 +55,7 @@ Begin VB.Form FormUnsharpMask
       Height          =   495
       Left            =   6000
       TabIndex        =   6
-      Top             =   3690
+      Top             =   3210
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
@@ -65,7 +65,7 @@ Begin VB.Form FormUnsharpMask
       Height          =   495
       Left            =   6000
       TabIndex        =   7
-      Top             =   2730
+      Top             =   2250
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
@@ -79,7 +79,7 @@ Begin VB.Form FormUnsharpMask
       Height          =   495
       Left            =   6000
       TabIndex        =   8
-      Top             =   1770
+      Top             =   1290
       Width           =   5925
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -87,6 +87,45 @@ Begin VB.Form FormUnsharpMask
       Max             =   200
       SigDigits       =   1
       Value           =   5
+   End
+   Begin PhotoDemon.buttonStrip btsQuality 
+      Height          =   600
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   4260
+      Width           =   5910
+      _ExtentX        =   10425
+      _ExtentY        =   1058
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "quality:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   315
+      Index           =   0
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   3840
+      Width           =   795
    End
    Begin VB.Label lblAmount 
       Appearance      =   0  'Flat
@@ -107,7 +146,7 @@ Begin VB.Form FormUnsharpMask
       Height          =   285
       Left            =   6000
       TabIndex        =   5
-      Top             =   2400
+      Top             =   1920
       Width           =   900
    End
    Begin VB.Label lblTitle 
@@ -128,7 +167,7 @@ Begin VB.Form FormUnsharpMask
       Index           =   1
       Left            =   6000
       TabIndex        =   4
-      Top             =   3360
+      Top             =   2880
       Width           =   1080
    End
    Begin VB.Label lblIDEWarning 
@@ -143,10 +182,10 @@ Begin VB.Form FormUnsharpMask
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H000000FF&
-      Height          =   1095
+      Height          =   855
       Left            =   6000
       TabIndex        =   3
-      Top             =   4440
+      Top             =   4920
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
@@ -168,7 +207,7 @@ Begin VB.Form FormUnsharpMask
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   1440
+      Top             =   960
       Width           =   735
    End
 End
@@ -181,8 +220,8 @@ Attribute VB_Exposed = False
 'Unsharp Masking Tool
 'Copyright 2001-2015 by Tanner Helland
 'Created: 03/March/01
-'Last updated: 17/January/13
-'Last update: rewrote as a full tool, instead of a single hard-coded 5x5 implementation
+'Last updated: 19/January/15
+'Last update: major performance optimizations, in the form of selectable quality.
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a variable radius Unsharp Mask filter
 ' that utilizes all three traditional controls (radius, amount, and threshold) and is based on a
@@ -208,7 +247,7 @@ Dim m_ToolTip As clsToolTip
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal umThreshold As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal umThreshold As Long, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
         
     If Not toPreview Then Message "Applying unsharp mask (step %1 of %2)...", 1, 2
         
@@ -229,14 +268,47 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
     
+    'If the quality is set to 1 ("better" quality), and the radius is under 30, simply use quality 0.  There is no reason
+    ' to distinguish between them at that level, as differences really aren't noticeable until much larger amounts.
+    If (gaussQuality = 1) And (umRadius < 30) Then gaussQuality = 0
+    
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         umRadius = umRadius * curDIBValues.previewModifier
         If umRadius = 0 Then umRadius = 0.1
     End If
     
-    'Unsharp masking requires a gaussian blur DIB to operate.  Create one now.
-    If CreateGaussianBlurDIB(umRadius, workingDIB, srcDIB, toPreview, finalY * 2 + finalX) Then
+    'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
+    ' and the results so indistinguishable (3% different according to the Central Limit Theorem:
+    ' https://www.khanacademy.org/math/probability/statistics-inferential/sampling_distribution/v/central-limit-theorem?playlist=Statistics
+    ' ), that I recommend the faster methods instead.
+    Dim gaussBlurSuccess As Long
+    gaussBlurSuccess = 0
+    
+    Dim progBarCalculation As Long
+    progBarCalculation = 0
+    
+    Select Case gaussQuality
+    
+        '3 iteration box blur
+        Case 0
+            progBarCalculation = finalY * 3 + finalX * 3
+            gaussBlurSuccess = CreateApproximateGaussianBlurDIB(umRadius, workingDIB, srcDIB, 3, toPreview, progBarCalculation + finalX)
+        
+        '5 iteration box blur
+        Case 1
+            progBarCalculation = finalY * 5 + finalX * 5
+            gaussBlurSuccess = CreateApproximateGaussianBlurDIB(umRadius, workingDIB, srcDIB, 5, toPreview, progBarCalculation + finalX)
+        
+        'True Gaussian
+        Case Else
+            progBarCalculation = finalY * 2
+            gaussBlurSuccess = CreateGaussianBlurDIB(umRadius, workingDIB, srcDIB, toPreview, progBarCalculation + finalX)
+        
+    End Select
+    
+    'Assuming the blur was created successfully, proceed with the masking portion of the filter.
+    If (gaussBlurSuccess <> 0) Then
     
         'Now that we have a gaussian DIB created in workingDIB, we can point arrays toward it and the source DIB
         Dim dstImageData() As Byte
@@ -328,10 +400,10 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
             End If
                     
         Next y
-            If toPreview = False Then
+            If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal x + (finalY * 2)
+                    SetProgBarVal progBarCalculation + x
                 End If
             End If
         Next x
@@ -352,8 +424,12 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         
 End Sub
 
+Private Sub btsQuality_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Unsharp mask", , buildParams(sltRadius, sltAmount, sltThreshold), UNDO_LAYER
+    Process "Unsharp mask", , buildParams(sltRadius, sltAmount, sltThreshold, btsQuality.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -375,9 +451,6 @@ Private Sub Form_Activate()
         sltRadius.Max = 50
         lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool is very slow when used inside the IDE. Please compile for best results.")
         lblIDEWarning.Visible = True
-    Else
-        '32bpp images take longer to process.  Limit the radius to 100 in this case.
-        If pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth = 32 Then sltRadius.Max = 100 Else sltRadius.Max = 200
     End If
     
     'Draw a preview of the effect
@@ -390,6 +463,12 @@ Private Sub Form_Load()
     
     'Suspend previews until the dialog is fully loaded
     cmdBar.markPreviewStatus False
+    
+    'Populate the quality selector
+    btsQuality.AddItem "good", 0
+    btsQuality.AddItem "better", 1
+    btsQuality.AddItem "best", 2
+    btsQuality.ListIndex = 0
     
 End Sub
 
@@ -410,7 +489,7 @@ Private Sub sltThreshold_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then UnsharpMask sltRadius, sltAmount, sltThreshold, True, fxPreview
+    If cmdBar.previewsAllowed Then UnsharpMask sltRadius, sltAmount, sltThreshold, btsQuality.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
