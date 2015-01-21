@@ -295,7 +295,7 @@ End Sub
 '
 'The Optional keyword is only used to demonstrate default values (e.g. the values that return the Identity LUT).
 ' You should pass actual values if you want this function to do anything useful!
-Public Sub fillLUT_RemappedRange(ByRef srcArray() As Byte, Optional ByVal inputMin As Long = 0, Optional ByVal inputMax As Long = 25, Optional ByVal outputMin As Long = 0, Optional ByVal outputMax As Long = 255)
+Public Sub fillLUT_RemappedRange(ByRef srcArray() As Byte, Optional ByVal inputMin As Long = 0, Optional ByVal inputMax As Long = 255, Optional ByVal outputMin As Long = 0, Optional ByVal outputMax As Long = 255)
     
     'Prep the source array
     ReDim srcArray(0 To 255) As Byte
