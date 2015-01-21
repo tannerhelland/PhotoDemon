@@ -999,7 +999,9 @@ Public Sub writeUndoDataToXML(ByVal dstFilename As String)
     
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
     ' will use this as an image preview if something goes horribly wrong.
-    If (undoNum > 0) And (Not (undoStack(undoNum - 1).thumbnailLarge Is Nothing)) Then Saving.QuickSaveDIBAsPNG generateUndoHeaderFilename & ".asp", undoStack(undoNum - 1).thumbnailLarge
+    If (undoNum > 0) Then
+        If (Not (undoStack(undoNum - 1).thumbnailLarge Is Nothing)) Then Saving.QuickSaveDIBAsPNG generateUndoHeaderFilename & ".asp", undoStack(undoNum - 1).thumbnailLarge
+    End If
     
 End Sub
 
