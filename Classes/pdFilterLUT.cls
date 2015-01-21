@@ -289,6 +289,85 @@ Friend Sub fillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTF
     
 End Sub
 
+'Given an arbitrary byte array, ReDim it to [0, 255] and fill each index with a corresponding range-adjusted LUT value.
+' This LUT function is similar to Levels, but without the pesky midtone operator.  Note that both input and output ranges
+' can be specified, but either will default to [0, 255] if unsupplied.
+'
+'The Optional keyword is only used to demonstrate default values (e.g. the values that return the Identity LUT).
+' You should pass actual values if you want this function to do anything useful!
+Public Sub fillLUT_RemappedRange(ByRef srcArray() As Byte, Optional ByVal inputMin As Long = 0, Optional ByVal inputMax As Long = 25, Optional ByVal outputMin As Long = 0, Optional ByVal outputMax As Long = 255)
+    
+    'Prep the source array
+    ReDim srcArray(0 To 255) As Byte
+    
+    'Apply bounds-checking
+    Dim boundFail As Boolean
+    boundFail = False
+    
+    If (inputMin < 0) Or (inputMax < 0) Or (outputMin < 0) Or (outputMax < 0) Then boundFail = True
+    If (inputMin > 255) Or (inputMax > 255) Or (outputMin > 255) Or (outputMax > 255) Then boundFail = True
+    If (inputMin >= inputMax) Or (outputMin >= outputMax) Then boundFail = True
+    
+    If boundFail Then
+        Debug.Print "WARNING: Invalid adjustment passed to fillLUT_RemappedRange().  Fix it!"
+        Exit Sub
+    End If
+    
+    Dim i As Long, tmpCalc As Double
+    Dim inRange As Long, outRange As Long
+    
+    inRange = inputMax - inputMin
+    outRange = outputMax - outputMin
+        
+    'Generate the LUT
+    For i = 0 To 255
+        
+        'Remap the input value to the [0, 1] range
+        tmpCalc = (i - inputMin) / inRange
+        
+        'Now, map the [0, 1] value to the desired output range
+        tmpCalc = tmpCalc * outRange + outputMin
+        
+        'Failsafe range clamping
+        If tmpCalc < 0 Then
+            tmpCalc = 0
+        ElseIf tmpCalc > 255 Then
+            tmpCalc = 255
+        End If
+        
+        srcArray(i) = tmpCalc
+        
+    Next i
+
+End Sub
+
+'Given an arbitrary byte array, ReDim it to [0, 255] and fill each index with a corresponding threshold-adjusted LUT value.
+' Values LESS THAN the cutoff will be set to 0.  Values GREATER THAN OR EQUAL TO the cutoff will be set to 255.
+' The passed adjustment value should be on the range [0, 256], but this function will actually accept any input.
+'
+'The Optional keyword is only used to demonstrate the default value (which in this case, does NOT return an Identity LUT).
+Public Sub fillLUT_Threshold(ByRef srcArray() As Byte, Optional ByVal thresholdCutoff As Long = 127)
+    
+    'Prep the source array
+    ReDim srcArray(0 To 255) As Byte
+    
+    'Note that this function does not require bounds-checking, but if it did, we would apply it here.
+    
+    Dim i As Long
+    
+    'Generate the LUT
+    For i = 0 To 255
+        
+        If i < thresholdCutoff Then
+            srcArray(i) = 0
+        Else
+            srcArray(i) = 255
+        End If
+        
+    Next i
+
+End Sub
+
 'Spline initialization function used by the Curve LUT generator.  Call this function once prior to generating a curve.
 Private Sub SetPandU(ByVal numOfPoints As Long, ByRef srcPoints() As POINTFLOAT, ByRef p() As Double, ByRef u() As Double)
     
@@ -404,7 +483,7 @@ End Sub
 ' TODO: try wrapping GDI+ on Vista and later, and do some performance profiling to compare results.
 '
 ' RETURNS: 1 if successful, 0 if unsuccessful or canceled by the user.
-Public Function applyLUTsToDIB(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte, ByRef gLUT() As Byte, ByRef bLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte, ByRef gLUT() As Byte, ByRef bLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Unpremultiply the source DIB, as necessary
     If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha False
@@ -473,6 +552,87 @@ Public Function applyLUTsToDIB(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte, ByRe
     'Premultiply the source DIB, as necessary
     If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha True
     
-    If cancelCurrentAction Then applyLUTsToDIB = 0 Else applyLUTsToDIB = 1
+    If cancelCurrentAction Then applyLUTsToDIB_Color = 0 Else applyLUTsToDIB_Color = 1
+    
+End Function
+
+'Given one LUT, apply it to each pixel in the image, using the pixel's calculated GRAY VALUE as the LUT lookup parameter.
+'
+' RETURNS: 1 if successful, 0 if unsuccessful or canceled by the user.
+Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+    
+    'Unpremultiply the source DIB, as necessary
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha False
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = srcDIB.getDIBColorDepth \ 8
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = findBestProgBarValue()
+    End If
+    
+    'Color values are used, but I plan on doing some testing to see if direct LUT assignment is faster.
+    Dim r As Long, g As Long, b As Long, grayVal As Long, grayByte As Byte
+        
+    'Now we can loop through each pixel in the image, converting values as we go
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+        
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
+        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+        If grayVal > 255 Then grayVal = 255
+        grayByte = gLUT(grayVal)
+        
+        'Assign the look-up table values
+        ImageData(QuickVal + 2, y) = grayByte
+        ImageData(QuickVal + 1, y) = grayByte
+        ImageData(QuickVal, y) = grayByte
+        
+    Next y
+        If Not suppressMessages Then
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + modifyProgBarOffset
+            End If
+        End If
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Premultiply the source DIB, as necessary
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha True
+    
+    If cancelCurrentAction Then applyLUTsToDIB_Gray = 0 Else applyLUTsToDIB_Gray = 1
     
 End Function
