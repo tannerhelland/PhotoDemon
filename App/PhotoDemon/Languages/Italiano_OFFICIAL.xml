@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.6.0</langversion>
+<langversion>6.6.1</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -2788,6 +2788,11 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
+<original>Cross-screen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Lens flare</original>
 <translation>Bagliore lenticolare</translation>
 </phrase>
@@ -3596,6 +3601,20 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
+<original>Language changed successfully!
+
+Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.</original>
+<translation>Linguaggio modificato correttamente!
+
+Nota: un testo meno significativo del programma non può essere aggiornato dal vivo. Tale testo verrà tradotto correttamente la prossima volta che si avvia l'applicazione.</translation>
+</phrase>
+
+<phrase>
+<original>Language changed successfully</original>
+<translation>Linguaggio modificato con successo</translation>
+</phrase>
+
+<phrase>
 <original>No metadata available.</original>
 <translation>Nessun metadato disponibile.</translation>
 </phrase>
@@ -3775,7 +3794,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Rimuovi il canale alfa</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 536 phrases. 156 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 540 phrases. 157 were duplicates of existing phrases, so only 383 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -6590,17 +6609,17 @@ Per favore inserisci un valore numerico.</translation>
 
 <phrase>
 <original>Fade last action</original>
-<translation></translation>
+<translation>Sfuma con l'ultima azione</translation>
 </phrase>
 
 <phrase>
 <original>Undo last action</original>
-<translation></translation>
+<translation>Annulla l'ultima azione</translation>
 </phrase>
 
 <phrase>
 <original>Redo previous action</original>
-<translation></translation>
+<translation>Ripeti l'azione precedente</translation>
 </phrase>
 
 <phrase>
@@ -8170,7 +8189,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione della maschera di contrasto (passo %1 di %2)</translation>
 </phrase>
 
-<!-- VBP_FormUnsharpMask.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormUnsharpMask.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormUnsharpMask.frm-->
 
@@ -12177,37 +12196,37 @@ o il menù File > Apri e File > Importa.</translation>
 
 <phrase>
 <original>Add a blank layer to the image.</original>
-<translation></translation>
+<translation>Aggiungi un livello vuoto all'immagine.</translation>
 </phrase>
 
 <phrase>
 <original>New layer</original>
-<translation></translation>
+<translation>Nuovo livello</translation>
 </phrase>
 
 <phrase>
 <original>Delete the currently selected layer.</original>
-<translation></translation>
+<translation>Elimina il livello attualmente selezionato.</translation>
 </phrase>
 
 <phrase>
 <original>Move the current layer upward in the layer stack.</original>
-<translation></translation>
+<translation>Sposta il livello corrente verso l'alto nella pila dei livelli.</translation>
 </phrase>
 
 <phrase>
 <original>Move layer up</original>
-<translation></translation>
+<translation>Sposta il livello sopra</translation>
 </phrase>
 
 <phrase>
 <original>Move the current layer downward in the layer stack.</original>
-<translation></translation>
+<translation>Sposta il livello corrente verso il basso nella pila dei livelli.</translation>
 </phrase>
 
 <phrase>
 <original>Move layer down</original>
-<translation></translation>
+<translation>Sposta il livello in basso</translation>
 </phrase>
 
 <!-- VBP_ToolbarLayers.frm contains 41 phrases. 21 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -12641,7 +12660,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Generazione della mappa HDR per l'immagine</translation>
 </phrase>
 
-<!-- VBP_FormHDR.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormHDR.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormHDR.frm-->
 
@@ -13022,13 +13041,24 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for pdFilterLUT.cls-->
 
+<!-- BEGIN text for VBP_FormCrossScreen.frm (FormCrossScreen) -->
+
+<phrase>
+<original>Cross-screen (stars)</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormCrossScreen.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormCrossScreen.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2277</phrasecount>
+<phrasecount>2281</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3943 phrases. -->
-<!-- 1666 are duplicates, so only 2277 unique phrases have been written to file. -->
-<!-- These 2277 phrases contain approximately 13068 total words. -->
+<!-- As of this build, PhotoDemon contains 3963 phrases. -->
+<!-- 1682 are duplicates, so only 2281 unique phrases have been written to file. -->
+<!-- These 2281 phrases contain approximately 13097 total words. -->
 
 </pdData>
 
