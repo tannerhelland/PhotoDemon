@@ -464,6 +464,23 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     
 End Sub
 
+'Given two DIBs of equal size, perform a fast merge with variable blend mode and opacity.  Previously, PD required you to create temporary layers
+' for each DIB, assign them blendmodes, then manually perform a full merge (with checks for non-destructive effects, sizing, etc).  If all you want
+' is two merged DIBs, use this function.
+'
+'IMPORTANT NOTE!  Both the top and bottom DIBs will be modified by this function, per standard merge rules.  The top DIB must be modified because it
+'                  contains the intermediate results of the merge.  The bottom DIB must be modified because it contains the final result.  As such,
+'                  use temp copies of DIBs you can't afford to lose.
+Friend Sub quickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As LAYER_BLENDMODE = BL_NORMAL, Optional ByVal topLayerOpacity As Double = 100#)
+
+    'Composite the two DIBs
+    If blendMode <> BL_NORMAL Then compositeDIBs topDIB, bottomDIB, blendMode, 0, 0
+    
+    'With compositing complete, apply the final step, which is alpha-blending the layer downward while accounting for layer opacity.
+    topDIB.alphaBlendToDC bottomDIB.getDIBDC, topLayerOpacity * 2.55
+
+End Sub
+
 'Returns all layers of the image as a single, composited image (in pdDIB format, of course).  Because of the way VB handles
 ' object references, we ask the calling function to supply the DIB they want filled.  Optionally, they can also request a
 ' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
