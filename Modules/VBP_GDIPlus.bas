@@ -768,7 +768,7 @@ End Function
 ' The function currently expects the rotation to occur around the center point of the source image.  Unlike the various
 ' size interaction calls in this module, all (x,y) coordinate pairs refer to the CENTER of the image, not the top-left
 ' corner.  This was a deliberate decision to make copying rotated data easier.
-Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rotationAngle As Single, ByVal interpolationType As InterpolationMode) As Boolean
+Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcDIB As pdDIB, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rotationAngle As Single, ByVal interpolationType As InterpolationMode, Optional ByVal wrapModeForEdges As WrapMode = WrapModeTileFlipXY) As Boolean
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -796,7 +796,7 @@ Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
         Dim imgAttributesHandle As Long
         GdipCreateImageAttributes imgAttributesHandle
-        GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0&, 0&
+        GdipSetImageAttributesWrapMode imgAttributesHandle, wrapModeForEdges, 0&, 0&
         
         'To improve performance, explicitly request high-speed alpha compositing operation
         GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed

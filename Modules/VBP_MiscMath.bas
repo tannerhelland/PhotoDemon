@@ -133,8 +133,12 @@ End Sub
 Public Sub convertAspectRatio(ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef newWidth As Long, ByRef newHeight As Long, Optional ByVal fitInclusive As Boolean = True)
     
     Dim srcAspect As Double, dstAspect As Double
-    srcAspect = srcWidth / srcHeight
-    dstAspect = dstWidth / dstHeight
+    If (srcHeight > 0) And (dstHeight > 0) Then
+        srcAspect = srcWidth / srcHeight
+        dstAspect = dstWidth / dstHeight
+    Else
+        Exit Sub
+    End If
     
     Dim aspectLarger As Boolean
     If srcAspect > dstAspect Then aspectLarger = True Else aspectLarger = False
