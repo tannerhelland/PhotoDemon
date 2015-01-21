@@ -214,18 +214,25 @@ Attribute VB_Exposed = False
 'Cross-Screen (Star) Tool
 'Copyright 2014-2015 by Tanner Helland
 'Created: 20/January/15
-'Last updated: 20/January/15
-'Last update: initial build
+'Last updated: 21/January/15
+'Last update: wrap up initial build
 '
-'To my knowledge, this tool is the first of its kind in VB6 - a motion blur tool that supports variable angle
-' and strength, while still capable of operating in real-time.  This function is mostly just a wrapper to PD's
-' horizontal blur and rotate functions; they do all the heavy lifting, as you can see from the code below.
+'Cross-screen filters are physical filters placed over the lens of a camera:
+'http://en.wikipedia.org/wiki/Photographic_filter#Cross_screen
 '
-'Performance is pretty good, all things considered, but be careful in the IDE.  I STRONGLY recommend compiling
-' the project before applying any actions at a large radius.
+'Different diffraction patterns in the lens create stars of varying spoke counts in regions where lighting is strong.
 '
-'If FreeImage is available, it is used to estimate a new size for the rotated image.  This is not the best way
-' to estimate that value, but it's easier than doing the trig by hand, and FreeImage's rotate is *very* fast.  :)
+'Finding a digital replacement for a filter like this is tough; in factm the only one I've seen is a $50 plugin for
+' PhotoShop.  (http://www.scarablabs.com/star-filter-photoshop)  I haven't actually tested that solution, so I can't
+' vouch for its performance or quality, but given the rarity of digital versions of this filter, I have to think
+' others have run into problems creating their own.  (Which of course, makes our version that much sweeter!  ;)
+'
+'Performance is pretty good, all things considered, but be careful in the IDE.  As usual, I STRONGLY recommend compiling
+' before using this tool.
+'
+'Note also that this filter wraps a motion-blur-ish effect.  PD has multiple rotation engines available, and after some
+' profiling, I've decided to go with GDI+ for this filter.  It's fast and of sufficient quality, but in case we need
+' to revisit this decision in the future, I've left the engine code for FreeImage and our own internal PD method as well.
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
@@ -237,8 +244,11 @@ Option Explicit
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_ToolTip As clsToolTip
 
-'Apply motion blur to an image
-'Inputs: angle of the blur, distance of the blur
+'Apply a cross-screen blur to an image
+'Inputs: 1) luminance threshold for pixels to be considered for filtering
+'        2) angle of the generated star patterns
+'        3) Distance of the star spokes
+'        4) Strength (opacity) of the generated spokes, which is actually just gamma correction applied to the star mask
 Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Double, ByVal csDistance As Double, ByVal csStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying cross-screen filter..."
@@ -260,7 +270,7 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
         minDimension = workingDIB.getDIBHeight
     End If
     
-    csDistance = (csDistance / 100) * minDimension
+    csDistance = (csDistance / 100) * (minDimension * 0.5)
     If csDistance = 0 Then csDistance = 1
     
     'We start by creating a threshold DIB from the base image.  This threshold DIB will contain only pure black and pure
@@ -268,7 +278,10 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     Dim thresholdDIB As pdDIB
     Set thresholdDIB = New pdDIB
     thresholdDIB.createFromExistingDIB workingDIB
-        
+    
+    'When debugging these complicated filters, it is sometimes helpful to dump intermediate images to file.
+    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "0 - Original image.png", thresholdDIB
+    
     'Use the ever-excellent pdFilterLUT class to apply the threshold
     Dim cLUT As pdFilterLUT
     Set cLUT = New pdFilterLUT
@@ -276,6 +289,8 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     Dim tmpLUT() As Byte
     cLUT.fillLUT_Threshold tmpLUT, 255 - csThreshold
     cLUT.applyLUTsToDIB_Gray thresholdDIB, tmpLUT, True
+    
+    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "1 - Threshold.png", thresholdDIB
     
     'Progress is reported artificially, because it's too complex to handle using normal means
     If Not toPreview Then
@@ -289,6 +304,8 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     mbDIB.createFromExistingDIB thresholdDIB
     getMotionBlurredDIB thresholdDIB, mbDIB, csAngle, csDistance, True
     
+    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "2 - Motion Blur 1.png", mbDIB
+    
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
         SetProgBarVal 300
@@ -296,6 +313,8 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     
     'Repeat on a second DIB, but modify the rotation by 90 degrees to create a star shape
     getMotionBlurredDIB thresholdDIB, thresholdDIB, csAngle + 90, csDistance, True
+    
+    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "3 - Motion Blur 2.png", thresholdDIB
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
@@ -313,6 +332,8 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
     ' over-emphasizes bright areas, which gives a nice "bloom" effect.
     cComposite.quickMergeTwoDibsOfEqualSize thresholdDIB, mbDIB, BL_LINEARDODGE, 100
+    
+    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "4 - Composited motion blurs.png", thresholdDIB
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
@@ -335,6 +356,8 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     cLUT.MergeLUTs tmpLUT, gammaLUT, finalLUT
     cLUT.applyLUTsToDIB_Gray mbDIB, finalLUT, True
     
+    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "5 - Gamma corrected motion blurs.png", mbDIB
+    
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
         SetProgBarVal 600
@@ -348,6 +371,8 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     
     'thresholdDIB now contains the final, fully processed light effect.
     
+    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "6 - lighting cues applied to motion blur.png", thresholdDIB
+    
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
         SetProgBarVal 650
@@ -356,6 +381,8 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     'The final step is to merge the light effect onto the original image, using the Strength input parameter
     ' to control opacity of the merge.
     cComposite.quickMergeTwoDibsOfEqualSize workingDIB, thresholdDIB, BL_LINEARDODGE, 100
+    
+    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "7 - final result.png", workingDIB
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
@@ -436,11 +463,19 @@ Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, By
     Dim rotateDIB As pdDIB
     Set rotateDIB = New pdDIB
     
-    'If FreeImage is available, use it for the rotation; otherwise, use our own internal rotate (which is unfortunately much slower)
-    'If Not Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast(tmpClampDIB, rotateDIB, mbAngle, False, False) Then
-        rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth
-        CreateRotatedDIB mbAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3
-    'End If
+    'PD has a number of different rotation engines available.  After profiling each one, I have found GDI+ to be the fastest.
+    ' Code for the other engines is still here, in case those methods prove faster after future updates.  (For example, FreeImage may
+    ' be faster once they finally implement arbitrary view support, so we don't have to make so many intermediate DIB copies.)
+    
+    'GDI+ code:
+    rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 255
+    GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, -mbAngle, InterpolationModeHighQualityBicubic
+    
+    'FreeImage code:
+    'Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, -mbAngle, False, False
+    
+    'Internal pure-VB code:
+    'CreateRotatedDIB mbAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3
     
     'Next, apply a horizontal blur, using the blur radius supplied by the user
     Dim rightRadius As Long
@@ -448,10 +483,18 @@ Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, By
         
     If CreateHorizontalBlurDIB(mbDistance, rightRadius, rotateDIB, tmpClampDIB, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth) Then
         
-        'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion
-        'If Not Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast(tmpClampDIB, rotateDIB, -mbAngle, False, False) Then
-            CreateRotatedDIB -mbAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
-        'End If
+        'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion.
+        ' As before, multiple rotation engines could be used, but GDI+ is presently fastest:
+        
+        'GDI+ code:
+        GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 255
+        GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, mbAngle, InterpolationModeHighQualityBicubic
+        
+        'FreeImage code:
+        'Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, mbAngle, False, False
+        
+        'Internal pure-VB code:
+        'CreateRotatedDIB -mbAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
         
         'Erase the temporary clamp DIB
         tmpClampDIB.eraseDIB
