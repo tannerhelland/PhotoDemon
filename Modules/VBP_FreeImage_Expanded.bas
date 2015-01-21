@@ -1688,3 +1688,83 @@ Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long
     
 End Function
 
+'Use FreeImage to rotate a DIB, optimized against the use case where the full source image is being used.
+Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef rotationAngle As Double, Optional ByVal enlargeCanvasToFit As Boolean = True, Optional ByVal applyPostAlphaPremultiplication As Boolean = True) As Boolean
+
+    'Uncomment the two lines below, and the reporting line at the end of the sub, to send timing reports to the debug window.
+    'Dim profileTime As Double
+    'profileTime = Timer
+    
+    'Double-check that FreeImage exists
+    If g_ImageFormats.FreeImageEnabled Then
+    
+        'FreeImage uses positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this
+        ' unintuitive for casual users.  PD reverses the rotationAngle value so that POSITIVE values indicate CLOCKWISE rotation.
+        rotationAngle = -rotationAngle
+        
+        'Rotation requires quite a few variables, including a number of handles for passing data back-and-forth with FreeImage.
+        Dim fi_DIB As Long, returnDIB As Long
+        Dim nWidth As Long, nHeight As Long
+        
+        'One of the FreeImage rotation variants requires an explicit center point; calculate one in advance.
+        Dim cx As Double, cy As Double
+        
+        cx = srcDIB.getDIBWidth / 2
+        cy = srcDIB.getDIBHeight / 2
+            
+        'Give FreeImage a handle to our temporary rotation image
+        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+        
+        If fi_DIB <> 0 Then
+            
+            'There are two ways to rotate an image - enlarging the canvas to receive the fully rotated copy, or
+            ' leaving the image the same size and truncating corners.  These require two different FreeImage functions.
+            If enlargeCanvasToFit Then
+                
+                returnDIB = FreeImage_Rotate(fi_DIB, rotationAngle, 0)
+                nWidth = FreeImage_GetWidth(returnDIB)
+                nHeight = FreeImage_GetHeight(returnDIB)
+                
+            'Leave the canvas the same size
+            Else
+               
+               returnDIB = FreeImage_RotateEx(fi_DIB, rotationAngle, 0, 0, cx, cy, True)
+               nWidth = FreeImage_GetWidth(returnDIB)
+               nHeight = FreeImage_GetHeight(returnDIB)
+            
+            End If
+            
+            'Unload the original FreeImage source
+            FreeImage_UnloadEx fi_DIB
+            
+            If returnDIB <> 0 Then
+            
+                'Ask FreeImage to premultiply the image's alpha data, as necessary
+                If applyPostAlphaPremultiplication Then FreeImage_PreMultiplyWithAlpha returnDIB
+                
+                'Create a blank DIB to receive the rotated image from FreeImage
+                dstDIB.createBlank nWidth, nHeight, 32
+                            
+                'Copy the bits from the FreeImage DIB to our DIB
+                SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, nWidth, nHeight, 0, 0, 0, nHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                
+                'With the transfer complete, release any remaining FreeImage DIBs and exit
+                FreeImage_UnloadEx returnDIB
+                FreeImageRotateDIBFast = True
+                
+            Else
+                FreeImageRotateDIBFast = False
+            End If
+            
+        Else
+            FreeImageRotateDIBFast = False
+        End If
+                
+    Else
+        FreeImageRotateDIBFast = False
+    End If
+    
+    'Uncomment the line below to receive timing reports
+    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    
+End Function
