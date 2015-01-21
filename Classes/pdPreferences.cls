@@ -332,9 +332,10 @@ Public Sub loadUserSettings()
     g_ThumbnailPerformance = g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
     g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
     g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 0)
+    g_HighResolutionInput = g_UserPreferences.GetPref_Boolean("Interface", "High Resolution Input", True)
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
-        
+    
     'Terminate batch preference mode before exiting
     endBatchPreferenceMode
         
@@ -428,6 +429,7 @@ Private Sub createNewPreferencesFile()
     xmlEngine.writeTag "Interface", "", True
         xmlEngine.writeTag "CanvasBackground", Trim$(Str(vb3DShadow)) 'RGB(201, 211, 226)
         xmlEngine.writeTag "CanvasDropShadow", "True"
+        xmlEngine.writeTag "High Resolution Input", "True"
         xmlEngine.writeTag "MRUCaptionLength", "0"
         xmlEngine.writeTag "RecentFilesLimit", "10"
         xmlEngine.writeTag "WindowCaptionLength", "0"
