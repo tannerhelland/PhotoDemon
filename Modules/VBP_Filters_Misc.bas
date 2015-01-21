@@ -1225,7 +1225,7 @@ Public Sub MenuTest()
     '*******************************
     
     'Apply the test LUTs to the image
-    cLUT.applyLUTsToDIB pdImages(g_CurrentImage).getActiveDIB, rLUT, gLUT, bLUT
+    cLUT.applyLUTsToDIB_Color pdImages(g_CurrentImage).getActiveDIB, rLUT, gLUT, bLUT
         
     'Reflect any image changes on the screen.
     releaseProgressBar

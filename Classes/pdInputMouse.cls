@@ -359,17 +359,17 @@ End Sub
 'BY DEFAULT, all added hWnds will have MouseEnter/Leave/Wheel events tracked "for free".
 '
 'Note that this function will return TRUE if input tracking was initiated successfully.
-Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackStandardMouseEvents As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False) As Boolean
+Public Function addInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackStandardMouseEvents As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False) As Boolean
         
     'Add the hWnd to our tracking array.  Note that the hWnd in position 0 is treated as the base.
-    If targetHWnd <> 0 Then
+    If targetHwnd <> 0 Then
     
         'Add the hWnd to our tracking array, and increment all subarrays accordingly
         m_hWndCount = m_hWndCount + 1
         ReDim Preserve m_TrackingData(0 To NUM_OF_CUSTOM_INPUT_TRACKERS - 1, 0 To m_hWndCount - 1) As Long
         ReDim Preserve m_MouseTrackingActive(0 To m_hWndCount - 1) As Boolean
         
-        m_TrackingData(PDIT_DEFAULT, m_hWndCount - 1) = targetHWnd
+        m_TrackingData(PDIT_DEFAULT, m_hWndCount - 1) = targetHwnd
         m_TrackingData(PDIT_MOUSE_ENTERLEAVE, m_hWndCount - 1) = alsoTrackMouseEnterLeave
         m_TrackingData(PDIT_STANDARD_MOUSE, m_hWndCount - 1) = alsoTrackStandardMouseEvents
         m_TrackingData(PDIT_APPCOMMAND, m_hWndCount - 1) = alsoTrackAppCommands
@@ -383,9 +383,9 @@ Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTra
     End If
     
     'Attach the subclasser to this hWnd
-    If Not cSubclass.ssc_Subclass(targetHWnd, , 1, Me) Then
+    If Not cSubclass.ssc_Subclass(targetHwnd, , 1, Me) Then
         
-        Debug.Print "WARNING: input subclasser failed to subclass hWnd #" & targetHWnd & ".  Fix it!"
+        Debug.Print "WARNING: input subclasser failed to subclass hWnd #" & targetHwnd & ".  Fix it!"
         addInputTracker = False
         Exit Function
     
@@ -394,35 +394,35 @@ Public Function addInputTracker(ByVal targetHWnd As Long, Optional ByVal alsoTra
     'Subclassing was successful.  Add all relevant mouse messages.
     ' (Note that we subclass MouseMove events even if the user doesn't want these events returned; this is
     ' used to generate MouseEnter/Leave events.)
-    If Not disregardWheelEvents Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
+    If Not disregardWheelEvents Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
     
     'Set any optional event subclassing as well
-    If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER
-    If alsoTrackAppCommands Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_APPCOMMAND
+    If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER
+    If alsoTrackAppCommands Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_APPCOMMAND
     If alsoTrackStandardMouseEvents Then
         
         'Mouse down...
-        cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
+        cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
         
         'Mouse up...
-        cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
+        cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
         
         'Double-clicks (including X-buttons)...
-        cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
+        cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
         
     End If
     
     'Cursor duties require response to WM_SETCURSOR
-    If alsoHandleCursorDuties Then cSubclass.ssc_AddMsg targetHWnd, MSG_BEFORE, WM_SETCURSOR
+    If alsoHandleCursorDuties Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_SETCURSOR
             
     'If enter, leave, and hover events are desired, start mouse tracking now
     If alsoTrackMouseEnterLeave Then
     
-        If requestMouseTrackingForHwnd(targetHWnd) Then
+        If requestMouseTrackingForHwnd(targetHwnd) Then
             m_MouseTrackingActive(m_hWndCount - 1) = True
         Else
             
-            Debug.Print "WARNING: couldn't get Windows to track mouse events for hWnd #" & targetHWnd & ".  Fix it!"
+            Debug.Print "WARNING: couldn't get Windows to track mouse events for hWnd #" & targetHwnd & ".  Fix it!"
             addInputTracker = False
             Exit Function
                 
@@ -494,14 +494,14 @@ Private Sub resetClassCursor()
 End Sub
 
 'Given an hWnd, populate a generic TrackMouseEvent struct and pass it to the TrackMouseEvent function
-Private Function requestMouseTrackingForHwnd(ByVal targetHWnd As Long)
+Private Function requestMouseTrackingForHwnd(ByVal targetHwnd As Long)
 
     Dim eventTracker As TRACKMOUSEEVENT_STRUCT
     
     With eventTracker
         .cbSize = Len(eventTracker)
         .dwFlags = TME_LEAVE Or TME_HOVER
-        .hWndTrack = targetHWnd
+        .hWndTrack = targetHwnd
         .dwHoverTime = &HEFFFFFFF
     End With
     
@@ -950,7 +950,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         'There are two ways to raise MouseMove events for a window.  If high-resolution tracking is active,
                         ' we need to reconstruct any missing mouse events and raise them all in turn.  Otherwise, we can
                         ' simply return this event.
-                        If m_HighResModeActive Then
+                        If m_HighResModeActive And g_HighResolutionInput Then
                             reconstructMouseMoveHistory retMouseButton, retShiftConstants, mouseX, mouseY, msgTimestamp, lng_hWnd
                         Else
                         
@@ -1090,7 +1090,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Note that a MouseUp event is raised either way, and if a Click event is also being raised,
                 ' we warn the user in the MouseUp event.  This way, they can choose to abandon MouseUp
                 ' processing if the _Click event is implemented.
-                If m_MouseMoveCount < 2 Then
+                If m_MouseMoveCount < 1 Then
                     
                     RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt, True)
                     RaiseEvent ClickCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt)
