@@ -55,84 +55,92 @@ Begin VB.Form FormCrossScreen
       Height          =   495
       Left            =   6000
       TabIndex        =   4
-      Top             =   1440
+      Top             =   2640
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
       Max             =   359.9
       SigDigits       =   1
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   3990
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "quality"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   4410
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.smartCheckBox chkSymmetry 
-      Height          =   300
-      Left            =   6120
-      TabIndex        =   8
-      Top             =   3000
-      Width           =   5655
-      _ExtentX        =   3413
-      _ExtentY        =   582
-      Caption         =   "blur symmetrically"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      Value           =   45
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
       Height          =   495
       Left            =   6000
-      TabIndex        =   10
-      Top             =   2400
+      TabIndex        =   6
+      Top             =   3600
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
       Min             =   1
-      Max             =   500
-      Value           =   5
+      Max             =   100
+      SigDigits       =   1
+      Value           =   10
+   End
+   Begin PhotoDemon.sliderTextCombo sltStrength 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   4560
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Max             =   200
+      SigDigits       =   1
+      Value           =   50
+   End
+   Begin PhotoDemon.sliderTextCombo sltThreshold 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   1680
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   200
+      Value           =   20
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "threshold:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   3
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   1320
+      Width           =   1080
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "strength:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   1
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   4200
+      Width           =   960
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -151,32 +159,9 @@ Begin VB.Form FormCrossScreen
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   9
-      Top             =   2040
+      TabIndex        =   5
+      Top             =   3240
       Width           =   945
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   7
-      Top             =   3600
-      Width           =   1845
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -216,7 +201,7 @@ Begin VB.Form FormCrossScreen
       Index           =   0
       Left            =   6000
       TabIndex        =   1
-      Top             =   1080
+      Top             =   2280
       Width           =   660
    End
 End
@@ -254,23 +239,146 @@ Dim m_ToolTip As clsToolTip
 
 'Apply motion blur to an image
 'Inputs: angle of the blur, distance of the blur
-Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByVal blurSymmetrically As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Double, ByVal csDistance As Double, ByVal csStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If Not toPreview Then Message "Applying motion blur..."
+    If Not toPreview Then Message "Applying cross-screen filter..."
+    
+    'Progress reports are manually calculated on this function, as it involves a rather complicated series of steps
+    Dim calculatedProgBarMax As Long
+    calculatedProgBarMax = 700
     
     'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    prepImageData dstSA, toPreview, dstPic, calculatedProgBarMax
     
-    'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
-    If toPreview Then
-        bDistance = bDistance * curDIBValues.previewModifier
-        If bDistance = 0 Then bDistance = 1
+    'Distance is calculated as (csDistance / 100) * (smallestImageDimension).  This yields identical results in both the preview
+    ' and final image, and it also makes distance scale nicely by image size.
+    Dim minDimension As Long
+    If workingDIB.getDIBWidth < workingDIB.getDIBHeight Then
+        minDimension = workingDIB.getDIBWidth
+    Else
+        minDimension = workingDIB.getDIBHeight
     End If
     
+    csDistance = (csDistance / 100) * minDimension
+    If csDistance = 0 Then csDistance = 1
+    
+    'We start by creating a threshold DIB from the base image.  This threshold DIB will contain only pure black and pure
+    ' white pixels, and we use it to determine the regions of the image that need cross-screen filtering.
+    Dim thresholdDIB As pdDIB
+    Set thresholdDIB = New pdDIB
+    thresholdDIB.createFromExistingDIB workingDIB
+        
+    'Use the ever-excellent pdFilterLUT class to apply the threshold
+    Dim cLUT As pdFilterLUT
+    Set cLUT = New pdFilterLUT
+    
+    Dim tmpLUT() As Byte
+    cLUT.fillLUT_Threshold tmpLUT, 255 - csThreshold
+    cLUT.applyLUTsToDIB_Gray thresholdDIB, tmpLUT, True
+    
+    'Progress is reported artificially, because it's too complex to handle using normal means
+    If Not toPreview Then
+        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        SetProgBarVal 100
+    End If
+    
+    'We now need to produce two motion-blurred versions of the threshold DIB.  These will contain the actual star map.
+    Dim mbDIB As pdDIB
+    Set mbDIB = New pdDIB
+    mbDIB.createFromExistingDIB thresholdDIB
+    getMotionBlurredDIB thresholdDIB, mbDIB, csAngle, csDistance, True
+    
+    If Not toPreview Then
+        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        SetProgBarVal 300
+    End If
+    
+    'Repeat on a second DIB, but modify the rotation by 90 degrees to create a star shape
+    getMotionBlurredDIB thresholdDIB, thresholdDIB, csAngle + 90, csDistance, True
+    
+    If Not toPreview Then
+        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        SetProgBarVal 500
+    End If
+    
+    'Apply premultiplication to the layers prior to compositing
+    mbDIB.fixPremultipliedAlpha True
+    thresholdDIB.fixPremultipliedAlpha True
+    
+    'A pdCompositor class will help us blend these images together
+    Dim cComposite As pdCompositor
+    Set cComposite = New pdCompositor
+    
+    'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
+    ' over-emphasizes bright areas, which gives a nice "bloom" effect.
+    cComposite.quickMergeTwoDibsOfEqualSize thresholdDIB, mbDIB, BL_LINEARDODGE, 100
+    
+    If Not toPreview Then
+        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        SetProgBarVal 550
+    End If
+    
+    'Copy the finished DIB from the bottom layer back into mbDIB, and remove premultiplied alpha as necessary
+    mbDIB.createFromExistingDIB thresholdDIB
+    mbDIB.fixPremultipliedAlpha False
+    thresholdDIB.eraseDIB
+    
+    'We now need to brighten up mbDIB.
+    Dim lMax As Long, lMin As Long
+    getDIBMaxMinLuminance mbDIB, lMin, lMax
+    cLUT.fillLUT_RemappedRange tmpLUT, lMin, lMax, 0, 255
+    
+    'On top of the remapped range (which is most important), we also gamma-correct the DIB according to the input strength parameter
+    Dim gammaLUT() As Byte, finalLUT() As Byte
+    cLUT.fillLUT_Gamma gammaLUT, 0.5 + (csStrength / 100)
+    cLUT.MergeLUTs tmpLUT, gammaLUT, finalLUT
+    cLUT.applyLUTsToDIB_Gray mbDIB, finalLUT, True
+    
+    If Not toPreview Then
+        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        SetProgBarVal 600
+    End If
+    
+    'At this point, workingDIB is still intact (phew!).  We are going to mask workingDIB against our newly generate mbDIB image.
+    ' This gives a nice, lightly colored version of the star effect, using luminance from the stars, but colors from the
+    ' underlying image.
+    thresholdDIB.createFromExistingDIB workingDIB
+    cComposite.quickMergeTwoDibsOfEqualSize thresholdDIB, mbDIB, BL_HARDLIGHT, 100
+    
+    'thresholdDIB now contains the final, fully processed light effect.
+    
+    If Not toPreview Then
+        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        SetProgBarVal 650
+    End If
+    
+    'The final step is to merge the light effect onto the original image, using the Strength input parameter
+    ' to control opacity of the merge.
+    cComposite.quickMergeTwoDibsOfEqualSize workingDIB, thresholdDIB, BL_LINEARDODGE, 100
+    
+    If Not toPreview Then
+        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        SetProgBarVal 700
+    End If
+    
+    'Clear all temporary DIBs
+    Set mbDIB = Nothing
+    Set thresholdDIB = Nothing
+    
+PrematureCrossScreenExit:
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
+    finalizeImageData toPreview, dstPic, True
+    
+End Sub
+
+'Used to motion-blur the intermediate images required by the cross-screen filter
+Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal mbAngle As Double, ByVal mbDistance As Double, Optional ByVal toPreview As Boolean = False)
+
     Dim finalX As Long, finalY As Long
-    finalX = workingDIB.getDIBWidth
-    finalY = workingDIB.getDIBHeight
+    finalX = srcDIB.getDIBWidth
+    finalY = srcDIB.getDIBHeight
     
     'Before doing any rotating or blurring, we need to increase the size of the image we're working with.  If we
     ' don't do this, the rotation will chop off the image's corners, and the resulting motion blur will look terrible.
@@ -282,14 +390,14 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
                 
         'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(workingDIB.getDIBDC)
+        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
         
         'Use that handle to request an image rotation, then store the new image's width and height
         Dim nWidth As Long, nHeight As Long
         If fi_DIB <> 0 Then
         
             Dim returnDIB As Long
-            returnDIB = FreeImage_Rotate(fi_DIB, -bAngle, 0)
+            returnDIB = FreeImage_Rotate(fi_DIB, -mbAngle, 0)
                     
             nWidth = FreeImage_GetWidth(returnDIB)
             nHeight = FreeImage_GetHeight(returnDIB)
@@ -303,8 +411,8 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
         End If
         
         'Use the returned size to calculate optimal offsets
-        hScaleAmount = (nWidth - workingDIB.getDIBWidth) \ 2
-        vScaleAmount = (nHeight - workingDIB.getDIBHeight) \ 2
+        hScaleAmount = (nWidth - srcDIB.getDIBWidth) \ 2
+        vScaleAmount = (nHeight - srcDIB.getDIBHeight) \ 2
         
         If hScaleAmount < 0 Then hScaleAmount = 0
         If vScaleAmount < 0 Then vScaleAmount = 0
@@ -313,7 +421,7 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
         
         'This is basically a worst-case estimation of the final image size, and because of that, the function will
         ' be quite slow.  This is a very fringe case, however, as most users should have FreeImage available.
-        hScaleAmount = Sqr(workingDIB.getDIBWidth * workingDIB.getDIBWidth + workingDIB.getDIBHeight * workingDIB.getDIBHeight)
+        hScaleAmount = Sqr(srcDIB.getDIBWidth * srcDIB.getDIBWidth + srcDIB.getDIBHeight * srcDIB.getDIBHeight)
         If toPreview Then hScaleAmount = hScaleAmount \ 4 Else hScaleAmount = hScaleAmount \ 2
         vScaleAmount = hScaleAmount
         
@@ -322,56 +430,59 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     'I built a separate function to enlarge the image and fill the blank borders with clamped pixels from the source image:
     Dim tmpClampDIB As pdDIB
     Set tmpClampDIB = New pdDIB
-    padDIBClampedPixels hScaleAmount, vScaleAmount, workingDIB, tmpClampDIB
+    padDIBClampedPixels hScaleAmount, vScaleAmount, srcDIB, tmpClampDIB
     
     'Create a second DIB, which will receive the results of this one
     Dim rotateDIB As pdDIB
     Set rotateDIB = New pdDIB
-    rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth
     
-    'Start by rotating the image by the requested amount.  Clamped edges are used to improve the blur output below
-    If CreateRotatedDIB(bAngle, EDGE_CLAMP, useBilinear, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3) Then
+    'If FreeImage is available, use it for the rotation; otherwise, use our own internal rotate (which is unfortunately much slower)
+    'If Not Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast(tmpClampDIB, rotateDIB, mbAngle, False, False) Then
+        rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth
+        CreateRotatedDIB mbAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3
+    'End If
     
-        'Next, apply a horizontal blur, using the blur radius supplied by the user
-        Dim rightRadius As Long
-        If blurSymmetrically Then rightRadius = bDistance Else rightRadius = 0
+    'Next, apply a horizontal blur, using the blur radius supplied by the user
+    Dim rightRadius As Long
+    rightRadius = mbDistance
         
-        If CreateHorizontalBlurDIB(bDistance, rightRadius, rotateDIB, tmpClampDIB, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth) Then
-            
-            'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion
-            CreateRotatedDIB -bAngle, EDGE_CLAMP, useBilinear, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
-            
-            'Erase the temporary clamp DIB
-            tmpClampDIB.eraseDIB
-            Set tmpClampDIB = Nothing
-            
-            'rotateDIB now contains the image we want, but it also has all the (now-useless) padding from
-            ' the rotate operation.  Chop out the valid section and copy it into workingDIB.
-            BitBlt workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, rotateDIB.getDIBDC, hScaleAmount, vScaleAmount, vbSrcCopy
-            
-            'Erase the temporary rotation DIB
-            rotateDIB.eraseDIB
-            Set rotateDIB = Nothing
-            
-        End If
+    If CreateHorizontalBlurDIB(mbDistance, rightRadius, rotateDIB, tmpClampDIB, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth) Then
+        
+        'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion
+        'If Not Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast(tmpClampDIB, rotateDIB, -mbAngle, False, False) Then
+            CreateRotatedDIB -mbAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
+        'End If
+        
+        'Erase the temporary clamp DIB
+        tmpClampDIB.eraseDIB
+        Set tmpClampDIB = Nothing
+        
+        'rotateDIB now contains the image we want, but it also has all the (now-useless) padding from
+        ' the rotate operation.  Chop out the valid section and copy it into workingDIB.
+        dstDIB.createFromExistingDIB srcDIB
+        BitBlt dstDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateDIB.getDIBDC, hScaleAmount, vScaleAmount, vbSrcCopy
+        
+        'Erase the temporary rotation DIB
+        rotateDIB.eraseDIB
+        Set rotateDIB = Nothing
         
     End If
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
-    
-End Sub
-
-Private Sub chkSymmetry_Click()
-    updatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Motion blur", , buildParams(sltAngle, sltDistance, CBool(chkSymmetry), OptInterpolate(0)), UNDO_LAYER
+    Process "Cross-screen", , buildParams(sltThreshold, sltAngle, sltDistance, sltStrength), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltThreshold = 20
+    sltAngle = 45
+    sltDistance = 10
+    sltStrength = 50
 End Sub
 
 Private Sub Form_Activate()
@@ -403,13 +514,9 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
-End Sub
-
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), OptInterpolate(0), True, fxPreview
+    If cmdBar.previewsAllowed Then CrossScreenFilter sltThreshold, sltAngle, sltDistance, sltStrength, True, fxPreview
 End Sub
 
 Private Sub sltAngle_Change()
@@ -425,3 +532,10 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+Private Sub sltStrength_Change()
+    updatePreview
+End Sub
+
+Private Sub sltThreshold_Change()
+    updatePreview
+End Sub
