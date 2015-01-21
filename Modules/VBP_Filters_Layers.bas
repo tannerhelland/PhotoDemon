@@ -2808,6 +2808,67 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     
 End Function
 
+'Given a DIB, scan it and find the max/min luminance values.  This function makes no changes to the DIB itself.
+Public Sub getDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long, ByRef dibLumMax As Long)
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
+            
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickVal As Long, qvDepth As Long
+    qvDepth = srcDIB.getDIBColorDepth \ 8
+    
+    'Color values
+    Dim r As Long, g As Long, b As Long, grayVal As Long
+    
+    'Max and min values
+    Dim lMax As Long, lMin As Long
+    lMin = 255
+    lMax = 0
+    
+    'Calculate max/min values for each channel
+    For x = initX To finalX
+        QuickVal = x * qvDepth
+    For y = initY To finalY
+            
+        'Get the source pixel color values
+        r = ImageData(QuickVal + 2, y)
+        g = ImageData(QuickVal + 1, y)
+        b = ImageData(QuickVal, y)
+        
+        'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
+        grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+        
+        'Check max/min
+        If grayVal > lMax Then
+            lMax = grayVal
+        ElseIf grayVal < lMin Then
+            lMin = grayVal
+        End If
+        
+    Next y
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    
+    'Return the max/min values we calculated
+    dibLumMin = lMin
+    dibLumMax = lMax
+    
+End Sub
+
 'Quickly modify a DIB's gamma values.  A single value is used to correct all channels.
 ' TODO!  Look at wrapping GDI+ gamma correction, if available.  That may be faster than correcting gamma manually.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
