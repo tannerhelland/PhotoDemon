@@ -273,51 +273,18 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     finalY = workingDIB.getDIBHeight
     
     'Before doing any rotating or blurring, we need to increase the size of the image we're working with.  If we
-    ' don't do this, the rotation will chop off the image's corners, and the resulting motion blur will look terrible.
-        
-    'If FreeImage is enabled, use it to calculate an optimal extension size.  If it is not enabled, do a
-    ' quick-and-dirty estimation using basic geometry.
+    ' don't do this, intermediate rotation actions will chop off the image's corners, and the resulting effect
+    ' will look terrible.
     Dim hScaleAmount As Long, vScaleAmount As Long
-    If g_ImageFormats.FreeImageEnabled Then
-                
-        'Convert our current DIB to a FreeImage-type DIB
-        Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(workingDIB.getDIBDC)
+    Dim nWidth As Double, nHeight As Double
+    Math_Functions.findBoundarySizeOfRotatedRect finalX, finalY, bAngle, nWidth, nHeight
         
-        'Use that handle to request an image rotation, then store the new image's width and height
-        Dim nWidth As Long, nHeight As Long
-        If fi_DIB <> 0 Then
-        
-            Dim returnDIB As Long
-            returnDIB = FreeImage_Rotate(fi_DIB, -bAngle, 0)
-                    
-            nWidth = FreeImage_GetWidth(returnDIB)
-            nHeight = FreeImage_GetHeight(returnDIB)
-            
-            If returnDIB <> 0 Then FreeImage_Unload returnDIB
-            FreeImage_Unload fi_DIB
+    'Use the rotated size to calculate optimal padding amounts
+    hScaleAmount = (nWidth - finalX) \ 2
+    vScaleAmount = (nHeight - finalY) \ 2
     
-        Else
-            nWidth = workingDIB.getDIBWidth * 2
-            nHeight = workingDIB.getDIBHeight * 2
-        End If
-        
-        'Use the returned size to calculate optimal offsets
-        hScaleAmount = (nWidth - workingDIB.getDIBWidth) \ 2
-        vScaleAmount = (nHeight - workingDIB.getDIBHeight) \ 2
-        
-        If hScaleAmount < 0 Then hScaleAmount = 0
-        If vScaleAmount < 0 Then vScaleAmount = 0
-        
-    Else
-        
-        'This is basically a worst-case estimation of the final image size, and because of that, the function will
-        ' be quite slow.  This is a very fringe case, however, as most users should have FreeImage available.
-        hScaleAmount = Sqr(workingDIB.getDIBWidth * workingDIB.getDIBWidth + workingDIB.getDIBHeight * workingDIB.getDIBHeight)
-        If toPreview Then hScaleAmount = hScaleAmount \ 4 Else hScaleAmount = hScaleAmount \ 2
-        vScaleAmount = hScaleAmount
-        
-    End If
+    If hScaleAmount < 0 Then hScaleAmount = 0
+    If vScaleAmount < 0 Then vScaleAmount = 0
     
     'I built a separate function to enlarge the image and fill the blank borders with clamped pixels from the source image:
     Dim tmpClampDIB As pdDIB
@@ -327,35 +294,56 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     'Create a second DIB, which will receive the results of this one
     Dim rotateDIB As pdDIB
     Set rotateDIB = New pdDIB
-    rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth
     
-    'Start by rotating the image by the requested amount.  Clamped edges are used to improve the blur output below
-    If CreateRotatedDIB(bAngle, EDGE_CLAMP, useBilinear, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3) Then
+    'PD has a number of different rotation engines available.
     
-        'Next, apply a horizontal blur, using the blur radius supplied by the user
-        Dim rightRadius As Long
-        If blurSymmetrically Then rightRadius = bDistance Else rightRadius = 0
+    'GDI+ code:
+    'rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 255
+    'GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, -bAngle, InterpolationModeHighQualityBicubic, WrapModeClamp
+    
+    'FreeImage code:
+    'Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, -bAngle, False, False
+    
+    'Internal pure-VB code:
+    ' I have chosen to go with this mode for motion blur, because our custom clamping code ensures that no dead pixels
+    ' are introduced prior to the blur function, below.
+    rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 255
+    CreateRotatedDIB bAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3
+    
+    'Next, apply a horizontal blur, using the blur radius supplied by the user
+    Dim rightRadius As Long
+    If blurSymmetrically Then rightRadius = bDistance Else rightRadius = 0
         
-        If CreateHorizontalBlurDIB(bDistance, rightRadius, rotateDIB, tmpClampDIB, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth) Then
+    If CreateHorizontalBlurDIB(bDistance, rightRadius, rotateDIB, tmpClampDIB, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth) Then
             
-            'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion
-            CreateRotatedDIB -bAngle, EDGE_CLAMP, useBilinear, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
-            
-            'Erase the temporary clamp DIB
-            tmpClampDIB.eraseDIB
-            Set tmpClampDIB = Nothing
-            
-            'rotateDIB now contains the image we want, but it also has all the (now-useless) padding from
-            ' the rotate operation.  Chop out the valid section and copy it into workingDIB.
-            BitBlt workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, rotateDIB.getDIBDC, hScaleAmount, vScaleAmount, vbSrcCopy
-            
-            'Erase the temporary rotation DIB
-            rotateDIB.eraseDIB
-            Set rotateDIB = Nothing
-            
-        End If
+        'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion.
+        ' As before, multiple rotation engines could be used, but GDI+ is presently fastest, and as we don't care about distortion
+        ' (because we will manually be cropping out the relevant rect from the center), there is no penalty to using it:
+        
+        'GDI+ code:
+        GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 255
+        GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, bAngle, InterpolationModeHighQualityBicubic, WrapModeClamp
+        
+        'FreeImage code:
+        'Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, bAngle, False, False
+        
+        'Internal pure-VB code:
+        'GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 255
+        'CreateRotatedDIB -bAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
+        
+        'Erase the temporary clamp DIB
+        tmpClampDIB.eraseDIB
+        Set tmpClampDIB = Nothing
+        
+        'rotateDIB now contains the image we want, but it also has all the (now-useless) padding from
+        ' the rotate operation.  Chop out the valid section and copy it into workingDIB.
+        BitBlt workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, rotateDIB.getDIBDC, hScaleAmount, vScaleAmount, vbSrcCopy
         
     End If
+    
+    'Erase the temporary rotation DIB
+    rotateDIB.eraseDIB
+    Set rotateDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
