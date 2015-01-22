@@ -803,6 +803,7 @@ Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         
         'PixelOffsetMode doesn't seem to affect rendering speed more than < 5%, but I did notice a slight
         ' improvement from explicitly requesting HighQuality mode - so why not leave it?
+        'GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighSpeed
         GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
     
         'Lock the incoming angle to something in the range [-360, 360]
