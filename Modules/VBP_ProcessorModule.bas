@@ -1333,7 +1333,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormCrossScreen
             Else
-                FormCrossScreen.CrossScreenFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4)
+                FormCrossScreen.CrossScreenFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5), cParams.GetLong(6)
             End If
         
         Case "Lens flare"
