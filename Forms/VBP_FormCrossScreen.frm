@@ -54,8 +54,8 @@ Begin VB.Form FormCrossScreen
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2640
+      TabIndex        =   3
+      Top             =   2400
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -66,8 +66,8 @@ Begin VB.Form FormCrossScreen
    Begin PhotoDemon.sliderTextCombo sltDistance 
       Height          =   495
       Left            =   6000
-      TabIndex        =   6
-      Top             =   3600
+      TabIndex        =   5
+      Top             =   3360
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -79,8 +79,8 @@ Begin VB.Form FormCrossScreen
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
       Left            =   6000
-      TabIndex        =   7
-      Top             =   4560
+      TabIndex        =   6
+      Top             =   4320
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -91,14 +91,77 @@ Begin VB.Form FormCrossScreen
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
-      Top             =   1680
+      TabIndex        =   8
+      Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
       Min             =   1
       Max             =   200
       Value           =   20
+   End
+   Begin PhotoDemon.sliderTextCombo sltSpokes 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   10
+      Top             =   480
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   16
+      Value           =   4
+   End
+   Begin PhotoDemon.sliderTextCombo sltSoftness 
+      Height          =   495
+      Left            =   6000
+      TabIndex        =   12
+      Top             =   5280
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   873
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "softness:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   5
+      Left            =   6000
+      TabIndex        =   13
+      Top             =   4920
+      Width           =   945
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "spokes"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   4
+      Left            =   6000
+      TabIndex        =   11
+      Top             =   120
+      Width           =   720
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -117,8 +180,8 @@ Begin VB.Form FormCrossScreen
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   10
-      Top             =   1320
+      TabIndex        =   9
+      Top             =   1080
       Width           =   1080
    End
    Begin VB.Label lblTitle 
@@ -138,8 +201,8 @@ Begin VB.Form FormCrossScreen
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   8
-      Top             =   4200
+      TabIndex        =   7
+      Top             =   3960
       Width           =   960
    End
    Begin VB.Label lblTitle 
@@ -159,29 +222,9 @@ Begin VB.Form FormCrossScreen
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   5
-      Top             =   3240
+      TabIndex        =   4
+      Top             =   3000
       Width           =   945
-   End
-   Begin VB.Label lblIDEWarning 
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   1215
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   4680
-      Visible         =   0   'False
-      Width           =   5775
-      WordWrap        =   -1  'True
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -201,7 +244,7 @@ Begin VB.Form FormCrossScreen
       Index           =   0
       Left            =   6000
       TabIndex        =   1
-      Top             =   2280
+      Top             =   2040
       Width           =   660
    End
 End
@@ -249,13 +292,16 @@ Dim m_ToolTip As clsToolTip
 '        2) angle of the generated star patterns
 '        3) Distance of the star spokes
 '        4) Strength (opacity) of the generated spokes, which is actually just gamma correction applied to the star mask
-Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Double, ByVal csDistance As Double, ByVal csStrength As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double, ByVal csAngle As Double, ByVal csDistance As Double, ByVal csStrength As Double, ByVal csSoftening As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying cross-screen filter..."
-    
-    'Progress reports are manually calculated on this function, as it involves a rather complicated series of steps
+        
+    'Progress reports are manually calculated on this function, as it involves a rather complicated series of steps,
+    ' whose count is variable based on the number of spokes being processed.
+    '
+    'Six steps are hard-coded, and the rest are contingent on spoke count.
     Dim calculatedProgBarMax As Long
-    calculatedProgBarMax = 700
+    calculatedProgBarMax = 6 + csSpokes * 2
     
     'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
@@ -279,9 +325,6 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     Set thresholdDIB = New pdDIB
     thresholdDIB.createFromExistingDIB workingDIB
     
-    'When debugging these complicated filters, it is sometimes helpful to dump intermediate images to file.
-    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "0 - Original image.png", thresholdDIB
-    
     'Use the ever-excellent pdFilterLUT class to apply the threshold
     Dim cLUT As pdFilterLUT
     Set cLUT = New pdFilterLUT
@@ -290,60 +333,125 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     cLUT.fillLUT_Threshold tmpLUT, 255 - csThreshold
     cLUT.applyLUTsToDIB_Gray thresholdDIB, tmpLUT, True
     
-    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "1 - Threshold.png", thresholdDIB
-    
     'Progress is reported artificially, because it's too complex to handle using normal means
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
-        SetProgBarVal 100
+        SetProgBarVal 1
     End If
     
-    'We now need to produce two motion-blurred versions of the threshold DIB.  These will contain the actual star map.
-    Dim mbDIB As pdDIB
-    Set mbDIB = New pdDIB
-    mbDIB.createFromExistingDIB thresholdDIB
-    getMotionBlurredDIB thresholdDIB, mbDIB, csAngle, csDistance, True
+    'Next, prep a bunch of objects to help with the blend process
     
-    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "2 - Motion Blur 1.png", mbDIB
-    
-    If Not toPreview Then
-        If userPressedESC() Then GoTo PrematureCrossScreenExit:
-        SetProgBarVal 300
-    End If
-    
-    'Repeat on a second DIB, but modify the rotation by 90 degrees to create a star shape
-    getMotionBlurredDIB thresholdDIB, thresholdDIB, csAngle + 90, csDistance, True
-    
-    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "3 - Motion Blur 2.png", thresholdDIB
-    
-    If Not toPreview Then
-        If userPressedESC() Then GoTo PrematureCrossScreenExit:
-        SetProgBarVal 500
-    End If
-    
-    'Apply premultiplication to the layers prior to compositing
-    mbDIB.fixPremultipliedAlpha True
-    thresholdDIB.fixPremultipliedAlpha True
-    
-    'A pdCompositor class will help us blend these images together
+    'A pdCompositor class will help us blend various images together
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
     
-    'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
-    ' over-emphasizes bright areas, which gives a nice "bloom" effect.
-    cComposite.quickMergeTwoDibsOfEqualSize thresholdDIB, mbDIB, BL_LINEARDODGE, 100
+    Dim i As Long, numSpokeIterations As Long
+    Dim spokeIntervalDegrees As Double
     
-    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "4 - Composited motion blurs.png", thresholdDIB
+    'Temporary DIBs are required to assemble all the composite spokes
+    Dim mbDIB As pdDIB, mbDIBTemp As pdDIB
+    Set mbDIB = New pdDIB
+    Set mbDIBTemp = New pdDIB
+    
+    'We now need to produce a unique motion-blurred version of the threshold DIB for each "spoke" requested by the user.
+    ' There are two code paths here, because even-numbered spokes require half as many calculations (as symmetry allows us
+    ' to calculate two spokes at once.
+    
+    'Both paths share an identical base step, however, when we create the initial spoke and place it inside mbDIB.
+    ' mbDIB serves as the "master" spoke DIB, and we will also be merging subsequent spokes onto it as we go.
+    mbDIB.createFromExistingDIB thresholdDIB
+    getMotionBlurredDIB thresholdDIB, mbDIB, csAngle, csDistance, True, ((csSpokes Mod 2) = 0)
+    mbDIB.fixPremultipliedAlpha True
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
-        SetProgBarVal 550
+        SetProgBarVal 1
     End If
     
-    'Copy the finished DIB from the bottom layer back into mbDIB, and remove premultiplied alpha as necessary
-    mbDIB.createFromExistingDIB thresholdDIB
+    'Let's do even spokes first, because they are the simplest.
+    If (csSpokes Mod 2) = 0 Then
+        
+        'For each subsequent pair of spokes, we will render it to its own layer, then merge it down onto the mbDIB layer.
+        If csSpokes > 2 Then
+        
+            numSpokeIterations = (csSpokes \ 2)
+            spokeIntervalDegrees = 180 / numSpokeIterations
+            
+            'Now, repeat a simple pattern: for each subsequent spoke, render it to its own layer, then merge it down onto
+            ' the "master" mbDIB layer.
+            For i = 1 To numSpokeIterations - 1
+                
+                'Create the new spoke layer
+                mbDIBTemp.createFromExistingDIB thresholdDIB
+                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True
+                
+                If Not toPreview Then
+                    If userPressedESC() Then GoTo PrematureCrossScreenExit:
+                    SetProgBarVal 2 + (i * 4) - 2
+                End If
+                
+                'Premultiply alpha (as required by the compositor)
+                mbDIBTemp.fixPremultipliedAlpha True
+                
+                'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
+                ' over-emphasizes bright areas, which gives a nice "bloom" effect.
+                cComposite.quickMergeTwoDibsOfEqualSize mbDIB, mbDIBTemp, BL_LINEARDODGE, 100
+                
+                If Not toPreview Then
+                    If userPressedESC() Then GoTo PrematureCrossScreenExit:
+                    SetProgBarVal 2 + (i * 4)
+                End If
+                
+            Next i
+            
+        End If
+        
+    'Odd spokes are more involved...
+    Else
+    
+        'For each subsequent spoke, we will render it to its own layer, then merge it down onto the mbDIB layer.
+        ' (Note that we do not have the luxury of knocking out two spokes at once, as each spoke requires a unique angle.)
+        If csSpokes > 1 Then
+        
+            numSpokeIterations = csSpokes
+            spokeIntervalDegrees = 360 / numSpokeIterations
+            
+            'Now, repeat a simple pattern: for each subsequent spoke, render it to its own layer, then merge it down onto
+            ' the "master" mbDIB layer.
+            For i = 1 To numSpokeIterations - 1
+                
+                'Create the new spoke layer
+                mbDIBTemp.createFromExistingDIB thresholdDIB
+                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, False
+                
+                If Not toPreview Then
+                    If userPressedESC() Then GoTo PrematureCrossScreenExit:
+                    SetProgBarVal 2 + (i * 2) - 1
+                End If
+                
+                'Premultiply alpha (as required by the compositor)
+                mbDIBTemp.fixPremultipliedAlpha True
+                
+                'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
+                ' over-emphasizes bright areas, which gives a nice "bloom" effect.
+                cComposite.quickMergeTwoDibsOfEqualSize mbDIB, mbDIBTemp, BL_LINEARDODGE, 100
+                
+                If Not toPreview Then
+                    If userPressedESC() Then GoTo PrematureCrossScreenExit:
+                    SetProgBarVal 2 + (i * 2)
+                End If
+                
+            Next i
+            
+        End If
+    
+    End If
+    
+    'Remove premultipled alpha from the final, fully composited DIB, and release any temporary DIBs that
+    ' are no longer needed.
     mbDIB.fixPremultipliedAlpha False
     thresholdDIB.eraseDIB
+    Set mbDIBTemp = Nothing
     
     'We now need to brighten up mbDIB.
     Dim lMax As Long, lMin As Long
@@ -356,11 +464,21 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     cLUT.MergeLUTs tmpLUT, gammaLUT, finalLUT
     cLUT.applyLUTsToDIB_Gray mbDIB, finalLUT, True
     
-    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "5 - Gamma corrected motion blurs.png", mbDIB
+    'We also want to apply a slight blur to the final result, to improve the feathering of the light boundaries (as they may be
+    ' quite sharp due to the remapping).
+    If ((Not toPreview) And (csSoftening > 0)) Or (csSoftening * curDIBValues.previewModifier > 0) Then
+        
+        If toPreview Then
+            quickBlurDIB mbDIB, csSoftening * curDIBValues.previewModifier
+        Else
+            quickBlurDIB mbDIB, csSoftening
+        End If
+        
+    End If
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
-        SetProgBarVal 600
+        SetProgBarVal calculatedProgBarMax - 3
     End If
     
     'At this point, workingDIB is still intact (phew!).  We are going to mask workingDIB against our newly generate mbDIB image.
@@ -375,7 +493,7 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
-        SetProgBarVal 650
+        SetProgBarVal calculatedProgBarMax - 2
     End If
     
     'The final step is to merge the light effect onto the original image, using the Strength input parameter
@@ -386,7 +504,7 @@ Public Sub CrossScreenFilter(ByVal csThreshold As Double, ByVal csAngle As Doubl
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
-        SetProgBarVal 700
+        SetProgBarVal calculatedProgBarMax - 1
     End If
     
     'Clear all temporary DIBs
@@ -401,58 +519,25 @@ PrematureCrossScreenExit:
 End Sub
 
 'Used to motion-blur the intermediate images required by the cross-screen filter
-Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal mbAngle As Double, ByVal mbDistance As Double, Optional ByVal toPreview As Boolean = False)
+Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal mbAngle As Double, ByVal mbDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByVal spokesAreSymmetrical As Boolean = True)
 
     Dim finalX As Long, finalY As Long
     finalX = srcDIB.getDIBWidth
     finalY = srcDIB.getDIBHeight
     
     'Before doing any rotating or blurring, we need to increase the size of the image we're working with.  If we
-    ' don't do this, the rotation will chop off the image's corners, and the resulting motion blur will look terrible.
-        
-    'If FreeImage is enabled, use it to calculate an optimal extension size.  If it is not enabled, do a
-    ' quick-and-dirty estimation using basic geometry.
+    ' don't do this, intermediate rotation actions will chop off the image's corners, and the resulting effect
+    ' will look terrible.
     Dim hScaleAmount As Long, vScaleAmount As Long
-    If g_ImageFormats.FreeImageEnabled Then
-                
-        'Convert our current DIB to a FreeImage-type DIB
-        Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+    Dim nWidth As Double, nHeight As Double
+    Math_Functions.findBoundarySizeOfRotatedRect finalX, finalY, mbAngle, nWidth, nHeight
         
-        'Use that handle to request an image rotation, then store the new image's width and height
-        Dim nWidth As Long, nHeight As Long
-        If fi_DIB <> 0 Then
-        
-            Dim returnDIB As Long
-            returnDIB = FreeImage_Rotate(fi_DIB, -mbAngle, 0)
-                    
-            nWidth = FreeImage_GetWidth(returnDIB)
-            nHeight = FreeImage_GetHeight(returnDIB)
-            
-            If returnDIB <> 0 Then FreeImage_Unload returnDIB
-            FreeImage_Unload fi_DIB
+    'Use the rotated size to calculate optimal padding amounts
+    hScaleAmount = (nWidth - srcDIB.getDIBWidth) \ 2
+    vScaleAmount = (nHeight - srcDIB.getDIBHeight) \ 2
     
-        Else
-            nWidth = workingDIB.getDIBWidth * 2
-            nHeight = workingDIB.getDIBHeight * 2
-        End If
-        
-        'Use the returned size to calculate optimal offsets
-        hScaleAmount = (nWidth - srcDIB.getDIBWidth) \ 2
-        vScaleAmount = (nHeight - srcDIB.getDIBHeight) \ 2
-        
-        If hScaleAmount < 0 Then hScaleAmount = 0
-        If vScaleAmount < 0 Then vScaleAmount = 0
-        
-    Else
-        
-        'This is basically a worst-case estimation of the final image size, and because of that, the function will
-        ' be quite slow.  This is a very fringe case, however, as most users should have FreeImage available.
-        hScaleAmount = Sqr(srcDIB.getDIBWidth * srcDIB.getDIBWidth + srcDIB.getDIBHeight * srcDIB.getDIBHeight)
-        If toPreview Then hScaleAmount = hScaleAmount \ 4 Else hScaleAmount = hScaleAmount \ 2
-        vScaleAmount = hScaleAmount
-        
-    End If
+    If hScaleAmount < 0 Then hScaleAmount = 0
+    If vScaleAmount < 0 Then vScaleAmount = 0
     
     'I built a separate function to enlarge the image and fill the blank borders with clamped pixels from the source image:
     Dim tmpClampDIB As pdDIB
@@ -479,7 +564,7 @@ Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, By
     
     'Next, apply a horizontal blur, using the blur radius supplied by the user
     Dim rightRadius As Long
-    rightRadius = mbDistance
+    If spokesAreSymmetrical Then rightRadius = mbDistance Else rightRadius = 0
         
     If CreateHorizontalBlurDIB(mbDistance, rightRadius, rotateDIB, tmpClampDIB, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth) Then
         
@@ -505,16 +590,16 @@ Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, By
         dstDIB.createFromExistingDIB srcDIB
         BitBlt dstDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateDIB.getDIBDC, hScaleAmount, vScaleAmount, vbSrcCopy
         
-        'Erase the temporary rotation DIB
-        rotateDIB.eraseDIB
-        Set rotateDIB = Nothing
-        
     End If
+    
+    'Erase the temporary rotation DIB
+    rotateDIB.eraseDIB
+    Set rotateDIB = Nothing
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Cross-screen", , buildParams(sltThreshold, sltAngle, sltDistance, sltStrength), UNDO_LAYER
+    Process "Cross-screen", , buildParams(sltSpokes, sltThreshold, sltAngle, sltDistance, sltStrength, sltSoftness), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -522,6 +607,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    sltSpokes = 4
     sltThreshold = 20
     sltAngle = 45
     sltDistance = 10
@@ -533,13 +619,7 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_ToolTip = New clsToolTip
     makeFormPretty Me, m_ToolTip
-    
-    'If the program is not compiled, display a special warning for this tool
-    If Not g_IsProgramCompiled Then
-        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool is very slow when used inside the IDE. Please compile for best results.")
-        lblIDEWarning.Visible = True
-    End If
-    
+        
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
     updatePreview
@@ -559,7 +639,11 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then CrossScreenFilter sltThreshold, sltAngle, sltDistance, sltStrength, True, fxPreview
+    If cmdBar.previewsAllowed Then CrossScreenFilter sltSpokes, sltThreshold, sltAngle, sltDistance, sltStrength, sltSoftness, True, fxPreview
+End Sub
+
+Private Sub sliderTextCombo1_Change()
+    updatePreview
 End Sub
 
 Private Sub sltAngle_Change()
@@ -572,6 +656,14 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
+    updatePreview
+End Sub
+
+Private Sub sltSoftness_Change()
+    updatePreview
+End Sub
+
+Private Sub sltSpokes_Change()
     updatePreview
 End Sub
 
