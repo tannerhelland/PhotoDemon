@@ -302,6 +302,79 @@ Public Function Min3Int(rR As Long, rG As Long, rB As Long) As Long
    End If
 End Function
 
+'Return the maximum value from an arbitrary list of floating point values
+Public Function maxArbitraryListF(ParamArray listOfValues() As Variant) As Double
+    
+    If UBound(listOfValues) >= LBound(listOfValues) Then
+                    
+        Dim i As Long, numOfPoints As Long
+        numOfPoints = (UBound(listOfValues) - LBound(listOfValues)) + 1
+        
+        Dim maxValue As Double
+        maxValue = listOfValues(0)
+        
+        If numOfPoints > 1 Then
+            For i = 1 To numOfPoints - 1
+                If listOfValues(i) > maxValue Then maxValue = listOfValues(i)
+            Next i
+        End If
+        
+        maxArbitraryListF = maxValue
+        
+    Else
+        Debug.Print "No points provided - maxArbitraryListF() function failed!"
+    End If
+        
+End Function
+
+'Return the minimum value from an arbitrary list of floating point values
+Public Function minArbitraryListF(ParamArray listOfValues() As Variant) As Double
+    
+    If UBound(listOfValues) >= LBound(listOfValues) Then
+                    
+        Dim i As Long, numOfPoints As Long
+        numOfPoints = (UBound(listOfValues) - LBound(listOfValues)) + 1
+        
+        Dim minValue As Double
+        minValue = listOfValues(0)
+        
+        If numOfPoints > 1 Then
+            For i = 1 To numOfPoints - 1
+                If listOfValues(i) < minValue Then minValue = listOfValues(i)
+            Next i
+        End If
+        
+        minArbitraryListF = minValue
+        
+    Else
+        Debug.Print "No points provided - minArbitraryListF() function failed!"
+    End If
+        
+End Function
+
+'Given a list of floating-point values, convert each to its integer equivalent *furthest* from 0.
+' Said another way, round negative numbers down, and positive numbers up.  This is often relevant in PD when performing
+' coordinate conversions that are ultimately mapped to pixel locations, and we need to bounds-check corner coordinates
+' in advance and push them away from 0, so any partially-covered pixels are converted to fully-covered ones.
+Public Function convertArbitraryListToFurthestRoundedInt(ParamArray listOfValues() As Variant)
+    
+    If UBound(listOfValues) >= LBound(listOfValues) Then
+        
+        Dim i As Long
+        For i = LBound(listOfValues) To UBound(listOfValues)
+            If listOfValues(i) < 0 Then
+                listOfValues(i) = Int(listOfValues(i))
+            Else
+                listOfValues(i) = IIf(listOfValues(i) = Int(listOfValues(i)), listOfValues(i), Int(listOfValues(i)) + 1)
+            End If
+        Next i
+        
+    Else
+        Debug.Print "No points provided - convertArbitraryFListToRoundedInt() function failed!"
+    End If
+
+End Function
+
 'This is a modified module function; it handles negative values specially to ensure they work with certain distort functions
 Public Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
     Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
@@ -375,3 +448,60 @@ Public Function findClosestPointInFloatArray(ByVal targetX As Double, ByVal targ
 
 End Function
 
+'Given a rectangle (as defined by width and height, not position), calculate the bounding rect required by a rotation of that rectangle.
+Public Sub findBoundarySizeOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As Double, ByVal rotateAngle As Double, ByRef dstWidth As Double, ByRef dstHeight As Double, Optional ByVal padToIntegerValues As Boolean = True)
+
+    'Convert the rotation angle to radians
+    rotateAngle = rotateAngle * (PI_DIV_180)
+    
+    'Find the cos and sin of this angle and store the values
+    Dim cosTheta As Double, sinTheta As Double
+    cosTheta = Cos(rotateAngle)
+    sinTheta = Sin(rotateAngle)
+    
+    'Create source and destination points
+    Dim x1 As Double, x2 As Double, x3 As Double, x4 As Double
+    Dim x11 As Double, x21 As Double, x31 As Double, x41 As Double
+    
+    Dim y1 As Double, y2 As Double, y3 As Double, y4 As Double
+    Dim y11 As Double, y21 As Double, y31 As Double, y41 As Double
+    
+    'Position the points around (0, 0) to simplify the rotation code
+    x1 = -srcWidth / 2
+    x2 = srcWidth / 2
+    x3 = srcWidth / 2
+    x4 = -srcWidth / 2
+    y1 = srcHeight / 2
+    y2 = srcHeight / 2
+    y3 = -srcHeight / 2
+    y4 = -srcHeight / 2
+
+    'Apply the rotation to each point
+    x11 = x1 * cosTheta + y1 * sinTheta
+    y11 = -x1 * sinTheta + y1 * cosTheta
+    x21 = x2 * cosTheta + y2 * sinTheta
+    y21 = -x2 * sinTheta + y2 * cosTheta
+    x31 = x3 * cosTheta + y3 * sinTheta
+    y31 = -x3 * sinTheta + y3 * cosTheta
+    x41 = x4 * cosTheta + y4 * sinTheta
+    y41 = -x4 * sinTheta + y4 * cosTheta
+        
+    'If the caller is using this for something like determining bounds of a rotated image, we need to convert all points to
+    ' their "furthest from 0" integer amount.  Int() works on negative numbers, but a modified Ceiling()-type functions is
+    ' required as VB oddly does not provide one.
+    If padToIntegerValues Then convertArbitraryListToFurthestRoundedInt x11, x21, x31, x41, y11, y21, y31, y41
+    
+    'Find max/min values
+    Dim xMin As Double, xMax As Double
+    xMin = minArbitraryListF(x11, x21, x31, x41)
+    xMax = maxArbitraryListF(x11, x21, x31, x41)
+    
+    Dim yMin As Double, yMax As Double
+    yMin = minArbitraryListF(y11, y21, y31, y41)
+    yMax = maxArbitraryListF(y11, y21, y31, y41)
+    
+    'Return the max/min values
+    dstWidth = xMax - xMin
+    dstHeight = yMax - yMin
+    
+End Sub
