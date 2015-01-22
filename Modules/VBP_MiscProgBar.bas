@@ -95,6 +95,11 @@ Public Sub SetProgBarVal(ByVal pbVal As Long)
         If Not curProgBar Is Nothing Then
             curProgBar.Value = pbVal
             curProgBar.Refresh
+            
+            'Process some window messages on the main form, to prevent the dreaded "Not Responding" state
+            ' when PD is in the midst of a long-running action.
+            Replacement_DoEvents FormMain.hWnd
+            
         End If
         
         'On Windows 7 (or later), we also update the taskbar to reflect the current progress
