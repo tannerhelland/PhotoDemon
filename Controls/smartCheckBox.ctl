@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Checkbox control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 12/January/15
-'Last update: rewrite control to handle its own caption and tooltip translations
+'Last updated: 23/January/15
+'Last update: overhaul font handling to match the lighter, cleaner approach of newer UCs
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -502,7 +502,7 @@ Private Sub updateControlSize()
         curFont.attachToDC m_BackBuffer.getDIBDC
         
         'Measure the new size
-        stringWidth = curFont.getWidthOfString(m_CaptionTranslated)
+        stringWidth = getCheckboxPlusCaptionWidth(m_CaptionTranslated)
         
     Loop
     
@@ -517,7 +517,7 @@ Private Sub updateControlSize()
     'Our height calculation is pretty simple: the caption size, plus a one-pixel border (for displaying keyboard focus)
     ' and whatever fontY padding is specified at the top of this function.
     Dim newControlHeight As Long
-    newControlHeight = (fontY * 4 + stringHeight + 2) * TwipsPerPixelYFix
+    newControlHeight = (fontY * 4 + stringHeight + fixDPI(2)) * TwipsPerPixelYFix
     
     If controlHeight * TwipsPerPixelYFix <> newControlHeight Then
         m_InternalResizeState = True
@@ -687,7 +687,7 @@ Private Sub redrawBackBuffer()
     With clickableRect
         .Left = 0
         .Top = 0
-        .Right = offsetX * 2 + chkBoxSize + fixDPI(6) + curFont.getWidthOfString(m_CaptionTranslated) + fixDPI(6)
+        .Right = xFontOffset + curFont.getWidthOfString(m_CaptionTranslated) + fixDPI(6)
         .Bottom = m_BackBuffer.getDIBHeight
     End With
     
