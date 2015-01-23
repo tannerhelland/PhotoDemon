@@ -30,7 +30,7 @@ Begin VB.Form dialog_UnsavedChanges
       Height          =   735
       Index           =   2
       Left            =   3960
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   2865
       Width           =   5100
    End
@@ -39,7 +39,7 @@ Begin VB.Form dialog_UnsavedChanges
       Height          =   735
       Index           =   1
       Left            =   3960
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   2055
       Width           =   5100
    End
@@ -48,35 +48,26 @@ Begin VB.Form dialog_UnsavedChanges
       Height          =   735
       Index           =   0
       Left            =   3960
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   1260
       Width           =   5100
    End
    Begin PhotoDemon.smartCheckBox chkRepeat 
       Height          =   330
       Left            =   3960
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   4005
       Width           =   5130
       _ExtentX        =   9049
       _ExtentY        =   582
       Caption         =   "Repeat this action for all unsaved images (X in total)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H00FFFFFF&
       BeginProperty Font 
-         Name            =   "MS Sans Serif"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   0
          Weight          =   400
@@ -90,7 +81,7 @@ Begin VB.Form dialog_UnsavedChanges
       ScaleHeight     =   231
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   231
-      TabIndex        =   0
+      TabIndex        =   5
       Top             =   120
       Width           =   3495
    End
@@ -107,7 +98,7 @@ Begin VB.Form dialog_UnsavedChanges
       ForeColor       =   &H00202020&
       Height          =   765
       Left            =   4830
-      TabIndex        =   1
+      TabIndex        =   4
       Top             =   360
       Width           =   4215
       WordWrap        =   -1  'True
