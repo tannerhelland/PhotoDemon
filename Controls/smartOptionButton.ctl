@@ -33,8 +33,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Radio Button control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 28/January/13
-'Last updated: 12/January/15
-'Last update: rewrite control to handle its own caption and tooltip translations
+'Last updated: 23/January/15
+'Last update: overhaul font handling to match the lighter, cleaner approach of newer UCs
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -45,7 +45,8 @@ Attribute VB_Exposed = False
 '
 'A few notes on this radio button replacement, specifically:
 '
-' 1) The control is autosized based on the current font and caption.
+' 1) The control is no longer autosized based on the current font and caption.  If a caption exceeds the size of the
+'     (manually set) width, the font size will be repeatedly reduced until the caption fits.
 ' 2) High DPI settings are handled automatically, so do not attempt to handle this manually.
 ' 3) A hand cursor is automatically applied, and clicks on both the button and label are registered properly.
 ' 4) Coloration is automatically handled by PD's internal theming engine.
@@ -100,14 +101,17 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect A
 ' via a pdFont object.
 Private curFont As pdFont
 
+'Rather than use an StdFont container (which requires VB to create redundant font objects), we track font properties manually,
+' via dedicated properties.  At present, this control only exposes a Size font property.
+Private m_FontSize As Single
+
+'If the control's caption is too long, we must dynamically shrink the font size until an acceptable value is reached.
+' This variable represents the *currently in-use font size*, not the font size property.
+Private m_CurFontSize As Long
+
 'Mouse input handler
 Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
-
-'An StdFont object is used to make IDE font choices persistent; note that we also need it to raise events,
-' so we can track when it changes.
-Private WithEvents mFont As StdFont
-Attribute mFont.VB_VarHelpID = -1
 
 'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_CaptionEn
 ' is the ENGLISH CAPTION ONLY.  A translated caption will be stored in m_CaptionTranslated; the translated copy will be updated
@@ -115,8 +119,17 @@ Attribute mFont.VB_VarHelpID = -1
 Private m_CaptionEn As String
 Private m_CaptionTranslated As String
 
+'If we cannot physically fit a translated caption into the user control's area (because we run out of allowable font sizes),
+' this failure state will be set to TRUE.  When that happens, ellipses will be forcibly appended to the control caption.
+Private m_FitFailure As Boolean
+
 'Current control value
 Private m_Value As Boolean
+
+'If we resize the UC in the designer, the back buffer obviously needs to be redrawn.  If we resize it as part of an internal
+' AutoSize calculation, however, we will already be in the midst of resizing the back buffer - so we override the behavior
+' of the UserControl_Resize event, using this variable.
+Private m_InternalResizeState As Boolean
 
 'Persistent back buffer, which we manage internally
 Private m_BackBuffer As pdDIB
@@ -139,9 +152,9 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
+Public Property Let Enabled(ByVal newValue As Boolean)
     
-    UserControl.Enabled = NewValue
+    UserControl.Enabled = newValue
     PropertyChanged "Enabled"
     
     'Redraw the control
@@ -149,35 +162,46 @@ Public Property Let Enabled(ByVal NewValue As Boolean)
     
 End Property
 
-'Font handling is a bit specialized for user controls; see http://msdn.microsoft.com/en-us/library/aa261313%28v=vs.60%29.aspx
-Public Property Get Font() As StdFont
-    Set Font = mFont
+Public Property Get FontSize() As Single
+    FontSize = m_FontSize
 End Property
 
-Public Property Set Font(mNewFont As StdFont)
+Public Property Let FontSize(ByVal newSize As Single)
+    If newSize <> m_FontSize Then
+        m_FontSize = newSize
+        refreshFont
+    End If
+End Property
+
+'When the font used for the caption changes in some way, it can be recreated (refreshed) using this function.  Note that font
+' creation is expensive, so it's worthwhile to avoid this action as much as possible.
+Private Sub refreshFont()
     
-    With mFont
-        .Bold = mNewFont.Bold
-        .Italic = mNewFont.Italic
-        .Name = mNewFont.Name
-        .Size = mNewFont.Size
-    End With
+    Dim fontRefreshRequired As Boolean
+    fontRefreshRequired = curFont.hasFontBeenCreated
     
-    'Mirror all settings to our internal curFont object, then recreate it
-    If Not curFont Is Nothing Then
-        curFont.setFontBold mFont.Bold
-        curFont.setFontFace mFont.Name
-        curFont.setFontItalic mFont.Italic
-        curFont.setFontSize mFont.Size
-        curFont.createFontObject
+    'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
+    
+    'Font face is always set automatically, to match the current program-wide font
+    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
+        fontRefreshRequired = True
+        curFont.setFontFace g_InterfaceFont
     End If
     
-    PropertyChanged "Font"
+    'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
+    ' parity using an Int() conversion, as GDI only supports integer font sizes.
+    If Int(m_FontSize) <> Int(curFont.getFontSize) Then
+        fontRefreshRequired = True
+        curFont.setFontSize m_FontSize
+    End If
     
-    'Redraw the control to match
+    'Request a new font, if one or more settings have changed
+    If fontRefreshRequired Then curFont.createFontObject
+    
+    'Also, the back buffer needs to be rebuilt to reflect the new font metrics
     updateControlSize
-    
-End Property
+
+End Sub
 
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
@@ -186,10 +210,6 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     'Flip the relevant chunk of the buffer to the screen
     BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
     
-End Sub
-
-Private Sub mFont_FontChanged(ByVal PropertyName As String)
-    Set UserControl.Font = mFont
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
@@ -268,18 +288,18 @@ Attribute Value.VB_UserMemId = 0
     Value = m_Value
 End Property
 
-Public Property Let Value(ByVal NewValue As Boolean)
+Public Property Let Value(ByVal newValue As Boolean)
     
     'Update our internal value tracker
-    If m_Value <> NewValue Then
+    If m_Value <> newValue Then
     
-        m_Value = NewValue
+        m_Value = newValue
         If Not g_IsProgramRunning Then PropertyChanged "Value"
         
         'Redraw the control; it's important to do this *before* raising the associated event, to maintain an impression of max responsiveness
         redrawBackBuffer
         
-        If NewValue Then
+        If newValue Then
             
             'Set all other option buttons to FALSE
             updateValue
@@ -382,11 +402,7 @@ Private Sub UserControl_Initialize()
     
     m_MouseInsideUC = False
     m_FocusRectActive = False
-    
-    'Prepare a font object for use
-    Set mFont = New StdFont
-    Set UserControl.Font = mFont
-    
+        
     'Update the control size parameters at least once
     updateControlSize
     
@@ -396,10 +412,7 @@ End Sub
 Private Sub UserControl_InitProperties()
     
     Caption = "caption"
-    
-    Set mFont = UserControl.Font
-    mFont_FontChanged ("")
-    
+    m_FontSize = 10
     Value = False
     
 End Sub
@@ -434,7 +447,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         Caption = .ReadProperty("Caption", "")
-        Set Font = .ReadProperty("Font", Ambient.Font)
+        FontSize = .ReadProperty("FontSize", 10)
         Value = .ReadProperty("Value", False)
     End With
 
@@ -442,43 +455,102 @@ End Sub
 
 'The control dynamically resizes to match the dimensions of the caption.  The size cannot be set by the user.
 Private Sub UserControl_Resize()
-    updateControlSize
+    If (Not m_InternalResizeState) Then updateControlSize
 End Sub
 
 'Whenever the size of the control changes (because the control is auto-sized, this is typically from font or caption changes),
 ' we must recalculate some internal rendering metrics.
 Private Sub updateControlSize()
-
-    'By adjusting this fontY parameter, we can control the auto-height of a created check box
-    Dim fontY As Long
-    fontY = 1
-    
-    'Calculate a precise size for the requested caption.
-    Dim captionWidth As Long, captionHeight As Long, txtSize As POINTAPI
-    
-    If Not m_BackBuffer Is Nothing Then
-        
-        GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_CaptionTranslated), Len(m_CaptionTranslated), txtSize
-        captionHeight = txtSize.y
-    
-    'Failsafe if a Resize event is fired before we've initialized our back buffer DC
-    Else
-        captionHeight = fixDPI(32)
-    End If
-    
-    'The control's size is pretty simple: an x-offset (for the selection circle), plus the size of the caption itself,
-    ' and a one-pixel border around the edges.
-    UserControl.Height = (fontY * 4 + captionHeight + fixDPI(2)) * TwipsPerPixelYFix
     
     'Remove our font object from the buffer DC, because we are about to recreate it
     curFont.releaseFromDC
     
-    'Reset our back buffer, and reassign the font to it
-    Set m_BackBuffer = New pdDIB
-    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+    'By adjusting this fontY parameter, we can control the auto-height of a created check box
+    Dim fontY As Long
+    fontY = 1
+    
+    'If the back buffer has not been created, create it now, so we can select the font object into it.
+    If (m_BackBuffer Is Nothing) Then Set m_BackBuffer = New pdDIB
+    
+    'Manually create a (1, 1) buffer if one does not already exist.  (The buffer will be properly sized at a subsequent step.)
+    If (UserControl.ScaleWidth = 0) Or (UserControl.ScaleHeight = 0) Or (m_BackBuffer.getDIBWidth = 0) Then
+        m_BackBuffer.createBlank 1, 1, 24
+    End If
+    
+    'Always start by setting the current font size to match the default font size property value.
+    m_CurFontSize = m_FontSize
+    If m_CurFontSize <> Int(curFont.getFontSize) Then
+        curFont.setFontSize m_CurFontSize
+        curFont.createFontObject
+    End If
     curFont.attachToDC m_BackBuffer.getDIBDC
     
-    'Redraw the control
+    'Auto-fitting the caption requires us to fit the entire (translated!) caption within the control's pre-set boundaries.
+    Dim stringWidth As Long, stringHeight As Long
+    Dim controlWidth As Long, controlHeight As Long
+    controlWidth = UserControl.ScaleWidth
+    controlHeight = UserControl.ScaleHeight
+    
+    'Start by measuring the font relative to the current control size.  This step is a little more complicated than usual,
+    ' because we can't just measure the caption - we also have to calculate a matching size for the radio button, and factor
+    ' that (plus padding) into the width calculation.
+    stringWidth = getRadioButtonPlusCaptionWidth(m_CaptionTranslated)
+            
+    'If the caption + radio button + padding does not fit within the control, test increasingly smaller fonts until a satisfying
+    ' size has been reached.  If we reach font size 8 and still can't fit the caption, it will be forcibly truncated.
+    Do While (stringWidth > controlWidth) And (m_CurFontSize >= 8)
+        
+        'Shrink the font size
+        m_CurFontSize = m_CurFontSize - 1
+        
+        'Recreate the font
+        curFont.releaseFromDC
+        curFont.setFontSize m_CurFontSize
+        curFont.createFontObject
+        curFont.attachToDC m_BackBuffer.getDIBDC
+        
+        'Measure the new size
+        stringWidth = getRadioButtonPlusCaptionWidth(m_CaptionTranslated)
+        
+    Loop
+    
+    'If the font is at normal size, there is a small chance that the existing UC size will not be tall enough
+    ' (vertically) to hold it.  This is due to rendering differences between Tahoma (on XP) and Segoe UI
+    ' (on Vista+).  As such, we perform a failsafe check on the caption's height, and increase the control size
+    ' as necessary.
+    Dim txtSize As POINTAPI
+    GetTextExtentPoint32 m_BackBuffer.getDIBDC, StrPtr(m_CaptionTranslated), Len(m_CaptionTranslated), txtSize
+    stringHeight = txtSize.y
+    
+    'Our height calculation is pretty simple: the caption size, plus a one-pixel border (for displaying keyboard focus)
+    ' and whatever fontY padding is specified at the top of this function.
+    Dim newControlHeight As Long
+    newControlHeight = (fontY * 4 + stringHeight + fixDPI(2)) * TwipsPerPixelYFix
+    
+    If controlHeight * TwipsPerPixelYFix <> newControlHeight Then
+        m_InternalResizeState = True
+        UserControl.Height = newControlHeight
+        m_InternalResizeState = False
+    End If
+    
+    'We are now ready to recreate the backbuffer to its relevant size.
+    If (UserControl.ScaleWidth <> m_BackBuffer.getDIBWidth) Or (UserControl.ScaleHeight <> m_BackBuffer.getDIBHeight) Then
+        curFont.releaseFromDC
+        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+        curFont.attachToDC m_BackBuffer.getDIBDC
+    End If
+    
+    'If the caption still does not fit within the available area (typically because we reached the minimum allowable font
+    ' size, but the caption was *still* too long), set a module-level failure state to TRUE.  This notifies the renderer
+    ' that ellipses must be forcibly appended to the caption.
+    If stringWidth > UserControl.ScaleWidth Then
+        m_FitFailure = True
+    Else
+        m_FitFailure = False
+    End If
+    
+    'm_FontSize will now contain the final size of the control's font, and curFont has been updated accordingly.
+    ' We may proceed with rendering the control.
     redrawBackBuffer
             
 End Sub
@@ -511,7 +583,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Caption", Caption, "caption"
         .WriteProperty "Value", Value, False
-        .WriteProperty "Font", mFont, "Tahoma"
+        .WriteProperty "FontSize", m_FontSize, 10
     End With
     
 End Sub
@@ -519,7 +591,6 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
     
-    Me.Font.Name = g_InterfaceFont
     curFont.setFontFace g_InterfaceFont
     curFont.createFontObject
     
@@ -550,8 +621,9 @@ Public Sub updateAgainstCurrentTheme()
         m_CaptionTranslated = m_CaptionEn
     End If
     
-    'Redraw the control to match
-    updateControlSize
+    'Update the current font, as necessary.
+    ' (Note that this will also trigger a redraw, so we do not need to manually request one here.)
+    refreshFont
     
 End Sub
 
@@ -568,7 +640,6 @@ Private Sub redrawBackBuffer()
     End If
     
     'Colors used throughout this paint function are determined primarily control enablement
-    ' TODO: tie this into PD's central themer, instead of using custom values for this control!
     Dim optButtonColorBorder As Long, optButtonColorFill As Long
     If Me.Enabled Then
         optButtonColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
@@ -630,14 +701,21 @@ Private Sub redrawBackBuffer()
         curFont.setFontColor RGB(0, 0, 0)
     End If
     
-    'Render the text
-    curFont.fastRenderText offsetX * 2 + optCircleSize + fixDPI(6), 1, m_CaptionTranslated
+    'Render the text, appending ellipses as necessary
+    Dim xFontOffset As Long
+    xFontOffset = offsetX * 2 + optCircleSize + fixDPI(6)
+    
+    If m_FitFailure Then
+        curFont.fastRenderTextWithClipping xFontOffset, 1, m_BackBuffer.getDIBWidth - xFontOffset, m_BackBuffer.getDIBHeight, m_CaptionTranslated, True
+    Else
+        curFont.fastRenderTextWithClipping xFontOffset, 1, m_BackBuffer.getDIBWidth - xFontOffset, m_BackBuffer.getDIBHeight, m_CaptionTranslated, False
+    End If
     
     'Update the clickable rect using the measurements from the final render
     With clickableRect
         .Left = 0
         .Top = 0
-        .Right = offsetX * 2 + optCircleSize + fixDPI(6) + curFont.getWidthOfString(m_CaptionTranslated) + fixDPI(6)
+        .Right = xFontOffset + curFont.getWidthOfString(m_CaptionTranslated) + fixDPI(6)
         .Bottom = m_BackBuffer.getDIBHeight
     End With
     
