@@ -47,19 +47,10 @@ Begin VB.Form FormBrightnessContrast
       Left            =   6120
       TabIndex        =   3
       Top             =   3600
-      Width           =   5760
-      _ExtentX        =   10160
+      Width           =   5775
+      _ExtentX        =   10186
       _ExtentY        =   582
       Caption         =   "sample image for true contrast (slower but more accurate)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
