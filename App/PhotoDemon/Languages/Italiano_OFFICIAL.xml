@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.6.1</langversion>
+<langversion>6.6.2</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -4315,153 +4315,18 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>count unique colors in incoming images (to determine optimal color depth)</original>
-<translation>conteggio dei colori delle immagini entranti (per determinare la profondità ottimale di colore)</translation>
-</phrase>
-
-<phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
-<translation>visualizza le opzioni di mappatura del tono quando si importano immagini HDR e RAW</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>segui le istruzioni per la rotazione automatica all'interno del file di immagine</translation>
-</phrase>
-
-<phrase>
-<original>orientation</original>
-<translation>orientazione</translation>
-</phrase>
-
-<phrase>
-<original>color depth</original>
-<translation>profondità di colore</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>immagini high-dynamic range (HDR)</translation>
-</phrase>
-
-<phrase>
-<original>zoom</original>
-<translation>zoom</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>quando l'immagine viene caricata la prima volta, imposta il suo zoom di visualizzazione a</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>gestione del colore</translation>
-</phrase>
-
-<phrase>
-<original>when calculating color values</original>
-<translation>quando si calcolano i valori di colore</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>durante la decorazione degli elementi dell'interfaccia</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>interfaccia</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>nessuna compressione (più veloce)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>massima compressione (più lento)</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>comprimi i dati di annulla/ripeti al seguente livello</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>annulla/ripeti</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>miniature</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>durante la generazione dell'immagine e delle miniature del livello</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>durante la resa della tela dell'immagine</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>Visualizzazione</translation>
-</phrase>
-
-<phrase>
-<original>Click to open a browse-for-folder dialog</original>
-<translation>Clicca per aprire la finestra di dialogo Sfoglia per cartelle</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>Rapporto accelerazione hardware</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>l'utilizzo della memoria è mostrato quì</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnostica della memoria</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>locazione del file temporaneo</translation>
-</phrase>
-
-<phrase>
-<original>if core plugins cannot be located, offer to download them</original>
-<translation>se i plugin di base non sono localizzati, proponi di scaricarli</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for software updates every 10 days</original>
-<translation>controlla automaticamente gli aggiornamenti del software ogni 10 giorni</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>opzioni di aggiornamento</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(clausole elencate in esecuzione)</translation>
-</phrase>
-
-<phrase>
 <original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
 <translation>Le finestre delle immagini tendono a divenire grandi, quindi sentitevi liberi di visualizzare il percorso completo di ogni immagine nella barra del titolo nella finestra dell'immagine stessa.</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4527,6 +4392,11 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <phrase>
 <original>when rendering images to the screen</original>
 <translation>durante la resa delle immagini sullo schermo</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>gestione del colore</translation>
 </phrase>
 
 <phrase>
@@ -4680,6 +4550,146 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
+<original>count unique colors in incoming images (to determine optimal color depth)</original>
+<translation>conteggio dei colori delle immagini entranti (per determinare la profondità ottimale di colore)</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>visualizza le opzioni di mappatura del tono quando si importano immagini HDR e RAW</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>segui le istruzioni per la rotazione automatica all'interno del file di immagine</translation>
+</phrase>
+
+<phrase>
+<original>orientation</original>
+<translation>orientazione</translation>
+</phrase>
+
+<phrase>
+<original>color depth</original>
+<translation>profondità di colore</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>immagini high-dynamic range (HDR)</translation>
+</phrase>
+
+<phrase>
+<original>zoom</original>
+<translation>zoom</translation>
+</phrase>
+
+<phrase>
+<original>when an image is first loaded, set its viewport zoom to</original>
+<translation>quando l'immagine viene caricata la prima volta, imposta il suo zoom di visualizzazione a</translation>
+</phrase>
+
+<phrase>
+<original>when calculating color values</original>
+<translation>quando si calcolano i valori di colore</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>durante la decorazione degli elementi dell'interfaccia</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>interfaccia</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>nessuna compressione (più veloce)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>massima compressione (più lento)</translation>
+</phrase>
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>comprimi i dati di annulla/ripeti al seguente livello</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>annulla/ripeti</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>miniature</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>durante la generazione dell'immagine e delle miniature del livello</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>durante la resa della tela dell'immagine</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>Visualizzazione</translation>
+</phrase>
+
+<phrase>
+<original>Click to open a browse-for-folder dialog</original>
+<translation>Clicca per aprire la finestra di dialogo Sfoglia per cartelle</translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>Rapporto accelerazione hardware</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>l'utilizzo della memoria è mostrato quì</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnostica della memoria</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>locazione del file temporaneo</translation>
+</phrase>
+
+<phrase>
+<original>if core plugins cannot be located, offer to download them</original>
+<translation>se i plugin di base non sono localizzati, proponi di scaricarli</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for software updates every 10 days</original>
+<translation>controlla automaticamente gli aggiornamenti del software ogni 10 giorni</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>opzioni di aggiornamento</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(clausole elencate in esecuzione)</translation>
+</phrase>
+
+<phrase>
 <original>(none)</original>
 <translation>(nessuno)</translation>
 </phrase>
@@ -4766,6 +4776,11 @@ Sei sicuro di voler continuare?</translation>
 <phrase>
 <original>descriptive - full location, including folder(s)</original>
 <translation>descrittivo - percorso completo, inclusa la cartella(e)</translation>
+</phrase>
+
+<phrase>
+<original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5226,7 +5241,7 @@ Se si sceglie di disattivare queste funzioni, potete sempre visitare photodemon.
 <translation>ATTENZIONE: questa cartella non è valida (accesso proibito).  Per favore assegna una cartella valida. Se nessuna nuova cartella è assegnata, PhotoDemon utilizzerà la cartella predefinita per i file temporanei.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 267 phrases. 68 were duplicates of existing phrases, so only 199 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 271 phrases. 69 were duplicates of existing phrases, so only 202 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -6289,7 +6304,7 @@ Nota: puoi sempre scaricare manualmente l'ultima versione visitando il sito phot
 
 <phrase>
 <original>render tiled image using</original>
-<translation>rendi un'immagine pistrellata utilizzando</translation>
+<translation>rendi un'immagine piastrellata utilizzando</translation>
 </phrase>
 
 <phrase>
@@ -13048,17 +13063,27 @@ o il menù File > Apri e File > Importa.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormCrossScreen.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>spokes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying cross-screen filter</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormCrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormCrossScreen.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2281</phrasecount>
+<phrasecount>2286</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3963 phrases. -->
-<!-- 1682 are duplicates, so only 2281 unique phrases have been written to file. -->
-<!-- These 2281 phrases contain approximately 13097 total words. -->
+<!-- As of this build, PhotoDemon contains 3965 phrases. -->
+<!-- 1679 are duplicates, so only 2286 unique phrases have been written to file. -->
+<!-- These 2286 phrases contain approximately 13145 total words. -->
 
 </pdData>
 
