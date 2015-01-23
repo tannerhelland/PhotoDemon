@@ -465,7 +465,7 @@ Public Sub setFontSize(ByVal newFontSize As Single)
     currentLogFont.lfHeight = convertFontSize(newFontSize)
 End Sub
 
-Private Function convertFontSize(ByVal sizeInPoints As Long) As Long
+Private Function convertFontSize(ByVal sizeInPoints As Single) As Long
     convertFontSize = -1 * MulDiv(sizeInPoints, curLogPixelsY, 72)
 End Function
 
