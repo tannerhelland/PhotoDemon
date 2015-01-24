@@ -270,11 +270,11 @@ Public Property Get GradientMiddleValue() As Double
     GradientMiddleValue = gradMiddleValue
 End Property
 
-Public Property Let GradientMiddleValue(ByVal NewValue As Double)
+Public Property Let GradientMiddleValue(ByVal newValue As Double)
     
     'Store the new value, then redraw the slider to match
-    If NewValue <> gradMiddleValue Then
-        gradMiddleValue = NewValue
+    If newValue <> gradMiddleValue Then
+        gradMiddleValue = newValue
         redrawSlider
         PropertyChanged "GradientMiddleValue"
         redrawInternalGradientDIB
@@ -305,10 +305,10 @@ Public Property Get NotchValueCustom() As Double
     NotchValueCustom = customNotchValue
 End Property
 
-Public Property Let NotchValueCustom(ByVal NewValue As Double)
+Public Property Let NotchValueCustom(ByVal newValue As Double)
     
     'Store the new position
-    customNotchValue = NewValue
+    customNotchValue = newValue
     
     'Redraw the control
     redrawSlider
@@ -346,12 +346,12 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
+Public Property Let Enabled(ByVal newValue As Boolean)
     
-    UserControl.Enabled = NewValue
+    UserControl.Enabled = newValue
     
     'Disable text entry
-    tudPrimary.Enabled = NewValue
+    tudPrimary.Enabled = newValue
     
     'Redraw the slider; when disabled, the slider itself is not drawn (only the track behind it is)
     redrawSlider
@@ -464,13 +464,13 @@ Attribute Value.VB_UserMemId = 0
     Value = controlVal
 End Property
 
-Public Property Let Value(ByVal NewValue As Double)
+Public Property Let Value(ByVal newValue As Double)
     
     'Don't make any changes unless the new value deviates from the existing one
-    If NewValue <> controlVal Then
+    If newValue <> controlVal Then
     
         'Internally track the value of the control
-        controlVal = NewValue
+        controlVal = newValue
         
         'Check bounds
         If controlVal < controlMin Then controlVal = controlMin
@@ -514,9 +514,9 @@ Public Property Get Min() As Double
     Min = controlMin
 End Property
 
-Public Property Let Min(ByVal NewValue As Double)
+Public Property Let Min(ByVal newValue As Double)
     
-    controlMin = NewValue
+    controlMin = newValue
     tudPrimary.Min = controlMin
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
@@ -537,9 +537,9 @@ Public Property Get Max() As Double
     Max = controlMax
 End Property
 
-Public Property Let Max(ByVal NewValue As Double)
+Public Property Let Max(ByVal newValue As Double)
     
-    controlMax = NewValue
+    controlMax = newValue
     tudPrimary.Max = controlMax
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
@@ -560,8 +560,8 @@ Public Property Get SigDigits() As Long
     SigDigits = significantDigits
 End Property
 
-Public Property Let SigDigits(ByVal NewValue As Long)
-    significantDigits = NewValue
+Public Property Let SigDigits(ByVal newValue As Long)
+    significantDigits = newValue
     tudPrimary.SigDigits = significantDigits
     PropertyChanged "SigDigits"
 End Property
@@ -722,7 +722,7 @@ End Sub
 Private Sub UserControl_Resize()
 
     'We want to keep the text box and scroll bar universally aligned.  Thus, I have hard-coded specific spacing values.
-    tudPrimary.Left = UserControl.ScaleWidth - tudPrimary.Width - fixDPI(2)
+    tudPrimary.Left = UserControl.ScaleWidth - (tudPrimary.Width + fixDPI(2))
     
     'It's possible - but obviously not recommended - to shrink the control so much that the scroll bar is invisible.
     ' Please do not do this.

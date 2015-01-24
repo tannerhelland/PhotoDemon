@@ -1522,6 +1522,7 @@ Private Sub reflowInterface()
     
     'Horizontally stretch the opacity and blend mode UI objects
     sltLayerOpacity.Width = Me.ScaleWidth - (sltLayerOpacity.Left + fixDPI(5))
+    
     cboBlendMode.requestNewWidth Me.ScaleWidth - (cboBlendMode.Left + fixDPI(8))
     
     'Resize the layer box and associated scrollbar

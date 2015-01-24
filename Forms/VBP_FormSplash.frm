@@ -107,7 +107,12 @@ Public Sub prepareSplashLogo(ByVal maxProgressValue As Long)
     
     'Load the inverted logo DIB; this will be blurred and used as a shadow backdrop
     dibsLoadedSuccessfully = dibsLoadedSuccessfully And loadResourceToDIB("PDLOGOBLACK", shadowDIB)
-    quickBlurDIB shadowDIB, 7, True
+    
+    If fixDPIFloat(1) = 1 Then
+        quickBlurDIB shadowDIB, 7, True
+    Else
+        quickBlurDIB shadowDIB, 7 * (1 / fixDPIFloat(1)), False
+    End If
     
     'Set the StretchBlt mode of the underlying form in advance
     SetStretchBltMode Me.hDC, STRETCHBLT_HALFTONE
@@ -122,8 +127,8 @@ Public Sub prepareRestOfSplash()
         'Use the getDesktopAsDIB function to retrieve a copy of the current screen.  We will use this to mimic window
         ' transparency.  (It's faster, and works more smoothly than attempting to use layered Windows, especially on XP.)
         Dim formLeft As Long, formTop As Long, formWidth As Long, formHeight As Long
-        formLeft = Me.ScaleX(Me.Left, vbTwips, vbPixels)
-        formTop = Me.ScaleY(Me.Top, vbTwips, vbPixels)
+        formLeft = Me.Left * (1 / TwipsPerPixelXFix)
+        formTop = Me.Top * (1 / TwipsPerPixelYFix)
         formWidth = Me.ScaleWidth
         formHeight = Me.ScaleHeight
         
@@ -140,7 +145,9 @@ Public Sub prepareRestOfSplash()
         'Copy the screen background, shadow, and logo onto a single composite DIB
         Set splashDIB = New pdDIB
         splashDIB.createFromExistingDIB screenDIB
-        shadowDIB.alphaBlendToDC splashDIB.getDIBDC, , 1, 1, formWidth, formWidth / logoAspectRatio
+        'GDIPlus_StretchBlt splashDIB, fixDPI(1), fixDPI(1), formWidth, formWidth / logoAspectRatio, shadowDIB, 0, 0, shadowDIB.getDIBWidth, shadowDIB.getDIBHeight
+        'GDIPlus_StretchBlt splashDIB, 0, 0, formWidth, formWidth / logoAspectRatio, logoDIB, 0, 0, shadowDIB.getDIBWidth, shadowDIB.getDIBHeight
+        shadowDIB.alphaBlendToDC splashDIB.getDIBDC, , fixDPI(1), fixDPI(1), formWidth, formWidth / logoAspectRatio
         logoDIB.alphaBlendToDC splashDIB.getDIBDC, , 0, 0, formWidth, formWidth / logoAspectRatio
         
         'Free all intermediate DIBs
