@@ -329,7 +329,7 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
         
         'Flip the relevant chunk of the buffer to the screen
         BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
-    
+        
     End If
         
 End Sub
@@ -407,7 +407,7 @@ Private Sub UserControl_Initialize()
     Else
         Set g_Themer = New pdVisualThemes
     End If
-        
+    
     'Note that we are not currently responsible for any resize events
     m_InternalResizeState = False
     
@@ -557,8 +557,7 @@ Private Sub updateControlSize()
                 If g_IsProgramRunning Then
                     MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 1
                 Else
-                    UserControl.Width = ScaleX(origWidth, vbPixels, vbTwips)
-                    UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
+                    UserControl.Size pxToTwipsX(origWidth), pxToTwipsY(stringHeight)
                 End If
                 
                 'Recreate the backbuffer
@@ -636,23 +635,23 @@ Private Sub updateControlSize()
             'We must make the back buffer fit the control's caption precisely.  stringWidth should be accurate;
             ' however, antialiasing may require us to add an additional pixel to the caption, in the event
             ' that ClearType is in use.
-            If (stringWidth <> m_BackBuffer.getDIBWidth) Or (stringHeight <> m_BackBuffer.getDIBHeight) Then
+            'If (stringWidth <> m_BackBuffer.getDIBWidth) Or (stringHeight <> m_BackBuffer.getDIBHeight) Then
                 
                 'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
                 With UserControl
-                    .Size .ScaleX(stringWidth, vbPixels, vbTwips), .ScaleY(stringHeight, vbPixels, vbTwips)
+                    .Size pxToTwipsX(stringWidth), pxToTwipsY(stringHeight)
                 End With
                 
                 'Recreate the backbuffer
-                If (stringWidth <> m_BackBuffer.getDIBWidth) Or (stringHeight <> m_BackBuffer.getDIBHeight) Then
+                'If (stringWidth <> m_BackBuffer.getDIBWidth) Or (stringHeight <> m_BackBuffer.getDIBHeight) Then
                     curFont.releaseFromDC
                     m_BackBuffer.createBlank stringWidth, stringHeight, 24
                     curFont.attachToDC m_BackBuffer.getDIBDC
-                End If
+                'End If
                 
-            End If
+            'End If
             
             'Restore normal resize behavior
             m_InternalResizeState = False
@@ -678,7 +677,7 @@ Private Sub updateControlSize()
                 If g_IsProgramRunning Then
                     MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 1
                 Else
-                    UserControl.Height = ScaleY(stringHeight, vbPixels, vbTwips)
+                    UserControl.Height = pxToTwipsY(stringHeight)
                 End If
                 
                 'Recreate the backbuffer

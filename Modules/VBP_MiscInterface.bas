@@ -1078,6 +1078,16 @@ Public Function TwipsPerPixelYFix() As Double
 
 End Function
 
+'ScaleX and ScaleY functions do not work when converting from pixels to twips, thanks to the 15 / 2 <> 7
+' bug described above.  Instead of using ScaleX/Y functions, use these wrapper.
+Public Function pxToTwipsX(ByVal srcPixelWidth As Long) As Long
+    pxToTwipsX = srcPixelWidth * TwipsPerPixelXFix
+End Function
+
+Public Function pxToTwipsY(ByVal srcPixelHeight As Long) As Long
+    pxToTwipsY = srcPixelHeight * TwipsPerPixelYFix
+End Function
+
 Public Sub displayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form)
     
     FormWait.Visible = False
@@ -1663,4 +1673,17 @@ Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
     If dibPadding > 0 Then padDIB getRuntimeUIDIB, dibPadding
     
 
+End Function
+
+'New test functions to (hopefully) help address high-DPI issues where VB's internal scale properties report false values
+Public Function apiWidth(ByVal srcHwnd As Long) As Long
+    Dim tmpRect As winRect
+    GetWindowRect srcHwnd, tmpRect
+    apiWidth = tmpRect.x2 - tmpRect.x1
+End Function
+
+Public Function apiHeight(ByVal srcHwnd As Long) As Long
+    Dim tmpRect As winRect
+    GetWindowRect srcHwnd, tmpRect
+    apiHeight = tmpRect.y2 - tmpRect.y1
 End Function

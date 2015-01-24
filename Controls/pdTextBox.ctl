@@ -357,10 +357,10 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
+Public Property Let Enabled(ByVal newValue As Boolean)
     
-    If m_EditBoxHwnd <> 0 Then EnableWindow m_EditBoxHwnd, IIf(NewValue, 1, 0)
-    UserControl.Enabled = NewValue
+    If m_EditBoxHwnd <> 0 Then EnableWindow m_EditBoxHwnd, IIf(newValue, 1, 0)
+    UserControl.Enabled = newValue
     
     'Redraw the window to match
     If g_IsProgramRunning Then redrawBackBuffer
@@ -692,6 +692,8 @@ Private Sub getEditBoxRect(ByRef targetRect As winRect)
         .y1 = 2
         .x2 = UserControl.ScaleWidth - 4
         .y2 = UserControl.ScaleHeight - 4
+        '.x2 = apiWidth(Me.hWnd) - 4
+        '.y2 = apiWidth(Me.hWnd) - 4
     End With
 
 End Sub
@@ -755,7 +757,7 @@ Private Function createEditBox() As Boolean
             'If the program is running (e.g. NOT design-time) resize the user control to match.  This improves compile-time performance, as there
             ' are a lot of instances in this control, and their size events will be fired during compilation.
             If g_IsProgramRunning Then
-                UserControl.Height = ScaleY(idealHeight + 5, vbPixels, vbTwips)
+                UserControl.Height = pxToTwipsY(idealHeight + 5)
             End If
             
             m_InternalResizeState = False

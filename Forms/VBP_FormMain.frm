@@ -3,9 +3,9 @@ Begin VB.Form FormMain
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   11355
+   ClientHeight    =   11115
    ClientLeft      =   225
-   ClientTop       =   855
+   ClientTop       =   870
    ClientWidth     =   18915
    ClipControls    =   0   'False
    BeginProperty Font 
@@ -21,7 +21,7 @@ Begin VB.Form FormMain
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   757
+   ScaleHeight     =   741
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1261
    StartUpPosition =   3  'Windows Default
@@ -50,21 +50,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0   'False
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.bluDownload updateChecker 
       Left            =   120
       Top             =   840
-      _extentx        =   847
-      _extenty        =   847
+      _ExtentX        =   847
+      _ExtentY        =   847
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -2362,10 +2362,10 @@ Private Sub Form_Load()
     Me.Visible = True
     
     'Register all toolbox forms with the window manager
-    g_WindowManager.registerChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX, , 48
-    g_WindowManager.registerChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , 200
+    g_WindowManager.registerChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX, , fixDPI(48)
+    g_WindowManager.registerChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , fixDPI(200)
     g_WindowManager.registerChildForm toolbar_Options, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
-    g_WindowManager.registerChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , 32
+    g_WindowManager.registerChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , fixDPI(32)
     
     'The debug window can optionally be displayed, but only in nightly builds
     #If DEBUGMODE = 1 Then

@@ -991,9 +991,9 @@ Private Function createComboBox() As Boolean
         'If the program is running (e.g. NOT design-time) resize the user control to match.  This improves compile-time performance, as there
         ' are a lot of instances in this control, and their size events will be fired during compilation.
         If g_IsProgramRunning Then
-            UserControl.Height = ScaleY(idealHeight + 8, vbPixels, vbTwips)
+            UserControl.Height = pxToTwipsY(idealHeight + 8)
         End If
-                
+        
         m_InternalResizeState = False
                     
     End If
@@ -1721,7 +1721,7 @@ Private Sub syncUserControlSizeToComboSize()
         With UserControl
         
             If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
-                .Size .ScaleX((comboRect.Right - comboRect.Left), vbPixels, vbTwips), .ScaleY((comboRect.Bottom - comboRect.Top), vbPixels, vbTwips)
+                .Size pxToTwipsX(comboRect.Right - comboRect.Left), pxToTwipsY(comboRect.Bottom - comboRect.Top)
             End If
         
         End With

@@ -195,7 +195,7 @@ Begin VB.UserControl pdCanvas
          Top             =   60
          Width           =   6825
          _ExtentX        =   12039
-         _ExtentY        =   503
+         _ExtentY        =   635
          Alignment       =   1
          BackColor       =   -2147483626
          Caption         =   "(messages will appear here at run-time)"
@@ -381,8 +381,8 @@ Public Sub updateAgainstCurrentTheme()
     cmbSizeUnit.updateAgainstCurrentTheme
     
     'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
-    cmbZoom.Top = ScaleY((picStatusBar.ScaleHeight - cmbZoom.Height) \ 2, vbPixels, vbTwips)
-    cmbSizeUnit.Top = ScaleY((picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2, vbPixels, vbTwips)
+    cmbZoom.Top = (picStatusBar.ScaleHeight - cmbZoom.Height) \ 2
+    cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
     
     'Restore zoom and size unit indices
     cmbZoom.ListIndex = backupZoomIndex
