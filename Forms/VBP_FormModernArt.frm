@@ -170,10 +170,13 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
     finalY = curDIBValues.Bottom
         
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
-    If toPreview Then
-        mRadius = mRadius * curDIBValues.previewModifier
-        If mRadius = 0 Then mRadius = 1
-    End If
+    If toPreview Then mRadius = mRadius * curDIBValues.previewModifier
+    
+    'Range-check the radius.  During previews, the line of code above may cause the radius to drop to zero.
+    ' If this happens, we will report the filter as successful, but we will not actually apply it.  This is
+    ' really the only way we have to notify the user that the effect will not be noticeable without a
+    ' larger strength (or zooming in).
+    If mRadius = 0 Then GoTo prematureModernArtExit
     
     'Just to be safe, make sure the radius isn't larger than the image itself
     If (finalY - initY) < (finalX - initX) Then
@@ -519,14 +522,16 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         
     Next y
         atBottom = Not atBottom
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
-        
+    
+prematureModernArtExit:
+    
     'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     Erase srcImageData
