@@ -936,7 +936,7 @@ Private Function getCurvesParamString() As String
         'We now need to convert the histogram array into a "|"-delimited string that can be passed through the
         ' software processor.  Generate it automatically.
         For j = 0 To 255
-            paramString = paramString & Trim$(Str(cHistogram(j))) & "|"
+            paramString = paramString & Trim$(Str(1 - cHistogram(j))) & "|"
         Next j
         
     Next i
@@ -1418,6 +1418,7 @@ Private Sub fillResultsArray()
         For j = previewBorder - 1 To minX(i) - 1
             cResults(i, j) = cResults(i, minX(i))
         Next j
+                
         For j = picDraw.ScaleWidth - previewBorder To maxX(i) + 1 Step -1
             cResults(i, j) = cResults(i, maxX(i))
         Next j
