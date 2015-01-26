@@ -109,7 +109,7 @@ Begin VB.Form FormCrossScreen
       _ExtentX        =   10398
       _ExtentY        =   873
       Min             =   1
-      Max             =   16
+      Max             =   8
       Value           =   4
    End
    Begin PhotoDemon.sliderTextCombo sltSoftness 
@@ -257,15 +257,15 @@ Attribute VB_Exposed = False
 'Cross-Screen (Star) Tool
 'Copyright 2014-2015 by Tanner Helland
 'Created: 20/January/15
-'Last updated: 21/January/15
-'Last update: wrap up initial build
+'Last updated: 26/January/15
+'Last update: minor performance and quality tweaks
 '
 'Cross-screen filters are physical filters placed over the lens of a camera:
-'http://en.wikipedia.org/wiki/Photographic_filter#Cross_screen
+' http://en.wikipedia.org/wiki/Photographic_filter#Cross_screen
 '
 'Different diffraction patterns in the lens create stars of varying spoke counts in regions where lighting is strong.
 '
-'Finding a digital replacement for a filter like this is tough; in factm the only one I've seen is a $50 plugin for
+'Finding a digital replacement for a filter like this is tough; in fact, the only one I've seen is a $50 plugin for
 ' PhotoShop.  (http://www.scarablabs.com/star-filter-photoshop)  I haven't actually tested that solution, so I can't
 ' vouch for its performance or quality, but given the rarity of digital versions of this filter, I have to think
 ' others have run into problems creating their own.  (Which of course, makes our version that much sweeter!  ;)
@@ -319,6 +319,15 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     csDistance = (csDistance / 100) * (minDimension * 0.5)
     If csDistance = 0 Then csDistance = 1
     
+    'A pdCompositor class will help us blend various images together
+    Dim cComposite As pdCompositor
+    Set cComposite = New pdCompositor
+    
+    'Temporary DIBs are required to assemble all the composite spokes
+    Dim mbDIB As pdDIB, mbDIBTemp As pdDIB
+    Set mbDIB = New pdDIB
+    Set mbDIBTemp = New pdDIB
+    
     'We start by creating a threshold DIB from the base image.  This threshold DIB will contain only pure black and pure
     ' white pixels, and we use it to determine the regions of the image that need cross-screen filtering.
     Dim thresholdDIB As pdDIB
@@ -330,7 +339,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     Set cLUT = New pdFilterLUT
     
     Dim tmpLUT() As Byte
-    cLUT.fillLUT_Threshold tmpLUT, 255 - csThreshold
+    'cLUT.fillLUT_Threshold tmpLUT, 255 - csThreshold
+    cLUT.fillLUT_RemappedRange tmpLUT, 255 - csThreshold, 255, 0, 255
     cLUT.applyLUTsToDIB_Gray thresholdDIB, tmpLUT, True
     
     'Progress is reported artificially, because it's too complex to handle using normal means
@@ -339,19 +349,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
         SetProgBarVal 1
     End If
     
-    'Next, prep a bunch of objects to help with the blend process
-    
-    'A pdCompositor class will help us blend various images together
-    Dim cComposite As pdCompositor
-    Set cComposite = New pdCompositor
-    
     Dim i As Long, numSpokeIterations As Long
     Dim spokeIntervalDegrees As Double
-    
-    'Temporary DIBs are required to assemble all the composite spokes
-    Dim mbDIB As pdDIB, mbDIBTemp As pdDIB
-    Set mbDIB = New pdDIB
-    Set mbDIBTemp = New pdDIB
     
     'We now need to produce a unique motion-blurred version of the threshold DIB for each "spoke" requested by the user.
     ' There are two code paths here, because even-numbered spokes require half as many calculations (as symmetry allows us
@@ -488,9 +487,6 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     cComposite.quickMergeTwoDibsOfEqualSize thresholdDIB, mbDIB, BL_HARDLIGHT, 100
     
     'thresholdDIB now contains the final, fully processed light effect.
-    
-    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "6 - lighting cues applied to motion blur.png", thresholdDIB
-    
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
         SetProgBarVal calculatedProgBarMax - 2
@@ -499,8 +495,6 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     'The final step is to merge the light effect onto the original image, using the Strength input parameter
     ' to control opacity of the merge.
     cComposite.quickMergeTwoDibsOfEqualSize workingDIB, thresholdDIB, BL_LINEARDODGE, 100
-    
-    'QuickSaveDIBAsPNG g_UserPreferences.getDebugPath & "7 - final result.png", workingDIB
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit:
