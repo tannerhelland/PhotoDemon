@@ -5,7 +5,7 @@ Begin VB.Form FormMain
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
    ClientHeight    =   11115
    ClientLeft      =   225
-   ClientTop       =   870
+   ClientTop       =   855
    ClientWidth     =   18915
    ClipControls    =   0   'False
    BeginProperty Font 
@@ -50,21 +50,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
-   Begin PhotoDemon.bluDownload updateChecker 
+   Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
-      Top             =   840
-      _ExtentX        =   847
-      _ExtentY        =   847
+      Top             =   3840
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -1547,6 +1547,29 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 ' it evaluates the accelerator like normal.
 Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Double
 
+'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with its downloads
+Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
+    asyncDownloader.Reset
+End Sub
+
+'When an asynchronous download completes, deal with it here
+Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean, ByVal entryKey As String, downloadedData() As Byte, ByVal savedToThisFile As String)
+    
+    'On a typical PD install, updates are checked every 10 days.  When an update check successfully completes,
+    ' we write the current date out to the preferences file
+    If (StrComp(entryKey, "PROGRAM_UPDATE_CHECK") = 0) Then
+        
+        If downloadSuccessful Then
+            Debug.Print "Update file download complete.  Update information has been saved at " & savedToThisFile
+            g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
+        Else
+            Debug.Print "Update file was not downloaded.  asyncDownloader returned this error message: " & asyncDownloader.getLastErrorNumber & " - " & asyncDownloader.getLastErrorDescription
+        End If
+        
+    End If
+
+End Sub
+
 'Horizontal mousewheel; note that the pdInputMouse class automatically converts Shift+Wheel to horizontal wheel for us
 Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
@@ -2324,12 +2347,6 @@ Private Sub tmrMetadata_Timer()
 
 End Sub
 
-'When download of the update information is complete, write out the current date to the preferences file
-Private Sub updateChecker_Complete()
-    Debug.Print "Update file download complete.  Update information has been saved at " & g_UserPreferences.getDataPath & "updates.xml"
-    g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
-End Sub
-
 
 'THE BEGINNING OF EVERYTHING
 ' Actually, Sub "Main" in the module "modMain" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.
@@ -2499,7 +2516,7 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     ' Next, see if we need to launch an asynchronous check for updates
     '*************************************************************************************************************************************
-    
+        
     'Start by seeing if we're allowed to check for software updates (the user can disable this check, and we want to honor their selection)
     Dim allowedToUpdate As Boolean
     allowedToUpdate = Software_Updater.isItTimeForAnUpdate()
@@ -2510,17 +2527,15 @@ Private Sub Form_Load()
     
         Message "Initializing software updater (this feature can be disabled from the Tools -> Options menu)..."
         
-        'Prior to January 2014, PhotoDemon updates were downloaded synchronously (meaning all other PD operations were
-        ' suspended until the update completed).  In Jan 14, I moved to an asynchronous method, which means that updates
-        ' are downloaded transparently in the background.
-        
-        'This means that all we need to do at this stage is initiate the update file download (from its standard location
-        ' of photodemon.org/downloads/updates.xml).  If successful, the downloader will place the completed update file
-        ' in the /Data subfolder.  On exit (or subsequent program runs), we can simply check for the presence of that file.
-        FormMain.updateChecker.Download "http://photodemon.org/downloads/updates.xml", g_UserPreferences.getDataPath & "updates.xml", vbAsyncReadForceUpdate
+        'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
+        ' When the asynchronous download completes, the downloader will place the completed update file in the /Data subfolder.
+        ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
+        Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates.xml", vbAsyncReadForceUpdate, False, g_UserPreferences.getDataPath & "updates.xml"
                 
     End If
     
+    'With all potentially required downloads added to the queue, we can now begin downloading everything
+    Me.asyncDownloader.setAutoDownloadMode True
     
     '*************************************************************************************************************************************
     ' Next, see if an update was previously loaded; if it was, display any relevant findings.
@@ -2626,24 +2641,24 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files and URLs onto the main form
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
     
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
-    Clipboard_Handler.loadImageFromDragDrop Data, Effect, False
+    Clipboard_Handler.loadImageFromDragDrop data, Effect, False
     
 End Sub
 
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
 
     'Check to make sure the type of OLE object is files
-    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Then
+    If data.GetFormat(vbCFFiles) Or data.GetFormat(vbCFText) Then
         'Inform the source that the files will be treated as "copied"
         Effect = vbDropEffectCopy And Effect
     Else

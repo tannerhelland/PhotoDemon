@@ -965,7 +965,7 @@ End Sub
 'If an object of type Control is capable of receiving focus, this will return TRUE.
 Private Function isControlFocusable(ByRef Ctl As Control) As Boolean
 
-    If Not (TypeOf Ctl Is Timer) And Not (TypeOf Ctl Is Line) And Not (TypeOf Ctl Is pdLabel) And Not (TypeOf Ctl Is Frame) And Not (TypeOf Ctl Is Shape) And Not (TypeOf Ctl Is Image) And Not (TypeOf Ctl Is vbalHookControl) And Not (TypeOf Ctl Is ShellPipe) And Not (TypeOf Ctl Is bluDownload) Then
+    If Not (TypeOf Ctl Is Timer) And Not (TypeOf Ctl Is Line) And Not (TypeOf Ctl Is pdLabel) And Not (TypeOf Ctl Is Frame) And Not (TypeOf Ctl Is Shape) And Not (TypeOf Ctl Is Image) And Not (TypeOf Ctl Is vbalHookControl) And Not (TypeOf Ctl Is ShellPipe) And Not (TypeOf Ctl Is pdDownload) Then
         isControlFocusable = True
     Else
         isControlFocusable = False
