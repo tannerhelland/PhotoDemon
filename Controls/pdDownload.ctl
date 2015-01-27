@@ -22,6 +22,12 @@ Begin VB.UserControl pdDownload
    ScaleWidth      =   32
    ToolboxBitmap   =   "pdDownload.ctx":0000
    Windowless      =   -1  'True
+   Begin VB.Timer tmrReset 
+      Enabled         =   0   'False
+      Interval        =   1000
+      Left            =   0
+      Top             =   0
+   End
 End
 Attribute VB_Name = "pdDownload"
 Attribute VB_GlobalNameSpace = False
@@ -110,6 +116,7 @@ Private Type pdDownloadEntry
     LastAsyncStatus As Variant      'This may be a string, but VB doesn't guarantee the type.  The return varies according
                                     ' to the last status code.
     DataBytes() As Byte
+    DataBytesMarkedForRelease As Boolean
 End Type
 
 
@@ -133,6 +140,33 @@ Private m_DownloadsAllowed As Boolean
 'If an error occurs, it will be tracked here.  In PD, asynchronous downloads aren't generally used for mission-critical items,
 ' so errors just mean "try again later".  However, any returned error codes are stored here if you want 'em.
 Private m_LastErrorNumber As Long, m_LastErrorDescription As String
+
+'VB's asynchronous model is pretty simple for arrays; the cLocks value in the SAFEARRAY header is incremented and decremented
+' for each lock/unlock action.  Access errors are a strong potential for a class like this, where accesses and resets may happen
+' inside raised events, so as a precaution, I track "Reset" instructions via this module-level boolean.  Once a reset has been
+' requested, this will be set to TRUE alongside the tmrReset control.  Every second, that control will check to see if all locks
+' have been released for a given array.  If they have, it knows it can safely erase the master array.
+Private m_ResetActive As Boolean
+
+Private Sub tmrReset_Timer()
+
+    On Error GoTo arrayNotReadyForRelease
+
+    If m_ResetActive Then
+    
+        'Reset the master tracking array.  Note that this may fail when in an error state, as the array will be locked
+        ' when we try to ReDim it.  In that case, simply carry on.
+        ReDim m_DownloadList(0 To 3) As pdDownloadEntry
+        
+        'If we didn't error out, the ReDim was successful.  Reset the timer and tracking variable.
+        m_ResetActive = False
+        tmrReset.Enabled = False
+    
+    End If
+    
+arrayNotReadyForRelease:
+
+End Sub
 
 'Something has finished downloading.  Update our internal tracking directory, and raise events as necessary.
 ' (FYI: this function is also raised when download stops due to an error state; PD will try to auto-detect this,
@@ -159,7 +193,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
                 .BytesDownloaded = AsyncProp.BytesRead
                 .BytesTotal = AsyncProp.BytesMax
                 .LastAsyncStatusCode = AsyncProp.StatusCode
-                .LastAsyncStatus = AsyncProp.status
+                .LastAsyncStatus = AsyncProp.Status
                 
                 'This line is likely to trigger an error if the download failed, so we hit it last.
                 .DataBytes = AsyncProp.Value
@@ -183,7 +217,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
                 .CurrentStatus = PDS_DOWNLOAD_COMPLETE
                 .BytesDownloaded = AsyncProp.BytesRead
                 .LastAsyncStatusCode = AsyncProp.StatusCode
-                .LastAsyncStatus = AsyncProp.status
+                .LastAsyncStatus = AsyncProp.Status
                 
                 'This line is likely to trigger an error if the download failed, so we hit it last.
                 .DataBytes = AsyncProp.Value
@@ -251,7 +285,7 @@ DownloadError:
     With m_DownloadList(itemIndex)
         .CurrentStatus = PDS_FAILURE_NOT_TRYING_AGAIN
         .LastAsyncStatusCode = AsyncProp.StatusCode
-        .LastAsyncStatus = AsyncProp.status
+        .LastAsyncStatus = AsyncProp.Status
         Erase .DataBytes
     End With
     
@@ -389,10 +423,10 @@ Public Sub Reset()
     m_NumOfFilesFinishedDownloading = 0
     m_DownloadsAllowed = False
     
-    'Reset the master tracking array.  Note that this may fail when in an error state, as the array will be locked
-    ' when we try to ReDim it.  In that case, simply carry on.
-    On Error Resume Next
-    ReDim m_DownloadList(0 To 3) As pdDownloadEntry
+    'The master tracking array is likely locked, as this function will likely be accessed from inside a raised event.
+    ' To prevent asynchronicity issues, launch a separate timer.  It will handle the actual erasing of the array.
+    m_ResetActive = True
+    tmrReset.Enabled = True
 
 End Sub
 
