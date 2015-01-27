@@ -20,6 +20,14 @@ Begin VB.Form frmCreateMaster
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   969
    StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton cmdLangVersions 
+      Caption         =   "Generate master language update file"
+      Height          =   735
+      Left            =   360
+      TabIndex        =   16
+      Top             =   7320
+      Width           =   3975
+   End
    Begin VB.CommandButton cmdConvertLabels 
       Caption         =   "Convert labels in selected project file to pdLabel format.  (This cannot be undone; use cautiously!)"
       Height          =   450
@@ -102,6 +110,22 @@ Begin VB.Form frmCreateMaster
       TabIndex        =   1
       Top             =   1920
       Width           =   3015
+   End
+   Begin VB.Line Line2 
+      BorderColor     =   &H8000000D&
+      Index           =   1
+      X1              =   304
+      X2              =   304
+      Y1              =   480
+      Y2              =   536
+   End
+   Begin VB.Line Line2 
+      BorderColor     =   &H8000000D&
+      Index           =   0
+      X1              =   8
+      X2              =   304
+      Y1              =   480
+      Y2              =   480
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -261,12 +285,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Master English Language File (XML) Generator
-'Copyright ©2012-2013 by Tanner Helland
+'Copyright ©2013-2015 by Tanner Helland
 'Created: 23/January/13
-'Last updated: 27/September/13
-'Last update: add detection code for new tooltip types; fix vbCrLf/vbLf issue the same way we fixed it in PD (necessary because
-'             localization settings on a PC will sometimes use one in place of the other, so Frank's language files are always
-'             the opposite of mine!)
+'Last updated: 27/January/15
+'Last update: new support functions for generating PD's master language version file
 '
 'This project is designed to scan through all project files in PhotoDemon, extract any user-facing English text, and compile
 ' it into an XML file which can be used as the basis for translations into other languages.  It reads the master PhotoDemon.vbp
@@ -284,6 +306,8 @@ Attribute VB_Exposed = False
 'NOTE: this project is intended only as a support tool for PhotoDemon.  It is not designed or tested for general-purpose use.
 '       I do not have any intention of supporting this tool outside its intended use, so please do not submit bug reports
 '       regarding this project unless they directly relate to its intended purpose (generating a PhotoDemon XML language file).
+'
+'      Also, given this project's purpose, the code is pretty ugly.  Organization is minimal.  Read at your own risk.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://www.tannerhelland.com/photodemon/#license
@@ -452,6 +476,145 @@ Private Function isValidPDLabelProperty(ByVal srcString As String) As Boolean
     If InStr(1, srcString, "Width", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
     
 End Function
+
+'This function scans all of PD's current language files, and generates a small XML file with their version numbers.
+' (Note that two folders are scanned: the standard /App/PhotoDemon/Languages folder, which contains dev build values, and a separate
+'  stable folder, which contains the latest stable build language files.)
+'
+'That file is then uploaded (by a separate batch file) to PD's update server.  As of version 6.6, individual PD installs can download
+' this file, and use it to update their language files as necessary.
+Private Sub cmdLangVersions_Click()
+    
+    Dim numOfLangFiles As Long
+    numOfLangFiles = 0
+    
+    'Two folders must be iterated: a stable language folder, and an unstable (development) language folder.
+    ' Start with the development folder.
+    Dim srcFolder As String
+    srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
+    
+    'Lots of XML parsing will be going on here.
+    Dim xmlInput As pdXML, xmlOutput As pdXML
+    Set xmlInput = New pdXML
+    Set xmlOutput = New pdXML
+    
+    'Prep xmlOutput in advance
+    xmlOutput.prepareNewXML "Language versions"
+    xmlOutput.writeBlankLine
+    xmlOutput.writeComment "This language version file was automatically generated on " & Format(Now, "Medium date")
+    xmlOutput.writeBlankLine
+            
+    'Iterate through every language file in this folder.  (Language files will always be XML format, so we can ignore anything
+    ' that isn't XML.)
+    Dim chkFile As String
+    chkFile = Dir(srcFolder & "*.xml", vbNormal)
+    
+    Do While (chkFile <> "")
+        
+        numOfLangFiles = numOfLangFiles + 1
+        lblUpdates.Caption = "Processing language file #" & numOfLangFiles
+        
+        'Attempt to add this file to the version list
+        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile
+        
+        'Retrieve the next file and repeat
+        chkFile = Dir
+        
+    Loop
+    
+    'We are now going to repeat the above process, but for a separate folder of stable version language files.
+    srcFolder = "C:\PhotoDemon v4\PhotoDemon\Support\Master language XML generator\stable build language files\"
+    chkFile = Dir(srcFolder & "*.xml", vbNormal)
+    
+    Do While (chkFile <> "")
+        
+        numOfLangFiles = numOfLangFiles + 1
+        lblUpdates.Caption = "Processing language file #" & numOfLangFiles
+        
+        'Attempt to add this file to the version list
+        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile
+        
+        'Retrieve the next file and repeat
+        chkFile = Dir
+        
+    Loop
+    
+    'The master language version file is now complete.  Write it.
+    Dim dstFile As String
+    dstFile = "C:\PhotoDemon v4\langupdate.xml"
+    
+    xmlOutput.writeXMLToFile dstFile
+    
+    lblUpdates.Caption = numOfLangFiles & " languages successfully added to master language file."
+    lblUpdates.Refresh
+    DoEvents
+
+End Sub
+
+'Given a full path to a language file, add the language file's information to an output XML object.
+Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput As pdXML, ByRef pathToFile As String)
+
+    Dim langID As String, langVersion As String
+    
+    Dim versionMajor As String, versionMinor As String, versionRevision As String
+    Dim versionCheck() As String
+    
+    'Load the file into an XML parser
+    If xmlInput.loadXMLFile(pathToFile) Then
+    
+        'Check the file for two things: the language identifier, and the current version number.
+        xmlInput.setTextCompareMode vbTextCompare
+        langID = xmlInput.getUniqueTag_String("langid")
+        langVersion = xmlInput.getUniqueTag_String("langversion")
+        
+        'Make sure both returns are valid.  If they are not, skip this file.
+        If (Len(langID) <> 0) And (Len(langVersion) <> 0) Then
+        
+            'This file is valid.  To make it easier to check for updates in the core PD program, we're going to modify the information a bit.
+            ' PD's update code works by comparing the current program version (e.g. 6.4) to the listed versions of each language file.
+            ' (Version comparisons are necessary because stable and nightly builds require unique language files.)
+            '
+            'Because language files are updated independent of the program itself, revision numbers between the software and language files
+            ' are unlikely to match, and that's okay - we only care about the *latest* revision of each language file, that matches the base
+            ' version of the current build.
+            '
+            'So what does that mean for us?  It means we need to separate the language version into two distinct parts:
+            ' 1) A base version (e.g. "6.4")
+            ' 2) A revision number (e.g. the "1" in "6.4.1")
+            
+            'Start by replacing comma delimiters, if present
+            If InStr(1, langVersion, ",") Then langVersion = Replace$(langVersion, ",", ".")
+            
+            'Split the version into its component parts
+            versionCheck = Split(langVersion, ".")
+            
+            'Make sure the version contains at least a major and minor value
+            If UBound(versionCheck) >= 1 Then
+                
+                versionMajor = versionCheck(0)
+                versionMinor = versionCheck(1)
+                
+                'If no revision is given, assume a revision of 0
+                If UBound(versionCheck) > 1 Then
+                    versionRevision = versionCheck(2)
+                Else
+                    versionRevision = "0"
+                End If
+                
+                'We now have a major, minor, and revision value for this language file.  Write them out to file.
+                xmlOutput.writeTagWithAttribute "translation", "id", langID, "", True
+                xmlOutput.writeTag "version", versionMajor & "." & versionMinor
+                xmlOutput.writeTag "revision", versionRevision
+                xmlOutput.closeTag "translation"
+                xmlOutput.writeBlankLine
+            
+            End If
+            
+        End If
+    
+    End If
+
+End Sub
 
 Private Sub cmdMaster_Click()
 
