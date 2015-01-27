@@ -96,9 +96,12 @@ Public g_LastSaveFilter As Long
 ' checkerboard prior to rendering.
 Public g_CheckerboardPattern As pdDIB
 
-'Is the current system running Vista, Windows 7, or later?  (Used to determine availability of certain system features)
+'Is the current system running Vista, 7, 8, or later?  (Used to determine availability of certain system features)
 Public g_IsVistaOrLater As Boolean
 Public g_IsWin7OrLater As Boolean
+Public g_IsWin8OrLater As Boolean
+Public g_IsWin81OrLater As Boolean
+Public g_IsWin10OrLater As Boolean
 
 'Is theming enabled?  (Used to handle some menu icon rendering quirks)
 Public g_IsThemingEnabled As Boolean

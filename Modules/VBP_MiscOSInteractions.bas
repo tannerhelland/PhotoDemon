@@ -506,6 +506,41 @@ Public Function getWin7OrLaterStatus() As Boolean
 
 End Function
 
+'Check for a version >= Win 8.0
+Public Function getWin8OrLaterStatus() As Boolean
+
+    Dim tOSVI As OSVERSIONINFOEX
+    tOSVI.dwOSVersionInfoSize = Len(tOSVI)
+    GetVersionEx tOSVI
+    
+    getWin8OrLaterStatus = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 2))
+
+End Function
+
+'Check for a version >= Win 8.1
+Public Function getWin81OrLaterStatus() As Boolean
+
+    Dim tOSVI As OSVERSIONINFOEX
+    tOSVI.dwOSVersionInfoSize = Len(tOSVI)
+    GetVersionEx tOSVI
+    
+    getWin81OrLaterStatus = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 3))
+
+End Function
+
+'Check for a version >= Win 10.
+' (NOTE: this requires a manifest, so don't rely on it in the IDE.  Also, MS doesn't guarantee that this check will
+'  remain valid forever, though it does appear to work in Windows 10 TP builds.)
+Public Function getWin10OrLaterStatus() As Boolean
+
+    Dim tOSVI As OSVERSIONINFOEX
+    tOSVI.dwOSVersionInfoSize = Len(tOSVI)
+    GetVersionEx tOSVI
+    
+    getWin10OrLaterStatus = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 4))
+
+End Function
+
 'Return the current OS version as a string.  (At present, this data is added to debug logs.)
 Public Function getOSVersionAsString() As String
     
@@ -521,7 +556,10 @@ Public Function getOSVersionAsString() As String
         Case 6
             
             Select Case tOSVI.dwMinorVersion
-            
+                
+                Case 4
+                    osName = "Windows 10 Technical Preview"
+                    
                 Case 3
                     If (tOSVI.wProductType And VER_NT_WORKSTATION) <> 0 Then
                         osName = "Windows 8.1"
