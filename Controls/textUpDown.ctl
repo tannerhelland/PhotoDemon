@@ -36,8 +36,8 @@ Begin VB.UserControl textUpDown
       TabIndex        =   1
       Top             =   15
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   556
+      _ExtentX        =   1323
+      _ExtentY        =   556
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -621,7 +621,7 @@ Private Sub RedrawButton()
             upButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
             upButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
         Else
-            upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
             upButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
             upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
         End If
@@ -645,7 +645,7 @@ Private Sub RedrawButton()
             downButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
             downButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
         Else
-            downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
             downButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
             downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
         End If

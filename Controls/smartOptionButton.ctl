@@ -642,8 +642,15 @@ Private Sub redrawBackBuffer()
     'Colors used throughout this paint function are determined primarily control enablement
     Dim optButtonColorBorder As Long, optButtonColorFill As Long
     If Me.Enabled Then
-        optButtonColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-        optButtonColorFill = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+    
+        If m_MouseInsideUC Then
+            optButtonColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+            optButtonColorFill = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+        Else
+            optButtonColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+            optButtonColorFill = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+        End If
+        
     Else
         optButtonColorBorder = g_Themer.getThemeColor(PDTC_DISABLED)
         optButtonColorFill = g_Themer.getThemeColor(PDTC_DISABLED)
