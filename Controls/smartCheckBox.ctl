@@ -613,8 +613,15 @@ Private Sub redrawBackBuffer()
     'Colors used throughout this paint function are determined primarily control enablement
     Dim chkBoxColorBorder As Long, chkBoxColorFill As Long
     If Me.Enabled Then
-        chkBoxColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-        chkBoxColorFill = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+        
+        If m_MouseInsideUC Then
+            chkBoxColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+            chkBoxColorFill = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+        Else
+            chkBoxColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+            chkBoxColorFill = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+        End If
+        
     Else
         chkBoxColorBorder = g_Themer.getThemeColor(PDTC_DISABLED)
         chkBoxColorFill = g_Themer.getThemeColor(PDTC_DISABLED)
