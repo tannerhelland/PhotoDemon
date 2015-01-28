@@ -528,10 +528,10 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If NewState Then
                 toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Undo"
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID) & vbTab & "Ctrl+Z"
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
             Else
                 toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip "Undo last action"
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & "Ctrl+Z"
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
             End If
             
             'When changing menu text, icons must be reapplied.
@@ -547,10 +547,10 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If NewState Then
                 toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip pdImages(g_CurrentImage).undoManager.getRedoProcessID, "Redo"
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID) & vbTab & "Ctrl+Y"
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
             Else
                 toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip "Redo previous action"
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & "Ctrl+Y"
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
             End If
             
             'When changing menu text, icons must be reapplied.
