@@ -364,6 +364,7 @@ Begin VB.Form FormPreferences
          _ExtentX        =   13996
          _ExtentY        =   5318
          Caption         =   "(disclaimer populated at run-time)"
+         FontSize        =   9
          Layout          =   1
       End
       Begin PhotoDemon.smartCheckBox chkUpdates 
@@ -3527,7 +3528,7 @@ Private Sub LoadAllPreferences()
         'END update plugins independently
         
         'Populate the network access disclaimer in the "Update" panel
-            lblExplanation.Caption = "The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded as part of the update process.  Updates simply involve downloading a small XML file from photodemon.org. This file contains the latest software, plugin, and language version numbers. If updated versions are found, one or more compressed files can then be automatically downloaded from photodemon.org." & vbCrLf & vbCrLf & "If you still choose to disable updates, don't forget to visit photodemon.org from time to time to see if an updated version is available."
+            lblExplanation.Caption = "The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically." & vbCrLf & vbCrLf & "If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions."
     
     'END Update preferences
     
