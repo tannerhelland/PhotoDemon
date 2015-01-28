@@ -2524,10 +2524,10 @@ Public Sub DrawAccelerators()
     
     'Because the Import -> From Clipboard menu shares the same shortcut as Edit -> Paste as new image, we must
     ' manually add its shortcut (as only the Edit -> Paste will be handled automatically).
-    FormMain.MnuImportClipboard.Caption = FormMain.MnuImportClipboard.Caption & vbTab & "Ctrl+V"
+    FormMain.MnuImportClipboard.Caption = FormMain.MnuImportClipboard.Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+V"
     
     'Similarly for the Layer -> New -> From Clipboard menu
-    FormMain.MnuLayerNew(3).Caption = FormMain.MnuLayerNew(3).Caption & vbTab & "Ctrl+Shift+V"
+    FormMain.MnuLayerNew(3).Caption = FormMain.MnuLayerNew(3).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & g_Language.TranslateMessage("Shift") & "+V"
     
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module
     

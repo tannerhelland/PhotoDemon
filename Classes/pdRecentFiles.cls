@@ -230,7 +230,7 @@ Public Sub MRU_LoadFromFile()
             End If
             
             'For the first 10 menu entries, display a corresponding shortcut
-            If i < 10 Then FormMain.mnuRecDocs(i).Caption = FormMain.mnuRecDocs(i).Caption & vbTab & "Ctrl+" & i
+            If i < 10 Then FormMain.mnuRecDocs(i).Caption = FormMain.mnuRecDocs(i).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & i
             
         Next i
     
@@ -422,7 +422,7 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, ByRef srcImage As pdImage)
     End If
     
     'Display the corresponding accelerator (hotkey).
-    FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & vbTab & "Ctrl+0"
+    FormMain.mnuRecDocs(0).Caption = FormMain.mnuRecDocs(0).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+0"
     
     'If there are more entries on the list besides this one, update their menus now.
     If numEntries > 1 Then
@@ -445,7 +445,7 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, ByRef srcImage As pdImage)
             End If
             
             'If this entry is less than #11, give it an accelerator as well
-            If i < 10 Then FormMain.mnuRecDocs(i).Caption = FormMain.mnuRecDocs(i).Caption & vbTab & "Ctrl+" & i
+            If i < 10 Then FormMain.mnuRecDocs(i).Caption = FormMain.mnuRecDocs(i).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & i
             
         Next i
     End If
