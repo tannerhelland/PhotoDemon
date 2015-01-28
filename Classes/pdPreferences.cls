@@ -517,6 +517,10 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "CheckForUpdates", "True"
         xmlEngine.writeTag "LastUpdateCheck", ""
         xmlEngine.writeTag "PromptForPluginDownload", "True"
+        xmlEngine.writeTag "Update Frequency", PDUF_EACH_SESSION
+        xmlEngine.writeTag "Update Track", PDUT_BETA
+        xmlEngine.writeTag "Update Languages Independently", True
+        xmlEngine.writeTag "Update Plugins Independently", True
     xmlEngine.closeTag "Updates"
     xmlEngine.writeBlankLine
     

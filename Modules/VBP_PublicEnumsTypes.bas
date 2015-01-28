@@ -367,3 +367,24 @@ End Enum
     Private Const PD_SUCCESS = -1, PD_FAILURE_GENERIC = 0, PD_FAILURE_USER_CANCELED = 1
 #End If
 
+'As of version 6.6, PD's update abilities became a lot better.
+Public Enum PD_UPDATE_FREQUENCY
+    PDUF_EACH_SESSION = 0
+    PDUF_WEEKLY = 1
+    PDUF_MONTHLY = 2
+    PDUF_NEVER = 3
+End Enum
+
+#If False Then
+    Private Const PDUF_DAILY = 0, PDUF_WEEKLY = 1, PDUF_MONTHLY = 2, PDUF_NEVER = 3
+#End If
+
+Public Enum PD_UPDATE_TRACK
+    PDUT_STABLE = 0
+    PDUT_BETA = 1
+    PDUT_NIGHTLY = 2
+End Enum
+
+#If False Then
+    Private Const PDUT_STABLE = 0, PDUT_BETA = 1, PDUT_NIGHTLY = 2
+#End If
