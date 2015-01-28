@@ -50,21 +50,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -2537,17 +2537,18 @@ Private Sub Form_Load()
     'With all potentially required downloads added to the queue, we can now begin downloading everything
     Me.asyncDownloader.setAutoDownloadMode True
     
+    
     '*************************************************************************************************************************************
     ' Next, see if an update was previously loaded; if it was, display any relevant findings.
     '*************************************************************************************************************************************
     
     'It's possible that a past program instance downloaded update information for us; check for an update file now.
     ' (Note that this check can be skipped the first time the program is run, as we are guaranteed to not have update data yet!)
+    Dim updateNeeded As UpdateCheck
+    
     If (Not g_IsFirstRun) Then
     
         Message "Checking for previously downloaded update data..."
-    
-        Dim updateNeeded As UpdateCheck
         updateNeeded = CheckForSoftwareUpdate
         
         'CheckForSoftwareUpdate can return one of four values:
@@ -2583,9 +2584,10 @@ Private Sub Form_Load()
     ' Next, check for missing core plugins
     '*************************************************************************************************************************************
     
-    'Last but not least, if any core plugin files were marked as "missing," offer to download them
+    'Some 3rd-party sites (*cough* PSC *cough*) won't include binary attachments, like PD's plugins.  As a failsafe workaround, PD can
+    ' detect this state and offer to download the plugins for the user.
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
-    '        so ignore this request if the user was already notified of an update.)
+    '        so we ignore this request if the user was already notified of a program update.)
     If (updateNeeded <> UPDATE_AVAILABLE) And ((Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not isExifToolAvailable)) Then
     
         Message "Some core plugins could not be found. Preparing updater..."
@@ -2610,6 +2612,44 @@ Private Sub Form_Load()
         End If
     
     End If
+    
+    
+    '*************************************************************************************************************************************
+    ' Next, check for out-of-date language files
+    '*************************************************************************************************************************************
+    
+    'As of v6.6, PhotoDemon can now update language files independent of the core program.  It does this by downloading a separate
+    ' language-specific update file.
+    
+    'Some 3rd-party sites (*cough* PSC *cough*) won't include binary attachments, like PD's plugins.  As a failsafe workaround, PD can
+    ' detect this state and offer to download the plugins for the user.
+    ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
+    '        so we ignore this request if the user was already notified of a program update.)
+'    If (updateNeeded <> UPDATE_AVAILABLE) And ((Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not isExifToolAvailable)) Then
+'
+'        Message "Some core plugins could not be found. Preparing updater..."
+'
+'        'As a courtesy, if the user has asked us to stop bugging them about downloading plugins, obey their request
+'        Dim promptToDownload As Boolean
+'        promptToDownload = g_UserPreferences.GetPref_Boolean("Updates", "Prompt For Plugin Download", True)
+'
+'        'Finally, if allowed, we can prompt the user to download the recommended plugin set
+'        If promptToDownload Then
+'            showPDDialog vbModal, FormPluginDownloader
+'
+'            'Since plugins may have been downloaded, update the interface to match any new features that may be available.
+'            LoadPlugins
+'            applyAllMenuIcons
+'            resetMenuIcons
+'            g_ImageFormats.generateInputFormats
+'            g_ImageFormats.generateOutputFormats
+'
+'        Else
+'            Message "Ignoring plugin update request per user's saved preference"
+'        End If
+'
+'    End If
+    
     
     
     '*************************************************************************************************************************************
@@ -2641,24 +2681,24 @@ Private Sub Form_Load()
 End Sub
 
 'Allow the user to drag-and-drop files and URLs onto the main form
-Private Sub Form_OLEDragDrop(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
     
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
-    Clipboard_Handler.loadImageFromDragDrop data, Effect, False
+    Clipboard_Handler.loadImageFromDragDrop Data, Effect, False
     
 End Sub
 
-Private Sub Form_OLEDragOver(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
 
     'Make sure the form is available (e.g. a modal form hasn't stolen focus)
     If Not g_AllowDragAndDrop Then Exit Sub
 
     'Check to make sure the type of OLE object is files
-    If data.GetFormat(vbCFFiles) Or data.GetFormat(vbCFText) Then
+    If Data.GetFormat(vbCFFiles) Or Data.GetFormat(vbCFText) Then
         'Inform the source that the files will be treated as "copied"
         Effect = vbDropEffectCopy And Effect
     Else

@@ -37,7 +37,7 @@ Begin VB.Form FormPreferences
       EndProperty
       Height          =   495
       Left            =   2910
-      TabIndex        =   79
+      TabIndex        =   78
       Top             =   6990
       Width           =   2580
    End
@@ -246,7 +246,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   1
       Left            =   120
-      TabIndex        =   25
+      TabIndex        =   24
       Top             =   960
       Width           =   2520
       _ExtentX        =   4445
@@ -279,7 +279,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   2
       Left            =   120
-      TabIndex        =   38
+      TabIndex        =   37
       Top             =   1800
       Width           =   2520
       _ExtentX        =   4445
@@ -312,7 +312,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   3
       Left            =   120
-      TabIndex        =   40
+      TabIndex        =   39
       Top             =   2640
       Width           =   2520
       _ExtentX        =   4445
@@ -347,6 +347,115 @@ Begin VB.Form FormPreferences
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   6480
+      Index           =   6
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   432
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   13
+      Top             =   240
+      Width           =   8295
+      Begin PhotoDemon.pdLabel lblExplanation 
+         Height          =   3015
+         Left            =   240
+         Top             =   3360
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   5318
+         Caption         =   "(disclaimer populated at run-time)"
+         Layout          =   1
+      End
+      Begin PhotoDemon.smartCheckBox chkUpdates 
+         Height          =   330
+         Index           =   0
+         Left            =   240
+         TabIndex        =   131
+         Top             =   2280
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   582
+         Caption         =   "update language files independently"
+      End
+      Begin PhotoDemon.pdLabel lblUpdates 
+         Height          =   240
+         Index           =   0
+         Left            =   240
+         Top             =   480
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   503
+         Caption         =   "automatically check for updates:"
+      End
+      Begin PhotoDemon.pdComboBox cboUpdates 
+         Height          =   375
+         Index           =   0
+         Left            =   240
+         TabIndex        =   130
+         Top             =   840
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.smartCheckBox chkUpdates 
+         Height          =   330
+         Index           =   1
+         Left            =   240
+         TabIndex        =   132
+         Top             =   2760
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   582
+         Caption         =   "update plugins independently"
+      End
+      Begin PhotoDemon.pdComboBox cboUpdates 
+         Height          =   375
+         Index           =   1
+         Left            =   240
+         TabIndex        =   133
+         Top             =   1710
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdLabel lblUpdates 
+         Height          =   240
+         Index           =   1
+         Left            =   240
+         Top             =   1320
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   503
+         Caption         =   "allow updates from these tracks:"
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "update options"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   0
+         TabIndex        =   14
+         Top             =   0
+         Width           =   1575
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6480
       Index           =   0
       Left            =   3000
       MousePointer    =   1  'Arrow
@@ -359,7 +468,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.textUpDown tudRecentFiles 
          Height          =   345
          Left            =   3900
-         TabIndex        =   99
+         TabIndex        =   96
          Top             =   5325
          Width           =   1335
          _ExtentX        =   2355
@@ -371,7 +480,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.colorSelector csCanvasColor 
          Height          =   435
          Left            =   6960
-         TabIndex        =   94
+         TabIndex        =   91
          Top             =   780
          Width           =   1215
          _ExtentX        =   2143
@@ -391,7 +500,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   32
+         TabIndex        =   31
          Top             =   4800
          Width           =   8055
       End
@@ -409,7 +518,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   29
+         TabIndex        =   28
          ToolTipText     =   "Image windows tend to be large, so feel free to display each image's full location in the image window title bars."
          Top             =   2250
          Width           =   8055
@@ -435,21 +544,12 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkMouseHighResolution 
          Height          =   330
          Left            =   240
-         TabIndex        =   132
+         TabIndex        =   129
          Top             =   3360
          Width           =   7980
          _ExtentX        =   14076
          _ExtentY        =   582
          Caption         =   "use high-resolution input tracking"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
@@ -468,7 +568,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   131
+         TabIndex        =   128
          Top             =   2880
          Width           =   2250
       End
@@ -488,7 +588,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   98
+         TabIndex        =   95
          Top             =   5400
          Width           =   3480
       End
@@ -509,7 +609,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   13
          Left            =   0
-         TabIndex        =   97
+         TabIndex        =   94
          Top             =   3960
          Width           =   1515
       End
@@ -529,7 +629,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   33
+         TabIndex        =   32
          Top             =   4440
          Width           =   3315
       End
@@ -550,7 +650,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   4
          Left            =   0
-         TabIndex        =   31
+         TabIndex        =   30
          Top             =   1440
          Width           =   870
       End
@@ -570,7 +670,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   30
+         TabIndex        =   29
          Top             =   1890
          Width           =   2730
       End
@@ -628,13 +728,13 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   18
+      TabIndex        =   17
       Top             =   240
       Width           =   8295
       Begin PhotoDemon.pdTextBox txtColorProfilePath 
          Height          =   315
          Left            =   780
-         TabIndex        =   130
+         TabIndex        =   127
          Top             =   2790
          Width           =   6495
          _ExtentX        =   11456
@@ -654,7 +754,7 @@ Begin VB.Form FormPreferences
          EndProperty
          Height          =   375
          Left            =   7380
-         TabIndex        =   107
+         TabIndex        =   104
          Top             =   2760
          Width           =   810
       End
@@ -672,7 +772,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   780
          Style           =   2  'Dropdown List
-         TabIndex        =   105
+         TabIndex        =   102
          Top             =   1950
          Width           =   7440
       End
@@ -680,27 +780,18 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   0
          Left            =   240
-         TabIndex        =   102
+         TabIndex        =   99
          Top             =   840
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "use the system color profile"
          Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.colorSelector csAlphaOne 
          Height          =   435
          Left            =   6240
-         TabIndex        =   95
+         TabIndex        =   92
          Top             =   4230
          Width           =   945
          _ExtentX        =   1667
@@ -709,21 +800,12 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkValidateAlpha 
          Height          =   330
          Left            =   240
-         TabIndex        =   82
+         TabIndex        =   79
          Top             =   5760
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "automatically validate all incoming alpha channels"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.ComboBox cmbAlphaCheckSize 
          BeginProperty Font 
@@ -739,7 +821,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   5250
          Width           =   5895
       End
@@ -757,14 +839,14 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   20
+         TabIndex        =   19
          Top             =   4260
          Width           =   5895
       End
       Begin PhotoDemon.colorSelector csAlphaTwo 
          Height          =   435
          Left            =   7320
-         TabIndex        =   96
+         TabIndex        =   93
          Top             =   4230
          Width           =   945
          _ExtentX        =   1667
@@ -774,21 +856,12 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   1
          Left            =   240
-         TabIndex        =   103
+         TabIndex        =   100
          Top             =   1200
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "use one or more custom color profiles"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.Label lblColorManagement 
          AutoSize        =   -1  'True
@@ -807,7 +880,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   2
          Left            =   780
-         TabIndex        =   106
+         TabIndex        =   103
          Top             =   2430
          Width           =   2880
       End
@@ -828,7 +901,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   1
          Left            =   780
-         TabIndex        =   104
+         TabIndex        =   101
          Top             =   1590
          Width           =   1635
       End
@@ -849,7 +922,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   0
          Left            =   240
-         TabIndex        =   101
+         TabIndex        =   98
          Top             =   480
          Width           =   3285
       End
@@ -870,7 +943,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   0
          Left            =   0
-         TabIndex        =   100
+         TabIndex        =   97
          Top             =   0
          Width           =   1980
       End
@@ -890,7 +963,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   4860
          Width           =   2790
       End
@@ -910,7 +983,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   3870
          Width           =   2970
       End
@@ -931,7 +1004,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   19
+         TabIndex        =   18
          Top             =   3420
          Width           =   2805
       End
@@ -949,7 +1022,7 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   433
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   41
+      TabIndex        =   40
       Top             =   240
       Width           =   8295
       Begin VB.ComboBox cmbFiletype 
@@ -966,7 +1039,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   600
          Style           =   2  'Dropdown List
-         TabIndex        =   66
+         TabIndex        =   65
          Top             =   960
          Width           =   7395
       End
@@ -981,52 +1054,34 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   70
+         TabIndex        =   69
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkPNGBackground 
             Height          =   330
             Left            =   360
-            TabIndex        =   85
+            TabIndex        =   82
             Top             =   2520
             Width           =   7500
             _ExtentX        =   13229
             _ExtentY        =   582
             Caption         =   "preserve file's original background color, if available"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
             Height          =   330
             Left            =   360
-            TabIndex        =   84
+            TabIndex        =   81
             Top             =   2040
             Width           =   7500
             _ExtentX        =   13229
             _ExtentY        =   582
             Caption         =   "use interlacing (Adam7)"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin VB.HScrollBar hsPNGCompression 
             Height          =   330
             Left            =   360
             Max             =   9
-            TabIndex        =   72
+            TabIndex        =   71
             Top             =   1080
             Value           =   9
             Width           =   7095
@@ -1049,7 +1104,7 @@ Begin VB.Form FormPreferences
             Height          =   195
             Index           =   1
             Left            =   5625
-            TabIndex        =   75
+            TabIndex        =   74
             Top             =   1560
             Width           =   1590
          End
@@ -1070,7 +1125,7 @@ Begin VB.Form FormPreferences
             Height          =   195
             Index           =   0
             Left            =   600
-            TabIndex        =   74
+            TabIndex        =   73
             Top             =   1560
             Width           =   1110
          End
@@ -1091,7 +1146,7 @@ Begin VB.Form FormPreferences
             Height          =   240
             Index           =   1
             Left            =   360
-            TabIndex        =   73
+            TabIndex        =   72
             Top             =   720
             Width           =   4725
          End
@@ -1112,7 +1167,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   20
             Left            =   120
-            TabIndex        =   71
+            TabIndex        =   70
             Top             =   120
             Width           =   4290
          End
@@ -1128,27 +1183,18 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   76
+         TabIndex        =   75
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkTGARLE 
             Height          =   330
             Left            =   360
-            TabIndex        =   86
+            TabIndex        =   83
             Top             =   600
             Width           =   7500
             _ExtentX        =   13229
             _ExtentY        =   582
             Caption         =   "use RLE compression when saving TGA images"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
@@ -1167,7 +1213,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   21
             Left            =   120
-            TabIndex        =   77
+            TabIndex        =   76
             Top             =   120
             Width           =   2700
          End
@@ -1183,27 +1229,18 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   68
+         TabIndex        =   67
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkBMPRLE 
             Height          =   330
             Left            =   360
-            TabIndex        =   87
+            TabIndex        =   84
             Top             =   600
             Width           =   7500
             _ExtentX        =   13229
             _ExtentY        =   582
             Caption         =   "use RLE compression when saving 8bpp BMP images"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin VB.Label lblInterfaceTitle 
             AutoSize        =   -1  'True
@@ -1222,7 +1259,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   19
             Left            =   120
-            TabIndex        =   69
+            TabIndex        =   68
             Top             =   120
             Width           =   2295
          End
@@ -1238,27 +1275,18 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   60
+         TabIndex        =   59
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
             Height          =   330
             Left            =   360
-            TabIndex        =   83
+            TabIndex        =   80
             Top             =   1560
             Width           =   7500
             _ExtentX        =   13229
             _ExtentY        =   582
             Caption         =   " save TIFFs as separated CMYK (for printing)"
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
          End
          Begin VB.ComboBox cmbTIFFCompression 
             BeginProperty Font 
@@ -1274,7 +1302,7 @@ Begin VB.Form FormPreferences
             Height          =   360
             Left            =   360
             Style           =   2  'Dropdown List
-            TabIndex        =   61
+            TabIndex        =   60
             Top             =   960
             Width           =   7335
          End
@@ -1295,7 +1323,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   7
             Left            =   120
-            TabIndex        =   64
+            TabIndex        =   63
             Top             =   120
             Width           =   4395
          End
@@ -1316,7 +1344,7 @@ Begin VB.Form FormPreferences
             Height          =   240
             Index           =   0
             Left            =   360
-            TabIndex        =   62
+            TabIndex        =   61
             Top             =   645
             Width           =   3135
          End
@@ -1332,7 +1360,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   257
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   57
+         TabIndex        =   56
          Top             =   1680
          Width           =   7935
          Begin VB.ComboBox cmbPPMFormat 
@@ -1349,7 +1377,7 @@ Begin VB.Form FormPreferences
             Height          =   360
             Left            =   480
             Style           =   2  'Dropdown List
-            TabIndex        =   58
+            TabIndex        =   57
             Top             =   960
             Width           =   7335
          End
@@ -1370,7 +1398,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   12
             Left            =   120
-            TabIndex        =   65
+            TabIndex        =   64
             Top             =   120
             Width           =   3285
          End
@@ -1390,7 +1418,7 @@ Begin VB.Form FormPreferences
             ForeColor       =   &H00404040&
             Height          =   240
             Left            =   240
-            TabIndex        =   59
+            TabIndex        =   58
             Top             =   600
             Width           =   1950
          End
@@ -1400,7 +1428,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   495
          Left            =   600
-         TabIndex        =   67
+         TabIndex        =   66
          Top             =   5520
          Width           =   7455
       End
@@ -1428,7 +1456,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   18
          Left            =   360
-         TabIndex        =   63
+         TabIndex        =   62
          Top             =   480
          Width           =   2520
       End
@@ -1449,7 +1477,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   9
          Left            =   0
-         TabIndex        =   42
+         TabIndex        =   41
          Top             =   0
          Width           =   1950
       End
@@ -1466,27 +1494,18 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   39
+      TabIndex        =   38
       Top             =   240
       Width           =   8295
       Begin PhotoDemon.smartCheckBox chkConfirmUnsaved 
          Height          =   330
          Left            =   240
-         TabIndex        =   93
+         TabIndex        =   90
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "when closing images, warn me me about unsaved changes"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.ComboBox cmbSaveBehavior 
          BeginProperty Font 
@@ -1502,7 +1521,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   89
+         TabIndex        =   86
          Top             =   5925
          Width           =   7980
       End
@@ -1520,7 +1539,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   51
+         TabIndex        =   50
          Top             =   1740
          Width           =   7980
       End
@@ -1538,7 +1557,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   48
+         TabIndex        =   47
          Top             =   4530
          Width           =   7980
       End
@@ -1556,7 +1575,7 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   43
+         TabIndex        =   42
          Top             =   3135
          Width           =   7980
       End
@@ -1577,7 +1596,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   3
          Left            =   240
-         TabIndex        =   90
+         TabIndex        =   87
          Top             =   4140
          Width           =   4785
       End
@@ -1598,7 +1617,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   88
+         TabIndex        =   85
          Top             =   3690
          Width           =   4065
       End
@@ -1619,7 +1638,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   0
          Left            =   240
-         TabIndex        =   53
+         TabIndex        =   52
          Top             =   1350
          Width           =   2145
       End
@@ -1640,7 +1659,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   17
          Left            =   0
-         TabIndex        =   52
+         TabIndex        =   51
          Top             =   930
          Width           =   2985
       End
@@ -1661,7 +1680,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   16
          Left            =   0
-         TabIndex        =   50
+         TabIndex        =   49
          Top             =   5085
          Width           =   4320
       End
@@ -1682,7 +1701,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   2
          Left            =   240
-         TabIndex        =   49
+         TabIndex        =   48
          Top             =   5535
          Width           =   1830
       End
@@ -1703,7 +1722,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   11
          Left            =   0
-         TabIndex        =   46
+         TabIndex        =   45
          Top             =   0
          Width           =   2505
       End
@@ -1724,7 +1743,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   1
          Left            =   240
-         TabIndex        =   45
+         TabIndex        =   44
          Top             =   2730
          Width           =   6585
       End
@@ -1745,7 +1764,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   10
          Left            =   0
-         TabIndex        =   44
+         TabIndex        =   43
          Top             =   2310
          Width           =   3285
       End
@@ -1762,7 +1781,7 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   431
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   26
+      TabIndex        =   25
       Top             =   240
       Width           =   8295
       Begin VB.ComboBox cmbLargeImages 
@@ -1779,66 +1798,39 @@ Begin VB.Form FormPreferences
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   27
+         TabIndex        =   26
          Top             =   3600
          Width           =   7920
       End
       Begin PhotoDemon.smartCheckBox chkInitialColorDepth 
          Height          =   330
          Left            =   240
-         TabIndex        =   91
+         TabIndex        =   88
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "count unique colors in incoming images (to determine optimal color depth)"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartCheckBox chkToneMapping 
          Height          =   330
          Left            =   240
-         TabIndex        =   92
+         TabIndex        =   89
          Top             =   1320
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "display tone mapping options when importing HDR and RAW images"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartCheckBox chkLoadingOrientation 
          Height          =   330
          Left            =   240
-         TabIndex        =   123
+         TabIndex        =   120
          Top             =   2280
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "obey auto-rotate instructions inside image files"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
@@ -1857,7 +1849,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   3
          Left            =   60
-         TabIndex        =   124
+         TabIndex        =   121
          Top             =   1920
          Width           =   1140
       End
@@ -1878,7 +1870,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   15
          Left            =   60
-         TabIndex        =   47
+         TabIndex        =   46
          Top             =   0
          Width           =   1200
       End
@@ -1896,7 +1888,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   375
          Left            =   120
-         TabIndex        =   36
+         TabIndex        =   35
          Top             =   6000
          Width           =   8055
       End
@@ -1917,7 +1909,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   6
          Left            =   60
-         TabIndex        =   35
+         TabIndex        =   34
          Top             =   960
          Width           =   3675
       End
@@ -1938,7 +1930,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   5
          Left            =   60
-         TabIndex        =   34
+         TabIndex        =   33
          Top             =   2880
          Width           =   585
       End
@@ -1958,7 +1950,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   28
+         TabIndex        =   27
          Top             =   3240
          Width           =   4845
       End
@@ -1995,7 +1987,7 @@ Begin VB.Form FormPreferences
          Left            =   180
          List            =   "VBP_FormPreferences.frx":9692
          Style           =   2  'Dropdown List
-         TabIndex        =   125
+         TabIndex        =   122
          Top             =   720
          Width           =   7920
       End
@@ -2016,7 +2008,7 @@ Begin VB.Form FormPreferences
          Left            =   180
          List            =   "VBP_FormPreferences.frx":9696
          Style           =   2  'Dropdown List
-         TabIndex        =   120
+         TabIndex        =   117
          Top             =   1980
          Width           =   7920
       End
@@ -2037,7 +2029,7 @@ Begin VB.Form FormPreferences
          Left            =   180
          List            =   "VBP_FormPreferences.frx":969A
          Style           =   2  'Dropdown List
-         TabIndex        =   112
+         TabIndex        =   109
          Top             =   3240
          Width           =   7920
       End
@@ -2058,14 +2050,14 @@ Begin VB.Form FormPreferences
          Left            =   180
          List            =   "VBP_FormPreferences.frx":969E
          Style           =   2  'Dropdown List
-         TabIndex        =   110
+         TabIndex        =   107
          Top             =   4470
          Width           =   7920
       End
       Begin PhotoDemon.sliderTextCombo sltUndoCompression 
          Height          =   495
          Left            =   240
-         TabIndex        =   119
+         TabIndex        =   116
          Top             =   5730
          Width           =   7980
          _ExtentX        =   14076
@@ -2091,7 +2083,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   4
          Left            =   0
-         TabIndex        =   127
+         TabIndex        =   124
          Top             =   0
          Width           =   1980
       End
@@ -2112,7 +2104,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   4
          Left            =   180
-         TabIndex        =   126
+         TabIndex        =   123
          Top             =   390
          Width           =   2580
       End
@@ -2133,7 +2125,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   3
          Left            =   180
-         TabIndex        =   122
+         TabIndex        =   119
          Top             =   1650
          Width           =   3150
       End
@@ -2154,7 +2146,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   3
          Left            =   0
-         TabIndex        =   121
+         TabIndex        =   118
          Top             =   1260
          Width           =   900
       End
@@ -2175,7 +2167,7 @@ Begin VB.Form FormPreferences
          Height          =   195
          Index           =   3
          Left            =   360
-         TabIndex        =   118
+         TabIndex        =   115
          Top             =   6210
          Width           =   1785
       End
@@ -2197,7 +2189,7 @@ Begin VB.Form FormPreferences
          Height          =   195
          Index           =   2
          Left            =   4980
-         TabIndex        =   117
+         TabIndex        =   114
          Top             =   6210
          Width           =   2295
       End
@@ -2218,7 +2210,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   2
          Left            =   240
-         TabIndex        =   116
+         TabIndex        =   113
          Top             =   5370
          Width           =   4110
       End
@@ -2239,7 +2231,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   115
+         TabIndex        =   112
          Top             =   4980
          Width           =   1110
       End
@@ -2260,7 +2252,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   114
+         TabIndex        =   111
          Top             =   2520
          Width           =   1170
       End
@@ -2281,7 +2273,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   1
          Left            =   180
-         TabIndex        =   113
+         TabIndex        =   110
          Top             =   2910
          Width           =   4530
       End
@@ -2302,7 +2294,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   0
          Left            =   180
-         TabIndex        =   111
+         TabIndex        =   108
          Top             =   4140
          Width           =   2985
       End
@@ -2340,13 +2332,13 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   16
+      TabIndex        =   15
       Top             =   240
       Width           =   8295
       Begin PhotoDemon.pdTextBox txtHardware 
          Height          =   2235
          Left            =   240
-         TabIndex        =   129
+         TabIndex        =   126
          Top             =   2040
          Width           =   7335
          _ExtentX        =   12938
@@ -2357,7 +2349,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdTextBox txtTempPath 
          Height          =   315
          Left            =   240
-         TabIndex        =   128
+         TabIndex        =   125
          Top             =   510
          Width           =   7335
          _ExtentX        =   12938
@@ -2367,7 +2359,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.jcbutton cmdCopyReportClipboard 
          Height          =   525
          Left            =   7680
-         TabIndex        =   109
+         TabIndex        =   106
          Top             =   3720
          Width           =   525
          _ExtentX        =   873
@@ -2403,7 +2395,7 @@ Begin VB.Form FormPreferences
          EndProperty
          Height          =   450
          Left            =   7680
-         TabIndex        =   17
+         TabIndex        =   16
          ToolTipText     =   "Click to open a browse-for-folder dialog"
          Top             =   435
          Width           =   525
@@ -2425,7 +2417,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   6
          Left            =   0
-         TabIndex        =   108
+         TabIndex        =   105
          Top             =   1560
          Width           =   3120
       End
@@ -2444,7 +2436,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00804040&
          Height          =   480
          Left            =   240
-         TabIndex        =   56
+         TabIndex        =   55
          Top             =   5430
          Width           =   7965
          WordWrap        =   -1  'True
@@ -2464,7 +2456,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00804040&
          Height          =   480
          Left            =   240
-         TabIndex        =   55
+         TabIndex        =   54
          Top             =   4920
          Width           =   7965
          WordWrap        =   -1  'True
@@ -2486,7 +2478,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   5
          Left            =   0
-         TabIndex        =   54
+         TabIndex        =   53
          Top             =   4560
          Width           =   2130
       End
@@ -2507,7 +2499,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   37
+         TabIndex        =   36
          Top             =   0
          Width           =   2385
       End
@@ -2525,104 +2517,10 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   510
          Left            =   240
-         TabIndex        =   24
+         TabIndex        =   23
          Top             =   900
          Width           =   7695
          WordWrap        =   -1  'True
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6480
-      Index           =   6
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   432
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   13
-      Top             =   240
-      Width           =   8295
-      Begin PhotoDemon.smartCheckBox chkPromptPluginDownload 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   81
-         Top             =   1080
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "if core plugins cannot be located, offer to download them"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin PhotoDemon.smartCheckBox chkProgramUpdates 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   80
-         Top             =   480
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "automatically check for software updates every 10 days"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "update options"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   0
-         TabIndex        =   14
-         Top             =   0
-         Width           =   1575
-      End
-      Begin VB.Label lblExplanation 
-         BackStyle       =   0  'Transparent
-         Caption         =   "(disclaimer populated at run-time)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   4095
-         Left            =   240
-         TabIndex        =   15
-         Top             =   1800
-         Width           =   7935
       End
    End
    Begin VB.Line lneVertical 
@@ -2635,7 +2533,7 @@ Begin VB.Form FormPreferences
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   78
+      TabIndex        =   77
       Top             =   6840
       Width           =   12135
    End
@@ -3101,12 +2999,18 @@ Private Sub CmdOK_Click()
     SetProgBarVal 7
     
     'BEGIN Update preferences
-    
-        'START/END allowed to check for updates
-            g_UserPreferences.SetPref_Boolean "Updates", "Check For Updates", CBool(chkProgramUpdates)
-    
-        'Store whether PhotoDemon is allowed to offer the automatic download of missing core plugins
-            g_UserPreferences.SetPref_Boolean "Updates", "Prompt For Plugin Download", CBool(chkPromptPluginDownload)
+        
+        'START/END update frequency
+            g_UserPreferences.SetPref_Long "Updates", "Update Frequency", cboUpdates(0).ListIndex
+        
+        'START/END update track
+            g_UserPreferences.SetPref_Long "Updates", "Update Track", cboUpdates(1).ListIndex
+        
+        'START update language files independently
+            g_UserPreferences.SetPref_Boolean "Updates", "Update Languages Independently", CBool(chkUpdates(0).Value)
+            
+        'START update plugins independently
+            g_UserPreferences.SetPref_Boolean "Updates", "Update Plugins Independently", CBool(chkUpdates(1).Value)
     
     'END Update preferences
     
@@ -3573,16 +3477,57 @@ Private Sub LoadAllPreferences()
     
     'START Update preferences
     
-        'START/END check for software updates
-            If g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True) Then chkProgramUpdates.Value = vbChecked Else chkProgramUpdates.Value = vbUnchecked
+        'START update frequency
+            cboUpdates(0).Clear
+            cboUpdates(0).AddItem "each session", 0
+            cboUpdates(0).AddItem "weekly", 1
+            cboUpdates(0).AddItem "monthly", 2
+            cboUpdates(0).AddItem "never (not recommended)", 3
             
-        'START prompt for missing plugin download
-            If g_UserPreferences.GetPref_Boolean("Updates", "Prompt For Plugin Download", True) Then chkPromptPluginDownload.Value = vbChecked Else chkPromptPluginDownload.Value = vbUnchecked
-            chkPromptPluginDownload.assignTooltip "PhotoDemon relies on several free, open-source plugins for full functionality. If any of these plugins are missing (for example, if you downloaded PhotoDemon from a 3rd-party site), this option will offer to download the missing plugins for you."
-        'END prompt for missing plugin download
-    
+            'Old versions of PD used a binary check/don't check preference.  To respect users who set the "don't check" preference in a
+            ' previous version, automatically convert that preference to the new "never (not recommended)" value.
+            If g_UserPreferences.doesValueExist("Updates", "Check For Updates") Then
+                
+                If Not g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True) Then
+                    
+                    'Write a matching preference in the new format.
+                    g_UserPreferences.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
+                    
+                    'Overwrite the old preference, so it doesn't trigger again
+                    g_UserPreferences.SetPref_Boolean "Updates", "Check For Updates", True
+                    
+                End If
+                
+            End If
+            
+            'Retrieve the current preference
+            cboUpdates(0).ListIndex = g_UserPreferences.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
+            cboUpdates(0).assignTooltip "Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired."
+        'END update frequency
+        
+        'START update track
+            cboUpdates(1).Clear
+            cboUpdates(1).AddItem "stable releases", 0
+            cboUpdates(1).AddItem "stable and beta releases", 1
+            cboUpdates(1).AddItem "stable, beta, and developer releases", 2
+            
+            'Retrieve the current preference
+            cboUpdates(1).ListIndex = g_UserPreferences.GetPref_Long("Updates", "Update Track", PDUT_BETA)
+            cboUpdates(1).assignTooltip "One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)"
+        'END update track
+            
+        'START update language files independently
+            If g_UserPreferences.GetPref_Boolean("Updates", "Update Languages Independently", True) Then chkUpdates(0).Value = vbChecked Else chkUpdates(0).Value = vbUnchecked
+            chkUpdates(0).assignTooltip "PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files."
+        'END update language files independently
+            
+        'START update plugins independently
+            If g_UserPreferences.GetPref_Boolean("Updates", "Update Plugins Independently", True) Then chkUpdates(1).Value = vbChecked Else chkUpdates(1).Value = vbUnchecked
+            chkUpdates(1).assignTooltip "PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available."
+        'END update plugins independently
+        
         'Populate the network access disclaimer in the "Update" panel
-            lblExplanation.Caption = g_Language.TranslateMessage("PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins if they aren't present in the \App\PhotoDemon\Plugins subdirectory." & vbCrLf & vbCrLf & "The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single ""updates.txt"" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server." & vbCrLf & vbCrLf & "If you choose to disable these features, you can always visit photodemon.org to manually download the most recent version of the program.")
+            lblExplanation.Caption = "The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded as part of the update process.  Updates simply involve downloading a small XML file from photodemon.org. This file contains the latest software, plugin, and language version numbers. If updated versions are found, one or more compressed files can then be automatically downloaded from photodemon.org." & vbCrLf & vbCrLf & "If you still choose to disable updates, don't forget to visit photodemon.org from time to time to see if an updated version is available."
     
     'END Update preferences
     
