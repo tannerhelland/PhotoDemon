@@ -4110,6 +4110,33 @@ End Sub
 
 Private Sub MnuTest_Click()
     
+'    'Temporary test of new pdPackage compression code.
+'
+'    'Create a pdPackage instance and add an arbitrary file to it
+'    Dim tmpPackager As pdPackager
+'    Set tmpPackager = New pdPackager
+'
+'    If g_ZLibEnabled Then tmpPackager.init_ZLib g_PluginPath & "zlibwapi.dll"
+'    tmpPackager.prepareNewPackage
+'
+'    If tmpPackager.autoAddNodeFromFile("C:\PhotoDemon v4\PhotoDemon\no_sync\microsoft help workshop tutorial.pdf", 1) Then Debug.Print "successfully added node"
+'
+'    'Write the pdPackage to file
+'    tmpPackager.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
+'
+'    'Reset the class, then load the pdPackage file
+'    Set tmpPackager = New pdPackager
+'    If g_ZLibEnabled Then tmpPackager.init_ZLib g_PluginPath & "zlibwapi.dll"
+'    tmpPackager.readPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
+'
+'    'Extract the compressed file (both extraction methods should be working)
+'    'If tmpPackager.autoExtractSingleFile("C:\PhotoDemon v4\PhotoDemon\no_sync\PDF TEST EXTRACT.pdf", "microsoft help workshop tutorial.pdf", True, 1) Then Debug.Print "successfully extracted"
+'    If tmpPackager.autoExtractSingleFile("C:\PhotoDemon v4\", "microsoft help workshop tutorial.pdf", False, 1) Then Debug.Print "successfully extracted"
+'    Set tmpPackager = Nothing
+'
+'    'Kill the temp pdPackage file
+'    If FileExist("C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp") Then Kill "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
+    
     'Want to test a new dialog?  Call it here:
     'showPDDialog vbModal, FormToTest
     

@@ -122,7 +122,7 @@ Private Type PDP_HEADER
     DataFlags(0 To 2) As Long               'User-defined flags for the data chunk.  See the PDP_FLAGS enum for details.
     
     DataChunkSizeCompressed As Long         'If compression has been applied to the data chunk, this value will be non-zero.  Use this to decompress
-                                            ' the data chnk prior to copying it into the buffer class.
+                                            ' the data chunk prior to copying it into the buffer class.
     Reserved As Long                        'Reserved for future use; no relevance at present.
     
 End Type
@@ -148,13 +148,15 @@ End Enum
 ' The list of currently supported flags is as follows:
 Public Enum PDP_FLAGS
     PDP_FLAG_ZLIB_REQUIRED = 0    'There are one or more compressed entries in this chunk, so zLib will be required to read it
+    PDP_FLAG_FILE_NODE = 1        'This node contains a file added via the shortcut autoAddNodeFromFile() function.
 End Enum
 
 #If False Then
     Private Const PDP_FLAG_ZLIB_REQUIRED = 0
+    Private Const PDP_FLAG_FILE_NODE = 1
 #End If
 
-'Immediately following the PDP_HEADER is the directory chunk, which is comprised of FilerHeader.NodeCount individual
+'Immediately following the PDP_HEADER is the directory chunk, which is comprised of FileHeader.NodeCount individual
 ' PDP_NODE structs.  These structs are small and flexible, and *they have a fixed size*, meaning they can be read into
 ' a fixed-width array in a single pass.
 Private Type PDP_NODE
@@ -458,6 +460,56 @@ Public Function addNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBu
 
 End Function
 
+'Shortcut function to both create a new node, and copy a file's contents directly into that node, without any intermediate work on the caller's part.
+' Note that only the filename and the file's contents are added; things like file attributes are *not*, by design.
+'
+'At present, PD does not preserve path information.  I don't need such a feature right now, but might look at adding it in the future.
+' (As such, only the file's name and extension are stored.)
+'
+'Returns TRUE if successful.
+Public Function autoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal addChecksumVerification As Boolean = True) As Boolean
+
+    'Attempt to load the file into a byte array
+    If FileExist(pathToFile) Then
+    
+        Dim fileNum As Integer
+        fileNum = FreeFile
+        
+        Dim fileContents() As Byte
+        
+        Open pathToFile For Binary Access Read As #fileNum
+            If LOF(fileNum) > 0 Then
+                ReDim fileContents(0 To LOF(fileNum) - 1)
+                Get fileNum, 1, fileContents
+            End If
+        Close #fileNum
+        
+        'Make sure the file loaded successfully
+        If UBound(fileContents) >= LBound(fileContents) Then
+            
+            'Create a blank node
+            Dim nodeIndex As Long
+            nodeIndex = addNode("PDPFILE", , OptionalNodeType)
+            
+            'Write the filename out to the first node
+            autoAddNodeFromFile = addNodeDataFromString(nodeIndex, True, getFilename(pathToFile), False)
+            
+            'Write the file contents out to the first node
+            autoAddNodeFromFile = autoAddNodeFromFile And addNodeDataFromByteArray(nodeIndex, False, fileContents, , , addChecksumVerification)
+            
+            'Mark a special flag bit in this node, to identify it as an auto-added file entry.  This simplifies the extraction process later,
+            ' and also provides a failsafe against the user adding their own nodes called "PDPFILE".
+            setBitFlag PDP_FLAG_FILE_NODE, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
+            
+        End If
+    
+    Else
+        Debug.Print "WARNING! Requested file does not exist; abandoning pdPackage autoAddNodeFromFile request."
+        autoAddNodeFromFile = False
+    End If
+
+End Function
+
 'When all nodes have been successfully added, the user can finally write out their data to file.  This function will return TRUE
 ' if successful, FALSE if unsuccessful.  (Note that it assumes the caller has done some basic validation on the file path, like
 ' obtaining permission from the user to overwrite an existing file.)
@@ -537,7 +589,7 @@ End Function
 
 'Copy one array into another, with variable compression.  This is used in many places throughout this class; basically any action that
 ' potentially supports compression should use this function to transfer data between arrays, even when compression is not in use.
-' (This function will abstract away all the messy CopyMemory bits, keeping the rest of the class clean.)
+' (This function abstracts away all the messy CopyMemory bits, keeping the rest of the class clean.)
 '
 'If compression *is* in use, this function will use zLib to compress the array accordingly, and it will fill the passed dstSize Long
 ' with the size (1-based) of the compressed array.  Explicit size values are required for both source and destination arrays, which
@@ -863,6 +915,149 @@ Public Function getNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName 
 
 End Function
 
+'Shortcut function for extracting a node's contents directly to file.  This function requires the data to have been added via the dedicated
+' autoAddNodeFromFile() function, above, as that function automatically populates all necessary fields for file extraction.
+'
+'In the future, additional functions will be added for extracting all files in the pdPackage, but for this function, a source filename
+' (WITH EXTENSION) is required.
+'
+'Returns TRUE if extraction was successful.
+Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename As String, Optional ByVal dstPathIncludesFilename As Boolean = False, Optional ByVal OptionalNodeType As Long = 0) As Boolean
+
+    'Node headers use a fixed-length 32 character string for storing names.  As such, we pad the file node type identifier to 32 chars.
+    Dim nodeName32 As String * 32
+    nodeName32 = "PDPFILE"
+    
+    'Cast the source filename to an array.  This allows us to make direct byte array comparisons without coercing the byte arrays into strings.
+    Dim filenameArray() As Byte
+    ReDim filenameArray(0 To Len(srcFilename) * 2 - 1) As Byte
+    CopyMemory VarPtr(filenameArray(0)), StrPtr(srcFilename), UBound(filenameArray) + 1
+    
+    'Start searching the node array for matches
+    Dim retBytes() As Byte, retString As String
+    Dim i As Long, nodeIndex As Long, nodeFound As Boolean
+    nodeIndex = -1
+    nodeFound = False
+    
+    For i = 0 To UBound(m_NodeDirectory)
+    
+        If StrComp(nodeName32, m_NodeDirectory(i).NodeName, vbTextCompare) = 0 Then
+        
+            'This node appears to be a file node.  As a failsafe, check for the special file-type node flag.
+            If getBitFlag(PDP_FLAG_FILE_NODE, m_NodeDirectory(i).NodeFlags(0)) Then
+            
+                'This is a valid file-type node.  If the user supplied an optionalNodeType, check it now.
+                nodeFound = True
+                
+                If OptionalNodeType <> 0 Then
+                    If m_NodeDirectory(i).OptionalNodeType = OptionalNodeType Then
+                        nodeFound = True
+                    Else
+                        nodeFound = False
+                    End If
+                End If
+                
+                'If the optional node type check succeeded, the last thing we need to do is check the actual filename of this node.
+                If nodeFound Then
+                    
+                    'Extract the header array, which will contain the filename of this file
+                    If getNodeDataByIndex(i, True, retBytes, True) Then
+                    
+                        'If this byte array equals the source filename, we have a match (DING DING DING)
+                        If checkArrayEquality(filenameArray, retBytes) Then
+                        
+                            nodeFound = True
+                            nodeIndex = i
+                            Exit For
+                        
+                        Else
+                            nodeFound = False
+                        End If
+                    
+                    Else
+                        nodeFound = False
+                    End If
+                    
+                End If
+                
+            End If
+        
+            'This node is the one!
+            nodeIndex = i
+            Exit For
+        
+        End If
+    
+    Next i
+    
+    'If a matching node was found, use getNodeDataByIndex() to retrieve its data
+    If (nodeIndex >= 0) And nodeFound Then
+        
+        'As a convenience to the caller, a rename can be applied at extraction time by supplying a destination path that includes a target filename,
+        ' and notifying us via the dstPathIncludesFilename flag.  If that flag is NOT present, we create the full destination filename by appending
+        ' the original filename+extension to the specified path.
+        Dim fullDestinationPath As String
+        
+        If dstPathIncludesFilename Then
+            fullDestinationPath = dstPath
+        Else
+            dstPath = FixPath(dstPath)
+            fullDestinationPath = dstPath & srcFilename
+        End If
+        
+        'Retrieve this node's contents
+        If getNodeDataByIndex(nodeIndex, False, retBytes()) Then
+        
+            'Erase the target file, if it exists
+            If FileExist(fullDestinationPath) Then Kill fullDestinationPath
+            
+            'Dump the node's contents to file
+            Dim fileNum As Integer
+            fileNum = FreeFile
+            
+            Open fullDestinationPath For Binary Access Write As #fileNum
+                Put #fileNum, , retBytes
+            Close #fileNum
+            
+            autoExtractSingleFile = True
+        
+        Else
+            autoExtractSingleFile = False
+        End If
+        
+    Else
+        autoExtractSingleFile = False
+    End If
+
+End Function
+
+'Are two byte arrays equal?
+Private Function checkArrayEquality(ByRef srcArray1() As Byte, ByRef srcArray2() As Byte) As Boolean
+
+    'Check bounds first
+    If UBound(srcArray1) <> UBound(srcArray2) Then
+        checkArrayEquality = False
+    
+    'Array bounds are equal, so an actual per-element test is required
+    Else
+    
+        Dim i As Long
+        For i = 0 To UBound(srcArray1)
+        
+            If srcArray1(i) <> srcArray2(i) Then
+                checkArrayEquality = False
+                Exit Function
+            End If
+        
+        Next i
+        
+        'If we made it all the way here, the arrays are equal
+        checkArrayEquality = True
+    
+    End If
+
+End Function
+
 'Node data access functions.  These functions fill a byte array with the requested data, and they will return TRUE if successful.
 ' (FALSE generally only occurs if the requested node cannot be found in the source data.)
 '
@@ -1086,7 +1281,7 @@ Private Sub setBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, B
             'Blend the flag with the source Long using OR, which will force the target bit to 1 while preserving the rest of the Long's contents
             copyOfDstLong = copyOfDstLong Or longMask
         
-        'Write  a 0 flag
+        'Write a 0 flag
         Else
         
             'Blend the INVERSE flag with the source Long, which will force the target bit to 0 while preserving the rest of the Long's contents
