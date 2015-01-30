@@ -23,11 +23,10 @@ End Enum
 ' Obvious corollary: ALWAYS SET DEBUGMODE TO 0 IN PRODUCTION BUILDS!
 Public Const PD_BUILD_QUALITY As Long = PD_PRE_ALPHA
 
-'Identifier for pdImage data saved to file.  (ASCII characters "PDID", as hex, listed here in little-endian notation.)
-Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450
-
-'Identifier for pdLayer data saved to file.  (ASCII characters "PDIL", as hex, listed here in little-endian notation.)
-Public Const PD_LAYER_IDENTIFIER As Long = &H4C494450
+'Identifier for various PD-specific file types
+Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450   'pdImage data (ASCII characters "PDID", as hex, little-endian)
+Public Const PD_LAYER_IDENTIFIER As Long = &H4C494450   'pdLayer data (ASCII characters "PDIL", as hex, little-endian)
+Public Const PD_LANG_IDENTIFIER As Long = &H414C4450    'pdLanguage data (ASCII characters "PDLA", as hex, little-endian)
 
 'Magic number for errors that arise during pdPackage interactions
 Public Const PDP_GENERIC_ERROR As Long = 9001

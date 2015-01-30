@@ -337,6 +337,9 @@ Dim versionString As String
 'If silent mode has been activated via command line, this will be set to TRUE.
 Dim m_SilentMode As Boolean
 
+'PD language file identifier.  IMPORTANT NOTE: this constant is shared with the main PhotoDemon project.  DO NOT CHANGE IT!
+Private Const PD_LANG_IDENTIFIER As Long = &H414C4450    'pdLanguage data (ASCII characters "PDLA", as hex, little-endian)
+
 'New support function for auto-converting old common control labels to PD's new pdLabel object.  If successful, this will save me a ton of time
 ' manually converting all the labels in the program.
 Private Sub cmdConvertLabels_Click()
@@ -490,13 +493,15 @@ Private Sub cmdLangVersions_Click()
     Dim numOfLangFiles As Long
     numOfLangFiles = 0
     
-    'Two folders must be iterated: a stable language folder, and an unstable (development) language folder.
-    ' Start with the development folder.
+    'Two folders must be iterated for existing language files: a stable language folder, and an unstable (development) language folder.
+    ' We'll start with the development folder.
     Dim srcFolder As String
     srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
     
-    'srcFolder = "C:\PhotoDemon v4\PhotoDemon\PhotoDemon\no_sync\PD_Language_File_Tmp\stable\"
-    'srcFolder = "C:\PhotoDemon v4\PhotoDemon\PhotoDemon\no_sync\PD_Language_File_Tmp\dev\"
+    'Two folders are also required for exporting the compressed language file copies (again, stable and dev).
+    Dim exportFolderDev As String, exportFolderStable As String
+    exportFolderDev = "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Language_File_Tmp\dev\"
+    exportFolderStable = "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Language_File_Tmp\stable\"
     
     'Lots of XML parsing will be going on here.
     Dim xmlInput As pdXML, xmlOutput As pdXML
@@ -508,10 +513,17 @@ Private Sub cmdLangVersions_Click()
     xmlOutput.writeBlankLine
     xmlOutput.writeComment "This language version file was automatically generated on " & Format(Now, "Medium date")
     xmlOutput.writeBlankLine
-            
+    
+    'The trusty pdPackage class will be used to compress each language file as we process it.
+    Dim cPackager As pdPackager
+    Set cPackager = New pdPackager
+    cPackager.init_ZLib App.Path & "\zlibwapi.dll"
+    
+    Dim compressedFilename As String
+    
     'Iterate through every language file in this folder.  (Language files will always be XML format, so we can ignore anything
     ' that isn't XML.)
-    Dim chkFile As String
+    Dim chkFile As String, chkFileNoExtension As String
     chkFile = Dir(srcFolder & "*.xml", vbNormal)
     
     Do While (chkFile <> "")
@@ -520,7 +532,16 @@ Private Sub cmdLangVersions_Click()
         lblUpdates.Caption = "Processing language file #" & numOfLangFiles
         
         'Attempt to add this file to the version list
-        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile
+        chkFileNoExtension = chkFile
+        StripOffExtension chkFileNoExtension
+        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension
+        
+        'This program is also responsible for compressing each language file and copying it to a temp folder,
+        ' so the nightly build batch script can find it.
+        compressedFilename = chkFileNoExtension & ".pdz"
+        cPackager.prepareNewPackage 1, PD_LANG_IDENTIFIER
+        cPackager.autoAddNodeFromFile srcFolder & chkFile
+        cPackager.writePackageToFile exportFolderDev & compressedFilename
         
         'Retrieve the next file and repeat
         chkFile = Dir
@@ -537,7 +558,16 @@ Private Sub cmdLangVersions_Click()
         lblUpdates.Caption = "Processing language file #" & numOfLangFiles
         
         'Attempt to add this file to the version list
-        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile
+        chkFileNoExtension = chkFile
+        StripOffExtension chkFileNoExtension
+        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension
+        
+        'This program is also responsible for compressing each language file and copying it to a temp folder,
+        ' so the nightly build batch script can find it.
+        compressedFilename = chkFileNoExtension & ".pdz"
+        cPackager.prepareNewPackage 1, PD_LANG_IDENTIFIER
+        cPackager.autoAddNodeFromFile srcFolder & chkFile
+        cPackager.writePackageToFile exportFolderDev & compressedFilename
         
         'Retrieve the next file and repeat
         chkFile = Dir
@@ -560,9 +590,9 @@ Private Sub cmdLangVersions_Click()
 End Sub
 
 'Given a full path to a language file, add the language file's information to an output XML object.
-Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput As pdXML, ByRef pathToFile As String)
+Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput As pdXML, ByRef pathToFile As String, ByRef sourceFilename As String)
 
-    Dim langID As String, langVersion As String
+    Dim langID As String, langVersion As String, langName As String
     
     Dim versionMajor As String, versionMinor As String, versionRevision As String
     Dim versionCheck() As String
@@ -574,6 +604,7 @@ Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput 
         xmlInput.setTextCompareMode vbTextCompare
         langID = xmlInput.getUniqueTag_String("langid")
         langVersion = xmlInput.getUniqueTag_String("langversion")
+        langName = xmlInput.getUniqueTag_String("langname")
         
         'Make sure both returns are valid.  If they are not, skip this file.
         If (Len(langID) <> 0) And (Len(langVersion) <> 0) Then
@@ -611,6 +642,8 @@ Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput 
                 
                 'We now have a major, minor, and revision value for this language file.  Write them out to file.
                 xmlOutput.writeTagWithAttribute "translation", "id", langID, "", True
+                xmlOutput.writeTag "name", langName
+                xmlOutput.writeTag "filename", sourceFilename
                 xmlOutput.writeTag "version", versionMajor & "." & versionMinor
                 xmlOutput.writeTag "revision", versionRevision
                 xmlOutput.closeTag "translation"

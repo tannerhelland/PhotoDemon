@@ -1248,6 +1248,7 @@ Public Function init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveIni
             If m_ZLibToken <> 0 Then
                 m_ZLibAvailable = True
             Else
+                Debug.Print "WARNING! zLib was not loaded successfully - check the supplied path."
                 m_ZLibAvailable = False
             End If
             
