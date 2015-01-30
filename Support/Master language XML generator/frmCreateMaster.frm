@@ -21,7 +21,7 @@ Begin VB.Form frmCreateMaster
    ScaleWidth      =   969
    StartUpPosition =   3  'Windows Default
    Begin VB.CommandButton cmdLangVersions 
-      Caption         =   "Generate master language update file"
+      Caption         =   "Generate master language update file(s)"
       Height          =   735
       Left            =   360
       TabIndex        =   16
@@ -316,10 +316,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Used to quickly check if a file (or folder) exists
-Private Const ERROR_SHARING_VIOLATION As Long = 32
-Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
-
 'Variables used to generate the master translation file
 Dim m_VBPFile As String, m_VBPPath As String
 Dim m_FormName As String, m_ObjectName As String, m_FileName As String
@@ -338,6 +334,9 @@ Dim m_numOfBlacklistEntries As Long
 'String to store the version of the current VBP file (which will be written out to the master XML file for guidance)
 Dim versionString As String
 
+'If silent mode has been activated via command line, this will be set to TRUE.
+Dim m_SilentMode As Boolean
+
 'New support function for auto-converting old common control labels to PD's new pdLabel object.  If successful, this will save me a ton of time
 ' manually converting all the labels in the program.
 Private Sub cmdConvertLabels_Click()
@@ -346,11 +345,11 @@ Private Sub cmdConvertLabels_Click()
     If lstProjectFiles.ListIndex <> -1 Then
 
         'Read the file into a string array
-        Dim srcFileName As String
-        srcFileName = lstProjectFiles.List(lstProjectFiles.ListIndex)
+        Dim srcFilename As String
+        srcFilename = lstProjectFiles.List(lstProjectFiles.ListIndex)
         
         Dim fileContents As String
-        fileContents = getFileAsString(srcFileName)
+        fileContents = getFileAsString(srcFilename)
         
         Dim fileLines() As String
         fileLines = Split(fileContents, vbCrLf)
@@ -427,13 +426,13 @@ nextLine:
         ' We are now going to overwrite the original file (gasp) with these new contents.
         
         'Start by killing the original copy
-        If FileExist(srcFileName) Then Kill srcFileName
+        If FileExist(srcFilename) Then Kill srcFilename
         
         'Open the file anew
         Dim fHandle As Integer
         fHandle = FreeFile
         
-        Open srcFileName For Output As #fHandle
+        Open srcFilename For Output As #fHandle
         
             'Write the modified file contents out to file
             For i = LBound(fileLines) To UBound(fileLines)
@@ -481,8 +480,11 @@ End Function
 ' (Note that two folders are scanned: the standard /App/PhotoDemon/Languages folder, which contains dev build values, and a separate
 '  stable folder, which contains the latest stable build language files.)
 '
-'That file is then uploaded (by a separate batch file) to PD's update server.  As of version 6.6, individual PD installs can download
-' this file, and use it to update their language files as necessary.
+'It also fills two temporary folders (one stable, one dev) with pdPackaged copies of the latest PD language files.  PD's nightly build script
+' will then upload these files to photodemon.org, so individual PD instances can self-patch according to the user's preferences.
+'
+'Note that this function can be automatically run by specifying -s on the command line.  If -s is used, this function will close the program
+' upon completion.
 Private Sub cmdLangVersions_Click()
     
     Dim numOfLangFiles As Long
@@ -492,6 +494,9 @@ Private Sub cmdLangVersions_Click()
     ' Start with the development folder.
     Dim srcFolder As String
     srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
+    
+    'srcFolder = "C:\PhotoDemon v4\PhotoDemon\PhotoDemon\no_sync\PD_Language_File_Tmp\stable\"
+    'srcFolder = "C:\PhotoDemon v4\PhotoDemon\PhotoDemon\no_sync\PD_Language_File_Tmp\dev\"
     
     'Lots of XML parsing will be going on here.
     Dim xmlInput As pdXML, xmlOutput As pdXML
@@ -548,6 +553,9 @@ Private Sub cmdLangVersions_Click()
     lblUpdates.Caption = numOfLangFiles & " languages successfully added to master language file."
     lblUpdates.Refresh
     DoEvents
+    
+    'If the program is running in silent mode, unload it now
+    If m_SilentMode Then Unload Me
 
 End Sub
 
@@ -1903,28 +1911,6 @@ Private Function getFileAsString(ByVal fName As String) As String
     
 End Function
 
-'Returns a boolean as to whether or not a given file exists
-Private Function FileExist(ByRef fName As String) As Boolean
-    Select Case (GetFileAttributesW(StrPtr(fName)) And vbDirectory) = 0
-        Case True: FileExist = True
-        Case Else: FileExist = (Err.LastDllError = ERROR_SHARING_VIOLATION)
-    End Select
-End Function
-
-'Return the filename chunk of a path
-Public Function getFilename(ByVal sString As String) As String
-
-    Dim i As Long
-    
-    For i = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, i, 1) = "/") Or (Mid(sString, i, 1) = "\") Then
-            getFilename = Right(sString, Len(sString) - i)
-            Exit Function
-        End If
-    Next i
-    
-End Function
-
 'Count the number of words in a string (will not be 100% accurate, but that's okay)
 Private Function countWordsInString(ByVal srcString As String) As Long
 
@@ -2017,6 +2003,17 @@ Private Sub Form_Load()
     addBlacklist "HTML / CSS"
     addBlacklist "jcbutton"
     addBlacklist "while it downloads."
+    
+    'Check the command line.  This project can be run in silent mode as part of my nightly build batch script.
+    Dim chkCommandLine As String
+    chkCommandLine = Command$
+    
+    If Len(Trim$(chkCommandLine)) <> 0 Then
+        If InStr(1, chkCommandLine, "-s", vbTextCompare) Then m_SilentMode = True Else m_SilentMode = False
+    End If
+    
+    'If silent mode is activated, automatically "click" the relevant button
+    If m_SilentMode Then Call cmdLangVersions_Click
     
 End Sub
 
