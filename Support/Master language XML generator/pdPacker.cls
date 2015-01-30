@@ -689,7 +689,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         Get #fileNum, 1, pdpCheck
         
         If (pdpCheck <> PDP_UNIVERSAL_IDENTIFIER) Then
-            Debug.Print "File doesn't have valid pdPackage header.  Abandoning load."
+            raiseInternalMessage "File doesn't have valid pdPackage header.  Abandoning load."
             GoTo StopPackageFileRead
         End If
         
@@ -699,7 +699,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             Get #fileNum, 5, pdpCheck
         
             If (pdpCheck <> subTypeValidator) Then
-                Debug.Print "File doesn't match requested sub-type value.  Abandoning load."
+                raiseInternalMessage "File doesn't match requested sub-type value.  Abandoning load."
                 GoTo StopPackageFileRead
             End If
         
@@ -713,7 +713,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             
             pdpCheck = loadLegacyPDPackage(fileNum)
             If Not pdpCheck Then
-                Debug.Print "Legacy file format could not be decoded."
+                raiseInternalMessage "Legacy file format could not be decoded."
                 GoTo StopPackageFileRead
             End If
         
@@ -723,7 +723,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             'Make sure the struct size is correct; if it isn't, all subsequent parsing will fail.
             Dim tmpNode As PDP_NODE
             If m_FileHeader.NodeStructSize <> LenB(tmpNode) Then
-                Debug.Print "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+                raiseInternalMessage "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
                 GoTo StopPackageFileRead
             End If
             
@@ -751,14 +751,14 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     If zLibResult <> 0 Then
                         
-                        Debug.Print "Directory is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                        raiseInternalMessage "Directory is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
                         GoTo StopPackageFileRead
                     
                     End If
                     
                 Else
                 
-                    Debug.Print "Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+                    raiseInternalMessage "Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
                     GoTo StopPackageFileRead
                 
                 End If
@@ -794,14 +794,14 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     If zLibResult <> 0 Then
                         
-                        Debug.Print "Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                        raiseInternalMessage "Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
                         GoTo StopPackageFileRead
                     
                     End If
                     
                 Else
                 
-                    Debug.Print "Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+                    raiseInternalMessage "Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
                     GoTo StopPackageFileRead
                 
                 End If
@@ -823,7 +823,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     
 StopPackageFileRead:
     
-    Debug.Print "An error occurred in the pdPackager.readPackageFromFile function.  Additional data should have been supplied by the debug.print() function."
+    Debug.Print "An error occurred in the pdPackager.readPackageFromFile function.  Additional data should have been supplied by the Message() function."
     If fileNum <> 0 Then Close #fileNum
     readPackageFromFile = False
     Exit Function
@@ -870,7 +870,7 @@ Private Function loadLegacyPDPackage(ByRef fileNum As Integer) As Boolean
                 
             'Struct size mismatch - file is probably not PDI type.
             Else
-                Debug.Print "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+                raiseInternalMessage "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
                 loadLegacyPDPackage = False
             End If
             
@@ -1164,7 +1164,7 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             
             If zLibResult <> 0 Then
                 
-                Debug.Print "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                raiseInternalMessage "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
                 getNodeDataByIndex = False
                 Exit Function
             
@@ -1172,7 +1172,7 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             
         Else
         
-            Debug.Print "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+            raiseInternalMessage "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
             getNodeDataByIndex = False
             Exit Function
         
@@ -1205,7 +1205,7 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         
         'If the checksums do not match, fail the function and exit
         If checkSumOriginal <> zLibAdlerSum Then
-            Debug.Print "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
+            raiseInternalMessage "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
             getNodeDataByIndex = False
             Exit Function
         Else
@@ -1371,4 +1371,10 @@ Private Sub Class_Terminate()
     If Not (m_DataBuffer Is Nothing) Then m_DataBuffer.CloseBuf
     Set m_DataBuffer = Nothing
 
+End Sub
+
+'If something unexpected occurs, and the user needs to know about it (e.g. it's not just debugging data), pdPackage will raise a message
+' using this function.  PhotoDemon uses a central "Message" function to handle messages like this, but you can change it to Debug.Print instead.
+Private Sub raiseInternalMessage(ByVal msgString As String, ParamArray ExtraText() As Variant)
+    Debug.Print msgString
 End Sub
