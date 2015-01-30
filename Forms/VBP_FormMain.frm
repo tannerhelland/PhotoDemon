@@ -1553,7 +1553,7 @@ Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boo
 End Sub
 
 'When an asynchronous download completes, deal with it here
-Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean, ByVal entryKey As String, downloadedData() As Byte, ByVal savedToThisFile As String)
+Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean, ByVal entryKey As String, ByVal OptionalType As Long, downloadedData() As Byte, ByVal savedToThisFile As String)
     
     'On a typical PD install, updates are checked every 10 days.  When an update check successfully completes,
     ' we write the current date out to the preferences file
@@ -2530,8 +2530,8 @@ Private Sub Form_Load()
         'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
         ' When the asynchronous download completes, the downloader will place the completed update file in the /Data subfolder.
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-        Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates.xml", vbAsyncReadForceUpdate, False, g_UserPreferences.getDataPath & "updates.xml"
-                
+        Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getDataPath & "updates.xml"
+        
     End If
     
     'With all potentially required downloads added to the queue, we can now begin downloading everything

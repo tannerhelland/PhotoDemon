@@ -85,7 +85,7 @@ Option Explicit
 ' relevant keys manually.
 '
 'TODO: pass a ByRef "try again" flag, so the recipient can easily re-initate downloads that weren't successful
-Event FinishedOneItem(ByVal downloadSuccessful As Boolean, ByVal entryKey As String, ByRef downloadedData() As Byte, ByVal savedToThisFile As String)
+Event FinishedOneItem(ByVal downloadSuccessful As Boolean, ByVal entryKey As String, ByVal OptionalType As Long, ByRef downloadedData() As Byte, ByVal savedToThisFile As String)
 Event FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
 
 'Because we often have to download multiple files at once, a custom type is used.  This type includes enums
@@ -106,6 +106,7 @@ End Enum
 
 Private Type pdDownloadEntry
     Key As String
+    DownloadTypeOptional As Long
     CurrentStatus As pdDownloadStatus
     DownloadURL As String
     DownloadFlags As AsyncReadConstants
@@ -199,7 +200,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
                 .DataBytes = AsyncProp.Value
                 
                 'Raise a failure event
-                RaiseEvent FinishedOneItem(False, .Key, .DataBytes, "")
+                RaiseEvent FinishedOneItem(False, .Key, .DownloadTypeOptional, .DataBytes, "")
                 
             End With
             
@@ -257,7 +258,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
             
             'Raise a success event
             With m_DownloadList(itemIndex)
-                RaiseEvent FinishedOneItem(True, .Key, .DataBytes, .TargetFileWhenComplete)
+                RaiseEvent FinishedOneItem(True, .Key, .DownloadTypeOptional, .DataBytes, .TargetFileWhenComplete)
             End With
             
             'Increment the "download finished" counter by 1.
@@ -290,7 +291,7 @@ DownloadError:
     End With
     
     'Raise a failure event
-    RaiseEvent FinishedOneItem(False, m_DownloadList(itemIndex).Key, m_DownloadList(itemIndex).DataBytes, "")
+    RaiseEvent FinishedOneItem(False, m_DownloadList(itemIndex).Key, m_DownloadList(itemIndex).DownloadTypeOptional, m_DownloadList(itemIndex).DataBytes, "")
     
     'Increment the "download finished" counter by 1.
     m_NumOfFilesFinishedDownloading = m_NumOfFilesFinishedDownloading + 1
@@ -464,7 +465,7 @@ End Sub
 '    of the file immediately.
 '
 'Returns: success/fail.  Fail is unlikely, unless the caller does something stupid like specifying a duplicate key.
-Public Function addToQueue(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "") As Boolean
+Public Function addToQueue(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "") As Boolean
 
     'Make sure this key is unique in the collection
     If doesKeyExist(downloadKey) >= 0 Then
@@ -484,6 +485,7 @@ Public Function addToQueue(ByVal downloadKey As String, ByVal urlString As Strin
     
     With m_DownloadList(itemIndex)
         .Key = downloadKey
+        .DownloadTypeOptional = OptionalDownloadType
         .DownloadURL = urlString
         .DownloadFlags = asyncFlags
         .CurrentStatus = PDS_NOT_YET_STARTED
