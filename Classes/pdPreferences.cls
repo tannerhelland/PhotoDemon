@@ -354,13 +354,14 @@ Private Sub createNewPreferencesFile()
 
     'This function is used to determine whether PhotoDemon is being run for the first time.  Why do it here?
     ' 1) When first downloaded, PhotoDemon doesn't come with a prefs file.  Thus this routine MUST be called.
-    ' 2) When preferences are reset, this file is deleted.  That is an appropriate time to mark the program as "first run".
+    ' 2) When preferences are reset, this file is deleted.  That is an appropriate time to mark the program as "first run",
+    '     so any first-run type dialogs are reset as well.
     ' 3) If the user moves PhotoDemon but leaves behind the old prefs file.  There's no easy way to check this, but
     '     treating the program as if its being run for the first time is as good a plan as any.
     g_IsFirstRun = True
     
-    'As a failsafe against data corruption, if this is determined to be a first run, delete some settings-related
-    ' files in the Presets folder (if they exist)
+    'As a failsafe against data corruption, if this is determined to be a first run, we also delete some settings-related
+    ' files in the Presets folder (if they exist).
     If g_IsFirstRun Then
         If FileExist(PresetPath & "Program_WindowLocations.xml") Then Kill PresetPath & "Program_WindowLocations.xml"
     End If

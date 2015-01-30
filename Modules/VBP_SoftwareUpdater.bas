@@ -218,48 +218,94 @@ End Function
 '    is running the program
 Public Function isItTimeForAnUpdate() As Boolean
 
-    'Locale settings can sometimes screw with the DateDiff function in unpredictable ways.  If something goes
-    ' wrong, disable update checks for this session
+    'Locale settings can sometimes screw with the DateDiff function in unpredictable ways.  (For example, if a
+    ' user is using PD on a pen drive, and they move between PCs with wildly different date representations)
+    ' If something goes wrong at any point in this function, we'll simply disable update checks until next run.
     On Error GoTo noUpdates
 
     Dim allowedToUpdate As Boolean
-    allowedToUpdate = g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True)
+    allowedToUpdate = False
+    
+    'Previous to v6.6, PD's update preference was a binary yes/no thing.  To make sure users who previously disabled
+    ' updates are respected, if the new preference doesn't exist yet, we'll use their old preference instead.
+    Dim updateFrequency As PD_UPDATE_FREQUENCY
+    updateFrequency = PDUF_EACH_SESSION
+    If g_UserPreferences.doesValueExist("Updates", "Check For Updates") Then
         
-    'If updates ARE allowed, see when we last checked.  To be polite, only check once every 10 days.
-    If allowedToUpdate Then
+        If Not g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True) Then
+            
+            'Write a matching preference in the new format.
+            g_UserPreferences.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
+            
+            'Overwrite the old preference, so it doesn't trigger this check again
+            g_UserPreferences.SetPref_Boolean "Updates", "Check For Updates", True
+            
+        End If
+        
+    End If
+    
+    'In v6.6, PD's update strategy was modified to allow the user to specify an update frequency (rather than
+    ' a binary yes/no preference).  Retrieve the allowed frequency now.
+    If updateFrequency <> PDUF_NEVER Then
+        updateFrequency = g_UserPreferences.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
+    End If
+        
+    'If updates ARE allowed, see when we last checked for an update.  If enough time has elapsed, check again.
+    If updateFrequency <> PDUF_NEVER Then
     
         Dim lastCheckDate As String
         lastCheckDate = g_UserPreferences.GetPref_String("Updates", "Last Update Check", "")
         
-        'If the last update check date was not found, request an update check now
+        'If a "last update check date" was not found, request an update check now.
         If Len(lastCheckDate) = 0 Then
         
             allowedToUpdate = True
         
-        'If a last update check date was found, check to see how much time has elapsed since that check
+        'If a last update check date was found, check to see how much time has elapsed since that check.
         Else
         
+            'Start by figuring out how many days need to have passed before we're allowed to check for updates
+            ' again.  (This varies according to user preference.)
+            Dim numAllowableDays As Long
+            
+            Select Case updateFrequency
+            
+                Case PDUF_EACH_SESSION
+                    numAllowableDays = 0
+                
+                Case PDUF_WEEKLY
+                    numAllowableDays = 7
+                    
+                Case PDUF_MONTHLY
+                    numAllowableDays = 30
+            
+            End Select
+            
             Dim currentDate As Date
             currentDate = Format$(Now, "Medium Date")
             
-            'If 10 days have elapsed, allow an update check
-            If CLng(DateDiff("d", CDate(lastCheckDate), currentDate)) >= 10 Then
+            'If the allowable date threshold has passed, allow the updater to perform a new check
+            If CLng(DateDiff("d", CDate(lastCheckDate), currentDate)) >= numAllowableDays Then
                 allowedToUpdate = True
             
             'If 10 days haven't passed, prevent an update
             Else
-                Message "Update check postponed (a check has been performed in the last 10 days)"
+                Message "Update check postponed (a check has been performed recently)"
                 allowedToUpdate = False
             End If
                     
         End If
     
+    'If the user has specified "never" as their desired update frequency, we'll always return FALSE.
+    Else
+        allowedToUpdate = False
     End If
     
     isItTimeForAnUpdate = allowedToUpdate
     
     Exit Function
-    
+
+'In the event of an error, simply disallow updates for this session.
 noUpdates:
 
     isItTimeForAnUpdate = False
