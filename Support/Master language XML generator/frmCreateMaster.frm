@@ -534,7 +534,7 @@ Private Sub cmdLangVersions_Click()
         'Attempt to add this file to the version list
         chkFileNoExtension = chkFile
         StripOffExtension chkFileNoExtension
-        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension
+        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, False
         
         'This program is also responsible for compressing each language file and copying it to a temp folder,
         ' so the nightly build batch script can find it.
@@ -560,7 +560,7 @@ Private Sub cmdLangVersions_Click()
         'Attempt to add this file to the version list
         chkFileNoExtension = chkFile
         StripOffExtension chkFileNoExtension
-        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension
+        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, True
         
         'This program is also responsible for compressing each language file and copying it to a temp folder,
         ' so the nightly build batch script can find it.
@@ -590,7 +590,7 @@ Private Sub cmdLangVersions_Click()
 End Sub
 
 'Given a full path to a language file, add the language file's information to an output XML object.
-Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput As pdXML, ByRef pathToFile As String, ByRef sourceFilename As String)
+Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput As pdXML, ByRef pathToFile As String, ByRef sourceFilename As String, ByVal isSourceStableVersion As Boolean)
 
     Dim langID As String, langVersion As String, langName As String
     
@@ -645,8 +645,14 @@ Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput 
                 End If
                 
                 'We now have a major, minor, and revision value for this language file.  Write them out to file.
-                xmlOutput.writeTagWithAttribute "language", "id", langID, "", True
+                If isSourceStableVersion Then
+                    xmlOutput.writeTagWithAttribute "language", "updateID", langID & " stable", "", True
+                Else
+                    xmlOutput.writeTagWithAttribute "language", "updateID", langID & " dev", "", True
+                End If
+                
                 xmlOutput.writeTag "name", langName
+                xmlOutput.writeTag "id", langID
                 xmlOutput.writeTag "filename", sourceFilename
                 xmlOutput.writeTag "version", versionMajor & "." & versionMinor
                 xmlOutput.writeTag "revision", versionRevision

@@ -50,21 +50,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -1547,16 +1547,21 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 ' it evaluates the accelerator like normal.
 Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Double
 
-'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with its downloads
+'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.
 Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
-    asyncDownloader.Reset
+
+    'Core program updates are handled specially, so their resources can be freed without question.
+    asyncDownloader.freeResourcesForItem "PROGRAM_UPDATE_CHECK"
+    'asyncDownloader.Reset
+    
 End Sub
 
 'When an asynchronous download completes, deal with it here
 Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean, ByVal entryKey As String, ByVal OptionalType As Long, downloadedData() As Byte, ByVal savedToThisFile As String)
     
-    'On a typical PD install, updates are checked every 10 days.  When an update check successfully completes,
-    ' we write the current date out to the preferences file
+    'On a typical PD install, updates are checked every session, but users can specify a larger interval in the preferences dialog.
+    ' As part of honoring that preference, whenever an update check successfully completes, we write the current date out to the
+    ' preferences file, so subsequent runs can limit their check frequency accordingly.
     If (StrComp(entryKey, "PROGRAM_UPDATE_CHECK") = 0) Then
         
         If downloadSuccessful Then
@@ -1565,7 +1570,17 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         Else
             Debug.Print "Update file was not downloaded.  asyncDownloader returned this error message: " & asyncDownloader.getLastErrorNumber & " - " & asyncDownloader.getLastErrorDescription
         End If
+    
+    'Separate from the core program, we also check language file updates (if preferences allow).
+    ElseIf (StrComp(entryKey, "LANGUAGE_UPDATE_CHECK") = 0) Then
+    
+        'Because we can live-update languages, we don't save the language update code to a file.  Instead, we retrieve its contents directly.
+        Dim updateXML As String
+        updateXML = StrConv(downloadedData, vbUnicode)
         
+        'Offload the reset of the check to a separate function.
+        Software_Updater.processLanguageUpdateFile updateXML
+            
     End If
 
 End Sub
@@ -2516,7 +2531,7 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     ' Next, see if we need to launch an asynchronous check for updates
     '*************************************************************************************************************************************
-        
+    
     'Start by seeing if we're allowed to check for software updates (the user can disable this check, and we want to honor their selection)
     Dim allowedToUpdate As Boolean
     allowedToUpdate = Software_Updater.isItTimeForAnUpdate()
@@ -2531,6 +2546,20 @@ Private Sub Form_Load()
         ' When the asynchronous download completes, the downloader will place the completed update file in the /Data subfolder.
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
         Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getDataPath & "updates.xml"
+        
+        'As of v6.6, PhotoDemon now supports independent language file updates, separate from updating PD as a whole.
+        ' Check that preference, and if allowed, initiate a separate language file check.  (If no core program update is found, but a language
+        ' file update *is* found, we'll download and patch those separately.)
+        If g_UserPreferences.GetPref_Boolean("Updates", "Update Languages Independently", True) Then
+            Me.asyncDownloader.addToQueue "LANGUAGE_UPDATE_CHECK", "http://photodemon.org/downloads/updates/langupdate.xml"
+        End If
+        
+        'As of v6.6, PhotoDemon also supports independent plugin file updates, separate from updating PD as a whole.
+        ' Check that preference, and if allowed, initiate a separate plugin file check.  (If no core program update is found, but a plugin
+        ' file update *is* found, we'll download and patch those separately.)
+        If g_UserPreferences.GetPref_Boolean("Updates", "Update Plugins Independently", True) Then
+            'TODO!
+        End If
         
     End If
     

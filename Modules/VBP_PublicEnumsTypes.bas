@@ -102,12 +102,14 @@ End Enum
 ' here, so the entire project can access the type.
 Public Type pdLanguageFile
     Author As String
-    FileName As String
+    fileName As String
     langID As String
     langName As String
     langType As String
     langVersion As String
     langStatus As String
+    updateChecksum As Long
+    isOfficial As Boolean
 End Type
 
 'Replacement mouse button type.  VB doesn't report X-button clicks in their native button type, but PD does.  Whether
