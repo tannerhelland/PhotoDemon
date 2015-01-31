@@ -154,7 +154,8 @@ Public Function getLanguagePath(Optional ByVal getUserLanguagePathInstead As Boo
     End If
 End Function
 
-'Return the current temporary directory
+'Return the current temporary directory, as specified by the user's preferences.  (Note that this is a totally different function from
+' this class's GetSystemTemporaryPath function, which returns the current Windows system temp path.)
 Public Function GetTempPath() As String
     GetTempPath = TempPath
 End Function
@@ -167,7 +168,7 @@ Public Sub setTempPath(ByVal newTempPath As String)
     TempPath = newTempPath
     
     'Ensure that this directory exists AND that we have write access to it.  If we do not, substitute the default system temp folder.
-    If DirectoryExist(TempPath) = False Then TempPath = GetTemporaryPath()
+    If DirectoryExist(TempPath) = False Then TempPath = GetSystemTemporaryPath()
     
     SetPref_String "Paths", "TempFiles", TempPath
     
@@ -301,7 +302,7 @@ Public Sub loadUserSettings()
     ' the system temp path.)
     TempPath = GetPref_String("Paths", "TempFiles", "")
     If Not DirectoryExist(TempPath) Then
-        TempPath = GetTemporaryPath
+        TempPath = GetSystemTemporaryPath
         SetPref_String "Paths", "TempFiles", TempPath
     End If
     
@@ -455,7 +456,7 @@ Private Sub createNewPreferencesFile()
         
     'Write out the "paths" block of preferences:
     xmlEngine.writeTag "Paths", "", True
-        xmlEngine.writeTag "TempFiles", GetTemporaryPath
+        xmlEngine.writeTag "TempFiles", GetSystemTemporaryPath
         xmlEngine.writeTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
         xmlEngine.writeTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
         xmlEngine.writeTag "Macro", MacroPath
@@ -700,7 +701,7 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
 End Function
 
 'Get the current Windows-specified temp directory
-Private Function GetTemporaryPath() As String
+Private Function GetSystemTemporaryPath() As String
     
     'Create a blank string (as required by the API call)
     Dim sRet As String
@@ -714,7 +715,7 @@ Private Function GetTemporaryPath() As String
     If lngLen = 0 Then Err.Raise Err.LastDllError
     
     'Return the temporary path, and ensure that it has a trailing "\"
-    GetTemporaryPath = FixPath(Left$(sRet, lngLen))
+    GetSystemTemporaryPath = FixPath(Left$(sRet, lngLen))
 
 End Function
 

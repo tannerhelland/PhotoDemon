@@ -227,7 +227,7 @@ Public Function isItTimeForAnUpdate() As Boolean
     allowedToUpdate = False
     
     'Previous to v6.6, PD's update preference was a binary yes/no thing.  To make sure users who previously disabled
-    ' updates are respected, if the new preference doesn't exist yet, we'll use their old preference instead.
+    ' updates are respected, if the new preference doesn't exist yet, we'll use the old preference value instead.
     Dim updateFrequency As PD_UPDATE_FREQUENCY
     updateFrequency = PDUF_EACH_SESSION
     If g_UserPreferences.doesValueExist("Updates", "Check For Updates") Then
@@ -256,7 +256,7 @@ Public Function isItTimeForAnUpdate() As Boolean
         Dim lastCheckDate As String
         lastCheckDate = g_UserPreferences.GetPref_String("Updates", "Last Update Check", "")
         
-        'If a "last update check date" was not found, request an update check now.
+        'If a "last update check date" was not found, request an immediate update check.
         If Len(lastCheckDate) = 0 Then
         
             allowedToUpdate = True
@@ -311,3 +311,128 @@ noUpdates:
     isItTimeForAnUpdate = False
     
 End Function
+
+'Given the XML string of a download language version XML report from photodemon.org, initiate downloads of any languages that need to be updated.
+Public Sub processLanguageUpdateFile(ByRef srcXML As String)
+    
+    'This boolean array will be track which (if any) language files are in need of an update.  The matching "numOfUpdates"
+    ' value will be > 0 if any files need updating.
+    Dim numOfUpdates As Long
+    numOfUpdates = 0
+    
+    Dim updateFlags() As Boolean
+    
+    'We will be testing a number of different languages to see if they qualify for an update.  This temporary object will
+    ' be passed to the public translation class as necessary, to retrieve a copy of a given language file's data.
+    Dim tmpLanguage As pdLanguageFile
+        
+    'A pdXML object handles XML parsing for us.
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    Dim langVersion As String, langID As String, langRevision As Long
+    
+    'Validate the XML
+    If xmlEngine.loadXMLFromString(srcXML) Then
+    
+        'Check for a few necessary tags, just to make sure this is actually a PhotoDemon language file
+        If xmlEngine.isPDDataType("Language versions") Then
+        
+            'We're now going to enumerate all language tags in the file.  If one needs to be updated, a couple extra
+            ' steps need to be taken.
+            Dim langList() As String
+            If xmlEngine.findAllAttributeValues(langList, "language", "updateID") Then
+                
+                'langList() now contains a list of all the unique language listings in the update file.
+                ' We want to search this list for entries with an identical major/minor version to this PD build.
+                
+                'Start by retrieving the current PD executable version.
+                Dim currentPDVersion As String
+                currentPDVersion = getPhotoDemonVersionMajorMinorOnly
+                
+                'This step is simply going to flag language files in need of an update.  This array will be used to track
+                ' such language; a separate step will initiate the actual update downloads.
+                ReDim updateFlags(0 To UBound(langList)) As Boolean
+                
+                'Iterate the language update list, looking for version matches
+                Dim i As Long
+                For i = 0 To UBound(langList)
+                
+                    'Retrieve the major/minor version of this language file.  (String format is fine, as we're just
+                    ' checking equality.)
+                    langVersion = xmlEngine.getUniqueTag_String("version", , , "language", "updateID", langList(i))
+                    langVersion = retrieveVersionMajorMinorAsString(langVersion)
+                    
+                    'Retrieve the language's revision as well.  This is explicitly retrieved as a LONG, because we need to perform
+                    ' a >= check between it and the current language file revision.
+                    langRevision = retrieveVersionRevisionAsLong(xmlEngine.getUniqueTag_String("revision", , , "language", "updateID", langList(i)))
+                    
+                    'If the version matches this .exe version, this language file is a candidate for updating.
+                    If StrComp(currentPDVersion, langVersion, vbBinaryCompare) = 0 Then
+                    
+                        'Next, we need to compare the versions of the update language file and the installed language file.
+                        
+                        'Retrieve the language ID, which is a unique identifier.
+                        langID = xmlEngine.getUniqueTag_String("id", , , "language", "updateID", langList(i))
+                        
+                        'Use a helper function to retrieve the language header for the currently installed copy of this language.
+                        If g_Language.getPDLanguageFileObject(tmpLanguage, langID) Then
+                        
+                            'A matching language file was found.  Compare version numbers.
+                            If StrComp(langVersion, retrieveVersionMajorMinorAsString(tmpLanguage.langVersion), vbBinaryCompare) = 0 Then
+                            
+                                'The major/minor version of this language file matches the current language.  Compare revisions.
+                                If langRevision > retrieveVersionRevisionAsLong(tmpLanguage.langVersion) Then
+                                
+                                    'Holy shit, this language actually needs to be updated!  :P  Mark the corresponding location
+                                    ' in the update array, and increment the update counter.
+                                    updateFlags(i) = True
+                                    numOfUpdates = numOfUpdates + 1
+                                    
+                                    Debug.Print "Language ID " & langID & " will be updated to revision " & langRevision & "."
+                                
+                                'The current file is up-to-date.
+                                Else
+                                
+                                    Debug.Print "Language ID " & langID & " is already up-to-date."
+                                
+                                End If
+                            
+                            End If
+                            
+                        'This language ID was not found.  This could mean one of two things:
+                        ' 1) This language file is a new one (e.g. it was not included in the original release of this PD version)
+                        ' 2) The user forcibly deleted this language file at some point in the past.
+                        '
+                        'To avoid undoing (2), we must also ignore (1).  Do nothing if this language file doesn't exist in the
+                        ' current languages folder.
+                        Else
+                            Debug.Print "Language ID " & langID & " does not exist on this PC.  No update will be performed."
+                        End If
+                    
+                    End If
+                    
+                Next i
+            
+            End If
+        
+            'At this point, updateFlags() will contain TRUE for any language files that need to be updated, and numOfUpdates should
+            ' be greater than 0 if updates are required.
+            If numOfUpdates > 0 Then
+                
+                'TODO!
+                Debug.Print numOfUpdates & " updated language files will now be downloaded."
+                
+            Else
+                Debug.Print "All language files are up-to-date.  No new files will be downloaded."
+            End If
+        
+        Else
+            Debug.Print "WARNING! Language update XML did not pass basic validation.  Abandoning update process."
+        End If
+    
+    Else
+        Debug.Print "WARNING! Language update XML did not load successfully - check for an encoding error, maybe...?"
+    End If
+    
+End Sub

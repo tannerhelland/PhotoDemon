@@ -386,7 +386,7 @@ Public Sub freeResourcesForItem(ByVal itemKey As String)
     Dim itemIndex As Long
     itemIndex = doesKeyExist(itemKey)
     
-    If itemKey >= 0 Then
+    If itemIndex >= 0 Then
     
         'Check the download status, and make sure at least one byte was retrieved.
         With m_DownloadList(itemIndex)

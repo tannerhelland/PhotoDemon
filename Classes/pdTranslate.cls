@@ -148,7 +148,7 @@ Public Function translationActive() As Boolean
 End Function
 
 Public Sub writeLanguagePreferencesToFile()
-    g_UserPreferences.SetPref_String "Language", "Current Language File", availableLanguages(curLanguage).FileName
+    g_UserPreferences.SetPref_String "Language", "Current Language File", availableLanguages(curLanguage).fileName
 End Sub
 
 'Given an index in the availableLanguages array, mark that as the new language (including saving it to the preferences file)
@@ -236,7 +236,7 @@ Private Function getLangIndexFromFile(ByVal srcFile As String) As Long
     
     Dim i As Long
     For i = 0 To numOfLanguages - 1
-        If StrComp(availableLanguages(i).FileName, srcFile, vbTextCompare) = 0 Then
+        If StrComp(availableLanguages(i).fileName, srcFile, vbTextCompare) = 0 Then
             getLangIndexFromFile = i
             Exit Function
         End If
@@ -292,7 +292,7 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
     'If the language is set to anything other than the default, load the contents of the language XML file into memory.
     If translationActive Then
         Set xmlEngine = New pdXML
-        xmlEngine.loadXMLFile availableLanguages(curLanguage).FileName
+        xmlEngine.loadXMLFile availableLanguages(curLanguage).fileName
         
         'New as of August '14 is use of binary text comparisons.  This provides a huge performance boost, while also rendering
         ' more faithful text where case is concerned.
@@ -363,6 +363,14 @@ Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
     Dim nLanguages As Long
     nLanguages = langOffset
     
+    'If this is the official language folder, we will mark those entries specially, as they are the only ones PD is allowed to auto-update.
+    Dim isOfficialFolder As Boolean
+    If StrComp(UCase(langTypeForThisFolder), "OFFICIAL", vbBinaryCompare) = 0 Then
+        isOfficialFolder = True
+    Else
+        isOfficialFolder = False
+    End If
+    
     'An XML class will be used to parse the various language files
     Dim tmpXMLEngine As pdXML
     
@@ -381,8 +389,9 @@ Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
                 
                 'If this is a valid language file, get the language information (if available).
                 fillLanguageInfo tmpXMLEngine, availableLanguages(nLanguages)
-                availableLanguages(nLanguages).FileName = srcFolder & chkFile
+                availableLanguages(nLanguages).fileName = srcFolder & chkFile
                 availableLanguages(nLanguages).langType = langTypeForThisFolder
+                availableLanguages(nLanguages).isOfficial = isOfficialFolder
                 nLanguages = nLanguages + 1
                 
                 'If, for some ungodly reason, the user has more than 100 languages available, dynamically resize the array to fit.
@@ -408,18 +417,19 @@ Public Sub CheckAvailableLanguages()
     ReDim Preserve availableLanguages(0 To 99) As pdLanguageFile
     
     'Find all available OFFICIAL language files
-    numOfLanguages = tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath, 0, "Official")
+    numOfLanguages = tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath(False), 0, "Official")
     
     'Find all available USER language files
     numOfLanguages = numOfLanguages + tallyLanguageFilesInFolder(g_UserPreferences.getLanguagePath(True), numOfLanguages, "Unofficial")
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
-    availableLanguages(numOfLanguages).FileName = ""
+    availableLanguages(numOfLanguages).fileName = ""
     availableLanguages(numOfLanguages).langID = "en-US"
     availableLanguages(numOfLanguages).langName = "English (US) - Default"
     availableLanguages(numOfLanguages).langType = "Default"
     availableLanguages(numOfLanguages).langStatus = "Complete"
     availableLanguages(numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
+    availableLanguages(numOfLanguages).isOfficial = True
     numOfLanguages = numOfLanguages + 1
     
     'Resize the array to contain only the number of languages found
@@ -475,13 +485,17 @@ End Sub
 Private Sub fillLanguageInfo(ByRef srcXMLEngine As pdXML, ByRef targetLangHolder As pdLanguageFile)
 
     'First, get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
-    targetLangHolder.langID = srcXMLEngine.getUniqueTag_String("langid")
-    targetLangHolder.langName = srcXMLEngine.getUniqueTag_String("langname")
+    With targetLangHolder
+        
+        .langID = srcXMLEngine.getUniqueTag_String("langid")
+        .langName = srcXMLEngine.getUniqueTag_String("langname")
     
     'Version, status, and author information should also be present, but the file will still be loaded even if they don't exist
-    targetLangHolder.langVersion = srcXMLEngine.getUniqueTag_String("langversion")
-    targetLangHolder.langStatus = srcXMLEngine.getUniqueTag_String("langstatus")
-    targetLangHolder.Author = srcXMLEngine.getUniqueTag_String("author")
+        .langVersion = srcXMLEngine.getUniqueTag_String("langversion")
+        .langStatus = srcXMLEngine.getUniqueTag_String("langstatus")
+        .Author = srcXMLEngine.getUniqueTag_String("author")
+        
+    End With
         
 End Sub
 
@@ -510,6 +524,37 @@ Private Sub SwapLanguageData(ByRef langOne As pdLanguageFile, ByRef langTwo As p
     langOne = langTwo
     langTwo = langTmp
 End Sub
+
+'External functions can use this retrieve the current pdLanguageFile contents for a given language ID.
+' Note that this ONLY SUPPORTS OFFICIAL LANGUAGE FILES, by design.  User language files should not be modified by PD itself.
+' Returns TRUE if a match is found; FALSE otherwise.
+Friend Function getPDLanguageFileObject(ByRef dstLanguageFileObject As pdLanguageFile, ByVal languageID As String) As Boolean
+    
+    languageID = Trim$(UCase(languageID))
+    
+    'Find the matching language ID
+    Dim i As Long
+    For i = 0 To UBound(availableLanguages)
+    
+        If availableLanguages(i).isOfficial Then
+            
+            If StrComp(languageID, Trim$(UCase(availableLanguages(i).langID)), vbBinaryCompare) = 0 Then
+                
+                'It's a match!  Fill the target object and exit
+                dstLanguageFileObject = availableLanguages(i)
+                getPDLanguageFileObject = True
+                Exit Function
+            
+            End If
+        
+        End If
+    
+    Next i
+    
+    'If we made it here, no matching language was found
+    getPDLanguageFileObject = False
+
+End Function
 
 'All text to be translated should be passed here first.  This sub will perform a few automatic checks of the string, and it will record what
 ' it finds.  For example, if the text has "..." at the end, this sub will remove that.  Its counterpart - postProcessText() - will re-apply
