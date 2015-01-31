@@ -425,10 +425,8 @@ Public Function addNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     'Next, checksum the file (if requested).
     If requestChecksum And m_ZLibAvailable Then
     
-        'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
-        ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
         Dim zLibAdlerSum As Long
-        zLibAdlerSum = adler32(adler32(0, ByVal 0&, 0), ByVal dataPointer, dataLength)
+        zLibAdlerSum = checkSumArbitraryData(dataPointer, dataLength)
         
         If useHeaderBuffer Then
             m_NodeDirectory(nodeIndex).NodeHeaderAdler32 = zLibAdlerSum
@@ -1201,7 +1199,7 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
         ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
         Dim zLibAdlerSum As Long
-        zLibAdlerSum = adler32(adler32(0, ByVal 0&, 0), dstArray(0), UBound(dstArray) + 1)
+        zLibAdlerSum = checkSumArbitraryArray(dstArray)
         
         'If the checksums do not match, fail the function and exit
         If checkSumOriginal <> zLibAdlerSum Then
@@ -1248,7 +1246,6 @@ Public Function init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveIni
             If m_ZLibToken <> 0 Then
                 m_ZLibAvailable = True
             Else
-                Debug.Print "WARNING! zLib was not loaded successfully - check the supplied path."
                 m_ZLibAvailable = False
             End If
             
@@ -1352,6 +1349,48 @@ Public Function getPackageFlag(ByVal flagToCheck As PDP_FLAGS, Optional ByVal ch
             getPackageFlag = getBitFlag(flagToCheck, m_NodeDirectory(nodeIndex).NodeFlags(0))
     
     End Select
+
+End Function
+
+'Since this class makes extensive use of checksums, it's a convenient place to expose an arbitrary checksum function.  This function uses the
+' same checksum strategy as pdPackage itself, so checksums by this function can be used as a failsafe check against internal pdPackage checksums.
+Public Function checkSumArbitraryData(ByVal dataPointer As Long, ByVal dataLength As Long) As Long
+    
+    'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
+    ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
+    checkSumArbitraryData = adler32(adler32(0, ByVal 0&, 0), ByVal dataPointer, dataLength)
+    
+End Function
+
+'Thin wrapper to checkSumArbitraryData, above, as a convenience when working with VB arrays
+Public Function checkSumArbitraryArray(ByRef array0Based() As Byte) As Long
+    checkSumArbitraryArray = checkSumArbitraryData(VarPtr(array0Based(0)), UBound(array0Based) + 1)
+End Function
+
+'Thin wrapper to checkSumArbitraryData, above, as a convenience when working with files
+Public Function checkSumArbitraryFile(ByRef pathToFile As String) As Long
+
+    'Attempt to load the file into a byte array
+    If FileExist(pathToFile) Then
+    
+        Dim fileNum As Integer
+        fileNum = FreeFile
+        
+        Dim fileContents() As Byte
+        
+        Open pathToFile For Binary Access Read As #fileNum
+            If LOF(fileNum) > 0 Then
+                ReDim fileContents(0 To LOF(fileNum) - 1)
+                Get fileNum, 1, fileContents
+            End If
+        Close #fileNum
+        
+        'Make sure the file loaded successfully
+        If UBound(fileContents) >= LBound(fileContents) Then
+            checkSumArbitraryFile = checkSumArbitraryArray(fileContents)
+        End If
+        
+    End If
 
 End Function
 

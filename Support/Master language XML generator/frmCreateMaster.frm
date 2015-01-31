@@ -597,6 +597,10 @@ Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput 
     Dim versionMajor As String, versionMinor As String, versionRevision As String
     Dim versionCheck() As String
     
+    'A pdPackage class provides a convenient way to checksum files
+    Dim cPackage As pdPackager
+    Set cPackage = New pdPackager
+    
     'Load the file into an XML parser
     If xmlInput.loadXMLFile(pathToFile) Then
     
@@ -641,12 +645,13 @@ Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput 
                 End If
                 
                 'We now have a major, minor, and revision value for this language file.  Write them out to file.
-                xmlOutput.writeTagWithAttribute "translation", "id", langID, "", True
+                xmlOutput.writeTagWithAttribute "language", "id", langID, "", True
                 xmlOutput.writeTag "name", langName
                 xmlOutput.writeTag "filename", sourceFilename
                 xmlOutput.writeTag "version", versionMajor & "." & versionMinor
                 xmlOutput.writeTag "revision", versionRevision
-                xmlOutput.closeTag "translation"
+                xmlOutput.writeTag "checksum", cPackage.checkSumArbitraryFile(pathToFile)
+                xmlOutput.closeTag "language"
                 xmlOutput.writeBlankLine
             
             End If
