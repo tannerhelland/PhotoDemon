@@ -97,11 +97,13 @@ Public Enum pdDownloadStatus
     PDS_FAILURE_CALLER_CANCELED_DOWNLOAD = 3
     PDS_FAILURE_BUT_WILL_TRY_AGAIN_SOON = 4
     PDS_FAILURE_NOT_TRYING_AGAIN = 5
+    PDS_FAILURE_CHECKSUM_MISMATCH = 6
 End Enum
 
 #If False Then
     Private Const PDS_NOT_YET_STARTED = 0, PDS_DOWNLOADING = 1, PDS_DOWNLOAD_COMPLETE = 2
     Private Const PDS_FAILURE_CALLER_CANCELED_DOWNLOAD = 3, PDS_FAILURE_BUT_WILL_TRY_AGAIN_SOON = 4, PDS_FAILURE_NOT_TRYING_AGAIN = 5
+    Private Const PDS_FAILURE_CHECKSUM_MISMATCH = 6
 #End If
 
 Private Type pdDownloadEntry
@@ -118,6 +120,8 @@ Private Type pdDownloadEntry
                                     ' to the last status code.
     DataBytes() As Byte
     DataBytesMarkedForRelease As Boolean
+    ExpectedChecksum As Long        'Callers can supply the downloader with an expected checksum.  If present, pdDownload will automatically verify
+                                    ' the download's integrity, and raise an error state if the download completes but the checksum doesn't mathc.
 End Type
 
 
@@ -231,10 +235,28 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
             
             'If we made it all the way here, the download appears to be successful.
             
+            'If the user supplied us with a checksum, verify it now.  We will report an error state if the checksums don't match.
+            Dim checkSumPassed As Boolean
+            checkSumPassed = True
+            
+            If m_DownloadList(itemIndex).ExpectedChecksum <> 0 Then
+                
+                'Use pdPackager to checksum the retrieved data
+                Dim cPackage As pdPackager
+                Set cPackage = New pdPackager
+                
+                Dim chksumVerify As Long
+                chksumVerify = cPackage.checkSumArbitraryArray(m_DownloadList(itemIndex).DataBytes)
+                
+                'Check for equality; the downloader will report failure if the checksums do not match
+                checkSumPassed = (chksumVerify = m_DownloadList(itemIndex).ExpectedChecksum)
+                
+            End If
+            
             'If requested, copy the contents out to file.
             With m_DownloadList(itemIndex)
             
-                If Len(.TargetFileWhenComplete) > 0 Then
+                If (Len(.TargetFileWhenComplete) > 0) And checkSumPassed Then
                 
                     'Kill the destination file if it already exists
                     If FileExist(.TargetFileWhenComplete) Then Kill .TargetFileWhenComplete
@@ -256,9 +278,13 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
             
             End With
             
-            'Raise a success event
+            'Raise a success/failure event, based on the checksum result (if any; note that checkSumPassed defaults to TRUE)
             With m_DownloadList(itemIndex)
-                RaiseEvent FinishedOneItem(True, .Key, .DownloadTypeOptional, .DataBytes, .TargetFileWhenComplete)
+                If checkSumPassed Then
+                    RaiseEvent FinishedOneItem(True, .Key, .DownloadTypeOptional, .DataBytes, .TargetFileWhenComplete)
+                Else
+                    RaiseEvent FinishedOneItem(False, .Key, .DownloadTypeOptional, .DataBytes, .TargetFileWhenComplete)
+                End If
             End With
             
             'Increment the "download finished" counter by 1.
@@ -465,7 +491,7 @@ End Sub
 '    of the file immediately.
 '
 'Returns: success/fail.  Fail is unlikely, unless the caller does something stupid like specifying a duplicate key.
-Public Function addToQueue(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "") As Boolean
+Public Function addToQueue(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
 
     'Make sure this key is unique in the collection
     If doesKeyExist(downloadKey) >= 0 Then
@@ -492,6 +518,7 @@ Public Function addToQueue(ByVal downloadKey As String, ByVal urlString As Strin
         .BytesDownloaded = 0
         .BytesTotal = 0
         .TargetFileWhenComplete = saveToThisFileWhenComplete
+        .ExpectedChecksum = checksumToVerify
     End With
         
     'Update the size of the directory, as necessary
