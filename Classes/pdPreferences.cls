@@ -83,8 +83,9 @@ Private SelectionPath As String
 Private PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
 Private DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps
                                     ' are automatically placed here.
-Private UserThemePath As String     '6.6 nightly builds added support for themes.  PD will extract its default themes into the /App/ Themes folder,
-                                    ' but perhaps at some point in the future, others could add their own custom themes into this /Data/ folder.
+Private UserThemePath As String     '6.6 nightly builds added prelimianary theme support.  These are currently handled in-memory only, but in
+                                    ' the future, themes may be extracted into this (or a matching /Data/) folder.
+Private UpdatesPath As String       '6.6 greatly improved update support.  Update check and temp files are now stored in a dedicated folder.
 
 'XML engine for reading/writing preference values from file
 Private xmlEngine As pdXML
@@ -207,6 +208,11 @@ Public Function getIconPath() As String
     getIconPath = IconPath
 End Function
 
+'Return the current update-specific temp path
+Public Function getUpdatePath() As String
+    getUpdatePath = UpdatesPath
+End Function
+
 'Initialize key program directories
 Public Sub initializePaths()
     
@@ -256,6 +262,9 @@ Public Sub initializePaths()
     
     UserThemePath = DataPath & "Themes\"
     If Not DirectoryExist(UserThemePath) Then MkDir UserThemePath
+    
+    UpdatesPath = DataPath & "Updates\"
+    If Not DirectoryExist(UpdatesPath) Then MkDir UpdatesPath
     
     'The user preferences file is also located in the \Data subdirectory
     PreferencesPath = DataPath & PROGRAMNAME & "_settings.xml"

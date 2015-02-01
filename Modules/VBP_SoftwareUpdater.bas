@@ -87,7 +87,7 @@ Public Function CheckForSoftwareUpdate(Optional ByVal downloadUpdateManually As 
             
         'We need a temporary file to house the update information; generate it automatically
         Dim tmpFile As String
-        tmpFile = g_UserPreferences.getDataPath & "updates.xml"
+        tmpFile = g_UserPreferences.getUpdatePath & "updates.xml"
         
         'Open the temporary file and begin downloading the update information to it
         Dim fileNum As Integer
@@ -152,7 +152,7 @@ Public Function CheckForSoftwareUpdate(Optional ByVal downloadUpdateManually As 
     
     'Check for the presence of an update file
     Dim updateFile As String
-    updateFile = g_UserPreferences.getDataPath & "updates.xml"
+    updateFile = g_UserPreferences.getUpdatePath & "updates.xml"
     
     If FileExist(updateFile) Then
     
