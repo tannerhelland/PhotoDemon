@@ -50,21 +50,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -1585,6 +1585,16 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
 
 End Sub
 
+'External functions can request asynchronous downloads via this function.
+Public Function requestAsynchronousDownload(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "") As Boolean
+    requestAsynchronousDownload = Me.asyncDownloader.addToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, startDownloadImmediately, saveToThisFileWhenComplete)
+End Function
+
+'External functions can use this to initiate any pending downloads (e.g. downloads they may have added via requestAsynchronousDownload, above)
+Public Sub triggerPendingAsynchronousDownloads()
+    Me.asyncDownloader.setAutoDownloadMode True
+End Sub
+
 'Horizontal mousewheel; note that the pdInputMouse class automatically converts Shift+Wheel to horizontal wheel for us
 Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     
@@ -2543,9 +2553,9 @@ Private Sub Form_Load()
         Message "Initializing software updater (this feature can be disabled from the Tools -> Options menu)..."
         
         'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
-        ' When the asynchronous download completes, the downloader will place the completed update file in the /Data subfolder.
+        ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-        Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getDataPath & "updates.xml"
+        Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
         
         'As of v6.6, PhotoDemon now supports independent language file updates, separate from updating PD as a whole.
         ' Check that preference, and if allowed, initiate a separate language file check.  (If no core program update is found, but a language
@@ -2792,6 +2802,13 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Shutdown initiated"
     #End If
     
+    'Cancel any pending downloads
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Checking for (and terminating) any in-progress downloads..."
+    #End If
+    
+    Me.asyncDownloader.Reset
+    
     'Release GDIPlus (if applicable)
     If g_ImageFormats.GDIPlusEnabled Then
         
@@ -2885,7 +2902,7 @@ Private Sub Form_Unload(Cancel As Integer)
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutting down window manager"
     #End If
-    
+        
     'Release this form from the window manager, and write out all window data to file
     g_WindowManager.unregisterForm Me
     g_WindowManager.saveAllWindowLocations
