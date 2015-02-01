@@ -2907,9 +2907,17 @@ Private Sub Form_Unload(Cancel As Integer)
     Next tmpForm
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Final step: writing out new autosave checksum"
+        pdDebug.LogAction "Writing session data to file..."
     #End If
     
+    'Because PD can now auto-update between runs, it's helpful to log the current program version to the preferences file.  The next time PD runs,
+    ' it can compare its version against this value, to infer if an update occurred.
+    g_UserPreferences.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Final step: writing out new autosave checksum"
+    #End If
+        
     'The very last thing we do before terminating is notify the Autosave handler that everything shut down correctly
     Autosave_Handler.purgeOldAutosaveData
     Autosave_Handler.notifyCleanShutdown
