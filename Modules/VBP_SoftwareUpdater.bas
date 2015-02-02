@@ -365,7 +365,7 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                     
                     'Retrieve the language's revision as well.  This is explicitly retrieved as a LONG, because we need to perform
                     ' a >= check between it and the current language file revision.
-                    langRevision = retrieveVersionRevisionAsLong(xmlEngine.getUniqueTag_String("revision", , , "language", "updateID", langList(i)))
+                    langRevision = xmlEngine.getUniqueTag_String("revision", , , "language", "updateID", langList(i))
                     
                     'If the version matches this .exe version, this language file is a candidate for updating.
                     If StrComp(currentPDVersion, langVersion, vbBinaryCompare) = 0 Then
@@ -394,7 +394,7 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                                 'The current file is up-to-date.
                                 Else
                                 
-                                    Debug.Print "Language ID " & langID & " is already up-to-date."
+                                    Debug.Print "Language ID " & langID & " is already up-to-date (updated: "; langVersion & "." & langRevision & ", current: "; retrieveVersionMajorMinorAsString(tmpLanguage.langVersion) & "." & retrieveVersionRevisionAsLong(tmpLanguage.langVersion) & ")"
                                 
                                 End If
                             
@@ -420,8 +420,48 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
             ' be greater than 0 if updates are required.
             If numOfUpdates > 0 Then
                 
+                Dim reportedChecksum As Long
+                Dim langFilename As String, langLocation As String, langURL As String
+                                
                 'TODO!
                 Debug.Print numOfUpdates & " updated language files will now be downloaded."
+                
+                'Loop through the update array; for any language marked for update, request an asnychronous download of their
+                ' matching file from the main form.
+                For i = 0 To UBound(updateFlags)
+                
+                    If updateFlags(i) Then
+                    
+                        'Retrieve the matching checksum for this language; we'll be passing this to the downloader, so it can verify
+                        ' the downloaded file prior to us unpacking it.
+                        reportedChecksum = CLng(xmlEngine.getUniqueTag_String("checksum", "0", , "language", "updateID", langList(i)))
+                        
+                        'Retrieve the filename and location folder for this language; we need these to construct a URL
+                        langFilename = xmlEngine.getUniqueTag_String("filename", , , "language", "updateID", langList(i))
+                        langLocation = xmlEngine.getUniqueTag_String("location", , , "language", "updateID", langList(i))
+                                                
+                        'Construct a matching URL
+                        langURL = "http://photodemon.org/downloads/languages/"
+                        If StrComp(UCase(langLocation), "STABLE", vbBinaryCompare) = 0 Then
+                            langURL = langURL & "stable/"
+                        Else
+                            langURL = langURL & "nightly/"
+                        End If
+                        langURL = langURL & langFilename & ".pdz"
+                        
+                        'Request a download on the main form.  Note that we explicitly set the download type to the pdLanguage file
+                        ' header constant; this lets us easily sort the incoming downloads as they arrive.  We also use the reported
+                        ' checksum as the file's unique ID value.  Post-download and extraction, we use this value to ensure that
+                        ' the extracted data matches what we originally uploaded.
+                        If FormMain.requestAsynchronousDownload(reportedChecksum, langURL, PD_LANG_IDENTIFIER, vbAsyncReadForceUpdate, True, g_UserPreferences.getUpdatePath & langFilename & ".tmp") Then
+                            Debug.Print "Download successfully initiated for language update at " & langURL
+                        Else
+                            Debug.Print "WARNING! FormMain.requestAsynchronousDownload refused to initiate download of " & langID & " language file update."
+                        End If
+                                            
+                    End If
+                
+                Next i
                 
             Else
                 Debug.Print "All language files are up-to-date.  No new files will be downloaded."
@@ -436,3 +476,89 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
     End If
     
 End Sub
+
+'After a language file has successfully downloaded, FormMain calls this function to actually apply the patch.
+Public Function patchLanguageFile(ByVal entryKey As String, downloadedData() As Byte, ByVal savedToThisFile As String) As Boolean
+    
+    On Error GoTo LanguagePatchingFailure
+    
+    'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackager object.
+    Dim cPackage As pdPackager
+    Set cPackage = New pdPackager
+    If g_ZLibEnabled Then cPackage.init_ZLib g_PluginPath & "zlibwapi.dll"
+    
+    If cPackage.readPackageFromFile(savedToThisFile) Then
+    
+        'The package appears to be intact.  Attempt to retrieve the embedded language file.
+        Dim rawNewFile() As Byte, newFilenameArray() As Byte, newFilename As String, newChecksum As Long
+        Dim rawOldFile() As Byte
+        If cPackage.getNodeDataByIndex(0, False, rawNewFile) Then
+        
+            'If we made it here, it means the internal pdPackage checksum passed successfully, meaning the post-compression file checksum
+            ' matches the original checksum calculated at creation time.  Because we are very cautious, we now apply a second checksum verification,
+            ' using the checksum value embedded within the original langupdate.xml file.  (For convenience, that checksum was passed to us as
+            ' the download key.)
+            newChecksum = CLng(entryKey)
+            
+            If newChecksum = cPackage.checkSumArbitraryArray(rawNewFile) Then
+                
+                'Checksums match!  We now want to overwrite the old language file with the new one.
+                
+                'Retrieve the filename of the updated language file
+                If cPackage.getNodeDataByIndex(0, True, newFilenameArray) Then
+                    
+                    newFilename = Space$((UBound(newFilenameArray) + 1) \ 2)
+                    CopyMemory ByVal StrPtr(newFilename), ByVal VarPtr(newFilenameArray(0)), UBound(newFilenameArray) + 1
+                    
+                    'See if that file already exists
+                    newFilename = g_UserPreferences.getLanguagePath() & newFilename
+                    If FileExist(newFilename) Then
+                        
+                        'Make a temporary backup of the existing file, then delete it
+                        loadFileToArray newFilename, rawOldFile
+                        Kill newFilename
+                        
+                    End If
+                    
+                    'Write out the new file
+                    If writeArrayToFile(rawNewFile, newFilename) Then
+                    
+                        'Perform a final failsafe checksum verification of the extracted file
+                        If (newChecksum = cPackage.checkSumArbitraryFile(newFilename)) Then
+                            patchLanguageFile = True
+                        Else
+                            'Failsafe checksum verification didn't pass.  Restore the old file.
+                            Debug.Print "WARNING!  Downloaded language file was written, but final checksum failsafe failed.  Restoring old language file..."
+                            writeArrayToFile rawOldFile, newFilename
+                            patchLanguageFile = False
+                        End If
+                        
+                    End If
+                
+                Else
+                    Debug.Print "WARNING! pdPackage refused to return filename."
+                    patchLanguageFile = False
+                End If
+                
+            Else
+                Debug.Print "WARNING! Secondary checksum failsafe failed (" & newChecksum & " != " & cPackage.checkSumArbitraryArray(rawNewFile) & ").  Language update abandoned."
+                patchLanguageFile = False
+            End If
+        
+        End If
+    
+    Else
+        Debug.Print "WARNING! Language file downloaded, but pdPackager rejected it.  Language update abandoned."
+        patchLanguageFile = False
+    End If
+    
+    'Regardless of outcome, we kill the update file when we're done with it.
+    If FileExist(savedToThisFile) Then Kill savedToThisFile
+    
+    Exit Function
+    
+LanguagePatchingFailure:
+
+    patchLanguageFile = False
+    
+End Function

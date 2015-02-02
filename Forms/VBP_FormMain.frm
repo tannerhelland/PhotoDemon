@@ -1547,9 +1547,19 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 ' it evaluates the accelerator like normal.
 Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Double
 
+'If one or more language file updates is downloaded and patched, this will be set to TRUE by the downloader.  When all updates finish,
+' this value tells us to update the active language object if the currently in-use language was one of the ones we updated.
+Private m_LanguagesUpdatedSuccessfully As Boolean
+
 'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.
 Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
 
+    'When all language updates have been processed and patched, check to see if a translation is active.  If it is, update the translation
+    ' engine against the new language file.
+    If m_LanguagesUpdatedSuccessfully Then
+        'TODO
+    End If
+    
     'Core program updates are handled specially, so their resources can be freed without question.
     asyncDownloader.freeResourcesForItem "PROGRAM_UPDATE_CHECK"
     'asyncDownloader.Reset
@@ -1578,16 +1588,31 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         Dim updateXML As String
         updateXML = StrConv(downloadedData, vbUnicode)
         
-        'Offload the reset of the check to a separate function.
+        'Offload the reset of the check to a separate function.  It will initiate subsequent downloads as necessary.
         Software_Updater.processLanguageUpdateFile updateXML
-            
+    
+    'If LANGUAGE_UPDATE_CHECK (above) finds out of date language files, it will trigger their download.  When such a download arrives, we can patch
+    ' it through immediately.
+    ElseIf (OptionalType = PD_LANG_IDENTIFIER) Then
+        
+        'Make sure the downloader thought the download was successful...
+        If downloadSuccessful Then
+            If Software_Updater.patchLanguageFile(entryKey, downloadedData, savedToThisFile) Then
+                Debug.Print "Patching of " & getFilenameWithoutExtension(savedToThisFile) & ".xml completed successfully."
+            Else
+                Debug.Print "Patching of " & getFilename(savedToThisFile) & " was unsuccessful."
+            End If
+        Else
+            Debug.Print "WARNING! A language file download was interrupted.  Further patches will be postponed until next session."
+        End If
+        
     End If
 
 End Sub
 
 'External functions can request asynchronous downloads via this function.
-Public Function requestAsynchronousDownload(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "") As Boolean
-    requestAsynchronousDownload = Me.asyncDownloader.addToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, startDownloadImmediately, saveToThisFileWhenComplete)
+Public Function requestAsynchronousDownload(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
+    requestAsynchronousDownload = Me.asyncDownloader.addToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, startDownloadImmediately, saveToThisFileWhenComplete, checksumToVerify)
 End Function
 
 'External functions can use this to initiate any pending downloads (e.g. downloads they may have added via requestAsynchronousDownload, above)

@@ -567,7 +567,7 @@ Private Sub cmdLangVersions_Click()
         compressedFilename = chkFileNoExtension & ".pdz"
         cPackager.prepareNewPackage 1, PD_LANG_IDENTIFIER
         cPackager.autoAddNodeFromFile srcFolder & chkFile
-        cPackager.writePackageToFile exportFolderDev & compressedFilename
+        cPackager.writePackageToFile exportFolderStable & compressedFilename
         
         'Retrieve the next file and repeat
         chkFile = Dir
@@ -657,6 +657,11 @@ Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput 
                 xmlOutput.writeTag "version", versionMajor & "." & versionMinor
                 xmlOutput.writeTag "revision", versionRevision
                 xmlOutput.writeTag "checksum", cPackage.checkSumArbitraryFile(pathToFile)
+                If isSourceStableVersion Then
+                    xmlOutput.writeTag "location", "stable"
+                Else
+                    xmlOutput.writeTag "location", "dev"
+                End If
                 xmlOutput.closeTag "language"
                 xmlOutput.writeBlankLine
             
