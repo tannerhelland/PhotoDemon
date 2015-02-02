@@ -486,7 +486,30 @@ Public Sub CheckAvailableLanguages()
     availableLanguages(numOfLanguages).langName = "English (US) - Default"
     availableLanguages(numOfLanguages).langType = "Default"
     availableLanguages(numOfLanguages).langStatus = "Complete"
-    availableLanguages(numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
+    
+    'If the MASTER.XML language file is available, retrieve versioning information directly from it.
+    Dim masterEnFile As String
+    masterEnFile = g_UserPreferences.getLanguagePath() & "Master\MASTER.xml"
+    
+    If FileExist(masterEnFile) Then
+        
+        'Retrieve the version directly from file
+        Dim tmpXML As pdXML
+        Set tmpXML = New pdXML
+        If tmpXML.loadXMLFile(masterEnFile) Then
+            
+            Dim curMasterVersion As String
+            curMasterVersion = tmpXML.getUniqueTag_String("langversion")
+            availableLanguages(numOfLanguages).langVersion = curMasterVersion
+            
+        Else
+            availableLanguages(numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
+        End If
+        
+    Else
+        availableLanguages(numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
+    End If
+    
     availableLanguages(numOfLanguages).isOfficial = True
     numOfLanguages = numOfLanguages + 1
     

@@ -421,8 +421,7 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                 
                 Dim reportedChecksum As Long
                 Dim langFilename As String, langLocation As String, langURL As String
-                                
-                'TODO!
+                
                 Debug.Print numOfUpdates & " updated language files will now be downloaded."
                 
                 'Loop through the update array; for any language marked for update, request an asnychronous download of their
@@ -438,7 +437,7 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                         'Retrieve the filename and location folder for this language; we need these to construct a URL
                         langFilename = xmlEngine.getUniqueTag_String("filename", , , "language", "updateID", langList(i))
                         langLocation = xmlEngine.getUniqueTag_String("location", , , "language", "updateID", langList(i))
-                                                
+                        
                         'Construct a matching URL
                         langURL = "http://photodemon.org/downloads/languages/"
                         If StrComp(UCase(langLocation), "STABLE", vbBinaryCompare) = 0 Then
@@ -509,8 +508,14 @@ Public Function patchLanguageFile(ByVal entryKey As String, downloadedData() As 
                     newFilename = Space$((UBound(newFilenameArray) + 1) \ 2)
                     CopyMemory ByVal StrPtr(newFilename), ByVal VarPtr(newFilenameArray(0)), UBound(newFilenameArray) + 1
                     
-                    'See if that file already exists
-                    newFilename = g_UserPreferences.getLanguagePath() & newFilename
+                    'See if that file already exists.  Note that a modified path is required for the MASTER language file, which sits
+                    ' in a dedicated subfolder.
+                    If StrComp(UCase(newFilename), "MASTER.XML", vbBinaryCompare) = 0 Then
+                        newFilename = g_UserPreferences.getLanguagePath() & "MASTER\" & newFilename
+                    Else
+                        newFilename = g_UserPreferences.getLanguagePath() & newFilename
+                    End If
+                    
                     If FileExist(newFilename) Then
                         
                         'Make a temporary backup of the existing file, then delete it
