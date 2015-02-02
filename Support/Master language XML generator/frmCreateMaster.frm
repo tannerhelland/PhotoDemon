@@ -548,6 +548,23 @@ Private Sub cmdLangVersions_Click()
         
     Loop
     
+    'The MASTER language file is handled separately, on account of being held in a separate location.
+        numOfLangFiles = numOfLangFiles + 1
+        lblUpdates.Caption = "Processing language file #" & numOfLangFiles
+        
+        'Attempt to add this file to the version list
+        chkFile = "Master\MASTER.xml"
+        chkFileNoExtension = "MASTER"
+        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, False
+        
+        'This program is also responsible for compressing each language file and copying it to a temp folder,
+        ' so the nightly build batch script can find it.
+        compressedFilename = chkFileNoExtension & ".pdz"
+        cPackager.prepareNewPackage 1, PD_LANG_IDENTIFIER
+        cPackager.autoAddNodeFromFile srcFolder & chkFile
+        cPackager.writePackageToFile exportFolderDev & compressedFilename
+        
+    
     'We are now going to repeat the above process, but for a separate folder of stable version language files.
     srcFolder = "C:\PhotoDemon v4\PhotoDemon\Support\Master language XML generator\stable build language files\"
     chkFile = Dir(srcFolder & "*.xml", vbNormal)
@@ -573,6 +590,23 @@ Private Sub cmdLangVersions_Click()
         chkFile = Dir
         
     Loop
+    
+    'Once again, the MASTER language file is handled separately, on account of being held in a separate location.
+        numOfLangFiles = numOfLangFiles + 1
+        lblUpdates.Caption = "Processing language file #" & numOfLangFiles
+        
+        'Attempt to add this file to the version list
+        chkFile = "Master\MASTER.xml"
+        chkFileNoExtension = "MASTER"
+        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, True
+        
+        'This program is also responsible for compressing each language file and copying it to a temp folder,
+        ' so the nightly build batch script can find it.
+        compressedFilename = chkFileNoExtension & ".pdz"
+        cPackager.prepareNewPackage 1, PD_LANG_IDENTIFIER
+        cPackager.autoAddNodeFromFile srcFolder & chkFile
+        cPackager.writePackageToFile exportFolderStable & compressedFilename
+        
     
     'The master language version file is now complete.  Write it.
     Dim dstFile As String
