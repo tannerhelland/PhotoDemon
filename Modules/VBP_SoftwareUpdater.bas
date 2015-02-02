@@ -1,11 +1,10 @@
 Attribute VB_Name = "Software_Updater"
 '***************************************************************************
-'Automatic Software Updater (note: at present this doesn't techincally DO the updating (e.g. overwriting program files), it just CHECKS for updates)
+'Automatic Software Updater (note: at present this doesn't technically DO the updating (e.g. overwriting program files), it just CHECKS for updates)
 'Copyright 2012-2015 by Tanner Helland
 'Created: 19/August/12
-'Last updated: 14/August/13
-'Last update: rewrote all update code against XML instead of INI.  This was the last INI fix needed, so now PD is 100% free of INI files.  Yay!
-'              Also, the software update function now returns custom type UpdateCheck, which is more descriptive than arbitrary ints.
+'Last updated: 02/February/15
+'Last update: finished work on hot-patching language files at runtime.
 '
 'Interface for checking if a new version of PhotoDemon is available for download.  This code is a stripped-down
 ' version of PhotoDemon's "download image from Internet" code.

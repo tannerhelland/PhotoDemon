@@ -1553,11 +1553,17 @@ Private m_LanguagesUpdatedSuccessfully As Boolean
 
 'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.
 Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
-
+    
     'When all language updates have been processed and patched, check to see if a translation is active.  If it is, update the translation
     ' engine against the new language file.
     If m_LanguagesUpdatedSuccessfully Then
-        'TODO
+        
+        m_LanguagesUpdatedSuccessfully = False
+        
+        'One or more language files were patched.  Notify the language engine that it potentially needs updating.  (The updating itself will
+        ' be fired on the next processor call.)
+        If g_Language.translationActive Then g_Language.notifyHotPatchingComplete
+        
     End If
     
     'Core program updates are handled specially, so their resources can be freed without question.
@@ -1598,7 +1604,12 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         'Make sure the downloader thought the download was successful...
         If downloadSuccessful Then
             If Software_Updater.patchLanguageFile(entryKey, downloadedData, savedToThisFile) Then
-                Debug.Print "Patching of " & getFilenameWithoutExtension(savedToThisFile) & ".xml completed successfully."
+                
+                'Note that one or more language files has been patched.  If this value is true and all updates have completed, we'll hot-patch
+                ' the language engine on the next PD Processor call.
+                m_LanguagesUpdatedSuccessfully = True
+                Debug.Print "Successfully patched " & getFilenameWithoutExtension(savedToThisFile) & ".xml."
+                
             Else
                 Debug.Print "Patching of " & getFilename(savedToThisFile) & " was unsuccessful."
             End If
