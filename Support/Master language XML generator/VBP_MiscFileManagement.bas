@@ -382,7 +382,7 @@ Public Function GetExtension(sFile As String) As String
 End Function
 
 'Take a string and replace any invalid characters with "_"
-Public Sub makeValidWindowsFilename(ByRef FileName As String)
+Public Sub makeValidWindowsFilename(ByRef Filename As String)
 
     Dim strInvalidChars As String
     strInvalidChars = "\/*?""<>|:"
@@ -391,9 +391,9 @@ Public Sub makeValidWindowsFilename(ByRef FileName As String)
     
     Dim x As Long
     For x = 1 To Len(strInvalidChars)
-        invLoc = InStr(FileName, Mid$(strInvalidChars, x, 1))
+        invLoc = InStr(Filename, Mid$(strInvalidChars, x, 1))
         If invLoc <> 0 Then
-            FileName = Left(FileName, invLoc - 1) & "_" & Right(FileName, Len(FileName) - invLoc)
+            Filename = Left(Filename, invLoc - 1) & "_" & Right(Filename, Len(Filename) - invLoc)
         End If
     Next x
 
@@ -498,3 +498,53 @@ Private Function Win32ToVbTime(ft As Currency) As Date
     End If
     
 End Function
+
+'Given an arbitrary version string (e.g. "6.0.04 stability patch" or 6.0.04" or just plain "6.0"), return a canonical major/minor string, e.g. "6.0"
+Public Function retrieveVersionMajorMinorAsString(ByVal srcVersionString As String) As String
+
+    'To avoid locale issues, replace any "," with "."
+    If InStr(1, srcVersionString, ",") Then srcVersionString = Replace$(srcVersionString, ",", ".")
+    
+    'For this function to work, the major/minor data has to exist somewhere in the string.  Look for at least one "." occurrence.
+    Dim tmpArray() As String
+    tmpArray = Split(srcVersionString, ".")
+    
+    If UBound(tmpArray) >= 1 Then
+        retrieveVersionMajorMinorAsString = Trim$(tmpArray(0)) & "." & Trim$(tmpArray(1))
+    Else
+        retrieveVersionMajorMinorAsString = ""
+    End If
+
+End Function
+
+'Given an arbitrary version string (e.g. "6.0.04 stability patch" or 6.0.04" or just plain "6.0"), return the revision number
+' as a string, e.g. 4 for "6.0.04".  If no revision is found, return 0.
+Public Function retrieveVersionRevisionAsLong(ByVal srcVersionString As String) As Long
+    
+    'An improperly formatted version number can cause failure; if this happens, we'll assume a revision of 0, which should
+    ' force a re-download of the problematic file.
+    On Error GoTo cantFormatRevisionAsLong
+    
+    'To avoid locale issues, replace any "," with "."
+    If InStr(1, srcVersionString, ",") Then srcVersionString = Replace$(srcVersionString, ",", ".")
+    
+    'For this function to work, the revision has to exist somewhere in the string.  Look for at least two "." occurrences.
+    Dim tmpArray() As String
+    tmpArray = Split(srcVersionString, ".")
+    
+    If UBound(tmpArray) >= 2 Then
+        retrieveVersionRevisionAsLong = CLng(Trim$(tmpArray(2)))
+    
+    'If one or less "." chars are found, assume a revision of 0
+    Else
+        retrieveVersionRevisionAsLong = 0
+    End If
+    
+    Exit Function
+    
+cantFormatRevisionAsLong:
+
+    retrieveVersionRevisionAsLong = 0
+
+End Function
+

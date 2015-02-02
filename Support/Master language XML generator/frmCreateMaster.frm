@@ -698,7 +698,28 @@ Private Sub replaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMast
     
     Dim findText As String, replaceText As String
     findText = openTagName & getTextBetweenTags(sourceTextMaster, origTagName) & closeTagName
-    replaceText = openTagName & getTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
+    
+    'A special check is applied to the "langversion" tag.  Whenever this function is used, a merge is taking place; as such, we want to
+    ' auto-increment the language's version number to trigger an update on client machines.
+    If StrComp(origTagName, "langversion", vbBinaryCompare) = 0 Then
+    
+        'Retrieve the current language version
+        Dim curVersion As String
+        curVersion = getTextBetweenTags(sourceTextTranslation, origTagName)
+        
+        'Parse the current version into two discrete chunks: the major/minor value, and the revision value
+        Dim curMajorMinor As String, curRevision As Long
+        curMajorMinor = retrieveVersionMajorMinorAsString(curVersion)
+        curRevision = retrieveVersionRevisionAsLong(curVersion)
+        
+        'Increment the revision value by 1, then assemble the modified replacement text
+        curRevision = curRevision + 1
+        replaceText = openTagName & curMajorMinor & "." & curRevision & closeTagName
+    
+    Else
+        replaceText = openTagName & getTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
+    End If
+    
     destinationText = Replace(destinationText, findText, replaceText)
 
 End Sub
