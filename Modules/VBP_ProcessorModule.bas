@@ -88,15 +88,27 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'Mark the software processor as busy
     Processing = True
         
-    'Disable the main form to prevent the user from clicking additional menus or tools while this action is processing
-    FormMain.Enabled = False
-    
     'If we are applying an action to the image (e.g. not just showing a dialog), and the action is likely to take awhile
     ' (e.g. it is processing an image, and not just modifying a layer header) display a busy cursor.
     If (Not showDialog) Then
         If (createUndo = UNDO_EVERYTHING) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_LAYER) Then Screen.MousePointer = vbHourglass
     End If
     
+    'This central processor is a convenient place to check for any hot-patches that may have occurred in the background.
+    ' Trigger a few refresh functions; each of these has already determined if any internals need to be updated to match
+    ' various update processes, so there is no performance penalty if hot-patches are not required.
+    '
+    '(Note that language files must be patched PRIOR to the main form being disabled; if we don't do this, interface items won't update correctly
+    If (MacroStatus <> MacroBATCH) Then
+        
+        'Hot-patch the currently active language
+        If Not (g_Language Is Nothing) Then g_Language.refreshAsRequired
+    
+    End If
+    
+    'Disable the main form to prevent the user from clicking additional menus or tools while this action is processing
+    FormMain.Enabled = False
+        
     #If DEBUGMODE = 1 Then
         If showDialog Then
             pdDebug.LogAction "Show """ & processID & """ dialog", PDM_PROCESSOR
@@ -116,7 +128,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         recordAction = LastProcess.Recorded
     End If
     
-    'If a selection sin active, certain functions (primarily transformations) will remove it before proceeding. This is typically
+    'If a selection is active, certain functions (primarily transformations) will remove it before proceeding. This is typically
     ' done by functions that resize or reorient the image in a way that makes the selection's shape irrelevant. Because PD requires
     ' the selection mask and image size to remain in sync, errors may occur if selections persist after a size change - and this is
     ' particularly relevant for the Undo/Redo engine, because it will crash if it attempts to load an Undo file of an image, and the
@@ -263,6 +275,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         End If
         
     End If
+    
     
     'Finally, create a parameter parser to handle the parameter string.  This class will parse out individual parameters
     ' as specific data types when it comes time to use them.

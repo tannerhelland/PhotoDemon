@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Central Language and Translation Handler
 'Copyright 2012-2015 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
-'Last updated: 03/September/13
-'Last update: replace all custom XML code with the new pdXML class
+'Last updated: 02/February/15
+'Last update: integrate hot-patching language support
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
 ' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
@@ -88,6 +88,24 @@ Private m_isReady As Boolean
 Private m_hasDotDotDot As Boolean
 Private m_hasTrailingColon As Boolean
 
+'If the active language file is updated at run-time, this value will be set to TRUE.  PD's internal processor calls the refreshAsRequired() function
+' whenever a user-initiated action triggers, and refreshAsRequired() uses this value to know whether we need to re-translate the main form.
+Private m_ActiveLanguageWasPatched As Boolean
+
+Public Sub refreshAsRequired()
+    
+    If m_ActiveLanguageWasPatched Then
+        
+        Debug.Print "Patching active language file now..."
+        
+        m_ActiveLanguageWasPatched = False
+        undoTranslations FormMain
+        ApplyLanguage False
+        
+    End If
+    
+End Sub
+
 'External functions can request the a copy of all found languages; they must provide an array of type pdLanguageFile, which this
 ' function will then fill with the data assembled from CheckAvailableLanguages().
 Friend Sub copyListOfLanguages(ByRef dstListOfLanguages() As pdLanguageFile)
@@ -157,6 +175,46 @@ Public Sub activateNewLanguage(ByVal newLangIndex As Long, Optional ByVal useDoE
     curLanguage = newLangIndex
     writeLanguagePreferencesToFile
     ApplyLanguage useDoEvents
+
+End Sub
+
+'If the language file updater has updated one or more language files, it will call this function.  Any subsequent language update functions (such as loading a
+' new XML file) happen here.
+Public Sub notifyHotPatchingComplete()
+
+    'Figure out if the current language is affected by the patch
+    If curLanguage <> defaultLanguage Then
+    
+        'Retrieve the current language version
+        Dim curLanguageVersion As String
+        curLanguageVersion = xmlEngine.getUniqueTag_String("langversion")
+        
+        'Retrieve the version of the XML file on disk; if an update has occurred, we can detect it by comparing version numbers.
+        Dim tmpXML As pdXML
+        Set tmpXML = New pdXML
+        If tmpXML.loadXMLFile(availableLanguages(curLanguage).fileName) Then
+            
+            'Retrieve the version number from the potentially updated file
+            Dim newLanguageVersion As String
+            newLanguageVersion = tmpXML.getUniqueTag_String("langversion")
+            
+            If StrComp(curLanguageVersion, newLanguageVersion, vbBinaryCompare) <> 0 Then
+            
+                'The version numbers do not match.  Set a module-level refresh flag; PD's internal processor will a refresh function the next time a
+                ' user-initiated action completes, and that function will check this module-level value to see if a refresh is required.
+                m_ActiveLanguageWasPatched = True
+            
+            Else
+                m_ActiveLanguageWasPatched = False
+            End If
+            
+        Else
+            m_ActiveLanguageWasPatched = False
+        End If
+    
+    Else
+        m_ActiveLanguageWasPatched = False
+    End If
 
 End Sub
 
