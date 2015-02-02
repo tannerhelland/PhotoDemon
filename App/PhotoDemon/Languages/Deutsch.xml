@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch</langname>
-<langversion>6.5.3</langversion>
+<langversion>6.5.9</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -386,6 +386,16 @@ Wenn Sie komprimierte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe>Auf Update
 </phrase>
 
 <phrase>
+<original>Ctrl</original>
+<translation>Strg</translation>
+</phrase>
+
+<phrase>
+<original>Shift</original>
+<translation>Umsch</translation>
+</phrase>
+
+<phrase>
 <original>Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up</original>
 <translation>Eine frühere PhotoDemon-Sitzung wurde unerwartet beendet.  Die Plugins werden neu geladen</translation>
 </phrase>
@@ -405,7 +415,7 @@ Wenn Sie komprimierte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe>Auf Update
 <translation>Bild wurde dupliziert.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 68 phrases. 19 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 72 phrases. 21 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -2789,6 +2799,11 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwende
 </phrase>
 
 <phrase>
+<original>Cross-screen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Lens flare</original>
 <translation>Blendenflecken</translation>
 </phrase>
@@ -3597,6 +3612,18 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>Language changed successfully!
+
+Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Language changed successfully</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>No metadata available.</original>
 <translation>Keine Metadaten vorhanden.</translation>
 </phrase>
@@ -3776,7 +3803,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 536 phrases. 156 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 540 phrases. 157 were duplicates of existing phrases, so only 383 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -4297,138 +4324,28 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
-<original>count unique colors in incoming images (to determine optimal color depth)</original>
-<translation>einzelne Farben in eingehenden Bilder zählen (um die optimale Farbtiefe zu bestimmen)</translation>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Haftungsausschluss wird zur Laufzeit gefüllt)</translation>
 </phrase>
 
 <phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
+<original>update language files independently</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>Richtungsinformationen in Bilddateien beachten</translation>
+<original>automatically check for updates</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>orientation</original>
-<translation>Richtung</translation>
+<original>update plugins independently</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>color depth</original>
-<translation>Farbtiefe</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>Hochkontrastbilder (HDR)</translation>
-</phrase>
-
-<phrase>
-<original>zoom</original>
-<translation>Zoom</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>wenn ein Bild zum ersten Mal geladen wird, Zoom einstellen auf</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>Farbmanagement</translation>
-</phrase>
-
-<phrase>
-<original>when calculating color values</original>
-<translation>Beim Berechnen von Farbwerten</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>Bei der Verschönerung der Benutzeroberfläche</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>Benutzeroberfläche</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>Keine Komprimierung (sehr schnell)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>Stärkste Komprimierung (sehr langsam)</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>Daten für 'zurücknehmen/wiederholen' folgendermaßen komprimieren</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>zurücknehmen/wiederholen</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>Vorschaubilder</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>Beim Erzeugen von Vorschaubildern für Bilder und Ebenen</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>Bei der Darstellung der Bild-Leinwand</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>Ansichtsfenster</translation>
-</phrase>
-
-<phrase>
-<original>Click to open a browse-for-folder dialog</original>
-<translation> Für den Dialog "Ordner auswählen" anklicken</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>Bericht über die Hardware-Beschleunigung</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>Speicherauslastung wird hier angezeigt</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>Speicher-Diagnose</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>Speicherort für temporäre Dateien</translation>
-</phrase>
-
-<phrase>
-<original>if core plugins cannot be located, offer to download them</original>
-<translation>wenn Core-Plugins nicht gefunden werden, ihren Download anbieten</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for software updates every 10 days</original>
-<translation>automatisch alle 10 Tagen auf Software-Updates überprüfen</translation>
+<original>allow updates from these tracks</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4437,13 +4354,18 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Haftungsausschluss wird zur Laufzeit gefüllt)</translation>
+<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
+<translation>Bildfenster sind ja eher groß - also können Sie sich den vollständigen Speicherort jedes Bilds in der Titelleiste anzeigen lassen.</translation>
 </phrase>
 
 <phrase>
-<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
-<translation>Bildfenster sind ja eher groß - also können Sie sich den vollständigen Speicherort jedes Bilds in der Titelleiste anzeigen lassen.</translation>
+<original>use high-resolution input tracking</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4509,6 +4431,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <phrase>
 <original>when rendering images to the screen</original>
 <translation>beim Rendern von Bildern auf dem Bildschirm</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>Farbmanagement</translation>
 </phrase>
 
 <phrase>
@@ -4662,6 +4589,126 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
+<original>count unique colors in incoming images (to determine optimal color depth)</original>
+<translation>einzelne Farben in eingehenden Bilder zählen (um die optimale Farbtiefe zu bestimmen)</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>Richtungsinformationen in Bilddateien beachten</translation>
+</phrase>
+
+<phrase>
+<original>orientation</original>
+<translation>Richtung</translation>
+</phrase>
+
+<phrase>
+<original>color depth</original>
+<translation>Farbtiefe</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>Hochkontrastbilder (HDR)</translation>
+</phrase>
+
+<phrase>
+<original>zoom</original>
+<translation>Zoom</translation>
+</phrase>
+
+<phrase>
+<original>when an image is first loaded, set its viewport zoom to</original>
+<translation>wenn ein Bild zum ersten Mal geladen wird, Zoom einstellen auf</translation>
+</phrase>
+
+<phrase>
+<original>when calculating color values</original>
+<translation>Beim Berechnen von Farbwerten</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>Bei der Verschönerung der Benutzeroberfläche</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>Benutzeroberfläche</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>Keine Komprimierung (sehr schnell)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>Stärkste Komprimierung (sehr langsam)</translation>
+</phrase>
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>Daten für 'zurücknehmen/wiederholen' folgendermaßen komprimieren</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>zurücknehmen/wiederholen</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>Vorschaubilder</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>Beim Erzeugen von Vorschaubildern für Bilder und Ebenen</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>Bei der Darstellung der Bild-Leinwand</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>Ansichtsfenster</translation>
+</phrase>
+
+<phrase>
+<original>Click to open a browse-for-folder dialog</original>
+<translation> Für den Dialog "Ordner auswählen" anklicken</translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>Bericht über die Hardware-Beschleunigung</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>Speicherauslastung wird hier angezeigt</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>Speicher-Diagnose</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>Speicherort für temporäre Dateien</translation>
+</phrase>
+
+<phrase>
 <original>(none)</original>
 <translation>(keine)</translation>
 </phrase>
@@ -4748,6 +4795,11 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>descriptive - full location, including folder(s)</original>
 <translation>ausführlich - voller Standort mit Ordnerpfad</translation>
+</phrase>
+
+<phrase>
+<original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5116,21 +5168,58 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>PhotoDemon relies on several free, open-source plugins for full functionality. If any of these plugins are missing (for example, if you downloaded PhotoDemon from a 3rd-party site), this option will offer to download the missing plugins for you.</original>
-<translation>PhotoDemon benötigt mehrere kostenlose, Open-Source-Plugins zur vollen Funktionalität. Wenn eins dieser Plugins fehlt (wenn Sie PhotoDemon zum Beispiel nicht von der Originalseite heruntergeladen haben), können Sie durch die Wahl diese Option die fehlenden Plugins noch herunterladen.</translation>
+<original>each session</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins if they aren't present in the \App\PhotoDemon\Plugins subdirectory.
+<original>weekly</original>
+<translation></translation>
+</phrase>
 
-The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single "updates.txt" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server.
+<phrase>
+<original>monthly</original>
+<translation></translation>
+</phrase>
 
-If you choose to disable these features, you can always visit photodemon.org to manually download the most recent version of the program.</original>
-<translation>Zwei Funktionen von PhotoDemon, die allerdings nicht unbedingt benötigt werden, brauchen einen Internetzugang: die Prüfung auf Software-Updates und die Möglichkeit, fehlende Kern-Plugins nachzuladen, wenn sie nicht im Ordner \App\PhotoDemon\Plugins vorhanden sind.
+<phrase>
+<original>never (not recommended)</original>
+<translation></translation>
+</phrase>
 
-Die Entwickler von PhotoDemon nehmen Datenschutz sehr ernst, sodass keine Informationen - statistische oder andere - durch diese Funktionen hochgeladen werden. Die Prüfung auf Software-Updates beinhaltet das Herunterladen einer einzigen "updates.txt"-Datei mit der Nummer der neuesten Software-Version. Der Download von fehlenden Plugins ist das Herunterladen einer oder mehrerer komprimierter Dateien vom PhotoDemon-Server.
+<phrase>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<translation></translation>
+</phrase>
 
-Wenn Sie diese Funktionen deaktivieren, können Sie trotzdem jederzeit photodemon.org besuchen und manuell die neueste Programmversion laden.</translation>
+<phrase>
+<original>stable releases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>stable and beta releases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>stable, beta, and developer releases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5208,7 +5297,7 @@ Wenn Sie diese Funktionen deaktivieren, können Sie trotzdem jederzeit photodemon
 <translation>WARNUNG: Dieser Ordner ist ungültig (Zugang verboten). Bitte geben Sie einen gültigen Ordner an. Wenn Sie keinen neuen Ordner angeben, verwendet PhotoDemon den standardmäßigen temporären Speicherort des Systems.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 267 phrases. 68 were duplicates of existing phrases, so only 199 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 284 phrases. 71 were duplicates of existing phrases, so only 213 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -6086,18 +6175,8 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 <!-- BEGIN text for vbalHookControl.ctl -->
 
 <phrase>
-<original>Ctrl</original>
-<translation>Strg</translation>
-</phrase>
-
-<phrase>
 <original>Alt</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>Shift</original>
-<translation>Umsch</translation>
 </phrase>
 
 <phrase>
@@ -6120,7 +6199,7 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 <translation>Die Verwaltung der benutzerdefinierten Hotkeys konnte nicht initialisiert werden.</translation>
 </phrase>
 
-<!-- vbalHookControl.ctl contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- vbalHookControl.ctl contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for vbalHookControl.ctl-->
 
@@ -6235,8 +6314,8 @@ Hinweis: Sie können die neueste Version jederzeit manuell von photodemon.org her
 <!-- BEGIN text for VBP_SoftwareUpdater.bas -->
 
 <phrase>
-<original>Update check postponed (a check has been performed in the last 10 days)</original>
-<translation>Update-Prüfung verschoben (wurde in den letzten 10 Tagen schon überprüft)</translation>
+<original>Update check postponed (a check has been performed recently)</original>
+<translation></translation>
 </phrase>
 
 <!-- VBP_SoftwareUpdater.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -8172,7 +8251,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Unscharf maskieren (Schritt %1 von %2)</translation>
 </phrase>
 
-<!-- VBP_FormUnsharpMask.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormUnsharpMask.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormUnsharpMask.frm-->
 
@@ -11419,7 +11498,7 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 <translation>Die Liste der zuletzt geöffneten Bilder scheint nicht in Ordnung zu sein. Ein neue Liste wurde erstellt.</translation>
 </phrase>
 
-<!-- pdRecentFiles.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdRecentFiles.cls contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdRecentFiles.cls-->
 
@@ -11703,12 +11782,6 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 <!-- pdZoom.cls contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdZoom.cls-->
-
-<!-- BEGIN text for bluDownload.ctl -->
-
-<!-- bluDownload.ctl contains 0 phrases. -->
-
-<!-- END text for bluDownload.ctl-->
 
 <!-- BEGIN text for VBP_FormContentAwareResize.frm (FormResizeContentAware) -->
 
@@ -12216,7 +12289,7 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <!-- END text for VBP_ToolbarLayers.frm-->
 
-<!-- BEGIN text for pdPacker.cls -->
+<!-- BEGIN text for pdPackager.cls -->
 
 <phrase>
 <original>File doesn't have valid pdPackage header.  Abandoning load.</original>
@@ -12273,9 +12346,9 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 <translation>Prüfsumme für Knoten # nicht in Ordnung</translation>
 </phrase>
 
-<!-- pdPacker.cls contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
+<!-- pdPackager.cls contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
 
-<!-- END text for pdPacker.cls-->
+<!-- END text for pdPackager.cls-->
 
 <!-- BEGIN text for cBasicBuffer.cls -->
 
@@ -12643,7 +12716,7 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 <translation>HDR-'Karte' des Bildes wird erzeugt</translation>
 </phrase>
 
-<!-- VBP_FormHDR.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormHDR.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormHDR.frm-->
 
@@ -13024,13 +13097,40 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <!-- END text for pdFilterLUT.cls-->
 
+<!-- BEGIN text for VBP_FormCrossScreen.frm (FormCrossScreen) -->
+
+<phrase>
+<original>Cross-screen (stars)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>spokes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying cross-screen filter</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormCrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for VBP_FormCrossScreen.frm-->
+
+<!-- BEGIN text for pdDownload.ctl -->
+
+<!-- pdDownload.ctl contains 0 phrases. -->
+
+<!-- END text for pdDownload.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2277</phrasecount>
+<phrasecount>2297</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3943 phrases. -->
-<!-- 1666 are duplicates, so only 2277 unique phrases have been written to file. -->
-<!-- These 2277 phrases contain approximately 13068 total words. -->
+<!-- As of this build, PhotoDemon contains 3988 phrases. -->
+<!-- 1691 are duplicates, so only 2297 unique phrases have been written to file. -->
+<!-- These 2297 phrases contain approximately 13183 total words. -->
 
 </pdData>
 

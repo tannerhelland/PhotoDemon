@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.5.2</langversion>
+<langversion>6.5.6</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -384,6 +384,16 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 </phrase>
 
 <phrase>
+<original>Ctrl</original>
+<translation>Ctrl</translation>
+</phrase>
+
+<phrase>
+<original>Shift</original>
+<translation>Maiusc</translation>
+</phrase>
+
+<phrase>
 <original>Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up</original>
 <translation>La precedente sessione di PhotoDemon è terminata in modo imprevisto.  Esecuzione della pulizia dei plugin</translation>
 </phrase>
@@ -403,7 +413,7 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 <translation>Duplicazione dell'immagine completa.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 68 phrases. 19 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 72 phrases. 21 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -4315,6 +4325,36 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(clausole elencate in esecuzione)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>opzioni di aggiornamento</translation>
+</phrase>
+
+<phrase>
 <original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
 <translation>Le finestre delle immagini tendono a divenire grandi, quindi sentitevi liberi di visualizzare il percorso completo di ogni immagine nella barra del titolo nella finestra dell'immagine stessa.</translation>
 </phrase>
@@ -4667,26 +4707,6 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <phrase>
 <original>temporary file location</original>
 <translation>locazione del file temporaneo</translation>
-</phrase>
-
-<phrase>
-<original>if core plugins cannot be located, offer to download them</original>
-<translation>se i plugin di base non sono localizzati, proponi di scaricarli</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for software updates every 10 days</original>
-<translation>controlla automaticamente gli aggiornamenti del software ogni 10 giorni</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>opzioni di aggiornamento</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(clausole elencate in esecuzione)</translation>
 </phrase>
 
 <phrase>
@@ -5149,21 +5169,58 @@ Sei sicuro di voler continuare?</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon relies on several free, open-source plugins for full functionality. If any of these plugins are missing (for example, if you downloaded PhotoDemon from a 3rd-party site), this option will offer to download the missing plugins for you.</original>
-<translation>PhotoDemon si basa su diversi plugin open-source per la piena funzionalità. Se alcuni di questi plugin sono mancanti (per esempio, se avete scaricato PhotoDemon da un sito di terze parti), questa opzione offrirà di scaricare i plugin mancanti per voi.</translation>
+<original>each session</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins if they aren't present in the \App\PhotoDemon\Plugins subdirectory.
+<original>weekly</original>
+<translation></translation>
+</phrase>
 
-The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single "updates.txt" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server.
+<phrase>
+<original>monthly</original>
+<translation></translation>
+</phrase>
 
-If you choose to disable these features, you can always visit photodemon.org to manually download the most recent version of the program.</original>
-<translation>PhotoDemon fornisce due funzioni non essenziali che richiedono l'accesso a Internet: il controllo degli aggiornamenti software, e la possibilità di scaricare i plugin indispensabili se non sono presenti nella cartella\app\PhotoDemon\Plugins.
+<phrase>
+<original>never (not recommended)</original>
+<translation></translation>
+</phrase>
 
-Gli sviluppatori di PhotoDemon prendono molto sul serio la privacy, in modo che nessuna informazione - statistica o altro - è stato caricato da queste caratteristiche. La verifica degli aggiornamenti software prevede il download di un singolo file "updates.txt" contenente l'ultima versione del software. Allo stesso modo, il download di plugin mancanti comporta semplicemente il download di uno o più file dei plugin compressi dal server PhotoDemon.
+<phrase>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<translation></translation>
+</phrase>
 
-Se si sceglie di disattivare queste funzioni, potete sempre visitare photodemon.org per scaricare manualmente la versione più recente del programma.</translation>
+<phrase>
+<original>stable releases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>stable and beta releases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>stable, beta, and developer releases</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5241,7 +5298,7 @@ Se si sceglie di disattivare queste funzioni, potete sempre visitare photodemon.
 <translation>ATTENZIONE: questa cartella non è valida (accesso proibito).  Per favore assegna una cartella valida. Se nessuna nuova cartella è assegnata, PhotoDemon utilizzerà la cartella predefinita per i file temporanei.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 271 phrases. 69 were duplicates of existing phrases, so only 202 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 284 phrases. 71 were duplicates of existing phrases, so only 213 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -6118,18 +6175,8 @@ Per migliorare l'esperienza dell'utente, si prega di lasciare che il programma s
 <!-- BEGIN text for vbalHookControl.ctl -->
 
 <phrase>
-<original>Ctrl</original>
-<translation>Ctrl</translation>
-</phrase>
-
-<phrase>
 <original>Alt</original>
 <translation>Alt</translation>
-</phrase>
-
-<phrase>
-<original>Shift</original>
-<translation>Maiusc</translation>
 </phrase>
 
 <phrase>
@@ -6152,7 +6199,7 @@ Per migliorare l'esperienza dell'utente, si prega di lasciare che il programma s
 <translation>Impossibile inizializzare il gestore dei tasti a scelta rapida personalizzati.</translation>
 </phrase>
 
-<!-- vbalHookControl.ctl contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- vbalHookControl.ctl contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for vbalHookControl.ctl-->
 
@@ -6267,8 +6314,8 @@ Nota: puoi sempre scaricare manualmente l'ultima versione visitando il sito phot
 <!-- BEGIN text for VBP_SoftwareUpdater.bas -->
 
 <phrase>
-<original>Update check postponed (a check has been performed in the last 10 days)</original>
-<translation>Controllo aggiornamenti rinviato (un controllo è stato eseguito negli ultimi 10 giorni)</translation>
+<original>Update check postponed (a check has been performed recently)</original>
+<translation></translation>
 </phrase>
 
 <!-- VBP_SoftwareUpdater.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -11451,7 +11498,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>La lista delle immagini aperte di recente sembra essere valida.  È stato creato un nuovo elenco di immagini recenti.</translation>
 </phrase>
 
-<!-- pdRecentFiles.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdRecentFiles.cls contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for pdRecentFiles.cls-->
 
@@ -11735,12 +11782,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <!-- pdZoom.cls contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdZoom.cls-->
-
-<!-- BEGIN text for bluDownload.ctl -->
-
-<!-- bluDownload.ctl contains 0 phrases. -->
-
-<!-- END text for bluDownload.ctl-->
 
 <!-- BEGIN text for VBP_FormContentAwareResize.frm (FormResizeContentAware) -->
 
@@ -12248,7 +12289,7 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for VBP_ToolbarLayers.frm-->
 
-<!-- BEGIN text for pdPacker.cls -->
+<!-- BEGIN text for pdPackager.cls -->
 
 <phrase>
 <original>File doesn't have valid pdPackage header.  Abandoning load.</original>
@@ -12305,9 +12346,9 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Checksum non riuscito per il nodo #</translation>
 </phrase>
 
-<!-- pdPacker.cls contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
+<!-- pdPackager.cls contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
 
-<!-- END text for pdPacker.cls-->
+<!-- END text for pdPackager.cls-->
 
 <!-- BEGIN text for cBasicBuffer.cls -->
 
@@ -13077,13 +13118,19 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for VBP_FormCrossScreen.frm-->
 
+<!-- BEGIN text for pdDownload.ctl -->
+
+<!-- pdDownload.ctl contains 0 phrases. -->
+
+<!-- END text for pdDownload.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2286</phrasecount>
+<phrasecount>2297</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3965 phrases. -->
-<!-- 1679 are duplicates, so only 2286 unique phrases have been written to file. -->
-<!-- These 2286 phrases contain approximately 13145 total words. -->
+<!-- As of this build, PhotoDemon contains 3988 phrases. -->
+<!-- 1691 are duplicates, so only 2297 unique phrases have been written to file. -->
+<!-- These 2297 phrases contain approximately 13183 total words. -->
 
 </pdData>
 
