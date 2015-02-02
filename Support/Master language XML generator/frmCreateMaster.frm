@@ -958,6 +958,10 @@ Private Sub cmdMergeAll_Click()
     'Auto-load the latest master language file
     m_MasterText = getFileAsString(srcFolder & "Master\MASTER.xml")
     
+    'Rather than backup the old files to the dev language folder (which is confusing), I now place them inside a dedicated backup folder.
+    Dim backupFolder As String
+    backupFolder = "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Language_File_Tmp\dev_backup\"
+    
     'Iterate through every language file in the default PD directory
     'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
     Dim chkFile As String
@@ -992,7 +996,6 @@ Private Sub cmdMergeAll_Click()
             'Copy over all top-level language and author information
             replaceTopLevelTag "langid", m_MasterText, m_OldLanguageText, m_NewLanguageText
             replaceTopLevelTag "langname", m_MasterText, m_OldLanguageText, m_NewLanguageText
-            replaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText
             replaceTopLevelTag "langstatus", m_MasterText, m_OldLanguageText, m_NewLanguageText
             replaceTopLevelTag "author", m_MasterText, m_OldLanguageText, m_NewLanguageText
                 
@@ -1021,7 +1024,7 @@ Private Sub cmdMergeAll_Click()
                 
                 'Remove any tab stops from the translated text (which may have been added by an outside editor)
                 If InStr(translatedText, vbTab) <> 0 Then translatedText = Replace(translatedText, vbTab, "", , , vbBinaryCompare)
-                                
+                
                 'If a translation was found, insert it into the new file
                 If Len(translatedText) <> 0 Then
                     'findText = "<original>" & origText & "</original>" & vbCrLf & vbTab & vbTab & vbTab & "<translation></translation>"
@@ -1045,22 +1048,32 @@ Private Sub cmdMergeAll_Click()
             
             Loop While sPos > 0
             
-            'Unlike the normal merge option, we will automatically save the results to a new XML file
-            
-            'Start by backing up the old file
-            FileCopy m_OldLanguagePath, m_OldLanguagePath & ".backup"
-                        
-            If FileExist(m_OldLanguagePath) Then
-                Kill m_OldLanguagePath
-                Debug.Print "Note - old file with same name (" & m_OldLanguagePath & ") was erased.  Hope this is what you wanted!"
+            'See if the old and new language files are equal.  If they are, we won't bother writing the results out to file.
+            If Len(m_NewLanguageText) = Len(m_OldLanguageText) Then
+                Debug.Print "New language file and old language file are identical for " & chkFile & ".  Merge abandoned."
+            Else
+                
+                'Update the version number by 1
+                replaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText
+                
+                'Unlike the normal merge option, we will automatically save the results to a new XML file
+                
+                'Start by backing up the old file
+                FileCopy m_OldLanguagePath, backupFolder & chkFile
+                
+                If FileExist(m_OldLanguagePath) Then
+                    Kill m_OldLanguagePath
+                    Debug.Print "Note - old file with same name (" & m_OldLanguagePath & ") was erased.  Hope this is what you wanted!"
+                End If
+                
+                Dim fileNum As Integer
+                fileNum = FreeFile
+                
+                Open m_OldLanguagePath For Output As #fileNum
+                    Print #fileNum, m_NewLanguageText
+                Close #fileNum
+                
             End If
-            
-            Dim fileNum As Integer
-            fileNum = FreeFile
-            
-            Open m_OldLanguagePath For Output As #fileNum
-                Print #fileNum, m_NewLanguageText
-            Close #fileNum
             
         
         'END COPY OF CODE FROM cmdMerge
@@ -1175,7 +1188,6 @@ Private Sub cmdProcess_Click()
     Close #fileNum
     
     cmdProcess.Caption = "Processing complete!"
-    'MsgBox "Text extraction complete!"
     
 End Sub
 
@@ -1901,13 +1913,16 @@ Private Sub cmdSelectVBP_Click()
     Set cDlg = New cCommonDialog
     
     m_VBPFile = "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.vbp"
+    lblVBP = "Active VBP: " & m_VBPFile
+    m_VBPPath = getDirectory(m_VBPFile)
     
-    If cDlg.VBGetOpenFileName(m_VBPFile, , True, False, False, True, "VBP - Visual Basic Project|*.vbp", , , "Please select a Visual Basic project file (VBP)", "vbp", Me.hWnd) Then
-        lblVBP = "Active VBP: " & m_VBPFile
-        m_VBPPath = getDirectory(m_VBPFile)
-    Else
-        Exit Sub
-    End If
+    'PD uses a hard-coded VBP location, but if you want to specify your own location, you can do so here
+    'If cDlg.VBGetOpenFileName(m_VBPFile, , True, False, False, True, "VBP - Visual Basic Project|*.vbp", , , "Please select a Visual Basic project file (VBP)", "vbp", Me.hWnd) Then
+    '    lblVBP = "Active VBP: " & m_VBPFile
+    '    m_VBPPath = getDirectory(m_VBPFile)
+    'Else
+    '    Exit Sub
+    'End If
     
     'Load the file into a string array, split up line-by-line
     Dim vbpContents As String
@@ -2117,7 +2132,21 @@ Private Sub Form_Load()
     End If
     
     'If silent mode is activated, automatically "click" the relevant button
-    If m_SilentMode Then Call cmdLangVersions_Click
+    If m_SilentMode Then
+    
+        'Load the current PhotoDemon VBP file
+        Call cmdSelectVBP_Click
+        
+        'Generate a new master English file
+        Call cmdProcess_Click
+        
+        'Forcibly merge all translation files with the latest English text
+        Call cmdMergeAll_Click
+        
+        'Update the master langupdate.XML file, and generate new compressed language copies in their dedicated upload folders
+        Call cmdLangVersions_Click
+        
+    End If
     
 End Sub
 
