@@ -1440,7 +1440,7 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     If UBound(ExtraText) >= LBound(ExtraText) Then
                     
         For i = LBound(ExtraText) To UBound(ExtraText)
-            tmpDupeCheckString = Replace$(tmpDupeCheckString, "%" & i + 1, CStr(ExtraText(i)))
+            tmpDupeCheckString = Replace$(tmpDupeCheckString, "%" & CStr(i + 1), CStr(ExtraText(i)))
         Next i
         
     End If

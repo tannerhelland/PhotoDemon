@@ -382,7 +382,7 @@ Public Function GetExtension(sFile As String) As String
 End Function
 
 'Take a string and replace any invalid characters with "_"
-Public Sub makeValidWindowsFilename(ByRef FileName As String)
+Public Sub makeValidWindowsFilename(ByRef fileName As String)
 
     Dim strInvalidChars As String
     strInvalidChars = "\/*?""<>|:"
@@ -391,9 +391,9 @@ Public Sub makeValidWindowsFilename(ByRef FileName As String)
     
     Dim x As Long
     For x = 1 To Len(strInvalidChars)
-        invLoc = InStr(FileName, Mid$(strInvalidChars, x, 1))
+        invLoc = InStr(fileName, Mid$(strInvalidChars, x, 1))
         If invLoc <> 0 Then
-            FileName = Left(FileName, invLoc - 1) & "_" & Right(FileName, Len(FileName) - invLoc)
+            fileName = Left(fileName, invLoc - 1) & "_" & Right(fileName, Len(fileName) - invLoc)
         End If
     Next x
 
@@ -496,5 +496,80 @@ Private Function Win32ToVbTime(ft As Currency) As Date
     Else
         Debug.Print "FileTimeToLocalFileTime failed!"
     End If
+    
+End Function
+
+'Shortcut function for copying a file into a byte array.
+Public Function loadFileToArray(ByVal pathToFile As String, ByRef dstArray() As Byte) As Boolean
+    
+    On Error GoTo loadFileToArray_Failure
+    
+    'Attempt to load the file into a byte array
+    If FileExist(pathToFile) Then
+    
+        Dim fileNum As Integer
+        fileNum = FreeFile
+        
+        Open pathToFile For Binary Access Read As #fileNum
+            If LOF(fileNum) > 0 Then
+                ReDim dstArray(0 To LOF(fileNum) - 1)
+                Get fileNum, 1, dstArray
+            End If
+        Close #fileNum
+        
+        'Make sure the file loaded successfully
+        If UBound(dstArray) >= LBound(dstArray) Then
+            loadFileToArray = True
+        Else
+            Debug.Print "WARNING! File passed to loadFileAsArray() was empty."
+            loadFileToArray = False
+        End If
+        
+    Else
+        Debug.Print "WARNING! File passed to loadFileAsArray() does not exist.  File was (obviously) not loaded."
+        loadFileToArray = False
+    End If
+    
+    Exit Function
+    
+loadFileToArray_Failure:
+
+    Debug.Print "WARNING! Unspecified error occurred in loadFileAsArray().  Load abandoned."
+    loadFileToArray = False
+
+End Function
+
+'Shortcut function for dumping a byte array into a file.
+Public Function writeArrayToFile(ByRef srcArray() As Byte, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True) As Boolean
+    
+    On Error GoTo writeArrayToFile_Failure
+    
+    'See if the file exists
+    If FileExist(pathToFile) Then
+    
+        If (Not overwriteExistingIfPresent) Then
+            writeArrayToFile = False
+            Debug.Print "WARNING!  File passed to writeArrayToFile() already exists, and overwrites not allowed.  Write abandoned."
+            Exit Function
+        Else
+            Kill pathToFile
+        End If
+        
+    End If
+        
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    Open pathToFile For Binary Access Write As #fileNum
+        Put fileNum, , srcArray
+    Close #fileNum
+    
+    writeArrayToFile = True
+    Exit Function
+    
+writeArrayToFile_Failure:
+
+    Debug.Print "WARNING! Unspecified error occurred in writeArrayToFile().  Write abandoned."
+    writeArrayToFile = False
     
 End Function

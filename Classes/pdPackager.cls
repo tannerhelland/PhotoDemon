@@ -1416,5 +1416,11 @@ End Sub
 'If something unexpected occurs, and the user needs to know about it (e.g. it's not just debugging data), pdPackage will raise a message
 ' using this function.  PhotoDemon uses a central "Message" function to handle messages like this, but you can change it to Debug.Print instead.
 Private Sub raiseInternalMessage(ByVal msgString As String, ParamArray ExtraText() As Variant)
-    Message msgString, ExtraText
+    
+    If UBound(ExtraText) >= LBound(ExtraText) Then
+        Message msgString, ExtraText
+    Else
+        Message msgString
+    End If
+    
 End Sub

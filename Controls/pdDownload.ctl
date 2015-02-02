@@ -256,23 +256,30 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
             'If requested, copy the contents out to file.
             With m_DownloadList(itemIndex)
             
-                If (Len(.TargetFileWhenComplete) > 0) And checkSumPassed Then
-                
-                    'Kill the destination file if it already exists
-                    If FileExist(.TargetFileWhenComplete) Then Kill .TargetFileWhenComplete
+                If (Len(.TargetFileWhenComplete) > 0) Then
                     
-                    'Open the target file
-                    Dim fileNum As Integer
-                    fileNum = FreeFile
+                    'Make sure the checksum passed (if one was specified).
+                    If checkSumPassed Then
                     
-                    Open .TargetFileWhenComplete For Binary As #fileNum
-                    
-                        'Writing the actual data to file is incredibly easy!
+                        'Kill the destination file if it already exists
+                        If FileExist(.TargetFileWhenComplete) Then Kill .TargetFileWhenComplete
                         
-                        'Header
-                        Put #fileNum, 1, .DataBytes
+                        'Open the target file
+                        Dim fileNum As Integer
+                        fileNum = FreeFile
                         
-                    Close #fileNum
+                        Open .TargetFileWhenComplete For Binary As #fileNum
+                        
+                            'Writing the actual data to file is incredibly easy!
+                            
+                            'Header
+                            Put #fileNum, 1, .DataBytes
+                            
+                        Close #fileNum
+                    
+                    Else
+                        Debug.Print "WARNING! File was downloaded successfully, but checksum failed.  Please investigate: " & m_DownloadList(itemIndex).DownloadURL
+                    End If
                     
                 End If
             
