@@ -2669,7 +2669,7 @@ Private Sub Form_Load()
         
         'As a courtesy, if the user has asked us to stop bugging them about downloading plugins, obey their request
         Dim promptToDownload As Boolean
-        promptToDownload = g_UserPreferences.GetPref_Boolean("Updates", "Prompt For Plugin Download", True)
+        promptToDownload = g_UserPreferences.GetPref_Boolean("Updates", "Update Plugins Independently", True)
                 
         'Finally, if allowed, we can prompt the user to download the recommended plugin set
         If promptToDownload Then
@@ -2687,45 +2687,7 @@ Private Sub Form_Load()
         End If
     
     End If
-    
-    
-    '*************************************************************************************************************************************
-    ' Next, check for out-of-date language files
-    '*************************************************************************************************************************************
-    
-    'As of v6.6, PhotoDemon can now update language files independent of the core program.  It does this by downloading a separate
-    ' language-specific update file.
-    
-    'Some 3rd-party sites (*cough* PSC *cough*) won't include binary attachments, like PD's plugins.  As a failsafe workaround, PD can
-    ' detect this state and offer to download the plugins for the user.
-    ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
-    '        so we ignore this request if the user was already notified of a program update.)
-'    If (updateNeeded <> UPDATE_AVAILABLE) And ((Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not isExifToolAvailable)) Then
-'
-'        Message "Some core plugins could not be found. Preparing updater..."
-'
-'        'As a courtesy, if the user has asked us to stop bugging them about downloading plugins, obey their request
-'        Dim promptToDownload As Boolean
-'        promptToDownload = g_UserPreferences.GetPref_Boolean("Updates", "Prompt For Plugin Download", True)
-'
-'        'Finally, if allowed, we can prompt the user to download the recommended plugin set
-'        If promptToDownload Then
-'            showPDDialog vbModal, FormPluginDownloader
-'
-'            'Since plugins may have been downloaded, update the interface to match any new features that may be available.
-'            LoadPlugins
-'            applyAllMenuIcons
-'            resetMenuIcons
-'            g_ImageFormats.generateInputFormats
-'            g_ImageFormats.generateOutputFormats
-'
-'        Else
-'            Message "Ignoring plugin update request per user's saved preference"
-'        End If
-'
-'    End If
-    
-    
+        
     
     '*************************************************************************************************************************************
     ' Display any final messages and/or warnings
