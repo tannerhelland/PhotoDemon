@@ -1178,16 +1178,31 @@ Private Sub cmdProcess_Click()
         outputFile = m_VBPPath & "App\PhotoDemon\Languages\Master\MASTER (with duplicates).xml"
     End If
     
-    If FileExist(outputFile) Then Kill outputFile
+    'We are now going to compare the length of the old file and new file.  If the lengths match, there's no reason to write out this new file.
+    Dim oldFileString As String
+    oldFileString = getFileAsString(outputFile)
     
-    Dim fileNum As Integer
-    fileNum = FreeFile
+    Dim newFileLen As Long, oldFileLen As Long
     
-    Open outputFile For Output As #fileNum
-        Print #fileNum, outputText
-    Close #fileNum
+    newFileLen = Len(Trim$(Replace$(Replace$(outputText, vbCrLf, ""), vbTab, "")))
+    oldFileLen = Len(Trim$(Replace$(Replace$(oldFileString, vbCrLf, ""), vbTab, "")))
+        
+    If newFileLen <> oldFileLen Then
     
-    cmdProcess.Caption = "Processing complete!"
+        If FileExist(outputFile) Then Kill outputFile
+        
+        Dim fileNum As Integer
+        fileNum = FreeFile
+        
+        Open outputFile For Output As #fileNum
+            Print #fileNum, outputText
+        Close #fileNum
+        
+        cmdProcess.Caption = "Processing complete!"
+        
+    Else
+        cmdProcess.Caption = "Processing complete (no changes made)"
+    End If
     
 End Sub
 
