@@ -299,14 +299,14 @@ End Sub
 
 'Load all user settings from file
 Public Sub loadUserSettings()
-        
+    
     'If no preferences file exists, build a default one
     If Not FileExist(PreferencesPath) Then createNewPreferencesFile
     
     'Start batch processing mode for preferences, which is much faster (as we don't have to go out to the hard drive
     ' for each preference access).
     startBatchPreferenceMode
-    
+        
     'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
     ' the system temp path.)
     TempPath = GetPref_String("Paths", "TempFiles", "")
@@ -314,7 +314,7 @@ Public Sub loadUserSettings()
         TempPath = GetSystemTemporaryPath
         SetPref_String "Paths", "TempFiles", TempPath
     End If
-    
+        
     'Pull all other stored paths
     MacroPath = GetPref_String("Paths", "Macro", MacroPath)
     SelectionPath = GetPref_String("Paths", "Selections", SelectionPath)
@@ -348,7 +348,7 @@ Public Sub loadUserSettings()
     
     'Terminate batch preference mode before exiting
     endBatchPreferenceMode
-        
+                
 End Sub
 
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)

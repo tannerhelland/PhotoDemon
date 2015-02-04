@@ -638,7 +638,9 @@ End Function
 'Write the current XML contents out to file.  By default, the output will have tabs added to it to make the output "pretty".
 ' This behavior can be avoided by setting the suppressIndentation param to TRUE.
 Public Function writeXMLToFile(ByVal dstFile As String, Optional ByVal suppressIndentation As Boolean = False)
-
+    
+    On Error GoTo CouldNotWriteXML
+    
     'Make the XML contents pretty by providing some basic indentation
     Dim fileContents As String
     fileContents = m_xmlContents
@@ -646,11 +648,9 @@ Public Function writeXMLToFile(ByVal dstFile As String, Optional ByVal suppressI
     If Not suppressIndentation Then applyIndentation fileContents
     
     'If the file already exists, remove it.  (I have also added a DoEvents here after noticing random errors in this
-    ' sub - it's important to wait for the file to be deleted, so that the write attempt below does not fail.)
-    If FileExist(dstFile) Then
-        Kill dstFile
-        DoEvents
-    End If
+    ' sub - it's important to wait for the file to be deleted, so that the write attempt below does not fail.
+    ' Update 04 Feb 15: DoEvents causes strange things to happen (imagine that!) so I have once again removed it.)
+    If FileExist(dstFile) Then Kill dstFile
     
     'Open the specified file
     Dim fileNum As Integer
@@ -661,6 +661,12 @@ Public Function writeXMLToFile(ByVal dstFile As String, Optional ByVal suppressI
     Close #fileNum
     
     writeXMLToFile = True
+    Exit Function
+    
+CouldNotWriteXML:
+
+    Debug.Print "WARNING! A request to pdXML.writeXMLToFile failed for unknown reasons.  Please investigate."
+    writeXMLToFile = False
 
 End Function
 
