@@ -432,9 +432,13 @@ Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
     'An XML class will be used to parse the various language files
     Dim tmpXMLEngine As pdXML
     
+    'A pdFSO class is required for Unicode support
+    Dim pdFiles As pdFSO
+    Set pdFiles = New pdFSO
+    
     'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
     Dim chkFile As String
-    chkFile = Dir(srcFolder & "*.xml", vbNormal)
+    chkFile = pdFiles.DirW(srcFolder & "*.xml")
         
     Do While (Len(chkFile) <> 0)
         
@@ -460,8 +464,8 @@ Private Function tallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
         End If
         
         'Retrieve the next file and repeat
-        chkFile = Dir
-    
+        chkFile = pdFiles.DirW()
+        
     Loop
     
     tallyLanguageFilesInFolder = nLanguages - langOffset

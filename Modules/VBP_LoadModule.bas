@@ -115,8 +115,6 @@ Public Sub LoadTheProgram()
     
     handleClearType True
     
-    
-    
     '*************************************************************************************************************************************
     ' Initialize the user preferences (settings) handler
     '*************************************************************************************************************************************
@@ -135,12 +133,12 @@ Public Sub LoadTheProgram()
     LoadMessage "Initializing all program directories..."
     
     g_UserPreferences.initializePaths
-    
+        
     'Now, ask the preferences handler to load all other user settings from the preferences file
     LoadMessage "Loading all user settings..."
     
     g_UserPreferences.loadUserSettings
-    
+        
     'Mark the Macro recorder as "not recording"
     MacroStatus = MacroSTOP
     
@@ -155,8 +153,6 @@ Public Sub LoadTheProgram()
     
     'While here, also initialize the image format handler (as plugins and other load functions interact with it)
     Set g_ImageFormats = New pdFormats
-    
-    
     
     
     '*************************************************************************************************************************************
@@ -2677,13 +2673,13 @@ Public Sub DuplicateCurrentImage()
     SavePhotoDemonImage pdImages(g_CurrentImage), tmpDuplicationFile, True, True, True, False
     
     'We can now use the standard image load routine to import the temporary file
-    Dim sFile() As String, sTitle As String, sFilename As String
+    Dim sFile() As String, sTitle As String, sFileName As String
     ReDim sFile(0) As String
     sFile(0) = tmpDuplicationFile
     sTitle = pdImages(g_CurrentImage).originalFileName & " - " & g_Language.TranslateMessage("Copy")
-    sFilename = sTitle
+    sFileName = sTitle
     
-    LoadFileAsNewImage sFile, False, sTitle, sFilename
+    LoadFileAsNewImage sFile, False, sTitle, sFileName
                     
     'Be polite and remove the temporary file
     If FileExist(tmpDuplicationFile) Then Kill tmpDuplicationFile
