@@ -82,14 +82,15 @@ End Function
 ' (http://www.vbforums.com/showthread.php?736735-How-to-mamage-files-with-non-English-names&p=4779595&viewfull=1#post4779595)
 ' ...but heavily modified for use in PD.  Many thanks to Elroy for sharing his code.
 Public Function DirW(Optional ByVal sParam As String = "") As String
-
+    
+    Dim allFilesFound As Boolean, keepSearching As Boolean, handleJustCreated As Boolean
+    Dim retValue As Long
+    Dim retString As String
+    
     'IMPORTANT NOTE!  Because this function has been designed to work like VB's Dir() function, it has an important caveat:
     ' you should continue to call it until no more files exist.  (Unlike VB's Dir() function, it can't auto-detect when its
     ' caller goes out of scope, so its file handle will remain open.)  As a failsafe, any open file handles will be released
     ' when the class is closed, but it's not ideal to leave search handles open any longer than you need them.
-    '
-    'If you need to close a handle prematurely, call this function with a non-existent path (e.g. DirW("asdf1234")); this will
-    ' force a close of the existing handle, and because the function fails on the bogus path, no new handles will be created.
 
     'Start by applying some modifications to sParam.  FindFirstFile fails under conditions that VB's own Dir() doese not.
     If Len(sParam) > 0 Then
@@ -97,9 +98,11 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
         'First, prepend "\\?\" to sParam.  This enables long file paths.
         If StrComp(Left$(sParam, 4), "\\?\", vbBinaryCompare) <> 0 Then sParam = "\\?\" & sParam
     
-        'FindFirstFile fails if the requested path has a trailing slash.  Detect and fix this case if present.
-        If StrComp(Right$(sParam, 1), "\", vbBinaryCompare) = 0 Then sParam = Left$(sParam, Len(sParam) - 1)
-        If StrComp(Right$(sParam, 1), "/", vbBinaryCompare) = 0 Then sParam = Left$(sParam, Len(sParam) - 1)
+        'FindFirstFile fails if the requested path has a trailing slash.  If the user hands us a bare path, assume that they
+        ' want to iterate all files and folders within that folder.
+        If (StrComp(Right$(sParam, 1), "\", vbBinaryCompare) = 0) Or (StrComp(Right$(sParam, 1), "/", vbBinaryCompare) = 0) Then
+            sParam = sParam & "*"
+        End If
         
     End If
     
@@ -113,91 +116,99 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
         If m_SearchHandle <> 0 Then FindClose m_SearchHandle
         
         'Retrieve the first file in the new search; this returns the search handle we'll use for subsequent searches
+        handleJustCreated = True
         m_SearchHandle = FindFirstFileW(StrPtr(sParam), m_FileDataReturnPtr)
         
         'Check for failure.  Failure can occur for multiple reasons: bad inputs, no files meeting the criteria, etc.
-        If m_SearchHandle <> INVALID_HANDLE_VALUE Then
-            DirW = TrimNull(m_FileDataReturn.cFileName)
-        Else
+        If m_SearchHandle = INVALID_HANDLE_VALUE Then
             
             'No files found is fine, but if the caller screwed up the input path, we want to print some debug info.
             If Err.LastDllError <> ERROR_FILE_NOT_FOUND Then
                 Debug.Print "WARNING! DirW was possibly handed a bad path (" & sParam & "). Please investigate."
             End If
             
+            Exit Function
+        
         End If
         
-        'Exit immediately
-        Exit Function
+    End If
       
-    'No parameter provided: iterate upon the previous search
-    Else
-            
-        'Make sure a valid search handle exists
-        If m_SearchHandle <> 0 Then
+    'Now it's time to return an actual file to the caller.
+    
+    'Make sure a valid search handle exists
+    If m_SearchHandle <> 0 Then
         
-            'Prepare to retrieve the next file.  Some extra work is required to cover the case of ".." and ".", which are
-            ' not relevant for PD's purposes.
-            Dim allFilesFound As Boolean
-            allFilesFound = False
-            
-            Dim keepSearching As Boolean
-            keepSearching = False
-            
-            Dim retString As String
-                        
-            Do
-                
-                'FindNextFile will return a non-zero value if successful
-                If FindNextFileW(m_SearchHandle, m_FileDataReturnPtr) <> 0 Then
+        'Prepare to retrieve the next file.  Some extra work is required to cover the case of ".." and ".", which are
+        ' not relevant for PD's purposes.
+        allFilesFound = False
+        keepSearching = False
                     
-                    'If the return value is a blank string, ignore it and keep looking for the next file
-                    retString = Trim$(TrimNull(m_FileDataReturn.cFileName))
-                    If Len(retString) = 0 Then
+        Do
+            
+            'FindNextFile will return a non-zero value if successful, but in the case of the *first* retrieved file,
+            ' we already pulled its info from FindFirstFileW, above.
+            If handleJustCreated Then
+                retValue = 1
+                handleJustCreated = False
+            Else
+                retValue = FindNextFileW(m_SearchHandle, m_FileDataReturnPtr)
+            End If
+                
+            If retValue <> 0 Then
+                
+                'If the return value is "." or "..", ignore it and keep looking for the next file
+                retString = Trim$(TrimNull(m_FileDataReturn.cFileName))
+                
+                If Len(retString) <= 2 Then
+                    
+                    If (StrComp(retString, ".", vbBinaryCompare) = 0) Or (StrComp(retString, "..", vbBinaryCompare) = 0) Then
                         keepSearching = True
                     Else
                         keepSearching = False
                     End If
-                    
+                
                 Else
                     keepSearching = False
-                    allFilesFound = True
-                End If
-            
-            Loop While keepSearching
-            
-            'If all files were found, it's time to exist.  (Note that this value is triggered by a 0 return from FindNextFileW,
-            ' which can indicate other error states as well - we'll check this momentarily.)
-            If allFilesFound Then
-                
-                'Start by closing the search handle
-                FindClose m_SearchHandle
-                m_SearchHandle = 0
-                
-                'Check for unexpected errors
-                If Err.LastDllError <> ERROR_NO_MORE_FILES Then
-                    Debug.Print "WARNING! DirW terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate."
                 End If
                 
             Else
-                DirW = retString
+                keepSearching = False
+                allFilesFound = True
             End If
         
-        Else
-            Debug.Print "WARNING! DirW tried to iterate a previous search, but no search handle exists.  Please investigate."
-        End If
+        Loop While keepSearching
         
+        'If all files were found, it's time to exist.  (Note that this value is triggered by a 0 return from FindNextFileW,
+        ' which can indicate other error states as well - we'll check this momentarily.)
+        If allFilesFound Then
+            
+            'Start by closing the search handle
+            FindClose m_SearchHandle
+            m_SearchHandle = 0
+            
+            'Check for unexpected errors
+            If Err.LastDllError <> ERROR_NO_MORE_FILES Then
+                Debug.Print "WARNING! DirW terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate."
+            End If
+            
+        Else
+            DirW = retString
+        End If
+    
+    Else
+        Debug.Print "WARNING! DirW tried to iterate a previous search, but no search handle exists.  Please investigate."
     End If
+    
     
 End Function
 
 'Given a full path+filename string, return only the folder portion
-Public Function GetPathOnly(ByRef sFileName As String) As String
+Public Function GetPathOnly(ByRef sFilename As String) As String
     
     Dim slashPosition As Long
-    slashPosition = InStrRev(sFileName, "\", , vbBinaryCompare)
+    slashPosition = InStrRev(sFilename, "\", , vbBinaryCompare)
     
-    If slashPosition <> 0 Then GetPathOnly = Left$(sFileName, slashPosition)
+    If slashPosition <> 0 Then GetPathOnly = Left$(sFilename, slashPosition)
     
 End Function
 
