@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.5.6</langversion>
+<langversion>6.5.7</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13123,6 +13123,12 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <!-- pdDownload.ctl contains 0 phrases. -->
 
 <!-- END text for pdDownload.ctl-->
+
+<!-- BEGIN text for pdFSO.cls -->
+
+<!-- pdFSO.cls contains 0 phrases. -->
+
+<!-- END text for pdFSO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

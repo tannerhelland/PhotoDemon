@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.5.4</langversion>
+<langversion>6.5.5</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13123,6 +13123,12 @@ or os menus File> Open e File> Import.</translation>
 <!-- pdDownload.ctl contains 0 phrases. -->
 
 <!-- END text for pdDownload.ctl-->
+
+<!-- BEGIN text for pdFSO.cls -->
+
+<!-- pdFSO.cls contains 0 phrases. -->
+
+<!-- END text for pdFSO.cls-->
 
 <!-- Automatic text extraction complete. -->
 

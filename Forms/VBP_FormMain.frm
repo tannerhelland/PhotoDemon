@@ -4162,6 +4162,22 @@ End Sub
 
 Private Sub MnuTest_Click()
     
+    'Temporary tests on pdFSO
+    Dim cFSO As pdFSO
+    Set cFSO = New pdFSO
+    
+    Dim chkFile As String
+    chkFile = cFSO.DirW("C:\PhotoDemon v4\PhotoDemon\*")
+    
+    Do While Len(chkFile) <> 0
+    
+        Debug.Print chkFile
+        chkFile = cFSO.DirW()
+    
+    Loop
+    
+    
+    Exit Sub
 '    'Temporary test of new pdPackage compression code.
 '
 '    'Create a pdPackage instance and add an arbitrary file to it
