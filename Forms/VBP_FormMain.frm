@@ -4166,16 +4166,10 @@ Private Sub MnuTest_Click()
     Dim cFSO As pdFSO
     Set cFSO = New pdFSO
     
-    Dim chkFile As String
-    chkFile = cFSO.DirW("C:\PhotoDemon v4\PhotoDemon\*")
+    Dim cResults As pdStringStack
     
-    Do While Len(chkFile) <> 0
-    
-        Debug.Print chkFile
-        chkFile = cFSO.DirW()
-    
-    Loop
-    
+    cFSO.retrieveAllFiles "C:\PhotoDemon v4\PhotoDemon\Support", cResults, True, False
+    cResults.DEBUG_dumpResultsToImmediateWindow
     
     Exit Sub
 '    'Temporary test of new pdPackage compression code.

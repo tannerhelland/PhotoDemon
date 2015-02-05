@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon File System Object Interface
 'Copyright 2014-2015 by Tanner Helland
 'Created: 04/February/15
-'Last updated: 04/February/15
-'Last update: started moving various functions from across PD into this single class
+'Last updated: 05/February/15
+'Last update: ongoing work on folder and file iterators
+'Dependencies: pdStringStack (used internally for performance-friendly string collection management)
 '
 'This class is currently under heavy construction.
 '
@@ -71,11 +72,259 @@ Public Function FileExist(ByRef fName As String) As Boolean
     End Select
 End Function
 
-'Given a base folder, retrieve the names of all files within that folder (and optionally, its subfolders)
-Public Function retrieveAllFiles_Relative(ByVal srcFolder As String, ByRef dstArray() As String, Optional ByVal recurseSubfolders As Boolean, Optional ByVal onlyAllowTheseExtensions As String) As Boolean
+'Given a base folder, return all files within that folder (including subfolders).  Subfolder recursion is assumed, but can be waived by setting
+' recurseSubfolders to FALSE.
+'
+'If returnRelativeStrings is true, strings are (obviously) returned relative to the base folder.  So for e.g. base folder "C:\Folder",
+' "C:\Folder\Subfolder\file.txt" will be returned as "Subfolder\file.txt".
+'
+'Returns TRUE if at least one file is found; FALSE otherwise.  If the incoming dstFiles parameter already contains strings, TRUE will
+' always be returned.
+'
+'As an additional convenience, files can be restricted in one of two ways:
+' 1) by restricting allowed extensions, using a pipe-delimited list of acceptable extensions (e.g. "jpg|bmp|gif")
+' 2) by avoiding disallowed extensions, using a pipe-delimited list of unacceptable extensions (e.g. "bak|tmp")
+'
+'Use either the whitelist or the blacklist option, but not both (obviously).
+Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
+    
+    'Enforce strict trailing slash formatting of the base folder
+    srcFolder = EnforcePathSlash(srcFolder)
+    
+    'Initialize the destination stack as necessary.  Note that nothing happens if dstFiles is already initialized; this is by design, so the caller
+    ' can concatenate multiple search results together if desired.
+    If dstFiles Is Nothing Then Set dstFiles = New pdStringStack
+    
+    'This function was first used in PD as part of pdPackage's zip-like interface.  The goal was to create a convenient way
+    ' to generate a folder-preserved list of files.  Consider a file tree like the following:
+    ' C:\Folder\file.txt
+    ' C:\Folder\SubFolder\subfile1.txt
+    ' C:\Folder\SubFolder\AnotherFolder\subfile2.txt
+    '
+    'By calling this function with "C:\Folder\" as the base, this function can return an array with the following entries:
+    ' file.txt
+    ' SubFolder\subfile1.txt
+    ' SubFolder\AnotherFolder\subfile2.txt
+    '
+    'This structure makes it very easy to duplicate a full file and folder structure in a new directory, which is exactly
+    ' what pdPackage does when behaving like a .zip container.
+    '
+    'To that end, this function uses DirW to assemble a list of files relative to some base folder.  Subfolders are not explicitly
+    ' returned; the hope is that you can implicitly determine them from the relative filenames provided.  If you want a list of
+    ' subfolders, make a separate call to retrieveAllFolders, below.
+    '
+    'Finally, two optional pattern parameters are available.  Use one or the other (or neither), but not both.
+    '
+    'onlyAllowTheseExtensions: used when the set of desired files uses a small subset of extensions.  Separate valid extensions
+    ' by pipe, e.g. "exe|txt".  Do not include ".".  If non-extension files are desired, YOU CANNOT USE THIS PARAMETER, as "||" doesn't
+    ' parse correctly.
+    '
+    'doNotAllowTheseExtensions: used to blacklist unwanted file types.  Same rules as onlyAllowTheseExtensions applies, e.g.
+    ' "bak|tmp" would be used to exclude .bak and .tmp files.
+    
+    'Because white/blacklisting is computationally expensive, we prepare separate boolean checks in advance
+    Dim whiteListInUse As Boolean, blackListInUse As Boolean
+    whiteListInUse = (Len(onlyAllowTheseExtensions) <> 0)
+    blackListInUse = (Len(doNotAllowTheseExtensions) <> 0)
+    
+    'To eliminate the need for expensive recursion, we use a stack structure to store subfolders that still need to be searched.
+    ' Valid files are directly added to dstFiles as they are encountered.
+    Dim cFoldersToCheck As pdStringStack
+    Set cFoldersToCheck = New pdStringStack
+    
+    'Add the base folder to the collection, then start searching for subfolders.
+    cFoldersToCheck.AddString srcFolder
+    
+    Dim curFolder As String, chkFile As String
+    Dim fileValid As Boolean
+        
+    'The first folder doesn't get added to the destination collection, but all other folders do.
+    Dim isNotFirstFolder As Boolean
+    isNotFirstFolder = False
+    
+    Do While cFoldersToCheck.PopString(curFolder)
+        
+        'DirW does all the heavy lifting on the actual folder iteration steps
+        chkFile = DirW(curFolder)
+    
+        Do While Len(chkFile) <> 0
+            
+            'See if this chkFile iteration contains a folder
+            If (getAttributesOfLastDirWReturn And vbDirectory) <> 0 Then
+            
+                'This is a folder.  Add it to the "folders to check" collection if subfolders are being parsed.
+                If recurseSubfolders Then cFoldersToCheck.AddString EnforcePathSlash(curFolder & chkFile)
+                
+            'This is not a folder, but a file.  Add it to the destination file list if it meets any white/blacklisted criteria.
+            Else
+                
+                'White-listing check required
+                If whiteListInUse Then
+                
+                    'TODO!
+                    fileValid = True
+                
+                'Black-listing check required
+                ElseIf blackListInUse Then
+                
+                    'TODO!
+                    fileValid = True
+                
+                'All files are allowed
+                Else
+                    fileValid = True
+                End If
+                
+                'If we are allowed to add this file, do so now
+                If fileValid Then
+                    If returnRelativeStrings Then
+                        dstFiles.AddString generateRelativePath(srcFolder, curFolder & chkFile, True)
+                    Else
+                        dstFiles.AddString curFolder & chkFile
+                    End If
+                End If
+            
+            End If
+            
+            'Get the next file
+            chkFile = DirW()
+        
+        Loop
+        
+        'If recursion is enabled, any subfolders in this folder have now been added to cFolderToCheck, while all files in this folder
+        ' are already present in the dstFiles collection.
+        
+    Loop
+    
+    'dstFiles now contains a full collection of files with the given base folder (and subfolders, if recursion is enabled).
+    ' If at least one file was found, return TRUE. (Note that this value might be incorrect if the user sent us an already-populated
+    ' string stack, but that's okay - the assumption is that they'll be processing the stack as one continuous list, so this return
+    ' value won't be relevant anyway.)
+    If dstFiles.getNumOfStrings > 0 Then
+        retrieveAllFiles = True
+    Else
+        retrieveAllFiles = False
+    End If
+    
 
-    'TODO!
+End Function
 
+'Given a base folder, return all subfolders.  Recursion is assumed, but can be waived by setting recurseSubfolders to FALSE.
+'
+'If returnRelativeStrings is true, strings are (obviously) returned relative to the base folder.  So for e.g. base folder "C:\Folder",
+' "C:\Folder\Subfolder" will be returned as just "Subfolder", while "C:\Folder\Subfolder\etc\" will return as "Subfolder\etc".
+'
+'Returns TRUE if at least one subfolder is found; FALSE otherwise.  If the incoming dstFolders parameter already contains strings, TRUE will
+' always be returned.
+Public Function retrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders As pdStringStack, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal returnRelativeStrings As Boolean = True) As Boolean
+
+    'Enforce strict trailing slash formatting of the base folder
+    srcFolder = EnforcePathSlash(srcFolder)
+    
+    'Initialize dstStrings as necessary.  Note that nothing happens if dstStrings is already initialized; this is by design, so the caller
+    ' can concatenate multiple results together if desired.
+    If dstFolders Is Nothing Then Set dstFolders = New pdStringStack
+    
+    'To eliminate the need for expensive recursion, we use a stack structure to store subfolders that still need to be searched.
+    Dim cFoldersToCheck As pdStringStack
+    Set cFoldersToCheck = New pdStringStack
+    
+    'Add the base folder to the collection, then start searching for subfolders.
+    cFoldersToCheck.AddString srcFolder
+    
+    Dim curFolder As String, chkFile As String
+    
+    'The first folder doesn't get added to the destination collection, but all other folders do.
+    Dim isNotFirstFolder As Boolean
+    isNotFirstFolder = False
+    
+    Do While cFoldersToCheck.PopString(curFolder)
+        
+        'DirW does all the heavy lifting on the actual folder iteration steps
+        chkFile = DirW(curFolder)
+    
+        Do While Len(chkFile) <> 0
+            
+            'See if this chkFile iteration contains a folder
+            If (getAttributesOfLastDirWReturn And vbDirectory) <> 0 Then
+            
+                'This is a folder.  Add it to the "folders to check" collection.
+                If recurseSubfolders Then
+                    cFoldersToCheck.AddString EnforcePathSlash(curFolder & chkFile)
+                Else
+                    If returnRelativeStrings Then
+                        dstFolders.AddString generateRelativePath(srcFolder, EnforcePathSlash(curFolder & chkFile), True)
+                    Else
+                        dstFolders.AddString EnforcePathSlash(curFolder & chkFile)
+                    End If
+                End If
+            
+            End If
+            
+            'Get the next file
+            chkFile = DirW()
+        
+        Loop
+        
+        'Any subfolders in this folder have now been added to cFolderToCheck.  With this folder successfully processed, we can move it to
+        ' the "folders checked" stack.
+        If isNotFirstFolder Then
+            
+            If returnRelativeStrings Then
+                dstFolders.AddString generateRelativePath(srcFolder, EnforcePathSlash(curFolder & chkFile), True)
+            Else
+                dstFolders.AddString curFolder
+            End If
+            
+        Else
+            isNotFirstFolder = True
+        End If
+        
+    Loop
+    
+    'dstFolders now contains a full collection of subfolders for the given base folder.  If subfolders were found, return TRUE.
+    ' (Note that this value might be incorrect if the user sent us an already-populated string stack, but that's okay - the assumption is that
+    ' they'll be processing the stack as one continuous list, so individual returns don't matter.)
+    If dstFolders.getNumOfStrings > 0 Then
+        retrieveAllFolders = True
+    Else
+        retrieveAllFolders = False
+    End If
+    
+End Function
+
+'Given a base folder and some other path, generate a relative path between the two.
+' It's assumed that thisFolder contains baseFolder within its path; if it doesn't, a copy of the full thisFolder string is returned.
+Private Function generateRelativePath(ByVal baseFolder As String, ByVal thisFolder As String, Optional ByVal normalizationCanBeSkipped As Boolean = False) As String
+    
+    'Start by forcing each string to have a trailing path
+    If Not normalizationCanBeSkipped Then
+        baseFolder = EnforcePathSlash(baseFolder)
+        thisFolder = EnforcePathSlash(thisFolder)
+    End If
+    
+    'Make sure a relative path is possible
+    If InStr(1, thisFolder, baseFolder) = 1 Then
+        
+        'Check equality first; equal strings mean no relative folder is required
+        If StringsEqual(baseFolder, thisFolder) Then
+            generateRelativePath = ""
+        
+        'Strings are not equal, but baseFolder is contained within thisFolder.  Perfect!
+        Else
+            generateRelativePath = Right$(thisFolder, Len(thisFolder) - Len(baseFolder))
+        End If
+            
+    Else
+        generateRelativePath = thisFolder
+    End If
+
+End Function
+
+'Return the .dwFileAttributes parameter of the last DirW() return.  This provides on-demand file attribute access, without any
+' performance penalty to the DirW loop.
+Public Function getAttributesOfLastDirWReturn() As Long
+    getAttributesOfLastDirWReturn = m_FileDataReturn.dwFileAttributes
 End Function
 
 'Unicode-friendly Dir() replacement.  Original version developed by vbForums user "Elroy"
@@ -96,11 +345,11 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
     If Len(sParam) > 0 Then
     
         'First, prepend "\\?\" to sParam.  This enables long file paths.
-        If StrComp(Left$(sParam, 4), "\\?\", vbBinaryCompare) <> 0 Then sParam = "\\?\" & sParam
+        If Not StringsEqual(Left$(sParam, 4), "\\?\") Then sParam = "\\?\" & sParam
     
         'FindFirstFile fails if the requested path has a trailing slash.  If the user hands us a bare path, assume that they
         ' want to iterate all files and folders within that folder.
-        If (StrComp(Right$(sParam, 1), "\", vbBinaryCompare) = 0) Or (StrComp(Right$(sParam, 1), "/", vbBinaryCompare) = 0) Then
+        If StringsEqual(Right$(sParam, 1), "\") Or StringsEqual(Right$(sParam, 1), "/") Then
             sParam = sParam & "*"
         End If
         
@@ -157,11 +406,11 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
             If retValue <> 0 Then
                 
                 'If the return value is "." or "..", ignore it and keep looking for the next file
-                retString = Trim$(TrimNull(m_FileDataReturn.cFileName))
+                retString = TrimNull(m_FileDataReturn.cFileName)
                 
                 If Len(retString) <= 2 Then
                     
-                    If (StrComp(retString, ".", vbBinaryCompare) = 0) Or (StrComp(retString, "..", vbBinaryCompare) = 0) Then
+                    If StringsEqual(retString, ".") Or StringsEqual(retString, "..") Then
                         keepSearching = True
                     Else
                         keepSearching = False
@@ -202,6 +451,17 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
     
 End Function
 
+'Given a path, make sure the right backslash is existant
+Public Function EnforcePathSlash(ByRef srcPath As String) As String
+    
+    If (Not StringsEqual(Right$(srcPath, 1), "\")) And (Not StringsEqual(Right$(srcPath, 1), "/")) Then
+        EnforcePathSlash = srcPath & "\"
+    Else
+        EnforcePathSlash = srcPath
+    End If
+    
+End Function
+
 'Given a full path+filename string, return only the folder portion
 Public Function GetPathOnly(ByRef sFilename As String) As String
     
@@ -227,6 +487,11 @@ Public Function TrimNull(ByRef origString As String) As String
        TrimNull = origString
     End If
     
+End Function
+
+'VB's default string comparison function is overly cumbersome.  This wrapper makes string equality checks much tidier.
+Private Function StringsEqual(ByRef srcString1 As String, ByRef srcString2 As String) As Boolean
+    StringsEqual = (StrComp(srcString1, srcString2, vbBinaryCompare) = 0)
 End Function
 
 Private Sub Class_Initialize()
