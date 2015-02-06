@@ -1491,8 +1491,8 @@ Private Function isNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     ' Because an image does not have to include 0 or 1 values specifically, we return TRUE exclusively; e.g. if any value falls outside
     ' the [0, 1] range, normalization is required.
     Dim minR As Single, maxR As Single, minG As Single, maxG As Single, minB As Single, maxB As Single
-    minR = 0: minG = 0: minB = 0
-    maxR = 1: maxG = 1: maxB = 1
+    minR = 1: minG = 1: minB = 1
+    maxR = 0: maxG = 0: maxB = 0
     
     'This Single-type array will consistently be updated to point to the current line of pixels in the image (RGBF format, remember!)
     Dim srcImageData() As Single
