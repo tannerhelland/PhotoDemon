@@ -51,6 +51,47 @@ Private Const INVALID_HANDLE_VALUE As Long = -1
 Private Const ERROR_FILE_NOT_FOUND As Long = 2
 Private Const ERROR_NO_MORE_FILES As Long = 18
 
+'ReplaceFile is a handy API that combines the following steps into one smooth procedure:
+' Saving data to a new file, renaming the original file using a temporary name, renaming the new file to have the same name as the
+' original file, then deleting the original file.  As a nice bonus, it also preserves DACLs, object ID, security descriptors, and various
+' other attributes.  This makes it perfect for in-place file updating.
+Private Declare Function ReplaceFileW Lib "kernel32" (ByVal lpReplacedFileName As Long, ByVal lpReplacementFileName As Long, ByVal lpBackupFileName As Long, ByVal dwReplaceFlags As Long, ByVal lpExclude As Long, ByVal lpReserved As Long) As Long
+Private Const REPLACEFILE_IGNORE_MERGE_ERRORS As Long = &H2
+
+'ReplaceFileW returns a non-zero value if successful, or zero if it fails.  GetLastError can be used to ascertain specific failures, including:
+Private Const ERROR_UNABLE_TO_MOVE_REPLACEMENT As Long = &H498  'The replacement file could not be renamed. If lpBackupFileName was specified, the replaced
+                                                                ' and replacement files retain their original file names. Otherwise, the replaced file no
+                                                                ' longer exists and the replacement file exists under its original name.
+Private Const ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 As Long = &H499    'The replacement file could not be moved. The replacement file still exists under its
+                                                                    ' original name; however, it has inherited the file streams and attributes from the file
+                                                                    ' it is replacing. The file to be replaced still exists with a different name. If
+                                                                    ' lpBackupFileName is specified, it will be the name of the replaced file.
+Private Const ERROR_UNABLE_TO_REMOVE_REPLACED As Long = &H497       'The replaced file could not be deleted. The replaced and replacement files retain their
+                                                                    ' original file names.
+
+'ReplaceFile has some rare (but not impossible) failure states that could leave us in a nasty lurch.  It also fails if the target file does not exist.
+' We can work around some of these states with a MoveFile fallback.
+Private Declare Function MoveFileExW Lib "kernel32" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long, ByVal dwFlags As Long) As Long
+Private Const MOVEFILE_REPLACE_EXISTING As Long = &H1   'If a file named lpNewFileName exists, the function replaces its contents with the contents of the
+                                                        ' lpExistingFileName file, provided that security requirements regarding access control lists (ACLs)
+                                                        ' are met. (This value cannot be used if lpNewFileName or lpExistingFileName names a directory.)
+Private Const MOVEFILE_COPY_ALLOWED As Long = &H2   'If the file is to be moved to a different volume, the function simulates the move by using the CopyFile
+                                                    ' and DeleteFile functions. If the file is successfully copied to a different volume and the original file
+                                                    ' is unable to be deleted, the function succeeds leaving the source file intact.
+
+'Because our file patching code affects critical PhotoDemon files, we need to make sure we return detailed success/failure information.
+Public Enum FILE_PATCH_RESULT
+    FPR_SUCCESS = 0
+    FPR_FAIL_NOTHING_CHANGED = 1
+    FPR_FAIL_OLD_FILE_REMOVED = 2
+    FPR_FAIL_NEW_FILE_REMOVED = 3
+    FPR_FAIL_BOTH_FILES_REMOVED = 4
+End Enum
+
+#If False Then
+Private Const FPR_SUCCESS = 0, FPR_FAIL_NOTHING_CHANGED = 1, FPR_FAIL_OLD_FILE_REMOVED = 2, FPR_FAIL_NEW_FILE_REMOVED = 3, FPR_FAIL_BOTH_FILES_REMOVED = 4
+#End If
+
 'Used to quickly check if a file (or folder) exists.  Thanks to Bonnie West's "Optimum FileExists Function"
 ' for this technique: http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1
 Private Const ERROR_SHARING_VIOLATION As Long = 32
@@ -470,6 +511,266 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
     
 End Function
 
+'Replace an arbitrary file with another arbitrary file, with optional backup file of the original created during the process.
+'
+'All files must reside on the same volume.  The target file should exist, but to be safe, I have added some custom code to address instances
+' where the target file does not exist (this function will silently fall back to a "Move file" action instead).
+'
+'IMPORTANT NOTE: the ReplaceFileW function has rare-but-not-impossible failure outcomes where the original file is deleted, but the new file is
+'                 not renamed.  Because this failure could be catastrophic during an update process, PD will forcibly create backups of any files
+'                 patched via this function, and restore them as necessary.  The "customBackupFile" parameter only exists if you want to specify
+'                 a CUSTOM backup filename + location; it does not affect whether or not a backup IS created.  (TL;DR - backups are always created.)
+Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = "") As FILE_PATCH_RESULT
+    
+    'Because this function is capable of botching an existing PD install if catastrophic failure occurs, error handling must be comprehensive.
+    On Error GoTo replaceFailure
+    
+    Dim backupFile As String
+    Dim rfReturn As Long, mfReturn As Long
+    
+    'Make sure the target file exists.  If it doesn't, we need to use a different set of APIs
+    If FileExist(oldFile) Then
+    
+        'Forcibly specify a backup path if the user didn't provide their own
+        If Len(customBackupFile) = 0 Then
+        
+            'IMPORTANT NOTE!  If the files you're patching are critical, I STRONGLY recommend forcibly creating a backup here.
+            ' Otherwise, you risk a scenario where something goes wrong during the replace step, and the original file is gone forever.
+            
+            'For example, in PhotoDemon I use the standard Data/Updates folder for backups when patching, like this:
+            'backupFile = getFilename(oldFile)
+            'backupFile = g_UserPreferences.getUpdatePath & backupFile
+            
+            'This ensure that we always have a way to undo the replace step if something goes wrong
+        
+        Else
+            backupFile = customBackupFile
+        End If
+        
+        'ReplaceFileW returns a non-zero value if successful, or zero if it fails.  Because this function is used to patch PhotoDemon.exe,
+        ' there is no margin for failure, so detailed handling of every possible outcome is required.
+        rfReturn = ReplaceFileW(StrPtr(oldFile), StrPtr(newFile), StrPtr(backupFile), REPLACEFILE_IGNORE_MERGE_ERRORS, 0&, 0&)
+        
+        'Success means we can exit immediately
+        If rfReturn <> 0 Then
+            
+            ReplaceFile = FPR_SUCCESS
+            Exit Function
+        
+        'Failure is a problem.  Retrieve the error cause, and do whatever we can to resolve it.
+        Else
+        
+            Select Case Err.LastDllError
+            
+                'The replacement file could not be renamed. If lpBackupFileName was specified, the replaced and replacement files retain their original
+                ' file names. Otherwise, the replaced file no longer exists and the replacement file exists under its original name.
+                Case ERROR_UNABLE_TO_MOVE_REPLACEMENT
+                    
+                    'See if the old file exists
+                    If FileExist(oldFile) Then
+                    
+                        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
+                        ' to this function being invoked, the caller is free to try again.
+                        If FileExist(customBackupFile) Then Kill customBackupFile
+                        
+                        ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                        Exit Function
+                       
+                    Else
+                    
+                        'The old file no longer exists.  Restore the backup file, if at all possible.
+                        If FileExist(backupFile) Then
+                        
+                            'The backup file exists.  Try to restore it to the location of the original file.
+                            mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
+                            
+                            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
+                            ' restored to its original state.
+                            If mfReturn <> 0 Then
+                                
+                                If FileExist(backupFile) Then Kill backupFile
+                                ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                                Exit Function
+                            
+                            'The move failed.  This should never happen.
+                            Else
+                                
+                                Debug.Print "WARNING!  Impossible outcome 1 occurred in ReplaceFile.  Please investigate."
+                                ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+                                Exit Function
+                            
+                            End If
+                        
+                        'The backup file does not exist.  This should never happen.
+                        Else
+                        
+                            Debug.Print "WARNING!  Impossible outcome 2 occurred in ReplaceFile.  Please investigate."
+                            ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+                            Exit Function
+                        
+                        End If
+                    
+                    End If
+                
+                'The replacement file could not be moved. The replacement file still exists under its original name; however, it has inherited the file streams
+                ' and attributes from the file it is replacing. The file to be replaced still exists with a different name. If lpBackupFileName is specified,
+                ' it will be the name of the replaced file.
+                Case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2
+                
+                    'See if the old file exists; this should never happen.
+                    If FileExist(oldFile) Then
+                    
+                        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
+                        ' to this function being invoked, the caller is free to try again.
+                        If FileExist(customBackupFile) Then Kill customBackupFile
+                        
+                        Debug.Print "WARNING!  Impossible outcome 3 occurred in ReplaceFile.  Please investigate."
+                        ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                        Exit Function
+                       
+                    Else
+                    
+                        'The old file no longer exists.  Restore the backup file.  (The backup file is supposedly guaranteed to exist with this error code.)
+                        If FileExist(backupFile) Then
+                        
+                            'The backup file exists.  Try to restore it to the location of the original file.
+                            mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
+                            
+                            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
+                            ' restored to its original state.
+                            If mfReturn <> 0 Then
+                                
+                                If FileExist(backupFile) Then Kill backupFile
+                                ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                                Exit Function
+                            
+                            'The move failed.  This should never happen.
+                            Else
+                                
+                                Debug.Print "WARNING!  Impossible outcome 4 occurred in ReplaceFile.  Please investigate."
+                                ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+                                Exit Function
+                            
+                            End If
+                        
+                        'The backup file does not exist.  This should never happen.
+                        Else
+                        
+                            Debug.Print "WARNING!  Impossible outcome 5 occurred in ReplaceFile.  Please investigate."
+                            ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+                            Exit Function
+                        
+                        End If
+                    
+                    End If
+                
+                'The replaced file could not be deleted. The replaced and replacement files retain their original file names.
+                Case ERROR_UNABLE_TO_REMOVE_REPLACED
+                
+                    'MSDN is unclear on the state of the backup file on this error.  As a failsafe, remove it if it exists.
+                    If FileExist(backupFile) Then Kill backupFile
+                    ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                    Exit Function
+                
+                'Other failure states are more problematic.  Defer to the primary error handler, which will try to restore the
+                ' original file setup as best as it can.
+                Case Else
+                    GoTo replaceFailure
+            
+            End Select
+        
+        End If
+    
+    'The file-to-be-replaced does *not* exist.  Use MoveFile instead of ReplaceFile.
+    Else
+    
+        'Use the API to attempt a move.  (Note that a backup file isn't required in this case, as nothing will be deleted unless the
+        ' operation is successful.)
+        mfReturn = MoveFileExW(StrPtr(oldFile), StrPtr(newFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
+        
+        'The move succeeded!  Exit immediately.
+        If mfReturn <> 0 Then
+            
+            ReplaceFile = FPR_SUCCESS
+            Exit Function
+        
+        'The move failed.  This should not happen (as the target file is known to not exist), but if it does, no harm is done as we haven't
+        ' changed the filesystem at all.
+        Else
+            
+            Debug.Print "WARNING!  Impossible outcome 10 occurred in ReplaceFile.  Please investigate."
+            ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+            Exit Function
+        
+        End If
+    
+    End If
+    
+    Exit Function
+    
+    
+'Arbitrary failure states are problematic.  Basically, our goal is to restore the original file setup as best as we can.  We do this by attempting
+' to restore the backup file (if it exists), and applying any renames or moves required to get everything back to the way it was.
+replaceFailure:
+
+    'See if the old file exists
+    If FileExist(oldFile) Then
+    
+        'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
+        ' to this function being invoked, the caller is free to try again.
+        If FileExist(customBackupFile) Then Kill customBackupFile
+        
+        If FileExist(newFile) Then
+            ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+        Else
+            Debug.Print "WARNING!  Impossible outcome 6 occurred in ReplaceFile.  Please investigate."
+            ReplaceFile = FPR_FAIL_NEW_FILE_REMOVED
+        End If
+        Exit Function
+       
+    Else
+    
+        'The old file no longer exists.  Restore the backup file, if at all possible.
+        If FileExist(backupFile) Then
+        
+            'The backup file exists.  Try to restore it to the location of the original file.
+            mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
+            
+            'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
+            ' restored to its original state.
+            If mfReturn <> 0 Then
+                
+                If FileExist(backupFile) Then Kill backupFile
+                If FileExist(newFile) Then
+                    ReplaceFile = FPR_FAIL_NOTHING_CHANGED
+                Else
+                    Debug.Print "WARNING!  Impossible outcome 7 occurred in ReplaceFile.  Please investigate."
+                    ReplaceFile = FPR_FAIL_NEW_FILE_REMOVED
+                End If
+                Exit Function
+            
+            'The move failed.  This should never happen.
+            Else
+                
+                Debug.Print "WARNING!  Impossible outcome 8 occurred in ReplaceFile.  Please investigate."
+                ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+                Exit Function
+            
+            End If
+        
+        'The backup file does not exist.  This should never happen.
+        Else
+        
+            Debug.Print "WARNING!  Impossible outcome 9 occurred in ReplaceFile.  Please investigate."
+            ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
+            Exit Function
+        
+        End If
+    
+    End If
+
+End Function
+
 'Given a path, make sure the right backslash is existant
 Public Function EnforcePathSlash(ByRef srcPath As String) As String
     
@@ -478,6 +779,23 @@ Public Function EnforcePathSlash(ByRef srcPath As String) As String
     Else
         EnforcePathSlash = srcPath
     End If
+    
+End Function
+
+'Return just the filename from a full path
+Public Function getFilename(ByRef sString As String) As String
+
+    Dim i As Long
+    
+    For i = Len(sString) - 1 To 1 Step -1
+        If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
+            getFilename = Right$(sString, Len(sString) - i)
+            Exit Function
+        End If
+    Next i
+    
+    'If we made it here, no slash was found, so presume that the entire incoming string was the filename
+    getFilename = sString
     
 End Function
 
