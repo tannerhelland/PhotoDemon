@@ -49,6 +49,7 @@ Private Declare Function FindNextFileW Lib "kernel32" (ByVal hFindFile As Long, 
 Private Declare Function FindClose Lib "kernel32" (ByVal hFindFile As Long) As Long
 Private Const INVALID_HANDLE_VALUE As Long = -1
 Private Const ERROR_FILE_NOT_FOUND As Long = 2
+Private Const ERROR_PATH_NOT_FOUND As Long = 3
 Private Const ERROR_NO_MORE_FILES As Long = 18
 
 'ReplaceFile is a handy API that combines the following steps into one smooth procedure:
@@ -92,6 +93,15 @@ End Enum
 Private Const FPR_SUCCESS = 0, FPR_FAIL_NOTHING_CHANGED = 1, FPR_FAIL_OLD_FILE_REMOVED = 2, FPR_FAIL_NEW_FILE_REMOVED = 3, FPR_FAIL_BOTH_FILES_REMOVED = 4
 #End If
 
+'Folder creation.  NULL can be passed as the security attributes pointer; this results in default permissions.
+Private Declare Function CreateDirectoryW Lib "kernel32" (ByVal lpPathName As Long, ByVal ptrToSecurityAttributes As Long) As Long
+
+Private Type SECURITY_ATTRIBUTES
+    nLength As Long
+    lpSecurityDescriptor As Long
+    bInheritHandle As Long
+End Type
+
 'Used to quickly check if a file (or folder) exists.  Thanks to Bonnie West's "Optimum FileExists Function"
 ' for this technique: http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1
 Private Const ERROR_SHARING_VIOLATION As Long = 32
@@ -111,6 +121,116 @@ Public Function FileExist(ByRef fName As String) As Boolean
         Case True: FileExist = True
         Case Else: FileExist = (Err.LastDllError = ERROR_SHARING_VIOLATION)
     End Select
+End Function
+
+'Returns a boolean as to whether or not a given directory exists.  Write access can optionally be tested, too.
+Public Function FolderExist(ByRef fullPath As String, Optional ByVal checkWriteAccessAsWell As Boolean = True) As Boolean
+    
+    'First, make sure the directory exists
+    Dim chkExistence As Boolean
+    chkExistence = Abs(GetFileAttributesW(StrPtr(fullPath))) And vbDirectory
+        
+    'If the caller doesn't care about write access, or the folder wasn't found, exit now.
+    If (Not chkExistence) Or (Not checkWriteAccessAsWell) Then
+        FolderExist = chkExistence
+        
+    'The folder was found, but the caller wants to know about write access, so a few more checks are needed.
+    Else
+        
+        'Writing to an inaccessible folder will raise an error; this is an ugly way to check, but security descriptors are a hassle...
+        On Error GoTo noWriteAccess
+        
+        Dim tmpFilename As String
+        tmpFilename = EnforcePathSlash(fullPath) & "tmp.tmp"
+        
+        Dim fileNum As Integer
+        fileNum = FreeFile
+    
+        'Attempt to create a file within this directory.  If we succeed, delete the file and return "true".
+        ' If we fail, we do not have access rights.
+        Open tmpFilename For Binary As #fileNum
+            Put #fileNum, 1, 1
+        Close #fileNum
+        
+        If FileExist(tmpFilename) Then Kill tmpFilename
+        
+        'If we made it all the way here, the file was written and deleted successfully.
+        FolderExist = True
+        
+    End If
+    
+    Exit Function
+    
+noWriteAccess:
+
+    FolderExist = False
+    
+End Function
+
+'Create a given directory.  Returns TRUE if folder already exists, or folder was successfully created.  FALSE otherwise.
+'
+'An optional parameter, "createIntermediateFoldersAsNecessary", can be specified.  This instructs the function to create as many
+' missing subfolders as are necessary in order to ensure the full source path exists.
+'
+'IMPORTANT NOTE! createIntermediateFoldersAsNecessary is not yet implemented.
+Public Function CreateFolder(ByVal fullPath As String, Optional ByVal createIntermediateFoldersAsNecessary As Boolean = False) As Boolean
+    
+    'If the folder already exists, great!
+    If FolderExist(fullPath, False) Then
+        CreateFolder = True
+        
+    'The folder doesn't exist, so we need to make it
+    Else
+    
+        Dim cSuccess As Long
+        cSuccess = CreateDirectoryW(StrPtr(fullPath), 0&)
+        
+        If (cSuccess <> 0) Then
+            CreateFolder = True
+        Else
+            CreateFolder = False
+            
+            'Check relevant errors
+            
+            'PATH NOT FOUND means one or more parent folders do not exist.
+            If Err.LastDllError = ERROR_PATH_NOT_FOUND Then
+            
+                'If the user wants us to construct intermediate folders, this is our chance to do so.
+                If createIntermediateFoldersAsNecessary Then
+                    
+                    'Starting at the base and working our way forward, create all necessary folders.
+                    
+                    'First, normalize against backslashes
+                    If InStr(1, fullPath, "/", vbBinaryCompare) Then fullPath = Replace$(fullPath, "/", "\")
+                    
+                    'Assume a drive letter is present.  We'll use that as our starting point.
+                    Dim startPos As Long, endPos As Long
+                    startPos = InStr(1, fullPath, ":", vbBinaryCompare)
+                    
+                    'Find the first "\"
+                    startPos = InStr(startPos, fullPath, "\")
+                    
+                    If startPos > 0 Then
+                    
+                        'Extract the next folder in line
+                        'TODO!
+                    
+                    End If
+                    
+                    Debug.Print "WARNING! CreateFolder failed, because the createIntermediateFoldersAsNecessary parameter is not yet implemented."
+                    
+                Else
+                    Debug.Print "WARNING! CreateFolder failed; intermediate folders were missing."
+                End If
+            
+            Else
+                Debug.Print "WARNING! CreateFolder failed on an unknown error (#" & Err.LastDllError & ")."
+            End If
+            
+        End If
+        
+    End If
+
 End Function
 
 'Given a base folder, return all files within that folder (including subfolders).  Subfolder recursion is assumed, but can be waived by setting
