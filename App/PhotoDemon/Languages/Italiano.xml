@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.5.7</langversion>
+<langversion>6.5.8</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13129,6 +13129,12 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- pdFSO.cls contains 0 phrases. -->
 
 <!-- END text for pdFSO.cls-->
+
+<!-- BEGIN text for pdStringStack.cls -->
+
+<!-- pdStringStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStringStack.cls-->
 
 <!-- Automatic text extraction complete. -->
 

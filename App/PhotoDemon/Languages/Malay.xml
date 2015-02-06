@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.5.6</langversion>
+<langversion>6.5.7</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13129,6 +13129,12 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- pdFSO.cls contains 0 phrases. -->
 
 <!-- END text for pdFSO.cls-->
+
+<!-- BEGIN text for pdStringStack.cls -->
+
+<!-- pdStringStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStringStack.cls-->
 
 <!-- Automatic text extraction complete. -->
 

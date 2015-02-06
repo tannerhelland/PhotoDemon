@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.5.7</langversion>
+<langversion>6.5.8</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13129,6 +13129,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- pdFSO.cls contains 0 phrases. -->
 
 <!-- END text for pdFSO.cls-->
+
+<!-- BEGIN text for pdStringStack.cls -->
+
+<!-- pdStringStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStringStack.cls-->
 
 <!-- Automatic text extraction complete. -->
 
