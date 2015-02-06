@@ -56,6 +56,9 @@ Private m_xmlContents As String
 'Text comparison mode.  By default, this is set to m_TextCompareMode.  Outside functions can modify this via setTextCompareMode().
 Private m_TextCompareMode As VbCompareMethod
 
+'File operations are made easier by using the pdFSO class, which wraps a bunch of Unicode-friendly file APIs
+Private m_File As pdFSO
+
 Public Sub setTextCompareMode(ByVal newCompareMode As VbCompareMethod)
     m_TextCompareMode = newCompareMode
 End Sub
@@ -501,7 +504,7 @@ End Function
 ' Returns: TRUE if file found, loaded, and validated successfully.  FALSE otherwise.
 Public Function loadXMLFile(ByVal xmlPath As String) As Boolean
     
-    If FileExist(xmlPath) Then
+    If m_File.FileExist(xmlPath) Then
     
         'Load the file's contents into a string
         m_xmlContents = getFileAsString(xmlPath)
@@ -537,7 +540,7 @@ Private Function getFileAsString(ByVal fName As String) As String
     Dim tmpFileContents As String
     
     'Ensure that the file exists before attempting to load it
-    If FileExist(fName) Then
+    If m_File.FileExist(fName) Then
         
         Dim fileNum As Integer
         fileNum = FreeFile
@@ -650,7 +653,7 @@ Public Function writeXMLToFile(ByVal dstFile As String, Optional ByVal suppressI
     'If the file already exists, remove it.  (I have also added a DoEvents here after noticing random errors in this
     ' sub - it's important to wait for the file to be deleted, so that the write attempt below does not fail.
     ' Update 04 Feb 15: DoEvents causes strange things to happen (imagine that!) so I have once again removed it.)
-    If FileExist(dstFile) Then Kill dstFile
+    If m_File.FileExist(dstFile) Then Kill dstFile
     
     'Open the specified file
     Dim fileNum As Integer
@@ -968,10 +971,80 @@ Public Function findAllTagLocations(ByRef locationArray() As Long, ByVal tagName
     
 End Function
 
+'A custom CDbl function that accepts both commas and decimals as a separator; this is important when moving floating-point data,
+' represented as strings, between locales.
+Private Function CDblCustom(ByVal srcString As String) As Double
+
+    'Replace commas with periods
+    If InStr(1, srcString, ",") > 0 Then srcString = Replace(srcString, ",", ".")
+    
+    'We can now use Val() to convert to Double
+    If IsNumberLocaleUnaware(srcString) Then
+        CDblCustom = Val(srcString)
+    Else
+        CDblCustom = 0
+    End If
+
+End Function
+
+'Locale-unaware check for strings that can successfully be converted to numbers.  Thank you to
+' http://stackoverflow.com/questions/18368680/vb6-isnumeric-behaviour-in-windows-8-windows-2012
+' for the code.  (Note that the original function listed there is buggy!  I had to add some
+' fixes for exponent strings, which the original code did not handle correctly.)
+Private Function IsNumberLocaleUnaware(ByRef Expression As String) As Boolean
+    
+    Dim Negative As Boolean
+    Dim Number As Boolean
+    Dim Period As Boolean
+    Dim Positive As Boolean
+    Dim Exponent As Boolean
+    Dim x As Long
+    For x = 1& To Len(Expression)
+        Select Case Mid$(Expression, x, 1&)
+        Case "0" To "9"
+            Number = True
+        Case "-"
+            If Period Or Number Or Negative Or Positive Then Exit Function
+            Negative = True
+        Case "."
+            If Period Or Exponent Then Exit Function
+            Period = True
+        Case "E", "e"
+            If Not Number Then Exit Function
+            If Exponent Then Exit Function
+            Exponent = True
+            Number = False
+            Negative = False
+            Period = False
+        Case "+"
+            If Not Exponent Then Exit Function
+            If Number Or Negative Or Positive Then Exit Function
+            Positive = True
+        Case " ", vbTab, vbVerticalTab, vbCr, vbLf, vbFormFeed
+            If Period Or Number Or Exponent Or Negative Then Exit Function
+        Case Else
+            Exit Function
+        End Select
+    Next x
+        
+    IsNumberLocaleUnaware = Number
+    
+End Function
+
 Private Sub Class_Initialize()
 
     'This XML class uses text comparison mode by default.  Note that this is fraught with internationalization issues,
-    ' so be aware of the considerations before relying on output in non-en locales.
+    ' so be aware of the considerations before relying on output in locales other than en-US.
     m_TextCompareMode = vbTextCompare
+    
+    'Prepare a module-level pdFSO instance, which will make file operations much easier
+    Set m_File = New pdFSO
+
+End Sub
+
+Private Sub Class_Terminate()
+
+    'Release our pdFSO instance
+    Set m_File = Nothing
 
 End Sub

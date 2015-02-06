@@ -15,9 +15,11 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" Interface (e.g. Zip-like archive handler)
 'Copyright 2014-2015 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 24/October/14
-'Last update: add support for second-pass directory chunk and data chunk compression
+'Last updated: 06/February/15
+'Last update: expand zip-like interface, with help from the new pdFSO class
 'Dependencies: clsBasicBuffer class by dilettante (used to read/write byte array buffers more easily)
+'              pdFSO class from photodemon.org (Unicode-friendly file operations)
+'              pdStringStack class from photodemon.org (optimized handling of large string collections)
 '
 'This class provides an interface for creating and reading "pdPackage" files.  pdPackages are zip-like archive files
 ' that contain one or more "nodes" (e.g. pieces of data), compressed or uncompressed, in a VB-friendly structure.
@@ -210,6 +212,9 @@ Private m_NumOfNodes As Long
 'The actual data chunk of the pdPackage will be assembled using a clsBasicBuffer instance.  It greatly simplifies the process of
 ' assembling a 1D byte array from discrete individual chunks.
 Private m_DataBuffer As clsBasicBuffer
+
+'File operations are made easier by using the pdFSO class, which wraps a bunch of Unicode-friendly file APIs
+Private m_File As pdFSO
 
 
 'pdPackage operations are roughly divided into two groups:
@@ -468,7 +473,7 @@ End Function
 Public Function autoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal addChecksumVerification As Boolean = True) As Boolean
 
     'Attempt to load the file into a byte array
-    If FileExist(pathToFile) Then
+    If m_File.FileExist(pathToFile) Then
     
         Dim fileNum As Integer
         fileNum = FreeFile
@@ -490,7 +495,7 @@ Public Function autoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
             nodeIndex = addNode("PDPFILE", , OptionalNodeType)
             
             'Write the filename out to the first node
-            autoAddNodeFromFile = addNodeDataFromString(nodeIndex, True, getFilename(pathToFile), False)
+            autoAddNodeFromFile = addNodeDataFromString(nodeIndex, True, m_File.getFilename(pathToFile), False)
             
             'Write the file contents out to the first node
             autoAddNodeFromFile = autoAddNodeFromFile And addNodeDataFromByteArray(nodeIndex, False, fileContents, , , addChecksumVerification)
@@ -557,7 +562,7 @@ Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal s
     End If
     
     'Kill the destination file if it already exists
-    If FileExist(dstFilename) Then Kill dstFilename
+    If m_File.FileExist(dstFilename) Then Kill dstFilename
     
     'Open the target file
     Dim fileNum As Integer
@@ -673,7 +678,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     Dim zLibResult As Long
     
     'Before doing anything else, make sure the file exists
-    If Not FileExist(srcFilename) Then
+    If Not m_File.FileExist(srcFilename) Then
         Debug.Print "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
         GoTo StopPackageFileRead
     End If
@@ -999,7 +1004,7 @@ Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         If dstPathIncludesFilename Then
             fullDestinationPath = dstPath
         Else
-            dstPath = FixPath(dstPath)
+            dstPath = m_File.EnforcePathSlash(dstPath)
             fullDestinationPath = dstPath & srcFilename
         End If
         
@@ -1007,7 +1012,7 @@ Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
         If getNodeDataByIndex(nodeIndex, False, retBytes()) Then
         
             'Erase the target file, if it exists
-            If FileExist(fullDestinationPath) Then Kill fullDestinationPath
+            If m_File.FileExist(fullDestinationPath) Then Kill fullDestinationPath
             
             'Dump the node's contents to file
             Dim fileNum As Integer
@@ -1371,7 +1376,7 @@ End Function
 Public Function checkSumArbitraryFile(ByRef pathToFile As String) As Long
 
     'Attempt to load the file into a byte array
-    If FileExist(pathToFile) Then
+    If m_File.FileExist(pathToFile) Then
     
         Dim fileNum As Integer
         fileNum = FreeFile
@@ -1400,6 +1405,9 @@ Private Sub Class_Initialize()
     m_ZLibAvailable = False
     m_ZLibToken = 0
     
+    'Prepare a module-level pdFSO instance, which will make file operations much easier
+    Set m_File = New pdFSO
+    
 End Sub
 
 Private Sub Class_Terminate()
@@ -1410,6 +1418,9 @@ Private Sub Class_Terminate()
     'Release our data stream buffer
     If Not (m_DataBuffer Is Nothing) Then m_DataBuffer.CloseBuf
     Set m_DataBuffer = Nothing
+    
+    'Release our pdFSO instance
+    Set m_File = Nothing
 
 End Sub
 
