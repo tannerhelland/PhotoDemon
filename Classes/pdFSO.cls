@@ -127,6 +127,17 @@ Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     whiteListInUse = (Len(onlyAllowTheseExtensions) <> 0)
     blackListInUse = (Len(doNotAllowTheseExtensions) <> 0)
     
+    'To further simplify searching for extension matches in the whitelist, we enforce strict formatting of the string
+    If whiteListInUse Then
+        If Not StringsEqual(Left$(onlyAllowTheseExtensions, 1), "|") Then onlyAllowTheseExtensions = "|" & onlyAllowTheseExtensions
+        If Not StringsEqual(Right$(onlyAllowTheseExtensions, 1), "|") Then onlyAllowTheseExtensions = onlyAllowTheseExtensions & "|"
+    End If
+    
+    If blackListInUse Then
+        If Not StringsEqual(Left$(doNotAllowTheseExtensions, 1), "|") Then doNotAllowTheseExtensions = "|" & doNotAllowTheseExtensions
+        If Not StringsEqual(Right$(doNotAllowTheseExtensions, 1), "|") Then doNotAllowTheseExtensions = doNotAllowTheseExtensions & "|"
+    End If
+    
     'To eliminate the need for expensive recursion, we use a stack structure to store subfolders that still need to be searched.
     ' Valid files are directly added to dstFiles as they are encountered.
     Dim cFoldersToCheck As pdStringStack
@@ -160,15 +171,23 @@ Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
                 
                 'White-listing check required
                 If whiteListInUse Then
-                
-                    'TODO!
-                    fileValid = True
+                    
+                    'Look for this file's extension in the white list
+                    If InStr(1, onlyAllowTheseExtensions, "|" & GetFileExtension(chkFile) & "|", vbBinaryCompare) > 0 Then
+                        fileValid = True
+                    Else
+                        fileValid = False
+                    End If
                 
                 'Black-listing check required
                 ElseIf blackListInUse Then
                 
-                    'TODO!
-                    fileValid = True
+                    'Look for this file's extension in the black list
+                    If InStr(1, doNotAllowTheseExtensions, "|" & GetFileExtension(chkFile) & "|", vbBinaryCompare) > 0 Then
+                        fileValid = False
+                    Else
+                        fileValid = True
+                    End If
                 
                 'All files are allowed
                 Else
@@ -460,6 +479,29 @@ Public Function EnforcePathSlash(ByRef srcPath As String) As String
         EnforcePathSlash = srcPath
     End If
     
+End Function
+
+'Function to return the extension from a filename.
+Public Function GetFileExtension(sFile As String) As String
+    
+    Dim i As Long
+    For i = Len(sFile) To 1 Step -1
+    
+        'If we find a path before we find an extension, return a blank string
+        If StringsEqual(Mid(sFile, i, 1), "\") Or StringsEqual(Mid(sFile, i, 1), "/") Then
+            GetFileExtension = ""
+            Exit Function
+        End If
+        
+        If StringsEqual(Mid(sFile, i, 1), ".") Then
+            GetFileExtension = Right$(sFile, Len(sFile) - i)
+            Exit Function
+        End If
+    Next i
+    
+    'If we reach this point, no extension was found
+    GetFileExtension = ""
+            
 End Function
 
 'Given a full path+filename string, return only the folder portion

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.5.6</langversion>
+<langversion>6.5.7</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers </author>
@@ -13128,6 +13128,12 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- pdFSO.cls contains 0 phrases. -->
 
 <!-- END text for pdFSO.cls-->
+
+<!-- BEGIN text for pdStringStack.cls -->
+
+<!-- pdStringStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStringStack.cls-->
 
 <!-- Automatic text extraction complete. -->
 

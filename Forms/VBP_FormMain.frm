@@ -4168,7 +4168,7 @@ Private Sub MnuTest_Click()
     
     Dim cResults As pdStringStack
     
-    cFSO.retrieveAllFiles "C:\PhotoDemon v4\PhotoDemon\Support", cResults, True, False
+    cFSO.retrieveAllFiles "C:\PhotoDemon v4\PhotoDemon\App\", cResults, True, True, , "exe|dll"
     cResults.DEBUG_dumpResultsToImmediateWindow
     
     Exit Sub
