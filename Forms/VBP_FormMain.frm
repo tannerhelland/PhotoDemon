@@ -4168,6 +4168,7 @@ Private Sub MnuTest_Click()
     
     Dim cResults As pdStringStack
     
+    'cFSO.CreateFolder("C:\PhotoDemon v4\PhotoDemon\Imaginary\More imaginary\Fake\etc", True)
     cFSO.retrieveAllFiles "C:\PhotoDemon v4\PhotoDemon\Support\", cResults, True, True
     
     cResults.sortStackByLength

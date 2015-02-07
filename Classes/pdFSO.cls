@@ -202,6 +202,7 @@ Public Function CreateFolder(ByVal fullPath As String, Optional ByVal createInte
                     
                     'First, normalize against backslashes
                     If InStr(1, fullPath, "/", vbBinaryCompare) Then fullPath = Replace$(fullPath, "/", "\")
+                    fullPath = EnforcePathSlash(fullPath)
                     
                     'Assume a drive letter is present.  We'll use that as our starting point.
                     Dim startPos As Long, endPos As Long
@@ -213,11 +214,28 @@ Public Function CreateFolder(ByVal fullPath As String, Optional ByVal createInte
                     If startPos > 0 Then
                     
                         'Extract the next folder in line
-                        'TODO!
+                        endPos = InStr(startPos + 1, fullPath, "\", vbBinaryCompare)
+                        
+                        Do While endPos > 0
+                            
+                            'We're going to ignore return values during creation of these child folders, because permissions may not exist
+                            ' for creating some parent folders.  Instead, to verify that everything worked, we'll re-test the full folder
+                            ' existence after attempting to create the entire hierarchy.
+                            CreateFolder Left$(fullPath, endPos), False
+                            
+                            'Find the next folder in the path and repeat!
+                            startPos = endPos
+                            endPos = InStr(startPos + 1, fullPath, "\", vbBinaryCompare)
+                            
+                        Loop
+                        
+                        'Now we check to see if the full path exists; if it doesn't, we're SOL.
+                        CreateFolder = FolderExist(fullPath, True)
                     
+                    Else
+                        Debug.Print "WARNING! CreateFolder failed; no folders were specified in the path parameter...?"
+                        CreateFolder = False
                     End If
-                    
-                    Debug.Print "WARNING! CreateFolder failed, because the createIntermediateFoldersAsNecessary parameter is not yet implemented."
                     
                 Else
                     Debug.Print "WARNING! CreateFolder failed; intermediate folders were missing."
