@@ -171,8 +171,6 @@ End Function
 '
 'An optional parameter, "createIntermediateFoldersAsNecessary", can be specified.  This instructs the function to create as many
 ' missing subfolders as are necessary in order to ensure the full source path exists.
-'
-'IMPORTANT NOTE! createIntermediateFoldersAsNecessary is not yet implemented.
 Public Function CreateFolder(ByVal fullPath As String, Optional ByVal createIntermediateFoldersAsNecessary As Boolean = False) As Boolean
     
     'If the folder already exists, great!
@@ -960,7 +958,8 @@ Public Function GetFileExtension(sFile As String) As String
             
 End Function
 
-'Given a full path+filename string, return only the folder portion
+'Given a full path+filename string, return only the folder portion.
+' Returns a blank string if a folder cannot be extracted.
 Public Function GetPathOnly(ByRef sFilename As String) As String
     
     Dim slashPosition As Long
