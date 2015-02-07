@@ -4162,50 +4162,57 @@ End Sub
 
 Private Sub MnuTest_Click()
     
-    'Temporary tests on pdFSO
-    Dim cFSO As pdFSO
-    Set cFSO = New pdFSO
+'    'Temporary tests on pdFSO
+'    Dim cFSO As pdFSO
+'    Set cFSO = New pdFSO
+'
+'    Dim cResults As pdStringStack
+'
+'    'cFSO.CreateFolder("C:\PhotoDemon v4\PhotoDemon\Imaginary\More imaginary\Fake\etc", True)
+'    cFSO.retrieveAllFiles "C:\PhotoDemon v4\PhotoDemon\Support\", cResults, True, True
+'
+'    cResults.sortStackByLength
+'    cResults.DEBUG_dumpResultsToImmediateWindow
+'
+'    Exit Sub
+
+
+    'Temporary test(s) of new pdPackage compression code.
+
+    'Create a pdPackage instance and add an arbitrary file to it
+    Dim tmpPackager As pdPackager
+    Set tmpPackager = New pdPackager
+
+    If g_ZLibEnabled Then tmpPackager.init_ZLib g_PluginPath & "zlibwapi.dll"
+    tmpPackager.prepareNewPackage
+
+    If tmpPackager.autoAddNodeFromFile("C:\PhotoDemon v4\PhotoDemon\no_sync\microsoft help workshop tutorial.pdf", 1, , "PhotoDemon\no_sync\microsoft help workshop tutorial.pdf") Then Debug.Print "successfully added node"
+
+    'Write the pdPackage to file
+    tmpPackager.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
+
+    'Reset the class, then load the pdPackage file
+    Set tmpPackager = New pdPackager
+    If g_ZLibEnabled Then tmpPackager.init_ZLib g_PluginPath & "zlibwapi.dll"
+    tmpPackager.readPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
+
+    'Extract the compressed file, and test its ability to reconstruct the folder hierarchy
+    If tmpPackager.autoExtractSingleFile("C:\PhotoDemon v4\PhotoDemon\Support\", "PhotoDemon\no_sync\microsoft help workshop tutorial.pdf", False, 1) Then Debug.Print "successfully extracted"
+    Set tmpPackager = Nothing
+
+    'Kill the temp pdPackage file
+    If FileExist("C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp") Then Kill "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
     
-    Dim cResults As pdStringStack
     
-    'cFSO.CreateFolder("C:\PhotoDemon v4\PhotoDemon\Imaginary\More imaginary\Fake\etc", True)
-    cFSO.retrieveAllFiles "C:\PhotoDemon v4\PhotoDemon\Support\", cResults, True, True
     
-    cResults.sortStackByLength
-    cResults.DEBUG_dumpResultsToImmediateWindow
+'    'Want to test a new dialog?  Call it here:
+'    showPDDialog vbModal, FormToTest
     
-    Exit Sub
-'    'Temporary test of new pdPackage compression code.
-'
-'    'Create a pdPackage instance and add an arbitrary file to it
-'    Dim tmpPackager As pdPackager
-'    Set tmpPackager = New pdPackager
-'
-'    If g_ZLibEnabled Then tmpPackager.init_ZLib g_PluginPath & "zlibwapi.dll"
-'    tmpPackager.prepareNewPackage
-'
-'    If tmpPackager.autoAddNodeFromFile("C:\PhotoDemon v4\PhotoDemon\no_sync\microsoft help workshop tutorial.pdf", 1) Then Debug.Print "successfully added node"
-'
-'    'Write the pdPackage to file
-'    tmpPackager.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
-'
-'    'Reset the class, then load the pdPackage file
-'    Set tmpPackager = New pdPackager
-'    If g_ZLibEnabled Then tmpPackager.init_ZLib g_PluginPath & "zlibwapi.dll"
-'    tmpPackager.readPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
-'
-'    'Extract the compressed file (both extraction methods should be working)
-'    'If tmpPackager.autoExtractSingleFile("C:\PhotoDemon v4\PhotoDemon\no_sync\PDF TEST EXTRACT.pdf", "microsoft help workshop tutorial.pdf", True, 1) Then Debug.Print "successfully extracted"
-'    If tmpPackager.autoExtractSingleFile("C:\PhotoDemon v4\", "microsoft help workshop tutorial.pdf", False, 1) Then Debug.Print "successfully extracted"
-'    Set tmpPackager = Nothing
-'
-'    'Kill the temp pdPackage file
-'    If FileExist("C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp") Then Kill "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
     
-    'Want to test a new dialog?  Call it here:
-    'showPDDialog vbModal, FormToTest
     
-    MenuTest
+'    'A longer, more dedicated test function can be accessed in the MenuTest() sub.  It also contains rudimentary code for modifying
+'    ' an image's pixel data, if you want to test any pixel-based code.
+'    MenuTest
     
 End Sub
 
