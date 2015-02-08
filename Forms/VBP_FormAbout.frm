@@ -365,7 +365,9 @@ Private Sub Form_Load()
     GenerateThankyou "Bonnie West", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1", True
     GenerateThankyou "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1", True
     GenerateThankyou "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546", True
+    GenerateThankyou "Dana Seaman", "http://www.cyberactivex.com/", True
     GenerateThankyou "dilettante", "http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control", True
+    GenerateThankyou "Dirk Hartmann", "http://www.taichi-zentrum-heidelberg.de", True
     GenerateThankyou "Dosadi", "http://eztwain.com/eztwain1.htm", True
     GenerateThankyou "Easy RGB", "http://www.easyrgb.com/", True
     GenerateThankyou "Everaldo Coelho", "http://www.everaldo.com/", True
@@ -387,6 +389,7 @@ Private Sub Form_Load()
     GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/", True
     GenerateThankyou "Mike Raynder", "http://www.xtremevbtalk.com/showthread.php?t=229758", True
     GenerateThankyou "Mohammad Reza Karimi"
+    GenerateThankyou "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/", True
     GenerateThankyou "Paul Bourke", "http://paulbourke.net/miscellaneous/", True
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx", True
     GenerateThankyou "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/", True
