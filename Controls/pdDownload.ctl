@@ -435,46 +435,53 @@ Public Sub freeResourcesForItem(ByVal itemKey As String)
 End Sub
 
 'Use this sub to reset everything to its virgin state.
-Public Sub Reset()
+Public Sub Reset(Optional ByVal setFailsafeTimer As Boolean = True)
     
     'Cancel any downloads currently in progress
     Dim i As Long
-    For i = 0 To m_NumOfFiles - 1
+    If m_NumOfFiles > 0 Then
     
-        With m_DownloadList(i)
+        For i = 0 To m_NumOfFiles - 1
         
-            If .CurrentStatus = PDS_DOWNLOADING Then
-                UserControl.CancelAsyncRead .Key
-                .CurrentStatus = PDS_FAILURE_CALLER_CANCELED_DOWNLOAD
-            End If
+            With m_DownloadList(i)
+            
+                If .CurrentStatus = PDS_DOWNLOADING Then
+                    UserControl.CancelAsyncRead .Key
+                    .CurrentStatus = PDS_FAILURE_CALLER_CANCELED_DOWNLOAD
+                End If
+            
+            End With
         
-        End With
+        Next i
     
-    Next i
+    End If
     
     'Reset all tracking variables
     m_NumOfFiles = 0
     m_NumOfFilesFinishedDownloading = 0
     m_DownloadsAllowed = False
+    ReDim m_DownloadList(0 To 3) As pdDownloadEntry
     
     'The master tracking array is likely locked, as this function will likely be accessed from inside a raised event.
     ' To prevent asynchronicity issues, launch a separate timer.  It will handle the actual erasing of the array.
-    m_ResetActive = True
-    tmrReset.Enabled = True
+    If setFailsafeTimer Then
+        m_ResetActive = True
+        tmrReset.Enabled = True
+    End If
 
 End Sub
 
 Private Sub UserControl_Initialize()
     
     'Reset everything to its default state
-    Reset
+    Reset False
     
 End Sub
 
 'At termination, all downloads are forcibly stopped and any existing data is deleted.
 ' This all happens automatically, so we don't need to do our own clean-up.
 Private Sub UserControl_Terminate()
-    Reset
+    Reset False
 End Sub
 
 'Add a file to the queue.  Note that this DOES NOT start the download, unless setDownloadState has been passed TRUE at some
