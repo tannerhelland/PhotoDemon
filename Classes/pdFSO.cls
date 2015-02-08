@@ -338,7 +338,7 @@ Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
         Do While Len(chkFile) <> 0
             
             'See if this chkFile iteration contains a folder
-            If (getAttributesOfLastDirWReturn And vbDirectory) <> 0 Then
+            If (GetAttributesOfLastDirWReturn And vbDirectory) <> 0 Then
             
                 'This is a folder.  Add it to the "folders to check" collection if subfolders are being parsed.
                 If recurseSubfolders Then cFoldersToCheck.AddString EnforcePathSlash(curFolder & chkFile)
@@ -374,7 +374,7 @@ Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
                 'If we are allowed to add this file, do so now
                 If fileValid Then
                     If returnRelativeStrings Then
-                        dstFiles.AddString generateRelativePath(srcFolder, curFolder & chkFile, True)
+                        dstFiles.AddString GenerateRelativePath(srcFolder, curFolder & chkFile, True)
                     Else
                         dstFiles.AddString curFolder & chkFile
                     End If
@@ -442,14 +442,14 @@ Public Function retrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
         Do While Len(chkFile) <> 0
             
             'See if this chkFile iteration contains a folder
-            If (getAttributesOfLastDirWReturn And vbDirectory) <> 0 Then
+            If (GetAttributesOfLastDirWReturn And vbDirectory) <> 0 Then
             
                 'This is a folder.  Add it to the "folders to check" collection.
                 If recurseSubfolders Then
                     cFoldersToCheck.AddString EnforcePathSlash(curFolder & chkFile)
                 Else
                     If returnRelativeStrings Then
-                        dstFolders.AddString generateRelativePath(srcFolder, EnforcePathSlash(curFolder & chkFile), True)
+                        dstFolders.AddString GenerateRelativePath(srcFolder, EnforcePathSlash(curFolder & chkFile), True)
                     Else
                         dstFolders.AddString EnforcePathSlash(curFolder & chkFile)
                     End If
@@ -467,7 +467,7 @@ Public Function retrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
         If isNotFirstFolder Then
             
             If returnRelativeStrings Then
-                dstFolders.AddString generateRelativePath(srcFolder, EnforcePathSlash(curFolder & chkFile), True)
+                dstFolders.AddString GenerateRelativePath(srcFolder, EnforcePathSlash(curFolder & chkFile), True)
             Else
                 dstFolders.AddString curFolder
             End If
@@ -489,38 +489,35 @@ Public Function retrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
     
 End Function
 
-'Given a base folder and some other path, generate a relative path between the two.
+'Given a base folder and some other path (with or without filename), generate a relative path between the two.
 ' It's assumed that thisFolder contains baseFolder within its path; if it doesn't, a copy of the full thisFolder string is returned.
-Private Function generateRelativePath(ByVal baseFolder As String, ByVal thisFolder As String, Optional ByVal normalizationCanBeSkipped As Boolean = False) As String
+Public Function GenerateRelativePath(ByVal baseFolder As String, ByVal thisFolder As String, Optional ByVal normalizationCanBeSkipped As Boolean = False) As String
     
     'Start by forcing each string to have a trailing path
-    If Not normalizationCanBeSkipped Then
-        baseFolder = EnforcePathSlash(baseFolder)
-        thisFolder = EnforcePathSlash(thisFolder)
-    End If
+    If Not normalizationCanBeSkipped Then baseFolder = EnforcePathSlash(baseFolder)
     
     'Make sure a relative path is possible
     If InStr(1, thisFolder, baseFolder) = 1 Then
         
         'Check equality first; equal strings mean no relative folder is required
         If StringsEqual(baseFolder, thisFolder) Then
-            generateRelativePath = ""
+            GenerateRelativePath = ""
         
         'Strings are not equal, but baseFolder is contained within thisFolder.  Perfect!
         Else
-            generateRelativePath = Right$(thisFolder, Len(thisFolder) - Len(baseFolder))
+            GenerateRelativePath = Right$(thisFolder, Len(thisFolder) - Len(baseFolder))
         End If
             
     Else
-        generateRelativePath = thisFolder
+        GenerateRelativePath = thisFolder
     End If
 
 End Function
 
 'Return the .dwFileAttributes parameter of the last DirW() return.  This provides on-demand file attribute access, without any
 ' performance penalty to the DirW loop.
-Public Function getAttributesOfLastDirWReturn() As Long
-    getAttributesOfLastDirWReturn = m_FileDataReturn.dwFileAttributes
+Public Function GetAttributesOfLastDirWReturn() As Long
+    GetAttributesOfLastDirWReturn = m_FileDataReturn.dwFileAttributes
 End Function
 
 'Unicode-friendly Dir() replacement.  Original version developed by vbForums user "Elroy"

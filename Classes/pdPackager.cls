@@ -480,6 +480,8 @@ End Function
 'Shortcut function to both create a new node, and copy a file's contents directly into that node, without any intermediate work on the caller's part.
 ' Note that only the filename and the file's contents are added; things like file attributes or security descriptors are *not*, by design.
 '
+'Default compression settings are used for the added files (e.g. compression is always applied, at zLib's recommended setting).
+'
 'This function now supports relative paths, e.g. "\Subfolder\Filename.txt".  To make use of this feature, you *must* pass the desired
 ' RELATIVE PATH AND FILENAME as the optional "storeUsingThisRelativePathAndFilename" parameter.  (e.g. continuing with the above example,
 ' you would pass the full absolute path as pathToFile, "C:\User\Subfolder\Filename.txt", then pass "\Subfolder\Filename.txt" as
@@ -544,6 +546,102 @@ Public Function autoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
     Else
         Debug.Print "WARNING! Requested file does not exist; abandoning pdPackage autoAddNodeFromFile request."
         autoAddNodeFromFile = False
+    End If
+
+End Function
+
+'Shortcut function to create an arbitrary number of nodes, using some source folder as the reference.
+'
+'This function is basically a thin wrapper to pdFSO.retrieveAllFiles and autoAddNodeFromFile.  You could achieve the same results by using
+' those two functions yourselves.
+'
+'The required srcFolder must be an absolute path, including drive letter (e.g. "C:\ThisFolder\SubFolder").
+'
+'For convenience, every file added via this request can be assigned an optional node type.  This same node type can be used when extracting
+' files, if you want to add many folder groups to a single pdPackage instance, but still retain the ability to access them individually
+' at extraction time.
+'
+'Subfolder recursion is assumed, but it can be switched off via the optional recurseSubfolders parameter.
+'
+'When subfolder recursion is in use, each file automatically has a relative path automatically generated for it.  By default, this path is
+' constructed relative to the srcFolder parameter.  If this behavior is not desirable, an alternate base folder can be specified via the
+' useCustomRelativeFolderBase string.  This is preferable if you are adding multiple folders via this call, but you want all added files
+' extracted relative to some parent folder.  For example, when updating PD, I manually add the "PhotoDemon\App" subfolder to the update package.
+' By default, all added files will be constructed relative to the \App subfolder, so "C:\PhotoDemon\App\Languages\Deutsch.xml" becomes
+' "\Languages\Deutsch.xml".  At extraction time, this file would be erroneously extracted to "C:\New PD Folder\Languages\Deutsch.xml", because
+' the \App folder was the original relative base.  To override this behavior, I manually specify a different base folder at creation time,
+' e.g. "C:\PhotoDemon\".  This causes all added files to receive the relative path "App\Languages\Deutsch.xml", making extraction much simpler.
+'
+'If you do not want relative paths used whatsoever, set the optional preserveFolders parameter to FALSE.  If you do this, note that you cannot
+' change your mind at extraction time, as relative paths will not physically exist inside the package.
+'
+'Default compression settings are assumed for all added files.  Per-file checksum verifications can be toggled, but it's strongly recommended
+' to leave it at its default setting (ON), as a failsafe against package corruption.
+'
+'Finally, whitelisting or blacklisting behavior is available via the optional onlyAllowTheseExtensions and doNotAllowTheseExtensions parameters.
+' These two parameters are passed, untouched, to an underlying pdFSO instance, so please refer to pdFSO for details on how to use these.
+'
+'Returns: TRUE if all files are added successfully, FALSE otherwise.  FALSE should not occur unless read access to target folder(s) is restricted,
+' or if memory runs out because the constructed package exceeds available memory.
+Public Function autoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal preserveFolders As Boolean = True, Optional ByVal useCustomRelativeFolderBase As String = "", Optional ByVal addChecksumVerification As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
+
+    'As usual, our lovely pdFSO instance (m_File) is going to handle most the heavy lifting.  It will return the list of files to be added
+    ' in a pdStringStack object, which we can then iterate at our leisure.
+    Dim filesToAdd As pdStringStack
+    Set filesToAdd = New pdStringStack
+    
+    'Retrieve all files in the specified folder
+    If m_File.retrieveAllFiles(srcFolder, filesToAdd, recurseSubfolders, False, onlyAllowTheseExtensions, doNotAllowTheseExtensions) Then
+        
+        Dim nodeAdditionSuccess As Boolean
+        nodeAdditionSuccess = True
+        
+        'filesToAdd now contains absolute paths to all files we need to add.  Pop each file in turn, adding it as we go.
+        Dim curFile As String, relativeFilePath As String
+        
+        Do While filesToAdd.PopString(curFile)
+            
+            'Start by constructing a relative path for this string.  (pdFSO could have done this for us automatically, but we need the full
+            ' paths for node addition, and relative paths may vary if the user supplies custom path options.)
+            '
+            'First, check for folder preservation.
+            If preserveFolders Then
+                
+                'Folder preservation is active.  Find the appropriate relative base, per the caller's supplied path(s).
+                If Len(useCustomRelativeFolderBase) <> 0 Then
+                    relativeFilePath = m_File.GenerateRelativePath(useCustomRelativeFolderBase, curFile)
+                Else
+                    relativeFilePath = m_File.GenerateRelativePath(srcFolder, curFile)
+                End If
+                
+            'Folder preservation is inactive, so do not specify any relative paths whatsoever
+            Else
+                relativeFilePath = ""
+            End If
+            
+            'Add this node
+            nodeAdditionSuccess = nodeAdditionSuccess And autoAddNodeFromFile(curFile, OptionalNodeType, addChecksumVerification, relativeFilePath)
+            
+        Loop
+        
+        autoAddNodesFromFolder = nodeAdditionSuccess
+        
+        'Display some debug info if one or more nodes failed to add
+        If Not nodeAdditionSuccess Then
+            
+            If recurseSubfolders Then
+                Debug.Print "WARNING! pdPackager.autoAddNodesFromFolder() failed to add one or more nodes.  Do you have read access to all subfolders??"
+            Else
+                Debug.Print "WARNING! pdPackager.autoAddNodesFromFolder() failed to add one or more nodes.  Please investigate."
+            End If
+        
+        End If
+        
+    Else
+        
+        Debug.Print "WARNING! pdPackager.autoAddNodesFromFolder() could not retrieve a valid list of files.  Do you have read access to the folder??"
+        autoAddNodesFromFolder = False
+        
     End If
 
 End Function
@@ -1151,6 +1249,180 @@ Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
     Else
         autoExtractSingleFile = False
     End If
+
+End Function
+
+'Shortcut function to extract all files embedded into this pdPackage instance.  This function will extract all files to the specified
+' destination path, using whatever relative path settings were established at creation time.  Subfolders will automatically be created
+' as necessary.
+'
+'If you do not want relative paths used, set the optional ignoreRelativePaths parameter to TRUE.  This will cause all files to be
+' dumped directly into the destination path.  (Also remember: if relative paths were explicitly ignored at creation time, this function
+' cannot recreate them, as they don't exist inside the pdPackage data stream.)
+'
+'If one or more OptionalNodeType values were used at creation time, you may pass such a value to this function.  This will result in
+' extraction of only the file(s) that match that node type value.  (This makes it possible to package multiple file groups into one
+' package, then extract them as separate groups later.)
+'
+'Unlike other extraction functions, this function will automatically make use of checksums if they were embedded at creation time.  This
+' behavior cannot be overridden, by design, as it's an important failsafe against package corruption, damage during transit, or tampering.
+'
+'Returns: TRUE if all files are extracted successfully, FALSE otherwise.  FALSE should not occur unless write access to the target folder
+' is restricted.
+Public Function autoExtractAllFiles(ByVal dstPath As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePaths As Boolean = False) As Boolean
+    
+    'Enforce a trailing slash on dstPath, as we'll potentially be appending a lot of filenames to it
+    dstPath = m_File.EnforcePathSlash(dstPath)
+    
+    'Node headers use a fixed-length 32 character string for storing names.  As such, we pad the two valid file node type identifiers to
+    ' 32 chars in advance.
+    Dim nodeName32_1 As String * 32, nodeName32_2 As String * 32
+    nodeName32_1 = PDP_DATA_FILE
+    nodeName32_2 = PDP_DATA_FILEANDPATH
+    
+    'Nodes with relative paths are detected and handled automatically
+    Dim thisNodeType As PDP_SPECIAL_NODE_TYPE
+    
+    'By default, we assume SUCCESS.  This value is && with the results of each individual file extraction, so it will return FALSE if any
+    ' individual file fails.  We don't halt extraction on a single failure; instead, we try to complete as many extractions as we can.
+    Dim allNodesSuccessful As Boolean
+    allNodesSuccessful = True
+    
+    'Start searching the node array for any valid file entries.
+    Dim retBytes() As Byte, strFilename As String
+    Dim i As Long, nodeIndex As Long, nodeFound As Boolean
+    nodeIndex = -1
+    nodeFound = False
+    
+    For i = 0 To UBound(m_NodeDirectory)
+    
+        'Look for two types of node names: bare filenames, and filenames with relative paths attached.
+        ' (pdPackage handles both types automatically)
+        If StrComp(nodeName32_1, m_NodeDirectory(i).NodeName, vbBinaryCompare) = 0 Then
+            nodeFound = True
+            thisNodeType = PDPSNT_FILENAME
+        ElseIf StrComp(nodeName32_2, m_NodeDirectory(i).NodeName, vbBinaryCompare) = 0 Then
+            nodeFound = True
+            thisNodeType = PDPSNT_FILENAME_AND_RELATIVE_PATH
+        Else
+            nodeFound = False
+        End If
+        
+        If nodeFound Then
+        
+            'This node appears to be a file node.  As a failsafe, check for the special file-type node flag.
+            If getBitFlag(PDP_FLAG_FILE_NODE, m_NodeDirectory(i).NodeFlags(0)) Then
+            
+                'This is a valid file-type node.  If the user supplied an optionalNodeType, check it now.
+                nodeFound = True
+                
+                If OptionalNodeType <> 0 Then
+                    If m_NodeDirectory(i).OptionalNodeType = OptionalNodeType Then
+                        nodeFound = True
+                    Else
+                        nodeFound = False
+                    End If
+                End If
+                
+                'If the optional node type check succeeded, this is a valid file.  Prepare to extract it.
+                If nodeFound Then
+                    
+                    'Extract the header array, which contain the file's name and any relative path data
+                    If getNodeDataByIndex(i, True, retBytes, True) Then
+                        
+                        'Cast the returned bytes directly into a string; this preserves Unicode characters.
+                        strFilename = Space$((UBound(retBytes) + 1) \ 2)
+                        CopyMemory StrPtr(strFilename), VarPtr(retBytes(0)), UBound(retBytes) + 1
+                        Debug.Print "First: " & strFilename
+                        'Now we need to construct a full destination path + filename.  This can vary by several criteria.
+                        Dim fullDestinationPath As String
+                        
+                        'If the caller wants relative paths ignored, extract just the filename from the original path, and append it to the destination path.
+                        If ignoreRelativePaths Then
+                            fullDestinationPath = dstPath & m_File.getFilename(strFilename)
+                        
+                        'The caller wants to make use of relative paths.
+                        Else
+                            
+                            Select Case thisNodeType
+                            
+                                'This path is just a bare filename.  Append it to the destination path and carry on.
+                                Case PDPSNT_FILENAME
+                                    fullDestinationPath = dstPath & strFilename
+                                
+                                'This path includes a relative path.  Additional work is required to make sure the destination folder hierarchy exists.
+                                Case PDPSNT_FILENAME_AND_RELATIVE_PATH
+                                
+                                    'Start by assembling the desired final filename, with all relative folders attached.
+                                    
+                                    'First, strip any preceding slashes in the relative path
+                                    If StrComp(Left$(strFilename, 1), "\", vbBinaryCompare) = 0 Then strFilename = Right$(strFilename, Len(strFilename) - 1)
+                                    
+                                    'Concatenate the two paths
+                                    Dim dstPathComplete As String
+                                    dstPathComplete = dstPath & m_File.GetPathOnly(strFilename)
+                                    
+                                    'Attempt to create the folder hierarchy.  (If the folder already exists, this will return TRUE, so no harm.)
+                                    If m_File.CreateFolder(dstPathComplete, True) Then
+                                    
+                                        'The full target path exists.  Append the original filename to it, then proceed with the extraction
+                                        fullDestinationPath = m_File.EnforcePathSlash(dstPathComplete) & m_File.getFilename(strFilename)
+                                        
+                                    'The path could not be constructed.  Set the full destination path to a blank string, which will cause the function
+                                    ' to terminate prematurely.
+                                    Else
+                                        fullDestinationPath = ""
+                                    End If
+                                    
+                            End Select
+                        
+                        End If
+                        
+                        'Make sure the destination path was successfully constructed, including any relative path data.
+                        ' (If constructing the relative path failed, the destination path string will have been erased.)
+                        If Len(fullDestinationPath) > 0 Then
+                        
+                            'Retrieve this node's contents
+                            If getNodeDataByIndex(i, False, retBytes()) Then
+                            
+                                'Erase the target file, if it exists
+                                If m_File.FileExist(fullDestinationPath) Then Kill fullDestinationPath
+                                
+                                'Dump the node's contents to file
+                                Dim fileNum As Integer
+                                fileNum = FreeFile
+                                
+                                Open fullDestinationPath For Binary Access Write As #fileNum
+                                    Put #fileNum, , retBytes
+                                Close #fileNum
+                                
+                            Else
+                                Debug.Print "WARNING! pdPackage.autoExtractAllFiles() could not extract file contents from an otherwise valid node.  Extraction abandoned."
+                                allNodesSuccessful = False
+                            End If
+                            
+                        Else
+                            Debug.Print "WARNING! pdPackage.autoExtractAllFiles() was unable to construct the output path for " & strFilename & "."
+                            Debug.Print "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
+                            allNodesSuccessful = False
+                        End If
+                        
+                    Else
+                        allNodesSuccessful = False
+                        Debug.Print "WARNING! pdPackage.autoExtractAllFiles() could not extract a filename from an otherwise valid node.  Extraction abandoned."
+                    End If
+                    
+                'This set of 3 EndIf's looks confusing, but they simply terminate all file node detection criteria blocks.
+                ' No action needs to be taken if any node detection checks fail; that just means this node isn't part of
+                ' the current extraction request.
+                End If
+            End If
+        End If
+    
+    Next i
+    
+    'Report success.  allNodesSuccessful will be TRUE IFF there were no failures or errors during extraction.
+    autoExtractAllFiles = allNodesSuccessful
 
 End Function
 
