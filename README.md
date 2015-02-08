@@ -1,10 +1,10 @@
 # PhotoDemon 6.6 alpha
 
-![PhotoDemon Screenshot] (http://photodemon.org/images/PD_64.jpg)
+![PhotoDemon Screenshot] (http://photodemon.org/images/PD_66_a2.jpg)
 
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 
-It provides a comprehensive selection of photo editing tools in a tiny 7 MB download.  It runs on any Windows machine (XP through Win 8.1) and *does not* require installation.  It can easily be run from a USB stick or SD card.  English, Dutch, French, German, Italian, Malay, Portuguese, Spanish and Swedish translations are currently provided.
+It provides a comprehensive selection of photo editing tools in an 8 MB download.  It runs on any Windows machine (XP through Win 10) and *does not* require installation.  It can easily be run from a USB stick or SD card.  Translations are currently provided for English and eight other languages.
 
 PhotoDemon is completely open-source and available under a permissive BSD license.  Outside contributions from coders, designers, translators, and enthusiasts are always welcome.
 
@@ -19,7 +19,7 @@ http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip
 ## What makes PhotoDemon unique?
 
 ### It is lightweight and completely portable
-PhotoDemon is designed to be run as a standalone program. No installer is provided or required.  It does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Tools > Options dialog – it leaves no trace of itself on your hard drive.  Many people choose to run PhotoDemon from a USB drive.  It will run on any Windows machine from XP through Windows 8.1.
+PhotoDemon is designed to be run as a standalone program. No installer is provided or required.  It does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Tools > Options dialog – it leaves no trace of itself on your hard drive.  Many people choose to run PhotoDemon from a USB drive.
 
 ### It integrates macro recording and batch processing
 Complex editing actions can be automated by recording them as macros (similar to Office software).  Once recorded, a macro can be applied to other images.  Macros integrate with a built-in batch processing tool, so you can choose a saved macro and a folder or list of images, and PhotoDemon will apply the macro to every image automagically.
@@ -35,12 +35,12 @@ Most free, open-source image editors are usability nightmares. PhotoDemon tries 
 * 2D transformations: advanced rescale operators (Sinc, Catmull-Rom, etc), content-aware scaling (seam carving), crop, rotate, shear, zoom, tiling
 * Pro adjustment tools: levels, curves, HDR, white balance, split-toning, sepia, full-featured histogram, green screen, Wratten filters, and many more
 * Filters and effects: perspective correction, edge detection, noise removal, content-aware blur, unsharp masking, lens diffraction, vignetting, film grain, and many more
-* 100+ tools are provided in the current build, plus a custom filter tool that allows you to construct your own convolution filters.
+* 100+ tools are provided in the current build.
 
 ### What doesn't PhotoDemon do?
 
 * The current release (6.6a) does not support text layers.  Text layers are planned for the next release.
-* The current release (6.6a) does not generally support Unicode filenames, folders, or text entry.  Improved Unicode support is planned for the next release.
+* The current release (6.6a) finally includes partial Unicode support.  Some features may not work with Unicode filenames, but work on this is ongoing.
 * The current release (6.6a) does not provide any on-canvas painting tools.  Some on-canvas paint tools are planned for the next release.
 * The current release (6.6a) may not integrate well with high-contrast Windows themes, or non-standard Windows themes.  Improvements to theming are planned for the next release.
 * PhotoDemon isn't designed for OSes other than Microsoft Windows.  A compatibility layer like Wine (http://www.winehq.org/) may allow PhotoDemon to work on OSX, Linux, BSD, Solaris, or Maemo systems, but program stability and performance may suffer.
@@ -82,13 +82,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ### Who has contributed to PhotoDemon's development?
 
 PhotoDemon would not be possible without the help of many talented contributors, including...
-* Helmut Kuerbiss for maintaining (and hand-editing!) the German language file.
+* Helmut Kuerbiss for maintaining (and hand-editing!) the German language file
+* Dirk Hartmann for additional help with the German language file
+(http://www.taichi-zentrum-heidelberg.de)
 * Will Stampfer for a comprehensive code review and multiple optimization and bug-fix patches
 (https://github.com/epmatsw)
 * Hans Nolte for many improvements to HDR image format handling
 (https://github.com/hansnolte)
 * Zhu JinYong for a great deal of Unicode testing and help
 (http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66273&lngWId=1)
+* Dana Seaman for many excellent Unicode references
+(http://www.cyberactivex.com/) 
+* Olaf Schmidt for many code samples and forum discussions, particularly regarding Unicode handling
+(http://www.vbrichclient.com)
 * The portablefreeware.com team for helping me debug a nasty Windows 7 crash
 (http://www.portablefreeware.com/forums/viewtopic.php?t=21652)
 * Frans van Beers for many detailed bug reports and testing
