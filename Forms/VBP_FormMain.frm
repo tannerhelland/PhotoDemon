@@ -1524,8 +1524,8 @@ Attribute VB_Exposed = False
 'Main Program Form
 'Copyright 2002-2015 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 13/June/14
-'Last update: solve remaining asynchronicity problems when metadata parsing is delayed or full-on interrupted
+'Last updated: */February/14
+'Last update: overhaul update code to actually apply updates, not just check for them
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its
 ' primary purpose is sending parameters to other, more interesting sections of the program.
@@ -4161,6 +4161,17 @@ Private Sub MnuSynthesize_Click()
 End Sub
 
 Private Sub MnuTest_Click()
+    
+'    'Temporary test(s) of text file encodings
+'    Dim cFile As pdFSO
+'    Set cFile = New pdFSO
+'
+'    Dim tmpString As String
+'    Debug.Print cFile.LoadTextFileAsString("C:\PhotoDemon v4\UnicodeStringsUTF8.txt", tmpString)
+'    Debug.Print cFile.LoadTextFileAsString("C:\PhotoDemon v4\UnicodeStringsUTF16BE.txt", tmpString)
+'    Debug.Print cFile.LoadTextFileAsString("C:\PhotoDemon v4\UnicodeStringsUTF16LE.txt", tmpString)
+'    Debug.Print cFile.LoadTextFileAsString("C:\PhotoDemon v4\UTF8NoBOM.txt", tmpString)
+'    Debug.Print cFile.LoadTextFileAsString("C:\PhotoDemon v4\langupdate.xml", tmpString)
     
 '    'Temporary test(s) of new pdPackage compression code.
 '

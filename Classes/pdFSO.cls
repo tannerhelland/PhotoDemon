@@ -23,6 +23,9 @@ Attribute VB_Exposed = False
 '
 'The end goal is to provide convenient, Unicode-friendly replacements for VB's various file and folder functions.
 '
+'Thank you to the many invaluable references I used while constructing this class, particularly:
+' - Dana Seaman's UnicodeTutorialVB (http://www.cyberactivex.com/UnicodeTutorialVb.htm)
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -106,6 +109,12 @@ End Type
 ' for this technique: http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1
 Private Const ERROR_SHARING_VIOLATION As Long = 32
 Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
+
+'Helper APIs for dealing with incoming Unicode text files.
+Private Const CP_UTF8 As Long = 65001
+Private Declare Function MultiByteToWideChar Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpMultiByteStr As Long, ByVal cbMultiByte As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long) As Long
+Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long, ByVal lpMultiByteStr As Long, ByVal cchMultiByte As Long, ByVal lpDefaultChar As Long, ByVal lpUsedDefaultChar As Long) As Long
+Private Declare Function GetShortPathNameW Lib "kernel32" (ByVal lpLongPath As Long, ByVal lpShortPath As Long, ByVal nBufLen As Long) As Long
 
 'Our Unicode-friendly DirW function may be iterated many many times.  To prevent the reallocation of huge WIN32_FIND_DATA structs,
 ' we use a single module-level entry.
@@ -986,6 +995,249 @@ End Function
 'VB's default string comparison function is overly cumbersome.  This wrapper makes string equality checks much tidier.
 Private Function StringsEqual(ByRef srcString1 As String, ByRef srcString2 As String) As Boolean
     StringsEqual = (StrComp(srcString1, srcString2, vbBinaryCompare) = 0)
+End Function
+
+'Load a text file into a VB string.  Any valid encoding is supported.  Heuristics are used for "best-guess" encoding detection when
+' BOM and other markers are unclear.
+'
+'The optional forceWindowsLineEndings parameter will apply additional checks, to make sure line endings are consistently vbCrLf
+' (vs Unix-style vbLf only).
+'
+'Many thanks to Dana Seaman and cyberactivex.com.  This function is based off Dana's excellent "GenericFileRead" function, available via
+' http://www.cyberactivex.com/UnicodeTutorialVb.htm.
+'
+'Returns TRUE if successful; FALSE otherwise.  FALSE generally means the file is missing, or read access was denied.
+Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As String, Optional ByVal forceWindowsLineEndings As Boolean = True) As Boolean
+
+    On Error GoTo StopTextFileRead
+    
+    'Before doing anything else, make sure the file exists
+    If Not FileExist(srcFile) Then
+        Debug.Print "WARNING! pdFSO.LoadTextFileAsString can't find " & srcFile & ".  Abandoning load."
+        LoadTextFileAsString = False
+        Exit Function
+    End If
+    
+    'Dump file contents into a byte array.  Native VB methods can be used by wrapping the (potentially Unicode) srcFile with GetShortPathNameW.
+    Dim fileBytes() As Byte
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    Open GetShortPath(srcFile) For Binary Access Read As #fileNum
+        ReDim fileBytes(0 To LOF(fileNum) - 1) As Byte
+        Get fileNum, , fileBytes
+    Close fileNum
+    
+    'There are a number of different ways to convert the incoming byte array to a string; this temporary string will be used to translate data
+    ' between byte array and VB string as necessary.
+    Dim tmpString As String
+    
+    'Start running some file encoding heuristics.  BOMs are checked first, as they're easiest to handle.  Note that no attempts are currently
+    ' made to detect UTF-32, due to its extreme rarity.  (That said, heursitics for it are simple; see http://stackoverflow.com/questions/4520184/how-to-detect-the-character-encoding-of-a-text-file/4522251#4522251)
+    
+    'First, check for BOM 0xFFFE, which indicates little-endian UTF-16 (e.g. VB's internal format)
+    If fileBytes(0) = 255 And fileBytes(1) = 254 Then
+        
+        'Cast the byte array straight into a string, then remove the BOM.
+        tmpString = fileBytes
+        dstString = Right$(tmpString, Len(tmpString) - 2)
+        Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 LE encoding for (" & srcFile & ")"
+    
+    'Next, check for big-endian UTF-16 (0xFEFF)
+    ElseIf fileBytes(0) = 254 And fileBytes(1) = 255 Then
+      
+        'Swap all byte pairs in the incoming array
+        Dim tmpSwap As Byte, i As Long
+        
+        For i = 0 To UBound(fileBytes) Step 2
+            tmpSwap = fileBytes(i)
+            fileBytes(i) = fileBytes(i + 1)
+            fileBytes(i + 1) = tmpSwap
+        Next i
+        
+        'Cast the newly ordered byte array straight into a string, then remove the BOM
+        tmpString = fileBytes
+        dstString = Right$(tmpString, Len(tmpString) - 2)
+        Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 BE encoding for (" & srcFile & ")"
+        
+    'Next, check for UTF-8 BOM (0xEFBBBF).  This isn't common (UTF-8 doesn't require a BOM) but it's worth checking prior to diving into
+    ' more complicated heuristics.
+    ElseIf (fileBytes(0) = 239) And (fileBytes(1) = 187) And (fileBytes(2) = 191) Then
+   
+        'A helper function will convert the UTF-8 bytes for us; all we need to do is remove the BOM
+        dstString = Mid$(UTF8BytesToString(fileBytes), 2)
+        Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-8 encoding, via BOM, for (" & srcFile & ")"
+        
+    'All BOM checks failed.  Time to start running more complicated heuristics.
+    Else
+        
+        'Check for UTF-8 data without a BOM.  The heuristics I use are pretty much perfect for avoiding false-positives, but there is
+        ' a low risk of false-negatives.  The default character search (currently 512 octets) can be extended to reduce false-negative risk.
+        If AreBytesUTF8(fileBytes) Then
+            dstString = UTF8BytesToString(fileBytes)
+            Debug.Print "FYI: pdFSO.LoadTextFileAsString is assuming UTF-8 encoding for (" & srcFile & ")"
+        
+        'If the bytes do not appear to be UTF-8, we could theoretically run one final ANSI check.  US-ANSI data falls into the [0, 127] range,
+        ' exclusively, so it's easy to identify.  If, however, the file contains bytes outside this range, we're SOL, because extended bytes
+        ' will vary according to the original creation locale (which we do not know).  In that case, we can't really do anything but use the
+        ' current user locale and hope for the best, so rather than differentiate between these cases, I just do a forcible conversion using
+        ' the current codepage anyway.
+        Else
+            dstString = StrConv(fileBytes, vbUnicode)
+            Debug.Print "FYI: pdFSO.LoadTextFileAsString is unsure of the encoding for (" & srcFile & ").  Current user's codepage will be assumed."
+        End If
+        
+    End If
+    
+    LoadTextFileAsString = True
+    Exit Function
+    
+StopTextFileRead:
+
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "LoadTextFileAsString threw error " & Err.Number & " on " & srcFile & ". Abandoning load."
+    #End If
+    
+    LoadTextFileAsString = False
+    
+End Function
+
+'Apply some basic heuristics to the first n bytes of a potentially UTF-8 source.
+' Based off a similar function by Dana Seaman, who noted an original source of http://www.geocities.co.jp/SilkRoad/4511/vb/utf8.htm
+' I have modified this function to ignore invalid 5- and 6- byte extensions, which are not valid UTF-8, and to shorten the validation
+' range as the original 2048 seems excessive.  (For a 24-byte sequence, the risk of a false positive is less than 1 in 1,000,000;
+' see http://stackoverflow.com/questions/4520184/how-to-detect-the-character-encoding-of-a-text-file?lq=1.  False negative results are
+' higher, but several hundred characters should be enough to determine this.)
+' For additional details, see
+'  https://github.com/neitanod/forceutf8/blob/master/src/ForceUTF8/Encoding.php
+'  http://www-archive.mozilla.org/projects/intl/UniversalCharsetDetection.html (very detailed)
+Private Function AreBytesUTF8(ByRef textBytes() As Byte, Optional ByVal verifyLength As Long = 512) As Boolean
+
+    If verifyLength > 0 Then
+    
+        Dim pos As Long
+        pos = 0
+        
+        Dim Utf8Size As Long, lIsUtf8 As Long, i As Long
+        
+        'If the requested verification length exceeds the size of the array, just search the entire array
+        If verifyLength > UBound(textBytes) Then verifyLength = UBound(textBytes)
+        
+        'Scan through the byte array, looking for patterns specific to UTF-8
+        Do While pos < verifyLength
+        
+            'If this is a standard ANSI value, it doesn't tell us anything useful - proceed to the next bytes
+            If textBytes(pos) <= &H7F Then
+                pos = pos + 1
+            
+            'If this value is a continuation byte (128-191), invalid byte (192-193), or Latin-1 identifier (194), we know
+            ' the text is *not* UTF-8.  Exit now.
+            ElseIf textBytes(pos) < &HC0 Then
+                AreBytesUTF8 = False
+                Exit Function
+            
+            'Other byte values are potential multibyte UTF-8 markers.  We will advance the pointer by a matching amount, and scan
+            ' intermediary bytes to make sure they do not contain invalid markers.
+            ElseIf (textBytes(pos) <= &HF4) Then
+                
+                'These special-range UTF-8 markers are used to represent multi-byte encodings.  Detect how many bytes are included
+                ' in this character
+                If (textBytes(pos) And &HF0) = &HF0 Then
+                    Utf8Size = 3
+                ElseIf (textBytes(pos) And &HE0) = &HE0 Then
+                    Utf8Size = 2
+                ElseIf (textBytes(pos) And &HC0) = &HC0 Then
+                    Utf8Size = 1
+                End If
+                
+                'If the position exceeds the length we are supposed to verify, exit now and rely on previous detection
+                ' passes to return a yes/no result.
+                If (pos + Utf8Size) >= verifyLength Then Exit Do
+                
+                'Scan the intermediary bytes of this character to ensure that no invalid markers are contained.
+                For i = (pos + 1) To (pos + Utf8Size)
+                    
+                    'Valid UTF-8 continuation bytes must not exceed &H80
+                    If Not ((textBytes(i) And &HC0) = &H80) Then
+                        
+                        'This is an invalid marker; exit immediately
+                        AreBytesUTF8 = False
+                        Exit Function
+                        
+                    End If
+                    
+                Next i
+                
+                'If we made it all the way here, all bytes in this multibyte set are valid.  Note that we've found at least one
+                ' valid UTF-8 multibyte encoding, and carry on with the next character
+                lIsUtf8 = lIsUtf8 + 1
+                pos = pos + Utf8Size + 1
+            
+            'Byte values above 0xF4 are always invalid (http://en.wikipedia.org/wiki/UTF-8).  Exit immediately and report failure.
+            Else
+                AreBytesUTF8 = False
+                Exit Function
+            End If
+            
+        Loop
+        
+        'If we found at least one valid, multibyte UTF-8 sequence, return TRUE.  If we did not encounter such a sequence, then all
+        ' characters fall within the ASCII range.  This is "indeterminate", and returning TRUE or FALSE is really a matter of preference.
+        ' Default to whatever return you think is most likely.  (In our case, we assume ANSI, as files are likely coming from VB sources.)
+        AreBytesUTF8 = (lIsUtf8 > 0)
+        
+    'If no validation length is passed, any heuristics are pointless - exit now.
+    Else
+        AreBytesUTF8 = False
+        Exit Function
+    End If
+    
+End Function
+
+'Given a byte array containing UTF-8 data, return the data as a VB string.
+Private Function UTF8BytesToString(ByRef Utf8() As Byte) As String
+    
+    'Use MultiByteToWideChar() to calculate the required size of the UTF-8, if we expand it to VB's default wide character set.
+    Dim lenWideString As Long
+    lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(LBound(Utf8))), UBound(Utf8) - LBound(Utf8) + 1, 0, 0)
+    
+    'If the returned length is 0, MultiByteToWideChar failed.  This typically only happens if totally invalid characters are found.
+    If lenWideString = 0 Then
+        
+        Debug.Print "FromUTF8() failed because MultiByteToWideChar did not return a valid buffer length.)"
+        Err.Raise Err.LastDllError, "FromUTF8", "MultiByteToWideChar"
+        UTF8BytesToString = ""
+        
+    'The returned length is non-zero.  Prep a buffer, then retrieve the bytes
+    Else
+    
+        'Prep a temporary string buffer
+        Dim strWide As String
+        strWide = String$(lenWideString, 0)
+        
+        'Use the API to perform the actual conversion
+        lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(LBound(Utf8))), UBound(Utf8) - LBound(Utf8) + 1, StrPtr(strWide), lenWideString)
+        
+        'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating a buffer length, only to
+        ' fail here, but better safe than sorry.)
+        If lenWideString = 0 Then
+            Debug.Print "FromUTF8() failed because MultiByteToWideChar could not perform the conversion, despite returning a valid buffer length.)"
+            Err.Raise Err.LastDllError, "FromUTF8", "MultiByteToWideChar"
+            UTF8BytesToString = ""
+        Else
+            UTF8BytesToString = strWide
+        End If
+        
+    End If
+    
+End Function
+
+'Given a (potentially) long path, with or without Unicode chars, return the short path.  This provides an easy way to use internal VB file functions,
+' even on Unicode pathnames.
+Public Function GetShortPath(ByRef longPath As String) As String
+   Dim tmpString As String
+   tmpString = Space$(MAX_PATH)
+   GetShortPath = Left$(tmpString, GetShortPathNameW(StrPtr(longPath), StrPtr(tmpString), Len(tmpString)))
 End Function
 
 Private Sub Class_Initialize()
