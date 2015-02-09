@@ -80,7 +80,7 @@ End Sub
 
 'Retrieve a string from the stack, with optional support for locale invariant conversions (when the caller expects the string
 ' to represent a number of some sort)
-Public Function getString(ByVal strIndex As Long, Optional ByVal assumeLocaleInvariantNumber As Boolean = False) As String
+Public Function GetString(ByVal strIndex As Long, Optional ByVal assumeLocaleInvariantNumber As Boolean = False) As String
 
     If (strIndex >= 0) And (strIndex < m_NumOfStrings) Then
         
@@ -97,13 +97,13 @@ Public Function getString(ByVal strIndex As Long, Optional ByVal assumeLocaleInv
             testString = m_Strings(strIndex)
             
             If IsNumberLocaleUnaware(testString) Then
-                getString = Trim$(Str(Val(testString)))
+                GetString = Trim$(Str(Val(testString)))
             Else
-                getString = testString
+                GetString = testString
             End If
         
         Else
-            getString = m_Strings(strIndex)
+            GetString = m_Strings(strIndex)
         End If
     Else
         Debug.Print "WARNING!  Someone asked pdStringStack for a string outside stack bounds.  Fix this!"
@@ -155,6 +155,47 @@ Private Function IsNumberLocaleUnaware(ByRef Expression As String) As Boolean
     
 End Function
 
+'This function may seem like a ridiculous addition, but it's actually very helpful in PD.  pdStringStack is used by pdFSO when retrieving all subfolders
+' inside some base folder.  When performing something like a tree copy, I like to pre-sort the subfolder list by length.  This greatly simplifies the
+' code required to create the new folder tree prior to performing the copy; creating the folders in advance greatly accelerates the copy operation, as we
+' don't have to perform "do my folders exist?" checks on every damn file.
+Public Sub sortStackByLength(Optional ByVal sortAscending As Boolean = True)
+
+    If m_NumOfStrings > 1 Then
+    
+        'Given PD's standard use-case (subfolder trees, as mentioned above), the existing stack order is typically pretty close to sorted.  This saves us
+        ' from needing an elaborate search algorithm; instead, a simple in-place insertion sort performs very well.
+        Dim i As Long, j As Long, loopBound As Long
+        loopBound = m_NumOfStrings - 1
+        
+        'Loop through all entries in the stack, sorting them as we go
+        For i = 0 To loopBound
+            For j = 0 To loopBound
+                
+                'Compare two entries, and if the longer one precedes the shorter one, swap them
+                If sortAscending Then
+                    If Len(m_Strings(i)) < Len(m_Strings(j)) Then swapStrings i, j
+                
+                'An opposite check is used for descending order.
+                Else
+                    If Len(m_Strings(i)) > Len(m_Strings(j)) Then swapStrings i, j
+                End If
+                
+            Next j
+        Next i
+        
+    End If
+
+End Sub
+
+'Helper for string sorting, above.  This is not optimized at all, but it's sufficient for PD's current usage...
+Private Sub swapStrings(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
+    Dim tmpString As String
+    tmpString = m_Strings(strIndex1)
+    m_Strings(strIndex1) = m_Strings(strIndex2)
+    m_Strings(strIndex2) = tmpString
+End Sub
+
 'Clear the current stack.
 Public Sub resetStack()
     ReDim m_Strings(0 To INIT_STACK_SIZE - 1) As String
@@ -172,13 +213,14 @@ Private Sub Class_Terminate()
     resetStack
 End Sub
 
-'DEBUG ONLY!
+'DEBUG ONLY!  I sometimes find it helpful to investigate the contents of the stack.  This function makes it trivial to do so.
+' I also append "--" to the start and end of the string, to help me see if extra whitespace chars are present.
 Public Sub DEBUG_dumpResultsToImmediateWindow()
     
     If m_NumOfStrings > 0 Then
         Dim i As Long
         For i = 0 To m_NumOfStrings - 1
-            Debug.Print " -- " & m_Strings(i) & " -- "
+            Debug.Print i & ": -- " & m_Strings(i) & " -- "
         Next i
     Else
         Debug.Print " -- String stack is empty -- "

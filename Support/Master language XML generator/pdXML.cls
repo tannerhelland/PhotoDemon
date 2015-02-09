@@ -66,7 +66,7 @@ End Sub
 'If this class is being used to write out a new XML file, this function can be called to initialize the blank file.
 Public Sub prepareNewXML(ByVal pdDataType As String)
 
-    m_xmlContents = "<?xml version=""1.0"" encoding=""windows-1252""?>" & vbCrLf & vbCrLf
+    m_xmlContents = "<?xml version=""1.0"" encoding=""UTF-8""?>" & vbCrLf & vbCrLf
     m_xmlContents = m_xmlContents & ROOT_TAG & vbCrLf & vbCrLf & PD_DATA_ID & pdDataType & PD_DATA_ID_CLOSE & vbCrLf & ROOT_TAG_CLOSE & vbCrLf
 
 End Sub
@@ -507,11 +507,19 @@ Public Function loadXMLFile(ByVal xmlPath As String) As Boolean
     If m_File.FileExist(xmlPath) Then
     
         'Load the file's contents into a string
-        m_xmlContents = getFileAsString(xmlPath)
-        
-        'Check for an XML header
-        If verifyXMLHeader(m_xmlContents) Then
-            loadXMLFile = True
+        If m_File.LoadTextFileAsString(xmlPath, m_xmlContents) Then
+            
+            'Remove all tabs from the source file.  (These pad the XML data unnecessarily, so we erase them when loading XML, and restore
+            ' them when writing XML.)
+            If InStr(1, m_xmlContents, vbTab, vbBinaryCompare) <> 0 Then m_xmlContents = Replace$(m_xmlContents, vbTab, "", , , vbBinaryCompare)
+            
+            'Check for an XML header
+            If verifyXMLHeader(m_xmlContents) Then
+                loadXMLFile = True
+            Else
+                loadXMLFile = False
+            End If
+            
         Else
             loadXMLFile = False
         End If
@@ -650,20 +658,12 @@ Public Function writeXMLToFile(ByVal dstFile As String, Optional ByVal suppressI
     
     If Not suppressIndentation Then applyIndentation fileContents
     
-    'If the file already exists, remove it.  (I have also added a DoEvents here after noticing random errors in this
-    ' sub - it's important to wait for the file to be deleted, so that the write attempt below does not fail.
-    ' Update 04 Feb 15: DoEvents causes strange things to happen (imagine that!) so I have once again removed it.)
-    If m_File.FileExist(dstFile) Then Kill dstFile
+    'If the file contains an old-style windows-1252 encoding declaration, replace it with UTF-8
+    If InStr(1, fileContents, "windows-1252", vbBinaryCompare) Then fileContents = Replace$(fileContents, "windows-1252", "UTF-8")
     
-    'Open the specified file
-    Dim fileNum As Integer
-    fileNum = FreeFile
+    'Allow pdFSO to handle the file write for us
+    writeXMLToFile = m_File.SaveStringToTextFile(fileContents, dstFile)
     
-    Open dstFile For Output As #fileNum
-        Print #fileNum, fileContents
-    Close #fileNum
-    
-    writeXMLToFile = True
     Exit Function
     
 CouldNotWriteXML:
@@ -1039,12 +1039,5 @@ Private Sub Class_Initialize()
     
     'Prepare a module-level pdFSO instance, which will make file operations much easier
     Set m_File = New pdFSO
-
-End Sub
-
-Private Sub Class_Terminate()
-
-    'Release our pdFSO instance
-    Set m_File = Nothing
 
 End Sub
