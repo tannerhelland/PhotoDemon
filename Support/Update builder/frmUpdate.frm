@@ -75,6 +75,7 @@ End Sub
 ' we handle the /Stable and /Beta folders.
 Private Sub AssembleNightlyBuild()
 
-    'This list of relevant files is hardcoded.
+    'This list of relevant files is hardcoded into a text file.  This is required by 7zip, and to make sure that nightly build
+    ' auto-update files match the nightly build .zip on the website, we use the same file.
 
 End Sub

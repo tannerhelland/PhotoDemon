@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1252"?>
+ï»¿<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.5.7</langversion>
+<langversion>6.5.8</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -129,7 +129,7 @@
 <!-- BEGIN text for VBP_LoadModule.bas -->
 
 <phrase>
-<original>Detecting Windows® version</original>
+<original>Detecting WindowsÂ® version</original>
 <translation>Versi Windows Mengesan</translation>
 </phrase>
 
@@ -1497,7 +1497,7 @@ When selesai, klik butang Hantar. Terima kasih!</translation>
 <!-- BEGIN text for cCommonDialog.cls -->
 
 <phrase>
-<original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
+<original>Unfortunately, the number of images you selected exceeds what WindowsÂ® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
 <translation>Malangnya, bilangan imej yang anda pilih melebihi apa yang Windows membolehkan operasi beban tunggal. Sila cuba lagi dengan set yang lebih kecil daripada imej yang terpilih.</translation>
 </phrase>
 
@@ -2134,18 +2134,18 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
-<original>90° clockwise</original>
-<translation>90 ° ikut arah jam</translation>
+<original>90Â° clockwise</original>
+<translation>90 Â° ikut arah jam</translation>
 </phrase>
 
 <phrase>
-<original>90° counter-clockwise</original>
-<translation>90 ° melawan arah jam</translation>
+<original>90Â° counter-clockwise</original>
+<translation>90 Â° melawan arah jam</translation>
 </phrase>
 
 <phrase>
-<original>180°</original>
-<translation>180 °</translation>
+<original>180Â°</original>
+<translation>180 Â°</translation>
 </phrase>
 
 <phrase>
@@ -2269,18 +2269,18 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
-<original>Rotate 90° clockwise</original>
-<translation>Putar 90 ° ikut arah jam</translation>
+<original>Rotate 90Â° clockwise</original>
+<translation>Putar 90 Â° ikut arah jam</translation>
 </phrase>
 
 <phrase>
-<original>Rotate 90° counter-clockwise</original>
-<translation>Putar 90 ° melawan arah jam</translation>
+<original>Rotate 90Â° counter-clockwise</original>
+<translation>Putar 90 Â° melawan arah jam</translation>
 </phrase>
 
 <phrase>
-<original>Rotate 180°</original>
-<translation>Putar 180 °</translation>
+<original>Rotate 180Â°</original>
+<translation>Putar 180 Â°</translation>
 </phrase>
 
 <phrase>
@@ -13145,4 +13145,3 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- These 2297 phrases contain approximately 13183 total words. -->
 
 </pdData>
-

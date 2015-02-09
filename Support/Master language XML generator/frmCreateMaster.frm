@@ -337,6 +337,9 @@ Dim versionString As String
 'If silent mode has been activated via command line, this will be set to TRUE.
 Dim m_SilentMode As Boolean
 
+'A pdXML instance provides UTF-8 support.
+Private m_XML As pdXML
+
 'PD language file identifier.  IMPORTANT NOTE: this constant is shared with the main PhotoDemon project.  DO NOT CHANGE IT!
 Private Const PD_LANG_IDENTIFIER As Long = &H414C4450    'pdLanguage data (ASCII characters "PDLA", as hex, little-endian)
 
@@ -845,12 +848,9 @@ Private Sub cmdMerge_Click()
             Exit Sub
         End If
         
-        Dim fileNum As Integer
-        fileNum = FreeFile
-        
-        Open fPath For Output As #fileNum
-            Print #fileNum, m_NewLanguageText
-        Close #fileNum
+        'Use pdXML to write out a UTF-8 encoded XML file
+        m_XML.loadXMLFromString m_NewLanguageText
+        m_XML.writeXMLToFile m_OldLanguagePath, True
         
     End If
     
@@ -1062,16 +1062,12 @@ Private Sub cmdMergeAll_Click()
                 FileCopy m_OldLanguagePath, backupFolder & chkFile
                 
                 If FileExist(m_OldLanguagePath) Then
-                    Kill m_OldLanguagePath
                     Debug.Print "Note - old file with same name (" & m_OldLanguagePath & ") was erased.  Hope this is what you wanted!"
                 End If
                 
-                Dim fileNum As Integer
-                fileNum = FreeFile
-                
-                Open m_OldLanguagePath For Output As #fileNum
-                    Print #fileNum, m_NewLanguageText
-                Close #fileNum
+                'Use pdXML to write out a UTF-8 encoded XML file
+                m_XML.loadXMLFromString m_NewLanguageText
+                m_XML.writeXMLToFile m_OldLanguagePath, True
                 
             End If
             
@@ -1118,7 +1114,7 @@ Private Sub cmdProcess_Click()
     End If
     
     'Start by preparing the XML header
-    outputText = "<?xml version=""1.0"" encoding=""windows-1252""?>"
+    outputText = "<?xml version=""1.0"" encoding=""UTF-8""?>"
     outputText = outputText & vbCrLf & vbCrLf
     outputText = outputText & vbTab & "<pdData>"
     outputText = outputText & vbCrLf & vbCrLf
@@ -1188,15 +1184,10 @@ Private Sub cmdProcess_Click()
     oldFileLen = Len(Trim$(Replace$(Replace$(oldFileString, vbCrLf, ""), vbTab, "")))
         
     If newFileLen <> oldFileLen Then
-    
-        If FileExist(outputFile) Then Kill outputFile
         
-        Dim fileNum As Integer
-        fileNum = FreeFile
-        
-        Open outputFile For Output As #fileNum
-            Print #fileNum, outputText
-        Close #fileNum
+        'Use pdXML to write a UTF-8 encoded text file
+        m_XML.loadXMLFromString outputText
+        m_XML.writeXMLToFile outputFile, True
         
         cmdProcess.Caption = "Processing complete!"
         
@@ -1918,9 +1909,6 @@ Private Function findFormCaption(ByRef srcLines() As String, ByRef lineNumber As
 End Function
 
 
-
-
-
 'Extract a list of all project files from a VBP file
 Private Sub cmdSelectVBP_Click()
 
@@ -2022,25 +2010,34 @@ Private Function getDirectory(ByVal sString As String) As String
     
 End Function
 
-'Retrieve an entire file and return it as a string.
+'Retrieve an entire file and return it as a string.  pdXML is used to support UTF-8 encodings (which PD's language files default to).
 Private Function getFileAsString(ByVal fName As String) As String
+           
+    'Attempt to load the file as an XML object; if this fails, we'll assume it's not XML, and just load it as plain ol' ANSI text
+    If m_XML.loadXMLFile(fName) Then
+        getFileAsString = m_XML.returnCurrentXMLString(True)
         
-    'Ensure that the file exists before attempting to load it
-    If FileExist(fName) Then
-        
-        Dim fileNum As Integer
-        fileNum = FreeFile
-    
-        Open fName For Binary As #fileNum
-            getFileAsString = Space$(LOF(fileNum))
-            Get #fileNum, , getFileAsString
-        Close #fileNum
-    
-        'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
-        If InStr(1, getFileAsString, vbTab) <> 0 Then getFileAsString = Replace(getFileAsString, vbTab, "")
-    
     Else
-        getFileAsString = ""
+        
+        'Ensure that the file exists before attempting to load it
+        If FileExist(fName) Then
+        
+            Dim fileNum As Integer
+            fileNum = FreeFile
+            
+            Open fName For Binary As #fileNum
+                getFileAsString = Space$(LOF(fileNum))
+                Get #fileNum, , getFileAsString
+            Close #fileNum
+            
+            'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
+            If InStr(1, getFileAsString, vbTab) <> 0 Then getFileAsString = Replace(getFileAsString, vbTab, "")
+            
+        Else
+            Debug.Print "File does not exist; exiting."
+            getFileAsString = ""
+        End If
+            
     End If
     
 End Function
@@ -2104,6 +2101,8 @@ End Function
 
 Private Sub Form_Load()
     
+    Set m_XML = New pdXML
+        
     'Build a blacklist of phrases that are in the software, but do not need to be translated.  (These are complex phrases that
     ' may include things like names, but the automatic text generator has no way of knowing that the text is non-translatable.)
     ReDim m_Blacklist(0) As String
