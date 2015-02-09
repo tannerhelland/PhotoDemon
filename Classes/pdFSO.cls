@@ -1062,7 +1062,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
         
     'Next, check for UTF-8 BOM (0xEFBBBF).  This isn't common (UTF-8 doesn't require a BOM) but it's worth checking prior to diving into
     ' more complicated heuristics.
-    ElseIf (fileBytes(0) = 239) And (fileBytes(1) = 187) And (fileBytes(2) = 191) Then
+    ElseIf (fileBytes(0) = &HEF) And (fileBytes(1) = &HBB) And (fileBytes(2) = &HBF) Then
    
         'A helper function will convert the UTF-8 bytes for us; all we need to do is remove the BOM
         dstString = Mid$(UTF8BytesToString(fileBytes), 2)
@@ -1115,6 +1115,72 @@ StopTextFileRead:
     #End If
     
     LoadTextFileAsString = False
+    
+End Function
+
+'Write a string out to text file.  UTF-8 is assumed, but old-style ANSI can also be used by setting the optional useUTF8 parameter to FALSE.
+' If UTF-8 is requested, the optional parameter useUTF8_BOM specifies whether to preface the file with a BOM.
+'
+'Returns TRUE if successful, FALSE otherwise.  FALSE generally only occurs if write access to the destination folder is restricted.
+' That said, if UTF-8 conversion fails, this function (by design) will silently fall back to regular ANSI output.  It will still return TRUE,
+' however, so if you need to be absolutely certain that the file saved as UTF-8, you will want to perform manual validation post-saving.
+Public Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilename As String, Optional ByVal useUTF8 As Boolean = True, Optional ByVal useUTF8_BOM As Boolean = True) As Boolean
+    
+    On Error GoTo StopSaveStringToTextFile
+    
+    Dim fileBytes() As Byte
+    
+    'If UTF-8 output is requested, generate it now.
+    If useUTF8 Then useUTF8 = StringToUTF8Bytes(srcString, fileBytes)
+    
+    'Kill the output file as necessary
+    If FileExist(srcString) Then Kill srcString
+    
+    'Dump the string to file
+    
+    'Dump file contents into a byte array.  Native VB methods can be used by wrapping the (potentially Unicode) srcFile with GetShortPathNameW.
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    If useUTF8 Then
+        
+        Open GetShortPath(dstFilename) For Binary Access Write As #fileNum
+            
+            'If requested, write a BOM first.  This is desirable for PD's internal files, as it makes it very quick to identify the new UTF-8
+            ' ones vs old Windows-1252 ones.
+            If useUTF8_BOM Then
+                
+                Dim bomMarker(0 To 2) As Byte
+                bomMarker(0) = &HEF: bomMarker(1) = &HBB: bomMarker(2) = &HBF
+                Put #fileNum, , bomMarker
+                
+            End If
+            
+            'Write the byte array and exit!
+            Put #fileNum, , fileBytes
+        
+    'If UTF-8 is not requested, allow VB to perform its own innate SBCS conversion
+    Else
+    
+        Open GetShortPath(dstFilename) For Output As #fileNum
+            Print #fileNum, srcString
+        
+    End If
+    
+    'Close the file and exit
+    Close #fileNum
+    
+    SaveStringToTextFile = True
+    
+    Exit Function
+    
+StopSaveStringToTextFile:
+
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "SaveStringToTextFile threw error " & Err.Number & " on " & dstFilename & ". Abandoning load."
+    #End If
+    
+    SaveStringToTextFile = False
     
 End Function
 
@@ -1213,18 +1279,18 @@ End Function
 'Given a byte array containing UTF-8 data, return the data as a VB string.
 Private Function UTF8BytesToString(ByRef Utf8() As Byte) As String
     
-    'Use MultiByteToWideChar() to calculate the required size of the UTF-8, if we expand it to VB's default wide character set.
+    'Use MultiByteToWideChar() to calculate the required size of the final string (e.g. UTF-8 expanded to VB's default wide character set).
     Dim lenWideString As Long
-    lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(LBound(Utf8))), UBound(Utf8) - LBound(Utf8) + 1, 0, 0)
+    lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(0)), UBound(Utf8) + 1, 0, 0)
     
     'If the returned length is 0, MultiByteToWideChar failed.  This typically only happens if totally invalid characters are found.
     If lenWideString = 0 Then
         
-        Debug.Print "FromUTF8() failed because MultiByteToWideChar did not return a valid buffer length.)"
-        Err.Raise Err.LastDllError, "FromUTF8", "MultiByteToWideChar"
+        Debug.Print "UTF8BytesToString() failed because MultiByteToWideChar did not return a valid buffer length.)"
+        Err.Raise Err.LastDllError, "UTF8BytesToString", "MultiByteToWideChar"
         UTF8BytesToString = ""
         
-    'The returned length is non-zero.  Prep a buffer, then retrieve the bytes
+    'The returned length is non-zero.  Prep a buffer, then retrieve the bytes.
     Else
     
         'Prep a temporary string buffer
@@ -1232,16 +1298,53 @@ Private Function UTF8BytesToString(ByRef Utf8() As Byte) As String
         strWide = String$(lenWideString, 0)
         
         'Use the API to perform the actual conversion
-        lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(LBound(Utf8))), UBound(Utf8) - LBound(Utf8) + 1, StrPtr(strWide), lenWideString)
+        lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(0)), UBound(Utf8) + 1, StrPtr(strWide), lenWideString)
         
         'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating a buffer length, only to
         ' fail here, but better safe than sorry.)
         If lenWideString = 0 Then
-            Debug.Print "FromUTF8() failed because MultiByteToWideChar could not perform the conversion, despite returning a valid buffer length.)"
-            Err.Raise Err.LastDllError, "FromUTF8", "MultiByteToWideChar"
+            Debug.Print "UTF8BytesToString() failed because MultiByteToWideChar could not perform the conversion, despite returning a valid buffer length.)"
+            Err.Raise Err.LastDllError, "UTF8BytesToString", "MultiByteToWideChar"
             UTF8BytesToString = ""
         Else
             UTF8BytesToString = strWide
+        End If
+        
+    End If
+    
+End Function
+
+'Given a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
+Private Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As Byte) As Boolean
+    
+    'Use WideCharToMultiByte() to calculate the required size of the final UTF-8 array.
+    Dim lenUTF8 As Long
+    lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, StrPtr(srcString), Len(srcString), 0, 0, 0, 0)
+    
+    'If the returned length is 0, WideCharToMultiByte failed.  This typically only happens if totally invalid character combinations are found.
+    If lenUTF8 = 0 Then
+        
+        Debug.Print "StringToUTF8Bytes() failed because WideCharToMultiByte did not return a valid buffer length.)"
+        Err.Raise Err.LastDllError, "StringToUTF8Bytes", "WideCharToMultiByte"
+        StringToUTF8Bytes = False
+    
+    'The returned length is non-zero.  Prep a buffer, then process the bytes.
+    Else
+        
+        'Prep a temporary byte buffer
+        ReDim dstUtf8(0 To lenUTF8 - 1) As Byte
+        
+        'Use the API to perform the actual conversion
+        lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, StrPtr(srcString), Len(srcString), VarPtr(dstUtf8(0)), lenUTF8, 0, 0)
+        
+        'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating a buffer length, only to
+        ' fail here, but better safe than sorry.)
+        If lenUTF8 <> 0 Then
+            StringToUTF8Bytes = True
+        Else
+            Debug.Print "StringToUTF8Bytes() failed because WideCharToMultiByte could not perform the conversion, despite returning a valid buffer length.)"
+            Err.Raise Err.LastDllError, "StringToUTF8Bytes", "WideCharToMultiByte"
+            StringToUTF8Bytes = False
         End If
         
     End If
