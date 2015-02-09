@@ -1144,7 +1144,7 @@ Public Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilenam
     
     If useUTF8 Then
         
-        Open GetShortPath(dstFilename) For Binary Access Write As #fileNum
+        Open GetShortPath(dstFilename) For Binary As #fileNum
             
             'If requested, write a BOM first.  This is desirable for PD's internal files, as it makes it very quick to identify the new UTF-8
             ' ones vs old Windows-1252 ones.
@@ -1354,9 +1354,19 @@ End Function
 'Given a (potentially) long path, with or without Unicode chars, return the short path.  This provides an easy way to use internal VB file functions,
 ' even on Unicode pathnames.
 Public Function GetShortPath(ByRef longPath As String) As String
-   Dim tmpString As String
-   tmpString = Space$(MAX_PATH)
-   GetShortPath = Left$(tmpString, GetShortPathNameW(StrPtr(longPath), StrPtr(tmpString), Len(tmpString)))
+    
+    Dim tmpString As String
+    tmpString = Space$(MAX_PATH)
+       
+    Dim lenFinalBuffer As Long
+    lenFinalBuffer = GetShortPathNameW(StrPtr(longPath), StrPtr(tmpString), Len(tmpString))
+    
+    If lenFinalBuffer > 0 Then
+        GetShortPath = Left$(tmpString, lenFinalBuffer)
+    Else
+        GetShortPath = longPath
+    End If
+    
 End Function
 
 Private Sub Class_Initialize()
