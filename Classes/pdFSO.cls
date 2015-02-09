@@ -1089,6 +1089,22 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
         
     End If
     
+    'If the caller is concerned about inconsistent line-endings, we can forcibly convert everything to vbCrLf.  This harms performance (as we
+    ' need to cover both the CR-only case (OSX) and LF-only case (Linux/Unix), but it ensures that any combination of linefeed characters
+    ' is properly normalized against vbCrLf.
+    If forceWindowsLineEndings Then
+    
+        'Force all existing vbCrLf instances to vbLf
+        If InStr(1, dstString, vbCrLf, vbBinaryCompare) Then dstString = Replace$(dstString, vbCrLf, vbLf, , , vbBinaryCompare)
+        
+        'Force all existing vbCr instances to vbLf
+        If InStr(1, dstString, vbCr, vbBinaryCompare) Then dstString = Replace$(dstString, vbCr, vbLf, , , vbBinaryCompare)
+        
+        'With everything normalized against vbLf, convert all instances to vbCrLf
+        If InStr(1, dstString, vbLf, vbBinaryCompare) Then dstString = Replace$(dstString, vbLf, vbCrLf, , , vbBinaryCompare)
+    
+    End If
+    
     LoadTextFileAsString = True
     Exit Function
     
