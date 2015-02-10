@@ -495,19 +495,8 @@ End Function
 Public Function autoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal addChecksumVerification As Boolean = True, Optional ByVal storeUsingThisRelativePathAndFilename As String = "") As Boolean
 
     'Attempt to load the file into a byte array
-    If m_File.FileExist(pathToFile) Then
-    
-        Dim fileNum As Integer
-        fileNum = FreeFile
-        
-        Dim fileContents() As Byte
-        
-        Open pathToFile For Binary Access Read As #fileNum
-            If LOF(fileNum) > 0 Then
-                ReDim fileContents(0 To LOF(fileNum) - 1)
-                Get fileNum, 1, fileContents
-            End If
-        Close #fileNum
+    Dim fileContents() As Byte
+    If m_File.LoadFileAsByteArray(pathToFile, fileContents) Then
         
         'Make sure the file loaded successfully
         If UBound(fileContents) >= LBound(fileContents) Then
@@ -544,7 +533,7 @@ Public Function autoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
         End If
     
     Else
-        Debug.Print "WARNING! Requested file does not exist; abandoning pdPackage autoAddNodeFromFile request."
+        Debug.Print "WARNING! pdPackage.autoAddNodeFromFile could not load " & pathToFile & ". Abandoning request."
         autoAddNodeFromFile = False
     End If
 
@@ -644,6 +633,83 @@ Public Function autoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
         
     End If
 
+End Function
+
+'Shortcut function to create an arbitrary number of nodes, using a pdStringStack full of files and/or folders as the reference.
+' (Obviously, it's up to the caller to populate the string stack.)
+'
+'This function is basically a thin wrapper to autoAddNodeFromFile and autoAddNodesFromFolder.  You could achieve identical results by using
+' those two functions yourselves.
+'
+'All files and folders in the in the pdStringStack object must be absolute paths, including drive letter (e.g. "C:\ThisFolder\SubFolder" or
+' "C:\ThisFolder\SubFolder\file.txt")
+'
+'For convenience, every file and/or folder added via this request can be assigned an optional node type.  This same node type can be used
+' when extracting files, if you want to add multiple file and/or folder groups to a single pdPackage instance, but still retain the ability
+' to access them individually at extraction time.
+'
+'Subfolder recursion is assumed for any folders in the stack, but this behavior can be switched off via the optional recurseSubfolders parameter.
+'
+'Because the incoming pdStringStack can potentially contain a huge range of possible files and folders, this function is unique in forcing you
+' to specify your own custom base folder (relativeFolderBase) against which relative paths will be contructed.  If this value is *not* supplied,
+' relative paths will not be constructed - e.g. all discovered files will be added WITHOUT folder information attached - so plan accordingly.
+'
+'Whitelist and blacklist options are disabled for performance reasons.  It is assumed that the caller already made use of these, if desired,
+' when constructing the incoming string stack.
+'
+'Default compression settings are assumed for all added files.  Per-file checksum verifications can be toggled, but it's strongly recommended
+' to leave it at its default setting (ON), as a failsafe against package corruption.
+'
+'Returns: TRUE if all files are added successfully, FALSE otherwise.  FALSE should not occur unless read access to target file(s) and/or folder(s)
+' is restricted, or if memory runs out because the constructed package exceeds available memory.
+Public Function autoAddNodesFromStringStack(ByRef srcStringStack As pdStringStack, Optional ByVal relativeFolderBase As String = "", Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal addChecksumVerification As Boolean = True) As Boolean
+    
+    Dim autoAddSuccess As Boolean
+    autoAddSuccess = True
+    
+    'Prior to starting, mark whether relative folders are in use.  If they are not, we can bypass some steps within the main Do loop.
+    Dim relativeFoldersInUse As Boolean
+    relativeFoldersInUse = (Len(relativeFolderBase) <> 0)
+    
+    Dim relativePath As String
+    
+    'This function relies on autoAddNodesFromFolder and autoAddNodeFromFile to do all the heavy lifting.  All we do is pop items off the
+    ' string stack, and forward them to one of those two functions.
+    Dim curFile As String
+    
+    Do While srcStringStack.PopString(curFile)
+    
+        'See if this is a file or a folder
+        If m_File.FileExist(curFile) Then
+        
+            'This is a file.  Add it via the file function
+            If relativeFoldersInUse Then
+            
+                'Construct a relative path
+                relativePath = m_File.GenerateRelativePath(relativeFolderBase, curFile)
+                autoAddSuccess = autoAddSuccess And autoAddNodeFromFile(curFile, OptionalNodeType, addChecksumVerification, relativePath)
+                
+            Else
+                autoAddSuccess = autoAddSuccess And autoAddNodeFromFile(curFile, OptionalNodeType, addChecksumVerification)
+            End If
+        
+        ElseIf m_File.FolderExist(curFile, False) Then
+        
+            'This is a folder.  Add it via the folder function.
+            If relativeFoldersInUse Then
+                autoAddSuccess = autoAddSuccess And autoAddNodesFromFolder(curFile, OptionalNodeType, recurseSubfolders, True, relativeFolderBase, addChecksumVerification)
+            Else
+                autoAddSuccess = autoAddSuccess And autoAddNodesFromFolder(curFile, OptionalNodeType, recurseSubfolders, False, , addChecksumVerification)
+            End If
+        
+        Else
+            Debug.Print "WARNING!  pdPackager.autoAddNodesFromStringStack() was handed something that isn't a file or folder (" & curFile & ")."
+        End If
+    
+    Loop
+    
+    autoAddNodesFromStringStack = autoAddSuccess
+    
 End Function
 
 'When all nodes have been successfully added, the user can finally write out their data to file.  This function will return TRUE
@@ -1333,7 +1399,7 @@ Public Function autoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         'Cast the returned bytes directly into a string; this preserves Unicode characters.
                         strFilename = Space$((UBound(retBytes) + 1) \ 2)
                         CopyMemory StrPtr(strFilename), VarPtr(retBytes(0)), UBound(retBytes) + 1
-                        Debug.Print "First: " & strFilename
+                        
                         'Now we need to construct a full destination path + filename.  This can vary by several criteria.
                         Dim fullDestinationPath As String
                         
@@ -1821,7 +1887,7 @@ End Sub
 Private Sub raiseInternalMessage(ByVal msgString As String, ParamArray ExtraText() As Variant)
     
     If UBound(ExtraText) >= LBound(ExtraText) Then
-        Debug.Print msgString   ', ExtraText
+        Debug.Print msgString       ', ExtraText
     Else
         Debug.Print msgString
     End If

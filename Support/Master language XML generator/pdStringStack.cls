@@ -53,9 +53,13 @@ Public Function AddString(ByRef srcString As String) As Long
 End Function
 
 'Pop the top string off the stack.  Returns TRUE if pop is successful, FALSE if stack is empty.  Caller is responsible for
-' allocating their own string.
+' allocating their own destination string, which this function simply fills.
 '
 'The function was designed to make popping the entire stack convenient (e.g. Do While strStack.PopString(tmpString)...)
+'
+'Note that this function DOES NOT shrink the string array to match.  This is by design.  If you want to resize the string array
+' after a pop, manually call trimStack().  (But seriously - don't do this unless you really need to, as the performance
+' implications are severe.)
 Public Function PopString(ByRef dstString As String) As Boolean
     
     If m_NumOfStrings > 0 Then

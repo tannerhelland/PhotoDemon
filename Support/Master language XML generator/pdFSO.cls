@@ -997,6 +997,42 @@ Private Function StringsEqual(ByRef srcString1 As String, ByRef srcString2 As St
     StringsEqual = (StrComp(srcString1, srcString2, vbBinaryCompare) = 0)
 End Function
 
+'Dump a specified file directly into a VB byte array.  No additional processing is performed.
+'
+'Returns TRUE if successful; FALSE otherwise.  FALSE generally means the file is missing, or read access was denied.
+Public Function LoadFileAsByteArray(ByRef srcFile As String, ByRef dstArray() As Byte) As Boolean
+
+    On Error GoTo StopFileLoad
+    
+    'Before doing anything else, make sure the file exists
+    If Not FileExist(srcFile) Then
+        Debug.Print "WARNING! pdFSO.LoadFileAsByteArray can't find " & srcFile & ".  Abandoning load."
+        LoadFileAsByteArray = False
+        Exit Function
+    End If
+    
+    'Dump file contents into a byte array.  Native VB methods can be used by wrapping the (potentially Unicode) srcFile with GetShortPathNameW.
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    Open GetShortPath(srcFile) For Binary Access Read As #fileNum
+        ReDim dstArray(0 To LOF(fileNum) - 1) As Byte
+        Get fileNum, , dstArray
+    Close fileNum
+    
+    LoadFileAsByteArray = True
+    Exit Function
+    
+StopFileLoad:
+
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "LoadFileAsByteArray threw error " & Err.Number & " (" & Err.Description & ") on " & srcFile & ". Abandoning load."
+    #End If
+    
+    LoadFileAsByteArray = False
+    
+End Function
+
 'Load a text file into a VB string.  Any valid encoding is supported.  Heuristics are used for "best-guess" encoding detection when
 ' BOM and other markers are unclear.
 '
@@ -1011,101 +1047,94 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
 
     On Error GoTo StopTextFileRead
     
-    'Before doing anything else, make sure the file exists
-    If Not FileExist(srcFile) Then
-        Debug.Print "WARNING! pdFSO.LoadTextFileAsString can't find " & srcFile & ".  Abandoning load."
-        LoadTextFileAsString = False
-        Exit Function
-    End If
-    
-    'Dump file contents into a byte array.  Native VB methods can be used by wrapping the (potentially Unicode) srcFile with GetShortPathNameW.
+    'Use a wrapper function to dump the file's contents into a byte array.
     Dim fileBytes() As Byte
-    Dim fileNum As Integer
-    fileNum = FreeFile
+    If LoadFileAsByteArray(srcFile, fileBytes) Then
     
-    Open GetShortPath(srcFile) For Binary Access Read As #fileNum
-        ReDim fileBytes(0 To LOF(fileNum) - 1) As Byte
-        Get fileNum, , fileBytes
-    Close fileNum
-    
-    'There are a number of different ways to convert the incoming byte array to a string; this temporary string will be used to translate data
-    ' between byte array and VB string as necessary.
-    Dim tmpString As String
-    
-    'Start running some file encoding heuristics.  BOMs are checked first, as they're easiest to handle.  Note that no attempts are currently
-    ' made to detect UTF-32, due to its extreme rarity.  (That said, heursitics for it are simple; see http://stackoverflow.com/questions/4520184/how-to-detect-the-character-encoding-of-a-text-file/4522251#4522251)
-    
-    'First, check for BOM 0xFFFE, which indicates little-endian UTF-16 (e.g. VB's internal format)
-    If fileBytes(0) = 255 And fileBytes(1) = 254 Then
+        'There are a number of different ways to convert the incoming byte array to a string; this temporary string will be used to translate data
+        ' between byte array and VB string as necessary.
+        Dim tmpString As String
         
-        'Cast the byte array straight into a string, then remove the BOM.
-        tmpString = fileBytes
-        dstString = Right$(tmpString, Len(tmpString) - 2)
-        Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 LE encoding for (" & srcFile & ")"
-    
-    'Next, check for big-endian UTF-16 (0xFEFF)
-    ElseIf fileBytes(0) = 254 And fileBytes(1) = 255 Then
-      
-        'Swap all byte pairs in the incoming array
-        Dim tmpSwap As Byte, i As Long
+        'Start running some file encoding heuristics.  BOMs are checked first, as they're easiest to handle.  Note that no attempts are currently
+        ' made to detect UTF-32, due to its extreme rarity.  (That said, heursitics for it are simple; see http://stackoverflow.com/questions/4520184/how-to-detect-the-character-encoding-of-a-text-file/4522251#4522251)
         
-        For i = 0 To UBound(fileBytes) Step 2
-            tmpSwap = fileBytes(i)
-            fileBytes(i) = fileBytes(i + 1)
-            fileBytes(i + 1) = tmpSwap
-        Next i
+        'First, check for BOM 0xFFFE, which indicates little-endian UTF-16 (e.g. VB's internal format)
+        If fileBytes(0) = 255 And fileBytes(1) = 254 Then
+            
+            'Cast the byte array straight into a string, then remove the BOM.
+            tmpString = fileBytes
+            dstString = Right$(tmpString, Len(tmpString) - 2)
+            Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 LE encoding for (" & srcFile & ")"
         
-        'Cast the newly ordered byte array straight into a string, then remove the BOM
-        tmpString = fileBytes
-        dstString = Right$(tmpString, Len(tmpString) - 2)
-        Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 BE encoding for (" & srcFile & ")"
+        'Next, check for big-endian UTF-16 (0xFEFF)
+        ElseIf fileBytes(0) = 254 And fileBytes(1) = 255 Then
+          
+            'Swap all byte pairs in the incoming array
+            Dim tmpSwap As Byte, i As Long
+            
+            For i = 0 To UBound(fileBytes) Step 2
+                tmpSwap = fileBytes(i)
+                fileBytes(i) = fileBytes(i + 1)
+                fileBytes(i + 1) = tmpSwap
+            Next i
+            
+            'Cast the newly ordered byte array straight into a string, then remove the BOM
+            tmpString = fileBytes
+            dstString = Right$(tmpString, Len(tmpString) - 2)
+            Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 BE encoding for (" & srcFile & ")"
+            
+        'Next, check for UTF-8 BOM (0xEFBBBF).  This isn't common (UTF-8 doesn't require a BOM) but it's worth checking prior to diving into
+        ' more complicated heuristics.
+        ElseIf (fileBytes(0) = &HEF) And (fileBytes(1) = &HBB) And (fileBytes(2) = &HBF) Then
         
-    'Next, check for UTF-8 BOM (0xEFBBBF).  This isn't common (UTF-8 doesn't require a BOM) but it's worth checking prior to diving into
-    ' more complicated heuristics.
-    ElseIf (fileBytes(0) = &HEF) And (fileBytes(1) = &HBB) And (fileBytes(2) = &HBF) Then
-   
-        'A helper function will convert the UTF-8 bytes for us; all we need to do is remove the BOM
-        dstString = Mid$(UTF8BytesToString(fileBytes), 2)
-        Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-8 encoding, via BOM, for (" & srcFile & ")"
-        
-    'All BOM checks failed.  Time to start running more complicated heuristics.
-    Else
-        
-        'Check for UTF-8 data without a BOM.  The heuristics I use are pretty much perfect for avoiding false-positives, but there is
-        ' a low risk of false-negatives.  The default character search (currently 512 octets) can be extended to reduce false-negative risk.
-        If AreBytesUTF8(fileBytes) Then
-            dstString = UTF8BytesToString(fileBytes)
-            Debug.Print "FYI: pdFSO.LoadTextFileAsString is assuming UTF-8 encoding for (" & srcFile & ")"
-        
-        'If the bytes do not appear to be UTF-8, we could theoretically run one final ANSI check.  US-ANSI data falls into the [0, 127] range,
-        ' exclusively, so it's easy to identify.  If, however, the file contains bytes outside this range, we're SOL, because extended bytes
-        ' will vary according to the original creation locale (which we do not know).  In that case, we can't really do anything but use the
-        ' current user locale and hope for the best, so rather than differentiate between these cases, I just do a forcible conversion using
-        ' the current codepage anyway.
+            'A helper function will convert the UTF-8 bytes for us; all we need to do is remove the BOM
+            dstString = Mid$(UTF8BytesToString(fileBytes), 2)
+            Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-8 encoding, via BOM, for (" & srcFile & ")"
+            
+        'All BOM checks failed.  Time to start running more complicated heuristics.
         Else
-            dstString = StrConv(fileBytes, vbUnicode)
-            Debug.Print "FYI: pdFSO.LoadTextFileAsString is unsure of the encoding for (" & srcFile & ").  Current user's codepage will be assumed."
+            
+            'Check for UTF-8 data without a BOM.  The heuristics I use are pretty much perfect for avoiding false-positives, but there is
+            ' a low risk of false-negatives.  The default character search (currently 512 octets) can be extended to reduce false-negative risk.
+            If AreBytesUTF8(fileBytes) Then
+                dstString = UTF8BytesToString(fileBytes)
+                Debug.Print "FYI: pdFSO.LoadTextFileAsString is assuming UTF-8 encoding for (" & srcFile & ")"
+            
+            'If the bytes do not appear to be UTF-8, we could theoretically run one final ANSI check.  US-ANSI data falls into the [0, 127] range,
+            ' exclusively, so it's easy to identify.  If, however, the file contains bytes outside this range, we're SOL, because extended bytes
+            ' will vary according to the original creation locale (which we do not know).  In that case, we can't really do anything but use the
+            ' current user locale and hope for the best, so rather than differentiate between these cases, I just do a forcible conversion using
+            ' the current codepage anyway.
+            Else
+                dstString = StrConv(fileBytes, vbUnicode)
+                Debug.Print "FYI: pdFSO.LoadTextFileAsString is unsure of the encoding for (" & srcFile & ").  Current user's codepage will be assumed."
+            End If
+            
         End If
         
+        'If the caller is concerned about inconsistent line-endings, we can forcibly convert everything to vbCrLf.  This harms performance (as we
+        ' need to cover both the CR-only case (OSX) and LF-only case (Linux/Unix), but it ensures that any combination of linefeed characters
+        ' is properly normalized against vbCrLf.
+        If forceWindowsLineEndings Then
+        
+            'Force all existing vbCrLf instances to vbLf
+            If InStr(1, dstString, vbCrLf, vbBinaryCompare) Then dstString = Replace$(dstString, vbCrLf, vbLf, , , vbBinaryCompare)
+            
+            'Force all existing vbCr instances to vbLf
+            If InStr(1, dstString, vbCr, vbBinaryCompare) Then dstString = Replace$(dstString, vbCr, vbLf, , , vbBinaryCompare)
+            
+            'With everything normalized against vbLf, convert all instances to vbCrLf
+            If InStr(1, dstString, vbLf, vbBinaryCompare) Then dstString = Replace$(dstString, vbLf, vbCrLf, , , vbBinaryCompare)
+        
+        End If
+     
+        LoadTextFileAsString = True
+        
+    'The file could not be loaded into a byte array; abandon ship
+    Else
+        LoadTextFileAsString = False
     End If
     
-    'If the caller is concerned about inconsistent line-endings, we can forcibly convert everything to vbCrLf.  This harms performance (as we
-    ' need to cover both the CR-only case (OSX) and LF-only case (Linux/Unix), but it ensures that any combination of linefeed characters
-    ' is properly normalized against vbCrLf.
-    If forceWindowsLineEndings Then
-    
-        'Force all existing vbCrLf instances to vbLf
-        If InStr(1, dstString, vbCrLf, vbBinaryCompare) Then dstString = Replace$(dstString, vbCrLf, vbLf, , , vbBinaryCompare)
-        
-        'Force all existing vbCr instances to vbLf
-        If InStr(1, dstString, vbCr, vbBinaryCompare) Then dstString = Replace$(dstString, vbCr, vbLf, , , vbBinaryCompare)
-        
-        'With everything normalized against vbLf, convert all instances to vbCrLf
-        If InStr(1, dstString, vbLf, vbBinaryCompare) Then dstString = Replace$(dstString, vbLf, vbCrLf, , , vbBinaryCompare)
-    
-    End If
-    
-    LoadTextFileAsString = True
     Exit Function
     
 StopTextFileRead:
