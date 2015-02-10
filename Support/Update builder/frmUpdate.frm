@@ -21,7 +21,16 @@ Begin VB.Form frmUpdate
    ScaleWidth      =   842
    StartUpPosition =   2  'CenterScreen
    Begin VB.CommandButton cmdAction 
-      Caption         =   "Assemble nightly build files"
+      Caption         =   "Assemble stable and beta build packages (dedicated folders)"
+      Height          =   615
+      Index           =   1
+      Left            =   240
+      TabIndex        =   2
+      Top             =   1920
+      Width           =   12135
+   End
+   Begin VB.CommandButton cmdAction 
+      Caption         =   "Assemble nightly build package (direct from current development folder)"
       Height          =   615
       Index           =   0
       Left            =   240
@@ -32,7 +41,7 @@ Begin VB.Form frmUpdate
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Step 1: copy all relevant nightly build files into a dedicated /nightly folder"
+      Caption         =   "Step 2: assemble the stable and beta update packages"
       BeginProperty Font 
          Name            =   "Segoe UI Semibold"
          Size            =   12
@@ -44,10 +53,32 @@ Begin VB.Form frmUpdate
       EndProperty
       ForeColor       =   &H00DC7032&
       Height          =   315
+      Index           =   1
+      Left            =   120
+      TabIndex        =   3
+      Top             =   1440
+      Width           =   5925
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Step 1: assemble the nightly build update package"
+      BeginProperty Font 
+         Name            =   "Segoe UI Semibold"
+         Size            =   12
+         Charset         =   0
+         Weight          =   600
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00DC7032&
+      Height          =   315
+      Index           =   0
       Left            =   120
       TabIndex        =   0
       Top             =   120
-      Width           =   8040
+      Width           =   5505
    End
 End
 Attribute VB_Name = "frmUpdate"
@@ -97,14 +128,17 @@ Private Sub cmdAction_Click(Index As Integer)
         Case 0
             AssembleNightlyBuild
             
+        'Assemble stable + beta build files
+        Case 1
+            AssembleStableAndBetaBuilds
+            
     
     End Select
     
 End Sub
 
-'Copy the relevant nightly build files from their default VB project location, to a dedicated /Nightly folder.
-' This greatly simplifies the pdPackage generation step, as we can handle the dedicated /Nightly folder the same way
-' we handle the /Stable and /Beta folders.
+'The nightly build is unique, because we generate it directly from the current PD development folder.  As such, it uses a
+' different series of assembly steps (compared to the stable and beta builds).
 Private Sub AssembleNightlyBuild()
 
     'This list of relevant files is hardcoded to match the nightly build script's instructions for 7zip.
@@ -131,8 +165,37 @@ Private Sub AssembleNightlyBuild()
     nightlyPackage.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly.pdz", True, True
     
     'TEMPORARY TEST ONLY!  Extract the files to a temp folder, to make sure they unpack correctly.
-    nightlyPackage.readPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly.pdz", PD_PATCH_IDENTIFIER
-    nightlyPackage.autoExtractAllFiles "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly\"
+    'nightlyPackage.readPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly.pdz", PD_PATCH_IDENTIFIER
+    'nightlyPackage.autoExtractAllFiles "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly\"
+    
+
+End Sub
+
+'Stable and Beta update channels use custom, dedicated folders.  The contents of these folders are updated manually,
+' only when necessary (as opposed to the nightly channel which is built directly from the current PD codebase).
+Private Sub AssembleStableAndBetaBuilds()
+
+    'Stable and beta builds can be constructed directly from their folders, no special work required.
+    
+    'Assemble a basic pdPackage instance
+    Dim cPackage As pdPackager
+    Set cPackage = New pdPackager
+    cPackage.init_ZLib App.Path & "\zlibwapi.dll"
+    
+    'Build the stable update file directly from its folder.  Unlike the nightly build, all files are allowed, including
+    ' XML language files.
+    cPackage.prepareNewPackage 4, PD_PATCH_IDENTIFIER
+    cPackage.autoAddNodesFromFolder "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable\"
+    cPackage.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable.pdz", True, True
+    
+    'Repeat the above steps for the beta update folder
+    cPackage.prepareNewPackage 4, PD_PATCH_IDENTIFIER
+    cPackage.autoAddNodesFromFolder "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta\"
+    cPackage.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta.pdz", True, True
+    
+    'TEMPORARY TEST ONLY!  Extract an update package to a temp folder, to make sure everything's in order.
+    'cPackage.readPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable.pdz", PD_PATCH_IDENTIFIER
+    'cPackage.autoExtractAllFiles "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\testing_only\"
     
 
 End Sub
@@ -152,8 +215,11 @@ Private Sub Form_Load()
     'If silent mode is activated, automatically "click" the relevant button
     If m_SilentMode Then
     
-        'Assemble the nightly build .pdz
+        'Assemble the nightly build update package
         Call cmdAction_Click(0)
+        
+        'assemble the stable and beta build update packages
+        Call cmdAction_Click(1)
         
     End If
     
