@@ -27,6 +27,7 @@ Public Const PD_BUILD_QUALITY As Long = PD_PRE_ALPHA
 Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450   'pdImage data (ASCII characters "PDID", as hex, little-endian)
 Public Const PD_LAYER_IDENTIFIER As Long = &H4C494450   'pdLayer data (ASCII characters "PDIL", as hex, little-endian)
 Public Const PD_LANG_IDENTIFIER As Long = &H414C4450    'pdLanguage data (ASCII characters "PDLA", as hex, little-endian)
+Public Const PD_PATCH_IDENTIFIER As Long = &H50554450    'pdLanguage data (ASCII characters "PDUP", as hex, little-endian)
 
 'Magic number for errors that arise during pdPackage interactions
 Public Const PDP_GENERIC_ERROR As Long = 9001
