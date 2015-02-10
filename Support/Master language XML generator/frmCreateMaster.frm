@@ -727,7 +727,7 @@ Private Sub cmdMaster_Click()
     
 End Sub
 
-Private Sub replaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMaster As String, ByRef sourceTextTranslation As String, ByRef destinationText As String)
+Private Sub replaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMaster As String, ByRef sourceTextTranslation As String, ByRef destinationText As String, Optional ByVal alsoIncrementVersion As Boolean = True)
 
     Dim openTagName As String, closeTagName As String
     openTagName = "<" & origTagName & ">"
@@ -738,7 +738,7 @@ Private Sub replaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMast
     
     'A special check is applied to the "langversion" tag.  Whenever this function is used, a merge is taking place; as such, we want to
     ' auto-increment the language's version number to trigger an update on client machines.
-    If StrComp(origTagName, "langversion", vbBinaryCompare) = 0 Then
+    If (StrComp(origTagName, "langversion", vbBinaryCompare) = 0) And alsoIncrementVersion Then
     
         'Retrieve the current language version
         Dim curVersion As String
@@ -998,6 +998,7 @@ Private Sub cmdMergeAll_Click()
             replaceTopLevelTag "langname", m_MasterText, m_OldLanguageText, m_NewLanguageText
             replaceTopLevelTag "langstatus", m_MasterText, m_OldLanguageText, m_NewLanguageText
             replaceTopLevelTag "author", m_MasterText, m_OldLanguageText, m_NewLanguageText
+            replaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText, False
                 
             Dim phrasesProcessed As Long, phrasesFound As Long, phrasesMissed As Long
             phrasesProcessed = 0
@@ -1048,8 +1049,18 @@ Private Sub cmdMergeAll_Click()
             
             Loop While sPos > 0
             
+            'Find where the two files don't match
+            'Dim i As Long
+            'For i = 1 To Len(Trim$(m_NewLanguageText))
+            '    If StrComp(Mid$(m_NewLanguageText, i, 1), Mid$(m_OldLanguageText, i, 1), vbBinaryCompare) <> 0 Then
+            '        MsgBox i & vbCrLf & Mid$(m_NewLanguageText, i, 10) & vbCrLf & Mid$(m_OldLanguageText, i, 10)
+            '    End If
+            'Next i
+            '
+            'MsgBox Len(Trim$(m_NewLanguageText)) & vbCrLf & Len(Trim$(m_OldLanguageText))
+            
             'See if the old and new language files are equal.  If they are, we won't bother writing the results out to file.
-            If Len(m_NewLanguageText) = Len(m_OldLanguageText) Then
+            If Len(Trim$(m_NewLanguageText)) = Len(Trim$(m_OldLanguageText)) Then
                 Debug.Print "New language file and old language file are identical for " & chkFile & ".  Merge abandoned."
             Else
                 
