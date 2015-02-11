@@ -27,7 +27,7 @@ Public Const PD_BUILD_QUALITY As Long = PD_PRE_ALPHA
 Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450   'pdImage data (ASCII characters "PDID", as hex, little-endian)
 Public Const PD_LAYER_IDENTIFIER As Long = &H4C494450   'pdLayer data (ASCII characters "PDIL", as hex, little-endian)
 Public Const PD_LANG_IDENTIFIER As Long = &H414C4450    'pdLanguage data (ASCII characters "PDLA", as hex, little-endian)
-Public Const PD_PATCH_IDENTIFIER As Long = &H50554450    'pdLanguage data (ASCII characters "PDUP", as hex, little-endian)
+Public Const PD_PATCH_IDENTIFIER As Long = &H50554450   'PD update patch data (ASCII characters "PDUP", as hex, little-endian)
 
 'Magic number for errors that arise during pdPackage interactions
 Public Const PDP_GENERIC_ERROR As Long = 9001
@@ -37,8 +37,8 @@ Public Const PDP_GENERIC_ERROR As Long = 9001
 Public Const EXPECTED_FREEIMAGE_VERSION As String = "3.16.1"
 Public Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
 Public Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
-Public Const EXPECTED_PNGQUANT_VERSION As String = "2.1.1"
-Public Const EXPECTED_EXIFTOOL_VERSION As String = "9.70"
+Public Const EXPECTED_PNGQUANT_VERSION As String = "2.3.1"
+Public Const EXPECTED_EXIFTOOL_VERSION As String = "9.84"
 
 'Some constants used for general program changes (better to leave them as constants here, then to
 ' have to manually change them when I think up better or more appropriate ones)
