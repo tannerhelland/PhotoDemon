@@ -1611,7 +1611,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 Debug.Print "Successfully patched " & getFilenameWithoutExtension(savedToThisFile) & ".xml."
                 
             Else
-                Debug.Print "Patching of " & getFilename(savedToThisFile) & " was unsuccessful."
+                Debug.Print "Patching of " & GetFilename(savedToThisFile) & " was unsuccessful."
             End If
         Else
             Debug.Print "WARNING! A language file download was interrupted.  Further patches will be postponed until next session."
@@ -4162,16 +4162,31 @@ End Sub
 
 Private Sub MnuTest_Click()
     
-'    'Temporary test(s) of text file encodings
-'    Dim cFile As pdFSO
-'    Set cFile = New pdFSO
-'
-'    Dim tmpString As String
-'    Debug.Print cFile.LoadTextFileAsString("C:\PhotoDemon v4\UnicodeStringsUTF8.txt", tmpString)
-'    Debug.Print cFile.LoadTextFileAsString("C:\PhotoDemon v4\UnicodeStringsUTF16BE.txt", tmpString)
-'    Debug.Print cFile.LoadTextFileAsString("C:\PhotoDemon v4\UnicodeStringsUTF16LE.txt", tmpString)
-'    Debug.Print cFile.LoadTextFileAsString("C:\PhotoDemon v4\UTF8NoBOM.txt", tmpString)
-'    Debug.Print cFile.LoadTextFileAsString("C:\PhotoDemon v4\langupdate.xml", tmpString)
+    'Temporary test(s) of various pdFSO features
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    Dim tmpVerString As String, useProductVersion As Boolean
+    useProductVersion = True
+    
+    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\FreeImage.dll", tmpVerString, useProductVersion
+    Debug.Print "FreeImage: " & tmpVerString
+    
+    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\exiftool.exe", tmpVerString, useProductVersion
+    Debug.Print "ExifTool: " & tmpVerString
+    
+    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\EZTW32.dll", tmpVerString, useProductVersion
+    Debug.Print "EZTwain: " & tmpVerString
+    
+    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\zlibwapi.dll", tmpVerString, useProductVersion
+    Debug.Print "zLib: " & tmpVerString
+    
+    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\pngquant.exe", tmpVerString, useProductVersion
+    Debug.Print "PNGQuant: " & tmpVerString
+    
+    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.exe", tmpVerString, useProductVersion
+    Debug.Print "PD itself: " & tmpVerString
+    
     
 '    'Temporary test(s) of new pdPackage compression code.
 '
