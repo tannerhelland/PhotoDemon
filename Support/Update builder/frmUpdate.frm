@@ -21,6 +21,15 @@ Begin VB.Form frmUpdate
    ScaleWidth      =   842
    StartUpPosition =   2  'CenterScreen
    Begin VB.CommandButton cmdAction 
+      Caption         =   "Calculate version and checksum details"
+      Height          =   615
+      Index           =   2
+      Left            =   240
+      TabIndex        =   4
+      Top             =   3240
+      Width           =   12135
+   End
+   Begin VB.CommandButton cmdAction 
       Caption         =   "Assemble stable and beta build packages (dedicated folders)"
       Height          =   615
       Index           =   1
@@ -37,6 +46,27 @@ Begin VB.Form frmUpdate
       TabIndex        =   1
       Top             =   600
       Width           =   12135
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "Step 3: build a version XML file, with version and checksum details on all update packages"
+      BeginProperty Font 
+         Name            =   "Segoe UI Semibold"
+         Size            =   12
+         Charset         =   0
+         Weight          =   600
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00DC7032&
+      Height          =   315
+      Index           =   2
+      Left            =   120
+      TabIndex        =   5
+      Top             =   2760
+      Width           =   9765
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -132,6 +162,10 @@ Private Sub cmdAction_Click(Index As Integer)
         Case 1
             AssembleStableAndBetaBuilds
             
+        'Build version and checksum file
+        Case 2
+            MakeVersionFile
+            
     
     End Select
     
@@ -164,11 +198,11 @@ Private Sub AssembleNightlyBuild()
     'Write the completed package out to the updates folder
     nightlyPackage.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly.pdz", True, True
     
-    'TEMPORARY TEST ONLY!  Extract the files to a temp folder, to make sure they unpack correctly.
-    'nightlyPackage.readPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly.pdz", PD_PATCH_IDENTIFIER
-    'nightlyPackage.autoExtractAllFiles "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly\"
+    'Next, we're going to extract all packaged files to a temp folder.  This serves two purposes: it lets us verify that the packaging went
+    ' as expected, and it also gives us a dedicated folder we can scan for assembling version and checksum data.
+    nightlyPackage.readPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly.pdz", PD_PATCH_IDENTIFIER
+    nightlyPackage.autoExtractAllFiles "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly\"
     
-
 End Sub
 
 'Stable and Beta update channels use custom, dedicated folders.  The contents of these folders are updated manually,
@@ -200,6 +234,93 @@ Private Sub AssembleStableAndBetaBuilds()
 
 End Sub
 
+'Generate a master version XML file, by reading the version numbers from each .exe.
+Private Sub MakeVersionFile()
+
+    'Prep an XML object.
+    Dim xmlOutput As pdXML
+    Set xmlOutput = New pdXML
+    
+    xmlOutput.prepareNewXML "Program version"
+    xmlOutput.writeBlankLine
+    xmlOutput.writeComment "This program version file was automatically generated on " & Format(Now, "Medium date")
+    xmlOutput.writeBlankLine
+    
+    'For each build, we're going to generate some key pieces of information.  Start with the stable build.
+    xmlOutput.writeTagWithAttribute "update", "track", "stable", "", True
+    addVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\stable\"
+    xmlOutput.closeTag "update"
+    
+    'Next comes beta (which is often the same as the stable release)
+    xmlOutput.writeTagWithAttribute "update", "track", "beta", "", True
+    addVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\beta\"
+    xmlOutput.closeTag "update"
+    
+    'Last comes nightly.  Note that the nightly files will be out of date unless Step 1 (AssembleNightlyBuild) has been run during this session.
+    xmlOutput.writeTagWithAttribute "update", "track", "nightly", "", True
+    addVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\nightly\"
+    xmlOutput.closeTag "update"
+    
+    'Write the XML out to file
+    Dim dstFile As String
+    dstFile = "C:\PhotoDemon v4\pdupdate.xml"
+    
+    xmlOutput.writeXMLToFile dstFile
+    
+End Sub
+
+'Helpful wrapper to add version and checksum data to an output XML object
+Private Sub addVersionGroupToXML(ByRef xmlOutput As pdXML, ByRef srcPath As String)
+    
+    'A pdPackage instance is used to generate checksums
+    Dim cPackager As pdPackager
+    Set cPackager = New pdPackager
+    cPackager.init_ZLib App.Path & "\zlibwapi.dll"
+    
+    'We're now going to assemble a list of files that need to be parsed.  This list is universal for every program group (at present; we can add
+    ' custom code in the future if required files change between versions).
+    Dim buildFiles As pdStringStack
+    Set buildFiles = New pdStringStack
+    
+    'Note that XML files are currently ignored, as they're handled by the separate language file update protocol
+    m_File.retrieveAllFiles srcPath, buildFiles, True, False, , "xml"
+    
+    Dim curFile As String, vString As String
+    
+    'Iterate through each file, adding its version and checksum to the update file as we go
+    Do While buildFiles.PopString(curFile)
+        
+        'Retrieve the file's version (if any)
+        vString = getFileVersion_Modified(curFile)
+        
+        'If version isn unavailable, we must fall back to checksums for updating files.
+        If StrComp(vString, "unknown", vbBinaryCompare) <> 0 Then
+            xmlOutput.writeTagWithAttribute "version", "component", m_File.GenerateRelativePath(srcPath, curFile), vString
+        End If
+        
+        'Checksums are always written out to file
+        xmlOutput.writeTagWithAttribute "checksum", "component", m_File.GenerateRelativePath(srcPath, curFile), cPackager.checkSumArbitraryFile(curFile)
+        
+    Loop
+    
+    
+    
+End Sub
+
+'Small convenience wrapper, so we can plug in "unknown" when the version number is, actually, unknown
+Private Function getFileVersion_Modified(ByRef srcFilename As String, Optional ByVal useThisIfVersionDoesntExist As String = "unknown") As String
+    
+    Dim vString As String
+    
+    If m_File.GetFileVersionAsString(srcFilename, vString) Then
+        getFileVersion_Modified = vString
+    Else
+        getFileVersion_Modified = useThisIfVersionDoesntExist
+    End If
+    
+End Function
+
+
 Private Sub Form_Load()
     
     Set m_File = New pdFSO
@@ -218,8 +339,14 @@ Private Sub Form_Load()
         'Assemble the nightly build update package
         Call cmdAction_Click(0)
         
-        'assemble the stable and beta build update packages
+        'Assemble the stable and beta build update packages
         Call cmdAction_Click(1)
+        
+        'Generate the master version and checksum file
+        Call cmdAction_Click(2)
+        
+        'If the program is running in silent mode, unload it now
+        Unload Me
         
     End If
     

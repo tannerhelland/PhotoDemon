@@ -1524,7 +1524,7 @@ Attribute VB_Exposed = False
 'Main Program Form
 'Copyright 2002-2015 by Tanner Helland
 'Created: 15/September/02
-'Last updated: */February/14
+'Last updated: 11/February/15
 'Last update: overhaul update code to actually apply updates, not just check for them
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its
@@ -1611,7 +1611,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 Debug.Print "Successfully patched " & getFilenameWithoutExtension(savedToThisFile) & ".xml."
                 
             Else
-                Debug.Print "Patching of " & GetFilename(savedToThisFile) & " was unsuccessful."
+                Debug.Print "Patching of " & getFilename(savedToThisFile) & " was unsuccessful."
             End If
         Else
             Debug.Print "WARNING! A language file download was interrupted.  Further patches will be postponed until next session."

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon File System Object Interface
 'Copyright 2014-2015 by Tanner Helland
 'Created: 04/February/15
-'Last updated: 05/February/15
-'Last update: ongoing work on folder and file iterators
+'Last updated: 11/February/15
+'Last update: add version retrieval functions for arbitrary files
 'Dependencies: pdStringStack (used internally for performance-friendly string collection management)
 '
 'This class is currently under heavy construction.
@@ -115,6 +115,33 @@ Private Const CP_UTF8 As Long = 65001
 Private Declare Function MultiByteToWideChar Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpMultiByteStr As Long, ByVal cbMultiByte As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long) As Long
 Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long, ByVal lpMultiByteStr As Long, ByVal cchMultiByte As Long, ByVal lpDefaultChar As Long, ByVal lpUsedDefaultChar As Long) As Long
 Private Declare Function GetShortPathNameW Lib "kernel32" (ByVal lpLongPath As Long, ByVal lpShortPath As Long, ByVal nBufLen As Long) As Long
+
+'Much of this class's version-checking code used in this form was derived from http://allapi.mentalis.org/apilist/GetFileVersionInfo.shtml
+' Many thanks to those authors for their work on demystifying some of these more obscure API calls
+Private Type VS_FIXEDFILEINFO
+   dwSignature As Long
+   dwStrucVersionl As Integer     ' e.g. = &h0000 = 0
+   dwStrucVersionh As Integer     ' e.g. = &h0042 = .42
+   dwFileVersionMSl As Integer    ' e.g. = &h0003 = 3
+   dwFileVersionMSh As Integer    ' e.g. = &h0075 = .75
+   dwFileVersionLSl As Integer    ' e.g. = &h0000 = 0
+   dwFileVersionLSh As Integer    ' e.g. = &h0031 = .31
+   dwProductVersionMSl As Integer ' e.g. = &h0003 = 3
+   dwProductVersionMSh As Integer ' e.g. = &h0010 = .1
+   dwProductVersionLSl As Integer ' e.g. = &h0000 = 0
+   dwProductVersionLSh As Integer ' e.g. = &h0031 = .31
+   dwFileFlagsMask As Long        ' = &h3F for version "0.42"
+   dwFileFlags As Long            ' e.g. VFF_DEBUG Or VFF_PRERELEASE
+   dwFileOS As Long               ' e.g. VOS_DOS_WINDOWS16
+   dwFileType As Long             ' e.g. VFT_DRIVER
+   dwFileSubtype As Long          ' e.g. VFT2_DRV_KEYBOARD
+   dwFileDateMS As Long           ' e.g. 0
+   dwFileDateLS As Long           ' e.g. 0
+End Type
+Private Declare Function GetFileVersionInfo Lib "Version" Alias "GetFileVersionInfoA" (ByVal lptstrFilename As String, ByVal dwhandle As Long, ByVal dwlen As Long, lpData As Any) As Long
+Private Declare Function GetFileVersionInfoSize Lib "Version" Alias "GetFileVersionInfoSizeA" (ByVal lptstrFilename As String, lpdwHandle As Long) As Long
+Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBlock As Any, ByVal lpSubBlock As String, lplpBuffer As Any, puLen As Long) As Long
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 
 'Our Unicode-friendly DirW function may be iterated many many times.  To prevent the reallocation of huge WIN32_FIND_DATA structs,
 ' we use a single module-level entry.
@@ -913,6 +940,83 @@ replaceFailure:
 
 End Function
 
+'Given an arbitrary file path, return embeded versioning information.  The optional getProductVersionInstead value sets whether file or product
+' version values are returned.  These are often the same, as Visual Studio inheritance rules typically make the Product value match the File value
+' if it isn't explicitly given (http://all-things-pure.blogspot.com/2009/09/assembly-version-file-version-product.html).  But this rule is not
+' foolproof, so double-check 3rd-party sources in particular.
+'
+'Returns TRUE if successful; FALSE otherwise.  If the function fails, DLL error info will be dumped to the debug window.
+Public Function GetFileVersion(ByVal FullFileName As String, ByRef verMajor As Long, ByRef verMinor As Long, ByRef verBuild As Long, ByRef verRevision As Long, Optional ByVal getProductVersionInstead As Boolean = True) As Boolean
+   
+    'A surprising number of variables are required to retrieve versioning info...
+    Dim StrucVer As String, FileVer As String, ProdVer As String
+    
+    Dim rc As Long, lDummy As Long, sBuffer() As Byte
+    Dim lBufferLen As Long, lVerPointer As Long, udtVerBuffer As VS_FIXEDFILEINFO
+    Dim lVerbufferLen As Long
+    
+    'Start by retrieving the size of the required buffer
+    lBufferLen = GetFileVersionInfoSize(FullFileName, lDummy)
+    If lBufferLen > 0 Then
+     
+        'Retrieve the root versioning block, without any localization edits (https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464%28v=vs.85%29.aspx)
+        ReDim sBuffer(lBufferLen) As Byte
+        If GetFileVersionInfo(FullFileName, 0&, lBufferLen, sBuffer(0)) > 0 Then
+            
+            If VerQueryValue(sBuffer(0), "\", lVerPointer, lVerbufferLen) Then
+                
+                CopyMemory udtVerBuffer, ByVal lVerPointer, Len(udtVerBuffer)
+                
+                'Return file or product version number, depending on the optional getProductVersionInstead parameter.  Note that these do not currently
+                ' mask the integer return values, so they will provide bogus results for versions > 32767; I could fix this, but it's not relevant to
+                ' PD's usage.
+                If getProductVersionInstead Then
+                    With udtVerBuffer
+                        verMajor = .dwProductVersionMSh
+                        verMinor = .dwProductVersionMSl
+                        verBuild = .dwProductVersionLSh
+                        verRevision = .dwProductVersionLSl
+                    End With
+                Else
+                    With udtVerBuffer
+                        verMajor = .dwFileVersionMSh
+                        verMinor = .dwFileVersionMSl
+                        verBuild = .dwFileVersionLSh
+                        verRevision = .dwFileVersionLSl
+                    End With
+                End If
+                
+                GetFileVersion = True
+                
+            Else
+                Debug.Print "WARNING!  Could not retrieve version information for (" & FullFileName & ") due to VerQueryValue error."
+                Debug.Print "WARNING!  Last DLL error info: " & Err.LastDllError & "."
+                GetFileVersion = False
+            End If
+            
+        Else
+            Debug.Print "WARNING!  Could not retrieve version information for (" & FullFileName & ") due to GetFileVersionInfo error."
+            Debug.Print "WARNING!  Last DLL error info: " & Err.LastDllError & "."
+            GetFileVersion = False
+        End If
+        
+    Else
+        Debug.Print "WARNING!  Could not retrieve version information for (" & FullFileName & ") due to buffer allocation failure."
+        GetFileVersion = False
+    End If
+
+End Function
+
+'Convenience wrapper to GetFileVersion, above.
+Public Function GetFileVersionAsString(ByVal FullFileName As String, ByRef dstVersionString As String, Optional ByVal getProductVersionInstead As Boolean = True) As Boolean
+    
+    Dim tmpLong1 As Long, tmpLong2 As Long, tmpLong3 As Long, tmpLong4 As Long
+    GetFileVersionAsString = GetFileVersion(FullFileName, tmpLong1, tmpLong2, tmpLong3, tmpLong4, getProductVersionInstead)
+    
+    dstVersionString = CStr(tmpLong1) & "." & CStr(tmpLong2) & "." & CStr(tmpLong3) & "." & CStr(tmpLong4)
+    
+End Function
+
 'Given a path, make sure the right backslash is existant
 Public Function EnforcePathSlash(ByRef srcPath As String) As String
     
@@ -925,19 +1029,19 @@ Public Function EnforcePathSlash(ByRef srcPath As String) As String
 End Function
 
 'Return just the filename from a full path
-Public Function getFilename(ByRef sString As String) As String
+Public Function GetFilename(ByRef sString As String) As String
 
     Dim i As Long
     
     For i = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
-            getFilename = Right$(sString, Len(sString) - i)
+            GetFilename = Right$(sString, Len(sString) - i)
             Exit Function
         End If
     Next i
     
     'If we made it here, no slash was found, so presume that the entire incoming string was the filename
-    getFilename = sString
+    GetFilename = sString
     
 End Function
 
