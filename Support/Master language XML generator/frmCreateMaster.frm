@@ -7,8 +7,8 @@ Begin VB.Form frmCreateMaster
    ClientTop       =   450
    ClientWidth     =   14535
    BeginProperty Font 
-      Name            =   "Tahoma"
-      Size            =   8.25
+      Name            =   "Segoe UI"
+      Size            =   9
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
@@ -22,6 +22,15 @@ Begin VB.Form frmCreateMaster
    StartUpPosition =   3  'Windows Default
    Begin VB.CommandButton cmdLangVersions 
       Caption         =   "Generate master language update file(s)"
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   735
       Left            =   360
       TabIndex        =   16
@@ -30,14 +39,32 @@ Begin VB.Form frmCreateMaster
    End
    Begin VB.CommandButton cmdConvertLabels 
       Caption         =   "Convert labels in selected project file to pdLabel format.  (This cannot be undone; use cautiously!)"
-      Height          =   450
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   570
       Left            =   2520
       TabIndex        =   15
-      Top             =   4440
+      Top             =   4380
       Width           =   11775
    End
    Begin VB.CommandButton cmdMergeAll 
-      Caption         =   "2a (Optional) Automatically merge all language files in default PhotoDemon folder with newest Master XML file..."
+      Caption         =   "2a (Optional) Automatically merge all language files with newest Master XML file..."
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   735
       Left            =   4800
       TabIndex        =   13
@@ -47,6 +74,15 @@ Begin VB.Form frmCreateMaster
    Begin VB.CheckBox chkRemoveDuplicates 
       BackColor       =   &H80000005&
       Caption         =   " Remove duplicate entries"
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   255
       Left            =   360
       TabIndex        =   3
@@ -55,7 +91,16 @@ Begin VB.Form frmCreateMaster
       Width           =   3015
    End
    Begin VB.CommandButton cmdMerge 
-      Caption         =   "3) Merge the files into an updated non-English XML file (NOTE: this will not modify the source files in any way)"
+      Caption         =   "3) Merge the files into an updated non-English XML file (NOTE: this will not modify the source files)"
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   735
       Left            =   8520
       TabIndex        =   7
@@ -64,6 +109,15 @@ Begin VB.Form frmCreateMaster
    End
    Begin VB.CommandButton cmdOldLanguage 
       Caption         =   "2) Select old non-English XML file..."
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   735
       Left            =   4800
       TabIndex        =   6
@@ -72,6 +126,15 @@ Begin VB.Form frmCreateMaster
    End
    Begin VB.CommandButton cmdMaster 
       Caption         =   "1) Select master English XML file..."
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   735
       Left            =   1080
       TabIndex        =   5
@@ -80,6 +143,15 @@ Begin VB.Form frmCreateMaster
    End
    Begin VB.CommandButton cmdProcess 
       Caption         =   "Begin processing"
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   615
       Left            =   360
       TabIndex        =   2
@@ -87,16 +159,7 @@ Begin VB.Form frmCreateMaster
       Width           =   3015
    End
    Begin VB.ListBox lstProjectFiles 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   2370
+      Height          =   2310
       Left            =   4200
       Sorted          =   -1  'True
       TabIndex        =   4
@@ -105,6 +168,15 @@ Begin VB.Form frmCreateMaster
    End
    Begin VB.CommandButton cmdSelectVBP 
       Caption         =   "Select VBP file..."
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   615
       Left            =   360
       TabIndex        =   1
@@ -132,7 +204,7 @@ Begin VB.Form frmCreateMaster
       BackStyle       =   0  'Transparent
       Caption         =   "other support tools:"
       BeginProperty Font 
-         Name            =   "Tahoma"
+         Name            =   "Segoe UI"
          Size            =   12
          Charset         =   0
          Weight          =   400
@@ -141,12 +213,12 @@ Begin VB.Form frmCreateMaster
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   315
       Index           =   2
       Left            =   240
       TabIndex        =   14
       Top             =   4500
-      Width           =   2115
+      Width           =   2040
    End
    Begin VB.Label lblWarning 
       Appearance      =   0  'Flat
@@ -154,7 +226,7 @@ Begin VB.Form frmCreateMaster
       BackStyle       =   0  'Transparent
       Caption         =   $"frmCreateMaster.frx":0000
       BeginProperty Font 
-         Name            =   "Tahoma"
+         Name            =   "Segoe UI"
          Size            =   12
          Charset         =   0
          Weight          =   400
@@ -173,7 +245,7 @@ Begin VB.Form frmCreateMaster
    Begin VB.Label lblUpdates 
       BackStyle       =   0  'Transparent
       BeginProperty Font 
-         Name            =   "Tahoma"
+         Name            =   "Segoe UI"
          Size            =   12
          Charset         =   0
          Weight          =   400
@@ -193,7 +265,7 @@ Begin VB.Form frmCreateMaster
       BackStyle       =   0  'Transparent
       Caption         =   "merge old translation files with new data:"
       BeginProperty Font 
-         Name            =   "Tahoma"
+         Name            =   "Segoe UI"
          Size            =   12
          Charset         =   0
          Weight          =   400
@@ -202,19 +274,19 @@ Begin VB.Form frmCreateMaster
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   315
       Index           =   1
       Left            =   720
       TabIndex        =   10
       Top             =   5880
-      Width           =   4410
+      Width           =   4275
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "extra language support tools"
       BeginProperty Font 
-         Name            =   "Tahoma"
+         Name            =   "Segoe UI"
          Size            =   12
          Charset         =   0
          Weight          =   400
@@ -223,12 +295,12 @@ Begin VB.Form frmCreateMaster
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   315
       Index           =   0
       Left            =   240
       TabIndex        =   9
       Top             =   5280
-      Width           =   3030
+      Width           =   2970
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
@@ -242,7 +314,7 @@ Begin VB.Form frmCreateMaster
       BackStyle       =   0  'Transparent
       Caption         =   "step 2: process all files in project"
       BeginProperty Font 
-         Name            =   "Tahoma"
+         Name            =   "Segoe UI"
          Size            =   12
          Charset         =   0
          Weight          =   400
@@ -251,18 +323,18 @@ Begin VB.Form frmCreateMaster
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   315
       Left            =   240
       TabIndex        =   8
       Top             =   2760
-      Width           =   3495
+      Width           =   3345
    End
    Begin VB.Label lblVBP 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   "step 1: select VBP file"
       BeginProperty Font 
-         Name            =   "Tahoma"
+         Name            =   "Segoe UI"
          Size            =   12
          Charset         =   0
          Weight          =   400
@@ -271,11 +343,11 @@ Begin VB.Form frmCreateMaster
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   315
       Left            =   240
       TabIndex        =   0
       Top             =   1440
-      Width           =   2280
+      Width           =   2175
    End
 End
 Attribute VB_Name = "frmCreateMaster"
