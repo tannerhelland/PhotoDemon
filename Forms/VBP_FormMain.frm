@@ -1570,6 +1570,8 @@ Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boo
     asyncDownloader.freeResourcesForItem "PROGRAM_UPDATE_CHECK"
     'asyncDownloader.Reset
     
+    FormMain.mainCanvas(0).setNetworkState False
+    
 End Sub
 
 'When an asynchronous download completes, deal with it here
@@ -1581,8 +1583,19 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
     If (StrComp(entryKey, "PROGRAM_UPDATE_CHECK") = 0) Then
         
         If downloadSuccessful Then
+        
+            'The update file downloaded correctly.  Write today's date to the master preferences file, so we can correctly calculate
+            ' weekly/monthly update checks for users that require it.
             Debug.Print "Update file download complete.  Update information has been saved at " & savedToThisFile
             g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
+            
+            'Retrieve the file contents into a string
+            Dim updateXML As String
+            updateXML = StrConv(downloadedData, vbUnicode)
+            
+            'Offload the rest of the check to a separate update function.  It will initiate subsequent downloads as necessary.
+            Software_Updater.processProgramUpdateFile updateXML
+            
         Else
             Debug.Print "Update file was not downloaded.  asyncDownloader returned this error message: " & asyncDownloader.getLastErrorNumber & " - " & asyncDownloader.getLastErrorDescription
         End If
@@ -1591,11 +1604,11 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
     ElseIf (StrComp(entryKey, "LANGUAGE_UPDATE_CHECK") = 0) Then
     
         'Because we can live-update languages, we don't save the language update code to a file.  Instead, we retrieve its contents directly.
-        Dim updateXML As String
-        updateXML = StrConv(downloadedData, vbUnicode)
+        Dim langUpdateXML As String
+        langUpdateXML = StrConv(downloadedData, vbUnicode)
         
-        'Offload the reset of the check to a separate function.  It will initiate subsequent downloads as necessary.
-        Software_Updater.processLanguageUpdateFile updateXML
+        'Offload the rest of the check to a separate function.  It will initiate subsequent downloads as necessary.
+        Software_Updater.processLanguageUpdateFile langUpdateXML
     
     'If LANGUAGE_UPDATE_CHECK (above) finds out of date language files, it will trigger their download.  When such a download arrives, we can patch
     ' it through immediately.
@@ -1623,6 +1636,7 @@ End Sub
 
 'External functions can request asynchronous downloads via this function.
 Public Function requestAsynchronousDownload(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
+    FormMain.mainCanvas(0).setNetworkState True
     requestAsynchronousDownload = Me.asyncDownloader.addToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, startDownloadImmediately, saveToThisFileWhenComplete, checksumToVerify)
 End Function
 
@@ -2591,7 +2605,7 @@ Private Sub Form_Load()
         'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
         ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
         ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-        Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
+        Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
         
         'As of v6.6, PhotoDemon now supports independent language file updates, separate from updating PD as a whole.
         ' Check that preference, and if allowed, initiate a separate language file check.  (If no core program update is found, but a language

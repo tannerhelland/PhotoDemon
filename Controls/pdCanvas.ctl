@@ -322,7 +322,7 @@ Private WithEvents VScroll As pdScrollAPI
 Attribute VScroll.VB_VarHelpID = -1
 
 'Icons rendered to the scroll bar.  Rather than constantly reloading them from file, we cache them at initialization.
-Dim sbIconSize As pdDIB, sbIconCoords As pdDIB
+Dim sbIconSize As pdDIB, sbIconCoords As pdDIB, sbIconNetwork As pdDIB
 
 'When no images are loaded, we instruct the user to load an image.  This generic image icon is used as a placeholder.
 Dim iconLoadAnImage As pdDIB
@@ -337,6 +337,27 @@ Private m_LayerAutoActivateIndex As Long
 ' will add "Remove Selection" to the Undo/Redo chain; however, if no selection was active, the working selection will simply
 ' be erased.
 Private m_SelectionActiveBeforeMouseEvents As Boolean
+
+'External functions can notify the status bar of PD's network access.  When PD is downloading various update bits, a relevant icon
+' will be displayed in the status bar.  As the canvas has no knowledge of network stuff, it's imperative that the caller notify
+' of both TRUE and FALSE states.
+Private m_NetworkAccessActive As Boolean
+
+'External functions can tell us to enable or disable the status bar for various reasons (e.g. no images are loaded).  We track the
+' last requested state internally, in case we need to internally refresh the status bar for some reason.
+Private m_LastEnabledState As Boolean
+
+
+'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
+Public Sub setNetworkState(ByVal NewState As Boolean)
+    
+    'When the state changes, update a module-level variable and redraw the icon.
+    If NewState <> m_NetworkAccessActive Then
+        m_NetworkAccessActive = NewState
+        drawStatusBarIcons m_LastEnabledState
+    End If
+    
+End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating all button captions against the current language.
@@ -1959,9 +1980,11 @@ Private Sub UserControl_Show()
         'Load various status bar icons from the resource file
         Set sbIconSize = New pdDIB
         Set sbIconCoords = New pdDIB
+        Set sbIconNetwork = New pdDIB
         
         loadResourceToDIB "SB_IMG_SIZE", sbIconSize
         loadResourceToDIB "SB_MOUSE_POS", sbIconCoords
+        loadResourceToDIB "SB_NETWORK", sbIconNetwork
         
         Set iconLoadAnImage = New pdDIB
         loadResourceToDIB "IMAGE_ETCH_256", iconLoadAnImage
@@ -2016,7 +2039,7 @@ Public Sub fixChromeLayout()
     If newMessageArea < 0 Then
         lblMessages.Visible = False
     Else
-        lblMessages.Width = newMessageArea
+        If lblMessages.Width <> newMessageArea Then lblMessages.Width = newMessageArea
         lblMessages.Visible = True
     End If
     
@@ -2088,7 +2111,10 @@ End Sub
 
 'Dynamically render some icons onto the status bar.
 Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
-    
+        
+    'Note the enabled state at a module level, in case we need to internally refresh the status bar for some reason
+    m_LastEnabledState = enabledState
+        
     'Start by clearing the status bar
     picStatusBar.Picture = LoadPicture("")
     
@@ -2133,6 +2159,9 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + fixDPI(10)
         lineStatusBar(2).x2 = lineStatusBar(2).x1
         
+        'Render the network access icon as necessary
+        If m_NetworkAccessActive Then sbIconNetwork.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(2).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconNetwork.getDIBWidth), fixDPI(sbIconNetwork.getDIBHeight)
+        
     'Images are not loaded.  Hide the lines and other items.
     Else
     
@@ -2141,6 +2170,9 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         lineStatusBar(0).Visible = False
         lineStatusBar(1).Visible = False
         lineStatusBar(2).Visible = False
+        
+        'Render the network access icon as necessary
+        If m_NetworkAccessActive Then sbIconNetwork.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1, fixDPI(4), fixDPI(sbIconNetwork.getDIBWidth), fixDPI(sbIconNetwork.getDIBHeight)
                 
     End If
     
