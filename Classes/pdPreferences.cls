@@ -440,7 +440,7 @@ Private Sub createNewPreferencesFile()
     xmlEngine.writeTag "Interface", "", True
         xmlEngine.writeTag "CanvasBackground", Trim$(Str(vb3DShadow)) 'RGB(201, 211, 226)
         xmlEngine.writeTag "CanvasDropShadow", "True"
-        xmlEngine.writeTag "HighResolutionInput", "True"
+        xmlEngine.writeTag "HighResolutionInput", "False"
         xmlEngine.writeTag "MRUCaptionLength", "0"
         xmlEngine.writeTag "RecentFilesLimit", "10"
         xmlEngine.writeTag "WindowCaptionLength", "0"
@@ -529,7 +529,21 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "LastUpdateCheck", ""
         xmlEngine.writeTag "PromptForPluginDownload", "True"
         xmlEngine.writeTag "UpdateFrequency", PDUF_EACH_SESSION
-        xmlEngine.writeTag "UpdateTrack", PDUT_BETA
+        
+        'The current update track is set according to the hard-coded build ID of this .exe instance.
+        Select Case PD_BUILD_QUALITY
+        
+            Case PD_PRE_ALPHA, PD_ALPHA
+                xmlEngine.writeTag "UpdateTrack", PDUT_NIGHTLY
+                
+            Case PD_BETA
+                xmlEngine.writeTag "UpdateTrack", PDUT_BETA
+                
+            Case PD_PRODUCTION
+                xmlEngine.writeTag "UpdateTrack", PDUT_STABLE
+        
+        End Select
+        
         xmlEngine.writeTag "UpdateLanguagesIndependently", True
         xmlEngine.writeTag "UpdatePluginsIndependently", True
     xmlEngine.closeTag "Updates"
