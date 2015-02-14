@@ -1029,19 +1029,19 @@ Public Function EnforcePathSlash(ByRef srcPath As String) As String
 End Function
 
 'Return just the filename from a full path
-Public Function GetFilename(ByRef sString As String) As String
+Public Function getFilename(ByRef sString As String) As String
 
     Dim i As Long
     
     For i = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
-            GetFilename = Right$(sString, Len(sString) - i)
+            getFilename = Right$(sString, Len(sString) - i)
             Exit Function
         End If
     Next i
     
     'If we made it here, no slash was found, so presume that the entire incoming string was the filename
-    GetFilename = sString
+    getFilename = sString
     
 End Function
 
@@ -1168,7 +1168,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
             'Cast the byte array straight into a string, then remove the BOM.
             tmpString = fileBytes
             dstString = Right$(tmpString, Len(tmpString) - 2)
-            Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 LE encoding for (" & srcFile & ")"
+            'Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 LE encoding for (" & srcFile & ")"
         
         'Next, check for big-endian UTF-16 (0xFEFF)
         ElseIf fileBytes(0) = 254 And fileBytes(1) = 255 Then
@@ -1185,7 +1185,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
             'Cast the newly ordered byte array straight into a string, then remove the BOM
             tmpString = fileBytes
             dstString = Right$(tmpString, Len(tmpString) - 2)
-            Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 BE encoding for (" & srcFile & ")"
+            'Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 BE encoding for (" & srcFile & ")"
             
         'Next, check for UTF-8 BOM (0xEFBBBF).  This isn't common (UTF-8 doesn't require a BOM) but it's worth checking prior to diving into
         ' more complicated heuristics.
@@ -1193,7 +1193,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
         
             'A helper function will convert the UTF-8 bytes for us; all we need to do is remove the BOM
             dstString = Mid$(UTF8BytesToString(fileBytes), 2)
-            Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-8 encoding, via BOM, for (" & srcFile & ")"
+            'Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-8 encoding, via BOM, for (" & srcFile & ")"
             
         'All BOM checks failed.  Time to start running more complicated heuristics.
         Else
@@ -1202,7 +1202,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
             ' a low risk of false-negatives.  The default character search (currently 512 octets) can be extended to reduce false-negative risk.
             If AreBytesUTF8(fileBytes) Then
                 dstString = UTF8BytesToString(fileBytes)
-                Debug.Print "FYI: pdFSO.LoadTextFileAsString is assuming UTF-8 encoding for (" & srcFile & ")"
+                'Debug.Print "FYI: pdFSO.LoadTextFileAsString is assuming UTF-8 encoding for (" & srcFile & ")"
             
             'If the bytes do not appear to be UTF-8, we could theoretically run one final ANSI check.  US-ANSI data falls into the [0, 127] range,
             ' exclusively, so it's easy to identify.  If, however, the file contains bytes outside this range, we're SOL, because extended bytes
@@ -1211,7 +1211,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
             ' the current codepage anyway.
             Else
                 dstString = StrConv(fileBytes, vbUnicode)
-                Debug.Print "FYI: pdFSO.LoadTextFileAsString is unsure of the encoding for (" & srcFile & ").  Current user's codepage will be assumed."
+                'Debug.Print "FYI: pdFSO.LoadTextFileAsString is unsure of the encoding for (" & srcFile & ").  Current user's codepage will be assumed."
             End If
             
         End If
