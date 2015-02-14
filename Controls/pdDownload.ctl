@@ -460,7 +460,7 @@ Public Sub Reset(Optional ByVal setFailsafeTimer As Boolean = True)
     m_NumOfFiles = 0
     m_NumOfFilesFinishedDownloading = 0
     m_DownloadsAllowed = False
-    ReDim m_DownloadList(0 To 3) As pdDownloadEntry
+    ReDim m_DownloadList(0 To 31) As pdDownloadEntry
     
     'The master tracking array is likely locked, as this function will likely be accessed from inside a raised event.
     ' To prevent asynchronicity issues, launch a separate timer.  It will handle the actual erasing of the array.
@@ -517,7 +517,7 @@ Public Function addToQueue(ByVal downloadKey As String, ByVal urlString As Strin
     
     End If
     
-    On Error GoTo addToQueueFailure
+    'On Error GoTo addToQueueFailure
     
     'This key is unique; add it now
     Dim itemIndex As Long
