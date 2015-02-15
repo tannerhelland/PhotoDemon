@@ -1571,6 +1571,7 @@ Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boo
     'asyncDownloader.Reset
     
     FormMain.mainCanvas(0).setNetworkState False
+    Debug.Print "All downloads complete."
     
 End Sub
 
@@ -1610,7 +1611,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         'Offload the rest of the check to a separate function.  It will initiate subsequent downloads as necessary.
         Software_Updater.processLanguageUpdateFile langUpdateXML
     
-    'If LANGUAGE_UPDATE_CHECK (above) finds out of date language files, it will trigger their download.  When such a download arrives, we can patch
+    'If LANGUAGE_UPDATE_CHECK (above) finds out-of-date language files, it will trigger their download.  When such a download arrives, we can patch
     ' it through immediately.
     ElseIf (OptionalType = PD_LANG_IDENTIFIER) Then
         
@@ -1629,6 +1630,20 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         Else
             Debug.Print "WARNING! A language file download was interrupted.  Further patches will be postponed until next session."
         End If
+    
+    'If PROGRAM_UPDATE_CHECK (above) finds updated program or plugin files, it will trigger their download.  When the download arrives,
+    ' we can start patching immediately.
+    ElseIf (OptionalType = PD_PATCH_IDENTIFIER) Then
+        
+        If downloadSuccessful Then
+            
+            'Notify the software updater that an update package was downloaded successfully, then exit.
+            ' The actual patching will take place when PD is shutting dow.
+            Software_Updater.notifyUpdatePackageAvailable savedToThisFile
+                        
+        Else
+            Debug.Print "WARNING!  A program update was found, but the download was interrupted.  PD is postponing further patches until a later session."
+        End If
         
     End If
 
@@ -1642,6 +1657,7 @@ End Function
 
 'External functions can use this to initiate any pending downloads (e.g. downloads they may have added via requestAsynchronousDownload, above)
 Public Sub triggerPendingAsynchronousDownloads()
+    FormMain.mainCanvas(0).setNetworkState True
     Me.asyncDownloader.setAutoDownloadMode True
 End Sub
 
@@ -2934,6 +2950,18 @@ Private Sub Form_Unload(Cancel As Integer)
         End If
         
     Next tmpForm
+    
+    'If an update package was downloaded, this is a good time to apply it
+    If Software_Updater.isUpdatePackageAvailable Then
+        
+        If Software_Updater.patchProgramFiles() Then
+            Debug.Print "A PhotoDemon update was applied successfully.  Restart to make use of the new version."
+        Else
+            Debug.Print "WARNING!  One or more errors were encountered while applying an update.  PD has attempted to roll everything back to its original state."
+        End If
+        
+    End If
+        
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Writing session data to file..."

@@ -250,16 +250,19 @@ Private Sub MakeVersionFile()
     xmlOutput.writeTagWithAttribute "update", "track", "stable", "", True
     addVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\stable\"
     xmlOutput.closeTag "update"
+    xmlOutput.writeBlankLine
     
     'Next comes beta (which is often the same as the stable release)
     xmlOutput.writeTagWithAttribute "update", "track", "beta", "", True
     addVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\beta\"
     xmlOutput.closeTag "update"
+    xmlOutput.writeBlankLine
     
     'Last comes nightly.  Note that the nightly files will be out of date unless Step 1 (AssembleNightlyBuild) has been run during this session.
     xmlOutput.writeTagWithAttribute "update", "track", "nightly", "", True
     addVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\nightly\"
     xmlOutput.closeTag "update"
+    xmlOutput.writeBlankLine
     
     'Write the XML out to file
     Dim dstFile As String

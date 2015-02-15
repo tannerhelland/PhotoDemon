@@ -44,6 +44,14 @@ End Enum
 'Same goes for the update announcement path
 Public updateAnnouncement As String
 
+'When patching PD itself, we make a backup copy of the update XML contents.  This file provides a second failsafe checksum reference, which is
+' important when patching binary EXE and DLL files.
+Private m_PDPatchXML As String
+
+'If an update package is downloaded successfully, it will be forwarded to this module.  At program shutdown time, the package will be applied.
+Private m_UpdateFilePath As String
+
+
 'Check for a software update; it's assumed the update file has already been downloaded, if available, from its standard
 ' location at http://photodemon.org/downloads/updates.xml.  If an update file has not been downloaded, this function
 ' will exit with status code UPDATE_UNAVAILABLE.
@@ -52,17 +60,15 @@ Public updateAnnouncement As String
 ' UPDATE_ERROR - something went wrong
 ' UPDATE_NOT_NEEDED - an update file was found, but the current software version is already up-to-date
 ' UPDATE_AVAILABLE - an update file was found, and an updated PD copy is available
-' UPDATE_UNAVAILABLE - no update file was found (this is the most common occurrence, as updates are only checked every 10 days)
+' UPDATE_UNAVAILABLE - no update file was found (this happens if the user specifies weekly or monthly checks, and it's not yet time for a new check)
 Public Function CheckForSoftwareUpdate(Optional ByVal downloadUpdateManually As Boolean = False) As UpdateCheck
 
-    'If the user has requested a forcible update check (as can be done from the Help menu), manually
-    ' download a new copy of the update file now.
+    'If the user has requested a forcible update check (as can be done from the Help menu), manually download a new copy of the update file.
     If downloadUpdateManually Then
     
         'First things first - set up our target URL
         Dim URL As String
-        URL = "http://photodemon.org/downloads/updates.xml"
-        'URL = "http://tannerhelland.com/photodemon_files/updates_testing.txt"
+        URL = "http://photodemon.org/downloads/updates/pdupdate.xml"
            
         'Open an Internet session and assign it a handle
         Dim hInternetSession As Long
@@ -87,7 +93,7 @@ Public Function CheckForSoftwareUpdate(Optional ByVal downloadUpdateManually As 
             
         'We need a temporary file to house the update information; generate it automatically
         Dim tmpFile As String
-        tmpFile = g_UserPreferences.getUpdatePath & "updates.xml"
+        tmpFile = g_UserPreferences.getUpdatePath & "pdupdate.xml"
         
         'Open the temporary file and begin downloading the update information to it
         Dim fileNum As Integer
@@ -152,7 +158,7 @@ Public Function CheckForSoftwareUpdate(Optional ByVal downloadUpdateManually As 
     
     'Check for the presence of an update file
     Dim updateFile As String
-    updateFile = g_UserPreferences.getUpdatePath & "updates.xml"
+    updateFile = g_UserPreferences.getUpdatePath & "pdupdate.xml"
     
     If FileExist(updateFile) Then
     
@@ -425,7 +431,7 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                 
                 Debug.Print numOfUpdates & " updated language files will now be downloaded."
                 
-                'Loop through the update array; for any language marked for update, request an asnychronous download of their
+                'Loop through the update array; for any language marked for update, request an asynchronous download of their
                 ' matching file from the main form.
                 For i = 0 To UBound(updateFlags)
                 
@@ -568,23 +574,385 @@ LanguagePatchingFailure:
     
 End Function
 
+'Given the XML string of a download program version XML report from photodemon.org, initiate the download of a program update package, as necessary.
+' This function basically checks to see if PhotoDemon.exe is out of date on the current update track (stable, beta, or nightly, per the user's
+' preference).  If it is, an update package will be downloaded.  At extraction time, all files that need to be updated, will be updated; this function's
+' job is simply to initiate a larger package download if necessary.
+Public Sub processProgramUpdateFile(ByRef srcXML As String)
+    
+    'A pdXML object handles XML parsing for us.
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Validate the XML
+    If xmlEngine.loadXMLFromString(srcXML) Then
+    
+        'Check for a few necessary tags, just to make sure this is actually a valid update file
+        If xmlEngine.isPDDataType("Program version") Then
+            
+            'Next, figure out which update track we need to check.  The user can change this at any time, so it may not necessarily correlate to
+            ' the current build.  (e.g., if the user is on the stable track, they may switch to the nightly track, which necessitates a different
+            ' update procedure).
+            Dim curUpdateTrack As PD_UPDATE_TRACK
+            curUpdateTrack = g_UserPreferences.GetPref_Long("Updates", "Update Track", PDUT_BETA)
+            
+            'From the update track, we need to generate a string that identifies the correct chunk of the XML file.  Some update tracks can update
+            ' to more than one type of build (for example, the nightly build track can update to a stable version, if the stable version is newer),
+            ' so we may need to search multiple regions of the update file in order to find the best update target.
+            Dim updateTagIDs() As String, numUpdateTagIDs As Long
+            ReDim updateTagIDs(0 To 2) As String
+            updateTagIDs(0) = "stable"
+            updateTagIDs(1) = "beta"
+            updateTagIDs(2) = "nightly"
+            
+            Select Case curUpdateTrack
+            
+                Case PDUT_STABLE
+                    numUpdateTagIDs = 1
+                    
+                Case PDUT_BETA
+                    numUpdateTagIDs = 2
+                
+                Case PDUT_NIGHTLY
+                    numUpdateTagIDs = 3
+                
+            End Select
+            
+            ReDim Preserve updateTagIDs(0 To numUpdateTagIDs - 1) As String
+            
+            'If we find an update track with a valid update available, this value will point at that track (0, 1, or 2, for stable, beta,
+            ' or nightly, respectively).  If no update is found, it will remain at -1.
+            Dim trackWithValidUpdate As Long
+            trackWithValidUpdate = -1
+            
+            'We start with the current PD version as a baseline.  If newer update targets are found, this string will be updated with those targets instead.
+            Dim curVersionMatch As String
+            curVersionMatch = getPhotoDemonVersionCanonical()
+            
+            'FAKE TESTING VERSION ONLY!
+            'curVersionMatch = "6.4.0"
+            
+            'Next, we need to search the update file for PhotoDemon.exe versions.  Each valid updateTagID region (as calculated above) will be
+            ' searched.  If any return a hit, we will initiate the download of an update package.
+            Dim i As Long
+            For i = 0 To numUpdateTagIDs - 1
+            
+                'Find the bounding character markers for the relevant XML region (e.g. the one that corresponds to this update track)
+                Dim tagAreaStart As Long, tagAreaEnd As Long
+                If xmlEngine.getTagCharacterRange(tagAreaStart, tagAreaEnd, "update", "track", updateTagIDs(i)) Then
+                    
+                    'Find the position of the PhotoDemon.exe version
+                    Dim pdTagPosition As Long
+                    pdTagPosition = xmlEngine.getLocationOfTagPlusAttribute("version", "component", "PhotoDemon.exe", tagAreaStart)
+                    
+                    'Make sure the tag position is within the valid range.  (This should always be TRUE, but it doesn't hurt to check.)
+                    If (pdTagPosition >= tagAreaStart) And (pdTagPosition <= tagAreaEnd) Then
+                    
+                        'This is the version tag we want!  Retrieve its value.
+                        Dim newPDVersionString As String
+                        newPDVersionString = xmlEngine.getTagValueAtPreciseLocation(pdTagPosition)
+                        
+                        Debug.Print "Update track " & i & " reports version " & newPDVersionString & " (our version: " & getPhotoDemonVersionCanonical() & ")"
+                        
+                        'If this value is higher than our current update target, mark it and proceed.  Note that this approach gives us the
+                        ' highest possible update target from all available/enabled update tracks.
+                        If isNewVersionHigher(curVersionMatch, newPDVersionString) Then trackWithValidUpdate = i
+                        
+                    End If
+                
+                'This Else branch should never trigger, as it means the update file doesn't contain the listed update track.
+                Else
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING!  Update XML file is possibly corrupt, as the requested update track could not be located within the file."
+                    #End If
+                End If
+                
+            Next i
+            
+            'If trackWithValidUpdate is >= 0, it points to the update track with the highest possible update target.
+            If trackWithValidUpdate >= 0 Then
+            
+                'Make a backup copy of the update XML string.  We'll be referring to this later, after the patch files have downloaded.
+                m_PDPatchXML = xmlEngine.returnCurrentXMLString
+                
+                'Construct a URL that matches the selected update track
+                Dim updateURL As String
+                updateURL = "http://photodemon.org/downloads/updates/"
+                
+                Select Case trackWithValidUpdate
+                
+                    Case PDUT_STABLE
+                        updateURL = updateURL & "stable"
+                    
+                    Case PDUT_BETA
+                        updateURL = updateURL & "beta"
+                
+                    Case PDUT_NIGHTLY
+                        updateURL = updateURL & "nightly"
+                
+                End Select
+                
+                updateURL = updateURL & ".pdz"
+
+                'Request a download on the main form.  Note that we explicitly set the download type to the pdLanguage file
+                ' header constant; this lets us easily sort the incoming downloads as they arrive.  We also use the reported
+                ' checksum as the file's unique ID value.  Post-download and extraction, we use this value to ensure that
+                ' the extracted data matches what we originally uploaded.
+                If FormMain.requestAsynchronousDownload("PD_UPDATE_PATCH", updateURL, PD_PATCH_IDENTIFIER, vbAsyncReadForceUpdate, True, g_UserPreferences.getUpdatePath & "PDPatch.tmp") Then
+                    Debug.Print "Download successfully initiated for program patch file at " & updateURL
+                Else
+                    Debug.Print "WARNING! FormMain.requestAsynchronousDownload refused to initiate download of " & updateURL & " patch file."
+                End If
+            
+            'No update was found.  Exit now.
+            Else
+            
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Update check performed successfully.  (No update available right now.)"
+                #End If
+            
+            End If
+        
+        Else
+            Debug.Print "WARNING! Program update XML did not pass basic validation.  Abandoning update process."
+        End If
+    
+    Else
+        Debug.Print "WARNING! Program update XML did not load successfully - check for an encoding error, maybe...?"
+    End If
+    
+End Sub
+
+'After a program update file has successfully downloaded, FormMain calls this function to actually apply the patch(es).
+Public Function patchProgramFiles() As Boolean
+    
+    'If no update file is available, exit without doing anything
+    If Len(m_UpdateFilePath) = 0 Then
+        patchProgramFiles = True
+        Exit Function
+    End If
+    
+    'On Error GoTo ProgramPatchingFailure
+    
+    'This function will only return TRUE if all files were patched successfully.
+    Dim allFilesSuccessful As Boolean
+    allFilesSuccessful = True
+    
+    'Temporary files are a necessary evil of this function, due to the ugliness of patching in-use binary files.
+    ' As a security precaution, we'll be hashing our temp filenames.
+    Randomize Timer
+    
+    Dim cHash As CSHA256
+    Set cHash = New CSHA256
+    
+    'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackager object.
+    Dim cPackage As pdPackager
+    Set cPackage = New pdPackager
+    If g_ZLibEnabled Then cPackage.init_ZLib g_PluginPath & "zlibwapi.dll"
+    
+    If cPackage.readPackageFromFile(m_UpdateFilePath, PD_PATCH_IDENTIFIER) Then
+    
+        'The package appears to be intact.  Time to start enumerating and patching files.
+        Dim rawNewFile() As Byte, newFilenameArray() As Byte, newFilename As String, newChecksum As Long
+        Dim rawOldFile() As Byte
+        
+        Dim numOfNodes As Long
+        numOfNodes = cPackage.getNumOfNodes
+        
+        'Iterate each file in turn, extracting as we go
+        Dim i As Long
+        For i = 0 To numOfNodes - 1
+        
+            'Somewhat unconventionally, we extract the file's contents first.  We want to verify all checksum data before proceeding
+            ' with the overwrite; hence this odd order.
+            If cPackage.getNodeDataByIndex(i, False, rawNewFile) Then
+            
+            'If we made it here, it means the internal pdPackage checksum passed successfully, meaning the post-compression file checksum
+            ' matches the original checksum calculated at creation time.  Because we are very cautious, we now apply a second checksum verification,
+            ' using the checksum value embedded within the original pdupdate.xml file.
+            
+            'TODO!
+            ' newChecksum = CLng(entryKey)
+            
+'            If newChecksum = cPackage.checkSumArbitraryArray(rawNewFile) Then
+'
+                'Checksums match!  We now want to overwrite the old binary file with its new copy.
+
+                'Retrieve the filename of the updated language file
+                If cPackage.getNodeDataByIndex(i, True, newFilenameArray) Then
+
+                    newFilename = Space$((UBound(newFilenameArray) + 1) \ 2)
+                    CopyMemory ByVal StrPtr(newFilename), ByVal VarPtr(newFilenameArray(0)), UBound(newFilenameArray) + 1
+                    
+                    'Unlike language files, which can be patched willy-nilly, these update packages contain binary files that are likely
+                    ' in use RIGHT NOW by PD.  Files like this normally can't be patched, but we're going to use a special in-place
+                    ' patching system.
+                     
+                    'First, we must write this file out to a temporary file.  The filename doesn't matter, but we'll hash it just to be safe.
+                    Dim tmpFilename As String
+                    tmpFilename = Left$(cHash.SHA256(CStr(Rnd) & newFilename), 16) & ".tmp"
+                    
+                    'Write the temp file
+                    If writeArrayToFile(rawNewFile, g_UserPreferences.getUpdatePath & tmpFilename) Then
+                    
+                        'The temp file is ready to go.  Prepare a destination name, which we get by appending the embedded pdPackage name
+                        ' and the current PD folder.
+                        Dim dstFilename As String
+                        dstFilename = g_UserPreferences.getProgramPath & newFilename
+                        
+                        'Use a special patch function to replace the binary file in question
+                        Dim patchResult As FILE_PATCH_RESULT
+                        patchResult = patchArbitraryFile(dstFilename, g_UserPreferences.getUpdatePath & tmpFilename, , True)
+                        
+                        If patchResult = FPR_SUCCESS Then
+                        
+                            'TODO!  Post-write checksum validation
+                            Debug.Print "Successfully patched " & newFilename
+                            
+                        Else
+                        
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "WARNING! patchProgramFiles failed to patch " & newFilename
+                                
+                                Select Case patchResult
+                                
+                                    Case FPR_FAIL_NOTHING_CHANGED
+                                        pdDebug.LogAction "(However, patchProgramFiles was able to restore everything to its initial state.)"
+                                        
+                                    Case FPR_FAIL_BOTH_FILES_REMOVED
+                                        pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill both files while it was at it."
+                                    
+                                    Case FPR_FAIL_NEW_FILE_REMOVED
+                                        pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill the new file while it was at it."
+                                    
+                                    Case FPR_FAIL_OLD_FILE_REMOVED
+                                        pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill the old file while it was at it."
+                                    
+                                End Select
+                                
+                            #End If
+                            
+                            allFilesSuccessful = False
+                            
+                        End If
+                    
+                    End If
+                    
+                End If
+                
+            End If
+        
+        Next i
+        
+        'If cPackage.autoExtractAllFiles(g_UserPreferences.getProgramPath) Then
+        '    patchProgramFiles = True
+        'Else
+        '    patchProgramFiles = False
+        'End If
+        
+        patchProgramFiles = allFilesSuccessful
+    
+    Else
+        Debug.Print "WARNING! Program patch file downloaded, but pdPackager rejected it.  Program update abandoned."
+        patchProgramFiles = False
+    End If
+    
+    'Regardless of outcome, we kill the update file when we're done with it.
+    If FileExist(m_UpdateFilePath) Then Kill m_UpdateFilePath
+    
+    Exit Function
+    
+ProgramPatchingFailure:
+
+    patchProgramFiles = False
+    
+End Function
+
 'Simple wrapper to pdFSO's ReplaceFile function.  The only thing this function adds is a forcible backup of the original file prior to replacing it;
 ' this is crucial for undoing any damage from a failed replace operation.
-Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = "") As FILE_PATCH_RESULT
+Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = "", Optional ByVal handleBackupsForMe As Boolean = True) As FILE_PATCH_RESULT
 
     'Create a pdFSO instance
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    'Enforce strict file backup rules
+    'If the user wants us to handle backups, we'll hash their incoming filename as our backup name.
+    Dim cHash As CSHA256
+    Set cHash = New CSHA256
     
-    If Len(customBackupFile) = 0 Then
+    'Two paths are required: a more complicated one for backups that we handle, and a thin wrapper otherwise
+    If handleBackupsForMe Then
         
-        'We use the standard Data/Updates folder for backups when patching update files
-        customBackupFile = g_UserPreferences.getUpdatePath & cFile.getFilename(oldFile)
+        'We use the standard Data/Updates folder for backups when patching files
+        customBackupFile = g_UserPreferences.getUpdatePath & Left$(cHash.SHA256(cFile.getFilename(oldFile)), 16) & ".tmp"
         
+        'Copy the contents of newFile to Backup file
+        If cFile.CopyFile(oldFile, customBackupFile) Then
+        
+            'With a backup successfully created, lean on the API to perform the actual patching
+            Dim patchResult As FILE_PATCH_RESULT
+            patchResult = cFile.ReplaceFile(oldFile, newFile)
+            
+            'If the patch succeeds, great!  Kill our backup and exit.
+            If patchResult = FPR_SUCCESS Then
+            
+                cFile.KillFile customBackupFile
+                patchArbitraryFile = FPR_SUCCESS
+                
+            'If the patch does not succeed, restore our backup as necessary
+            Else
+            
+                'If the old file still exists, kill our backup, then return the appropriate fail state
+                If FileExist(oldFile) Then
+                    cFile.KillFile customBackupFile
+                    patchArbitraryFile = FPR_FAIL_NOTHING_CHANGED
+                
+                'The old file is missing.  Restore it from our backup.
+                Else
+                    
+                    If cFile.CopyFile(customBackupFile, oldFile) Then
+                        patchArbitraryFile = FPR_FAIL_NOTHING_CHANGED
+                    
+                    'If we can't restore our backup, things are really messed up.  We have no choice but to exit.
+                    Else
+                        patchArbitraryFile = FPR_FAIL_OLD_FILE_REMOVED
+                    End If
+                    
+                    'Either way, kill our backup
+                    cFile.KillFile customBackupFile
+                
+                End If
+            
+            End If
+        
+        'If the copy failed, try and get the API to copy the file for us.  This isn't ideal, as the API may leave behind a copy of the backup file,
+        ' but it's better than nothing.
+        Else
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING! patchArbitraryFile was unable to create a manual backup prior to patching."
+            #End If
+            
+            'Leave it to the API from here...
+            patchArbitraryFile = cFile.ReplaceFile(oldFile, newFile, customBackupFile)
+            
+        End If
+        
+    'If the caller doesn't want us to handle backups, its up to them to
+    Else
+        patchArbitraryFile = cFile.ReplaceFile(oldFile, newFile, customBackupFile)
     End If
     
-    patchArbitraryFile = cFile.ReplaceFile(oldFile, newFile, customBackupFile)
+    'ReplaceFile may not kill the backup file (WTF).  Check for this and kill it as necessary.
+    'If FileExist(customBackupFile) Then Kill customBackupFile
 
+End Function
+
+'Rather than apply updates mid-session, any patches are applied at shutdown time
+Public Sub notifyUpdatePackageAvailable(ByVal tmpUpdateFile As String)
+    m_UpdateFilePath = tmpUpdateFile
+End Sub
+
+Public Function isUpdatePackageAvailable() As Boolean
+    isUpdatePackageAvailable = (Len(m_UpdateFilePath) <> 0)
 End Function
