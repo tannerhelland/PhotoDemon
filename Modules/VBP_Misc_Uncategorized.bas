@@ -270,6 +270,11 @@ Public Function getPhotoDemonVersion() As String
     
 End Function
 
+'Retrieve PD's current version witout any appended tags (e.g. "beta"), and with a "0" automatically plugged in for build.
+Public Function getPhotoDemonVersionCanonical() As String
+    getPhotoDemonVersionCanonical = Trim$(Str(App.Major)) & "." & Trim$(Str(App.Minor)) & ".0." & Trim$(Str(App.Revision))
+End Function
+
 'Retrieve PD's current version (not revision!) as a pure major/minor string.  This is not generally recommended for displaying
 ' to the user, but it's helpful for things like update checks.
 Public Function getPhotoDemonVersionMajorMinorOnly() As String
@@ -327,4 +332,63 @@ cantFormatRevisionAsLong:
 
     retrieveVersionRevisionAsLong = 0
 
+End Function
+
+'Given two version numbers, return TRUE if the second version is larger than the first.
+' If the second version equals the first, FALSE is returned.
+Public Function isNewVersionHigher(ByVal oldVersion As String, ByVal newVersion As String) As Boolean
+    
+    'Normalize version separators
+    If InStr(1, oldVersion, ",", vbBinaryCompare) Then oldVersion = Replace$(oldVersion, ",", ".")
+    If InStr(1, newVersion, ",", vbBinaryCompare) Then oldVersion = Replace$(newVersion, ",", ".")
+    
+    'If the string representations are identical, we can exit now
+    If StrComp(oldVersion, newVersion, vbBinaryCompare) = 0 Then
+        isNewVersionHigher = False
+        
+    'If the strings are not equal, a more detailed comparison is required.
+    Else
+    
+        'Parse the versions by "."
+        Dim oldV() As String, newV() As String
+        oldV = Split(oldVersion, ".")
+        newV = Split(newVersion, ".")
+        
+        'Fill in any missing version entries
+        Dim i As Long, oldUBound As Long
+        
+        If UBound(oldV) < 3 Then
+            
+            oldUBound = UBound(oldV)
+            ReDim Preserve oldV(0 To 3) As String
+            
+            For i = oldUBound + 1 To 3
+                oldV(i) = "0"
+            Next i
+            
+        End If
+        
+        If UBound(newV) < 3 Then
+            
+            oldUBound = UBound(newV)
+            ReDim Preserve newV(0 To 3) As String
+            
+            For i = oldUBound + 1 To 3
+                newV(i) = "0"
+            Next i
+            
+        End If
+        
+        'With both version numbers normalized, compare each entry in turn.
+        Dim newIsNewer As Boolean
+        newIsNewer = False
+        
+        For i = 0 To 3
+            If CLng(newV(i)) > CLng(oldV(i)) Then newIsNewer = True
+        Next i
+        
+        isNewVersionHigher = newIsNewer
+        
+    End If
+    
 End Function
