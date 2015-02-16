@@ -3,8 +3,8 @@ Attribute VB_Name = "Software_Updater"
 'Automatic Software Updater (note: at present this doesn't technically DO the updating (e.g. overwriting program files), it just CHECKS for updates)
 'Copyright 2012-2015 by Tanner Helland
 'Created: 19/August/12
-'Last updated: 02/February/15
-'Last update: finished work on hot-patching language files at runtime.
+'Last updated: 16/February/15
+'Last update: continued work on automatic program patching
 '
 'Interface for checking if a new version of PhotoDemon is available for download.  This code is a stripped-down
 ' version of PhotoDemon's "download image from Internet" code.
@@ -47,6 +47,10 @@ Public updateAnnouncement As String
 'When patching PD itself, we make a backup copy of the update XML contents.  This file provides a second failsafe checksum reference, which is
 ' important when patching binary EXE and DLL files.
 Private m_PDPatchXML As String
+
+'When initially parsing the update XML file (above), if an update is found, the parse routine will note which track was used for the update,
+' and where that track's data starts and ends inside the XML file.
+Private m_SelectedTrack As Long, m_TrackStartPosition As Long, m_TrackEndPosition As Long
 
 'If an update package is downloaded successfully, it will be forwarded to this module.  At program shutdown time, the package will be applied.
 Private m_UpdateFilePath As String
@@ -656,7 +660,16 @@ Public Sub processProgramUpdateFile(ByRef srcXML As String)
                         
                         'If this value is higher than our current update target, mark it and proceed.  Note that this approach gives us the
                         ' highest possible update target from all available/enabled update tracks.
-                        If isNewVersionHigher(curVersionMatch, newPDVersionString) Then trackWithValidUpdate = i
+                        If isNewVersionHigher(curVersionMatch, newPDVersionString) Then
+                            
+                            trackWithValidUpdate = i
+                            
+                            'Set some matching module-level values, which we'll need when it's time to actually patch the files in question.
+                            m_SelectedTrack = trackWithValidUpdate
+                            m_TrackStartPosition = tagAreaStart
+                            m_TrackEndPosition = tagAreaEnd
+                            
+                        End If
                         
                     End If
                 
@@ -673,7 +686,7 @@ Public Sub processProgramUpdateFile(ByRef srcXML As String)
             If trackWithValidUpdate >= 0 Then
             
                 'Make a backup copy of the update XML string.  We'll be referring to this later, after the patch files have downloaded.
-                m_PDPatchXML = xmlEngine.returnCurrentXMLString
+                m_PDPatchXML = xmlEngine.returnCurrentXMLString(True)
                 
                 'Construct a URL that matches the selected update track
                 Dim updateURL As String
@@ -723,7 +736,35 @@ Public Sub processProgramUpdateFile(ByRef srcXML As String)
     
 End Sub
 
-'After a program update file has successfully downloaded, FormMain calls this function to actually apply the patch(es).
+'When live-patching program files, we double-check checksums of both the temp files and the final binary copies.  This prevents hijackers from
+' intercepting the files mid-transit, and replacing them with their own.
+Private Function getFailsafeChecksum(ByRef xmlEngine As pdXML, ByVal relativePath As String) As Long
+
+    'Find the position of this file's checksum
+    Dim pdTagPosition As Long
+    pdTagPosition = xmlEngine.getLocationOfTagPlusAttribute("checksum", "component", relativePath, m_TrackStartPosition)
+    
+    'Make sure the tag position is within the valid range.  (This should always be TRUE, but it doesn't hurt to check.)
+    If (pdTagPosition >= m_TrackStartPosition) And (pdTagPosition <= m_TrackEndPosition) Then
+    
+        'This is the checksum tag we want!  Retrieve its value.
+        Dim thisChecksum As String
+        thisChecksum = xmlEngine.getTagValueAtPreciseLocation(pdTagPosition)
+        
+        'Convert the checksum to a long and return it
+        getFailsafeChecksum = thisChecksum
+        
+    'If the checksum doesn't exist in the file, return 0
+    Else
+        getFailsafeChecksum = 0
+    End If
+    
+    'Debug.Print pdTagPosition & " (" & m_TrackStartPosition & ", " & m_TrackEndPosition & "): " & relativePath
+    
+End Function
+
+'If a program update file has successfully downloaded during this session, FormMain calls this function at program termination.
+' This lovely function actually patches any/all relevant files.
 Public Function patchProgramFiles() As Boolean
     
     'If no update file is available, exit without doing anything
@@ -745,6 +786,15 @@ Public Function patchProgramFiles() As Boolean
     Dim cHash As CSHA256
     Set cHash = New CSHA256
     
+    'An XML object is used to extract secondary failsafe checksum data from the original update file
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    xmlEngine.loadXMLFromString m_PDPatchXML
+    
+    'A pdFSO object helps with some extra file operations
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackager object.
     Dim cPackage As pdPackager
     Set cPackage = New pdPackager
@@ -753,7 +803,7 @@ Public Function patchProgramFiles() As Boolean
     If cPackage.readPackageFromFile(m_UpdateFilePath, PD_PATCH_IDENTIFIER) Then
     
         'The package appears to be intact.  Time to start enumerating and patching files.
-        Dim rawNewFile() As Byte, newFilenameArray() As Byte, newFilename As String, newChecksum As Long
+        Dim rawNewFile() As Byte, newFilenameArray() As Byte, newFilename As String, failsafeChecksum As Long
         Dim rawOldFile() As Byte
         
         Dim numOfNodes As Long
@@ -763,92 +813,95 @@ Public Function patchProgramFiles() As Boolean
         Dim i As Long
         For i = 0 To numOfNodes - 1
         
-            'Somewhat unconventionally, we extract the file's contents first.  We want to verify all checksum data before proceeding
-            ' with the overwrite; hence this odd order.
+            'Somewhat unconventionally, we extract the file's contents prior to extracting its name.  We want to verify that the contents
+            ' are intact (via pdPackage's internal checksum data) before proceeding with the overwrite.
             If cPackage.getNodeDataByIndex(i, False, rawNewFile) Then
             
-            'If we made it here, it means the internal pdPackage checksum passed successfully, meaning the post-compression file checksum
-            ' matches the original checksum calculated at creation time.  Because we are very cautious, we now apply a second checksum verification,
-            ' using the checksum value embedded within the original pdupdate.xml file.
-            
-            'TODO!
-            ' newChecksum = CLng(entryKey)
-            
-'            If newChecksum = cPackage.checkSumArbitraryArray(rawNewFile) Then
-'
-                'Checksums match!  We now want to overwrite the old binary file with its new copy.
-
-                'Retrieve the filename of the updated language file
+                'If we made it here, it means the internal pdPackage checksum passed successfully, meaning the post-compression file checksum
+                ' matches the original checksum calculated at creation time.  Because we are very cautious, we now apply a second checksum verification,
+                ' using the checksum value embedded within the original pdupdate.xml file.
+    
+                'Start by retrieving the filename of the updated language file; we need this to look up the original checksum value in the update XML file.
                 If cPackage.getNodeDataByIndex(i, True, newFilenameArray) Then
-
+    
                     newFilename = Space$((UBound(newFilenameArray) + 1) \ 2)
                     CopyMemory ByVal StrPtr(newFilename), ByVal VarPtr(newFilenameArray(0)), UBound(newFilenameArray) + 1
                     
-                    'Unlike language files, which can be patched willy-nilly, these update packages contain binary files that are likely
-                    ' in use RIGHT NOW by PD.  Files like this normally can't be patched, but we're going to use a special in-place
-                    ' patching system.
-                     
-                    'First, we must write this file out to a temporary file.  The filename doesn't matter, but we'll hash it just to be safe.
-                    Dim tmpFilename As String
-                    tmpFilename = Left$(cHash.SHA256(CStr(Rnd) & newFilename), 16) & ".tmp"
+                    'Retrieve the secondary failsafe checksum for this file
+                    failsafeChecksum = getFailsafeChecksum(xmlEngine, newFilename)
                     
-                    'Write the temp file
-                    If writeArrayToFile(rawNewFile, g_UserPreferences.getUpdatePath & tmpFilename) Then
+                    'Before proceeding with the write, compare the temp file array to our stored checksum
+                    If failsafeChecksum = cPackage.checkSumArbitraryArray(rawNewFile) Then
                     
-                        'The temp file is ready to go.  Prepare a destination name, which we get by appending the embedded pdPackage name
-                        ' and the current PD folder.
-                        Dim dstFilename As String
-                        dstFilename = g_UserPreferences.getProgramPath & newFilename
+                        'Checksums match!  We now want to overwrite the old binary file with its new copy.
                         
-                        'Use a special patch function to replace the binary file in question
-                        Dim patchResult As FILE_PATCH_RESULT
-                        patchResult = patchArbitraryFile(dstFilename, g_UserPreferences.getUpdatePath & tmpFilename, , True)
+                        'Unlike language files, which can be patched willy-nilly, these update packages contain binary files that are likely
+                        ' in use RIGHT NOW by PD.  Files like this normally can't be patched, but we're going to use a special in-place
+                        ' patching system.
+                         
+                        'First, we must write this file out to a temporary file.  The filename doesn't matter, but we'll hash it as a
+                        ' privacy and security precaution.
+                        Dim tmpFilename As String
+                        tmpFilename = Left$(cHash.SHA256(CStr(Rnd) & newFilename), 16) & ".tmp"
                         
-                        If patchResult = FPR_SUCCESS Then
+                        'Write the temp file
+                        If cFile.SaveByteArrayToFile(rawNewFile, g_UserPreferences.getUpdatePath & tmpFilename) Then
                         
-                            'TODO!  Post-write checksum validation
-                            Debug.Print "Successfully patched " & newFilename
+                            'The temp file is ready to go.  Prepare a destination name, which we get by appending the embedded pdPackage name
+                            ' and the current PD folder.
+                            Dim dstFilename As String
+                            dstFilename = g_UserPreferences.getProgramPath & newFilename
                             
-                        Else
-                        
-                            #If DEBUGMODE = 1 Then
-                                pdDebug.LogAction "WARNING! patchProgramFiles failed to patch " & newFilename
+                            'Use a special patch function to replace the binary file in question
+                            Dim patchResult As FILE_PATCH_RESULT
+                            patchResult = patchArbitraryFile(dstFilename, g_UserPreferences.getUpdatePath & tmpFilename, , True, failsafeChecksum, cPackage)
+                            
+                            If patchResult = FPR_SUCCESS Then
+                            
+                                'TODO!  Post-write checksum validation
+                                Debug.Print "Successfully patched " & newFilename
                                 
-                                Select Case patchResult
-                                
-                                    Case FPR_FAIL_NOTHING_CHANGED
-                                        pdDebug.LogAction "(However, patchProgramFiles was able to restore everything to its initial state.)"
+                            Else
+                            
+                                #If DEBUGMODE = 1 Then
+                                    pdDebug.LogAction "WARNING! patchProgramFiles failed to patch " & newFilename
+                                    
+                                    Select Case patchResult
+                                    
+                                        Case FPR_FAIL_NOTHING_CHANGED
+                                            pdDebug.LogAction "(However, patchProgramFiles was able to restore everything to its initial state.)"
+                                            
+                                        Case FPR_FAIL_BOTH_FILES_REMOVED
+                                            pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill both files while it was at it."
                                         
-                                    Case FPR_FAIL_BOTH_FILES_REMOVED
-                                        pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill both files while it was at it."
+                                        Case FPR_FAIL_NEW_FILE_REMOVED
+                                            pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill the new file while it was at it."
+                                        
+                                        Case FPR_FAIL_OLD_FILE_REMOVED
+                                            pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill the old file while it was at it."
+                                        
+                                    End Select
                                     
-                                    Case FPR_FAIL_NEW_FILE_REMOVED
-                                        pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill the new file while it was at it."
-                                    
-                                    Case FPR_FAIL_OLD_FILE_REMOVED
-                                        pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill the old file while it was at it."
-                                    
-                                End Select
+                                #End If
                                 
-                            #End If
-                            
-                            allFilesSuccessful = False
-                            
+                                allFilesSuccessful = False
+                                
+                            'End patchArbitraryFile success
+                            End If
+                        
+                        'End writing temp file success
                         End If
-                    
+                        
+                    'End secondary checksum failsafe
                     End If
-                    
-                End If
                 
+                'End node header data retrieval success
+                End If
+            
+            'End node data retrieval success
             End If
         
         Next i
-        
-        'If cPackage.autoExtractAllFiles(g_UserPreferences.getProgramPath) Then
-        '    patchProgramFiles = True
-        'Else
-        '    patchProgramFiles = False
-        'End If
         
         patchProgramFiles = allFilesSuccessful
     
@@ -868,10 +921,19 @@ ProgramPatchingFailure:
     
 End Function
 
-'Simple wrapper to pdFSO's ReplaceFile function.  The only thing this function adds is a forcible backup of the original file prior to replacing it;
-' this is crucial for undoing any damage from a failed replace operation.
-Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = "", Optional ByVal handleBackupsForMe As Boolean = True) As FILE_PATCH_RESULT
-
+'Advanced wrapper to pdFSO's ReplaceFile function.  This function adds several features to the ReplaceFile function:
+' - A comprehensive backup system for the original file, which this function will use to undo the replace operation if anything
+'    goes wrong during the replacement process.
+' - Support for a newFile checksum (adler32, as generated by a pdPackage object, which the caller must have initiated with zLib support).
+'    - It is assumed that the caller has already verified that this checksum is valid for the new file.
+'    - This checksum is used in two places:
+'       - First, if the checksum matches the oldFile, the replace step is skipped (as the files are identical)
+'       - Second, if the replacement process reports success, this checksum is validated AGAIN on the destination file.  This verifies that
+'          nothing hijacked the replacement process.
+'
+'Returns a FILE_PATCH_RESULT enum.  (FPR_SUCCESS means success; all other returns are various failures.)
+Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = "", Optional ByVal handleBackupsForMe As Boolean = True, Optional ByVal srcChecksum As Long = 0, Optional ByRef srcPackage As pdPackager = Nothing) As FILE_PATCH_RESULT
+    
     'Create a pdFSO instance
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -879,6 +941,31 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
     'If the user wants us to handle backups, we'll hash their incoming filename as our backup name.
     Dim cHash As CSHA256
     Set cHash = New CSHA256
+    
+    'Before doing anything, look for an incoming checksum.  If one was provided, compare it against the original (old) file now.
+    ' If the checksum matches the old file, it means the old and new files are identical, so we can skip the patch process.
+    If (srcChecksum <> 0) Then
+        
+        'If the old file doesn't exist, we're installing a new file, so ignore this first checksum verification.
+        ' (A second checksum verification will still be applied after the new file is written.)
+        If cFile.FileExist(oldFile) Then
+        
+            'Compare old and new checksums
+            If srcPackage.checkSumArbitraryFile(oldFile) = srcChecksum Then
+                
+                'Checksums are identical.  Patching is not required.  Report TRUE and exit now.
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "patchArbitraryFile skipped patching of " & oldFile & " because it's identical to the new file."
+                #End If
+                
+                patchArbitraryFile = FPR_SUCCESS
+                Exit Function
+                
+            End If
+            
+        End If
+        
+    End If
     
     'Two paths are required: a more complicated one for backups that we handle, and a thin wrapper otherwise
     If handleBackupsForMe Then
@@ -893,10 +980,9 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
             Dim patchResult As FILE_PATCH_RESULT
             patchResult = cFile.ReplaceFile(oldFile, newFile)
             
-            'If the patch succeeds, great!  Kill our backup and exit.
+            'If the patch succeeds, great!
             If patchResult = FPR_SUCCESS Then
             
-                cFile.KillFile customBackupFile
                 patchArbitraryFile = FPR_SUCCESS
                 
             'If the patch does not succeed, restore our backup as necessary
@@ -904,7 +990,6 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
             
                 'If the old file still exists, kill our backup, then return the appropriate fail state
                 If FileExist(oldFile) Then
-                    cFile.KillFile customBackupFile
                     patchArbitraryFile = FPR_FAIL_NOTHING_CHANGED
                 
                 'The old file is missing.  Restore it from our backup.
@@ -918,9 +1003,6 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
                         patchArbitraryFile = FPR_FAIL_OLD_FILE_REMOVED
                     End If
                     
-                    'Either way, kill our backup
-                    cFile.KillFile customBackupFile
-                
                 End If
             
             End If
@@ -943,9 +1025,43 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
         patchArbitraryFile = cFile.ReplaceFile(oldFile, newFile, customBackupFile)
     End If
     
-    'ReplaceFile may not kill the backup file (WTF).  Check for this and kill it as necessary.
-    'If FileExist(customBackupFile) Then Kill customBackupFile
-
+    'If we made it all the way here, the replace operation completed.  If it thinks it was successful, and a checksum was provided, perform a final
+    ' failsafe checksum verification on the new file.
+    If (srcChecksum <> 0) And (patchArbitraryFile = FPR_SUCCESS) Then
+    
+        'Validate the oldFile (which now contains the contents of newFile)
+        If srcPackage.checkSumArbitraryFile(oldFile) <> srcChecksum Then
+        
+            'The checksums don't match, which means something went horribly wrong.  Restore our backup now.
+            If cFile.ReplaceFile(oldFile, customBackupFile) = FPR_SUCCESS Then
+            
+                'Any damage was undone.  Report a matching fail state.
+                patchArbitraryFile = FPR_FAIL_NOTHING_CHANGED
+            
+            Else
+                
+                'We couldn't undo the damage.  This is an impossible outcome, IMO, but catch it anyway.
+                cFile.KillFile oldFile
+                patchArbitraryFile = FPR_FAIL_OLD_FILE_REMOVED
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING! patchArbitraryFile detected a checksum mismatch, but it was unable to restore the backup file."
+                    pdDebug.LogAction "WARNING! (File in question is " & oldFile & ")"
+                #End If
+                
+            End If
+        
+        End If
+    
+    End If
+    
+    'By this point, the function has done everything it can to ensure one of two states:
+    ' - A successful replacement operation
+    ' - A failed replacement operation, but everything has been restored to its original state.
+    
+    'Regardless of outcome, we no longer need our backup file, so kill it
+    cFile.KillFile customBackupFile
+    
 End Function
 
 'Rather than apply updates mid-session, any patches are applied at shutdown time
