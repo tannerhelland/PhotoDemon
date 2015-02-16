@@ -1199,6 +1199,42 @@ StopFileLoad:
     
 End Function
 
+'Shortcut function for dumping a byte array into a file.
+Public Function SaveByteArrayToFile(ByRef srcArray() As Byte, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True) As Boolean
+    
+    On Error GoTo SaveByteArrayToFile_Failure
+    
+    'See if the file exists
+    If FileExist(pathToFile) Then
+    
+        If (Not overwriteExistingIfPresent) Then
+            SaveByteArrayToFile = False
+            Debug.Print "WARNING!  File passed to SaveByteArrayToFile() already exists, and overwrites not allowed.  Write abandoned."
+            Exit Function
+        Else
+            KillFile pathToFile
+        End If
+        
+    End If
+        
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    Open GetShortPath(pathToFile) For Binary Access Write As #fileNum
+        Put fileNum, , srcArray
+    Close #fileNum
+    
+    SaveByteArrayToFile = True
+    Exit Function
+    
+SaveByteArrayToFile_Failure:
+
+    Debug.Print "WARNING! Unspecified error occurred in SaveByteArrayToFile().  Write abandoned."
+    SaveByteArrayToFile = False
+    
+End Function
+
+
 'Load a text file into a VB string.  Any valid encoding is supported.  Heuristics are used for "best-guess" encoding detection when
 ' BOM and other markers are unclear.
 '
