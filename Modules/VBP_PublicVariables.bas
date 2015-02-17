@@ -198,9 +198,10 @@ Public g_WindowManager As pdWindowManager
 'PhotoDemon's visual theme engine.
 Public g_Themer As pdVisualThemes
 
-'PhotoDemon's recent files manager.
+'PhotoDemon's recent files and recent macros managers.
 ' CHANGING: Replacing pdRecentFiles with pdMRUManager
 Public g_RecentFiles As pdMRUManager
+Public g_RecentMacros As pdMRUManager
 
 'To improve mousewheel handling, we dynamically track the position of the mouse.  If it is over the image tabstrip,
 ' the main form will forward mousewheel events there; otherwise, the image window gets them.

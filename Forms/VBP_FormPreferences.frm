@@ -2548,9 +2548,10 @@ Attribute VB_Exposed = False
 'Program Preferences Handler
 'Copyright 2002-2015 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 22/October/14
-'Last update: add "batch" preference update mode, which suspends all file read/write operations for the duration of the mode.
-'              This dramatically improves performance when closing the Preferences dialog.
+'Last updated: 17/February/15
+'Last updated by: Raj
+'Last update: When the "Maximum Recent Files" or "MRU Caption Length" settings
+'              change, update g_RecentFiles and g_RecentMacros.
 '
 'Dialog for interfacing with the user's desired program preferences.  Handles reading/writing from/to the persistent
 ' XML file that actually stores all preferences.
@@ -2843,7 +2844,11 @@ Private Sub CmdOK_Click()
         'END maximum MRU count
         
         'If the MRU needs to be rebuilt, do so now
-        If mruNeedsToBeRebuilt Then g_RecentFiles.MRU_NotifyNewMaxLimit
+        If mruNeedsToBeRebuilt Then
+            g_RecentFiles.MRU_NotifyNewMaxLimit
+            ' Recent files limit applies to macros as well
+            g_RecentMacros.MRU_NotifyNewMaxLimit
+        End If
         
     
     'END Interface preferences

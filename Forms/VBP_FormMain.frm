@@ -3,14 +3,14 @@ Begin VB.Form FormMain
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   11115
-   ClientLeft      =   225
-   ClientTop       =   855
-   ClientWidth     =   18915
+   ClientHeight    =   11124
+   ClientLeft      =   1284
+   ClientTop       =   1068
+   ClientWidth     =   18912
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   8.25
+      Size            =   8.4
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
@@ -21,10 +21,9 @@ Begin VB.Form FormMain
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   741
+   ScaleHeight     =   927
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1261
-   StartUpPosition =   3  'Windows Default
+   ScaleWidth      =   1576
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
       Interval        =   250
@@ -50,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _ExtentX        =   10393
+      _ExtentY        =   6583
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
+      _ExtentX        =   953
+      _ExtentY        =   847
       Enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _ExtentX        =   868
+      _ExtentY        =   868
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -1322,6 +1321,18 @@ Begin VB.Form FormMain
             Caption         =   "Sto&p recording..."
             Enabled         =   0   'False
          End
+         Begin VB.Menu mnuClearRecentMacros 
+            Caption         =   "Clear Recent Macros"
+            Enabled         =   0   'False
+         End
+         Begin VB.Menu MnuMacroSepBar2 
+            Caption         =   "-"
+         End
+         Begin VB.Menu mnuRecentMacros 
+            Caption         =   "Empty"
+            Enabled         =   0   'False
+            Index           =   0
+         End
       End
       Begin VB.Menu mnuTool 
          Caption         =   "-"
@@ -1524,8 +1535,9 @@ Attribute VB_Exposed = False
 'Main Program Form
 'Copyright 2002-2015 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 11/February/15
-'Last update: overhaul update code to actually apply updates, not just check for them
+'Last updated: 17/February/15
+'Last updated by: Raj
+'Last update: Added menus and handlers for MRU list for macros.
 '
 'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its
 ' primary purpose is sending parameters to other, more interesting sections of the program.
@@ -1827,6 +1839,10 @@ Private Sub MnuAutoEnhance_Click(Index As Integer)
     
 End Sub
 
+Private Sub mnuClearRecentMacros_Click()
+    g_RecentMacros.MRU_ClearList
+End Sub
+
 'The Developer Tools menu is automatically hidden in production builds, so (obviously) do not put anything here that end-users might want access to.
 Private Sub mnuDevelopers_Click(Index As Integer)
 
@@ -2118,6 +2134,20 @@ End Sub
 
 Private Sub MnuNatureTest_Click()
     'showPDDialog vbModal, FormFreeze2
+End Sub
+
+Private Sub mnuRecentMacros_Click(Index As Integer)
+    'Load the MRU Macro path that correlates to this index.  (If one is not found, a null string is returned)
+    Dim tmpString As String
+    tmpString = g_RecentMacros.getSpecificMRU(Index)
+    
+    'Check - just in case - to make sure the path isn't empty
+    If tmpString <> "" Then
+        
+        ' Play the macro
+        Macro_Interface.PlayMacroFromFile tmpString
+        
+    End If
 End Sub
 
 Private Sub MnuWindowToolbox_Click(Index As Integer)
@@ -2777,7 +2807,7 @@ End Sub
 
 'If the user is attempting to close the program, run some checks.  Specifically, we want to make sure all child forms have been saved.
 ' Note: in VB6, the order of events for program closing is MDI Parent QueryUnload, MDI children QueryUnload, MDI children Unload, MDI Unload
-Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+Private Sub Form_QueryUnload(cancel As Integer, UnloadMode As Integer)
         
     'If the histogram form is open, close it
     'Unload FormHistogram
@@ -2803,13 +2833,13 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                 If pdImages(i).IsActive Then
                 
                     'This image is active and so is its parent form.  Unload both now.
-                    QueryUnloadPDImage Cancel, UnloadMode, i
+                    QueryUnloadPDImage cancel, UnloadMode, i
                     
-                    If Not CBool(Cancel) Then UnloadPDImage Cancel, i
+                    If Not CBool(cancel) Then UnloadPDImage cancel, i
                     
                     'If the child form canceled shut down, it will have reset the g_ProgramShuttingDown variable
                     If Not g_ProgramShuttingDown Then
-                        Cancel = True
+                        cancel = True
                         Exit Sub
                     End If
                     
@@ -2822,7 +2852,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 End Sub
 
 'UNLOAD EVERYTHING
-Private Sub Form_Unload(Cancel As Integer)
+Private Sub Form_Unload(cancel As Integer)
     
     'FYI, this function includes a fair amount of debug code!
     
@@ -2906,6 +2936,9 @@ Private Sub Form_Unload(Cancel As Integer)
     ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
     ' the problematic image anyway.)
     g_RecentFiles.MRU_SaveToFile
+    
+    'Save the Macros MRU. Same concerns as above
+    g_RecentMacros.MRU_SaveToFile
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Restoring ClearType settings (if any)"

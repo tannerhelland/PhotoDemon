@@ -3,8 +3,12 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright 2001-2015 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 17/Feb/15
-'Last update: Replace pdRecentFiles with pdMRUManager
+'Last updated: 17/February/15
+'Last updated by: Raj
+'Last update: Changed g_RecentFiles from pdRecentFiles to pdMRUManager, and
+'               initialized it using an instance of pdMRURecentFiles. Also
+'               added g_RecentMacros, another instance of pdMRUManager, and
+'               initialized it using an instance of pdMRURecentMacros.
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -464,6 +468,10 @@ Public Sub LoadTheProgram()
     Set g_RecentFiles = New pdMRUManager
     g_RecentFiles.InitList New pdMRURecentFiles
     g_RecentFiles.MRU_LoadFromFile
+    
+    Set g_RecentMacros = New pdMRUManager
+    g_RecentMacros.InitList New pdMRURecentMacros
+    g_RecentMacros.MRU_LoadFromFile
             
     'Load and draw all menu icons
     loadMenuIcons
@@ -689,7 +697,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     
         'If debug mode is active, post some helpful debugging information
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Image load requested for """ & GetFilename(sFile(thisImage)) & """"
+            pdDebug.LogAction "Image load requested for """ & getFilename(sFile(thisImage)) & """"
         #End If
     
         '*************************************************************************************************************************************
@@ -715,7 +723,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
-                missingFiles = missingFiles & GetFilename(sFile(thisImage)) & vbCrLf
+                missingFiles = missingFiles & getFilename(sFile(thisImage)) & vbCrLf
             Else
                 If Not suspendWarnings Then
                     pdMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", sFile(thisImage)
@@ -966,7 +974,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
-                brokenFiles = brokenFiles & GetFilename(sFile(thisImage)) & vbCrLf
+                brokenFiles = brokenFiles & getFilename(sFile(thisImage)) & vbCrLf
             Else
                 If (MacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
                     pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", sFile(thisImage)
@@ -1146,7 +1154,7 @@ PDI_Load_Continuation:
         'If Debug Mode is active, supply a basic image summary
         #If DEBUGMODE = 1 Then
         
-            pdDebug.LogAction "~ Summary of image """ & GetFilename(sFile(thisImage)) & """ follows ~", , True
+            pdDebug.LogAction "~ Summary of image """ & getFilename(sFile(thisImage)) & """ follows ~", , True
             pdDebug.LogAction vbTab & "Image ID: " & targetImage.imageID, , True
             
             Select Case decoderUsed
@@ -1441,7 +1449,7 @@ PDI_Load_Continuation:
         'In debug mode, note the new memory baseline, post-load
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "targetImage.loadedSuccessfully set to TRUE"
-            pdDebug.LogAction "New memory report after loading image """ & GetFilename(sFile(thisImage)) & """:"
+            pdDebug.LogAction "New memory report after loading image """ & getFilename(sFile(thisImage)) & """:"
             pdDebug.LogAction "", PDM_MEM_REPORT
             
             'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
@@ -1805,7 +1813,7 @@ LoadPDIFail:
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
     If pdiReader.getPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        pdMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(PDIPath)
+        pdMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", getFilename(PDIPath)
         Exit Function
     End If
 
