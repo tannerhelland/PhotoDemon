@@ -14,10 +14,10 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'Generic MRU (Most Recently Used) List Handler
 'Copyright 2005-2015 by Tanner Helland
-'Created: 16-02-2015
-'Last updated: 16-02-2015
+'Created: 16/February/15
+'Last updated: 17/February/15
 'Last updated by: Raj
-'Last update: LAST UPDATE DETAILS HERE
+'Last update: Trimmed fileName in MRU_AddNewFile, and deleted old XML file if Max limit changed.
 '
 'This class is responsible for the creation and maintenance of MRU or "Most Recently Used" lists.
 '  It contains functionality for saving and loading MRU lists to files, and updating a single
@@ -81,7 +81,7 @@ End Function
 Private Function getMRUCaption(newFile As String) As String
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
     If g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0 Then
-        getMRUCaption = File_And_Path_Handling.GetFilename(newFile)
+        getMRUCaption = File_And_Path_Handling.getFilename(newFile)
     Else
         getMRUCaption = getShortMRU(newFile)
     End If
@@ -222,6 +222,8 @@ End Sub
 
 'Add another file to the MRU list
 Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pdImage = Nothing)
+    ' The filename is sometimes passed via dialogs, and as such may contain nulls
+    newFile = TrimNullW(newFile)
 
     Dim cancel As Boolean
     cancel = False
@@ -306,6 +308,10 @@ Public Sub MRU_NotifyNewMaxLimit()
     'Erase any entries above the new limit
     If m_numEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
         m_numEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
+        ' Delete the old MRU file now, because we need to truncate it
+        If File_And_Path_Handling.FileExist(m_xmlfilename) Then
+            Kill m_xmlfilename
+        End If
     End If
     
     'Write the current MRU list out to file.

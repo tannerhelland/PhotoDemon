@@ -128,3 +128,11 @@ LICENSE.txt
 # one from something like Visual Studio Express.
 /Resources/Assets/RC.EXE
 /Resources/Assets/RCDLL.DLL
+
+##############
+## Added for PhotoDemon compatibility testing
+##  I keep one or more renamed PhotoDemon exe files, 
+##  basically older builds to to before and after
+##  testing, in the output directory.
+##############
+PhotoDemon-*.exe

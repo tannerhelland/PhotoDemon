@@ -14,10 +14,10 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'RecentFiles MRU List
 'Copyright 2005-2015 by Tanner Helland
-'Created: 16-02-2015
-'Last updated: 16-02-2015
+'Created: 16/February/15
+'Last updated: 17/February/15
 'Last updated by: Raj
-'Last update: LAST UPDATE DETAILS HERE
+'Last update: Corrected IMRUList_GetThumbnailPath to return String
 '
 'This class is a specific implementation of the IMRUList Interface.
 '  It works with pdMRUManager to create and maintain the Recent
@@ -157,7 +157,7 @@ Private Property Get IMRUList_SupportsThumbNails() As Boolean
     IMRUList_SupportsThumbNails = True
 End Property
 
-Private Function IMRUList_GetThumbNailPath(manager As pdMRUManager, Index As Long) As Variant
+Private Function IMRUList_GetThumbNailPath(manager As pdMRUManager, Index As Long) As String
     IMRUList_GetThumbNailPath = getMRUThumbnailPath(manager.getSpecificMRU(Index))
 End Function
 
