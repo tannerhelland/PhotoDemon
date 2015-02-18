@@ -3,8 +3,9 @@ Attribute VB_Name = "Macro_Interface"
 'PhotoDemon Macro Interface
 'Copyright 2001-2015 by Tanner Helland
 'Created: 10/21/01
-'Last updated: 02/August/13
-'Last update: Rewrote all macro operations against the new, much-improved XML macro file format.
+'Last updated: 17/February/15
+'Last updated by: Raj
+'Last update: Update the macro MRU list when a macro is recorded or played.
 '
 'This (relatively small) sub handles all macro-related operations.  Macros are simply a recorded list of program operations, which
 ' can be "played back" to automate complex lists of image processing actions.  To create a macro, the user can "record" themselves
@@ -153,6 +154,9 @@ SaveMacroAgain:
         
         Message "Macro saved successfully."
         
+        'At this point, the macro should be added to the Recent Macros list
+        g_RecentMacros.MRU_AddNewFile sFile
+        
     Else
         
         mReturn = pdMsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: last chance to save macro")
@@ -295,4 +299,6 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     'Our work here is complete!
     Message "Macro complete!"
     
+    'After playing, the macro should be added to the Recent Macros list
+    g_RecentMacros.MRU_AddNewFile MacroPath
 End Function
