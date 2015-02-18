@@ -1285,7 +1285,7 @@ Private Sub processFile(ByVal srcFile As String)
 
     If Len(srcFile) = 0 Then Exit Sub
 
-    m_FileName = getFilename(srcFile)
+    m_FileName = GetFilename(srcFile)
     
     'Certain files can be ignored.  I generate this list manually, on account of knowing which files (classes, mostly) contain
     ' no special text.  I could probably add many more files to this list, but I primarily want to blacklist those that create

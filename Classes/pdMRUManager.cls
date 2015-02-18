@@ -12,8 +12,8 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'Generic MRU (Most Recently Used) List Handler
-'Copyright 2005-2015 by Tanner Helland
+'Generic Recent Files (MRU) List Manager
+'Copyright 2005-2015 by Raj Chaudhuri and Tanner Helland
 'Created: 16/February/15
 'Last updated: 17/February/15
 'Last updated by: Raj
@@ -23,6 +23,9 @@ Attribute VB_Exposed = False
 '  It contains functionality for saving and loading MRU lists to files, and updating a single
 '  menu array. The functionality can be further specialized if required.
 '
+'Many thanks to Raj Chaudhuri for rewriting this class as a generic manager, so PD can now support recent file lists
+' in multiple places throughout the program.
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -30,33 +33,38 @@ Attribute VB_Exposed = False
 Option Explicit
 
 
-'These functions are used to shrink long path entries to a max number of characters
+'These functions are used to shrink long path entries to a max number of characters.  PhotoDemon exposes a global preference
+' for Recent File menus, and this API is used to shrink full-length paths as necessary to fit them within a menu.
 Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
 Private Const MAX_PATH As Long = 260
 Private Const maxMRULength As Long = 64
 
 'MRUlist will contain string entries of all the most recently used files
-Private m_fileList() As String
+Private m_FileList() As String
 
 'Current number of entries in the MRU list
-Private m_numEntries As Long
+Private m_NumEntries As Long
 
-'XML handling (used to save/load actual MRU entries) is handled through a specialized class
-Private m_xmlEngine As pdXML
+'PD's standard XML engine is used to write the recent file lists out to file
+Private m_XMLEngine As pdXML
 
-'The file where we'll store the MRU data when the program is closed.
-Private m_xmlfilename As String
+'The file where this class persistently stores its data.  In PD, the path of this file is controlled by the global
+' preferences object (g_UserPreferences)
+Private m_XMLFilename As String
 
+'This class relies on a child class that implements that the IMRUList interface.
 Private m_MRUList As IMRUList
 
+'A pdFSO instance helps with various Unicode-friendly file tasks
+Private cFile As pdFSO
 
 'When creating a new MRU file, or overwriting a corrupt one, use this to initialize the XML header.
 Private Sub resetXMLData()
-    m_xmlEngine.prepareNewXML "Recent files"
-    m_xmlEngine.writeBlankLine
-    m_xmlEngine.writeComment "Everything past this point is recent file data.  Entries are sorted in reverse chronological order."
-    m_xmlEngine.writeBlankLine
+    m_XMLEngine.prepareNewXML "Recent files"
+    m_XMLEngine.writeBlankLine
+    m_XMLEngine.writeComment "Everything past this point is recent file data.  Entries are sorted in reverse chronological order."
+    m_XMLEngine.writeBlankLine
 End Sub
 
 'Remove null characters from a string
@@ -78,66 +86,93 @@ Private Function getShortMRU(ByVal sPath As String) As String
    
 End Function
 
-Private Function getMRUCaption(newFile As String) As String
+'Return the menu caption of the current recent file entry.  At present, menu caption length is controlled by a global preference
+Private Function getMRUCaption(ByRef newFile As String) As String
+    
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
     If g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0 Then
         getMRUCaption = File_And_Path_Handling.getFilename(newFile)
     Else
         getMRUCaption = getShortMRU(newFile)
     End If
+    
 End Function
 
+'Return the actual file path at a given index
 Public Function getSpecificMRU(ByVal mIndex As Long) As String
-    If (mIndex <= m_numEntries) And (mIndex >= 0) Then
-        getSpecificMRU = m_fileList(mIndex)
+    
+    If (mIndex <= m_NumEntries) And (mIndex >= 0) Then
+        getSpecificMRU = m_FileList(mIndex)
     Else
         getSpecificMRU = ""
     End If
+    
 End Function
 
-Public Function getSpecificMRUCaption(Index As Long) As String
-    If (Index <= m_numEntries) And (Index >= 0) Then
-        getSpecificMRUCaption = getMRUCaption(m_fileList(Index))
+'Return a menu-friendly caption of a given index
+Public Function getSpecificMRUCaption(ByVal Index As Long) As String
+    
+    If (Index <= m_NumEntries) And (Index >= 0) Then
+        getSpecificMRUCaption = getMRUCaption(m_FileList(Index))
     Else
         getSpecificMRUCaption = ""
     End If
+    
 End Function
 
-'Return the path to an MRU thumbnail file (in PNG format)
+'Return the path to an MRU thumbnail file.  (PD uses PNGs only, but any valid image format should technically work.)
 Public Function getMRUThumbnailPath(ByVal Index As Long) As String
-    Dim result As String
-    result = ""
-    If m_MRUList.SupportsThumbNails Then
-        If m_numEntries > 0 Then
-            If (Index >= 0) And (Index <= m_numEntries) Then
-                
-                result = m_MRUList.GetThumbNailPath(Me, Index)
+    
+    'Query the child to see if it supports thumbnail images
+    If m_MRUList.SupportsThumbnails Then
+        
+        'Ignore thumbnail requests if the current list is empty
+        If m_NumEntries > 0 Then
+        
+            If (Index >= 0) And (Index <= m_NumEntries) Then
+                getMRUThumbnailPath = m_MRUList.GetThumbnailPath(Me, Index)
+            Else
+                getMRUThumbnailPath = ""
             End If
+            
+        Else
+            getMRUThumbnailPath = ""
         End If
+    
+    Else
+        getMRUThumbnailPath = ""
     End If
-    getMRUThumbnailPath = result
+    
 End Function
 
 'Load the MRU list from file (if it exists)
 Public Sub MRU_LoadFromFile()
 
     'Start by seeing if an XML file with previously saved MRU data exists
-    If FileExist(m_xmlfilename) Then
+    If FileExist(m_XMLFilename) Then
         
         'Attempt to load and validate the current file; if we can't, create a new, blank XML object
-        If Not m_xmlEngine.loadXMLFile(m_xmlfilename) Then
-            Message "List of recently opened images seems to be invalid.  A new recent images list has been created."
+        If Not m_XMLEngine.loadXMLFile(m_XMLFilename) Then
+        
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "The Recent Files XML data at " & m_XMLFilename & " didn't validate.  Creating a new list now..."
+            #End If
+            
             resetXMLData
+            
         End If
         
     Else
         resetXMLData
     End If
     
-    Dim cancel As Boolean
-    cancel = False
-    m_MRUList.BeforeListLoad Me, cancel
-    If cancel Then Exit Sub
+    'Allow the child to run any required initialization steps
+    Dim Cancel As Boolean
+    Cancel = False
+    m_MRUList.BeforeListLoad Me, Cancel
+    
+    'If something goes wrong, the child is allowed to abort the load process.  Do not proceed if cancellation was requested.
+    If Cancel Then Exit Sub
        
     'We are now ready to load the actual MRU data from file.
     
@@ -145,90 +180,103 @@ Public Sub MRU_LoadFromFile()
     ' all values corresponding to the given tag name and attribute.  (We must do this dynamically, because we don't
     ' know how many recent filenames are actually saved - it could be anywhere from 0 to RECENT_FILE_COUNT.)
     Dim allRecentFiles() As String
-    If m_xmlEngine.findAllAttributeValues(allRecentFiles, "mruEntry", "id") Then
-        m_numEntries = UBound(allRecentFiles) + 1
+    If m_XMLEngine.findAllAttributeValues(allRecentFiles, "mruEntry", "id") Then
+        
+        m_NumEntries = UBound(allRecentFiles) + 1
         
         'Make sure the file does not contain more entries than are allowed (shouldn't theoretically be possible,
         ' but it doesn't hurt to check).
-        If m_numEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
-            m_numEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
+        If m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
+            m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
         End If
         
     'No recent file entries were found.  Adjust the Recent Files menu to match
     Else
-        m_numEntries = 0
         
+        m_NumEntries = 0
         m_MRUList.OnListIsEmpty
+        
     End If
     
     'If one or more recent file entries were found, load them now.
-    If m_numEntries > 0 Then
+    If m_NumEntries > 0 Then
     
-        'Remember that the allRecentFiles array was filled with the id values of all "mruEntry" entries in the XML file.
-        ' We can use its upper bound to determine how many MRU entries are actually present in the file
-        m_numEntries = UBound(allRecentFiles) + 1
-        ReDim m_fileList(0 To m_numEntries) As String
+        'Prepare our internal file list
+        ReDim m_FileList(0 To m_NumEntries) As String
         
         'Load the actual file paths from the MRU file
         Dim i As Long
-        For i = 0 To m_numEntries - 1
+        For i = 0 To m_NumEntries - 1
         
-            m_fileList(i) = m_xmlEngine.getUniqueTag_String("filePath", , , "mruEntry", "id", allRecentFiles(i))
+            m_FileList(i) = m_XMLEngine.getUniqueTag_String("filePath", , , "mruEntry", "id", allRecentFiles(i))
             
-            m_MRUList.OnItemLoad Me, i, getMRUCaption(m_fileList(i))
+            'Let the child do any UI preparation required on a per-item basis
+            m_MRUList.OnItemLoad Me, i, getMRUCaption(m_FileList(i))
             
         Next i
-    
-        m_MRUList.AfterListLoaded Me
+        
+        'Let the child perform an UI preparation after the whole list has been loaded
+        m_MRUList.AfterListLoad Me
+        
     End If
+    
 End Sub
 
 'Save the current MRU list to file (currently done at program close)
 Public Sub MRU_SaveToFile()
-    Dim cancel As Boolean
-    cancel = False
-    m_MRUList.BeforeListSave Me, cancel
-    If cancel Then
-        Exit Sub
-    End If
 
-    On Error Resume Next
+    Dim Cancel As Boolean
+    Cancel = False
+    
+    'Allow the child to do any necessary prep work.  They can cancel this operation; if they do, the file will not be saved.
+    m_MRUList.BeforeListSave Me, Cancel
+    If Cancel Then Exit Sub
+    
+    'Since the switch to pdFSO for file operations, we should no longer experience write errors, but better safe than sorry
+    On Error GoTo MRUSaveFailure
 
     'Reset whatever XML data we may have stored at present - we will be rewriting the full MRU file from scratch.
     resetXMLData
     
-    Dim i As Long
-    
     'Only write new entries if MRU data exists for them
-    If m_numEntries > 0 Then
-        For i = 0 To m_numEntries - 1
-            m_xmlEngine.writeTagWithAttribute "mruEntry", "id", CStr(i), "", True
-            m_xmlEngine.writeTag "filePath", m_fileList(i)
-            m_xmlEngine.closeTag "mruEntry"
-            m_xmlEngine.writeBlankLine
+    If m_NumEntries > 0 Then
+    
+        Dim i As Long
+        For i = 0 To m_NumEntries - 1
+            m_XMLEngine.writeTagWithAttribute "mruEntry", "id", CStr(i), "", True
+            m_XMLEngine.writeTag "filePath", m_FileList(i)
+            m_XMLEngine.closeTag "mruEntry"
+            m_XMLEngine.writeBlankLine
         Next i
+        
     End If
     
     'With the XML file now complete, write it out to file
-    m_xmlEngine.writeXMLToFile m_xmlfilename
+    m_XMLEngine.writeXMLToFile m_XMLFilename
     
     'Unload all corresponding menu entries.  (This doesn't matter when the program is closing, but we also use this
     ' routine to refresh the MRU list after changing the caption preference - and for that an unload is required.)
     m_MRUList.AfterListCleared
     
-    ' Perform any cleanup
-    m_MRUList.AfterListSaved Me
+    'Allow the child to perform any post-save cleanup
+    m_MRUList.AfterListSave Me
+    
+    
+MRUSaveFailure:
+    
 End Sub
 
 'Add another file to the MRU list
 Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pdImage = Nothing)
-    ' The filename is sometimes passed via dialogs, and as such may contain nulls
+    
+    'The filename is sometimes passed via dialogs, and as such may contain nulls
     newFile = TrimNullW(newFile)
-
-    Dim cancel As Boolean
-    cancel = False
-    m_MRUList.BeforeNewFileAdded Me, newFile, cancel
-    If cancel Then Exit Sub
+    
+    'Allow the child to perform any necessary UI prep work.  The child also has the option to cancel this operation.
+    Dim Cancel As Boolean
+    Cancel = False
+    m_MRUList.BeforeFileAdded Me, newFile, Cancel
+    If Cancel Then Exit Sub
 
     'Locators are used to determine if this file already exists in the recent files list.
     ' If it does, we will simply shuffle its position instead of adding it as a new entry.
@@ -241,10 +289,10 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pd
     Dim i As Long
     
     'First, check to see if this file currently exists in the MRU list
-    For i = 0 To m_numEntries - 1
+    For i = 0 To m_NumEntries - 1
     
         'This file already exists in the list!  Make a note of its location, then exit.
-        If StrComp(m_fileList(i), newFile, vbBinaryCompare) = 0 Then
+        If StrComp(m_FileList(i), newFile, vbTextCompare) = 0 Then
             alreadyThere = True
             curLocation = i
             Exit For
@@ -259,59 +307,61 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pd
         ' elsewhere in the list, shift everything after its position downward.
         If curLocation > 0 Then
             For i = curLocation To 1 Step -1
-                m_fileList(i) = m_fileList(i - 1)
+                m_FileList(i) = m_FileList(i - 1)
             Next i
         End If
     
     'This file doesn't exist in the MRU list, so it must be added at the very top as a new entry.
     Else
 
-        m_numEntries = m_numEntries + 1
+        m_NumEntries = m_NumEntries + 1
         
         'Cap the number of MRU files at a certain value (specified by the user in the Preferences menu)
-        If m_numEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
-            m_numEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
+        If m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
+            
+            m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
             
             'Also, because we are about to purge the MRU list, the last entry may require cleanup
-            m_MRUList.TrimListAtPosition Me, m_numEntries - 1
+            m_MRUList.EraseEntryAtPosition Me, m_NumEntries - 1
+            
         End If
         
         'Resize the list of MRU entries, which may have grown on account of this new addition.
-        ReDim Preserve m_fileList(0 To m_numEntries) As String
+        ReDim Preserve m_FileList(0 To m_NumEntries) As String
     
         'Shift all existing entries downward
-        If m_numEntries > 1 Then
-            For i = m_numEntries To 1 Step -1
-                m_fileList(i) = m_fileList(i - 1)
+        If m_NumEntries > 1 Then
+            For i = m_NumEntries To 1 Step -1
+                m_FileList(i) = m_FileList(i - 1)
             Next i
         End If
         
     End If
     
     'Add this entry to the top of the list
-    m_fileList(0) = newFile
+    m_FileList(0) = newFile
     
     'Save a thumbnail of this image to file.
-    If m_MRUList.SupportsThumbNails Then
-        m_MRUList.SaveThumbNail newFile, srcImage
-    End If
+    If m_MRUList.SupportsThumbnails Then m_MRUList.SaveThumbnailImage newFile, srcImage
       
-    'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
-    m_MRUList.AfterNewFileAdded Me, newFile, getMRUCaption(newFile)
+    'Based on the user's preference, display just the filename or the entire file path (up to the max character length).
+    ' Note that the child handles the actual UI work involved.
+    m_MRUList.AfterFileAdded Me, newFile, getMRUCaption(newFile)
+    
 End Sub
-
 
 'If the user changes their preference regarding the number of recent files we can save, call this sub to rebuild
 ' the current menu.
 Public Sub MRU_NotifyNewMaxLimit()
     
     'Erase any entries above the new limit
-    If m_numEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
-        m_numEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
+    If m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
+    
+        m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
+        
         ' Delete the old MRU file now, because we need to truncate it
-        If File_And_Path_Handling.FileExist(m_xmlfilename) Then
-            Kill m_xmlfilename
-        End If
+        cFile.KillFile m_XMLFilename
+        
     End If
     
     'Write the current MRU list out to file.
@@ -323,37 +373,52 @@ Public Sub MRU_NotifyNewMaxLimit()
     'Reload MRU data from file
     MRU_LoadFromFile
     
+    'Allow the child perform any related clean-up
     m_MRUList.OnMaxLimitChanged Me
+    
 End Sub
 
 'Empty the entire MRU list and clear the menu of all entries
 Public Sub MRU_ClearList()
     
     'Reset the number of entries in the MRU list
-    m_numEntries = 0
-    ReDim m_fileList(0) As String
+    m_NumEntries = 0
+    ReDim m_FileList(0) As String
     
     'Erase any existing XML file, and reset the in-memory version
-    If File_And_Path_Handling.FileExist(m_xmlfilename) Then Kill m_xmlfilename
+    cFile.KillFile m_XMLFilename
     resetXMLData
     
+    'Allow the child to perform any related UI clean-up
     m_MRUList.AfterListCleared
-    
     m_MRUList.OnListIsEmpty
+    
 End Sub
 
-'Return how many MRU entries are currently in the menu
+'Return the number of MRU entries currently loaded and active
 Public Function MRU_ReturnCount() As Long
-    MRU_ReturnCount = m_numEntries
+    MRU_ReturnCount = m_NumEntries
 End Function
 
+'Perform any pre-load initiation tasks
 Public Sub InitList(specificList As IMRUList)
+
+    'Set a pointer to the child list UI handler
     Set m_MRUList = specificList
-    'Initialize an XML engine, which we will use to read/write our MRU data to file
-    Set m_xmlEngine = New pdXML
     
-    'The XML data will be stored in the Preset path (/Data/Presets)
-    m_xmlfilename = m_MRUList.XMLFileName
+    'Initialize an XML engine, which we will use to read/write our MRU data to file
+    Set m_XMLEngine = New pdXML
+    
+    'The XML data will be stored in the Preset path (/Data/Presets), but we simply read it from the child's matching property
+    m_XMLFilename = m_MRUList.XMLFilename
     
     'If an XML file exists, it will be loaded separately, by the MRU_LoadFromFile() function
+    
+End Sub
+
+Private Sub Class_Initialize()
+    
+    'Initialize a file interface
+    Set cFile = New pdFSO
+    
 End Sub

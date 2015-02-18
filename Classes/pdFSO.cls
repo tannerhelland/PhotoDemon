@@ -1365,7 +1365,7 @@ Public Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilenam
     If useUTF8 Then useUTF8 = StringToUTF8Bytes(srcString, fileBytes)
     
     'Kill the output file as necessary
-    KillFile srcString
+    KillFile dstFilename
     
     'Dump the string to file
     

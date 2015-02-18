@@ -3003,23 +3003,33 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
-<original>&Macros</original>
-<translation>&Macro</translation>
+<original>Record macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Play saved macro</original>
-<translation>Avvia la Macro salvata</translation>
+<original>Start recording</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>&Record new macro</original>
-<translation>&Registra una nuova Macro</translation>
+<original>Stop recording</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Sto&p recording</original>
-<translation>Arresta la registra&zione</translation>
+<original>Play macro</original>
+<translation>Avvia la Macro</translation>
+</phrase>
+
+<phrase>
+<original>Recent macros</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Clear recent macro list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3325,6 +3335,16 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 <phrase>
 <original>Erode (minimum rank)</original>
 <translation>Erodi (rango minimo)</translation>
+</phrase>
+
+<phrase>
+<original>Start macro recording</original>
+<translation>Avvia la registrazione della Macro</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Ferma la registrazione della Macro</translation>
 </phrase>
 
 <phrase>
@@ -3680,11 +3700,6 @@ Nota: un testo meno significativo del programma non può essere aggiornato dal v
 </phrase>
 
 <phrase>
-<original>Play macro</original>
-<translation>Avvia la Macro</translation>
-</phrase>
-
-<phrase>
 <original>Straighten image</original>
 <translation>Raddrizza l'immagine</translation>
 </phrase>
@@ -3780,16 +3795,6 @@ Nota: un testo meno significativo del programma non può essere aggiornato dal v
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Avvia la registrazione della Macro</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Ferma la registrazione della Macro</translation>
-</phrase>
-
-<phrase>
 <original>Add alpha channel</original>
 <translation>Aggiungi canale alfa</translation>
 </phrase>
@@ -3804,7 +3809,7 @@ Nota: un testo meno significativo del programma non può essere aggiornato dal v
 <translation>Rimuovi il canale alfa</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 540 phrases. 157 were duplicates of existing phrases, so only 383 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 543 phrases. 159 were duplicates of existing phrases, so only 384 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -11491,17 +11496,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <!-- END text for VBP_FormReplaceColor.frm-->
 
-<!-- BEGIN text for pdRecentFiles.cls -->
-
-<phrase>
-<original>List of recently opened images seems to be invalid.  A new recent images list has been created.</original>
-<translation>La lista delle immagini aperte di recente sembra essere valida.  È stato creato un nuovo elenco di immagini recenti.</translation>
-</phrase>
-
-<!-- pdRecentFiles.cls contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for pdRecentFiles.cls-->
-
 <!-- BEGIN text for pdICCProfile.cls -->
 
 <phrase>
@@ -13136,12 +13130,36 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for pdStringStack.cls-->
 
+<!-- BEGIN text for IMRUList.cls -->
+
+<!-- IMRUList.cls contains 0 phrases. -->
+
+<!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for pdMRUManager.cls -->
+
+<!-- pdMRUManager.cls contains 0 phrases. -->
+
+<!-- END text for pdMRUManager.cls-->
+
+<!-- BEGIN text for pdMRURecentFiles.cls -->
+
+<!-- pdMRURecentFiles.cls contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for pdMRURecentFiles.cls-->
+
+<!-- BEGIN text for pdMRURecentMacros.cls -->
+
+<!-- pdMRURecentMacros.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for pdMRURecentMacros.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2297</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3988 phrases. -->
-<!-- 1691 are duplicates, so only 2297 unique phrases have been written to file. -->
-<!-- These 2297 phrases contain approximately 13183 total words. -->
+<!-- As of this build, PhotoDemon contains 3990 phrases. -->
+<!-- 1693 are duplicates, so only 2297 unique phrases have been written to file. -->
+<!-- These 2297 phrases contain approximately 13168 total words. -->
 
 </pdData>

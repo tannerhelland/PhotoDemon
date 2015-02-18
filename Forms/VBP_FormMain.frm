@@ -3,14 +3,14 @@ Begin VB.Form FormMain
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000010&
    Caption         =   "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-   ClientHeight    =   11124
-   ClientLeft      =   1284
-   ClientTop       =   1068
-   ClientWidth     =   18912
+   ClientHeight    =   11130
+   ClientLeft      =   1290
+   ClientTop       =   1065
+   ClientWidth     =   18900
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   8.4
+      Size            =   8.25
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
@@ -21,9 +21,9 @@ Begin VB.Form FormMain
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   927
+   ScaleHeight     =   742
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1576
+   ScaleWidth      =   1260
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
       Interval        =   250
@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10393
-      _ExtentY        =   6583
+      _extentx        =   10393
+      _extenty        =   6583
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   953
-      _ExtentY        =   847
-      Enabled         =   0   'False
+      _extentx        =   953
+      _extenty        =   847
+      enabled         =   0
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   868
-      _ExtentY        =   868
+      _extentx        =   868
+      _extenty        =   868
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -1306,53 +1306,57 @@ Begin VB.Form FormMain
          Index           =   2
       End
       Begin VB.Menu mnuTool 
-         Caption         =   "&Macros"
+         Caption         =   "Record macro"
          Index           =   3
-         Begin VB.Menu MnuPlayMacroRecording 
-            Caption         =   "Play saved macro..."
+         Begin VB.Menu MnuRecordMacro 
+            Caption         =   "Start recording"
+            Index           =   0
          End
-         Begin VB.Menu MnuMacroSepBar1 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuStartMacroRecording 
-            Caption         =   "&Record new macro"
-         End
-         Begin VB.Menu MnuStopMacroRecording 
-            Caption         =   "Sto&p recording..."
+         Begin VB.Menu MnuRecordMacro 
+            Caption         =   "Stop recording..."
             Enabled         =   0   'False
+            Index           =   1
          End
-         Begin VB.Menu mnuClearRecentMacros 
-            Caption         =   "Clear Recent Macros"
-            Enabled         =   0   'False
-         End
-         Begin VB.Menu MnuMacroSepBar2 
-            Caption         =   "-"
-         End
-         Begin VB.Menu mnuRecentMacros 
+      End
+      Begin VB.Menu mnuTool 
+         Caption         =   "Play macro..."
+         Index           =   4
+      End
+      Begin VB.Menu mnuTool 
+         Caption         =   "Recent macros"
+         Index           =   5
+         Begin VB.Menu MnuRecentMacros 
             Caption         =   "Empty"
             Enabled         =   0   'False
             Index           =   0
          End
+         Begin VB.Menu MnuRecentMacroSepBar 
+            Caption         =   "-"
+            Index           =   0
+         End
+         Begin VB.Menu mnuClearRecentMacros 
+            Caption         =   "Clear recent macro list"
+         End
       End
       Begin VB.Menu mnuTool 
          Caption         =   "-"
-         Index           =   4
-      End
-      Begin VB.Menu mnuTool 
-         Caption         =   "Options"
-         Index           =   5
-      End
-      Begin VB.Menu mnuTool 
-         Caption         =   "Plugin manager"
          Index           =   6
       End
       Begin VB.Menu mnuTool 
-         Caption         =   "-"
+         Caption         =   "Options"
          Index           =   7
       End
       Begin VB.Menu mnuTool 
-         Caption         =   "PD developer tools"
+         Caption         =   "Plugin manager"
          Index           =   8
+      End
+      Begin VB.Menu mnuTool 
+         Caption         =   "-"
+         Index           =   9
+      End
+      Begin VB.Menu mnuTool 
+         Caption         =   "PD developer tools"
+         Index           =   10
          Begin VB.Menu MnuDevelopers 
             Caption         =   "Debug window"
             Index           =   0
@@ -2150,6 +2154,22 @@ Private Sub mnuRecentMacros_Click(Index As Integer)
     End If
 End Sub
 
+Private Sub MnuRecordMacro_Click(Index As Integer)
+    
+    Select Case Index
+    
+        'Start recording
+        Case 0
+            Process "Start macro recording", , , UNDO_NOTHING
+        
+        'Stop recording
+        Case 1
+            Process "Stop macro recording", True
+        
+    End Select
+    
+End Sub
+
 Private Sub MnuWindowToolbox_Click(Index As Integer)
     
     Select Case Index
@@ -2807,7 +2827,7 @@ End Sub
 
 'If the user is attempting to close the program, run some checks.  Specifically, we want to make sure all child forms have been saved.
 ' Note: in VB6, the order of events for program closing is MDI Parent QueryUnload, MDI children QueryUnload, MDI children Unload, MDI Unload
-Private Sub Form_QueryUnload(cancel As Integer, UnloadMode As Integer)
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         
     'If the histogram form is open, close it
     'Unload FormHistogram
@@ -2833,13 +2853,13 @@ Private Sub Form_QueryUnload(cancel As Integer, UnloadMode As Integer)
                 If pdImages(i).IsActive Then
                 
                     'This image is active and so is its parent form.  Unload both now.
-                    QueryUnloadPDImage cancel, UnloadMode, i
+                    QueryUnloadPDImage Cancel, UnloadMode, i
                     
-                    If Not CBool(cancel) Then UnloadPDImage cancel, i
+                    If Not CBool(Cancel) Then UnloadPDImage Cancel, i
                     
                     'If the child form canceled shut down, it will have reset the g_ProgramShuttingDown variable
                     If Not g_ProgramShuttingDown Then
-                        cancel = True
+                        Cancel = True
                         Exit Sub
                     End If
                     
@@ -2852,7 +2872,7 @@ Private Sub Form_QueryUnload(cancel As Integer, UnloadMode As Integer)
 End Sub
 
 'UNLOAD EVERYTHING
-Private Sub Form_Unload(cancel As Integer)
+Private Sub Form_Unload(Cancel As Integer)
     
     'FYI, this function includes a fair amount of debug code!
     
@@ -3986,10 +4006,6 @@ Private Sub MnuNoise_Click(Index As Integer)
         
 End Sub
 
-Private Sub MnuPlayMacroRecording_Click()
-    Process "Play macro", True
-End Sub
-
 Private Sub MnuRadioactive_Click()
     Process "Radioactive", , , UNDO_LAYER
 End Sub
@@ -4194,14 +4210,6 @@ Private Sub MnuSpecificZoom_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuStartMacroRecording_Click()
-    Process "Start macro recording", , , UNDO_NOTHING
-End Sub
-
-Private Sub MnuStopMacroRecording_Click()
-    Process "Stop macro recording", True
-End Sub
-
 'All stylize filters are handled here
 Private Sub MnuStylize_Click(Index As Integer)
 
@@ -4306,18 +4314,43 @@ End Sub
 Private Sub mnuTool_Click(Index As Integer)
 
     Select Case Index
-    
+        
+        'Languages (top-level)
+        Case 0
+        
         'Language editor
         Case 1
             If Not FormLanguageEditor.Visible Then showPDDialog vbModal, FormLanguageEditor
+            
+        '(separator)
+        Case 2
+        
+        'Record macro (top-level)
+        Case 3
+        
+        'Play saved macro
+        Case 4
+            Process "Play macro", True
+        
+        'Recent macros (top-level)
+        Case 5
+        
+        '(separator)
+        Case 6
     
         'Options
-        Case 5
+        Case 7
             If Not FormPreferences.Visible Then showPDDialog vbModal, FormPreferences
             
         'Plugin manager
-        Case 6
+        Case 8
             If Not FormPluginManager.Visible Then showPDDialog vbModal, FormPluginManager
+            
+        '(separator)
+        Case 9
+        
+        'Developer tools (top-level)
+        Case 10
             
     End Select
 

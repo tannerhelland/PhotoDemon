@@ -53,8 +53,8 @@ Public Sub StartMacro()
     Message "Macro recording started."
     toolbar_Toolbox.lblRecording.Visible = True
     
-    FormMain.MnuStartMacroRecording.Enabled = False
-    FormMain.MnuStopMacroRecording.Enabled = True
+    FormMain.MnuRecordMacro(0).Enabled = False
+    FormMain.MnuRecordMacro(1).Enabled = True
 
 End Sub
 
@@ -65,8 +65,8 @@ Public Sub StopMacro()
     Message "Macro recording stopped."
     
     toolbar_Toolbox.lblRecording.Visible = False
-    FormMain.MnuStartMacroRecording.Enabled = True
-    FormMain.MnuStopMacroRecording.Enabled = False
+    FormMain.MnuRecordMacro(0).Enabled = True
+    FormMain.MnuRecordMacro(1).Enabled = False
     
     'Automatically launch the save macro data routine
     Dim CC As cCommonDialog

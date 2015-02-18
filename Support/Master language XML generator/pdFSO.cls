@@ -83,6 +83,8 @@ Private Const MOVEFILE_COPY_ALLOWED As Long = &H2   'If the file is to be moved 
                                                     ' and DeleteFile functions. If the file is successfully copied to a different volume and the original file
                                                     ' is unable to be deleted, the function succeeds leaving the source file intact.
 
+Private Declare Function CopyFileW Lib "kernel32" (ByVal lpExistingFileName As Long, ByVal lpNewFileName As Long, ByVal bFailIfExists As Long) As Long
+
 'Because our file patching code affects critical PhotoDemon files, we need to make sure we return detailed success/failure information.
 Public Enum FILE_PATCH_RESULT
     FPR_SUCCESS = 0
@@ -143,6 +145,9 @@ Private Declare Function GetFileVersionInfoSize Lib "Version" Alias "GetFileVers
 Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBlock As Any, ByVal lpSubBlock As String, lplpBuffer As Any, puLen As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 
+'Unicode file deletion
+Private Declare Function DeleteFileW Lib "kernel32" (ByVal lpFileName As Long) As Long
+
 'Our Unicode-friendly DirW function may be iterated many many times.  To prevent the reallocation of huge WIN32_FIND_DATA structs,
 ' we use a single module-level entry.
 Private m_FileDataReturn As WIN32_FIND_DATA
@@ -188,7 +193,7 @@ Public Function FolderExist(ByRef fullPath As String, Optional ByVal checkWriteA
             Put #fileNum, 1, 1
         Close #fileNum
         
-        If FileExist(tmpFilename) Then Kill tmpFilename
+        KillFile tmpFilename
         
         'If we made it all the way here, the file was written and deleted successfully.
         FolderExist = True
@@ -201,6 +206,60 @@ noWriteAccess:
 
     FolderExist = False
     
+End Function
+
+'Kill a given file.  Returns TRUE if the file does not exist after the operation completes.  (Thus, if the file doesn't exist prior
+' to calling this function, it will still return TRUE.)
+'
+'A FALSE return indicates the file still exists.  The debug window will contain additional debug data.
+Public Function KillFile(ByVal srcFilename As String) As Boolean
+    
+    'If the file doesn't exist, return TRUE in advance
+    If FileExist(srcFilename) Then
+    
+        Dim APIReturn As Long
+        APIReturn = DeleteFileW(StrPtr(srcFilename))
+        
+        If APIReturn <> 0 Then
+            KillFile = True
+        Else
+            KillFile = False
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING! KillFile was unable to kill " & srcFilename & " due to WAPI error " & Err.LastDllError
+            #End If
+        End If
+        
+    Else
+        KillFile = True
+    End If
+    
+End Function
+
+'Copy a given file.  Returns TRUE if successful; false otherwise.  The debug window will contain additional failure information.
+Public Function CopyFile(ByVal srcFilename As String, ByVal dstFilename As String) As Boolean
+
+    'If the source file doesn't exist, fail in advance
+    If FileExist(srcFilename) Then
+    
+        Dim copyResult As Long
+        copyResult = CopyFileW(StrPtr(srcFilename), StrPtr(dstFilename), 0)
+        
+        If copyResult <> 0 Then
+            CopyFile = True
+        Else
+            CopyFile = False
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING! CopyFile was unable to copy " & srcFilename & " due to WAPI error " & Err.LastDllError
+            #End If
+        End If
+    
+    Else
+    
+        CopyFile = False
+        Debug.Print "WARNING! CopyFile failed because the source file (" & srcFilename & ") doesn't exist."
+    
+    End If
+
 End Function
 
 'Create a given directory.  Returns TRUE if folder already exists, or folder was successfully created.  FALSE otherwise.
@@ -700,7 +759,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
     'Make sure the target file exists.  If it doesn't, we need to use a different set of APIs
     If FileExist(oldFile) Then
     
-        'Forcibly specify a backup path if the user didn't provide their own
+        'Consider forcibly specifying a backup path if the user didn't provide their own
         If Len(customBackupFile) = 0 Then
         
             'IMPORTANT NOTE!  If the files you're patching are critical, I STRONGLY recommend forcibly creating a backup here.
@@ -723,6 +782,8 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
         'Success means we can exit immediately
         If rfReturn <> 0 Then
             
+            'Remove the backup file, then report success
+            KillFile backupFile
             ReplaceFile = FPR_SUCCESS
             Exit Function
         
@@ -740,7 +801,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
                     
                         'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
                         ' to this function being invoked, the caller is free to try again.
-                        If FileExist(customBackupFile) Then Kill customBackupFile
+                        KillFile customBackupFile
                         
                         ReplaceFile = FPR_FAIL_NOTHING_CHANGED
                         Exit Function
@@ -757,7 +818,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
                             ' restored to its original state.
                             If mfReturn <> 0 Then
                                 
-                                If FileExist(backupFile) Then Kill backupFile
+                                KillFile backupFile
                                 ReplaceFile = FPR_FAIL_NOTHING_CHANGED
                                 Exit Function
                             
@@ -791,7 +852,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
                     
                         'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
                         ' to this function being invoked, the caller is free to try again.
-                        If FileExist(customBackupFile) Then Kill customBackupFile
+                        KillFile customBackupFile
                         
                         Debug.Print "WARNING!  Impossible outcome 3 occurred in ReplaceFile.  Please investigate."
                         ReplaceFile = FPR_FAIL_NOTHING_CHANGED
@@ -809,7 +870,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
                             ' restored to its original state.
                             If mfReturn <> 0 Then
                                 
-                                If FileExist(backupFile) Then Kill backupFile
+                                KillFile backupFile
                                 ReplaceFile = FPR_FAIL_NOTHING_CHANGED
                                 Exit Function
                             
@@ -837,7 +898,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
                 Case ERROR_UNABLE_TO_REMOVE_REPLACED
                 
                     'MSDN is unclear on the state of the backup file on this error.  As a failsafe, remove it if it exists.
-                    If FileExist(backupFile) Then Kill backupFile
+                    KillFile backupFile
                     ReplaceFile = FPR_FAIL_NOTHING_CHANGED
                     Exit Function
                 
@@ -887,7 +948,7 @@ replaceFailure:
     
         'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
         ' to this function being invoked, the caller is free to try again.
-        If FileExist(customBackupFile) Then Kill customBackupFile
+        KillFile customBackupFile
         
         If FileExist(newFile) Then
             ReplaceFile = FPR_FAIL_NOTHING_CHANGED
@@ -909,7 +970,8 @@ replaceFailure:
             ' restored to its original state.
             If mfReturn <> 0 Then
                 
-                If FileExist(backupFile) Then Kill backupFile
+                KillFile backupFile
+                
                 If FileExist(newFile) Then
                     ReplaceFile = FPR_FAIL_NOTHING_CHANGED
                 Else
@@ -1029,19 +1091,19 @@ Public Function EnforcePathSlash(ByRef srcPath As String) As String
 End Function
 
 'Return just the filename from a full path
-Public Function GetFilename(ByRef sString As String) As String
+Public Function getFilename(ByRef sString As String) As String
 
     Dim i As Long
     
     For i = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
-            GetFilename = Right$(sString, Len(sString) - i)
+            getFilename = Right$(sString, Len(sString) - i)
             Exit Function
         End If
     Next i
     
     'If we made it here, no slash was found, so presume that the entire incoming string was the filename
-    GetFilename = sString
+    getFilename = sString
     
 End Function
 
@@ -1137,6 +1199,42 @@ StopFileLoad:
     
 End Function
 
+'Shortcut function for dumping a byte array into a file.
+Public Function SaveByteArrayToFile(ByRef srcArray() As Byte, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True) As Boolean
+    
+    On Error GoTo SaveByteArrayToFile_Failure
+    
+    'See if the file exists
+    If FileExist(pathToFile) Then
+    
+        If (Not overwriteExistingIfPresent) Then
+            SaveByteArrayToFile = False
+            Debug.Print "WARNING!  File passed to SaveByteArrayToFile() already exists, and overwrites not allowed.  Write abandoned."
+            Exit Function
+        Else
+            KillFile pathToFile
+        End If
+        
+    End If
+        
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    
+    Open GetShortPath(pathToFile) For Binary Access Write As #fileNum
+        Put fileNum, , srcArray
+    Close #fileNum
+    
+    SaveByteArrayToFile = True
+    Exit Function
+    
+SaveByteArrayToFile_Failure:
+
+    Debug.Print "WARNING! Unspecified error occurred in SaveByteArrayToFile().  Write abandoned."
+    SaveByteArrayToFile = False
+    
+End Function
+
+
 'Load a text file into a VB string.  Any valid encoding is supported.  Heuristics are used for "best-guess" encoding detection when
 ' BOM and other markers are unclear.
 '
@@ -1168,7 +1266,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
             'Cast the byte array straight into a string, then remove the BOM.
             tmpString = fileBytes
             dstString = Right$(tmpString, Len(tmpString) - 2)
-            Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 LE encoding for (" & srcFile & ")"
+            'Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 LE encoding for (" & srcFile & ")"
         
         'Next, check for big-endian UTF-16 (0xFEFF)
         ElseIf fileBytes(0) = 254 And fileBytes(1) = 255 Then
@@ -1185,7 +1283,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
             'Cast the newly ordered byte array straight into a string, then remove the BOM
             tmpString = fileBytes
             dstString = Right$(tmpString, Len(tmpString) - 2)
-            Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 BE encoding for (" & srcFile & ")"
+            'Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 BE encoding for (" & srcFile & ")"
             
         'Next, check for UTF-8 BOM (0xEFBBBF).  This isn't common (UTF-8 doesn't require a BOM) but it's worth checking prior to diving into
         ' more complicated heuristics.
@@ -1193,7 +1291,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
         
             'A helper function will convert the UTF-8 bytes for us; all we need to do is remove the BOM
             dstString = Mid$(UTF8BytesToString(fileBytes), 2)
-            Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-8 encoding, via BOM, for (" & srcFile & ")"
+            'Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-8 encoding, via BOM, for (" & srcFile & ")"
             
         'All BOM checks failed.  Time to start running more complicated heuristics.
         Else
@@ -1202,7 +1300,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
             ' a low risk of false-negatives.  The default character search (currently 512 octets) can be extended to reduce false-negative risk.
             If AreBytesUTF8(fileBytes) Then
                 dstString = UTF8BytesToString(fileBytes)
-                Debug.Print "FYI: pdFSO.LoadTextFileAsString is assuming UTF-8 encoding for (" & srcFile & ")"
+                'Debug.Print "FYI: pdFSO.LoadTextFileAsString is assuming UTF-8 encoding for (" & srcFile & ")"
             
             'If the bytes do not appear to be UTF-8, we could theoretically run one final ANSI check.  US-ANSI data falls into the [0, 127] range,
             ' exclusively, so it's easy to identify.  If, however, the file contains bytes outside this range, we're SOL, because extended bytes
@@ -1211,7 +1309,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
             ' the current codepage anyway.
             Else
                 dstString = StrConv(fileBytes, vbUnicode)
-                Debug.Print "FYI: pdFSO.LoadTextFileAsString is unsure of the encoding for (" & srcFile & ").  Current user's codepage will be assumed."
+                'Debug.Print "FYI: pdFSO.LoadTextFileAsString is unsure of the encoding for (" & srcFile & ").  Current user's codepage will be assumed."
             End If
             
         End If
@@ -1267,7 +1365,7 @@ Public Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilenam
     If useUTF8 Then useUTF8 = StringToUTF8Bytes(srcString, fileBytes)
     
     'Kill the output file as necessary
-    If FileExist(srcString) Then Kill srcString
+    KillFile dstFilename
     
     'Dump the string to file
     
