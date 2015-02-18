@@ -492,12 +492,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "LANGEDITOR", 8, 1      'Language editor
     addMenuIcon "RECORD", 8, 3          'Macros
         '--> Macro sub-menu
-        addMenuIcon "OPENMACRO", 8, 3, 0      'Open Macro
-        addMenuIcon "RECORD", 8, 3, 2         'Start Recording
-        addMenuIcon "RECORDSTOP", 8, 3, 3     'Stop Recording
-        addMenuIcon "CLEARRECENT", 8, 3, 4    'Clear Recent
-    addMenuIcon "PREFERENCES", 8, 5           'Options (Preferences)
-    addMenuIcon "PLUGIN", 8, 6          'Plugin Manager
+        addMenuIcon "RECORD", 8, 3, 0         'Start Recording
+        addMenuIcon "RECORDSTOP", 8, 3, 1     'Stop Recording
+    addMenuIcon "OPENMACRO", 8, 4       'Play saved macro
+    addMenuIcon "PREFERENCES", 8, 7           'Options (Preferences)
+    addMenuIcon "PLUGIN", 8, 8          'Plugin Manager
     
     'Window Menu
     addMenuIcon "NEXTIMAGE", 9, 7       'Next image
@@ -542,17 +541,25 @@ Private Sub addMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     
     'If the icon was not found, load it and add it to the list
     If Not iconAlreadyLoaded Then
-        cMenuImage.AddImageFromStream LoadResData(resID, "CUSTOM")
-        iconNames(curIcon) = resID
-        iconLocation = curIcon
-        curIcon = curIcon + 1
+        
+        If Not (cMenuImage Is Nothing) Then
+            cMenuImage.AddImageFromStream LoadResData(resID, "CUSTOM")
+            iconNames(curIcon) = resID
+            iconLocation = curIcon
+            curIcon = curIcon + 1
+        End If
+        
     End If
         
     'Place the icon onto the requested menu
-    If subSubMenu = -1 Then
-        cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu
-    Else
-        cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu, subMenu
+    If Not (cMenuImage Is Nothing) Then
+    
+        If subSubMenu = -1 Then
+            cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu
+        Else
+            cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu, subMenu
+        End If
+        
     End If
     
     'If an outside progress bar needs to refresh, do so now
@@ -588,6 +595,12 @@ Public Sub resetMenuIcons()
         addMenuIcon "LOADALL", 0, 2, numOfMRUFiles + 1
         addMenuIcon "CLEARRECENT", 0, 2, numOfMRUFiles + 2
     End If
+    
+    'Repeat the same steps for the Recent Macro list.  Note that a larger icon is never used for this list, because we don't have
+    ' large thumbnail images present.
+    Dim numOfMRUFiles_Macro As Long
+    numOfMRUFiles_Macro = g_RecentMacros.MRU_ReturnCount
+    addMenuIcon "CLEARRECENT", 8, 5, numOfMRUFiles_Macro + 1
     
     'Clear the current MRU icon cache.
     ' (Note added 01 Jan 2014 - RR has reported an IDE error on the following line, which means this function is somehow being

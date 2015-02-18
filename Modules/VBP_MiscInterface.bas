@@ -594,7 +594,11 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
         'Macro (within the Tools menu)
         Case tMacro
-            If FormMain.mnuTool(3).Enabled <> NewState Then FormMain.mnuTool(3).Enabled = NewState
+            If FormMain.mnuTool(3).Enabled <> NewState Then
+                FormMain.mnuTool(3).Enabled = NewState
+                FormMain.mnuTool(4).Enabled = NewState
+                FormMain.mnuTool(5).Enabled = NewState
+            End If
         
         'Selections in general
         Case tSelection

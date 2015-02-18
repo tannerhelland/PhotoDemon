@@ -338,6 +338,10 @@ Public Function getFilenameWithoutExtension(ByVal sString As String) As String
         End If
     Next i
     
+    'If we were only passed a filename (without the rest of the path), restore the original entry now
+    If Len(tmpFilename) = 0 Then tmpFilename = sString
+    
+    'Remove the extension, if any
     StripOffExtension tmpFilename
     
     getFilenameWithoutExtension = tmpFilename

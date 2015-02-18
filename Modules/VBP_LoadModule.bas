@@ -452,12 +452,12 @@ Public Sub LoadTheProgram()
     'In debug modes, certain developer and experimental options can be enabled.
     If PD_BUILD_QUALITY <> PD_PRODUCTION Then
         FormMain.MnuTest.Visible = True
-        FormMain.mnuTool(7).Visible = True
-        FormMain.mnuTool(8).Visible = True
+        FormMain.mnuTool(9).Visible = True
+        FormMain.mnuTool(10).Visible = True
     Else
         FormMain.MnuTest.Visible = False
-        FormMain.mnuTool(7).Visible = False
-        FormMain.mnuTool(8).Visible = False
+        FormMain.mnuTool(9).Visible = False
+        FormMain.mnuTool(10).Visible = False
     End If
         
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
@@ -2493,10 +2493,12 @@ Public Sub LoadAccelerators()
         '.AddAccelerator vbKeyU, vbCtrlMask Or vbAltMask Or vbShiftMask, "Unsharp mask", FormMain.MnuSharpen(1), True, True, True, False
         
         'Tools menu
-        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.mnuTool(5), False, False, True, UNDO_NOTHING
-        .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", FormMain.mnuTool(6), False, False, True, UNDO_NOTHING
-        'KeyCode 190 = >.  (two over from the letter M)
-        .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", FormMain.MnuPlayMacroRecording, True, True, True, UNDO_NOTHING
+        'KeyCode 190 = >.  (two keys to the right of the M letter key)
+        .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", FormMain.mnuTool(4), True, True, True, UNDO_NOTHING
+        
+        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.mnuTool(7), False, False, True, UNDO_NOTHING
+        .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", FormMain.mnuTool(8), False, False, True, UNDO_NOTHING
+        
         
         'Window menu
         .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(7), False, True, False, UNDO_NOTHING
