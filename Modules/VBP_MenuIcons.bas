@@ -3,8 +3,9 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 'PhotoDemon Icon and Cursor Handler
 'Copyright 2012-2015 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 13/October/13
-'Last update: rework custom form icon code to be much cleaner and self-contained
+'Last updated: 17/February/15
+'Last updated by: Raj
+'Last update: Added an icon for "Clear Recent Macros" menu
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
 ' functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written by Leandro Ascierto.
@@ -494,6 +495,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "OPENMACRO", 8, 3, 0      'Open Macro
         addMenuIcon "RECORD", 8, 3, 2         'Start Recording
         addMenuIcon "RECORDSTOP", 8, 3, 3     'Stop Recording
+        addMenuIcon "CLEARRECENT", 8, 3, 4    'Clear Recent
     addMenuIcon "PREFERENCES", 8, 5           'Options (Preferences)
     addMenuIcon "PLUGIN", 8, 6          'Plugin Manager
     

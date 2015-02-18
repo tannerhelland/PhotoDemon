@@ -3,8 +3,12 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright 2001-2015 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 06/August/14
-'Last update: greatly improve robustness against any asynchronous metadata issues that may arise
+'Last updated: 17/February/15
+'Last updated by: Raj
+'Last update: Changed g_RecentFiles from pdRecentFiles to pdMRUManager, and
+'               initialized it using an instance of pdMRURecentFiles. Also
+'               added g_RecentMacros, another instance of pdMRUManager, and
+'               initialized it using an instance of pdMRURecentMacros.
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -460,8 +464,14 @@ Public Sub LoadTheProgram()
     LoadAccelerators
             
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
-    Set g_RecentFiles = New pdRecentFiles
+    ' CHANGING: Using pdMRUManager instead of pdRecentFiles
+    Set g_RecentFiles = New pdMRUManager
+    g_RecentFiles.InitList New pdMRURecentFiles
     g_RecentFiles.MRU_LoadFromFile
+    
+    Set g_RecentMacros = New pdMRUManager
+    g_RecentMacros.InitList New pdMRURecentMacros
+    g_RecentMacros.MRU_LoadFromFile
             
     'Load and draw all menu icons
     loadMenuIcons
@@ -2673,13 +2683,13 @@ Public Sub DuplicateCurrentImage()
     SavePhotoDemonImage pdImages(g_CurrentImage), tmpDuplicationFile, True, True, True, False
     
     'We can now use the standard image load routine to import the temporary file
-    Dim sFile() As String, sTitle As String, sFileName As String
+    Dim sFile() As String, sTitle As String, sFilename As String
     ReDim sFile(0) As String
     sFile(0) = tmpDuplicationFile
     sTitle = pdImages(g_CurrentImage).originalFileName & " - " & g_Language.TranslateMessage("Copy")
-    sFileName = sTitle
+    sFilename = sTitle
     
-    LoadFileAsNewImage sFile, False, sTitle, sFileName
+    LoadFileAsNewImage sFile, False, sTitle, sFilename
                     
     'Be polite and remove the temporary file
     If FileExist(tmpDuplicationFile) Then Kill tmpDuplicationFile
