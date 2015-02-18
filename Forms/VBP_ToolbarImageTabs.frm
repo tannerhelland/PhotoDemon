@@ -7,11 +7,11 @@ Begin VB.Form toolbar_ImageTabs
    ClientHeight    =   1140
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   13710
+   ClientWidth     =   13716
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   8.25
+      Size            =   8.4
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
@@ -23,9 +23,9 @@ Begin VB.Form toolbar_ImageTabs
    MinButton       =   0   'False
    NegotiateMenus  =   0   'False
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   76
+   ScaleHeight     =   95
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   914
+   ScaleWidth      =   1143
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
    Begin VB.HScrollBar hsThumbnails 
@@ -47,8 +47,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Selection ("Tab") Toolbar
 'Copyright 2013-2015 by Tanner Helland
 'Created: 15/October/13
-'Last updated: 31/May/14
-'Last update: rewrite all custom mouse code against pdInput
+'Last updated: 18/February/15
+'Last update: Added a close icon on hover of each thumbnail
 '
 'In fall 2013, PhotoDemon left behind the MDI model in favor of fully dockable/floatable tool and image windows.
 ' This required quite a new features, including a way to switch between loaded images when image windows are docked -
@@ -101,6 +101,10 @@ Private weAreResponsibleForResize As Boolean
 
 'As a convenience to the user, we provide a small notification when an image has unsaved changes
 Private unsavedChangesDIB As pdDIB
+
+'We show a close icon when hovering over each thumbnail
+Private m_closeImageDIB As pdDIB
+Private m_closeTriggeredOnThumbnail As Long
 
 'Drop-shadows on the thumbnails have a variable radius that changes based on the user's DPI settings
 Private shadowBlurRadius As Long
@@ -358,6 +362,41 @@ Private Function getThumbAtPosition(ByVal x As Long, ByVal y As Long) As Long
     
 End Function
 
+'Given mouse coordinates over the form, return the thumbnail that has a close icon at that location.
+' If the cursor is not over a close icon on a thumbnail, the function will return -1
+Private Function getThumbWithCloseIconAtPosition(ByVal x As Long, ByVal y As Long) As Long
+    Dim thumbnailNumber As Long
+    Dim thumbnailStartOffsetX As Long
+    Dim thumbnailStartOffsetY As Long
+    Dim closeButtonStartOffsetX As Long
+    Dim closeButtonStartOffsetY As Long
+    Dim clickboundaryX As Long
+    Dim clickBoundaryY As Long
+    
+    getThumbWithCloseIconAtPosition = -1
+    thumbnailNumber = getThumbAtPosition(x, y)
+    If thumbnailNumber <> -1 Then
+        If verticalLayout Then
+            thumbnailStartOffsetX = 0
+            thumbnailStartOffsetY = thumbHeight * thumbnailNumber
+        Else
+            thumbnailStartOffsetX = thumbWidth * thumbnailNumber
+            thumbnailStartOffsetY = 0
+        End If
+        
+        closeButtonStartOffsetX = thumbnailStartOffsetX + (thumbWidth - (fixDPI(thumbBorder) + m_closeImageDIB.getDIBWidth + fixDPI(2)))
+        closeButtonStartOffsetY = thumbnailStartOffsetY + fixDPI(thumbBorder) + fixDPI(2)
+        clickboundaryX = x - closeButtonStartOffsetX
+        clickBoundaryY = y - closeButtonStartOffsetY
+        
+        If clickboundaryX >= 0 And clickboundaryX <= m_closeImageDIB.getDIBWidth Then
+            If clickBoundaryY >= 0 And clickBoundaryY <= m_closeImageDIB.getDIBHeight Then
+                getThumbWithCloseIconAtPosition = thumbnailNumber
+            End If
+        End If
+    End If
+End Function
+
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     g_MouseOverImageTabstrip = True
 End Sub
@@ -479,6 +518,14 @@ Private Sub Form_Load()
     Set unsavedChangesDIB = New pdDIB
     loadResourceToDIB "NTFY_UNSAVED", unsavedChangesDIB
     
+    ' Retrieve close icon from the same place
+    Set m_closeImageDIB = New pdDIB
+    loadResourceToDIB "CLOSE", m_closeImageDIB
+
+    ' Track the last thumbnail whose close icon has been clicked.
+    ' -1 means no close icon has been clicked yet
+    m_closeTriggeredOnThumbnail = -1
+    
     'Update the drop-shadow blur radius to account for DPI
     shadowBlurRadius = fixDPI(2)
     
@@ -508,6 +555,10 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
         m_InitY = y
         m_MouseDistanceTraveled = 0
         m_InitOffset = hsThumbnails.Value
+        
+        'Detect close icon click, and store the clicked thumbnail
+        m_closeTriggeredOnThumbnail = getThumbWithCloseIconAtPosition(x, y)
+        
     End If
     
     'Reset the "resize in progress" tracker
@@ -671,18 +722,34 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
 
     'If the _MouseUp event was triggered by the user, select the image at that position
     If Not weAreResponsibleForResize Then
-    
-        Dim potentialNewThumb As Long
-        potentialNewThumb = getThumbAtPosition(x, y)
-        
-        'Notify the program that a new image has been selected; it will then bring that image to the foreground,
-        ' which will automatically trigger a toolbar redraw.  Also, do not select the image if the user has been
-        ' scrolling the list.
-        If (potentialNewThumb >= 0) And (Not m_ScrollingOccured) Then
-            curThumb = potentialNewThumb
-            activatePDImage imgThumbnails(curThumb).indexInPDImages, "user clicked image thumbnail"
+        ' If a previous mousedown was not on a close icon
+        If m_closeTriggeredOnThumbnail = -1 Then
+            Dim potentialNewThumb As Long
+            potentialNewThumb = getThumbAtPosition(x, y)
+            
+            'Notify the program that a new image has been selected; it will then bring that image to the foreground,
+            ' which will automatically trigger a toolbar redraw.  Also, do not select the image if the user has been
+            ' scrolling the list.
+            If (potentialNewThumb >= 0) And (Not m_ScrollingOccured) Then
+                curThumb = potentialNewThumb
+                activatePDImage imgThumbnails(curThumb).indexInPDImages, "user clicked image thumbnail"
+            End If
+        Else
+            ' Check if the mouse pointer is still on the same close icon
+            '   as at mousedown. This check allows people to "change
+            '   their minds" by dragging the mouse pointer away from the
+            '   close icon before releasing the mouse button. This is an
+            '   old Windows mouse trick.
+            If getThumbWithCloseIconAtPosition(x, y) = m_closeTriggeredOnThumbnail Then
+               ' fullPDImageUnload will take care of refreshing the UI,
+               '   activating the next thumbnail if the active one is
+               '   closed, showing a dialog before closing an unsaved
+               '   image, etc.
+               Image_Canvas_Handler.fullPDImageUnload imgThumbnails(m_closeTriggeredOnThumbnail).indexInPDImages
+            End If
+
+            m_closeTriggeredOnThumbnail = -1
         End If
-        
     End If
     
     'Release mouse tracking
@@ -930,6 +997,11 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         'If the parent image has unsaved changes, also render a notification icon
         If Not pdImages(imgThumbnails(thumbIndex).indexInPDImages).getSaveState(pdSE_AnySave) Then
             unsavedChangesDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + fixDPI(thumbBorder) + fixDPI(2), offsetY + thumbHeight - fixDPI(thumbBorder) - unsavedChangesDIB.getDIBHeight - fixDPI(2)
+        End If
+        
+        'If this image is being hovered over, show the close icon
+        If thumbIndex = curThumbHover Then
+            m_closeImageDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (fixDPI(thumbBorder) + m_closeImageDIB.getDIBWidth + fixDPI(2))), offsetY + fixDPI(thumbBorder) + fixDPI(2)
         End If
         
     End If
