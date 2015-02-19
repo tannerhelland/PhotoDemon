@@ -5,8 +5,8 @@ Begin VB.Form toolbar_ImageTabs
    BorderStyle     =   0  'None
    Caption         =   "Images"
    ClientHeight    =   1140
-   ClientLeft      =   0
-   ClientTop       =   0
+   ClientLeft      =   2256
+   ClientTop       =   1776
    ClientWidth     =   13716
    ClipControls    =   0   'False
    BeginProperty Font 
@@ -27,7 +27,6 @@ Begin VB.Form toolbar_ImageTabs
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1143
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   3  'Windows Default
    Begin VB.HScrollBar hsThumbnails 
       Height          =   255
       Left            =   0
@@ -36,6 +35,21 @@ Begin VB.Form toolbar_ImageTabs
       Top             =   840
       Visible         =   0   'False
       Width           =   13695
+   End
+   Begin VB.Menu mnuImageTabsContext 
+      Caption         =   "Image"
+      Visible         =   0   'False
+      Begin VB.Menu mnuImageTabsSave 
+         Caption         =   "&Save"
+         Enabled         =   0   'False
+      End
+      Begin VB.Menu mnuImageTabsSaveAs 
+         Caption         =   "Save &As..."
+      End
+      Begin VB.Menu mnuImageTabsRevert 
+         Caption         =   "Revert"
+         Enabled         =   0   'False
+      End
    End
 End
 Attribute VB_Name = "toolbar_ImageTabs"
@@ -47,8 +61,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Selection ("Tab") Toolbar
 'Copyright 2013-2015 by Tanner Helland
 'Created: 15/October/13
-'Last updated: 18/February/15
-'Last update: Added a close icon on hover of each thumbnail
+'Last updated: 19/February/15
+'Last updated by: Raj
+'Last update: Added a close icon on hover of each thumbnail, and a context menu
 '
 'In fall 2013, PhotoDemon left behind the MDI model in favor of fully dockable/floatable tool and image windows.
 ' This required quite a new features, including a way to switch between loaded images when image windows are docked -
@@ -105,6 +120,9 @@ Private unsavedChangesDIB As pdDIB
 'We show a close icon when hovering over each thumbnail
 Private m_closeImageDIB As pdDIB
 Private m_closeTriggeredOnThumbnail As Long
+
+'Thumbnails can be right-clicked to see a context menu
+Private m_rightClickedThumbnail As Long
 
 'Drop-shadows on the thumbnails have a variable radius that changes based on the user's DPI settings
 Private shadowBlurRadius As Long
@@ -526,6 +544,9 @@ Private Sub Form_Load()
     ' -1 means no close icon has been clicked yet
     m_closeTriggeredOnThumbnail = -1
     
+    ' Track the last right-clicked thumbnail.
+    m_rightClickedThumbnail = -1
+    
     'Update the drop-shadow blur radius to account for DPI
     shadowBlurRadius = fixDPI(2)
     
@@ -559,6 +580,8 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y A
         'Detect close icon click, and store the clicked thumbnail
         m_closeTriggeredOnThumbnail = getThumbWithCloseIconAtPosition(x, y)
         
+    ElseIf Button = vbRightButton Then
+        m_rightClickedThumbnail = getThumbAtPosition(x, y)
     End If
     
     'Reset the "resize in progress" tracker
@@ -722,6 +745,34 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As 
 
     'If the _MouseUp event was triggered by the user, select the image at that position
     If Not weAreResponsibleForResize Then
+    
+        ' If a thumbnail was right-clicked at mousedown, and mouseup happens on
+        '   the same thumbnail, activate the image and show the context menu
+        If m_rightClickedThumbnail <> -1 Then
+            If m_rightClickedThumbnail = getThumbAtPosition(x, y) Then
+            
+                ' Activate the image, which triggers a redraw
+                curThumb = m_rightClickedThumbnail
+                activatePDImage imgThumbnails(curThumb).indexInPDImages, "user right-clicked image thumbnail"
+
+                 
+                If Not pdImages(imgThumbnails(m_rightClickedThumbnail).indexInPDImages).getSaveState(pdSE_AnySave) Then
+                    mnuImageTabsSave.Enabled = True
+                    mnuImageTabsRevert.Enabled = True
+                Else
+                    mnuImageTabsSave.Enabled = False
+                    mnuImageTabsRevert.Enabled = False
+                End If
+                
+                
+                Me.PopupMenu mnuImageTabsContext, x:=x, y:=y
+                
+                m_rightClickedThumbnail = -1
+                forceRedraw
+                Exit Sub
+            End If
+        End If
+        
         ' If a previous mousedown was not on a close icon
         If m_closeTriggeredOnThumbnail = -1 Then
             Dim potentialNewThumb As Long
@@ -1030,3 +1081,26 @@ End Sub
 Public Sub requestMakeFormPretty()
     makeFormPretty Me   ', m_ToolTip
 End Sub
+
+Private Sub mnuImageTabsRevert_Click()
+    Dim imageToRevert As Long
+    imageToRevert = imgThumbnails(m_rightClickedThumbnail).indexInPDImages
+    
+    pdImages(imageToRevert).undoManager.revertToLastSavedState
+                
+    'Also, redraw the current child form icon
+    createCustomFormIcon pdImages(imageToRevert)
+    notifyUpdatedImage imageToRevert
+End Sub
+
+Private Sub mnuImageTabsSave_Click()
+    File_Menu.MenuSave imgThumbnails(m_rightClickedThumbnail).indexInPDImages
+End Sub
+
+
+Private Sub mnuImageTabsSaveAs_Click()
+    File_Menu.MenuSaveAs imgThumbnails(m_rightClickedThumbnail).indexInPDImages
+End Sub
+
+
+
