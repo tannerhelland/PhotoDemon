@@ -4275,8 +4275,8 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 </phrase>
 
 <phrase>
-<original>Tool Options</original>
-<translation>Opzioni delle utilità</translation>
+<original>Performance Options</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5279,8 +5279,8 @@ Sei sicuro di voler continuare?</translation>
 </phrase>
 
 <phrase>
-<original>Tool options currently include customizable options for the Selection Tool. In the future, PhotoDemon will gain paint tools, and those settings will appear here as well.</original>
-<translation>Le opzioni di utilità correntemente includono personalizzazioni per la selezione. Prossimamente, PhotoDemon guadagnerà un'utilità di pittura, e queste impostazioni appariranno quì come giusto che sia.</translation>
+<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6660,6 +6660,11 @@ Per favore inserisci un valore numerico.</translation>
 </phrase>
 
 <phrase>
+<original>Fade last action</original>
+<translation>Sfuma con l'ultima azione</translation>
+</phrase>
+
+<phrase>
 <original>Please load or import an image to begin editing.</original>
 <translation>Si prega di caricare o importare un'immagine per iniziare la modifica.</translation>
 </phrase>
@@ -6672,11 +6677,6 @@ Per favore inserisci un valore numerico.</translation>
 <phrase>
 <original>Fade: %1</original>
 <translation>Sfuma: %1</translation>
-</phrase>
-
-<phrase>
-<original>Fade last action</original>
-<translation>Sfuma con l'ultima azione</translation>
 </phrase>
 
 <phrase>
@@ -6839,7 +6839,7 @@ Per favore inserisci un valore numerico.</translation>
 <translation>Luminosità</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 60 phrases. 23 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 62 phrases. 25 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -9015,6 +9015,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
+<original>Step 5: wait for batch processing to finish</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Batch processing is now underway.</original>
 <translation>L'elaborazione automatica è ora in corso.</translation>
 </phrase>
@@ -9173,7 +9178,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare u
 <translation>processata(e) prima della cancellazione. L'ultima immagine processata è stata "%1".</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 264 phrases. 143 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 267 phrases. 145 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -11444,7 +11449,22 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Immagini</translation>
 </phrase>
 
-<!-- VBP_ToolbarImageTabs.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<phrase>
+<original>Once this image has been saved to disk, its filename will appear here.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This image does not have a filename.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hover an image thumbnail to see its name and current file location.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolbarImageTabs.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarImageTabs.frm-->
 
@@ -11935,6 +11955,21 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used to resize the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used for image resolution (pixel density).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>exact aspect ratio will vary by image</original>
 <translation>l'esatto rapporto di aspetto varierà tramite l'immagine</translation>
 </phrase>
@@ -11944,7 +11979,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>l'esatta dimensione varierà tramite l'immagine</translation>
 </phrase>
 
-<!-- smartResize.ctl contains 31 phrases. 21 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- smartResize.ctl contains 39 phrases. 26 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for smartResize.ctl-->
 
@@ -13156,10 +13191,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2297</phrasecount>
+<phrasecount>2304</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3990 phrases. -->
-<!-- 1693 are duplicates, so only 2297 unique phrases have been written to file. -->
-<!-- These 2297 phrases contain approximately 13168 total words. -->
+<!-- As of this build, PhotoDemon contains 4007 phrases. -->
+<!-- 1703 are duplicates, so only 2304 unique phrases have been written to file. -->
+<!-- These 2304 phrases contain approximately 13241 total words. -->
 
 </pdData>

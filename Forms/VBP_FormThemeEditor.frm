@@ -4,7 +4,7 @@ Begin VB.Form FormThemeEditor
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Theme editor"
-   ClientHeight    =   7365
+   ClientHeight    =   8985
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   10605
@@ -20,10 +20,21 @@ Begin VB.Form FormThemeEditor
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   491
+   ScaleHeight     =   599
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   707
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdLabel lblExplanation 
+      Height          =   855
+      Left            =   120
+      Top             =   7560
+      Width           =   10335
+      _ExtentX        =   18230
+      _ExtentY        =   1508
+      Caption         =   $"VBP_FormThemeEditor.frx":0000
+      FontSize        =   12
+      Layout          =   3
+   End
    Begin VB.CommandButton cmdTextBoxTesting 
       Caption         =   "add new drop-down entries"
       BeginProperty Font 
