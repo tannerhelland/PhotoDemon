@@ -217,7 +217,8 @@ Private m_ToolCollection() As pdTooltipItem
 'Also, to eliminate the need for too many different handlers, this function will accept any parent window for any given tooltip.
 ' You are not required to use the same parent for each request.
 '
-'Setting a blank tooltip will result in destruction of the tool window.  You can subsequently recreate the tooltip
+'Setting a blank tooltip will result in destruction of the tool window.  (Note that there is no penalty to doing this, as the
+' tooltip can easily be recreated by calling this function again with Len(textString) > 0)
 Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd As Long, ByVal textString As String, Optional ByVal titleString As String = "", Optional ByVal toolTipIcon As TT_ICON_TYPE = TTI_NONE) As Boolean
     
     'Check for invalid requests

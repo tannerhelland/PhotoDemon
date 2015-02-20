@@ -4274,8 +4274,8 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 </phrase>
 
 <phrase>
-<original>Tool Options</original>
-<translation>Pilihan alat</translation>
+<original>Performance Options</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5278,8 +5278,8 @@ Are anda pasti anda mahu teruskan?</translation>
 </phrase>
 
 <phrase>
-<original>Tool options currently include customizable options for the Selection Tool. In the future, PhotoDemon will gain paint tools, and those settings will appear here as well.</original>
-<translation>Pilihan Alat kini termasuk pilihan disesuaikan untuk Alat Pemilihan. Pada masa akan datang, PhotoDemon akan mendapat alat cat, dan orang-orang tetapan akan muncul di sini juga.</translation>
+<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6660,6 +6660,11 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
+<original>Fade last action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Please load or import an image to begin editing.</original>
 <translation>Sila memuatkan atau mengimport imej untuk memulakan penyuntingan.</translation>
 </phrase>
@@ -6672,11 +6677,6 @@ Please masukkan nilai berangka.</translation>
 <phrase>
 <original>Fade: %1</original>
 <translation>Pudar: %1</translation>
-</phrase>
-
-<phrase>
-<original>Fade last action</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -6839,7 +6839,7 @@ Please masukkan nilai berangka.</translation>
 <translation>kilauan</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 60 phrases. 23 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 62 phrases. 25 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -9015,6 +9015,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>Step 5: wait for batch processing to finish</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Batch processing is now underway.</original>
 <translation>Pemprosesan kelompok kini dijalankan.</translation>
 </phrase>
@@ -9173,7 +9178,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>diproses sebelum pembatalan. Last imej diproses adalah " %1".</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 264 phrases. 143 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 267 phrases. 145 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -11444,7 +11449,22 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <translation>imej</translation>
 </phrase>
 
-<!-- VBP_ToolbarImageTabs.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<phrase>
+<original>Once this image has been saved to disk, its filename will appear here.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This image does not have a filename.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hover an image thumbnail to see its name and current file location.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolbarImageTabs.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarImageTabs.frm-->
 
@@ -11935,6 +11955,21 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used to resize the image.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Change the unit of measurement used for image resolution (pixel density).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>exact aspect ratio will vary by image</original>
 <translation>nisbah aspek yang tepat akan berbeza mengikut imej</translation>
 </phrase>
@@ -11944,7 +11979,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <translation>saiz tepat akan berbeza mengikut imej</translation>
 </phrase>
 
-<!-- smartResize.ctl contains 31 phrases. 21 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- smartResize.ctl contains 39 phrases. 26 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for smartResize.ctl-->
 
@@ -13156,10 +13191,10 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2297</phrasecount>
+<phrasecount>2304</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3990 phrases. -->
-<!-- 1693 are duplicates, so only 2297 unique phrases have been written to file. -->
-<!-- These 2297 phrases contain approximately 13168 total words. -->
+<!-- As of this build, PhotoDemon contains 4007 phrases. -->
+<!-- 1703 are duplicates, so only 2304 unique phrases have been written to file. -->
+<!-- These 2304 phrases contain approximately 13241 total words. -->
 
 </pdData>

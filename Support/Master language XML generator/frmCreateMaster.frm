@@ -387,6 +387,7 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+Option Compare Binary
 
 'Variables used to generate the master translation file
 Dim m_VBPFile As String, m_VBPPath As String
@@ -414,6 +415,9 @@ Private m_XML As pdXML
 
 'PD language file identifier.  IMPORTANT NOTE: this constant is shared with the main PhotoDemon project.  DO NOT CHANGE IT!
 Private Const PD_LANG_IDENTIFIER As Long = &H414C4450    'pdLanguage data (ASCII characters "PDLA", as hex, little-endian)
+
+'If duplicates are assigned for removal, this flag is set to TRUE
+Private m_RemoveDuplicates As Boolean
 
 'New support function for auto-converting old common control labels to PD's new pdLabel object.  If successful, this will save me a ton of time
 ' manually converting all the labels in the program.
@@ -1196,6 +1200,9 @@ Private Sub cmdProcess_Click()
         Exit Sub
     End If
     
+    'Note whether duplicate phrases are automatically removed
+    m_RemoveDuplicates = CBool(chkRemoveDuplicates)
+    
     'Start by preparing the XML header
     outputText = "<?xml version=""1.0"" encoding=""UTF-8""?>"
     outputText = outputText & vbCrLf & vbCrLf
@@ -1285,7 +1292,7 @@ Private Sub processFile(ByVal srcFile As String)
 
     If Len(srcFile) = 0 Then Exit Sub
 
-    m_FileName = GetFilename(srcFile)
+    m_FileName = getFilename(srcFile)
     
     'Certain files can be ignored.  I generate this list manually, on account of knowing which files (classes, mostly) contain
     ' no special text.  I could probably add many more files to this list, but I primarily want to blacklist those that create
@@ -1322,7 +1329,7 @@ Private Sub processFile(ByVal srcFile As String)
     Dim shortcutName As String
     shortcutName = ""
     
-    If Right(m_FileName, 3) = "frm" Then
+    If Right$(m_FileName, 3) = "frm" Then
         Dim findName() As String
         findName = Split(fileLines(1), " ")
         shortcutName = findName(2)
@@ -1449,18 +1456,20 @@ Private Sub processFile(ByVal srcFile As String)
             
             'Next, retrieve the message box title
             processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
-                        
-        '8) Check for text that has been manually marked for translation (e.g. g_Language.TranslateMessage("xyz"))
-        '    NOTE: as of 07 June 2013, each line can contain two translation calls (instead of just one)
-        ElseIf InStr(1, curLineText, "g_Language.TranslateMessage(""") Then
-            processedText = findMessage(fileLines, curLineNumber)
-            processedTextSecondary = findMessage(fileLines, curLineNumber, True)
-                    
-        '10) And finally, specific to PhotoDemon - check for action names that may not be present elsewhere
-        'ElseIf InStr(1, curLineText, "GetNameOfProcess =") Then
+        
+        '7) Specific to PhotoDemon - check for action names that may not be present elsewhere
         ElseIf InStr(1, curLineText, "Process """) Then
             processedText = findCaptionInQuotes(fileLines, curLineNumber, InStr(1, curLineText, "Process """))
-            
+        
+        End If
+        
+        '8) Check for text that has been manually marked for translation (e.g. g_Language.TranslateMessage("xyz"))
+        '    NOTE: as of 07 June 2013, each line can contain two translation calls (instead of just one)
+        '
+        'Note that this check is performed regardless of previous checks, to make sure no translations are missed.
+        If InStr(1, curLineText, "g_Language.TranslateMessage(""") Then
+            processedText = findMessage(fileLines, curLineNumber)
+            processedTextSecondary = findMessage(fileLines, curLineNumber, True)
         End If
         
         'DEBUG! Check for certain text entries here
@@ -1470,20 +1479,24 @@ Private Sub processFile(ByVal srcFile As String)
         chkText = Trim$(processedText)
         
         'Only pass the text along if it isn't blank, or a number, or a symbol, or a manually blacklisted phrase
-        If (chkText <> "") And (Not IsNumeric(chkText)) And (Not IsNumericPercentage(chkText)) And (Not isBlacklisted(chkText)) Then
-            If (chkText <> ".") And (chkText <> "-") And (Not IsURL(chkText)) Then
-                numOfPhrasesFound = numOfPhrasesFound + 1
-                If addPhrase(processedText) Then numOfPhrasesWritten = numOfPhrasesWritten + 1
+        If Len(chkText) <> 0 Then
+            If (Not IsNumeric(chkText)) And (Not IsNumericPercentage(chkText)) And (Not isBlacklisted(chkText)) Then
+                If (chkText <> ".") And (chkText <> "-") And (Not IsURL(chkText)) Then
+                    numOfPhrasesFound = numOfPhrasesFound + 1
+                    If addPhrase(processedText) Then numOfPhrasesWritten = numOfPhrasesWritten + 1
+                End If
             End If
         End If
         
         chkText = Trim$(processedTextSecondary)
         
         'Do the same for the secondary text
-        If (chkText <> "") And (Not IsNumeric(chkText)) And (Not IsNumericPercentage(chkText)) And (Not isBlacklisted(chkText)) Then
-            If (chkText <> ".") And (chkText <> "-") And (Not IsURL(chkText)) Then
-                numOfPhrasesFound = numOfPhrasesFound + 1
-                If addPhrase(processedTextSecondary) Then numOfPhrasesWritten = numOfPhrasesWritten + 1
+        If Len(chkText) <> 0 Then
+            If (Not IsNumeric(chkText)) And (Not IsNumericPercentage(chkText)) And (Not isBlacklisted(chkText)) Then
+                If (chkText <> ".") And (chkText <> "-") And (Not IsURL(chkText)) Then
+                    numOfPhrasesFound = numOfPhrasesFound + 1
+                    If addPhrase(processedTextSecondary) Then numOfPhrasesWritten = numOfPhrasesWritten + 1
+                End If
             End If
         End If
     
@@ -1495,7 +1508,7 @@ nextLine:
     'Now that all phrases in this file have been processed, we can wrap up this section of XML
     
     'For fun, write some stats about our processing results into the translation file.
-    If m_FileName <> "" Then
+    If Len(m_FileName) <> 0 Then
         
         outputText = outputText & vbCrLf & vbCrLf & vbTab & vbTab
         If numOfPhrasesFound <> 1 Then
@@ -1559,7 +1572,7 @@ Private Function addPhrase(ByRef phraseText As String) As Boolean
     'Next, do the same pre-processing that we do in the translation engine
     
     '1) Trim the text.  Extra spaces will be handled by the translation engine.
-    phraseText = Trim(phraseText)
+    phraseText = Trim$(phraseText)
     
     '2) Check for a trailing "..." and remove it
     If Right$(phraseText, 3) = "..." Then phraseText = Left$(phraseText, Len(phraseText) - 3)
@@ -1570,23 +1583,26 @@ Private Function addPhrase(ByRef phraseText As String) As Boolean
     'This phrase is now ready to write to file.
     
     'Before writing the phrase out, check to see if it already exists
-    If CBool(chkRemoveDuplicates) Then
+    If m_RemoveDuplicates Then
                 
         If InStr(1, outputText, "<original>" & phraseText & "</original>", vbBinaryCompare) > 0 Then
             addPhrase = False
         Else
-            If phraseText <> "" Then
+            If Len(phraseText) <> 0 Then
                 addPhrase = True
             Else
                 addPhrase = False
             End If
         End If
+        
     Else
-        If phraseText <> "" Then
+        
+        If Len(phraseText) <> 0 Then
             addPhrase = True
         Else
             addPhrase = False
         End If
+        
     End If
     
     'If the phrase does not exist, add it now
@@ -1632,9 +1648,9 @@ Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     Dim i As Long
     For i = startQuote + 1 To Len(srcLines(lineNumber))
     
-        If Mid(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
+        If Mid$(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
         
-        If ((Mid(srcLines(lineNumber), i, 1) = ",") Or (Mid(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
+        If ((Mid$(srcLines(lineNumber), i, 1) = ",") Or (Mid$(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
             endQuote = i - 1
             Exit For
         End If
@@ -1645,7 +1661,7 @@ Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     If endQuote = -1 Then
         findMessage = "MANUAL FIX REQUIRED FOR MESSAGE PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
     Else
-        findMessage = Mid(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        findMessage = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     End If
     
     'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
@@ -1687,9 +1703,9 @@ Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber
     Dim i As Long
     For i = startQuote + 1 To Len(srcLines(lineNumber))
     
-        If Mid(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
+        If Mid$(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
         
-        If ((Mid(srcLines(lineNumber), i, 1) = ",") Or (Mid(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
+        If ((Mid$(srcLines(lineNumber), i, 1) = ",") Or (Mid$(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
             endQuote = i - 1
             Exit For
         End If
@@ -1705,7 +1721,7 @@ Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber
     If endQuote = -1 Then
         findTooltipMessage = "MANUAL FIX REQUIRED FOR MESSAGE PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
     Else
-        findTooltipMessage = Mid(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        findTooltipMessage = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     End If
     
     'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
@@ -1728,7 +1744,7 @@ Private Function findMsgBoxTitle(ByRef srcLines() As String, ByRef lineNumber As
     startQuote = InStrRev(srcLines(lineNumber), """", endQuote - 1)
     
     If endQuote > 0 Then
-        findMsgBoxTitle = Mid(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        findMsgBoxTitle = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     Else
         findMsgBoxTitle = ""
     End If
@@ -1763,9 +1779,9 @@ Private Function findMsgBoxText(ByRef srcLines() As String, ByRef lineNumber As 
     Dim i As Long
     For i = startQuote + 1 To Len(srcLines(lineNumber))
     
-        If Mid(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
+        If Mid$(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
         
-        If (Mid(srcLines(lineNumber), i, 1) = ",") And Not insideQuotes Then
+        If (Mid$(srcLines(lineNumber), i, 1) = ",") And Not insideQuotes Then
             endQuote = i - 1
             Exit For
         End If
@@ -1776,7 +1792,7 @@ Private Function findMsgBoxText(ByRef srcLines() As String, ByRef lineNumber As 
     If endQuote = -1 Then
         findMsgBoxText = "MANUAL FIX REQUIRED FOR MSGBOX PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
     Else
-        findMsgBoxText = Mid(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        findMsgBoxText = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     End If
     
     'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
@@ -1806,14 +1822,14 @@ Private Function findCaptionInComplexQuotes(ByRef srcLines() As String, ByRef li
     Dim i As Long
     For i = startQuote + 1 To Len(srcLines(lineNumber))
     
-        If Mid(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
+        If Mid$(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
         
-        If ((Mid(srcLines(lineNumber), i, 1) = ",") And Not insideQuotes) Then
+        If ((Mid$(srcLines(lineNumber), i, 1) = ",") And Not insideQuotes) Then
             
             'Retreat backward until we find the last quotation mark, then report its location as the end of this text segment
             Dim j As Long
             For j = i To 1 Step -1
-                If Mid(srcLines(lineNumber), j, 1) = """" Then
+                If Mid$(srcLines(lineNumber), j, 1) = """" Then
                     endQuote = j
                     Exit For
                 End If
@@ -1847,7 +1863,7 @@ Private Function findCaptionInComplexQuotes(ByRef srcLines() As String, ByRef li
             findCaptionInComplexQuotes = "MANUAL FIX REQUIRED FOR TEXT PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
         End If
     Else
-        findCaptionInComplexQuotes = Mid(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        findCaptionInComplexQuotes = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     End If
     
     'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
@@ -1869,7 +1885,7 @@ Private Function findCaptionInQuotes(ByRef srcLines() As String, ByRef lineNumbe
     endQuote = InStr(startQuote + 1, srcLines(lineNumber), """")
     
     If endQuote > 0 Then
-        findCaptionInQuotes = Mid(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        findCaptionInQuotes = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     Else
         findCaptionInQuotes = ""
     End If
@@ -1888,15 +1904,15 @@ Private Function findControlCaption(ByRef srcLines() As String, ByRef lineNumber
     'Start by retrieving the name of this object and storing it in a module-level string.  The calling function may
     ' need this if the caption meets certain criteria.
     Dim objectName As String
-    objectName = Trim(srcLines(lineNumber))
+    objectName = Trim$(srcLines(lineNumber))
 
     Dim sPos As Long
     sPos = Len(objectName)
     Do
         sPos = sPos - 1
-    Loop While Mid(objectName, sPos, 1) <> " "
+    Loop While Mid$(objectName, sPos, 1) <> " "
     
-    m_ObjectName = Right(objectName, Len(objectName) - sPos)
+    m_ObjectName = Right$(objectName, Len(objectName) - sPos)
     'MsgBox "OBJECT NAME: " & objectName
 
     Do While InStr(1, UCase$(srcLines(lineNumber)), "CAPTION", vbBinaryCompare) = 0
@@ -1930,7 +1946,7 @@ Private Function findControlCaption(ByRef srcLines() As String, ByRef lineNumber
             endQuote = InStrRev(srcLines(lineNumber), """")
         
             If endQuote > 0 Then
-                findControlCaption = Mid(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+                findControlCaption = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
             Else
                 findControlCaption = ""
             End If
@@ -1953,15 +1969,15 @@ Private Function findFormCaption(ByRef srcLines() As String, ByRef lineNumber As
     'Start by retrieving the name of this form and storing it in a module-level string.  The calling function may
     ' need this if the caption meets certain criteria.
     Dim objectName As String
-    objectName = Trim(srcLines(lineNumber))
+    objectName = Trim$(srcLines(lineNumber))
 
     Dim sPos As Long
     sPos = Len(objectName)
     Do
         sPos = sPos - 1
-    Loop While Mid(objectName, sPos, 1) <> " "
+    Loop While Mid$(objectName, sPos, 1) <> " "
     
-    m_FormName = Right(objectName, Len(objectName) - sPos)
+    m_FormName = Right$(objectName, Len(objectName) - sPos)
     'MsgBox "FORM NAME: " & objectName
     
     Do While InStr(1, srcLines(lineNumber), "Caption") = 0
@@ -1982,9 +1998,10 @@ Private Function findFormCaption(ByRef srcLines() As String, ByRef lineNumber As
         startQuote = InStr(1, srcLines(lineNumber), """")
         
         Dim endQuote As Long
-        endQuote = InStr(startQuote + 1, srcLines(lineNumber), """")
+        endQuote = InStrRev(srcLines(lineNumber), """")
         
-        findFormCaption = Mid(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        findFormCaption = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        
     Else
         findFormCaption = ""
     End If
@@ -2026,37 +2043,37 @@ Private Sub cmdSelectVBP_Click()
     
         'Check for forms
         If InStr(1, vbpText(i), "Form=", vbBinaryCompare) = 1 Then
-            vbpFiles(numOfFiles) = m_VBPPath & Right(vbpText(i), Len(vbpText(i)) - 5)
+            vbpFiles(numOfFiles) = m_VBPPath & Right$(vbpText(i), Len(vbpText(i)) - 5)
             numOfFiles = numOfFiles + 1
         End If
         
         'Check for user controls
         If InStr(1, vbpText(i), "UserControl=", vbBinaryCompare) = 1 Then
-            vbpFiles(numOfFiles) = m_VBPPath & Right(vbpText(i), Len(vbpText(i)) - 12)
+            vbpFiles(numOfFiles) = m_VBPPath & Right$(vbpText(i), Len(vbpText(i)) - 12)
             numOfFiles = numOfFiles + 1
         End If
         
         'Check for modules
         If InStr(1, vbpText(i), "Module=", vbBinaryCompare) = 1 Then
-            vbpFiles(numOfFiles) = m_VBPPath & Trim(Right(vbpText(i), Len(vbpText(i)) - InStr(1, vbpText(i), ";")))
+            vbpFiles(numOfFiles) = m_VBPPath & Trim$(Right$(vbpText(i), Len(vbpText(i)) - InStr(1, vbpText(i), ";")))
             numOfFiles = numOfFiles + 1
         End If
         
         'Check for classes
         If InStr(1, vbpText(i), "Class=", vbBinaryCompare) = 1 Then
-            vbpFiles(numOfFiles) = m_VBPPath & Trim(Right(vbpText(i), Len(vbpText(i)) - InStr(1, vbpText(i), ";")))
+            vbpFiles(numOfFiles) = m_VBPPath & Trim$(Right$(vbpText(i), Len(vbpText(i)) - InStr(1, vbpText(i), ";")))
             numOfFiles = numOfFiles + 1
         End If
         
         'Check for version numbers
         If InStr(1, vbpText(i), "MajorVer=", vbBinaryCompare) = 1 Then
-            majorVer = Trim(Right(vbpText(i), Len(vbpText(i)) - InStr(1, vbpText(i), "=")))
+            majorVer = Trim$(Right$(vbpText(i), Len(vbpText(i)) - InStr(1, vbpText(i), "=")))
         End If
         If InStr(1, vbpText(i), "MinorVer=", vbBinaryCompare) = 1 Then
-            minorVer = Trim(Right(vbpText(i), Len(vbpText(i)) - InStr(1, vbpText(i), "=")))
+            minorVer = Trim$(Right$(vbpText(i), Len(vbpText(i)) - InStr(1, vbpText(i), "=")))
         End If
         If InStr(1, vbpText(i), "RevisionVer=", vbBinaryCompare) = 1 Then
-            buildVer = Trim(Right(vbpText(i), Len(vbpText(i)) - InStr(1, vbpText(i), "=")))
+            buildVer = Trim$(Right$(vbpText(i), Len(vbpText(i)) - InStr(1, vbpText(i), "=")))
         End If
     
     Next i
@@ -2083,13 +2100,11 @@ Private Function getDirectory(ByVal sString As String) As String
     Dim x As Long
     
     For x = Len(sString) - 1 To 1 Step -1
-        If (Mid(sString, x, 1) = "/") Or (Mid(sString, x, 1) = "\") Then
+        If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
             getDirectory = Left(sString, x)
             Exit Function
         End If
     Next x
-    
-    'getDirectory = ""
     
 End Function
 
@@ -2128,7 +2143,7 @@ End Function
 'Count the number of words in a string (will not be 100% accurate, but that's okay)
 Private Function countWordsInString(ByVal srcString As String) As Long
 
-    If Trim$(srcString) <> "" Then
+    If Len(Trim$(srcString)) <> 0 Then
 
         Dim tmpArray() As String
         tmpArray = Split(Trim$(srcString), " ")
@@ -2153,7 +2168,7 @@ End Function
 ' text translated - so manually check for it and reject such text if found.
 Private Function IsNumericPercentage(ByVal srcString As String) As Boolean
 
-    srcString = Trim(srcString)
+    srcString = Trim$(srcString)
 
     'Start by checking for a percent in the right-most position
     If Right$(srcString, 1) = "%" Then
