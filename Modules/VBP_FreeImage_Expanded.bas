@@ -228,6 +228,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         
     End If
     
+    'Store this original, untouched color depth now
+    If fi_hDIB <> 0 Then dstDIB.setOriginalFreeImageColorDepth FreeImage_GetBPP(fi_hDIB)
+    
     'Icon files may use a simple mask for their alpha channel; in this case, re-load the icon with the FILO_ICO_MAKEALPHA flag
     If fileFIF = FIF_ICO Then
         

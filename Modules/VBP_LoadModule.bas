@@ -638,6 +638,10 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     Dim brokenFiles As String
     brokenFiles = ""
     
+    'Some layers may receive extra information in their name.  (For example, when loading .ICO files with multiple icons inside,
+    ' PD will automatically add the name and original bit-depth to each layer, as relevant.)
+    Dim layerNameBase As String, layerNameAddon As String
+    
     'Some behavior varies based on the image decoding engine used.  PD uses a fairly complex cascading system for image decoders;
     ' if one fails, we continue trying alternates until either the load succeeds, or all known decoders have been exhausted.
     Dim decoderUsed As PD_IMAGE_DECODER_ENGINE
@@ -1088,11 +1092,52 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             '*************************************************************************************************************************************
             
             If isThisPrimaryImage Then
+                
+                'Assemble a base name for this layer
                 If Len(imgName) = 0 Then
-                    targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, getFilenameWithoutExtension(sFile(thisImage))
+                    layerNameBase = getFilenameWithoutExtension(sFile(thisImage))
                 Else
-                    targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, imgName
+                    layerNameBase = imgName
                 End If
+                
+                'Images with multiple pages/frames/icons receive special layer naming considering
+                If imageHasMultiplePages Or (targetImage.originalFileFormat = FIF_ICO) Then
+                
+                    layerNameAddon = ""
+                    
+                    Select Case targetImage.originalFileFormat
+                    
+                        'GIFs are called "frames" instead of pages
+                        Case FIF_GIF
+                            layerNameAddon = g_Language.TranslateMessage("frame %1", "1")
+                            layerNameAddon = " (" & layerNameAddon & ")"
+                        
+                        'Icons have their actual dimensions added to the layer name
+                        Case FIF_ICO
+                            
+                            If targetDIB.getOriginalFreeImageColorDepth = 0 Then
+                                layerNameAddon = g_Language.TranslateMessage("icon (%1x%2)", CStr(targetDIB.getDIBWidth), CStr(targetDIB.getDIBHeight))
+                            Else
+                                layerNameAddon = g_Language.TranslateMessage("icon (%1x%2, %3 bpp)", CStr(targetDIB.getDIBWidth), CStr(targetDIB.getDIBHeight), CStr(targetDIB.getOriginalFreeImageColorDepth))
+                            End If
+                            
+                            layerNameAddon = " " & layerNameAddon
+                            
+                        'Any other format is treated as "pages"
+                        Case Else
+                            layerNameAddon = g_Language.TranslateMessage("page %1", "1")
+                            layerNameAddon = " (" & layerNameAddon & ")"
+                        
+                    End Select
+                    
+                    'Merge this newly created add-on string with the original name
+                    layerNameBase = layerNameBase & layerNameAddon
+                    
+                End If
+                
+                'Create the layer now, and assign our assembled name
+                targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, layerNameBase
+                
             End If
             
             'Update the pdImage container to be the same size as its (newly created) base layer
@@ -1104,7 +1149,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             '*************************************************************************************************************************************
             ' If requested by the user, manually count the number of unique colors in the image (to accurately determine color depth)
             '*************************************************************************************************************************************
-                    
+            
             'At this point, we now have loaded image data in 24 or 32bpp format.  For future reference, let's count
             ' the number of colors present in the image (if the user has allowed it).  If the user HASN'T allowed
             ' it, we have no choice but to rely on whatever color depth was returned by FreeImage or GDI+ (or was
@@ -1345,17 +1390,33 @@ PDI_Load_Continuation:
                     End If
                     
                     'Determine a name for each layer, contingent on its size and type
-                    Dim layerNameAddon As String
+                    layerNameAddon = ""
                     
-                    If UCase(GetExtension(sFile(thisImage))) = "GIF" Then
-                        layerNameAddon = g_Language.TranslateMessage("frame")
-                    ElseIf UCase(GetExtension(sFile(thisImage))) = "ICO" Then
-                        layerNameAddon = g_Language.TranslateMessage("icon")
-                    Else
-                        layerNameAddon = g_Language.TranslateMessage("page")
-                    End If
+                    Select Case targetImage.originalFileFormat
                     
-                    layerNameAddon = " (" & layerNameAddon & " " & CStr(pageTracker + 1) & ")"
+                        'GIFs are called "frames" instead of pages
+                        Case FIF_GIF
+                            layerNameAddon = g_Language.TranslateMessage("frame")
+                            layerNameAddon = " (" & layerNameAddon & " " & CStr(pageTracker + 1) & ")"
+                        
+                        'Icons have their actual dimensions added to the layer name
+                        Case FIF_ICO
+                            
+                            If targetDIB.getOriginalFreeImageColorDepth = 0 Then
+                                layerNameAddon = g_Language.TranslateMessage("icon (%1x%2)", CStr(targetDIB.getDIBWidth), CStr(targetDIB.getDIBHeight))
+                            Else
+                                layerNameAddon = g_Language.TranslateMessage("icon (%1x%2, %3 bpp)", CStr(targetDIB.getDIBWidth), CStr(targetDIB.getDIBHeight), CStr(targetDIB.getOriginalFreeImageColorDepth))
+                            End If
+                            
+                            layerNameAddon = " " & layerNameAddon
+                            
+                        'Any other format is treated as "pages"
+                        Case Else
+                            layerNameAddon = g_Language.TranslateMessage("page")
+                            layerNameAddon = " (" & layerNameAddon & " " & CStr(pageTracker + 1) & ")"
+                        
+                    End Select
+                    
                     
                     'Copy the DIB into the layer, with a relevant name attached
                     If Len(imgName) = 0 Then
