@@ -266,13 +266,28 @@ Bitte benutzen Sie ein anderes Programm, um das Bild in einem bekannteren Format
 </phrase>
 
 <phrase>
-<original>frame</original>
-<translation>Rahmen</translation>
+<original>frame %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>icon</original>
-<translation>Symbol</translation>
+<original>icon (%1x%2)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icon (%1x%2, %3 bpp)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>page %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>frame</original>
+<translation>Rahmen</translation>
 </phrase>
 
 <phrase>
@@ -415,7 +430,7 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 <translation>Bild wurde dupliziert.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 72 phrases. 21 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 82 phrases. 28 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -11464,6 +11479,16 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 </phrase>
 
 <phrase>
+<original>Open location in E&xplorer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Close all except this</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
 <translation></translation>
 </phrase>
@@ -11478,7 +11503,7 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolbarImageTabs.frm contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- VBP_ToolbarImageTabs.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarImageTabs.frm-->
 
@@ -13205,10 +13230,10 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2306</phrasecount>
+<phrasecount>2311</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4009 phrases. -->
-<!-- 1703 are duplicates, so only 2306 unique phrases have been written to file. -->
-<!-- These 2306 phrases contain approximately 13259 total words. -->
+<!-- As of this build, PhotoDemon contains 4027 phrases. -->
+<!-- 1716 are duplicates, so only 2311 unique phrases have been written to file. -->
+<!-- These 2311 phrases contain approximately 13271 total words. -->
 
 </pdData>
