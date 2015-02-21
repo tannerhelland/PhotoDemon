@@ -246,7 +246,7 @@ End Sub
 Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
-    If ((offsetY + fixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight) Then
+    If ((offsetY + fixDPI(BLOCKHEIGHT)) >= 0) And (offsetY <= m_BufferHeight) Then
     
         offsetY = offsetY + fixDPI(2)
         
@@ -301,13 +301,17 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         'Render the Wratten ID and name fields
         firstFont.attachToDC bufferDIB.getDIBDC
         firstFont.fastRenderText colorWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4), drawString
-                
-        'Below that, add the description text
+        
+        'Calculate the drop-down for the description line
         mHeight = firstFont.getHeightOfString(drawString) + linePadding
+        firstFont.releaseFromDC
+        
+        'Below that, add the description text
         drawString = fArray(blockIndex).Description
         
         secondFont.attachToDC bufferDIB.getDIBDC
         secondFont.fastRenderText colorWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4) + mHeight, drawString
+        secondFont.releaseFromDC
         
     End If
 
@@ -392,10 +396,30 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    curFilter = getFilterAtPosition(x, y)
+    redrawFilterList
+    updatePreview
+
+End Sub
+
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.setSystemCursor IDC_HAND
+End Sub
+
 'When the mouse leaves the filter box, remove any hovered entries and redraw
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.setSystemCursor IDC_DEFAULT
     curFilterHover = -1
     redrawFilterList
+End Sub
+
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    curFilterHover = getFilterAtPosition(x, y)
+    redrawFilterList
+    
 End Sub
 
 Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
@@ -464,7 +488,7 @@ Private Sub Form_Load()
 
     'Enable mousewheel scrolling for the filter box
     Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
+    cMouseEvents.addInputTracker picBuffer.hWnd, True, True, , True
     cMouseEvents.addInputTracker Me.hWnd
     cMouseEvents.setSystemCursor IDC_HAND
     
@@ -576,21 +600,6 @@ Private Sub Form_Unload(Cancel As Integer)
     Set cMouseEvents = Nothing
     ReleaseFormTheming Me
         
-End Sub
-
-Private Sub picBuffer_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    curFilter = getFilterAtPosition(x, y)
-    redrawFilterList
-    updatePreview
-    
-End Sub
-
-Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    curFilterHover = getFilterAtPosition(x, y)
-    redrawFilterList
-    
 End Sub
 
 'Given mouse coordinates over the buffer picture box, return the filter at that location
