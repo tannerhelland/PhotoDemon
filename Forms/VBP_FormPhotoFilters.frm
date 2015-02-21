@@ -4,12 +4,12 @@ Begin VB.Form FormPhotoFilters
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Apply Photo Filter"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   14745
+   ClientLeft      =   48
+   ClientTop       =   288
+   ClientWidth     =   14748
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   8.25
+      Size            =   8.4
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
@@ -19,9 +19,9 @@ Begin VB.Form FormPhotoFilters
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   436
+   ScaleHeight     =   545
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   983
+   ScaleWidth      =   1229
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -30,11 +30,11 @@ Begin VB.Form FormPhotoFilters
       TabIndex        =   0
       Top             =   5796
       Width           =   14748
-      _ExtentX        =   26009
-      _ExtentY        =   1323
+      _ExtentX        =   26014
+      _ExtentY        =   1312
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   9.6
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -51,9 +51,9 @@ Begin VB.Form FormPhotoFilters
       ForeColor       =   &H80000008&
       Height          =   4245
       Left            =   6000
-      ScaleHeight     =   281
+      ScaleHeight     =   352
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   551
+      ScaleWidth      =   689
       TabIndex        =   6
       Top             =   480
       Width           =   8295
@@ -72,8 +72,8 @@ Begin VB.Form FormPhotoFilters
       TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _ExtentX        =   9927
+      _ExtentY        =   9927
    End
    Begin PhotoDemon.sliderTextCombo sltDensity 
       Height          =   495
@@ -81,8 +81,8 @@ Begin VB.Form FormPhotoFilters
       TabIndex        =   3
       Top             =   5040
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentX        =   10393
+      _ExtentY        =   868
       Min             =   1
       Max             =   100
       SliderTrackStyle=   2
