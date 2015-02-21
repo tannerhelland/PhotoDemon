@@ -1369,11 +1369,20 @@ PDI_Load_Continuation:
                 
                 'If the load was unsuccessful, delete the blank layer we created
                 Else
-                    pdImages(g_CurrentImage).deleteLayerByIndex pdImages(g_CurrentImage).getLayerIndexFromID(newLayerID)
+                    targetImage.deleteLayerByIndex pdImages(g_CurrentImage).getLayerIndexFromID(newLayerID)
                 End If
             
             'Continue on with the next page
             Next pageTracker
+            
+            'Now, as a convenience, make all but the first frame invisible.
+            If targetImage.getNumOfLayers > 1 Then
+            
+                For pageTracker = 1 To targetImage.getNumOfLayers - 1
+                    targetImage.getLayerByIndex(pageTracker).setLayerVisibility False
+                Next pageTracker
+        
+            End If
         
         End If
         
@@ -1485,23 +1494,7 @@ PreloadMoreImages:
     
     'Restore the screen cursor if necessary
     If pageNumber <= 0 Then Screen.MousePointer = vbNormal
-    
-    'If multiple pages were loaded, make all but the first frame invisible.
-    If imageHasMultiplePages Then
-    
-        If targetImage.getNumOfLayers > 1 Then
         
-            For pageTracker = 1 To targetImage.getNumOfLayers - 1
-                targetImage.getLayerByIndex(pageTracker).setLayerVisibility False
-            Next pageTracker
-        
-        End If
-        
-        Viewport_Engine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0), "multiframe image"
-        syncInterfaceToCurrentImage
-    
-    End If
-    
     'If multiple images were loaded and everything went well, display a success message
     If multipleFilesLoading Then
         If (Len(missingFiles) = 0) And (Len(brokenFiles) = 0) And isThisPrimaryImage Then Message "All images loaded successfully."
