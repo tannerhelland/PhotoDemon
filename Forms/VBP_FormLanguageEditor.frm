@@ -923,7 +923,10 @@ End Sub
 'Use Google Translate to auto-translate all untranslated messages.  Note that this is not a great implementation, but it
 ' should be "good enough" for PD's purposes.
 Private Sub cmdAutoTranslate_Click()
-
+    
+    'If the program is interrupted while auto-translations are taking place, the IE object will stall and the function will crash.
+    On Error GoTo AutoTranslateFailure
+    
     'Because this process can take a very long time, warn the user in advance.
     Dim msgReturn As VbMsgBoxResult
     msgReturn = pdMsgBox("This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?", vbYesNo + vbApplicationModal + vbInformation, "Automatic translation warning")
@@ -989,7 +992,17 @@ Private Sub cmdAutoTranslate_Click()
     
     'Select the "show untranslated phrases" option, which will refresh the list of untranslated phrases
     cmbPhraseFilter.ListIndex = 2
-
+    
+    Exit Sub
+    
+AutoTranslateFailure:
+    
+    'Auto-save whatever we've translated so far
+    performAutosave
+    
+    'Notify the user, then exit
+    pdMsgBox "Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.", vbApplicationModal + vbCritical + vbOKOnly, "Translations interrupted"
+    
 End Sub
 
 Private Sub CmdCancel_Click()
