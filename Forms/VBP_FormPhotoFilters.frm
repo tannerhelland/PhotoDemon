@@ -369,7 +369,7 @@ Private Sub cmdBar_RandomizeClick()
 
     'This is sloppy, but effective.  The vertical scroll bar will be randomly set; we can thus fake a click
     ' somewhere inside the picture box to simulate selecting a random photo filter.
-    picBuffer_MouseDown vbLeftButton, 0, Rnd * picBuffer.ScaleWidth, Rnd * picBuffer.ScaleHeight
+    cMouseEvents_MouseDownCustom pdLeftButton, 0, Rnd * picBuffer.ScaleWidth, Rnd * picBuffer.ScaleHeight
 
 End Sub
 
