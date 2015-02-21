@@ -10725,6 +10725,16 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 </phrase>
 
 <phrase>
+<original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Translations interrupted</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Are you sure you want to delete %1?
 
 (Even though this is an official PhotoDemon language file, you can safely delete it.)</original>
@@ -10981,7 +10991,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 <translation>enregistré automatiquement sur</translation>
 </phrase>
 
-<!-- VBP_FormLanguageEditor.frm contains 135 phrases. 58 were duplicates of existing phrases, so only 77 new phrases were written to file. -->
+<!-- VBP_FormLanguageEditor.frm contains 137 phrases. 58 were duplicates of existing phrases, so only 79 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLanguageEditor.frm-->
 
@@ -13191,10 +13201,10 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2304</phrasecount>
+<phrasecount>2306</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4007 phrases. -->
-<!-- 1703 are duplicates, so only 2304 unique phrases have been written to file. -->
-<!-- These 2304 phrases contain approximately 13241 total words. -->
+<!-- As of this build, PhotoDemon contains 4009 phrases. -->
+<!-- 1703 are duplicates, so only 2306 unique phrases have been written to file. -->
+<!-- These 2306 phrases contain approximately 13259 total words. -->
 
 </pdData>

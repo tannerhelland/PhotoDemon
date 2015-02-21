@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10393
-      _extenty        =   6583
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   953
-      _extenty        =   847
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _extentx        =   868
-      _extenty        =   868
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -2657,6 +2657,10 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     ' Next, see if we need to launch an asynchronous check for updates
     '*************************************************************************************************************************************
+    
+    'Before updating, clear out any temp files leftover from previous updates.  (Replacing files at run-time is messy business, and Windows
+    ' is unpredictable about allowing replaced files to be deleted.)
+    Software_Updater.cleanPreviousUpdateFiles
     
     'Start by seeing if we're allowed to check for software updates (the user can disable this check, and we want to honor their selection)
     Dim allowedToUpdate As Boolean
