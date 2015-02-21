@@ -43,12 +43,30 @@ Begin VB.Form toolbar_ImageTabs
          Caption         =   "&Save"
          Enabled         =   0   'False
       End
+      Begin VB.Menu mnuImageTabsSaveCopy 
+         Caption         =   "Save Copy (&lossless)"
+      End
       Begin VB.Menu mnuImageTabsSaveAs 
-         Caption         =   "Save &As..."
+         Caption         =   "Save &as..."
       End
       Begin VB.Menu mnuImageTabsRevert 
          Caption         =   "Revert"
          Enabled         =   0   'False
+      End
+      Begin VB.Menu mnuImageTabsSep1 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuImageTabsExplorer 
+         Caption         =   "Open location in E&xplorer"
+      End
+      Begin VB.Menu mnuImageTabsSep2 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuImageTabsClose 
+         Caption         =   "&Close"
+      End
+      Begin VB.Menu mnuImageTabsCloseOthers 
+         Caption         =   "Close all expect this"
       End
    End
 End
@@ -1082,6 +1100,32 @@ Public Sub requestMakeFormPretty()
     makeFormPretty Me   ', m_ToolTip
 End Sub
 
+Private Sub mnuImageTabsClose_Click()
+    Image_Canvas_Handler.fullPDImageUnload imgThumbnails(m_rightClickedThumbnail).indexInPDImages
+End Sub
+
+Private Sub mnuImageTabsCloseOthers_Click()
+    Dim lastImageIndex As Long
+    Dim rightclickedImageIndex As Long
+    Dim i As Long
+    
+    lastImageIndex = UBound(pdImages)
+    rightclickedImageIndex = imgThumbnails(m_rightClickedThumbnail).indexInPDImages
+    
+    For i = 0 To lastImageIndex
+        If i <> rightclickedImageIndex And (Not pdImages(i) Is Nothing) Then
+            fullPDImageUnload i
+        End If
+    Next i
+End Sub
+
+Private Sub mnuImageTabsExplorer_Click()
+    Dim filePath As String, shellCommand As String
+    filePath = pdImages(imgThumbnails(m_rightClickedThumbnail).indexInPDImages).locationOnDisk
+    shellCommand = "explorer.exe /select,""" & filePath & """"
+    Shell shellCommand, vbNormalFocus
+End Sub
+
 Private Sub mnuImageTabsRevert_Click()
     Dim imageToRevert As Long
     imageToRevert = imgThumbnails(m_rightClickedThumbnail).indexInPDImages
@@ -1104,3 +1148,6 @@ End Sub
 
 
 
+Private Sub mnuImageTabsSaveCopy_Click()
+    File_Menu.MenuSaveLosslessCopy imgThumbnails(m_rightClickedThumbnail).indexInPDImages
+End Sub
