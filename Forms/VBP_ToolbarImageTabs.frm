@@ -5,13 +5,13 @@ Begin VB.Form toolbar_ImageTabs
    BorderStyle     =   0  'None
    Caption         =   "Images"
    ClientHeight    =   1140
-   ClientLeft      =   2256
-   ClientTop       =   1776
-   ClientWidth     =   13716
+   ClientLeft      =   2250
+   ClientTop       =   1770
+   ClientWidth     =   13725
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   8.4
+      Size            =   8.25
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
@@ -23,9 +23,9 @@ Begin VB.Form toolbar_ImageTabs
    MinButton       =   0   'False
    NegotiateMenus  =   0   'False
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   95
+   ScaleHeight     =   76
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1143
+   ScaleWidth      =   915
    ShowInTaskbar   =   0   'False
    Begin VB.HScrollBar hsThumbnails 
       Height          =   255
@@ -37,14 +37,14 @@ Begin VB.Form toolbar_ImageTabs
       Width           =   13695
    End
    Begin VB.Menu mnuImageTabsContext 
-      Caption         =   "Image"
+      Caption         =   "&Image"
       Visible         =   0   'False
       Begin VB.Menu mnuImageTabsSave 
          Caption         =   "&Save"
          Enabled         =   0   'False
       End
       Begin VB.Menu mnuImageTabsSaveCopy 
-         Caption         =   "Save Copy (&lossless)"
+         Caption         =   "Save copy (&lossless)"
       End
       Begin VB.Menu mnuImageTabsSaveAs 
          Caption         =   "Save &as..."
@@ -66,7 +66,7 @@ Begin VB.Form toolbar_ImageTabs
          Caption         =   "&Close"
       End
       Begin VB.Menu mnuImageTabsCloseOthers 
-         Caption         =   "Close all expect this"
+         Caption         =   "Close all except this"
       End
    End
 End
