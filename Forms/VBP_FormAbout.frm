@@ -394,6 +394,7 @@ Private Sub Form_Load()
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx", True
     GenerateThankyou "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/", True
     GenerateThankyou "PortableFreeware.com team", "http://www.portablefreeware.com/forums/viewtopic.php?t=21652", True
+    GenerateThankyou "Raj Chaudhuri"
     GenerateThankyou "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1", True
     GenerateThankyou "Rod Stephens", "http://www.vb-helper.com", True
     GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp", True

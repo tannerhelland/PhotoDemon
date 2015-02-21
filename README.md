@@ -85,6 +85,7 @@ PhotoDemon would not be possible without the help of many talented contributors,
 * Helmut Kuerbiss for maintaining (and hand-editing!) the German language file
 * Dirk Hartmann for additional help with the German language file
 (http://www.taichi-zentrum-heidelberg.de)
+* Raj Chaudhuri for rewriting the recent file handler, and adding recent file support for macros
 * Will Stampfer for a comprehensive code review and multiple optimization and bug-fix patches
 (https://github.com/epmatsw)
 * Hans Nolte for many improvements to HDR image format handling
