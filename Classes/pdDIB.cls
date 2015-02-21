@@ -205,13 +205,27 @@ Private originalBackgroundColor As Long
 ' mode at present, but this value may contain other bit-depths (e.g. 8bpp if the source data was a GIF).
 Private originalColorDepth As Long
 
-'Get/set original color depth
+'If FreeImage is active, it allows us to retrieve even more detailed color depth information (vs GDI+, which downsamples unpredictably).
+' While I don't really make use of this value at present, it could be helpful in the future, for example when editing icons (which contain
+' multiple icons at varying sizes and original color depths).
+Private originalFreeImageColorDepth As Long
+
+'Get/set original color depth.  Note that this is set after tone-mapping and other actions have been applied
 Public Function getOriginalColorDepth() As Long
     getOriginalColorDepth = originalColorDepth
 End Function
 
 Public Sub setOriginalColorDepth(ByVal origColorDepth As Long)
     originalColorDepth = origColorDepth
+End Sub
+
+'Get/set original file color depth.  This is set prior to any tone-mapping or explicit FreeImage conversions.  As such, it may be quite large.
+Public Function getOriginalFreeImageColorDepth() As Long
+    getOriginalFreeImageColorDepth = originalFreeImageColorDepth
+End Function
+
+Public Sub setOriginalFreeImageColorDepth(ByVal origFIColorDepth As Long)
+    originalFreeImageColorDepth = origFIColorDepth
 End Sub
 
 'If this DIB was created from an image file, and that file specified a preferred background color, use this
