@@ -80,20 +80,11 @@ Begin VB.Form FormNewLayer
       Left            =   480
       TabIndex        =   3
       Top             =   1560
-      Width           =   8820
-      _ExtentX        =   2434
+      Width           =   8850
+      _ExtentX        =   15610
       _ExtentY        =   582
       Caption         =   "transparent"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optLayer 
       CausesValidation=   0   'False
@@ -102,19 +93,10 @@ Begin VB.Form FormNewLayer
       Left            =   480
       TabIndex        =   4
       Top             =   1920
-      Width           =   8820
-      _ExtentX        =   1455
+      Width           =   8850
+      _ExtentX        =   15610
       _ExtentY        =   582
       Caption         =   "black"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optLayer 
       CausesValidation=   0   'False
@@ -123,19 +105,10 @@ Begin VB.Form FormNewLayer
       Left            =   480
       TabIndex        =   5
       Top             =   2280
-      Width           =   8820
-      _ExtentX        =   1508
+      Width           =   8850
+      _ExtentX        =   15610
       _ExtentY        =   582
       Caption         =   "white"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optLayer 
       CausesValidation=   0   'False
@@ -144,19 +117,10 @@ Begin VB.Form FormNewLayer
       Left            =   480
       TabIndex        =   6
       Top             =   2640
-      Width           =   8820
-      _ExtentX        =   2752
+      Width           =   8850
+      _ExtentX        =   15610
       _ExtentY        =   582
       Caption         =   "custom color:"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   615
@@ -177,15 +141,6 @@ Begin VB.Form FormNewLayer
       _ExtentX        =   6059
       _ExtentY        =   582
       Caption         =   "make the new layer the active layer"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -298,6 +253,10 @@ End Sub
 Private Sub cmdBar_ResetClick()
     txtLayerName.Text = g_Language.TranslateMessage("(enter name here)")
     colorPicker.Color = RGB(60, 160, 255)
+End Sub
+
+Private Sub Form_Activate()
+    makeFormPretty Me
 End Sub
 
 Private Sub Form_Load()

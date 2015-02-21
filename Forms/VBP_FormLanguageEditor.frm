@@ -142,15 +142,6 @@ Begin VB.Form FormLanguageEditor
          _ExtentX        =   11642
          _ExtentY        =   582
          Caption         =   "automatically estimate missing translations (via Google Translate)"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.ComboBox cmbPhraseFilter 
          BackColor       =   &H00FFFFFF&
@@ -197,15 +188,6 @@ Begin VB.Form FormLanguageEditor
          _ExtentX        =   11642
          _ExtentY        =   582
          Caption         =   "ENTER key automatically saves and proceeds to next phrase"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.Label lblTranslatedPhrase 
          AutoSize        =   -1  'True
@@ -340,18 +322,9 @@ Begin VB.Form FormLanguageEditor
          Top             =   120
          Width           =   11325
          _ExtentX        =   19976
-         _ExtentY        =   661
+         _ExtentY        =   582
          Caption         =   "start a new language file from scratch"
          Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartOptionButton optBaseLanguage 
          Height          =   375
@@ -361,17 +334,8 @@ Begin VB.Form FormLanguageEditor
          Top             =   600
          Width           =   11325
          _ExtentX        =   19976
-         _ExtentY        =   661
+         _ExtentY        =   582
          Caption         =   "edit an existing language file:"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
@@ -926,7 +890,7 @@ Private Sub cmbPhraseFilter_Click()
         Case 0
             For i = 0 To numOfPhrases - 1
                 lstPhrases.AddItem allPhrases(i).ListBoxEntry
-                lstPhrases.ItemData(lstPhrases.newIndex) = i
+                lstPhrases.itemData(lstPhrases.newIndex) = i
             Next i
         
         'Translated phrases
@@ -934,7 +898,7 @@ Private Sub cmbPhraseFilter_Click()
             For i = 0 To numOfPhrases - 1
                 If Len(allPhrases(i).Translation) <> 0 Then
                     lstPhrases.AddItem allPhrases(i).ListBoxEntry
-                    lstPhrases.ItemData(lstPhrases.newIndex) = i
+                    lstPhrases.itemData(lstPhrases.newIndex) = i
                 End If
             Next i
         
@@ -943,7 +907,7 @@ Private Sub cmbPhraseFilter_Click()
             For i = 0 To numOfPhrases - 1
                 If Len(allPhrases(i).Translation) = 0 Then
                     lstPhrases.AddItem allPhrases(i).ListBoxEntry
-                    lstPhrases.ItemData(lstPhrases.newIndex) = i
+                    lstPhrases.itemData(lstPhrases.newIndex) = i
                 End If
             Next i
     
@@ -959,7 +923,10 @@ End Sub
 'Use Google Translate to auto-translate all untranslated messages.  Note that this is not a great implementation, but it
 ' should be "good enough" for PD's purposes.
 Private Sub cmdAutoTranslate_Click()
-
+    
+    'If the program is interrupted while auto-translations are taking place, the IE object will stall and the function will crash.
+    On Error GoTo AutoTranslateFailure
+    
     'Because this process can take a very long time, warn the user in advance.
     Dim msgReturn As VbMsgBoxResult
     msgReturn = pdMsgBox("This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?", vbYesNo + vbApplicationModal + vbInformation, "Automatic translation warning")
@@ -999,7 +966,7 @@ Private Sub cmdAutoTranslate_Click()
             'Request a translation from Google
             retString = autoTranslate.getGoogleTranslation(srcPhrase)
             
-            'If Google succeeded, store the new translation to file
+            'If Google succeeded, store the new translation
             If Len(retString) <> 0 Then
                 
                 'Store the translation
@@ -1009,6 +976,9 @@ Private Sub cmdAutoTranslate_Click()
                 xmlEngine.updateTagAtLocation "translation", allPhrases(i).Translation, xmlEngine.getLocationOfParentTag("phrase", "original", allPhrases(i).Original)
     
             End If
+            
+            'Every sixteen translations, perform an autosave
+            If (i And 15) = 0 Then performAutosave
             
             'Translations can sometimes get "stuck" (for reasons unknown), so forcibly refresh them after attempting a translation
             srcPhrase = ""
@@ -1022,7 +992,17 @@ Private Sub cmdAutoTranslate_Click()
     
     'Select the "show untranslated phrases" option, which will refresh the list of untranslated phrases
     cmbPhraseFilter.ListIndex = 2
-
+    
+    Exit Sub
+    
+AutoTranslateFailure:
+    
+    'Auto-save whatever we've translated so far
+    performAutosave
+    
+    'Notify the user, then exit
+    pdMsgBox "Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.", vbApplicationModal + vbCritical + vbOKOnly, "Translations interrupted"
+    
 End Sub
 
 Private Sub CmdCancel_Click()
@@ -1038,15 +1018,15 @@ Private Sub cmdDeleteLanguage_Click()
     Dim msgReturn As VbMsgBoxResult
 
     'Display different warnings for official languages (which can be restored) and user languages (which cannot)
-    If listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).langType = "Official" Then
+    If listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).langType = "Official" Then
         
         'Make sure we have write access to this folder before attempting to delete anything
-        If DirectoryHasWriteAccess(getDirectory(listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName)) Then
+        If DirectoryHasWriteAccess(getDirectory(listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).fileName)) Then
         
             msgReturn = pdMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
             
             If msgReturn = vbYes Then
-                Kill listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName
+                Kill listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).fileName
                 lstLanguages.RemoveItem lstLanguages.ListIndex
                 cmdDeleteLanguage.Enabled = False
             End If
@@ -1062,7 +1042,7 @@ Private Sub cmdDeleteLanguage_Click()
         msgReturn = pdMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Unless you have manually backed up this language file, this action cannot be undone.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
         
         If msgReturn = vbYes Then
-            Kill listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName
+            Kill listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).fileName
             lstLanguages.RemoveItem lstLanguages.ListIndex
             cmdDeleteLanguage.Enabled = False
         End If
@@ -1080,10 +1060,10 @@ Private Sub cmdNextPhrase_Click()
     If lstPhrases.ListIndex < 0 Then Exit Sub
     
     'Store this translation to the phrases array
-    allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation = txtTranslation
+    allPhrases(lstPhrases.itemData(lstPhrases.ListIndex)).Translation = txtTranslation
     
     'Insert this translation into the original XML file
-    xmlEngine.updateTagAtLocation "translation", txtTranslation, xmlEngine.getLocationOfParentTag("phrase", "original", allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Original)
+    xmlEngine.updateTagAtLocation "translation", txtTranslation, xmlEngine.getLocationOfParentTag("phrase", "original", allPhrases(lstPhrases.itemData(lstPhrases.ListIndex)).Original)
     
     'Write an alternating backup out to file
     performAutosave
@@ -1208,7 +1188,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                     
                     'Populate the current language's metadata container with some default values
                     With curLanguage
-                        .FileName = g_UserPreferences.getLanguagePath(True) & "new language.xml"
+                        .fileName = g_UserPreferences.getLanguagePath(True) & "new language.xml"
                         .langID = "en-US"
                         .langName = g_Language.TranslateMessage("New Language")
                         .langStatus = g_Language.TranslateMessage("incomplete")
@@ -1230,11 +1210,11 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
             
                 'Fill the current language metadata container with matching information from the selected language,
                 ' with a few changes
-                curLanguage = listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex))
-                curLanguage.FileName = g_UserPreferences.getLanguagePath(True) & getFilename(listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName)
+                curLanguage = listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex))
+                curLanguage.fileName = g_UserPreferences.getLanguagePath(True) & getFilename(listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).fileName)
                 
                 'Attempt to load the selected language from file
-                If loadAllPhrasesFromFile(listOfAvailableLanguages(lstLanguages.ItemData(lstLanguages.ListIndex)).FileName) Then
+                If loadAllPhrasesFromFile(listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).fileName) Then
                     
                     'No further action is necessary!
                     
@@ -1297,9 +1277,9 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 If curLanguage.langType = "Autosave" Then
                     sFile = curLanguage.langName
                     makeValidWindowsFilename sFile
-                    sFile = getDirectory(curLanguage.FileName) & sFile & ".xml"
+                    sFile = getDirectory(curLanguage.fileName) & sFile & ".xml"
                 Else
-                    sFile = getDirectory(curLanguage.FileName) & getFilenameWithoutExtension(curLanguage.FileName) & ".xml"
+                    sFile = getDirectory(curLanguage.fileName) & getFilenameWithoutExtension(curLanguage.fileName) & ".xml"
                 End If
                 
                 Dim cdFilter As String
@@ -1571,14 +1551,14 @@ Private Sub lstPhrases_Click()
     lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase:")
     lblTranslatedPhrase.ForeColor = RGB(64, 64, 64)
     
-    txtOriginal = allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Original
+    txtOriginal = allPhrases(lstPhrases.itemData(lstPhrases.ListIndex)).Original
     
     'If a translation exists for this phrase, load it.  If it does not, use Google Translate to estimate a translation
     ' (contingent on the relevant check box setting)
     lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase")
     
-    If Len(allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation) <> 0 Then
-        txtTranslation = allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Translation
+    If Len(allPhrases(lstPhrases.itemData(lstPhrases.ListIndex)).Translation) <> 0 Then
+        txtTranslation = allPhrases(lstPhrases.itemData(lstPhrases.ListIndex)).Translation
         lblTranslatedPhrase = lblTranslatedPhrase & " " & g_Language.TranslateMessage("(saved):")
     Else
     
@@ -1591,7 +1571,7 @@ Private Sub lstPhrases_Click()
             'I've had trouble with the text boxes not clearing properly (no idea why), so manually clear them before
             ' assigning new text.
             Dim retString As String
-            retString = autoTranslate.getGoogleTranslation(allPhrases(lstPhrases.ItemData(lstPhrases.ListIndex)).Original)
+            retString = autoTranslate.getGoogleTranslation(allPhrases(lstPhrases.itemData(lstPhrases.ListIndex)).Original)
             If Len(retString) <> 0 Then
                 txtTranslation = ""
                 txtTranslation = retString
@@ -1685,7 +1665,7 @@ Private Sub populateAvailableLanguages()
                     .Author = tmpXMLEngine.getUniqueTag_String("author")
                     
                     'Finally, add some internal metadata
-                    .FileName = g_UserPreferences.getLanguagePath(True) & chkFile
+                    .fileName = g_UserPreferences.getLanguagePath(True) & chkFile
                     .langType = "Autosave"
                     
                 End With
@@ -1748,7 +1728,7 @@ Private Sub populateAvailableLanguages()
                 listEntry = listEntry & " ("
                 listEntry = listEntry & g_Language.TranslateMessage("autosaved on")
                 listEntry = listEntry & " "
-                listEntry = listEntry & Format(FileDateTime(listOfAvailableLanguages(i).FileName), "hh:mm:ss AM/PM, dd-mmm-yy")
+                listEntry = listEntry & Format(FileDateTime(listOfAvailableLanguages(i).fileName), "hh:mm:ss AM/PM, dd-mmm-yy")
                 listEntry = listEntry & ") "
             
             End If
@@ -1756,7 +1736,7 @@ Private Sub populateAvailableLanguages()
             'To save us time in the future, use the .ItemData property of this entry to store the language's original index position
             ' in our listOfAvailableLanguages array.
             lstLanguages.AddItem listEntry
-            lstLanguages.ItemData(lstLanguages.newIndex) = i
+            lstLanguages.itemData(lstLanguages.newIndex) = i
             
         Else
             'Ignore the default language entry entirely
@@ -1767,3 +1747,4 @@ Private Sub populateAvailableLanguages()
     lstLanguages.ListIndex = -1
     
 End Sub
+
