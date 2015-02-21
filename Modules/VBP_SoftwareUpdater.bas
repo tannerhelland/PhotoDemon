@@ -1072,3 +1072,27 @@ End Sub
 Public Function isUpdatePackageAvailable() As Boolean
     isUpdatePackageAvailable = (Len(m_UpdateFilePath) <> 0)
 End Function
+
+'Replacing files at run-time is unpredictable; sometimes we can delete the files, sometimes we can't.
+'
+'As such, this function is called when PD starts. It scans the update folder for old temp files and deletes them as encountered.
+Public Sub cleanPreviousUpdateFiles()
+    
+    'Use pdFSO to generate a list of .tmp files in the Update folder
+    Dim tmpFileList As pdStringStack
+    Set tmpFileList = New pdStringStack
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.retrieveAllFiles(g_UserPreferences.getUpdatePath, tmpFileList, False, False, "tmp") Then
+        
+        Dim tmpFile As String
+        
+        Do While tmpFileList.PopString(tmpFile)
+            cFile.KillFile tmpFile
+        Loop
+        
+    End If
+    
+End Sub

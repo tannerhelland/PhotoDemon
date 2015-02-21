@@ -450,7 +450,7 @@ Public Sub LoadTheProgram()
     LoadMessage "Preparing program menus..."
     
     'In debug modes, certain developer and experimental options can be enabled.
-    If PD_BUILD_QUALITY <> PD_PRODUCTION Then
+    If (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA) Then
         FormMain.MnuTest.Visible = True
         FormMain.mnuTool(9).Visible = True
         FormMain.mnuTool(10).Visible = True
