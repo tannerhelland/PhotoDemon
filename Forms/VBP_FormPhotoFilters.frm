@@ -4,12 +4,12 @@ Begin VB.Form FormPhotoFilters
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Apply Photo Filter"
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   285
-   ClientWidth     =   14745
+   ClientLeft      =   48
+   ClientTop       =   288
+   ClientWidth     =   14748
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   8.25
+      Size            =   8.4
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
@@ -19,9 +19,9 @@ Begin VB.Form FormPhotoFilters
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   436
+   ScaleHeight     =   545
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   983
+   ScaleWidth      =   1229
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -30,11 +30,11 @@ Begin VB.Form FormPhotoFilters
       TabIndex        =   0
       Top             =   5796
       Width           =   14748
-      _ExtentX        =   26009
-      _ExtentY        =   1323
+      _ExtentX        =   26014
+      _ExtentY        =   1312
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9.75
+         Size            =   9.6
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -51,9 +51,9 @@ Begin VB.Form FormPhotoFilters
       ForeColor       =   &H80000008&
       Height          =   4245
       Left            =   6000
-      ScaleHeight     =   281
+      ScaleHeight     =   352
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   551
+      ScaleWidth      =   689
       TabIndex        =   6
       Top             =   480
       Width           =   8295
@@ -72,8 +72,8 @@ Begin VB.Form FormPhotoFilters
       TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _ExtentX        =   9927
+      _ExtentY        =   9927
    End
    Begin PhotoDemon.sliderTextCombo sltDensity 
       Height          =   495
@@ -81,8 +81,8 @@ Begin VB.Form FormPhotoFilters
       TabIndex        =   3
       Top             =   5040
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentX        =   10393
+      _ExtentY        =   868
       Min             =   1
       Max             =   100
       SliderTrackStyle=   2
@@ -246,7 +246,7 @@ End Sub
 Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
-    If ((offsetY + fixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight) Then
+    If ((offsetY + fixDPI(BLOCKHEIGHT)) >= 0) And (offsetY <= m_BufferHeight) Then
     
         offsetY = offsetY + fixDPI(2)
         
@@ -301,13 +301,17 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         'Render the Wratten ID and name fields
         firstFont.attachToDC bufferDIB.getDIBDC
         firstFont.fastRenderText colorWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4), drawString
-                
-        'Below that, add the description text
+        
+        'Calculate the drop-down for the description line
         mHeight = firstFont.getHeightOfString(drawString) + linePadding
+        firstFont.releaseFromDC
+        
+        'Below that, add the description text
         drawString = fArray(blockIndex).Description
         
         secondFont.attachToDC bufferDIB.getDIBDC
         secondFont.fastRenderText colorWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4) + mHeight, drawString
+        secondFont.releaseFromDC
         
     End If
 
@@ -365,7 +369,11 @@ Private Sub cmdBar_RandomizeClick()
 
     'This is sloppy, but effective.  The vertical scroll bar will be randomly set; we can thus fake a click
     ' somewhere inside the picture box to simulate selecting a random photo filter.
-    picBuffer_MouseDown vbLeftButton, 0, Rnd * picBuffer.ScaleWidth, Rnd * picBuffer.ScaleHeight
+    
+    ' Raj: The following line produced an error after commit 1d9fe12fa00f48f1664a1e46cbc0306fb9fd2534
+    '         because picbuffer_Mousedown was replaced. I have used cMouseEvents_MouseDownCustom instead.
+    'picBuffer_MouseDown vbLeftButton, 0, Rnd * picBuffer.ScaleWidth, Rnd * picBuffer.ScaleHeight
+    cMouseEvents_MouseDownCustom pdLeftButton, 0, Rnd * picBuffer.ScaleWidth, Rnd * picBuffer.ScaleHeight
 
 End Sub
 
@@ -392,10 +400,30 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    curFilter = getFilterAtPosition(x, y)
+    redrawFilterList
+    updatePreview
+
+End Sub
+
+Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.setSystemCursor IDC_HAND
+End Sub
+
 'When the mouse leaves the filter box, remove any hovered entries and redraw
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.setSystemCursor IDC_DEFAULT
     curFilterHover = -1
     redrawFilterList
+End Sub
+
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    curFilterHover = getFilterAtPosition(x, y)
+    redrawFilterList
+    
 End Sub
 
 Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
@@ -464,7 +492,7 @@ Private Sub Form_Load()
 
     'Enable mousewheel scrolling for the filter box
     Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker picBuffer.hWnd, True, , , True
+    cMouseEvents.addInputTracker picBuffer.hWnd, True, True, , True
     cMouseEvents.addInputTracker Me.hWnd
     cMouseEvents.setSystemCursor IDC_HAND
     
@@ -576,21 +604,6 @@ Private Sub Form_Unload(Cancel As Integer)
     Set cMouseEvents = Nothing
     ReleaseFormTheming Me
         
-End Sub
-
-Private Sub picBuffer_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    curFilter = getFilterAtPosition(x, y)
-    redrawFilterList
-    updatePreview
-    
-End Sub
-
-Private Sub picBuffer_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    curFilterHover = getFilterAtPosition(x, y)
-    redrawFilterList
-    
 End Sub
 
 'Given mouse coordinates over the buffer picture box, return the filter at that location

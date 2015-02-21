@@ -572,11 +572,6 @@ Private Sub Form_Load()
     m_ListScrollable = False
     
     'Activate the custom tooltip handler
-    'Set m_ToolTip = New clsToolTip
-    'm_ToolTip.Create Me
-    'm_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-    'm_ToolTip.DelayTime(ttDelayShow) = 10000
-    'm_ToolTip.AddTool Me, ""
     Set toolTipManager = New pdToolTip
     
     'Theme the form
