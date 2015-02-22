@@ -331,7 +331,7 @@ ABOUT        CUSTOM  MOVEABLE        LOADONCALL      about_pd.png
 //Special-purpose images
 
 //Program logo, with and without text overlay, and a mask for the About text blitting
-PDLOGO       CUSTOM  MOVEABLE        LOADONCALL      6_4_splash.jpg
+//PDLOGO       CUSTOM  MOVEABLE        LOADONCALL      6_4_splash.jpg
 PDLOGONOTEXT CUSTOM  MOVEABLE        LOADONCALL      6_4_no_overlay.jpg
 PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 
@@ -446,6 +446,11 @@ CHANNEL_RED   CUSTOM  MOVEABLE       LOADONCALL      red.png
 CHANNEL_GREEN CUSTOM  MOVEABLE       LOADONCALL      green.png
 CHANNEL_BLUE  CUSTOM  MOVEABLE       LOADONCALL      blue.png
 CHANNEL_RGB   CUSTOM  MOVEABLE       LOADONCALL      RGB.png
+
+//Image tabstrip run-time icons
+CLOSE_MINI_RED   CUSTOM  MOVEABLE       LOADONCALL      close_red_16.png
+CLOSE_MINI_GRAY  CUSTOM  MOVEABLE       LOADONCALL      close_gray_16.png
+
 
 //Sample image for rendering sample effects
 //SAMPLEIMAGE  CUSTOM  MOVEABLE        LOADONCALL      reference_flower.jpg
