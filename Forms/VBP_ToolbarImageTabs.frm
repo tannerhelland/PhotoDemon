@@ -39,34 +39,43 @@ Begin VB.Form toolbar_ImageTabs
    Begin VB.Menu mnuImageTabsContext 
       Caption         =   "&Image"
       Visible         =   0   'False
-      Begin VB.Menu mnuImageTabsSave 
+      Begin VB.Menu mnuTabstripPopup 
          Caption         =   "&Save"
          Enabled         =   0   'False
+         Index           =   0
       End
-      Begin VB.Menu mnuImageTabsSaveCopy 
+      Begin VB.Menu mnuTabstripPopup 
          Caption         =   "Save copy (&lossless)"
+         Index           =   1
       End
-      Begin VB.Menu mnuImageTabsSaveAs 
+      Begin VB.Menu mnuTabstripPopup 
          Caption         =   "Save &as..."
+         Index           =   2
       End
-      Begin VB.Menu mnuImageTabsRevert 
+      Begin VB.Menu mnuTabstripPopup 
          Caption         =   "Revert"
          Enabled         =   0   'False
+         Index           =   3
       End
-      Begin VB.Menu mnuImageTabsSep1 
+      Begin VB.Menu mnuTabstripPopup 
          Caption         =   "-"
+         Index           =   4
       End
-      Begin VB.Menu mnuImageTabsExplorer 
+      Begin VB.Menu mnuTabstripPopup 
          Caption         =   "Open location in E&xplorer"
+         Index           =   5
       End
-      Begin VB.Menu mnuImageTabsSep2 
+      Begin VB.Menu mnuTabstripPopup 
          Caption         =   "-"
+         Index           =   6
       End
-      Begin VB.Menu mnuImageTabsClose 
+      Begin VB.Menu mnuTabstripPopup 
          Caption         =   "&Close"
+         Index           =   7
       End
-      Begin VB.Menu mnuImageTabsCloseOthers 
+      Begin VB.Menu mnuTabstripPopup 
          Caption         =   "Close all except this"
+         Index           =   8
       End
    End
 End
@@ -135,12 +144,17 @@ Private weAreResponsibleForResize As Boolean
 'As a convenience to the user, we provide a small notification when an image has unsaved changes
 Private unsavedChangesDIB As pdDIB
 
-'We show a close icon when hovering over each thumbnail
-Private m_closeImageDIB As pdDIB
-Private m_closeTriggeredOnThumbnail As Long
+'In Feb '15, Raj added the very nice capability to close an image by hovering its tab, then clicking the X that magically appears.
+' A few DIBs are required for this: normal gray, red highlight when hovered, and an underlying shadow (to help it stand out against
+' dark thumbnails).
+Private m_CloseIconRed As pdDIB, m_CloseIconGray As pdDIB, m_CloseIconShadow As pdDIB
+
+'We also need a few tracking variables, for example if the user closes a tab that is *not* currently the active one
+Private m_CloseTriggeredOnThumbnail As Long
+Private m_CloseIconHovered As Long
 
 'Thumbnails can be right-clicked to see a context menu
-Private m_rightClickedThumbnail As Long
+Private m_RightClickedThumbnail As Long
 
 'Drop-shadows on the thumbnails have a variable radius that changes based on the user's DPI settings
 Private shadowBlurRadius As Long
@@ -149,15 +163,35 @@ Private shadowBlurRadius As Long
 Private toolTipManager As pdToolTip
 
 'If the user loads tons of images, the tabstrip may overflow the available area.  We now allow them to drag-scroll the list.
-' In order to allow that, we must track a few extra things, like initial mouse x/y
+' In order to allow that, we must track a few extra things, like initial mouse x/y.
 Private m_MouseDown As Boolean, m_ScrollingOccured As Boolean
 Private m_InitX As Long, m_InitY As Long, m_InitOffset As Long
 Private m_ListScrollable As Boolean
 Private m_MouseDistanceTraveled As Long
 
+'Most importantly for scrolling, this value is set to TRUE on cMouseEvents_MouseDownCustom, *if* the mouse is clicked near the resizable edge of the
+' toolbar (which varies according to its alignment, obviously).
+Private m_MouseInResizeTerritory As Boolean
+
 'Horizontal or vertical layout; obviously, all our rendering and mouse detection code changes depending on the orientation
 ' of the tabstrip.
 Private verticalLayout As Boolean
+
+'In Feb '15, Raj added a great context menu to the tabstrip.  To help simplify menu enable/disable behavior, this enum can be used to identify
+' individual menu entries.
+Private Enum POPUP_MENU_ENTRIES
+    POP_SAVE = 0
+    POP_SAVE_COPY = 1
+    POP_SAVE_AS = 2
+    POP_REVERT = 3
+    POP_OPEN_IN_EXPLORER = 5
+    POP_CLOSE = 7
+    POP_CLOSE_OTHERS = 8
+End Enum
+
+#If False Then
+    Private Const POP_SAVE = 0, POP_SAVE_COPY = 1, POP_SAVE_AS = 2, POP_REVERT = 3, POP_OPEN_IN_EXPLORER = 5, POP_CLOSE = 7, POP_CLOSE_OTHERS = 8
+#End If
 
 'External functions can force a full redraw by calling this sub
 Public Sub forceRedraw()
@@ -398,8 +432,8 @@ Private Function getThumbAtPosition(ByVal x As Long, ByVal y As Long) As Long
     
 End Function
 
-'Given mouse coordinates over the form, return the thumbnail that has a close icon at that location.
-' If the cursor is not over a close icon on a thumbnail, the function will return -1
+'Given mouse coordinates over the form, specify whether the cursor is over the "close" icon area.
+' RETURNS: thumbnail index if over a close icon on a thumbnail, -1 if not over a close icon.
 Private Function getThumbWithCloseIconAtPosition(ByVal x As Long, ByVal y As Long) As Long
     Dim thumbnailNumber As Long
     Dim thumbnailStartOffsetX As Long
@@ -420,18 +454,151 @@ Private Function getThumbWithCloseIconAtPosition(ByVal x As Long, ByVal y As Lon
             thumbnailStartOffsetY = 0
         End If
         
-        closeButtonStartOffsetX = thumbnailStartOffsetX + (thumbWidth - (fixDPI(thumbBorder) + m_closeImageDIB.getDIBWidth + fixDPI(2)))
+        closeButtonStartOffsetX = thumbnailStartOffsetX + (thumbWidth - (fixDPI(thumbBorder) + m_CloseIconGray.getDIBWidth + fixDPI(2)))
         closeButtonStartOffsetY = thumbnailStartOffsetY + fixDPI(thumbBorder) + fixDPI(2)
         clickboundaryX = x - closeButtonStartOffsetX
         clickBoundaryY = y - closeButtonStartOffsetY
         
-        If clickboundaryX >= 0 And clickboundaryX <= m_closeImageDIB.getDIBWidth Then
-            If clickBoundaryY >= 0 And clickBoundaryY <= m_closeImageDIB.getDIBHeight Then
+        If clickboundaryX >= 0 And clickboundaryX <= m_CloseIconGray.getDIBWidth Then
+            If clickBoundaryY >= 0 And clickBoundaryY <= m_CloseIconGray.getDIBHeight Then
                 getThumbWithCloseIconAtPosition = thumbnailNumber
             End If
         End If
     End If
+    
 End Function
+
+'Given an x/y mouse coordinate, return TRUE if the coordinate falls over the form resize area.  Tabstrip alignment is automatically handled.
+Private Function isMouseOverResizeBorder(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
+
+    'How close does the mouse have to be to the form border to allow resizing?  We currently use 7 pixels, while accounting
+    ' for DPI variance (e.g. 7 pixels at 96 dpi)
+    Dim resizeBorderAllowance As Long
+    resizeBorderAllowance = fixDPI(7)
+    
+    Select Case g_WindowManager.getImageTabstripAlignment
+    
+        Case vbAlignLeft
+            If (mouseY > 0) And (mouseY < Me.ScaleHeight) And (mouseX > Me.ScaleWidth - resizeBorderAllowance) Then isMouseOverResizeBorder = True
+            
+        Case vbAlignTop
+            If (mouseX > 0) And (mouseX < Me.ScaleWidth) And (mouseY > Me.ScaleHeight - resizeBorderAllowance) Then isMouseOverResizeBorder = True
+            
+        Case vbAlignRight
+            If (mouseY > 0) And (mouseY < Me.ScaleHeight) And (mouseX < resizeBorderAllowance) Then isMouseOverResizeBorder = True
+            
+        Case vbAlignBottom
+            If (mouseX > 0) And (mouseX < Me.ScaleWidth) And (mouseY < resizeBorderAllowance) Then isMouseOverResizeBorder = True
+            
+    End Select
+
+End Function
+
+'Click events are automatically sorted by the cMouseEvents class.  It will also raise a _MouseUp event, but a parameter in that event notifies
+' that _Click is also being raised; that allows us to specifically handle click-only behavior here (such as raising a context menu).
+Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    'Separate handling by button
+    Select Case Button
+    
+        Case pdLeftButton
+            
+            'If the mouse is not over a close icon, attempt to activate that image now
+            If m_CloseTriggeredOnThumbnail = -1 Then
+            
+                Dim potentialNewThumb As Long
+                potentialNewThumb = getThumbAtPosition(x, y)
+                
+                'Notify the program that a new image has been selected; it will then bring that image to the foreground,
+                ' which will automatically trigger a toolbar redraw.  Also, do not select the image if the user has been
+                ' scrolling the list.
+                If (potentialNewThumb >= 0) And (Not m_ScrollingOccured) Then
+                    curThumb = potentialNewThumb
+                    activatePDImage imgThumbnails(curThumb).indexInPDImages, "user clicked image thumbnail"
+                End If
+                
+            'If the mouse *IS* over a close icon, close the image in question
+            Else
+               
+                ' Check if the mouse pointer is still on the same close icon
+                '   as at mousedown. This check allows people to "change
+                '   their minds" by dragging the mouse pointer away from the
+                '   close icon before releasing the mouse button. This is an
+                '   old Windows mouse trick.
+                If getThumbWithCloseIconAtPosition(x, y) = m_CloseTriggeredOnThumbnail Then
+                   ' fullPDImageUnload will take care of refreshing the UI,
+                   '   activating the next thumbnail if the active one is
+                   '   closed, showing a dialog before closing an unsaved
+                   '   image, etc.
+                   Image_Canvas_Handler.fullPDImageUnload imgThumbnails(m_CloseTriggeredOnThumbnail).indexInPDImages
+                End If
+    
+                m_CloseTriggeredOnThumbnail = -1
+            End If
+            
+        'Right button raises a context menu (potentially)
+        Case pdRightButton
+        
+            ' If a thumbnail was right-clicked at mousedown, and mouseup happens on
+            '   the same thumbnail, activate the image and show the context menu
+            If m_RightClickedThumbnail <> -1 Then
+                If m_RightClickedThumbnail = getThumbAtPosition(x, y) Then
+                
+                    ' Activate the image, which triggers a redraw
+                    curThumb = m_RightClickedThumbnail
+                    activatePDImage imgThumbnails(curThumb).indexInPDImages, "user right-clicked image thumbnail"
+    
+                     
+                    If Not pdImages(imgThumbnails(m_RightClickedThumbnail).indexInPDImages).getSaveState(pdSE_AnySave) Then
+                        mnuTabstripPopup(POP_SAVE).Enabled = True
+                        mnuTabstripPopup(POP_REVERT).Enabled = True
+                    Else
+                        mnuTabstripPopup(POP_SAVE).Enabled = False
+                        mnuTabstripPopup(POP_REVERT).Enabled = False
+                    End If
+                    
+                    
+                    Me.PopupMenu mnuImageTabsContext, x:=x, y:=y
+                    
+                    m_RightClickedThumbnail = -1
+                    forceRedraw
+                    Exit Sub
+                End If
+            End If
+        
+    End Select
+    
+End Sub
+
+'When the left mouse button is pressed, activate click-to-drag mode for scrolling the tabstrip window
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    'On left-button presses, make a note of the initial mouse position
+    If Button = vbLeftButton Then
+    
+        m_MouseDown = True
+        m_InitX = x
+        m_InitY = y
+        m_MouseDistanceTraveled = 0
+        m_InitOffset = hsThumbnails.Value
+        
+        'Detect close icon click, and store the clicked thumbnail
+        m_CloseTriggeredOnThumbnail = getThumbWithCloseIconAtPosition(x, y)
+        
+        'We must also detect if the mouse is over the edge of the form that allows live-resizing.  (This varies by tabstrip orientation, obviously.)
+        m_MouseInResizeTerritory = isMouseOverResizeBorder(x, y)
+        
+    ElseIf Button = vbRightButton Then
+        m_RightClickedThumbnail = getThumbAtPosition(x, y)
+    End If
+    
+    'Reset the "resize in progress" tracker
+    weAreResponsibleForResize = False
+    
+    'Reset the "scrolling occured" tracker
+    m_ScrollingOccured = False
+
+End Sub
 
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     g_MouseOverImageTabstrip = True
@@ -447,6 +614,159 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     End If
     
     cMouseEvents.setSystemCursor IDC_ARROW
+
+End Sub
+
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'Note that the mouse is currently over the tabstrip
+    g_MouseOverImageTabstrip = True
+    
+    'We require a few mouse movements to fire before doing anything; otherwise this function will fire constantly.
+    m_MouseDistanceTraveled = m_MouseDistanceTraveled + 1
+    
+    'We handle several different _MouseMove scenarios, in this order:
+    ' 1) If the mouse is near the resizable edge of the form, and the left button is depressed, activate live resizing.
+    ' 2) If a button is depressed, activate tabstrip scrolling (if the list is long enough)
+    ' 3) If no buttons are depressed, hover the image at the current position (if any)
+        
+    'Check mouse button state; if it's down, check for resize or scrolling of the image list
+    If m_MouseDown Then
+        
+        If m_MouseInResizeTerritory Then
+                
+            If (Button = vbLeftButton) Then
+            
+                'Figure out which resize message to send to Windows; this varies by tabstrip orientation (obviously)
+                Dim hitCode As Long
+    
+                Select Case g_WindowManager.getImageTabstripAlignment
+                
+                    Case vbAlignLeft
+                        hitCode = HTRIGHT
+                    
+                    Case vbAlignTop
+                        hitCode = HTBOTTOM
+                    
+                    Case vbAlignRight
+                        hitCode = HTLEFT
+                    
+                    Case vbAlignBottom
+                        hitCode = HTTOP
+                
+                End Select
+                
+                'Initiate resizing, and set a form-level marker so that other functions know we're responsible for any resize-related events
+                weAreResponsibleForResize = True
+                ReleaseCapture
+                SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
+                
+            End If
+        
+        'The mouse is not in resize territory.  This means the user is click-dragging to scroll a long list.
+        Else
+            
+            'If the list is scrollable (due to tons of images being loaded), calculate a new offset now
+            If m_ListScrollable And (m_MouseDistanceTraveled > 5) And (Not weAreResponsibleForResize) Then
+            
+                m_ScrollingOccured = True
+            
+                Dim mouseOffset As Long
+                
+                If verticalLayout Then
+                    mouseOffset = (m_InitY - y)
+                Else
+                    mouseOffset = (m_InitX - x)
+                End If
+                
+                'Change the invisible scroll bar to match the new offset
+                Dim newScrollValue As Long
+                newScrollValue = m_InitOffset + mouseOffset
+                
+                If newScrollValue < 0 Then
+                    hsThumbnails.Value = 0
+                
+                ElseIf newScrollValue > hsThumbnails.Max Then
+                    hsThumbnails.Value = hsThumbnails.Max
+                    
+                Else
+                    hsThumbnails.Value = newScrollValue
+                    
+                End If
+                
+            
+            End If
+        
+        End If
+    
+    'The left mouse button is not down.  Hover the image beneath the cursor (if any)
+    Else
+    
+        'We want to highlight a close icon, if it's being hovered
+        m_CloseIconHovered = getThumbWithCloseIconAtPosition(x, y)
+        
+        Dim oldThumbHover As Long
+        oldThumbHover = curThumbHover
+        
+        'Retrieve the thumbnail at this position, and change the mouse pointer accordingly
+        curThumbHover = getThumbAtPosition(x, y)
+                
+        'To prevent flickering, only update the tooltip when absolutely necessary
+        If curThumbHover <> oldThumbHover Then
+        
+            'If the cursor is over a thumbnail, update the tooltip to display that image's filename
+            If curThumbHover <> -1 Then
+                        
+                If Len(pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk) <> 0 Then
+                    toolTipManager.setTooltip Me.hWnd, Me.hWnd, pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk, pdImages(imgThumbnails(curThumbHover).indexInPDImages).originalFileNameAndExtension
+                Else
+                    toolTipManager.setTooltip Me.hWnd, Me.hWnd, g_Language.TranslateMessage("Once this image has been saved to disk, its filename will appear here."), g_Language.TranslateMessage("This image does not have a filename.")
+                End If
+            
+            'The cursor is not over a thumbnail; let the user know they can hover if they want more information.
+            Else
+            
+                toolTipManager.setTooltip Me.hWnd, Me.hWnd, g_Language.TranslateMessage("Hover an image thumbnail to see its name and current file location."), ""
+            
+            End If
+            
+        End If
+        
+    End If
+    
+    'Set a mouse pointer according to the handling above
+    If isMouseOverResizeBorder(x, y) Then
+    
+        If verticalLayout Then
+            cMouseEvents.setSystemCursor IDC_SIZEWE
+        Else
+            cMouseEvents.setSystemCursor IDC_SIZENS
+        End If
+        
+    Else
+    
+        'Display a hand cursor if over an image; default cursor otherwise
+        If curThumbHover = -1 Then cMouseEvents.setSystemCursor IDC_ARROW Else cMouseEvents.setSystemCursor IDC_HAND
+    
+    End If
+    
+    'Regardless of what happened above, redraw the toolbar to reflect any changes
+    redrawToolbar
+    
+End Sub
+
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    
+    'cMouseEvents is nice enough to auto-detect clicks and raise the _Click event accordingly.  This saves us having to deal with certain
+    ' potential outcomes here.
+        
+    'Release mouse tracking, if any
+    If m_MouseDown Then
+        m_MouseDown = False
+        m_InitX = 0
+        m_InitY = 0
+        m_MouseDistanceTraveled = 0
+    End If
 
 End Sub
 
@@ -527,7 +847,7 @@ Private Sub Form_Load()
     
     'Enable mousewheel scrolling
     Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker Me.hWnd, True, , , True
+    cMouseEvents.addInputTracker Me.hWnd, True, True, , True
     cMouseEvents.setSystemCursor IDC_HAND
     
     'Detect initial alignment
@@ -554,20 +874,40 @@ Private Sub Form_Load()
     Set unsavedChangesDIB = New pdDIB
     loadResourceToDIB "NTFY_UNSAVED", unsavedChangesDIB
     
-    ' Retrieve close icon from the same place
-    Set m_closeImageDIB = New pdDIB
-    loadResourceToDIB "CLOSE", m_closeImageDIB
-
-    ' Track the last thumbnail whose close icon has been clicked.
-    ' -1 means no close icon has been clicked yet
-    m_closeTriggeredOnThumbnail = -1
+    'Retrieve all PNGs necessary to render the "close by hovering" X that appears
+    Set m_CloseIconRed = New pdDIB
+    loadResourceToDIB "CLOSE_MINI_RED", m_CloseIconRed
     
-    ' Track the last right-clicked thumbnail.
-    m_rightClickedThumbnail = -1
+    Set m_CloseIconGray = New pdDIB
+    loadResourceToDIB "CLOSE_MINI_GRAY", m_CloseIconGray
     
     'Update the drop-shadow blur radius to account for DPI
     shadowBlurRadius = fixDPI(2)
     
+    'Generate a drop-shadow for the X.  (We can use the same one for both red and gray, obviously.)
+    Set m_CloseIconShadow = New pdDIB
+    Filters_Layers.createShadowDIB m_CloseIconGray, m_CloseIconShadow
+    
+    'Pad and blur the drop-shadow
+    Dim tmpLUT() As Byte
+    
+    Dim cFilter As pdFilterLUT
+    Set cFilter = New pdFilterLUT
+    cFilter.fillLUT_Invert tmpLUT
+    
+    padDIB m_CloseIconShadow, fixDPI(thumbBorder)
+    quickBlurDIB m_CloseIconShadow, fixDPI(2), False
+    cFilter.applyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
+    
+    m_CloseIconShadow.fixPremultipliedAlpha True
+    
+    ' Track the last thumbnail whose close icon has been clicked.
+    ' -1 means no close icon has been clicked yet
+    m_CloseTriggeredOnThumbnail = -1
+    
+    ' Track the last right-clicked thumbnail.
+    m_RightClickedThumbnail = -1
+        
     'If the tabstrip ever becomes long enough to scroll, this will be set to TRUE
     m_ListScrollable = False
     
@@ -577,253 +917,6 @@ Private Sub Form_Load()
     'Theme the form
     makeFormPretty Me
     
-End Sub
-
-'When the left mouse button is pressed, activate click-to-drag mode for scrolling the tabstrip window
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    'Make a note of the initial mouse position
-    If Button = vbLeftButton Then
-        m_MouseDown = True
-        m_InitX = x
-        m_InitY = y
-        m_MouseDistanceTraveled = 0
-        m_InitOffset = hsThumbnails.Value
-        
-        'Detect close icon click, and store the clicked thumbnail
-        m_closeTriggeredOnThumbnail = getThumbWithCloseIconAtPosition(x, y)
-        
-    ElseIf Button = vbRightButton Then
-        m_rightClickedThumbnail = getThumbAtPosition(x, y)
-    End If
-    
-    'Reset the "resize in progress" tracker
-    weAreResponsibleForResize = False
-    
-    'Reset the "scrolling occured" tracker
-    m_ScrollingOccured = False
-    
-End Sub
-
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    
-    'Note that the mouse is currently over the tabstrip
-    g_MouseOverImageTabstrip = True
-    
-    'We require a few mouse movements to fire before doing anything; otherwise this function will fire constantly.
-    m_MouseDistanceTraveled = m_MouseDistanceTraveled + 1
-    
-    'We handle several different _MouseMove scenarios, in this order:
-    ' 1) If the mouse is near the resizable edge of the form, and the left button is depressed, activate live resizing.
-    ' 2) If a button is depressed, activate tabstrip scrolling (if the list is long enough)
-    ' 3) If no buttons are depressed, hover the image at the current position (if any)
-    
-    'If the mouse is near the resizable edge of the toolbar (which varies according to its alignment),
-    ' allow the user to resize the thumbnail toolbar
-    Dim mouseInResizeTerritory As Boolean
-    
-    'How close does the mouse have to be to the form border to allow resizing; currently we use 7 pixels, while accounting
-    ' for DPI variance (e.g. 7 pixels at 96 dpi)
-    Dim resizeBorderAllowance As Long
-    resizeBorderAllowance = fixDPI(7)
-    
-    Dim hitCode As Long
-    
-    Select Case g_WindowManager.getImageTabstripAlignment
-    
-        Case vbAlignLeft
-            If (y > 0) And (y < Me.ScaleHeight) And (x > Me.ScaleWidth - resizeBorderAllowance) Then mouseInResizeTerritory = True
-            hitCode = HTRIGHT
-        
-        Case vbAlignTop
-            If (x > 0) And (x < Me.ScaleWidth) And (y > Me.ScaleHeight - resizeBorderAllowance) Then mouseInResizeTerritory = True
-            hitCode = HTBOTTOM
-        
-        Case vbAlignRight
-            If (y > 0) And (y < Me.ScaleHeight) And (x < resizeBorderAllowance) Then mouseInResizeTerritory = True
-            hitCode = HTLEFT
-        
-        Case vbAlignBottom
-            If (x > 0) And (x < Me.ScaleWidth) And (y < resizeBorderAllowance) Then mouseInResizeTerritory = True
-            hitCode = HTTOP
-    
-    End Select
-        
-    'Check mouse button state; if it's down, check for resize or scrolling of the image list
-    If m_MouseDown Then
-        
-        If mouseInResizeTerritory Then
-                
-            If Button = vbLeftButton Then
-                
-                'Allow resizing
-                weAreResponsibleForResize = True
-                ReleaseCapture
-                SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
-                
-            End If
-        
-        'The mouse is not in resize territory.
-        Else
-        
-            mouseInResizeTerritory = False
-            
-            'If the list is scrollable (due to tons of images being loaded), calculate a new offset now
-            If m_ListScrollable And (m_MouseDistanceTraveled > 5) And (Not weAreResponsibleForResize) Then
-            
-                m_ScrollingOccured = True
-            
-                Dim mouseOffset As Long
-                
-                If verticalLayout Then
-                    mouseOffset = (m_InitY - y)
-                Else
-                    mouseOffset = (m_InitX - x)
-                End If
-                
-                'Change the invisible scroll bar to match the new offset
-                Dim newScrollValue As Long
-                newScrollValue = m_InitOffset + mouseOffset
-                
-                If newScrollValue < 0 Then
-                    hsThumbnails.Value = 0
-                
-                ElseIf newScrollValue > hsThumbnails.Max Then
-                    hsThumbnails.Value = hsThumbnails.Max
-                    
-                Else
-                    hsThumbnails.Value = newScrollValue
-                    
-                End If
-                
-            
-            End If
-        
-        End If
-    
-    'The left mouse button is not down.  Hover the image beneath the cursor (if any)
-    Else
-    
-        Dim oldThumbHover As Long
-        oldThumbHover = curThumbHover
-        
-        'Retrieve the thumbnail at this position, and change the mouse pointer accordingly
-        curThumbHover = getThumbAtPosition(x, y)
-        
-        'To prevent flickering, only update the tooltip when absolutely necessary
-        If curThumbHover <> oldThumbHover Then
-        
-            'If the cursor is over a thumbnail, update the tooltip to display that image's filename
-            If curThumbHover <> -1 Then
-                        
-                If Len(pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk) <> 0 Then
-                    toolTipManager.setTooltip Me.hWnd, Me.hWnd, pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk, pdImages(imgThumbnails(curThumbHover).indexInPDImages).originalFileNameAndExtension
-                Else
-                    toolTipManager.setTooltip Me.hWnd, Me.hWnd, g_Language.TranslateMessage("Once this image has been saved to disk, its filename will appear here."), g_Language.TranslateMessage("This image does not have a filename.")
-                End If
-            
-            'The cursor is not over a thumbnail; let the user know they can hover if they want more information.
-            Else
-            
-                toolTipManager.setTooltip Me.hWnd, Me.hWnd, g_Language.TranslateMessage("Hover an image thumbnail to see its name and current file location."), ""
-            
-            End If
-            
-        End If
-        
-    End If
-    
-    'Set a mouse pointer according to the handling above
-    If mouseInResizeTerritory Then
-    
-        If verticalLayout Then
-            cMouseEvents.setSystemCursor IDC_SIZEWE
-        Else
-            cMouseEvents.setSystemCursor IDC_SIZENS
-        End If
-            
-    Else
-    
-        'Display a hand cursor if over an image
-        If curThumbHover = -1 Then cMouseEvents.setSystemCursor IDC_ARROW Else cMouseEvents.setSystemCursor IDC_HAND
-    
-    End If
-    
-    'Regardless of what happened above, redraw the toolbar to reflect any changes
-    redrawToolbar
-    
-End Sub
-
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
-
-    'If the _MouseUp event was triggered by the user, select the image at that position
-    If Not weAreResponsibleForResize Then
-    
-        ' If a thumbnail was right-clicked at mousedown, and mouseup happens on
-        '   the same thumbnail, activate the image and show the context menu
-        If m_rightClickedThumbnail <> -1 Then
-            If m_rightClickedThumbnail = getThumbAtPosition(x, y) Then
-            
-                ' Activate the image, which triggers a redraw
-                curThumb = m_rightClickedThumbnail
-                activatePDImage imgThumbnails(curThumb).indexInPDImages, "user right-clicked image thumbnail"
-
-                 
-                If Not pdImages(imgThumbnails(m_rightClickedThumbnail).indexInPDImages).getSaveState(pdSE_AnySave) Then
-                    mnuImageTabsSave.Enabled = True
-                    mnuImageTabsRevert.Enabled = True
-                Else
-                    mnuImageTabsSave.Enabled = False
-                    mnuImageTabsRevert.Enabled = False
-                End If
-                
-                
-                Me.PopupMenu mnuImageTabsContext, x:=x, y:=y
-                
-                m_rightClickedThumbnail = -1
-                forceRedraw
-                Exit Sub
-            End If
-        End If
-        
-        ' If a previous mousedown was not on a close icon
-        If m_closeTriggeredOnThumbnail = -1 Then
-            Dim potentialNewThumb As Long
-            potentialNewThumb = getThumbAtPosition(x, y)
-            
-            'Notify the program that a new image has been selected; it will then bring that image to the foreground,
-            ' which will automatically trigger a toolbar redraw.  Also, do not select the image if the user has been
-            ' scrolling the list.
-            If (potentialNewThumb >= 0) And (Not m_ScrollingOccured) Then
-                curThumb = potentialNewThumb
-                activatePDImage imgThumbnails(curThumb).indexInPDImages, "user clicked image thumbnail"
-            End If
-        Else
-            ' Check if the mouse pointer is still on the same close icon
-            '   as at mousedown. This check allows people to "change
-            '   their minds" by dragging the mouse pointer away from the
-            '   close icon before releasing the mouse button. This is an
-            '   old Windows mouse trick.
-            If getThumbWithCloseIconAtPosition(x, y) = m_closeTriggeredOnThumbnail Then
-               ' fullPDImageUnload will take care of refreshing the UI,
-               '   activating the next thumbnail if the active one is
-               '   closed, showing a dialog before closing an unsaved
-               '   image, etc.
-               Image_Canvas_Handler.fullPDImageUnload imgThumbnails(m_closeTriggeredOnThumbnail).indexInPDImages
-            End If
-
-            m_closeTriggeredOnThumbnail = -1
-        End If
-    End If
-    
-    'Release mouse tracking
-    If m_MouseDown Then
-        m_MouseDown = False
-        m_InitX = 0
-        m_InitY = 0
-        m_MouseDistanceTraveled = 0
-    End If
-
 End Sub
 
 '(This code is copied from FormMain's OLEDragDrop event - please mirror any changes there)
@@ -1037,7 +1130,7 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         Dim hBrush As Long
     
         'If this thumbnail has been selected, draw the background with the system's current selection color
-        If thumbIndex = curThumb Then
+        If (thumbIndex = curThumb) Then
             SetRect tmpRect, offsetX, offsetY, offsetX + thumbWidth, offsetY + thumbHeight
             hBrush = CreateSolidBrush(ConvertSystemColor(vb3DLight))
             FillRect bufferDIB.getDIBDC, tmpRect, hBrush
@@ -1058,14 +1151,27 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         If g_InterfacePerformance <> PD_PERF_FASTEST Then imgThumbnails(thumbIndex).thumbShadow.alphaBlendToDC bufferDIB.getDIBDC, 192, offsetX, offsetY + fixDPI(1)
         imgThumbnails(thumbIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + fixDPI(thumbBorder), offsetY + fixDPI(thumbBorder)
         
-        'If the parent image has unsaved changes, also render a notification icon
-        If Not pdImages(imgThumbnails(thumbIndex).indexInPDImages).getSaveState(pdSE_AnySave) Then
-            unsavedChangesDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + fixDPI(thumbBorder) + fixDPI(2), offsetY + thumbHeight - fixDPI(thumbBorder) - unsavedChangesDIB.getDIBHeight - fixDPI(2)
+        'If the parent image has unsaved changes, also render a notification icon.
+        ' (When the program is shutting down, this value may not be available, so we must check it first.
+        If Not (pdImages(imgThumbnails(thumbIndex).indexInPDImages) Is Nothing) Then
+            If Not pdImages(imgThumbnails(thumbIndex).indexInPDImages).getSaveState(pdSE_AnySave) Then
+                unsavedChangesDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + fixDPI(thumbBorder) + fixDPI(2), offsetY + thumbHeight - fixDPI(thumbBorder) - unsavedChangesDIB.getDIBHeight - fixDPI(2)
+            End If
         End If
         
-        'If this image is being hovered over, show the close icon
-        If thumbIndex = curThumbHover Then
-            m_closeImageDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (fixDPI(thumbBorder) + m_closeImageDIB.getDIBWidth + fixDPI(2))), offsetY + fixDPI(thumbBorder) + fixDPI(2)
+        'If this image is being hovered over, show the close icon.  (Drop shadow gets rendered first, at a slight offset.)
+        If (thumbIndex = curThumbHover) Then
+        
+            'Render a shadow, regardless
+            m_CloseIconShadow.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (fixDPI(thumbBorder) * 2 + m_CloseIconRed.getDIBWidth + fixDPI(2))), offsetY + fixDPI(2)
+            
+            'Render a red icon if the close icon is actually hovered; gray, otherwise
+            If (thumbIndex = m_CloseIconHovered) Then
+                m_CloseIconRed.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (fixDPI(thumbBorder) + m_CloseIconRed.getDIBWidth + fixDPI(2))), offsetY + fixDPI(thumbBorder) + fixDPI(2)
+            Else
+                m_CloseIconGray.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (fixDPI(thumbBorder) + m_CloseIconRed.getDIBWidth + fixDPI(2))), offsetY + fixDPI(thumbBorder) + fixDPI(2)
+            End If
+            
         End If
         
     End If
@@ -1074,11 +1180,18 @@ End Sub
 
 'Whenever a thumbnail has been updated, this sub must be called to regenerate its drop-shadow
 Private Sub updateShadowDIB(ByVal imgThumbnailIndex As Long)
+    
+    'Create a shadow DIB
     imgThumbnails(imgThumbnailIndex).thumbShadow.eraseDIB
     createShadowDIB imgThumbnails(imgThumbnailIndex).thumbDIB, imgThumbnails(imgThumbnailIndex).thumbShadow
+    
+    'Pad and blur the DIB
     padDIB imgThumbnails(imgThumbnailIndex).thumbShadow, fixDPI(thumbBorder)
     quickBlurDIB imgThumbnails(imgThumbnailIndex).thumbShadow, shadowBlurRadius
+    
+    'Apply premultiplied alpha (so we can more quickly AlphaBlend the resulting image to the tabstrip)
     imgThumbnails(imgThumbnailIndex).thumbShadow.fixPremultipliedAlpha True
+    
 End Sub
 
 'Even though the scroll bar is not visible, we still process mousewheel events using it, so redraw when it changes
@@ -1092,57 +1205,69 @@ End Sub
 
 'External functions can use this to re-theme this form at run-time (important when changing languages, for example)
 Public Sub requestMakeFormPretty()
-    makeFormPretty Me   ', m_ToolTip
+    makeFormPretty Me
 End Sub
 
-Private Sub mnuImageTabsClose_Click()
-    Image_Canvas_Handler.fullPDImageUnload imgThumbnails(m_rightClickedThumbnail).indexInPDImages
-End Sub
+'All popup menu clicks are handled here
+Private Sub mnuTabstripPopup_Click(Index As Integer)
 
-Private Sub mnuImageTabsCloseOthers_Click()
-    Dim lastImageIndex As Long
-    Dim rightclickedImageIndex As Long
-    Dim i As Long
+    Select Case Index
+        
+        'Save
+        Case 0
+            File_Menu.MenuSave imgThumbnails(m_RightClickedThumbnail).indexInPDImages
+        
+        'Save copy (lossless)
+        Case 1
+            File_Menu.MenuSaveLosslessCopy imgThumbnails(m_RightClickedThumbnail).indexInPDImages
+        
+        'Save as
+        Case 2
+            File_Menu.MenuSaveAs imgThumbnails(m_RightClickedThumbnail).indexInPDImages
+        
+        'Revert
+        Case 3
+            Dim imageToRevert As Long
+            imageToRevert = imgThumbnails(m_RightClickedThumbnail).indexInPDImages
+            
+            pdImages(imageToRevert).undoManager.revertToLastSavedState
+                        
+            'Also, redraw the current child form icon
+            createCustomFormIcon pdImages(imageToRevert)
+            notifyUpdatedImage imageToRevert
+        
+        '(separator)
+        Case 4
+        
+        'Open location in Explorer
+        Case 5
+            Dim filePath As String, shellCommand As String
+            filePath = pdImages(imgThumbnails(m_RightClickedThumbnail).indexInPDImages).locationOnDisk
+            shellCommand = "explorer.exe /select,""" & filePath & """"
+            Shell shellCommand, vbNormalFocus
+        
+        '(separator)
+        Case 6
+        
+        'Close
+        Case 7
+            Image_Canvas_Handler.fullPDImageUnload imgThumbnails(m_RightClickedThumbnail).indexInPDImages
+        
+        'Close all but this
+        Case 8
+            Dim lastImageIndex As Long
+            Dim rightclickedImageIndex As Long
+            Dim i As Long
+            
+            lastImageIndex = UBound(pdImages)
+            rightclickedImageIndex = imgThumbnails(m_RightClickedThumbnail).indexInPDImages
+            
+            For i = 0 To lastImageIndex
+                If i <> rightclickedImageIndex And (Not pdImages(i) Is Nothing) Then
+                    fullPDImageUnload i
+                End If
+            Next i
     
-    lastImageIndex = UBound(pdImages)
-    rightclickedImageIndex = imgThumbnails(m_rightClickedThumbnail).indexInPDImages
-    
-    For i = 0 To lastImageIndex
-        If i <> rightclickedImageIndex And (Not pdImages(i) Is Nothing) Then
-            fullPDImageUnload i
-        End If
-    Next i
-End Sub
+    End Select
 
-Private Sub mnuImageTabsExplorer_Click()
-    Dim filePath As String, shellCommand As String
-    filePath = pdImages(imgThumbnails(m_rightClickedThumbnail).indexInPDImages).locationOnDisk
-    shellCommand = "explorer.exe /select,""" & filePath & """"
-    Shell shellCommand, vbNormalFocus
-End Sub
-
-Private Sub mnuImageTabsRevert_Click()
-    Dim imageToRevert As Long
-    imageToRevert = imgThumbnails(m_rightClickedThumbnail).indexInPDImages
-    
-    pdImages(imageToRevert).undoManager.revertToLastSavedState
-                
-    'Also, redraw the current child form icon
-    createCustomFormIcon pdImages(imageToRevert)
-    notifyUpdatedImage imageToRevert
-End Sub
-
-Private Sub mnuImageTabsSave_Click()
-    File_Menu.MenuSave imgThumbnails(m_rightClickedThumbnail).indexInPDImages
-End Sub
-
-
-Private Sub mnuImageTabsSaveAs_Click()
-    File_Menu.MenuSaveAs imgThumbnails(m_rightClickedThumbnail).indexInPDImages
-End Sub
-
-
-
-Private Sub mnuImageTabsSaveCopy_Click()
-    File_Menu.MenuSaveLosslessCopy imgThumbnails(m_rightClickedThumbnail).indexInPDImages
 End Sub
