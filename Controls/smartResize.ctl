@@ -26,9 +26,9 @@ Begin VB.UserControl smartResize
       TabIndex        =   13
       Top             =   1200
       Width           =   4695
-      _ExtentX        =   8281
-      _ExtentY        =   635
-      FontSize        =   11
+      _extentx        =   8281
+      _extenty        =   635
+      fontsize        =   11
    End
    Begin PhotoDemon.pdComboBox cmbHeightUnit 
       Height          =   360
@@ -36,9 +36,9 @@ Begin VB.UserControl smartResize
       TabIndex        =   12
       Top             =   600
       Width           =   4695
-      _ExtentX        =   8281
-      _ExtentY        =   635
-      FontSize        =   11
+      _extentx        =   8281
+      _extenty        =   635
+      fontsize        =   11
    End
    Begin PhotoDemon.pdComboBox cmbWidthUnit 
       Height          =   360
@@ -46,9 +46,9 @@ Begin VB.UserControl smartResize
       TabIndex        =   11
       Top             =   0
       Width           =   4695
-      _ExtentX        =   8281
-      _ExtentY        =   635
-      FontSize        =   14
+      _extentx        =   8281
+      _extenty        =   635
+      fontsize        =   14
    End
    Begin PhotoDemon.jcbutton cmdAspectRatio 
       Height          =   630
@@ -56,28 +56,20 @@ Begin VB.UserControl smartResize
       TabIndex        =   8
       Top             =   180
       Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1111
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      Value           =   -1  'True
-      HandPointer     =   -1  'True
-      PictureNormal   =   "smartResize.ctx":0312
-      PictureDown     =   "smartResize.ctx":1764
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      _extentx        =   1111
+      _extenty        =   1111
+      buttonstyle     =   7
+      font            =   "smartResize.ctx":0312
+      backcolor       =   -2147483643
+      caption         =   ""
+      mode            =   1
+      value           =   -1  'True
+      handpointer     =   -1  'True
+      picturenormal   =   "smartResize.ctx":033A
+      picturedown     =   "smartResize.ctx":178C
+      pictureeffectondown=   0
+      captioneffects  =   0
+      colorscheme     =   3
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   345
@@ -85,11 +77,11 @@ Begin VB.UserControl smartResize
       TabIndex        =   0
       Top             =   0
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   767
-      Min             =   1
-      Max             =   32767
-      Value           =   1
+      _extentx        =   2117
+      _extenty        =   767
+      min             =   1
+      max             =   32767
+      value           =   1
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   345
@@ -97,11 +89,11 @@ Begin VB.UserControl smartResize
       TabIndex        =   1
       Top             =   600
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   767
-      Min             =   1
-      Max             =   32767
-      Value           =   1
+      _extentx        =   2117
+      _extenty        =   767
+      min             =   1
+      max             =   32767
+      value           =   1
    End
    Begin PhotoDemon.textUpDown tudResolution 
       Height          =   345
@@ -109,11 +101,11 @@ Begin VB.UserControl smartResize
       TabIndex        =   9
       Top             =   1200
       Width           =   1200
-      _ExtentX        =   2117
-      _ExtentY        =   767
-      Min             =   1
-      Max             =   32767
-      Value           =   1
+      _extentx        =   2117
+      _extenty        =   767
+      min             =   1
+      max             =   32767
+      value           =   1
    End
    Begin VB.Label lblResolution 
       Alignment       =   1  'Right Justify
@@ -345,7 +337,7 @@ Private previousUnitOfResolution As ResolutionUnit
 Private m_UnknownSizeMode As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Private m_ToolTip As pdToolTip
 
 'If percentage measurements are disabled, this will be set to TRUE.
 Private m_PercentDisabled As Boolean
@@ -877,16 +869,14 @@ Private Sub UserControl_Show()
         cmdAspectRatio.Left = hOffset
         
         'Add tooltips to the form
-        Set m_ToolTip = New clsToolTip
+        Set m_ToolTip = New pdToolTip
         
-        m_ToolTip.Create Me
-        m_ToolTip.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-        m_ToolTip.DelayTime(ttDelayShow) = 10000
+        m_ToolTip.setTooltip cmdAspectRatio.hWnd, Me.hWnd, "Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync."
+        m_ToolTip.setTooltip cmbWidthUnit.hWnd, Me.hWnd, "Change the unit of measurement used to resize the image."
+        m_ToolTip.setTooltip cmbHeightUnit.hWnd, Me.hWnd, "Change the unit of measurement used to resize the image."
+        m_ToolTip.setTooltip cmbResolution.hWnd, Me.hWnd, "Change the unit of measurement used for image resolution (pixel density)."
         
-        m_ToolTip.AddTool cmdAspectRatio, g_Language.TranslateMessage("Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.")
-        m_ToolTip.AddTool cmbWidthUnit, g_Language.TranslateMessage("Change the unit of measurement used to resize the image.")
-        m_ToolTip.AddTool cmbHeightUnit, g_Language.TranslateMessage("Change the unit of measurement used to resize the image.")
-        m_ToolTip.AddTool cmbResolution, g_Language.TranslateMessage("Change the unit of measurement used for image resolution (pixel density).")
+        m_ToolTip.updateAgainstCurrentTheme
         
     End If
 
