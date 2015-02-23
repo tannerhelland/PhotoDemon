@@ -63,15 +63,6 @@ Begin VB.Form FormMetadata
       Width           =   11730
       _ExtentX        =   20690
       _ExtentY        =   1085
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -132,15 +123,6 @@ Begin VB.Form FormMetadata
       Width           =   4410
       _ExtentX        =   20690
       _ExtentY        =   1085
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.buttonStrip btsTechnical 
       Height          =   495
@@ -151,15 +133,6 @@ Begin VB.Form FormMetadata
       Width           =   4410
       _ExtentX        =   6720
       _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -553,9 +526,9 @@ Private Sub Form_Load()
     'Prior to adding category names, set a relevant button strip font according to the number of metadata groups.
     ' If an image has a ton of groups (10+ is not unheard of), reduce font size.
     If numOfCategories > 5 Then
-        btsGroup.Font.Size = 10
+        btsGroup.FontSize = 10
     Else
-        btsGroup.Font.Size = 12
+        btsGroup.FontSize = 12
     End If
     
     For i = 0 To numOfCategories - 1
