@@ -720,13 +720,13 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 If Len(pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk) <> 0 Then
                     toolTipManager.setTooltip Me.hWnd, Me.hWnd, pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk, pdImages(imgThumbnails(curThumbHover).indexInPDImages).originalFileNameAndExtension
                 Else
-                    toolTipManager.setTooltip Me.hWnd, Me.hWnd, g_Language.TranslateMessage("Once this image has been saved to disk, its filename will appear here."), g_Language.TranslateMessage("This image does not have a filename.")
+                    toolTipManager.setTooltip Me.hWnd, Me.hWnd, "Once this image has been saved to disk, its filename will appear here.", "This image does not have a filename."
                 End If
             
             'The cursor is not over a thumbnail; let the user know they can hover if they want more information.
             Else
             
-                toolTipManager.setTooltip Me.hWnd, Me.hWnd, g_Language.TranslateMessage("Hover an image thumbnail to see its name and current file location."), ""
+                toolTipManager.setTooltip Me.hWnd, Me.hWnd, "Hover an image thumbnail to see its name and current file location.", ""
             
             End If
             

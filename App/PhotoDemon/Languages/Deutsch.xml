@@ -5247,6 +5247,17 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation>Zwei Funktionen von PhotoDemon, die allerdings nicht unbedingt benötigt werden, brauchen einen Internetzugang: die Prüfung auf Software-Updates und die Möglichkeit, fehlende Kern-Plugins nachzuladen, wenn sie nicht im Ordner \App\PhotoDemon\Plugins vorhanden sind.
+
+Die Entwickler von PhotoDemon nehmen Datenschutz sehr ernst, sodass keine Informationen - statistische oder andere - durch diese Funktionen hochgeladen werden. Die Prüfung auf Software-Updates beinhaltet das Herunterladen einer einzigen "updates.txt"-Datei mit der Nummer der neuesten Software-Version. Der Download von fehlenden Plugins ist das Herunterladen einer oder mehrerer komprimierter Dateien vom PhotoDemon-Server.
+
+Wenn Sie diese Funktionen deaktivieren, können Sie trotzdem jederzeit photodemon.org besuchen und manuell die neueste Programmversion laden.</translation>
+</phrase>
+
+<phrase>
 <original>Copy the report to the system clipboard</original>
 <translation>Bericht in die Zwischenablage kopieren</translation>
 </phrase>
@@ -5321,7 +5332,7 @@ Are you sure you want to continue?</original>
 <translation>WARNUNG: Dieser Ordner ist ungültig (Zutritt verboten!). Bitte geben Sie einen gültigen Ordner an. Wenn Sie keinen neuen Ordner angeben, verwendet PhotoDemon den üblichen Speicherort des Systems für temporäre Dateien.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 284 phrases. 71 were duplicates of existing phrases, so only 213 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 286 phrases. 72 were duplicates of existing phrases, so only 214 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -11503,7 +11514,7 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolbarImageTabs.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_ToolbarImageTabs.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarImageTabs.frm-->
 
@@ -13230,10 +13241,10 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2311</phrasecount>
+<phrasecount>2312</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4027 phrases. -->
-<!-- 1716 are duplicates, so only 2311 unique phrases have been written to file. -->
-<!-- These 2311 phrases contain approximately 13271 total words. -->
+<!-- As of this build, PhotoDemon contains 4028 phrases. -->
+<!-- 1716 are duplicates, so only 2312 unique phrases have been written to file. -->
+<!-- These 2312 phrases contain approximately 13349 total words. -->
 
 </pdData>

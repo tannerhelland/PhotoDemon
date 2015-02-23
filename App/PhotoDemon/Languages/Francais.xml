@@ -5242,6 +5242,13 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Copy the report to the system clipboard</original>
 <translation>Copiez le rapport au presse-papiers du système</translation>
 </phrase>
@@ -5316,7 +5323,7 @@ Are you sure you want to continue?</original>
 <translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 284 phrases. 71 were duplicates of existing phrases, so only 213 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 286 phrases. 72 were duplicates of existing phrases, so only 214 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -11499,7 +11506,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolbarImageTabs.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_ToolbarImageTabs.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarImageTabs.frm-->
 
@@ -13226,10 +13233,10 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2311</phrasecount>
+<phrasecount>2312</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4027 phrases. -->
-<!-- 1716 are duplicates, so only 2311 unique phrases have been written to file. -->
-<!-- These 2311 phrases contain approximately 13271 total words. -->
+<!-- As of this build, PhotoDemon contains 4028 phrases. -->
+<!-- 1716 are duplicates, so only 2312 unique phrases have been written to file. -->
+<!-- These 2312 phrases contain approximately 13349 total words. -->
 
 </pdData>
