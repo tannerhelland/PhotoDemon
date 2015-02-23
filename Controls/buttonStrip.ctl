@@ -100,16 +100,21 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect A
 ' via a pdFont object.
 Private curFont As pdFont
 
+'If a given caption needs to be dynamically shrunk (because it's too long to fit, and DrawText can't hyphenate it for whatever reason),
+' we fall back to a temporary font object.  This is preferable to overwriting the main font object, as font creation is expensive, and we
+' can simply skip creating this font if text fits okay (as it does for en-US).
+Private shrinkFont As pdFont
+
+'Rather than use an StdFont container (which requires VB to create redundant font objects), we track font properties manually,
+' via dedicated properties.
+Private m_FontSize As Single
+Private m_FontBold As Boolean
+
 'Mouse and keyboard input handlers
 Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 Private WithEvents cKeyEvents As pdInputKeyboard
 Attribute cKeyEvents.VB_VarHelpID = -1
-
-'An StdFont object is used to make IDE font choices persistent; note that we also need it to raise events,
-' so we can track when it changes.
-Private WithEvents mFont As StdFont
-Attribute mFont.VB_VarHelpID = -1
 
 'Current button indices
 Private m_ButtonIndex As Long
@@ -152,9 +157,9 @@ Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
+Public Property Let Enabled(ByVal newValue As Boolean)
     
-    UserControl.Enabled = NewValue
+    UserControl.Enabled = newValue
     PropertyChanged "Enabled"
     
     'Redraw the control
@@ -162,36 +167,64 @@ Public Property Let Enabled(ByVal NewValue As Boolean)
     
 End Property
 
-'Font handling is a bit specialized for user controls; see http://msdn.microsoft.com/en-us/library/aa261313%28v=vs.60%29.aspx
-Public Property Get Font() As StdFont
-Attribute Font.VB_UserMemId = -512
-    Set Font = mFont
+'Font settings are handled via dedicated properties, to avoid the need for an internal VB font object
+Public Property Get FontBold() As Boolean
+    FontBold = m_FontBold
 End Property
 
-Public Property Set Font(mNewFont As StdFont)
+Public Property Let FontBold(ByVal newBoldSetting As Boolean)
+    If newBoldSetting <> m_FontBold Then
+        m_FontBold = newBoldSetting
+        refreshFont
+    End If
+End Property
+
+Public Property Get FontSize() As Single
+    FontSize = m_FontSize
+End Property
+
+Public Property Let FontSize(ByVal newSize As Single)
+    If newSize <> m_FontSize Then
+        m_FontSize = newSize
+        refreshFont
+    End If
+End Property
+
+'When the font used for the button changes in some way, it can be recreated (refreshed) using this function.  Note that font
+' creation is expensive, so it's worthwhile to avoid this step as much as possible.
+Private Sub refreshFont()
     
-    With mFont
-        .Bold = mNewFont.Bold
-        .Italic = mNewFont.Italic
-        .Name = mNewFont.Name
-        .Size = mNewFont.Size
-    End With
+    Dim fontRefreshRequired As Boolean
+    fontRefreshRequired = curFont.hasFontBeenCreated
     
-    'Mirror all settings to our internal curFont object, then recreate it
-    If Not curFont Is Nothing Then
-        curFont.setFontBold mFont.Bold
-        curFont.setFontFace mFont.Name
-        curFont.setFontItalic mFont.Italic
-        curFont.setFontSize mFont.Size
-        curFont.createFontObject
+    'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
+    
+    'Font face is always set automatically, to match the current program-wide font
+    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
+        fontRefreshRequired = True
+        curFont.setFontFace g_InterfaceFont
     End If
     
-    PropertyChanged "Font"
+    'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
+    ' parity using an Int() conversion, as GDI only supports integer font sizes.
+    If Int(m_FontSize) <> Int(curFont.getFontSize) Then
+        fontRefreshRequired = True
+        curFont.setFontSize m_FontSize
+    End If
     
-    'Redraw the control to match
+    'This control currently supports bold text, but not italics
+    If m_FontBold <> curFont.getFontBold Then
+        fontRefreshRequired = True
+        curFont.setFontBold m_FontBold
+    End If
+        
+    'Request a new font, if one or more settings have changed
+    If fontRefreshRequired Then curFont.createFontObject
+    
+    'Also, each button needs to be rebuilt to reflect the new font metrics
     updateControlSize
-    
-End Property
+
+End Sub
 
 'A few key events are also handled
 Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
@@ -246,11 +279,6 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     'Flip the relevant chunk of the buffer to the screen
     BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
     
-End Sub
-
-Private Sub mFont_FontChanged(ByVal PropertyName As String)
-    Set UserControl.Font = mFont
-    updateAgainstCurrentTheme
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
@@ -484,10 +512,7 @@ Public Sub updateAgainstCurrentTheme()
         Next i
         
         'In the future, themes may also result in font changes.  As such, recreate the font object, just to be safe.
-        Me.Font.Name = g_InterfaceFont
-        curFont.setFontFace g_InterfaceFont
-        curFont.setFontSize mFont.Size
-        curFont.createFontObject
+        refreshFont
         
     End If
         
@@ -542,10 +567,6 @@ Private Sub UserControl_Initialize()
     m_FocusRectActive = -1
     m_ButtonHoverIndex = -1
     
-    'Prepare a font object for use
-    Set mFont = New StdFont
-    Set UserControl.Font = mFont
-    
     'Update the control size parameters at least once
     updateControlSize
                 
@@ -554,11 +575,12 @@ End Sub
 'Set default properties
 Private Sub UserControl_InitProperties()
     
-    Set mFont = UserControl.Font
-    mFont_FontChanged ("")
-    
     'Select the first button by default
     ListIndex = 0
+    
+    'Set default font properties
+    m_FontBold = False
+    m_FontSize = 10
     
 End Sub
 
@@ -585,7 +607,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         ListIndex = .ReadProperty("ListIndex", 0)
-        Set Font = .ReadProperty("Font", Ambient.Font)
+        FontBold = .ReadProperty("FontBold", False)
+        FontSize = .ReadProperty("FontSize", 10)
     End With
 
 End Sub
@@ -740,7 +763,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     'Store all associated properties
     With PropBag
         .WriteProperty "ListIndex", ListIndex, 0
-        .WriteProperty "Font", mFont, "Tahoma"
+        .WriteProperty "FontBold", m_FontBold, False
+        .WriteProperty "FontSize", m_FontSize, 10
     End With
     
 End Sub
