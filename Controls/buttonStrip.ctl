@@ -130,6 +130,8 @@ Private Type buttonEntry
     btImageDisabled As pdDIB        'Auto-created disabled version of the image
     btImageHover As pdDIB           'Auto-created hover (glow) version of the image
     btImageCoords As POINTAPI       '(x, y) position of the button image, if any
+    btFontSize As Single            'If a button caption fits just fine, this value is 0.  If a translation is active and a button caption must be shrunk,
+                                    ' this value will be non-zero, and the button renderer must use it when rendering the button.
 End Type
 
 Private m_Buttons() As buttonEntry
@@ -220,7 +222,7 @@ Private Sub refreshFont()
         
     'Request a new font, if one or more settings have changed
     If fontRefreshRequired Then curFont.createFontObject
-    
+        
     'Also, each button needs to be rebuilt to reflect the new font metrics
     updateControlSize
 
@@ -686,6 +688,9 @@ Private Sub updateControlSize()
     
     For i = 0 To m_numOfButtons - 1
     
+        'Reset font size for this button
+        m_Buttons(i).btFontSize = 0
+        
         'Calculate the width of this button (which may deviate by 1px between buttons, due to integer truncation)
         buttonWidth = m_Buttons(i).btBounds.Right - m_Buttons(i).btBounds.Left
         
@@ -705,7 +710,33 @@ Private Sub updateControlSize()
             strHeight = curFont.getHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
             
             'As a failsafe for ultra-long captions, restrict their size to the button size.  Truncation will (necessarily) occur.
-            If strHeight > buttonHeight Then strHeight = buttonHeight
+            If (strHeight > buttonHeight) Then
+                strHeight = buttonHeight
+                
+            'As a second failsafe, if word-wrapping didn't solve the problem (because the text is a single word, for example, as is common
+            ' in German), we will forcibly set a smaller font size for this caption alone.
+            ElseIf curFont.getHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth) = curFont.getHeightOfString(m_Buttons(i).btCaptionTranslated) Then
+            
+                'Create and initialize the shrinkFont renderer
+                If (shrinkFont Is Nothing) Then
+                    Set shrinkFont = New pdFont
+                Else
+                    shrinkFont.releaseFromDC
+                End If
+                
+                m_Buttons(i).btFontSize = shrinkFont.getMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
+                
+                'The .btFontSize value now contains the font size required to render this button correctly.  In most cases, only a single button
+                ' will require this kind of special treatment, so initialize a matching shrinkFont now.  (If necessary, the object will be
+                ' recreated on the fly for other buttons.)
+                shrinkFont.setFontBold m_FontBold
+                shrinkFont.setFontSize m_Buttons(i).btFontSize
+                shrinkFont.createFontObject
+                
+                'Also note the new string height
+                strHeight = shrinkFont.getHeightOfString(m_Buttons(i).btCaptionTranslated)
+                
+            End If
             
         Else
             strHeight = curFont.getHeightOfString(m_Buttons(i).btCaptionTranslated)
@@ -863,10 +894,32 @@ Private Sub redrawBackBuffer()
                     End If
                 End If
                 
-                curFont.setFontColor curColor
-                curFont.drawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                If .btFontSize = 0 Then
+                    curFont.setFontColor curColor
+                    curFont.drawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                Else
                 
-                'Paint the image, if any
+                    'Release the main font object
+                    curFont.releaseFromDC
+                
+                    'Recreate shrinkFont as necessary
+                    If shrinkFont.getFontSize <> .btFontSize Then
+                        shrinkFont.setFontSize .btFontSize
+                        shrinkFont.createFontObject
+                    End If
+                    
+                    'Select shrinkFont into the DC and render the text accordingly
+                    shrinkFont.attachToDC m_BackBuffer.getDIBDC
+                    shrinkFont.setFontColor curColor
+                    shrinkFont.drawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                    
+                    'Restore curFont
+                    shrinkFont.releaseFromDC
+                    curFont.attachToDC m_BackBuffer.getDIBDC
+                    
+                End If
+                
+                'Paint the button image, if any
                 If Not (.btImage Is Nothing) Then
                     
                     If Me.Enabled Then
