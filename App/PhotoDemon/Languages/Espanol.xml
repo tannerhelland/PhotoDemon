@@ -5247,6 +5247,13 @@ Are ¿Seguro que quieres continuar?</translation>
 </phrase>
 
 <phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Copy the report to the system clipboard</original>
 <translation>Copie el informe al portapapeles del sistema</translation>
 </phrase>
@@ -5321,7 +5328,7 @@ Are ¿Seguro que quieres continuar?</translation>
 <translation>ADVERTENCIA: es inválida esta carpeta (acceso prohibido). Proporcione una carpeta válida. Si no se proporciona ninguna nueva carpeta, PhotoDemon utilizará ubicación temporal por defecto del sistema.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 284 phrases. 71 were duplicates of existing phrases, so only 213 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 286 phrases. 72 were duplicates of existing phrases, so only 214 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -11503,7 +11510,7 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <translation>Coloca una miniatura de la imagen para ver su nombre y el archivo actual ubicación.</translation>
 </phrase>
 
-<!-- VBP_ToolbarImageTabs.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_ToolbarImageTabs.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarImageTabs.frm-->
 
@@ -11995,17 +12002,17 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation>Mantener la relación de aspecto (a veces llamada Restringir proporciones). Utilice esta opción para cambiar el tamaño de una imagen, manteniendo la anchura y altura en sincronía.</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation>Cambie la unidad de medida utilizada para cambiar el tamaño de la imagen.</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>Cambie la unidad de medida utilizada para la resolución de la imagen (densidad de píxeles).</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13230,10 +13237,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2311</phrasecount>
+<phrasecount>2312</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4027 phrases. -->
-<!-- 1716 are duplicates, so only 2311 unique phrases have been written to file. -->
-<!-- These 2311 phrases contain approximately 13271 total words. -->
+<!-- As of this build, PhotoDemon contains 4028 phrases. -->
+<!-- 1716 are duplicates, so only 2312 unique phrases have been written to file. -->
+<!-- These 2312 phrases contain approximately 13349 total words. -->
 
 </pdData>

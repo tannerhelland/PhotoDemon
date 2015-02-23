@@ -1435,6 +1435,18 @@ Private Sub processFile(ByVal srcFile As String)
             
             End If
             
+            '3b) Check for tooltip text that has been manually assigned to a PhotoDemon pdToolTip object.  Note that we (obviously) avoid
+            '     .setToolTip function declarations themselves.
+            If (InStr(1, curLineText, ".setTooltip") > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
+                
+                'Process the tooltip text itself
+                processedText = findTooltipMessage(fileLines, curLineNumber, False)
+                
+                'Process the title, if any
+                processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
+            
+            End If
+            
             
         
         ElseIf InStr(1, UCase$(curLineText), "TOOLTIPTITLE", vbBinaryCompare) And (InStr(1, curLineText, ".TooltipTitle") = 0) And (InStr(1, UCase$(curLineText), "NEWTOOLTIPTITLE") = 0) And (Not m_FileName = "jcButton.ctl") Then
@@ -1691,46 +1703,62 @@ Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber
         initPosition = InStr(1, srcLines(lineNumber), ".assignTooltip """)
     End If
     
+    'If text is not found, try again, using a different tooltip assignment command
+    If initPosition = 0 Then
+        If inReverse Then
+            initPosition = InStrRev(srcLines(lineNumber), ".setTooltip")
+        Else
+            initPosition = InStr(1, srcLines(lineNumber), ".setTooltip")
+        End If
+    End If
+    
     Dim startQuote As Long
     startQuote = InStr(initPosition, srcLines(lineNumber), """")
     
-    Dim endQuote As Long
-    endQuote = -1
-    
-    Dim insideQuotes As Boolean
-    insideQuotes = True
-    
-    Dim i As Long
-    For i = startQuote + 1 To Len(srcLines(lineNumber))
-    
-        If Mid$(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
+    'Some tooltip assignments rely only on variables, not string text.  Ignore these, obviously, as their translation will be handled elsewhere.
+    If startQuote > 0 Then
         
-        If ((Mid$(srcLines(lineNumber), i, 1) = ",") Or (Mid$(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
-            endQuote = i - 1
-            Exit For
+        Dim endQuote As Long
+        endQuote = -1
+        
+        Dim insideQuotes As Boolean
+        insideQuotes = True
+        
+        Dim i As Long
+        For i = startQuote + 1 To Len(srcLines(lineNumber))
+        
+            If Mid$(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
+            
+            If ((Mid$(srcLines(lineNumber), i, 1) = ",") Or (Mid$(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
+                endQuote = i - 1
+                Exit For
+            End If
+            
+            If (i = Len(srcLines(lineNumber))) And (Not insideQuotes) Then
+                endQuote = i
+                Exit For
+            End If
+        
+        Next i
+        
+        'If endQuote = -1, something went horribly wrong
+        If endQuote = -1 Then
+            Debug.Print "POTENTIAL MANUAL FIX REQUIRED FOR MESSAGE PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
+            findTooltipMessage = ""
+        Else
+            findTooltipMessage = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
         End If
         
-        If (i = Len(srcLines(lineNumber))) And (Not insideQuotes) Then
-            endQuote = i
-            Exit For
-        End If
+        'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
+        Dim lineBreak As String
+        lineBreak = """ & vbCrLf & """
+        If InStr(1, findTooltipMessage, lineBreak) Then findTooltipMessage = Replace(findTooltipMessage, lineBreak, vbCrLf)
+        lineBreak = """ & vbCrLf & vbCrLf & """
+        If InStr(1, findTooltipMessage, lineBreak) Then findTooltipMessage = Replace(findTooltipMessage, lineBreak, vbCrLf & vbCrLf)
     
-    Next i
-    
-    'If endQuote = -1, something went horribly wrong
-    If endQuote = -1 Then
-        findTooltipMessage = "MANUAL FIX REQUIRED FOR MESSAGE PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
     Else
-        findTooltipMessage = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        findTooltipMessage = ""
     End If
-    
-    'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
-    Dim lineBreak As String
-    lineBreak = """ & vbCrLf & """
-    If InStr(1, findTooltipMessage, lineBreak) Then findTooltipMessage = Replace(findTooltipMessage, lineBreak, vbCrLf)
-    lineBreak = """ & vbCrLf & vbCrLf & """
-    If InStr(1, findTooltipMessage, lineBreak) Then findTooltipMessage = Replace(findTooltipMessage, lineBreak, vbCrLf & vbCrLf)
-
     
 End Function
 
