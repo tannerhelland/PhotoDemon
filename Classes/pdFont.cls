@@ -497,23 +497,53 @@ End Sub
 'Return the width (and below, height) of a string, in pixels.  This action REQUIRES that a DC be currently set for this
 ' object, as the DC's font settings are used to determine the string's dimensions.
 Public Function getWidthOfString(ByVal srcString As String) As Long
+    
     Dim txtSize As POINTAPI
+    
     If curDC = 0 Then
-        Debug.Print "Can't return string width, as pdFont has not been selected into a DC!"
+        
+        'If we're not currently selected into a DC, we'll create a temporary one, for measurement purposes only
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank 8, 8, 24
+        attachToDC tmpDIB.getDIBDC
+        
+        GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
+        getWidthOfString = txtSize.x
+        
+        releaseFromDC
+        curDC = 0
+        
     Else
         GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
         getWidthOfString = txtSize.x
     End If
+    
 End Function
 
 Public Function getHeightOfString(ByVal srcString As String) As Long
+    
     Dim txtSize As POINTAPI
+    
     If curDC = 0 Then
-        Debug.Print "Can't return string height, as pdFont has not been selected into a DC!"
+        
+        'If we're not currently selected into a DC, we'll create a temporary one, for measurement purposes only
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank 8, 8, 24
+        attachToDC tmpDIB.getDIBDC
+        
+        GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
+        getHeightOfString = txtSize.y
+        
+        releaseFromDC
+        curDC = 0
+        
     Else
         GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
         getHeightOfString = txtSize.y
     End If
+    
 End Function
 
 'With the current font settings, find the height of a word-wrapped string.  This action REQUIRES that a DC be currently
@@ -646,5 +676,71 @@ Public Function doesFontExist(ByVal fontNameToCheck As String, Optional ByRef fo
     'Not sure if helpful, but return the replacement font name and nearest supported size
     fontSubstitute = tmpFont.Name
     nearestFontSize = tmpFont.Size
+    
+End Function
+
+'Given a desired width (in pixels) and a source string, search for the largest font size that allows said string to fit within that width.
+' Word-wrapping is not used, by design, as it's assumed the caller already tried word-wrapping as a solution.
+'
+'RETURNS: largest font size that fits the string into the desired width.  (7 is the smallest size this function will return, FYI.)
+Public Function getMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal desiredWidth As Long, Optional ByVal startingFontSize As Long = 10) As Single
+    
+    'Start by determining a targetDC.  A fake DC will be used, as necessary.
+    Dim targetDC As Long, backupDC As Long
+    backupDC = curDC
+    
+    If curDC = 0 Then
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank 8, 8, 24
+        targetDC = tmpDIB.getDIBDC
+    Else
+        targetDC = curDC
+    End If
+    
+    'Make a backup of the current font size, if any
+    Dim backupFontSize As Single
+    backupFontSize = m_origFontSize
+    
+    'Create the font anew, using the default string size we were passed
+    releaseFromDC
+    m_origFontSize = startingFontSize
+    setFontSize m_origFontSize
+    createFontObject
+    attachToDC targetDC
+    
+    'Measure the font relative to the current control size
+    Dim stringWidth As Long
+    stringWidth = getWidthOfString(srcString)
+    
+    'If the string does not fit within the control size, shrink the font accordingly.
+    Do While (stringWidth > desiredWidth) And (m_origFontSize >= 7)
+        
+        'Shrink the font size
+        m_origFontSize = m_origFontSize - 0.5
+        
+        'Recreate the font
+        releaseFromDC
+        setFontSize m_origFontSize
+        createFontObject
+        attachToDC targetDC
+        
+        'Measure the new size
+        stringWidth = getWidthOfString(srcString)
+        
+    Loop
+    
+    'By this point, m_origFontSize represents the valid size.  Return it.
+    getMaxFontSizeToFitStringWidth = m_origFontSize
+    
+    'Before exiting, restore any parameters we changed
+    releaseFromDC
+    setFontSize backupFontSize
+    createFontObject
+    
+    If backupDC <> 0 Then
+        curDC = backupDC
+        attachToDC curDC
+    End If
     
 End Function
