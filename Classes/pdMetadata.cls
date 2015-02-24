@@ -877,6 +877,10 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
     'Metadata only needs to be written out if it exists (obviously)
     If hasXMLMetadata Then
         
+        'XML writing is handled by PD's master XML engine
+        Dim xmlEngine As pdXML
+        Set xmlEngine = New pdXML
+        
         Dim newXMLString As String, tmpXMLPath As String
         Dim fileNum As Integer
         
@@ -907,13 +911,9 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
                 tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
                 
                 'Write the XML file
-                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
-                fileNum = FreeFile
-    
-                Open tmpXMLPath For Output As #fileNum
-                    Print #fileNum, newXMLString
-                Close #fileNum
-                
+                xmlEngine.loadXMLFromString newXMLString
+                xmlEngine.writeXMLToFile tmpXMLPath, True
+                                
                 'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
                 If writeMetadata(tmpXMLPath, outputPath, srcPDImage) Then
                     Message "Metadata embedded successfully."
@@ -990,12 +990,8 @@ Public Function writeAllMetadata(ByVal outputPath As String, ByRef srcPDImage As
                 tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(outputPath), 16) & ".xml"
                 
                 'Write the XML file
-                If FileExist(tmpXMLPath) Then Kill tmpXMLPath
-                fileNum = FreeFile
-    
-                Open tmpXMLPath For Output As #fileNum
-                    Print #fileNum, newXMLString
-                Close #fileNum
+                xmlEngine.loadXMLFromString newXMLString
+                xmlEngine.writeXMLToFile tmpXMLPath, True
                 
                 'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
                 If writeMetadata(tmpXMLPath, outputPath, srcPDImage, True) Then
