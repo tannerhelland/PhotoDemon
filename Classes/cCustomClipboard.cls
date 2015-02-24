@@ -516,8 +516,8 @@ Private Function pbNotReady() As Boolean
 ' Determines whether a call to Get or Set Data on the
 ' clipboard will work.
     If Not (m_bClipboardIsOpen) Or (m_hWnd = 0) Then
-        Debug.Assert (1 = 0)
-        Err.Raise eccClipboardNotOpen, App.EXEName & ".cCustomClipboard", "Attempt to access the clipboard when clipboard not Open."
+        'Debug.Assert (1 = 0)
+        'Err.Raise eccClipboardNotOpen, App.EXEName & ".cCustomClipboard", "Attempt to access the clipboard when clipboard not Open."
         pbNotReady = True
     End If
 End Function

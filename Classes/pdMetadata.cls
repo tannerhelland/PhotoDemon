@@ -296,6 +296,21 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     Dim i As Long
     
     'DEBUGGING ONLY: sometimes it is helpful to dump the full metadata text to the clipboard.  Uncomment as necessary.
+    
+    'This rather ungainly set of code is required to copy Unicode text to the clipboard
+    'Dim tmpUnicode As pdUnicode
+    'Set tmpUnicode = New pdUnicode
+    'Dim tmpBytes() As Byte
+    'ReDim tmpBytes(0 To Len(mdString) * 2) As Byte
+    'CopyMemory ByVal VarPtr(tmpBytes(0)), ByVal StrPtr(mdString), UBound(tmpBytes)
+    'Dim tmpClip As cCustomClipboard
+    'Set tmpClip = New cCustomClipboard
+    'tmpClip.ClearClipboard
+    'tmpClip.ClipboardOpen FormMain.hWnd
+    'tmpClip.SetBinaryData 13, tmpBytes      '13 is CF_UNICODE
+    'tmpClip.ClipboardClose
+    
+    'VB clipboard text copy is much easier (but note that a forcible ANSI conversion will be applied)
     'Clipboard.Clear
     'Clipboard.SetText mdString
     
@@ -397,18 +412,35 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                     iMetadata(maxMetadataCount).isValueList = True
                     iMetadata(maxMetadataCount).Value = "(list of values too long to display)"
                 Else
-                    iMetadata(maxMetadataCount).isValueBinary = True
-                    iMetadata(maxMetadataCount).isValueList = False
-                    iMetadata(maxMetadataCount).Value = "(binary data)"
+                    
+                    'If a datatype is specified, this is true binary data.
+                    If InStr(1, xmlLines(curLine), "rdf:datatype=") > 0 Then
+                    
+                        iMetadata(maxMetadataCount).isValueBinary = True
+                        iMetadata(maxMetadataCount).isValueList = False
+                        iMetadata(maxMetadataCount).isValueMultiLine = False
+                        iMetadata(maxMetadataCount).Value = "(binary data)"
+                    
+                    'If a datatype is not specified, this is most likely a non-binary value with (non-spec!) line-breaks.  This invalid
+                    ' output confuses the parser, but we will attempt to retrieve it via special means later in the function.
+                    Else
+                    
+                        iMetadata(maxMetadataCount).isValueBinary = True
+                        iMetadata(maxMetadataCount).isValueList = False
+                        iMetadata(maxMetadataCount).isValueMultiLine = True
+                        
+                    End If
+                        
                 End If
             End If
             
             If iMetadata(maxMetadataCount).isValueBinary Or iMetadata(maxMetadataCount).isValueList Then
             
                 'SPECIAL CHECK FOR COMMENTS
-                'Comments are a unique exception to the binary data detector (data spanning multiple lines), as comments can actually
-                ' include their own linebreak characters!  Check for the presence of comment data now.
-                If StrComp(iMetadata(maxMetadataCount).Name, "Comment") = 0 Then
+                'Exif specifically disallows linebreak characters, but metadata is prone to these kinds of exceptions.  If the previous parse
+                ' step detected a potential multiline comment (defined by a line with an open tag, but no rdf type declaration), attempt to
+                ' retrieve the data into a string, and replace line end characters with spaces to bring the text into spec.
+                If iMetadata(maxMetadataCount).isValueMultiLine Then
                 
                     'This is a comment.  Retrieve its value using a custom parse strategy.
                     xmlLines(curLine) = Trim$(xmlLines(curLine))
@@ -464,7 +496,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                     iMetadata(maxMetadataCount).isActualValueBinary = False
                     iMetadata(maxMetadataCount).isActualValueList = False
                 Else
-                    'The current value is eithr binary, or a list.  Check for the presence of an <rdf:Bag> tag to distinguish between the two.
+                    'The current value is either binary, or a list.  Check for the presence of an <rdf:Bag> tag to distinguish between the two.
                     If (InStr(1, xmlLines(curLine + 1), "<rdf:Bag>") > 0) Then
                         iMetadata(maxMetadataCount).isActualValueBinary = False
                         iMetadata(maxMetadataCount).isActualValueList = True
