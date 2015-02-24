@@ -36,6 +36,14 @@ Private Const CP_UTF8 As Long = 65001
 Private Declare Function MultiByteToWideChar Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpMultiByteStr As Long, ByVal cbMultiByte As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long) As Long
 Private Declare Function WideCharToMultiByte Lib "kernel32" (ByVal CodePage As Long, ByVal dwFlags As Long, ByVal lpWideCharStr As Long, ByVal cchWideChar As Long, ByVal lpMultiByteStr As Long, ByVal cchMultiByte As Long, ByVal lpDefaultChar As Long, ByVal lpUsedDefaultChar As Long) As Long
 
+'Base 64 en/decoding can be handled by the API
+Private Const CRYPT_STRING_BASE64 As Long = 1
+Private Const CRYPT_STRING_NOCR As Long = &H80000000
+Private Const CRYPT_STRING_NOCRLF As Long = &H40000000
+
+Private Declare Function CryptBinaryToString Lib "Crypt32" Alias "CryptBinaryToStringW" (ByRef pbBinary As Byte, ByVal cbBinary As Long, ByVal dwFlags As Long, ByVal pszString As Long, ByRef pcchString As Long) As Long
+Private Declare Function CryptStringToBinary Lib "Crypt32" Alias "CryptStringToBinaryW" (ByVal pszString As Long, ByVal cchString As Long, ByVal dwFlags As Long, ByVal pbBinary As Long, ByRef pcbBinary As Long, ByRef pdwSkip As Long, ByRef pdwFlags As Long) As Long
+
 'Given a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
 Public Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As Byte) As Boolean
     
@@ -313,3 +321,32 @@ StringConversionFailed:
     convertUnknownBytesToString = False
 
 End Function
+
+'Convert a base-64 encoded string into a byte array, using standard Windows libraries.
+' Returns TRUE if successful; FALSE otherwise.
+'
+'Thanks to vbForums user dilettante for the original version of this code (retrieved here: http://www.vbforums.com/showthread.php?514815-JPEG-Base-64&p=3186994&viewfull=1#post3186994)
+Public Function Base64Decode(ByRef dstArray() As Byte, ByVal strBase64 As String) As Boolean
+    
+    Dim lngOutLen As Long
+    Dim dwActualUsed As Long
+    
+    'Retrieve the necessary output buffer size.
+    If CryptStringToBinary(StrPtr(strBase64), Len(strBase64), CRYPT_STRING_BASE64, ByVal 0&, lngOutLen, 0&, dwActualUsed) <> 0 Then
+    
+        'Prep the buffer
+        ReDim dstArray(lngOutLen - 1) As Byte
+        
+        'Retrieve the converted byte array
+        If CryptStringToBinary(StrPtr(strBase64), Len(strBase64), CRYPT_STRING_BASE64, VarPtr(dstArray(0)), lngOutLen, 0&, dwActualUsed) <> 0 Then
+            Base64Decode = True
+        Else
+            Base64Decode = False
+        End If
+        
+    Else
+        Base64Decode = False
+    End If
+    
+End Function
+
