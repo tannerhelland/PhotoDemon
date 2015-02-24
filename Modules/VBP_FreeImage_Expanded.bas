@@ -317,7 +317,10 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             End If
         
         End If
-        
+     
+    'No background color found; write -1 to notify of this.
+    Else
+        dstDIB.setBackgroundColor -1
     End If
     
     
