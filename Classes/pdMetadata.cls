@@ -341,6 +341,14 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     Dim tmpString As String
     Dim tmpSplitOuter() As String, tmpSplitInner() As String
     
+    Dim charPos As Long
+    
+    'If character sets are unknown, we don't really have a choice but to perform a blind Base-64 to text conversion.
+    ' pdUnicode can help us do that.
+    Dim uniHelper As pdUnicode
+    Set uniHelper = New pdUnicode
+    Dim tmpBytes() As Byte
+    
     ReDim iMetadata(0) As mdItem
     
     Do
@@ -419,7 +427,18 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                         iMetadata(maxMetadataCount).isValueBinary = True
                         iMetadata(maxMetadataCount).isValueList = False
                         iMetadata(maxMetadataCount).isValueMultiLine = False
-                        iMetadata(maxMetadataCount).Value = "(binary data)"
+                        
+                        'Check to see if the data is Base-64 encoded.  If it is, we'll retrieve the Base64 string for future reference.
+                        ' (This is most relevant for IPTC data, as many metadata writers will default to a local codepage but not actually
+                        '  embed the codepage in the file.  This makes retrieval pretty much impossible, but we may be able to expose an
+                        '  option to the user in the future, so they can attempt to apply a manual codepage conversion.)
+                        If InStr(1, xmlLines(curLine), "base64Binary") > 0 Then
+                            iMetadata(maxMetadataCount).isValueBase64 = True
+                            iMetadata(maxMetadataCount).Value = ""
+                        Else
+                            iMetadata(maxMetadataCount).isValueBase64 = False
+                            iMetadata(maxMetadataCount).Value = "(binary data)"
+                        End If
                     
                     'If a datatype is not specified, this is most likely a non-binary value with (non-spec!) line-breaks.  This invalid
                     ' output confuses the parser, but we will attempt to retrieve it via special means later in the function.
@@ -438,32 +457,78 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
             
                 'SPECIAL CHECK FOR COMMENTS
                 'Exif specifically disallows linebreak characters, but metadata is prone to these kinds of exceptions.  If the previous parse
-                ' step detected a potential multiline comment (defined by a line with an open tag, but no rdf type declaration), attempt to
-                ' retrieve the data into a string, and replace line end characters with spaces to bring the text into spec.
-                If iMetadata(maxMetadataCount).isValueMultiLine Then
+                ' step detected a potential multiline comment (defined by a line with an open tag, but no rdf type declaration), or if ExifTool
+                ' deemed it necessary to provide the data in Base-64 because the character set wasn't obvious, we will attempt to retrieve the
+                ' data into a string.  In the case of multiline text, we'll manually replace linefeed characters with spaces to bring the
+                ' metadata into spec.
+                If iMetadata(maxMetadataCount).isValueMultiLine Or iMetadata(maxMetadataCount).isValueBase64 Then
                 
-                    'This is a comment.  Retrieve its value using a custom parse strategy.
+                    'First, Retrieve its value using a custom parse strategy.
                     xmlLines(curLine) = Trim$(xmlLines(curLine))
-                    iMetadata(maxMetadataCount).Value = Trim$(Right$(xmlLines(curLine), Len(xmlLines(curLine)) - 8))
+                    
+                    charPos = InStrRev(xmlLines(curLine), ">", , vbBinaryCompare)
+                    If charPos > 0 Then
+                        iMetadata(maxMetadataCount).Value = Trim$(Right$(xmlLines(curLine), Len(xmlLines(curLine)) - charPos))
+                    End If
                     
                     Do
                         curLine = curLine + 1
                         
-                        If InStr(1, xmlLines(curLine), "</et:prt>") > 0 Then
+                        xmlLines(curLine) = Trim$(xmlLines(curLine))
                         
-                            'See if there are any useful characters on this line; if there are, add them to the comment before exiting
-                            If Len(xmlLines(curLine)) > 9 Then
-                                iMetadata(maxMetadataCount).Value = iMetadata(maxMetadataCount).Value & " " & Left$(xmlLines(curLine), Len(xmlLines(curLine)) - 9)
+                        'Ignore empty lines of any input type
+                        If Len(xmlLines(curLine)) > 0 Then
+                            
+                            'Check for the end of this XML section; if present, a custom parse strategy is required
+                            If InStr(1, xmlLines(curLine), "</et:prt>") > 0 Then
+                            
+                                'See if there are any useful characters on this line; if there are, add them to the comment before exiting
+                                If Len(xmlLines(curLine)) > 9 Then
+                                    
+                                    'Base-64 is loaded untouched
+                                    If iMetadata(maxMetadataCount).isValueBase64 Then
+                                        iMetadata(maxMetadataCount).Value = iMetadata(maxMetadataCount).Value & Left$(xmlLines(curLine), Len(xmlLines(curLine)) - 9)
+                                    
+                                    'Multiline text is converted to single-line text
+                                    Else
+                                        iMetadata(maxMetadataCount).Value = iMetadata(maxMetadataCount).Value & " " & Left$(xmlLines(curLine), Len(xmlLines(curLine)) - 9)
+                                    End If
+                                    
+                                End If
+                            
+                            'If there is no closing XML tag (yet), grab the entire line without modification
+                            Else
+                                
+                                'Base-64 is loaded untouched
+                                If iMetadata(maxMetadataCount).isValueBase64 Then
+                                    iMetadata(maxMetadataCount).Value = iMetadata(maxMetadataCount).Value & xmlLines(curLine)
+                                
+                                'Multiline text is converted to single-line text
+                                Else
+                                    iMetadata(maxMetadataCount).Value = iMetadata(maxMetadataCount).Value & " " & Left$(xmlLines(curLine), Len(xmlLines(curLine)) - 9)
+                                End If
+                                
                             End If
                         
-                        Else
-                            iMetadata(maxMetadataCount).Value = iMetadata(maxMetadataCount).Value & " " & xmlLines(curLine)
+                        'End for blank strings
                         End If
                         
                     Loop While InStr(1, xmlLines(curLine), "</et:prt>") = 0
                     
                     'Remove dead space from the parsed comment string
-                    iMetadata(maxMetadataCount).Value = Trim$(iMetadata(maxMetadataCount).Value)
+                    If iMetadata(maxMetadataCount).isValueBase64 Then
+                        
+                        'Store the Base64 value for future usage
+                        iMetadata(maxMetadataCount).Base64Value = Trim$(iMetadata(maxMetadataCount).Value)
+                        
+                        'Generate the value by a heuristic conversion; in the future, we can try something smarter, but for now,
+                        ' this at least gives us a baseline value.
+                        uniHelper.Base64Decode tmpBytes, iMetadata(maxMetadataCount).Base64Value
+                        uniHelper.convertUnknownBytesToString tmpBytes, iMetadata(maxMetadataCount).Value, False
+                        
+                    Else
+                        iMetadata(maxMetadataCount).Value = Trim$(iMetadata(maxMetadataCount).Value)
+                    End If
                     
                 Else
             
