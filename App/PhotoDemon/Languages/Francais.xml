@@ -9453,7 +9453,12 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormMetadata.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>(encoding unknown)</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormMetadata.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMetadata.frm-->
 
@@ -13239,10 +13244,10 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2312</phrasecount>
+<phrasecount>2313</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4028 phrases. -->
-<!-- 1716 are duplicates, so only 2312 unique phrases have been written to file. -->
-<!-- These 2312 phrases contain approximately 13349 total words. -->
+<!-- As of this build, PhotoDemon contains 4030 phrases. -->
+<!-- 1717 are duplicates, so only 2313 unique phrases have been written to file. -->
+<!-- These 2313 phrases contain approximately 13351 total words. -->
 
 </pdData>

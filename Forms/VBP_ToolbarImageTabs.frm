@@ -914,8 +914,8 @@ Private Sub Form_Load()
     'Activate the custom tooltip handler
     Set toolTipManager = New pdToolTip
     
-    'Theme the form
-    makeFormPretty Me
+    'As a final step, redraw everything against the current theme.
+    updateAgainstCurrentTheme
     
 End Sub
 
@@ -1270,4 +1270,21 @@ Private Sub mnuTabstripPopup_Click(Index As Integer)
     
     End Select
 
+End Sub
+
+'Updating against the current theme accomplishes a number of things:
+' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
+' 2) All tooltips and captions are translated according to the current language.
+' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
+'
+'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
+Public Sub updateAgainstCurrentTheme()
+    
+    'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
+    ' any common controls that may still exist in the program.)
+    makeFormPretty Me
+    
+    'Redraw the tabstrip
+    redrawToolbar
+    
 End Sub
