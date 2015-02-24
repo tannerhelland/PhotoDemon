@@ -435,12 +435,20 @@ Private Declare Function WaitForSingleObject Lib "kernel32" _
     (ByVal hHandle As Long, _
      ByVal dwMilliseconds As Long) As Long
 
+'Edit by Tanner: don't rely on VB's internal string conversions; instead, use a byte array and perform our own string handling.
 Private Declare Function WriteFile Lib "kernel32" _
     (ByVal hFile As Long, _
-     ByVal lpBuf As String, _
+     ByVal lpBuf As Long, _
      ByVal cToWrite As Long, _
      ByRef cWritten As Long, _
      ByVal lpOverlapped As Any) As Long
+
+'Private Declare Function WriteFile Lib "kernel32" _
+'    (ByVal hFile As Long, _
+'     ByVal lpBuf As String, _
+'     ByVal cToWrite As Long, _
+'     ByRef cWritten As Long, _
+'     ByVal lpOverlapped As Any) As Long
 
 Private piProc As PROCESSINFO
 Private saPipe As SECURITY_ATTRIBUTES
@@ -487,6 +495,7 @@ Public Event ChildFinished()
 ' breaking this class, I'm going to implement my changes using this helper variable.  If everything goes smoothly, I'll look at implementing
 ' this as an exposed property.
 Private m_AssumeUTF8Input As Boolean
+Private m_AssumeUTF8Output As Boolean
 
 Public Property Get Active() As Boolean
     If blnProcessActive Then 'Last we knew, it was active.
@@ -741,7 +750,7 @@ Private Sub ReadData()
     
     'Edit by Tanner: optional byte array, when UTF-8 interop is enabled
     Dim Buffer As String
-    Dim ByteBuffer() As Byte
+    Dim byteBuffer() As Byte
     Dim uniHelper As pdUnicode
     If m_AssumeUTF8Input Then Set uniHelper = New pdUnicode
     
@@ -757,15 +766,15 @@ Private Sub ReadData()
                 'Edit by Tanner: split handling if UTF-8 interop is active
                 Dim rfReturn As Long
                 
-                ReDim ByteBuffer(0 To AvailChars - 1) As Byte
-                rfReturn = ReadFile(hChildOutPipeRd, VarPtr(ByteBuffer(0)), AvailChars, CharsRead, WIN32NULL)
+                ReDim byteBuffer(0 To AvailChars - 1) As Byte
+                rfReturn = ReadFile(hChildOutPipeRd, VarPtr(byteBuffer(0)), AvailChars, CharsRead, WIN32NULL)
                 
                 If m_AssumeUTF8Input Then
-                    Buffer = uniHelper.UTF8BytesToString(ByteBuffer)
+                    Buffer = uniHelper.UTF8BytesToString(byteBuffer)
                 
                 'Original code follows:
                 Else
-                    Buffer = StrConv(ByteBuffer, vbUnicode)
+                    Buffer = StrConv(byteBuffer, vbUnicode)
                 End If
                 
                 If rfReturn <> WIN32FALSE Then
@@ -814,10 +823,10 @@ Private Sub ReadData()
                 
                 'Edit by Tanner: same as above, rewrite pipe handling to operate on a byte array (to match our new function declaration),
                 ' but in this case we assume StdErr will always return ANSI data
-                ReDim ByteBuffer(0 To AvailChars - 1) As Byte
-                If ReadFile(hChildErrPipeRd, VarPtr(ByteBuffer(0)), AvailChars, CharsRead, WIN32NULL) <> WIN32FALSE Then
+                ReDim byteBuffer(0 To AvailChars - 1) As Byte
+                If ReadFile(hChildErrPipeRd, VarPtr(byteBuffer(0)), AvailChars, CharsRead, WIN32NULL) <> WIN32FALSE Then
                 
-                    Buffer = StrConv(ByteBuffer, vbUnicode)
+                    Buffer = StrConv(byteBuffer, vbUnicode)
                     
                     If CharsRead > 0 Then
                         If mErrAsOut Then
@@ -872,8 +881,21 @@ Private Sub WriteData()
     
     If PipeOpenIn Then
         If BufferIn.Length > 0 Then
+            
             BufferIn.PeekBuffer Buffer
-            If WriteFile(hChildInPipeWr, ByVal Buffer, Len(Buffer), CharsWritten, 0&) <> WIN32FALSE Then
+            
+            'If UTF-8 mode is active, convert the string to a UTF-8 array; otherwise, use an ANSI array
+            Dim byteBuffer() As Byte
+            
+            If m_AssumeUTF8Output Then
+                Dim uniHelper As pdUnicode
+                Set uniHelper = New pdUnicode
+                uniHelper.StringToUTF8Bytes Buffer, byteBuffer
+            Else
+                byteBuffer = StrConv(Buffer, vbFromUnicode)
+            End If
+            
+            If WriteFile(hChildInPipeWr, VarPtr(byteBuffer(0)), UBound(byteBuffer) + 1, CharsWritten, 0&) <> WIN32FALSE Then
                 BufferIn.DeleteData CharsWritten
             Else
                 ErrNum = Err.LastDllError
@@ -898,6 +920,7 @@ Private Sub UserControl_Initialize()
     
     'Edit by Tanner: test UTF-8 interop
     m_AssumeUTF8Input = True
+    m_AssumeUTF8Output = True
     
 End Sub
 
