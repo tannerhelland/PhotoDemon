@@ -138,7 +138,8 @@ Type PROCESSENTRY32
 End Type
 
 
-'This type is what PhotoDemon uses internally for storing and displaying metadata
+'This type is what PhotoDemon uses internally for storing and displaying metadata.  Its complexity is a testament to the nightmare
+' that is metadata management.
 Public Type mdItem
     FullGroupAndName As String
     Group As String
@@ -147,11 +148,14 @@ Public Type mdItem
     Description As String
     Value As String
     ActualValue As String
+    Base64Value As String
+    UserModified As Boolean
     isValueBinary As Boolean
     isValueList As Boolean
     isActualValueBinary As Boolean
     isActualValueList As Boolean
     isValueMultiLine As Boolean
+    isValueBase64 As Boolean
     markedForRemoval As Boolean
 End Type
 

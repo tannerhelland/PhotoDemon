@@ -643,6 +643,11 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         Else
             drawString = thisTag.FullGroupAndName
         End If
+        
+        'Notify the user of text we were unable to manually convert
+        If thisTag.isValueBase64 Then
+            drawString = drawString & " " & g_Language.TranslateMessage("(encoding unknown)")
+        End If
     
         'Start with the simplest field: the tag title (readable form)
         m_TitleFont.attachToDC m_BackBuffer.getDIBDC
