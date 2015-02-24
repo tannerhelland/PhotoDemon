@@ -403,12 +403,20 @@ Private Declare Function PeekNamedPipe Lib "kernel32" _
      ByRef lpTotalBytesAvail As Long, _
      ByVal lpBytesLeftThisMessage As Long) As Long
 
+'Edit by Tanner: don't rely on VB's internal string conversions; instead, use a byte array and perform our own string handling.
 Private Declare Function ReadFile Lib "kernel32" _
     (ByVal hFile As Long, _
-     ByVal lpBuf As String, _
+     ByVal lpBuf As Long, _
      ByVal nNumberOfBytesToRead As Long, _
      ByRef lpNumberOfBytesRead As Long, _
      ByVal lpOverlapped As Any) As Long
+
+'Private Declare Function ReadFile Lib "kernel32" _
+'    (ByVal hFile As Long, _
+'     ByVal lpBuf As String, _
+'     ByVal nNumberOfBytesToRead As Long, _
+'     ByRef lpNumberOfBytesRead As Long, _
+'     ByVal lpOverlapped As Any) As Long
 
 Private Declare Function SetHandleInformation Lib "kernel32" _
     (ByVal hObject As Long, _
@@ -473,6 +481,12 @@ Public Event Error(ByVal Number As Long, _
                    ByVal Source As String, _
                    CancelDisplay As Boolean)
 Public Event ChildFinished()
+
+'Edit by Tanner:
+' I want to try and trade UTF-8 data with ExifTool, which (obviously) requires some special interop pieces.  As a failsafe against horribly
+' breaking this class, I'm going to implement my changes using this helper variable.  If everything goes smoothly, I'll look at implementing
+' this as an exposed property.
+Private m_AssumeUTF8Input As Boolean
 
 Public Property Get Active() As Boolean
     If blnProcessActive Then 'Last we knew, it was active.
@@ -724,7 +738,13 @@ Private Sub ClosePipeErr()
 End Sub
 
 Private Sub ReadData()
+    
+    'Edit by Tanner: optional byte array, when UTF-8 interop is enabled
     Dim Buffer As String
+    Dim ByteBuffer() As Byte
+    Dim uniHelper As pdUnicode
+    If m_AssumeUTF8Input Then Set uniHelper = New pdUnicode
+    
     Dim AvailChars As Long
     Dim CharsRead As Long
     Dim ErrNum As Long
@@ -733,8 +753,22 @@ Private Sub ReadData()
     If PipeOpenOut Then
         If PeekNamedPipe(hChildOutPipeRd, WIN32NULL, 0&, WIN32NULL, AvailChars, WIN32NULL) <> WIN32FALSE Then
             If AvailChars > 0 Then
-                Buffer = String$(AvailChars, 0)
-                If ReadFile(hChildOutPipeRd, ByVal Buffer, AvailChars, CharsRead, WIN32NULL) <> WIN32FALSE Then
+            
+                'Edit by Tanner: split handling if UTF-8 interop is active
+                Dim rfReturn As Long
+                
+                ReDim ByteBuffer(0 To AvailChars - 1) As Byte
+                rfReturn = ReadFile(hChildOutPipeRd, VarPtr(ByteBuffer(0)), AvailChars, CharsRead, WIN32NULL)
+                
+                If m_AssumeUTF8Input Then
+                    Buffer = uniHelper.UTF8BytesToString(ByteBuffer)
+                
+                'Original code follows:
+                Else
+                    Buffer = StrConv(ByteBuffer, vbUnicode)
+                End If
+                
+                If rfReturn <> WIN32FALSE Then
                     If CharsRead > 0 Then
                         BufferOut.Append Left$(Buffer, CharsRead)
                         RaiseEvent DataArrival(BufferOut.Length)
@@ -777,8 +811,14 @@ Private Sub ReadData()
     If PipeOpenErr Then
         If PeekNamedPipe(hChildErrPipeRd, WIN32NULL, 0&, WIN32NULL, AvailChars, WIN32NULL) <> WIN32FALSE Then
             If AvailChars > 0 Then
-                Buffer = String$(AvailChars, 0)
-                If ReadFile(hChildErrPipeRd, ByVal Buffer, AvailChars, CharsRead, WIN32NULL) <> WIN32FALSE Then
+                
+                'Edit by Tanner: same as above, rewrite pipe handling to operate on a byte array (to match our new function declaration),
+                ' but in this case we assume StdErr will always return ANSI data
+                ReDim ByteBuffer(0 To AvailChars - 1) As Byte
+                If ReadFile(hChildErrPipeRd, VarPtr(ByteBuffer(0)), AvailChars, CharsRead, WIN32NULL) <> WIN32FALSE Then
+                
+                    Buffer = StrConv(ByteBuffer, vbUnicode)
+                    
                     If CharsRead > 0 Then
                         If mErrAsOut Then
                             BufferOut.Append Left$(Buffer, CharsRead)
@@ -850,10 +890,15 @@ Private Sub WriteData()
 End Sub
 
 Private Sub UserControl_Initialize()
+    
     blnFinishedChild = True
     Set BufferOut = New SPBuffer
     Set BufferErr = New SPBuffer
     Set BufferIn = New SPBuffer
+    
+    'Edit by Tanner: test UTF-8 interop
+    m_AssumeUTF8Input = True
+    
 End Sub
 
 Private Sub UserControl_InitProperties()

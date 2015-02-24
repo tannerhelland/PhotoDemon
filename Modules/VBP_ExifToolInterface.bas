@@ -151,6 +151,7 @@ Public Type mdItem
     isValueList As Boolean
     isActualValueBinary As Boolean
     isActualValueList As Boolean
+    isValueMultiLine As Boolean
     markedForRemoval As Boolean
 End Type
 
@@ -458,8 +459,9 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     ' our metadata back out to file, we may want to have a copy of it.
     'cmdParams = cmdParams & "-b" & vbCrLf
     
-    'Historically, we needed to explicitly set a charset; this shouldn't be necessary with current versions.
-    'cmdParams = cmdParams & "-charset" & vbCrLf & "Latin" & vbCrLf
+    'Historically, we needed to explicitly set a charset; this shouldn't be necessary with current versions (as UTF-8 is
+    ' automatically supported), but if desired, specific metadata types can be coerced into requested character sets.
+    'cmdParams = cmdParams & "-charset" & vbCrLf & "UTF8" & vbCrLf
     
     'Requesting binary data also means preview and thumbnail images will be processed.  We DEFINITELY don't want these,
     ' so deny them specifically.
