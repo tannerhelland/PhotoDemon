@@ -372,7 +372,7 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
         toolbar_Toolbox.updateAgainstCurrentTheme
         toolbar_Options.updateAgainstCurrentTheme
         toolbar_Layers.updateAgainstCurrentTheme
-        toolbar_ImageTabs.requestMakeFormPretty
+        toolbar_ImageTabs.updateAgainstCurrentTheme
         
     End If
         
