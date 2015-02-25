@@ -520,20 +520,18 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             'If the mouse *IS* over a close icon, close the image in question
             Else
                
-                ' Check if the mouse pointer is still on the same close icon
-                '   as at mousedown. This check allows people to "change
-                '   their minds" by dragging the mouse pointer away from the
-                '   close icon before releasing the mouse button. This is an
-                '   old Windows mouse trick.
+                'm_CloseTriggeredOnThumbnail is set at MouseDown, if the mouse is over a close icon
                 If getThumbWithCloseIconAtPosition(x, y) = m_CloseTriggeredOnThumbnail Then
-                   ' fullPDImageUnload will take care of refreshing the UI,
-                   '   activating the next thumbnail if the active one is
-                   '   closed, showing a dialog before closing an unsaved
-                   '   image, etc.
-                   Image_Canvas_Handler.fullPDImageUnload imgThumbnails(m_CloseTriggeredOnThumbnail).indexInPDImages
+                    
+                    'fullPDImageUnload will take care of refreshing the UI, activating the next thumbnail if the active one is
+                    ' closed, showing a dialog before closing an unsaved image, etc.
+                    Image_Canvas_Handler.fullPDImageUnload imgThumbnails(m_CloseTriggeredOnThumbnail).indexInPDImages
+                    
                 End If
     
+                'Reset the close identifier
                 m_CloseTriggeredOnThumbnail = -1
+                
             End If
             
         'Right button raises a context menu (potentially)
@@ -544,25 +542,36 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             If m_RightClickedThumbnail <> -1 Then
                 If m_RightClickedThumbnail = getThumbAtPosition(x, y) Then
                 
-                    ' Activate the image, which triggers a redraw
+                    'Activate the image, which triggers a redraw and resets all of PD's internal image tracking data
                     curThumb = m_RightClickedThumbnail
                     activatePDImage imgThumbnails(curThumb).indexInPDImages, "user right-clicked image thumbnail"
-    
                      
-                    If Not pdImages(imgThumbnails(m_RightClickedThumbnail).indexInPDImages).getSaveState(pdSE_AnySave) Then
-                        mnuTabstripPopup(POP_SAVE).Enabled = True
-                        mnuTabstripPopup(POP_REVERT).Enabled = True
-                    Else
-                        mnuTabstripPopup(POP_SAVE).Enabled = False
-                        mnuTabstripPopup(POP_REVERT).Enabled = False
-                    End If
+                    'Enable various pop-up menu entries.  Wherever possible, we simply want to mimic the official PD menu, which saves
+                    ' us having to supply our own heuristics for menu enablement.
+                    mnuTabstripPopup(POP_SAVE).Enabled = FormMain.MnuFile(8).Enabled
+                    mnuTabstripPopup(POP_SAVE_COPY).Enabled = FormMain.MnuFile(9).Enabled
+                    mnuTabstripPopup(POP_SAVE_AS).Enabled = FormMain.MnuFile(10).Enabled
+                    mnuTabstripPopup(POP_REVERT).Enabled = FormMain.MnuFile(11).Enabled
+                    mnuTabstripPopup(POP_CLOSE).Enabled = FormMain.MnuFile(5).Enabled
                     
+                    'Two special commands only appear in this menu: Open in Explorer, and Close Other Images
+                    ' Use our own enablement heuristics for these.
                     
+                    'Open in Explorer only works if the image is currently on-disk
+                    mnuTabstripPopup(POP_OPEN_IN_EXPLORER).Enabled = (Len(pdImages(imgThumbnails(curThumb).indexInPDImages).locationOnDisk) > 0)
+                    
+                    'Close Other Images only works if more than one image is open.  We can determine this using the Next/Previous Image items
+                    ' in the Window menu
+                    mnuTabstripPopup(POP_CLOSE).Enabled = FormMain.MnuWindow(7).Enabled
+                    
+                    'Raise the context menu
                     Me.PopupMenu mnuImageTabsContext, x:=x, y:=y
                     
+                    'Reset the tabstrip, then exit
                     m_RightClickedThumbnail = -1
                     forceRedraw
                     Exit Sub
+                    
                 End If
             End If
         
