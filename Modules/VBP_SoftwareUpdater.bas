@@ -1078,21 +1078,134 @@ End Function
 'As such, this function is called when PD starts. It scans the update folder for old temp files and deletes them as encountered.
 Public Sub cleanPreviousUpdateFiles()
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Looking for previous update files and cleaning as necessary..."
+    #End If
+    
     'Use pdFSO to generate a list of .tmp files in the Update folder
     Dim tmpFileList As pdStringStack
-    Set tmpFileList = New pdStringStack
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If cFile.retrieveAllFiles(g_UserPreferences.getUpdatePath, tmpFileList, False, False, "tmp") Then
+    Dim tmpFile As String
         
-        Dim tmpFile As String
+    'If temp files exist, remove them now
+    If cFile.retrieveAllFiles(g_UserPreferences.getUpdatePath, tmpFileList, False, False, "TMP|tmp") Then
+            
+        Do While tmpFileList.PopString(tmpFile)
+        
+            cFile.KillFile tmpFile
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Found and deleting update file: " & tmpFile
+            #End If
+        
+        Loop
+        
+    End If
+        
+    'Do the same thing for temp files in the base PD folder
+    Set tmpFileList = Nothing
+    If cFile.retrieveAllFiles(g_UserPreferences.getProgramPath, tmpFileList, False, False, "TMP|tmp") Then
         
         Do While tmpFileList.PopString(tmpFile)
+            
             cFile.KillFile tmpFile
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Found and deleting update file: " & tmpFile
+            #End If
+            
+        Loop
+        
+    End If
+        
+    '...And just to be safe, do the same thing for temp files in the plugin folder
+    Set tmpFileList = Nothing
+    If cFile.retrieveAllFiles(g_PluginPath, tmpFileList, False, False, "TMP|tmp") Then
+        
+        Do While tmpFileList.PopString(tmpFile)
+        
+            cFile.KillFile tmpFile
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Found and deleting update file: " & tmpFile
+            #End If
+            
         Loop
         
     End If
     
+End Sub
+
+'After patches have been successfully applied, this sub can be used to create a .bat file that will restart PD.
+' This function DOES NOT shell the .bat file; it just creates it.
+'
+'Returns TRUE if .bat file was created successfully; FALSE otherwise
+Public Function createRestartBatchFile() As Boolean
+
+    Dim batchString As String
+    batchString = "@ECHO OFF" & vbCrLf & "start """" """ & g_UserPreferences.getProgramPath & "PhotoDemon.exe"""
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    createRestartBatchFile = cFile.SaveStringToTextFile(batchString, g_UserPreferences.getProgramPath & "restart.bat", False, False)
+    
+End Function
+
+'Initiate a restart.  This function MUST BE CALLED after createRestartBatchFile(), above; otherwise it will do nothing.
+Public Sub initiateRestart()
+    ShellExecute 0, "open", "restart.bat", "", "", 0
+End Sub
+
+'At start-up, PD calls this function to find out if the program started via a PD-generated restart event (e.g. the presence of restart.bat).
+' Returns TRUE if restart.bat is found; FALSE otherwise.
+' (Also, this function deletes restart.bat if present)
+Public Function wasProgramStartedViaRestart() As Boolean
+    
+    Dim restartFile As String
+    restartFile = g_UserPreferences.getProgramPath & "restart.bat"
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(restartFile) Then
+        
+        cFile.KillFile restartFile
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "FYI: this session was started by an update process (restart.bat is present)"
+        #End If
+        
+        wasProgramStartedViaRestart = True
+    Else
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "FYI: this session was started by the user (restart.bat is not present)"
+        #End If
+    
+        wasProgramStartedViaRestart = False
+    End If
+    
+End Function
+
+'If an update is ready, you may call this function to display an update notification to the user
+Public Sub displayUpdateNotification()
+
+    'If a modal dialog is active, raising a new window will cause a crash; we must deal with this accordingly
+    On Error GoTo couldNotDisplayUpdateNotification
+    
+    'Suspend any previous update notification flags
+    g_ShowUpdateNotification = False
+    
+    FormUpdateNotify.Show vbModeless, FormMain
+    
+    Exit Sub
+    
+couldNotDisplayUpdateNotification:
+
+    'Set a global flag; PD's central processor will use this to display the notification as soon as it reasonably can
+    g_ShowUpdateNotification = True
+
 End Sub

@@ -13242,12 +13242,53 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- END text for pdUnicode.cls-->
 
+<!-- BEGIN text for VBP_FormUpdateNotify.frm (FormUpdateNotify) -->
+
+<phrase>
+<original>Update ready</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Keep working</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Restart PhotoDemon</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Restart now to access to the latest version of the program.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Apply update now</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Apply update later</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormUpdateNotify.frm contains 8 phrases.  One was a duplicate of an existing phrase, so only 7 new phrases were written to file. -->
+
+<!-- END text for VBP_FormUpdateNotify.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2313</phrasecount>
+<phrasecount>2320</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4030 phrases. -->
-<!-- 1717 are duplicates, so only 2313 unique phrases have been written to file. -->
-<!-- These 2313 phrases contain approximately 13351 total words. -->
+<!-- As of this build, PhotoDemon contains 4038 phrases. -->
+<!-- 1718 are duplicates, so only 2320 unique phrases have been written to file. -->
+<!-- These 2320 phrases contain approximately 13398 total words. -->
 
 </pdData>

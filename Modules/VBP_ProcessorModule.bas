@@ -1666,6 +1666,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
     'Finally, after all our work is done, return focus to the main PD window
     If (MacroStatus <> MacroBATCH) Then g_WindowManager.requestActivation FormMain.hWnd
+    
+    'If an update is available, and we haven't displayed a notification yet, do so now
+    If g_ShowUpdateNotification Then Software_Updater.displayUpdateNotification
         
     'Mark the processor as ready
     Processing = False
