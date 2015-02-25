@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -4276,29 +4276,29 @@ End Sub
 Private Sub MnuTest_Click()
     
     'Temporary test(s) of various pdFSO features
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    Dim tmpVerString As String, useProductVersion As Boolean
-    useProductVersion = True
-    
-    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\FreeImage.dll", tmpVerString, useProductVersion
-    Debug.Print "FreeImage: " & tmpVerString
-    
-    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\exiftool.exe", tmpVerString, useProductVersion
-    Debug.Print "ExifTool: " & tmpVerString
-    
-    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\EZTW32.dll", tmpVerString, useProductVersion
-    Debug.Print "EZTwain: " & tmpVerString
-    
-    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\zlibwapi.dll", tmpVerString, useProductVersion
-    Debug.Print "zLib: " & tmpVerString
-    
-    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\pngquant.exe", tmpVerString, useProductVersion
-    Debug.Print "PNGQuant: " & tmpVerString
-    
-    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.exe", tmpVerString, useProductVersion
-    Debug.Print "PD itself: " & tmpVerString
+'    Dim cFile As pdFSO
+'    Set cFile = New pdFSO
+'
+'    Dim tmpVerString As String, useProductVersion As Boolean
+'    useProductVersion = True
+'
+'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\FreeImage.dll", tmpVerString, useProductVersion
+'    Debug.Print "FreeImage: " & tmpVerString
+'
+'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\exiftool.exe", tmpVerString, useProductVersion
+'    Debug.Print "ExifTool: " & tmpVerString
+'
+'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\EZTW32.dll", tmpVerString, useProductVersion
+'    Debug.Print "EZTwain: " & tmpVerString
+'
+'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\zlibwapi.dll", tmpVerString, useProductVersion
+'    Debug.Print "zLib: " & tmpVerString
+'
+'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\pngquant.exe", tmpVerString, useProductVersion
+'    Debug.Print "PNGQuant: " & tmpVerString
+'
+'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.exe", tmpVerString, useProductVersion
+'    Debug.Print "PD itself: " & tmpVerString
     
     
 '    'Temporary test(s) of new pdPackage compression code.
@@ -4337,6 +4337,10 @@ Private Sub MnuTest_Click()
 '    'A longer, more dedicated test function can be accessed in the MenuTest() sub.  It also contains rudimentary code for modifying
 '    ' an image's pixel data, if you want to test any pixel-based code.
 '    MenuTest
+    
+    'Current Gaussian Blur IIR tests:
+    'Filters_Area.GaussianBlur_IIRImplementation pdImages(g_CurrentImage).getActiveDIB, 100, 2, True
+    'Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 

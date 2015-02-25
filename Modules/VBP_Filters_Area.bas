@@ -471,3 +471,178 @@ Public Sub getSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples A
     End Select
 
 End Sub
+
+'Test implementation of an Infininte Impulse Response approach to Gaussian filtering.
+' This function is not yet optimized, and I do not consider it ready for "primetime" due to some boundary issues.
+' However, it won't take much work to solve the few remaining kinks, and the function is potentially much much faster
+' than PD's existing Gaussian blur solutions.
+'
+'I developed this function with help from http://www.getreuer.info/home/gaussianiir
+' Many thanks to Pascal Getreuer for his valuable reference.
+Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigma As Double, ByVal numSteps As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepImageData tmpSA
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
+    
+    Dim iWidth As Long, iHeight As Long
+    iWidth = curDIBValues.Width
+    iHeight = curDIBValues.Height
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickX As Long, QuickX2 As Long, QuickY As Long, qvDepth As Long
+    qvDepth = curDIBValues.BytesPerPixel
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long
+    
+    'Prep some IIR-specific values next
+    Dim numPixels As Long
+    numPixels = iWidth * iHeight
+    
+    Dim lambda As Double, dnu As Double
+    Dim nu As Double, boundaryScale As Double, postScale As Double
+    Dim i As Long, step As Long
+    
+    'Make sure sigma and steps are valid
+    If sigma <= 0 Then sigma = 0.01
+    If numSteps <= 0 Then numSteps = 1
+    
+    'Calculate IIR values
+    lambda = (sigma * sigma) / (2 * numSteps)
+    dnu = (1 + 2 * lambda - Sqr(1 + 4 * lambda)) / (2 * lambda)
+    nu = dnu
+    boundaryScale = (1 / (1 - dnu))
+    postScale = (dnu / lambda) ^ (2 * numSteps)
+    
+    'Intermediate float arrays are required
+    Dim rFloat() As Single, gFloat() As Single, bFloat() As Single
+    ReDim rFloat(0 To iWidth - 1, 0 To iHeight - 1) As Single
+    ReDim gFloat(0 To iWidth - 1, 0 To iHeight - 1) As Single
+    ReDim bFloat(0 To iWidth - 1, 0 To iHeight - 1) As Single
+    
+    'Copy the contents of the current image into the float arrays
+    For x = initX To finalX
+        QuickX = x * qvDepth
+    For y = initY To finalY
+
+        'Adjust white balance in a single pass (thanks to the magic of look-up tables)
+        r = ImageData(QuickX + 2, y)
+        g = ImageData(QuickX + 1, y)
+        b = ImageData(QuickX, y)
+        
+        rFloat(x, y) = r / 255
+        gFloat(x, y) = g / 255
+        bFloat(x, y) = b / 255
+
+    Next y
+    Next x
+    
+    '/* Filter horizontally along each row */
+    For y = 0 To iHeight - 1
+    
+        For step = 0 To numSteps - 1
+            
+            'Set initial values
+            rFloat(0, y) = rFloat(0, y) * boundaryScale
+            gFloat(0, y) = gFloat(0, y) * boundaryScale
+            bFloat(0, y) = bFloat(0, y) * boundaryScale
+            
+            'Filter right
+            For x = 1 To iWidth - 1
+                QuickX2 = (x - 1)
+                rFloat(x, y) = rFloat(x, y) + nu * rFloat(QuickX2, y)
+                gFloat(x, y) = gFloat(x, y) + nu * gFloat(QuickX2, y)
+                bFloat(x, y) = bFloat(x, y) + nu * bFloat(QuickX2, y)
+            Next x
+            
+            'Filter left
+            For x = iWidth - 2 To 1 Step -1
+                QuickX = (x - 1)
+                rFloat(QuickX, y) = rFloat(QuickX, y) + nu * rFloat(x, y)
+                gFloat(QuickX, y) = gFloat(QuickX, y) + nu * gFloat(x, y)
+                bFloat(QuickX, y) = bFloat(QuickX, y) + nu * bFloat(x, y)
+            Next x
+            
+        Next step
+    
+    Next y
+    
+    'Now repeat all the above steps, but filtering vertically along each column, instead
+    For x = 0 To iWidth - 1
+        
+        For step = 0 To numSteps - 1
+            
+            'Set initial values
+            rFloat(x, 0) = rFloat(x, 0) * boundaryScale
+            gFloat(x, 0) = gFloat(x, 0) * boundaryScale
+            bFloat(x, 0) = bFloat(x, 0) * boundaryScale
+            
+            'Filter down
+            For y = 1 To iHeight - 1
+                QuickY = (y - 1)
+                rFloat(x, y) = rFloat(x, y) + nu * rFloat(x, QuickY)
+                gFloat(x, y) = gFloat(x, y) + nu * gFloat(x, QuickY)
+                bFloat(x, y) = bFloat(x, y) + nu * bFloat(x, QuickY)
+            Next y
+            
+            'Filter up
+            For y = iHeight - 2 To 1 Step -1
+                QuickY = y - 1
+                rFloat(x, QuickY) = rFloat(x, QuickY) + nu * rFloat(x, y)
+                gFloat(x, QuickY) = gFloat(x, QuickY) + nu * gFloat(x, y)
+                bFloat(x, QuickY) = bFloat(x, QuickY) + nu * bFloat(x, y)
+            Next y
+            
+        Next step
+    
+    Next x
+    
+    'Apply final post-scaling
+    For x = 0 To iWidth - 1
+        QuickX = x * qvDepth
+    For y = 0 To iHeight - 1
+    
+        r = rFloat(x, y) * postScale * 255
+        g = gFloat(x, y) * postScale * 255
+        b = bFloat(x, y) * postScale * 255
+        
+        If r > 255 Then r = 255
+        If g > 255 Then g = 255
+        If b > 255 Then b = 255
+        
+        If r < 0 Then r = 0
+        If g < 0 Then g = 0
+        If b < 0 Then b = 0
+        
+        ImageData(QuickX, y) = b
+        ImageData(QuickX + 1, y) = g
+        ImageData(QuickX + 2, y) = r
+    
+    Next y
+    Next x
+    
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    finalizeImageData
+
+End Function
