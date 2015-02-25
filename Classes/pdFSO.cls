@@ -214,10 +214,11 @@ End Function
 ' to calling this function, it will still return TRUE.)
 '
 'A FALSE return indicates the file still exists.  The debug window will contain additional debug data.
-Public Function KillFile(ByVal srcFilename As String) As Boolean
+Public Function KillFile(ByVal srcFilename As String, Optional ByVal attemptToKillEvenIfNotFound As Boolean = False) As Boolean
     
-    'If the file doesn't exist, return TRUE in advance
-    If FileExist(srcFilename) Then
+    'If the file doesn't exist, return TRUE in advance.
+    ' (Note that the user can override this behavior, and attempt a kill regardless of FileExists's return value)
+    If FileExist(srcFilename) Or attemptToKillEvenIfNotFound Then
     
         Dim APIReturn As Long
         APIReturn = DeleteFileW(StrPtr(srcFilename))
@@ -361,10 +362,10 @@ End Function
 '
 'Use either the whitelist or the blacklist option, but not both (obviously).
 Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
-    
+        
     'Enforce strict trailing slash formatting of the base folder
     srcFolder = EnforcePathSlash(srcFolder)
-    
+        
     'Initialize the destination stack as necessary.  Note that nothing happens if dstFiles is already initialized; this is by design, so the caller
     ' can concatenate multiple search results together if desired.
     If dstFiles Is Nothing Then Set dstFiles = New pdStringStack
@@ -400,18 +401,18 @@ Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     Dim whiteListInUse As Boolean, blackListInUse As Boolean
     whiteListInUse = (Len(onlyAllowTheseExtensions) <> 0)
     blackListInUse = (Len(doNotAllowTheseExtensions) <> 0)
-    
+        
     'To further simplify searching for extension matches in the whitelist, we enforce strict formatting of the string
     If whiteListInUse Then
         If Not StringsEqual(Left$(onlyAllowTheseExtensions, 1), "|") Then onlyAllowTheseExtensions = "|" & onlyAllowTheseExtensions
         If Not StringsEqual(Right$(onlyAllowTheseExtensions, 1), "|") Then onlyAllowTheseExtensions = onlyAllowTheseExtensions & "|"
     End If
-    
+        
     If blackListInUse Then
         If Not StringsEqual(Left$(doNotAllowTheseExtensions, 1), "|") Then doNotAllowTheseExtensions = "|" & doNotAllowTheseExtensions
         If Not StringsEqual(Right$(doNotAllowTheseExtensions, 1), "|") Then doNotAllowTheseExtensions = doNotAllowTheseExtensions & "|"
     End If
-    
+        
     'To eliminate the need for expensive recursion, we use a stack structure to store subfolders that still need to be searched.
     ' Valid files are directly added to dstFiles as they are encountered.
     Dim cFoldersToCheck As pdStringStack
@@ -419,14 +420,14 @@ Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     
     'Add the base folder to the collection, then start searching for subfolders.
     cFoldersToCheck.AddString srcFolder
-    
+        
     Dim curFolder As String, chkFile As String
     Dim fileValid As Boolean
         
     'The first folder doesn't get added to the destination collection, but all other folders do.
     Dim isNotFirstFolder As Boolean
     isNotFirstFolder = False
-    
+        
     Do While cFoldersToCheck.PopString(curFolder)
         
         'DirW does all the heavy lifting on the actual folder iteration steps
@@ -1116,15 +1117,16 @@ Public Function GetFileExtension(sFile As String) As String
     For i = Len(sFile) To 1 Step -1
     
         'If we find a path before we find an extension, return a blank string
-        If StringsEqual(Mid(sFile, i, 1), "\") Or StringsEqual(Mid(sFile, i, 1), "/") Then
+        If StringsEqual(Mid$(sFile, i, 1), "\") Or StringsEqual(Mid(sFile, i, 1), "/") Then
             GetFileExtension = ""
             Exit Function
         End If
         
-        If StringsEqual(Mid(sFile, i, 1), ".") Then
+        If StringsEqual(Mid$(sFile, i, 1), ".") Then
             GetFileExtension = Right$(sFile, Len(sFile) - i)
             Exit Function
         End If
+                
     Next i
     
     'If we reach this point, no extension was found

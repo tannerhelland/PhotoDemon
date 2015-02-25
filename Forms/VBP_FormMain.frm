@@ -1653,9 +1653,12 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         
         If downloadSuccessful Then
             
-            'Notify the software updater that an update package was downloaded successfully, then exit.
-            ' The actual patching will take place when PD is shutting dow.
+            'Notify the software updater that an update package was downloaded successfully.  It will make a note of this, so it can
+            ' complete the actual patching when PD closes.
             Software_Updater.notifyUpdatePackageAvailable savedToThisFile
+            
+            'Display a notification to the user
+            Software_Updater.displayUpdateNotification
                         
         Else
             Debug.Print "WARNING!  A program update was found, but the download was interrupted.  PD is postponing further patches until a later session."
@@ -2492,7 +2495,9 @@ End Sub
 'THE BEGINNING OF EVERYTHING
 ' Actually, Sub "Main" in the module "modMain" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.
 Private Sub Form_Load()
-
+    
+    On Error GoTo FormMainLoadError
+    
     '*************************************************************************************************************************************
     ' Before doing anything else, store the command line to memory
     '*************************************************************************************************************************************
@@ -2629,8 +2634,7 @@ Private Sub Form_Load()
         Message "Loading requested images..."
         Loading.LoadImagesFromCommandLine
     End If
-    
-    
+        
     '*************************************************************************************************************************************
     ' Next, see if we need to display the language selection dialog (NOT IMPLEMENTED AT PRESENT)
     '*************************************************************************************************************************************
@@ -2657,14 +2661,20 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     ' Next, see if we need to launch an asynchronous check for updates
     '*************************************************************************************************************************************
-    
+        
+    'See if this PD session was initiated by a PD-generated restart.  This happens after an update patch is successfully applied, for example.
+    g_ProgramStartedViaRestart = Software_Updater.wasProgramStartedViaRestart
+        
     'Before updating, clear out any temp files leftover from previous updates.  (Replacing files at run-time is messy business, and Windows
     ' is unpredictable about allowing replaced files to be deleted.)
     Software_Updater.cleanPreviousUpdateFiles
-    
+        
     'Start by seeing if we're allowed to check for software updates (the user can disable this check, and we want to honor their selection)
     Dim allowedToUpdate As Boolean
     allowedToUpdate = Software_Updater.isItTimeForAnUpdate()
+    
+    'If PD was restarted by an internal restart, disallow an update check now, as we would have just applied one (which caused the restart)
+    If g_ProgramStartedViaRestart Then allowedToUpdate = False
     
     'If we're STILL allowed to update, do so now (unless this is the first time the user has run the program; in that case, suspend updates,
     ' as it is assumed the user already has an updated copy of the software - and we don't want to bother them already!)
@@ -2708,7 +2718,8 @@ Private Sub Form_Load()
     If (Not g_IsFirstRun) Then
     
         Message "Checking for previously downloaded update data..."
-        updateNeeded = CheckForSoftwareUpdate
+        updateNeeded = UPDATE_NOT_NEEDED
+        'updateNeeded = CheckForSoftwareUpdate
         
         'CheckForSoftwareUpdate can return one of four values:
         ' UPDATE_ERROR - something went wrong
@@ -2798,6 +2809,14 @@ Private Sub Form_Load()
     
     'Finally, return focus to the main form
     FormMain.SetFocus
+    
+    Exit Sub
+    
+FormMainLoadError:
+
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  FormMain_Load experienced an error: #" & Err.Number & ", " & Err.Description
+    #End If
      
 End Sub
 
@@ -3013,6 +3032,10 @@ Private Sub Form_Unload(Cancel As Integer)
         
         If Software_Updater.patchProgramFiles() Then
             Debug.Print "A PhotoDemon update was applied successfully.  Restart to make use of the new version."
+            
+            'If the user wants a restart, create a restart batch file now
+            If g_UserWantsRestart Then Software_Updater.createRestartBatchFile
+            
         Else
             Debug.Print "WARNING!  One or more errors were encountered while applying an update.  PD has attempted to roll everything back to its original state."
         End If
@@ -3040,6 +3063,9 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Shutdown appears to be clean.  pdDebug will now be terminated."
         Set pdDebug = Nothing
     #End If
+    
+    'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
+    If g_UserWantsRestart Then Software_Updater.initiateRestart
     
 End Sub
 

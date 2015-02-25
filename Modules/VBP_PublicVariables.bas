@@ -277,3 +277,16 @@ Public g_ModalDialogActive As Boolean
 'High-resolution input tracking allows for much more accurate reproduction of mouse values.  However, old PCs may struggle to
 ' cope with all the extra input data.  A user-facing preference allows for disabling this behavior.
 Public g_HighResolutionInput As Boolean
+
+'If an update notification is ready, but we can't display it (for example, because a modal dialog is active) this flag will
+' be set to TRUE.  PD's central processor uses this to display the update notification as soon as it reasonably can.
+Public g_ShowUpdateNotification As Boolean
+
+'If an update has been successfully applied, the user is given the option to restart PD immediately.  If the user chooses
+' to restart, this global value will be set to TRUE.
+Public g_UserWantsRestart As Boolean
+
+'If this PhotoDemon session was started by a restart (because an update patch was applied), this will be set to TRUE.
+' PD uses this value to suspend any other automatic updates, as a precaution against any bugs in the updater.
+Public g_ProgramStartedViaRestart As Boolean
+
