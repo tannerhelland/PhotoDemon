@@ -477,6 +477,10 @@ Public Sub setFontUnderline(ByVal newUnderline As Boolean)
     currentLogFont.lfUnderline = -1 * newUnderline
 End Sub
 
+Public Function getFontUnderline() As Boolean
+    getFontUnderline = (currentLogFont.lfUnderline * -1)
+End Function
+
 Public Sub setTextAlignment(ByVal newAlignment As AlignmentConstants)
     
     Select Case newAlignment
