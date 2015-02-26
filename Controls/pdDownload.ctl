@@ -423,10 +423,13 @@ Public Sub freeResourcesForItem(ByVal itemKey As String)
     
         'Check the download status, and make sure at least one byte was retrieved.
         With m_DownloadList(itemIndex)
-        
+            
             'Erase the data chunk, but leave any other indicators as things like "all downloads complete" may rely
             ' on that data.
             Erase .DataBytes
+            
+            'Also erase the name, so new downloads with that name can be initiated
+            .Key = ""
             
         End With
         
