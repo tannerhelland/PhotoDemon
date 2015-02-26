@@ -21,7 +21,7 @@ Begin VB.Form frmUpdate
    ScaleWidth      =   842
    StartUpPosition =   2  'CenterScreen
    Begin VB.CommandButton cmdAction 
-      Caption         =   "Calculate version and checksum details"
+      Caption         =   "Calculate version, checksum, and release announcement details"
       Height          =   615
       Index           =   2
       Left            =   240
@@ -50,7 +50,7 @@ Begin VB.Form frmUpdate
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Step 3: build a version XML file, with version and checksum details on all update packages"
+      Caption         =   "Step 3: build a versioning XML file, which PD will download first (to determine if an update is necessary)"
       BeginProperty Font 
          Name            =   "Segoe UI Semibold"
          Size            =   12
@@ -66,7 +66,7 @@ Begin VB.Form frmUpdate
       Left            =   120
       TabIndex        =   5
       Top             =   2760
-      Width           =   9765
+      Width           =   11265
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -264,12 +264,36 @@ Private Sub MakeVersionFile()
     xmlOutput.closeTag "update"
     xmlOutput.writeBlankLine
     
+    'Also, write out release announcement links.  These are stored in a custom local XML file.
+    addReleaseAnnouncementLinks xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\release_announcements.xml"
+    
     'Write the XML out to file
     Dim dstFile As String
     dstFile = "C:\PhotoDemon v4\pdupdate.xml"
     
     xmlOutput.writeXMLToFile dstFile
     
+End Sub
+
+'Given a path to the release announcement URL file, copy those links into the master language version XML file
+Private Sub addReleaseAnnouncementLinks(ByRef xmlOutput As pdXML, ByRef srcPath As String)
+
+    'Create an XML engine to parse the source document
+    Dim xmlSource As pdXML
+    Set xmlSource = New pdXML
+    
+    If xmlSource.loadXMLFile(srcPath) Then
+    
+        xmlOutput.writeTag "raurl-stable", xmlSource.getUniqueTag_String("raurl-stable")
+        xmlOutput.writeTag "raurl-beta", xmlSource.getUniqueTag_String("raurl-beta")
+        xmlOutput.writeTag "raurl-nightly", xmlSource.getUniqueTag_String("raurl-nightly")
+    
+    Else
+        MsgBox "Something went wrong with the release announcement URL file.  You should probably investigate.", vbOKOnly + vbApplicationModal + vbCritical, "Release announcement XML failure"
+    End If
+    
+    xmlOutput.writeBlankLine
+
 End Sub
 
 'Helpful wrapper to add version and checksum data to an output XML object
