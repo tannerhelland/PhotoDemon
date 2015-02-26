@@ -3219,6 +3219,37 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
+<original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This copy of PhotoDemon is up to date.</original>
+<translation>Ini salinan PhotoDemon adalah terkini.</translation>
+</phrase>
+
+<phrase>
+<original>A new version of PhotoDemon is available!
+
+The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon Updates</original>
+<translation>PhotoDemon Terbaru</translation>
+</phrase>
+
+<phrase>
+<original>This copy of PhotoDemon is the newest version available.
+
+(Current version: %1.%2.%3)</original>
+<translation>Ini salinan PhotoDemon adalah versi available.
+
+terbaru (versi semasa: %1 %2 %3)</translation>
+</phrase>
+
+<phrase>
 <original>Photo filter</original>
 <translation>penapis Photo</translation>
 </phrase>
@@ -3399,26 +3430,6 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
-<original>Checking for previously downloaded update data</original>
-<translation>Memeriksa untuk kemas kini data sebelum turun</translation>
-</phrase>
-
-<phrase>
-<original>An error occurred while looking for an update file.</original>
-<translation>Ralat berlaku semasa mencari fail kemas kini.</translation>
-</phrase>
-
-<phrase>
-<original>Update data found, but this copy of PhotoDemon is already up-to-date.</original>
-<translation>Data kemas kini dijumpai, tetapi salinan ini PhotoDemon sudah up-to-tarikh.</translation>
-</phrase>
-
-<phrase>
-<original>New PhotoDemon update found!  Launching update notifier</original>
-<translation>New PhotoDemon update dijumpai! Pelancaran update Pemberitahu</translation>
-</phrase>
-
-<phrase>
 <original>Some core plugins could not be found. Preparing updater</original>
 <translation>Sesetengah plugin teras tidak dapat ditemui. menyediakan updater</translation>
 </phrase>
@@ -3531,40 +3542,6 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <phrase>
 <original>Checking for software updates</original>
 <translation>Menyemak kemas kini perisian</translation>
-</phrase>
-
-<phrase>
-<original>An error occurred while checking for updates.  Please try again later.</original>
-<translation>Ralat berlaku semasa menyemak kemas kini. Sila cuba lagi kemudian.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Updates</original>
-<translation>PhotoDemon Terbaru</translation>
-</phrase>
-
-<phrase>
-<original>Software update check postponed.</original>
-<translation>Perisian pemeriksaan kemas ditangguhkan.</translation>
-</phrase>
-
-<phrase>
-<original>This copy of PhotoDemon is the newest version available.
-
-(Current version: %1.%2.%3)</original>
-<translation>Ini salinan PhotoDemon adalah versi available.
-
-terbaru (versi semasa: %1 %2 %3)</translation>
-</phrase>
-
-<phrase>
-<original>This copy of PhotoDemon is up to date.</original>
-<translation>Ini salinan PhotoDemon adalah terkini.</translation>
-</phrase>
-
-<phrase>
-<original>Software update found!  Launching update notifier</original>
-<translation>Kemas kini perisian dijumpai! Pelancaran update Pemberitahu</translation>
 </phrase>
 
 <phrase>
@@ -3823,7 +3800,7 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 543 phrases. 159 were duplicates of existing phrases, so only 384 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 538 phrases. 159 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -6262,86 +6239,6 @@ To meningkatkan pengalaman pengguna anda, sila membenarkan program untuk memuat 
 <!-- VBP_FormWhiteBalance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormWhiteBalance.frm-->
-
-<!-- BEGIN text for VBP_FormSoftwareUpdates.frm (FormSoftwareUpdate) -->
-
-<phrase>
-<original>Update Notifier</original>
-<translation>update Pemberitahu</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon website</original>
-<translation>laman web PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Not now, not ever.  Do not prompt me about future updates.</original>
-<translation>Tidak sekarang, tidak pernah. Jangan meminta saya tentang kemas kini masa hadapan.</translation>
-</phrase>
-
-<phrase>
-<original>Not right now, but please remind me again in the future.</original>
-<translation>Bukan sekarang, tetapi sila mengingatkan saya sekali lagi pada masa akan datang.</translation>
-</phrase>
-
-<phrase>
-<original>&Yes!  Take me to the download page.</original>
-<translation>Ya! Bawa saya ke laman muat turun.</translation>
-</phrase>
-
-<phrase>
-<original>Do you want to download the new version?</original>
-<translation>Adakah anda ingin memuat turun versi baru?</translation>
-</phrase>
-
-<phrase>
-<original>To learn about the latest version before downloading, please visit</original>
-<translation>Untuk mengetahui tentang versi terbaru sebelum sebarang muat turun, sila layari</translation>
-</phrase>
-
-<phrase>
-<original>Newest version</original>
-<translation>Versi terbaru</translation>
-</phrase>
-
-<phrase>
-<original>Your version</original>
-<translation>versi</translation>
-</phrase>
-
-<phrase>
-<original>A new version of PhotoDemon is available!</original>
-<translation>Versi baru PhotoDemon boleh didapati!</translation>
-</phrase>
-
-<phrase>
-<original>Automatic update canceled.</original>
-<translation>Kemas kini automatik dibatalkan.</translation>
-</phrase>
-
-<phrase>
-<original>The next time you launch the program, it will remind you about this software update.
-
-Note: you can always manually download the latest version by visiting photodemon.org.</original>
-<translation>Lain kali anda memulakan program ini, ia akan mengingatkan anda mengenai update.
-
-Note perisian ini: anda boleh sentiasa manual memuat turun versi terkini dengan melawat photodemon.org.</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for downloading the latest PhotoDemon update.  Hope you enjoy it!</original>
-<translation>Terima kasih kerana memuat turun PhotoDemon update terkini. Berharap anda menikmati!</translation>
-</phrase>
-
-<phrase>
-<original>What's new in PhotoDemon</original>
-<translation>Apa yang baru dalam PhotoDemon</translation>
-</phrase>
-
-<!-- VBP_FormSoftwareUpdates.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<!-- END text for VBP_FormSoftwareUpdates.frm-->
 
 <!-- BEGIN text for VBP_SoftwareUpdater.bas -->
 
@@ -13275,7 +13172,17 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>A PhotoDemon update is available.  Restart the program to complete the update process.</original>
+<original>Learn more about the new features in version %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(Sorry, but automatic restarts don't work inside the IDE.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
 <translation></translation>
 </phrase>
 
@@ -13299,16 +13206,22 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormUpdateNotify.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- VBP_FormUpdateNotify.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_FormUpdateNotify.frm-->
 
+<!-- BEGIN text for pdHyperlink.ctl -->
+
+<!-- pdHyperlink.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
+<!-- END text for pdHyperlink.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2324</phrasecount>
+<phrasecount>2307</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4046 phrases. -->
-<!-- 1722 are duplicates, so only 2324 unique phrases have been written to file. -->
-<!-- These 2324 phrases contain approximately 13419 total words. -->
+<!-- As of this build, PhotoDemon contains 4029 phrases. -->
+<!-- 1722 are duplicates, so only 2307 unique phrases have been written to file. -->
+<!-- These 2307 phrases contain approximately 13312 total words. -->
 
 </pdData>

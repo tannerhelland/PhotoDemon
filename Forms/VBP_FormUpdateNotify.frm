@@ -33,7 +33,7 @@ Begin VB.Form FormUpdateNotify
       _ExtentX        =   14340
       _ExtentY        =   503
       Alignment       =   2
-      Caption         =   "(populated at run-time)"
+      Caption         =   "(text populated at run-time)"
       FontSize        =   11
    End
    Begin VB.CommandButton cmdUpdate 

@@ -3218,6 +3218,37 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 </phrase>
 
 <phrase>
+<original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This copy of PhotoDemon is up to date.</original>
+<translation>Dit exemplaar van PhotoDemon is up to date.</translation>
+</phrase>
+
+<phrase>
+<original>A new version of PhotoDemon is available!
+
+The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon Updates</original>
+<translation>PhotoDemon updates</translation>
+</phrase>
+
+<phrase>
+<original>This copy of PhotoDemon is the newest version available.
+
+(Current version: %1.%2.%3)</original>
+<translation>Dit exemplaar van PhotoDemon is de nieuwste beschikbare versie .
+
+(huidige versie:.. %1 %2 %3)</translation>
+</phrase>
+
+<phrase>
 <original>Photo filter</original>
 <translation>Fotofilter</translation>
 </phrase>
@@ -3398,26 +3429,6 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 </phrase>
 
 <phrase>
-<original>Checking for previously downloaded update data</original>
-<translation>Controleren op eerder gedownloade updategegevens</translation>
-</phrase>
-
-<phrase>
-<original>An error occurred while looking for an update file.</original>
-<translation>Er is een fout opgetreden tijdens het zoeken naar een updatebestand.</translation>
-</phrase>
-
-<phrase>
-<original>Update data found, but this copy of PhotoDemon is already up-to-date.</original>
-<translation>Updategegevens gevonden, maar dit exemplaar van PhotoDemon is al up-to-date.</translation>
-</phrase>
-
-<phrase>
-<original>New PhotoDemon update found!  Launching update notifier</original>
-<translation>Nieuwe PhotoDemon Update gevonden!  Opstarten Update Notifier</translation>
-</phrase>
-
-<phrase>
 <original>Some core plugins could not be found. Preparing updater</original>
 <translation>Sommige kerninsteekmodules kunnen niet worden gevonden. Voorbereiden updater</translation>
 </phrase>
@@ -3530,40 +3541,6 @@ Je kan gebruik maken van de MenuTest () sub in de Filters_Miscellaneous module o
 <phrase>
 <original>Checking for software updates</original>
 <translation>Controleren op software-updates</translation>
-</phrase>
-
-<phrase>
-<original>An error occurred while checking for updates.  Please try again later.</original>
-<translation>Er is een fout opgetreden tijdens het controleren op updates. Probeer later opnieuw.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Updates</original>
-<translation>PhotoDemon updates</translation>
-</phrase>
-
-<phrase>
-<original>Software update check postponed.</original>
-<translation>Softwareupdate controle uitgesteld.</translation>
-</phrase>
-
-<phrase>
-<original>This copy of PhotoDemon is the newest version available.
-
-(Current version: %1.%2.%3)</original>
-<translation>Dit exemplaar van PhotoDemon is de nieuwste beschikbare versie .
-
-(huidige versie:.. %1 %2 %3)</translation>
-</phrase>
-
-<phrase>
-<original>This copy of PhotoDemon is up to date.</original>
-<translation>Dit exemplaar van PhotoDemon is up to date.</translation>
-</phrase>
-
-<phrase>
-<original>Software update found!  Launching update notifier</original>
-<translation>Softwareupdate gevonden! Lancering Update Notifier</translation>
 </phrase>
 
 <phrase>
@@ -3822,7 +3799,7 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 543 phrases. 159 were duplicates of existing phrases, so only 384 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 538 phrases. 159 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -6261,86 +6238,6 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 <!-- VBP_FormWhiteBalance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormWhiteBalance.frm-->
-
-<!-- BEGIN text for VBP_FormSoftwareUpdates.frm (FormSoftwareUpdate) -->
-
-<phrase>
-<original>Update Notifier</original>
-<translation>Update berichtgever</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon website</original>
-<translation>PhotoDemon website</translation>
-</phrase>
-
-<phrase>
-<original>Not now, not ever.  Do not prompt me about future updates.</original>
-<translation>Nu niet, nooit. Vraag me nooit meer naar toekomstige updates.</translation>
-</phrase>
-
-<phrase>
-<original>Not right now, but please remind me again in the future.</original>
-<translation>Niet nu, maar gelieve me opnieuw te herinneren in de toekomst.</translation>
-</phrase>
-
-<phrase>
-<original>&Yes!  Take me to the download page.</original>
-<translation>&Ja! Breng me naar de download pagina.</translation>
-</phrase>
-
-<phrase>
-<original>Do you want to download the new version?</original>
-<translation>Wilt u de nieuwe versie downloaden?</translation>
-</phrase>
-
-<phrase>
-<original>To learn about the latest version before downloading, please visit</original>
-<translation>Om over de meest recente versie te leren alvorens het te downloaden, kunt u terecht op</translation>
-</phrase>
-
-<phrase>
-<original>Newest version</original>
-<translation>Nieuwste versie</translation>
-</phrase>
-
-<phrase>
-<original>Your version</original>
-<translation>Uw versie</translation>
-</phrase>
-
-<phrase>
-<original>A new version of PhotoDemon is available!</original>
-<translation>Er is een nieuwe versie van PhotoDemon beschikbaar!</translation>
-</phrase>
-
-<phrase>
-<original>Automatic update canceled.</original>
-<translation>Automatische update geannuleerd.</translation>
-</phrase>
-
-<phrase>
-<original>The next time you launch the program, it will remind you about this software update.
-
-Note: you can always manually download the latest version by visiting photodemon.org.</original>
-<translation>De volgende keer dat u het programma start, zal het u aan deze Softwareupdate herinneren.
-
-Opmerking: je kan de nieuwste versie altijd handmatig downloaden door naar photodemon.org te gaan.</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for downloading the latest PhotoDemon update.  Hope you enjoy it!</original>
-<translation>Bedankt voor het downloaden van de nieuwste PhotoDemon update. Ik hoop dat je er van geniet!</translation>
-</phrase>
-
-<phrase>
-<original>What's new in PhotoDemon</original>
-<translation>Wat is nieuw in PhotoDemon</translation>
-</phrase>
-
-<!-- VBP_FormSoftwareUpdates.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<!-- END text for VBP_FormSoftwareUpdates.frm-->
 
 <!-- BEGIN text for VBP_SoftwareUpdater.bas -->
 
@@ -13274,7 +13171,17 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>A PhotoDemon update is available.  Restart the program to complete the update process.</original>
+<original>Learn more about the new features in version %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(Sorry, but automatic restarts don't work inside the IDE.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
 <translation></translation>
 </phrase>
 
@@ -13298,16 +13205,22 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormUpdateNotify.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+<!-- VBP_FormUpdateNotify.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_FormUpdateNotify.frm-->
 
+<!-- BEGIN text for pdHyperlink.ctl -->
+
+<!-- pdHyperlink.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
+<!-- END text for pdHyperlink.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2324</phrasecount>
+<phrasecount>2307</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4046 phrases. -->
-<!-- 1722 are duplicates, so only 2324 unique phrases have been written to file. -->
-<!-- These 2324 phrases contain approximately 13419 total words. -->
+<!-- As of this build, PhotoDemon contains 4029 phrases. -->
+<!-- 1722 are duplicates, so only 2307 unique phrases have been written to file. -->
+<!-- These 2307 phrases contain approximately 13312 total words. -->
 
 </pdData>
