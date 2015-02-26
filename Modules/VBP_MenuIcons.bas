@@ -166,12 +166,14 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Load every icon from the resource file.  (Yes, there are a LOT of icons!)
         
     'File Menu
+    addMenuIcon "NEWIMAGE", 0, 0      'New
     addMenuIcon "OPENIMG", 0, 1       'Open Image
     addMenuIcon "OPENREC", 0, 2       'Open recent
     addMenuIcon "IMPORT", 0, 3        'Import
     addMenuIcon "CLOSE", 0, 5         'Close
     addMenuIcon "CLOSE", 0, 6         'Close All
     addMenuIcon "SAVE", 0, 8          'Save
+    addMenuIcon "SAVECOPY", 0, 9      'Save copy
     addMenuIcon "SAVEAS", 0, 10       'Save As...
     addMenuIcon "REVERT", 0, 11       'Revert
     addMenuIcon "BCONVERT", 0, 13     'Batch conversion
@@ -219,11 +221,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "RESIZE", 3, 2         'Resize
     addMenuIcon "SMRTRESIZE", 3, 3     'Content-aware resize
     addMenuIcon "CANVASSIZE", 3, 5     'Canvas resize
-    'addMenuIcon "CANVASSIZE", 3, 6     'Fit canvas to active layer
-    'addMenuIcon "CANVASSIZE", 3, 7     'Fit canvas around all layers
+    addMenuIcon "FITTOLAYER", 3, 6     'Fit canvas to active layer
+    addMenuIcon "FITALLLAYERS", 3, 7   'Fit canvas around all layers
     addMenuIcon "CROPSEL", 3, 9        'Crop to Selection
-    addMenuIcon "AUTOCROP", 3, 10     'Trim
-    addMenuIcon "ROTATECW", 3, 12     'Rotate top-level
+    addMenuIcon "TRIMEMPTY", 3, 10      'Trim
+    addMenuIcon "ROTATECW", 3, 12      'Rotate top-level
         '--> Rotate sub-menu
         addMenuIcon "STRAIGHTEN", 3, 12, 0  'Straighten
         addMenuIcon "ROTATECW", 3, 12, 2    'Rotate Clockwise
@@ -430,7 +432,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "SUNSHINE", 7, 4        'Lights and shadows
         '--> Lights and shadows sub-menu
         addMenuIcon "BLACKLIGHT", 7, 4, 0     'Blacklight
-        'addMenuIcon "CROSSSCREEN", 7, 4, 1    'TODO: Cross-screen (stars)
+        addMenuIcon "CROSSSCREEN", 7, 4, 1    'Cross-screen (stars)
         addMenuIcon "LENSFLARE", 7, 4, 2      'Lens flare
         addMenuIcon "RAINBOW", 7, 4, 3        'Rainbow
         addMenuIcon "SUNSHINE", 7, 4, 4       'Sunshine
@@ -490,12 +492,15 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Tools Menu
     addMenuIcon "LANGUAGES", 8, 0       'Languages
     addMenuIcon "LANGEDITOR", 8, 1      'Language editor
-    addMenuIcon "RECORD", 8, 3          'Macros
+    
+    addMenuIcon "RECORDMACRO", 8, 3      'Macros
         '--> Macro sub-menu
-        addMenuIcon "RECORD", 8, 3, 0         'Start Recording
+        addMenuIcon "RECORDMACRO", 8, 3, 0    'Start Recording
         addMenuIcon "RECORDSTOP", 8, 3, 1     'Stop Recording
-    addMenuIcon "OPENMACRO", 8, 4       'Play saved macro
-    addMenuIcon "PREFERENCES", 8, 7           'Options (Preferences)
+    addMenuIcon "PLAYMACRO", 8, 4       'Play saved macro
+    addMenuIcon "RECENTMACROS", 8, 5    'Recent macros
+    
+    addMenuIcon "PREFERENCES", 8, 7     'Options (Preferences)
     addMenuIcon "PLUGIN", 8, 8          'Plugin Manager
     
     'Window Menu
