@@ -4,6 +4,7 @@ AAA          ICON    MOVEABLE        PRELOAD         PHOTO_all.ico
 //PNGs for use in menus - these are stored as custom data-types
 
 //File menu
+NEWIMAGE     CUSTOM  MOVEABLE        LOADONCALL      document.png
 OPENIMG      CUSTOM  MOVEABLE        LOADONCALL      image.png
 OPENREC      CUSTOM  MOVEABLE        LOADONCALL      clock_arrow.png
 //--> Recent documents sub-menu
@@ -23,6 +24,7 @@ CLOSE        CUSTOM  MOVEABLE        LOADONCALL      fileclose.png
 
 SAVE         CUSTOM  MOVEABLE        LOADONCALL      disk.png
 SAVEAS       CUSTOM  MOVEABLE        LOADONCALL      disk_save_as.png
+SAVECOPY     CUSTOM  MOVEABLE        LOADONCALL      disks.png
 REVERT       CUSTOM  MOVEABLE        LOADONCALL      disk_revert.png
 
 BCONVERT     CUSTOM  MOVEABLE        LOADONCALL      images_stack.png
@@ -69,7 +71,9 @@ RESIZE       CUSTOM  MOVEABLE        LOADONCALL      image_resize.png
 SMRTRESIZE   CUSTOM  MOVEABLE        LOADONCALL      image_contentaware_resize.png
 CANVASSIZE   CUSTOM  MOVEABLE        LOADONCALL      canvas_resize.png
 CROPSEL      CUSTOM  MOVEABLE        LOADONCALL      image_crop.png
-AUTOCROP     CUSTOM  MOVEABLE        LOADONCALL      image_resize_actual.png
+FITTOLAYER   CUSTOM  MOVEABLE        LOADONCALL      image_resize_actual.png
+FITALLLAYERS CUSTOM  MOVEABLE        LOADONCALL      image_fit_all.png
+TRIMEMPTY    CUSTOM  MOVEABLE        LOADONCALL      image_trim.png
 //--> Rotate sub-menu
 STRAIGHTEN   CUSTOM  MOVEABLE        LOADONCALL      arrow_retweet.png
 ROTATECW     CUSTOM  MOVEABLE        LOADONCALL      image_rotate_90.png
@@ -251,6 +255,7 @@ TRACECONTOUR CUSTOM  MOVEABLE        LOADONCALL      quill.png
 SUNSHINE     CUSTOM  MOVEABLE        LOADONCALL      sunshine.png
 //--> Lighting sub-menu
 BLACKLIGHT   CUSTOM  MOVEABLE        LOADONCALL      black_light_bulb.png
+CROSSSCREEN  CUSTOM  MOVEABLE        LOADONCALL      lighthouse_shine.png
 LENSFLARE    CUSTOM  MOVEABLE        LOADONCALL      lens_flare.png
 RAINBOW      CUSTOM  MOVEABLE        LOADONCALL      rainbow.png
 DILATE       CUSTOM  MOVEABLE        LOADONCALL      dilate.png
@@ -307,9 +312,10 @@ OTHER        CUSTOM  MOVEABLE        LOADONCALL      beaker.png
 LANGUAGES    CUSTOM  MOVEABLE        LOADONCALL      language.png
 LANGEDITOR   CUSTOM  MOVEABLE        LOADONCALL      document_language_edit.png
 //--> Macro sub-menu
-OPENMACRO    CUSTOM  MOVEABLE        LOADONCALL      folder_video.png
-RECORD       CUSTOM  MOVEABLE        LOADONCALL      video.png
-RECORDSTOP   CUSTOM  MOVEABLE        LOADONCALL      stop.png
+RECORDMACRO  CUSTOM  MOVEABLE        LOADONCALL      control_record.png
+PLAYMACRO    CUSTOM  MOVEABLE        LOADONCALL      control.png
+RECORDSTOP   CUSTOM  MOVEABLE        LOADONCALL      control_stop_square.png
+RECENTMACROS CUSTOM  MOVEABLE        LOADONCALL      folder_video.png
 //
 PREFERENCES  CUSTOM  MOVEABLE        LOADONCALL      cog_edit.png
 PLUGIN       CUSTOM  MOVEABLE        LOADONCALL      plug.png
