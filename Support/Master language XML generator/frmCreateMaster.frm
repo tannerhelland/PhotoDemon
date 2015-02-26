@@ -1453,15 +1453,15 @@ Private Sub processFile(ByVal srcFile As String)
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
         
         '4) Check for text added to a combo box or list box control at run-time
-        ElseIf InStr(1, curLineText, ".AddItem """) Then
+        ElseIf InStr(1, curLineText, ".AddItem """) <> 0 Then
             processedText = findCaptionInComplexQuotes(fileLines, curLineNumber)
             
         '5) Check for message calls
-        ElseIf InStr(1, curLineText, "Message """) Then
+        ElseIf InStr(1, curLineText, "Message """) <> 0 Then
             processedText = findCaptionInQuotes(fileLines, curLineNumber)
         
         '6) Check for message box text, including 7) message box titles (which must also be translated)
-        ElseIf InStr(1, curLineText, "pdMsgBox") Then
+        ElseIf InStr(1, curLineText, "pdMsgBox") <> 0 Then
         
             'First, retrieve the message box text itself
             processedText = findMsgBoxText(fileLines, curLineNumber)
@@ -1470,8 +1470,12 @@ Private Sub processFile(ByVal srcFile As String)
             processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
         
         '7) Specific to PhotoDemon - check for action names that may not be present elsewhere
-        ElseIf InStr(1, curLineText, "Process """) Then
+        ElseIf InStr(1, curLineText, "Process """) <> 0 Then
             processedText = findCaptionInQuotes(fileLines, curLineNumber, InStr(1, curLineText, "Process """))
+        
+        '7.5) Now that pdLabel objects manage their own translations, we should also check for caption assignments
+        ElseIf InStr(1, curLineText, "Caption = """, vbBinaryCompare) <> 0 Then
+            processedText = findCaptionInQuotes(fileLines, curLineNumber, 1)
         
         End If
         
@@ -2262,6 +2266,10 @@ Private Sub Form_Load()
     addBlacklist "HTML / CSS"
     addBlacklist "jcbutton"
     addBlacklist "while it downloads."
+    addBlacklist "*"
+    addBlacklist "("
+    addBlacklist ")"
+    addBlacklist ","
     
     'Check the command line.  This project can be run in silent mode as part of my nightly build batch script.
     Dim chkCommandLine As String
