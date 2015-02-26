@@ -182,7 +182,7 @@ Private scrollOffset As Double
 Private Const BLOCKHEIGHT As Long = 54
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Private m_ToolTip As clsToolTip
+Private m_Tooltip As clsToolTip
 
 Private backDIB As pdDIB
 Private bufferDIB As pdDIB
@@ -429,8 +429,8 @@ Private Sub Form_Load()
     GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon"), "http://photodemon.org", True
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Initialize the background DIB (this allows for faster blitting than a picture box)
     ' Note that this DIB is dynamically resized; this solves issues with high-DPI screens

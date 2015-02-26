@@ -4,7 +4,7 @@ Begin VB.Form FormUpdateNotify
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Update ready"
-   ClientHeight    =   1755
+   ClientHeight    =   2355
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9195
@@ -20,11 +20,22 @@ Begin VB.Form FormUpdateNotify
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   117
+   ScaleHeight     =   157
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   613
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdHyperlink lblReleaseAnnouncement 
+      Height          =   270
+      Left            =   840
+      Top             =   930
+      Width           =   8130
+      _ExtentX        =   14340
+      _ExtentY        =   503
+      Alignment       =   2
+      Caption         =   "(populated at run-time)"
+      FontSize        =   11
+   End
    Begin VB.CommandButton cmdUpdate 
       Caption         =   "Keep working"
       BeginProperty Font 
@@ -40,7 +51,7 @@ Begin VB.Form FormUpdateNotify
       Index           =   1
       Left            =   4680
       TabIndex        =   1
-      Top             =   960
+      Top             =   1500
       Width           =   4455
    End
    Begin VB.CommandButton cmdUpdate 
@@ -58,7 +69,7 @@ Begin VB.Form FormUpdateNotify
       Index           =   0
       Left            =   120
       TabIndex        =   0
-      Top             =   960
+      Top             =   1500
       Width           =   4455
    End
    Begin PhotoDemon.pdLabel lblUpdate 
@@ -110,11 +121,29 @@ Private Sub Form_Load()
     'Theme the dialog
     makeFormPretty Me
     
+    'Set the release announcement URL
+    Dim raURL As String
+    raURL = Software_Updater.getReleaseAnnouncementURL
+    If Len(raURL) <> 0 Then
+        lblReleaseAnnouncement.Caption = g_Language.TranslateMessage("Learn more about the new features in version %1", Software_Updater.getUpdateVersion)
+        lblReleaseAnnouncement.Visible = True
+        lblReleaseAnnouncement.URL = raURL
+    Else
+        lblReleaseAnnouncement.Caption = ""
+        lblReleaseAnnouncement.Visible = False
+    End If
+    
+    'Disable the restart option inside the IDE
+    If Not g_IsProgramCompiled Then
+        cmdUpdate(0).Caption = g_Language.TranslateMessage("(Sorry, but automatic restarts don't work inside the IDE.)")
+        cmdUpdate(0).Enabled = False
+    End If
+    
     'Automatically draw a relevant icon using the system icon set
     DrawSystemIcon IDI_ASTERISK, Me.hDC, fixDPI(16), fixDPI(12)
     
     'Display the update message.  (pdLabel automatically handles translations, as necessary.)
-    lblUpdate.Caption = "A PhotoDemon update is available.  Restart the program to complete the update process."
+    lblUpdate.Caption = "A new version of PhotoDemon is available.  Restart the program to complete the update process."
     
     'Add a few tooltips
     Set m_Tooltip = New pdToolTip

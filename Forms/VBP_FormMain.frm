@@ -1584,6 +1584,7 @@ Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boo
     
     'Core program updates are handled specially, so their resources can be freed without question.
     asyncDownloader.freeResourcesForItem "PROGRAM_UPDATE_CHECK"
+    asyncDownloader.freeResourcesForItem "PROGRAM_UPDATE_CHECK_USER"
     'asyncDownloader.Reset
     
     FormMain.mainCanvas(0).setNetworkState False
@@ -1597,7 +1598,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
     'On a typical PD install, updates are checked every session, but users can specify a larger interval in the preferences dialog.
     ' As part of honoring that preference, whenever an update check successfully completes, we write the current date out to the
     ' preferences file, so subsequent runs can limit their check frequency accordingly.
-    If (StrComp(entryKey, "PROGRAM_UPDATE_CHECK") = 0) Then
+    If (StrComp(entryKey, "PROGRAM_UPDATE_CHECK") = 0) Or (StrComp(entryKey, "PROGRAM_UPDATE_CHECK_USER") = 0) Then
         
         If downloadSuccessful Then
         
@@ -1611,7 +1612,28 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             updateXML = StrConv(downloadedData, vbUnicode)
             
             'Offload the rest of the check to a separate update function.  It will initiate subsequent downloads as necessary.
-            Software_Updater.processProgramUpdateFile updateXML
+            Dim updateAvailable As Boolean
+            updateAvailable = Software_Updater.processProgramUpdateFile(updateXML)
+            
+            'If the user initiated the download, display a modal notification now
+            If (StrComp(entryKey, "PROGRAM_UPDATE_CHECK_USER") = 0) Then
+                
+                If updateAvailable Then
+                    Message "A new version of PhotoDemon is available.  The update is automatically processing in the background..."
+                Else
+                    Message "This copy of PhotoDemon is up to date."
+                End If
+                
+                'Perform a low-risk yield to events, so the status bar message has time to repaint itself before the message box appears
+                DoEvents
+                
+                If updateAvailable Then
+                    pdMsgBox "A new version of PhotoDemon is available!" & vbCrLf & vbCrLf & "The update is automatically processing in the background.  You will receive a new notification when it completes.", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                Else
+                    pdMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                End If
+                
+            End If
             
         Else
             Debug.Print "Update file was not downloaded.  asyncDownloader returned this error message: " & asyncDownloader.getLastErrorNumber & " - " & asyncDownloader.getLastErrorDescription
@@ -2676,6 +2698,9 @@ Private Sub Form_Load()
     'If PD was restarted by an internal restart, disallow an update check now, as we would have just applied one (which caused the restart)
     If g_ProgramStartedViaRestart Then allowedToUpdate = False
     
+    'If this is the user's first time using the program, don't pester them with update notifications
+    If g_IsFirstRun Then allowedToUpdate = False
+    
     'If we're STILL allowed to update, do so now (unless this is the first time the user has run the program; in that case, suspend updates,
     ' as it is assumed the user already has an updated copy of the software - and we don't want to bother them already!)
     If allowedToUpdate Then
@@ -2707,48 +2732,6 @@ Private Sub Form_Load()
     Me.asyncDownloader.setAutoDownloadMode True
     
     
-    '*************************************************************************************************************************************
-    ' Next, see if an update was previously loaded; if it was, display any relevant findings.
-    '*************************************************************************************************************************************
-    
-    'It's possible that a past program instance downloaded update information for us; check for an update file now.
-    ' (Note that this check can be skipped the first time the program is run, as we are guaranteed to not have update data yet!)
-    Dim updateNeeded As UpdateCheck
-    
-    If (Not g_IsFirstRun) Then
-    
-        Message "Checking for previously downloaded update data..."
-        updateNeeded = UPDATE_NOT_NEEDED
-        'updateNeeded = CheckForSoftwareUpdate
-        
-        'CheckForSoftwareUpdate can return one of four values:
-        ' UPDATE_ERROR - something went wrong
-        ' UPDATE_NOT_NEEDED - an update file was found, but the current software version is already up-to-date
-        ' UPDATE_AVAILABLE - an update file was found, and an updated PD copy is available
-        ' UPDATE_UNAVAILABLE - no update file was found (this is the most common occurrence, as updates are only checked every 10 days)
-        
-        Select Case updateNeeded
-        
-            Case UPDATE_ERROR
-                Message "An error occurred while looking for an update file."
-            
-            Case UPDATE_NOT_NEEDED
-                Message "Update data found, but this copy of PhotoDemon is already up-to-date."
-                
-                'Because the software is up-to-date, we can mark this as a successful check in the preferences file
-                g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
-                
-            Case UPDATE_AVAILABLE
-                Message "New PhotoDemon update found!  Launching update notifier..."
-                showPDDialog vbModal, FormSoftwareUpdate
-                
-            Case Else
-                'No update data found - which is fine!  (This is actually the most common occurrence.)
-            
-        End Select
-            
-    End If
-    
     
     '*************************************************************************************************************************************
     ' Next, check for missing core plugins
@@ -2758,7 +2741,7 @@ Private Sub Form_Load()
     ' detect this state and offer to download the plugins for the user.
     ' (NOTE: this check is superceded by the update check - since a full program update will include the missing plugins -
     '        so we ignore this request if the user was already notified of a program update.)
-    If (updateNeeded <> UPDATE_AVAILABLE) And ((Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not isExifToolAvailable)) Then
+    If (Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not isExifToolAvailable) Then
     
         Message "Some core plugins could not be found. Preparing updater..."
         
@@ -2902,6 +2885,8 @@ Private Sub Form_Unload(Cancel As Integer)
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutdown initiated"
     #End If
+    
+    Me.Visible = False
     
     'Cancel any pending downloads
     #If DEBUGMODE = 1 Then
@@ -3584,32 +3569,11 @@ Private Sub MnuHelp_Click(Index As Integer)
         'Check for updates
         Case 2
             Message "Checking for software updates..."
-    
-            Dim updateNeeded As Long
-            updateNeeded = CheckForSoftwareUpdate(True)
-    
-            'CheckForSoftwareUpdate can return one of three values:
-            ' 0 - something went wrong (no Internet connection, etc)
-            ' 1 - the check was successful, but this version is up-to-date
-            ' 2 - the check was successful, and an update is available
-            Select Case updateNeeded
-        
-                Case 0
-                    pdMsgBox "An error occurred while checking for updates.  Please try again later.", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates"
-                    Message "Software update check postponed."
-                    
-                Case 1
-                    pdMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
-                    Message "This copy of PhotoDemon is up to date."
-                        
-                    'Because the software is up-to-date, we can mark this as a successful check in the preferences file
-                    g_UserPreferences.SetPref_String "Updates", "Last Update Check", Format$(Now, "Medium Date")
-                        
-                Case 2
-                    Message "Software update found!  Launching update notifier..."
-                    showPDDialog vbModal, FormSoftwareUpdate
-                    
-            End Select
+            
+            'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
+            ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
+            ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
+            Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK_USER", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
         
         'Submit feedback
         Case 3
