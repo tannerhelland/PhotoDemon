@@ -23,10 +23,6 @@ Attribute VB_Name = "Software_Updater"
 
 Option Explicit
 
-
-'Because the update form needs access to the update version numbers, they are made publicly available
-Public updateMajor As Long, updateMinor As Long, updateBuild As Long
-
 Public Enum UpdateCheck
     UPDATE_ERROR = 0
     UPDATE_NOT_NEEDED = 1
@@ -41,9 +37,6 @@ End Enum
     Const UPDATE_UNAVAILABLE = 3
 #End If
 
-'Same goes for the update announcement path
-Public updateAnnouncement As String
-
 'When patching PD itself, we make a backup copy of the update XML contents.  This file provides a second failsafe checksum reference, which is
 ' important when patching binary EXE and DLL files.
 Private m_PDPatchXML As String
@@ -55,170 +48,12 @@ Private m_SelectedTrack As Long, m_TrackStartPosition As Long, m_TrackEndPositio
 'If an update package is downloaded successfully, it will be forwarded to this module.  At program shutdown time, the package will be applied.
 Private m_UpdateFilePath As String
 
+'If an update is available, that update's release announcement will be stored in this persistent string.  UI elements can retrieve it as necessary.
+Private m_UpdateReleaseAnnouncementURL As String
 
-'Check for a software update; it's assumed the update file has already been downloaded, if available, from its standard
-' location at http://photodemon.org/downloads/updates.xml.  If an update file has not been downloaded, this function
-' will exit with status code UPDATE_UNAVAILABLE.
+'Outside functions can also request the update version
+Private m_UpdateVersion As String
 
-'This function will return one of four values:
-' UPDATE_ERROR - something went wrong
-' UPDATE_NOT_NEEDED - an update file was found, but the current software version is already up-to-date
-' UPDATE_AVAILABLE - an update file was found, and an updated PD copy is available
-' UPDATE_UNAVAILABLE - no update file was found (this happens if the user specifies weekly or monthly checks, and it's not yet time for a new check)
-Public Function CheckForSoftwareUpdate(Optional ByVal downloadUpdateManually As Boolean = False) As UpdateCheck
-
-    'If the user has requested a forcible update check (as can be done from the Help menu), manually download a new copy of the update file.
-    If downloadUpdateManually Then
-    
-        'First things first - set up our target URL
-        Dim URL As String
-        URL = "http://photodemon.org/downloads/updates/pdupdate.xml"
-           
-        'Open an Internet session and assign it a handle
-        Dim hInternetSession As Long
-        hInternetSession = InternetOpen(App.EXEName, INTERNET_OPEN_TYPE_PRECONFIG, vbNullString, vbNullString, 0)
-        
-        'If a connection couldn't be established, exit out
-        If hInternetSession = 0 Then
-            CheckForSoftwareUpdate = UPDATE_ERROR
-            Exit Function
-        End If
-        
-        'Using the new Internet session, attempt to find the URL; if found, assign it a handle
-        Dim hUrl As Long
-        hUrl = InternetOpenUrl(hInternetSession, URL, vbNullString, 0, INTERNET_FLAG_RELOAD, 0)
-    
-        'If the URL couldn't be found, my server may be down. Close out this connection and exit.
-        If hUrl = 0 Then
-            If hInternetSession Then InternetCloseHandle hInternetSession
-            CheckForSoftwareUpdate = UPDATE_ERROR
-            Exit Function
-        End If
-            
-        'We need a temporary file to house the update information; generate it automatically
-        Dim tmpFile As String
-        tmpFile = g_UserPreferences.getUpdatePath & "pdupdate.xml"
-        
-        'Open the temporary file and begin downloading the update information to it
-        Dim fileNum As Integer
-        fileNum = FreeFile
-        Open tmpFile For Binary As fileNum
-        
-            'Prepare a receiving buffer (this will be used to hold chunks of the file)
-            Dim Buffer As String
-            Buffer = Space(4096)
-       
-            'We will need to verify each chunk as its downloaded
-            Dim chunkOK As Boolean
-       
-            'This will track the size of each chunk
-            Dim numOfBytesRead As Long
-       
-            'This will track of how many bytes we've downloaded so far
-            Dim totalBytesRead As Long
-            totalBytesRead = 0
-       
-            Do
-       
-                'Read the next chunk of the image
-                chunkOK = InternetReadFile(hUrl, Buffer, Len(Buffer), numOfBytesRead)
-       
-                'If something went wrong - like the connection dropping mid-download - delete the temp file and terminate the update function
-                If Not chunkOK Then
-                    
-                    'Remove the temporary file
-                    If FileExist(tmpFile) Then
-                        Close #fileNum
-                        Kill tmpFile
-                    End If
-                    
-                    'Close the Internet connection
-                    If hUrl Then InternetCloseHandle hUrl
-                    If hInternetSession Then InternetCloseHandle hInternetSession
-                    
-                    CheckForSoftwareUpdate = UPDATE_ERROR
-                    Exit Function
-                    
-                End If
-       
-                'If the file has downloaded completely, exit this loop
-                If numOfBytesRead = 0 Then Exit Do
-                
-                'If we've made it this far, assume we've received legitimate data. Place that data into the temporary file.
-                Put #fileNum, , Left$(Buffer, numOfBytesRead)
-                
-            'Carry on
-            Loop
-            
-        'Close the temporary file
-        Close #fileNum
-        
-        'With the update file completely downloaded, we can close this URL and Internet session
-        If hUrl Then InternetCloseHandle hUrl
-        If hInternetSession Then InternetCloseHandle hInternetSession
-        
-    End If
-
-    
-    'Check for the presence of an update file
-    Dim updateFile As String
-    updateFile = g_UserPreferences.getUpdatePath & "pdupdate.xml"
-    
-    If FileExist(updateFile) Then
-    
-        'Update information file found!  Investigate its contents.
-        
-        'Note that the update information file is in XML format, so we need an XML parser to read it.
-        Dim xmlEngine As pdXML
-        Set xmlEngine = New pdXML
-        
-        'Load the XML file into memory
-        xmlEngine.loadXMLFile updateFile
-        
-        'Check for a few necessary tags, just to make sure this is a valid PhotoDemon update file
-        If xmlEngine.isPDDataType("Update report") And xmlEngine.validateLoadedXMLData("updateMajor", "updateMinor", "updateBuild") Then
-        
-            'Retrieve the version numbers
-            updateMajor = xmlEngine.getUniqueTag_Long("updateMajor", -1)
-            updateMinor = xmlEngine.getUniqueTag_Long("updateMinor", -1)
-            updateBuild = xmlEngine.getUniqueTag_Long("updateBuild", -1)
-            
-            'If any of the version numbers weren't found, report an error and exit
-            If (updateMajor = -1) Or (updateMinor = -1) Or (updateBuild = -1) Then
-                If FileExist(updateFile) Then Kill updateFile
-                CheckForSoftwareUpdate = UPDATE_ERROR
-                Exit Function
-            End If
-            
-            'Finally, check for an update announcement article URL.  This may or may not be blank; it depends on whether I've written an
-            ' announcement article yet... :)
-            updateAnnouncement = xmlEngine.getUniqueTag_String("updateAnnouncementURL")
-            
-            'We have what we need from the temporary file, so delete it
-            If FileExist(updateFile) Then Kill updateFile
-                
-            'If we made it all the way here, we can assume the update check was successful.  The last thing we need to do is compare
-            ' the updated software version numbers with the current software version numbers.  If THAT yields results, we can finally
-            ' return "UPDATE_NEEDED" for this function
-            If (updateMajor > App.Major) Or ((updateMinor > App.Minor) And (updateMajor = App.Major)) Or ((updateBuild > App.Revision) And (updateMinor = App.Minor) And (updateMajor = App.Major)) Then
-                CheckForSoftwareUpdate = UPDATE_AVAILABLE
-            
-            '...otherwise, we went to all that work for nothing.  Oh well.  An update check occurred, but this version is up-to-date.
-            Else
-                CheckForSoftwareUpdate = UPDATE_NOT_NEEDED
-            End If
-            
-        Else
-            CheckForSoftwareUpdate = UPDATE_ERROR
-        End If
-    
-    'No update information found.  Return the proper code and exit.
-    Else
-        CheckForSoftwareUpdate = UPDATE_UNAVAILABLE
-    End If
-    
-    
-End Function
 
 'Determine if the program should check online for update information.  This will return true IFF the following
 ' criteria are met:
@@ -582,7 +417,12 @@ End Function
 ' This function basically checks to see if PhotoDemon.exe is out of date on the current update track (stable, beta, or nightly, per the user's
 ' preference).  If it is, an update package will be downloaded.  At extraction time, all files that need to be updated, will be updated; this function's
 ' job is simply to initiate a larger package download if necessary.
-Public Sub processProgramUpdateFile(ByRef srcXML As String)
+'
+'Returns TRUE is an update is available; FALSE otherwise
+Public Function processProgramUpdateFile(ByRef srcXML As String) As Boolean
+    
+    'In most cases, we assume there to *not* be an update
+    processProgramUpdateFile = False
     
     'A pdXML object handles XML parsing for us.
     Dim xmlEngine As pdXML
@@ -668,6 +508,8 @@ Public Sub processProgramUpdateFile(ByRef srcXML As String)
                             m_SelectedTrack = trackWithValidUpdate
                             m_TrackStartPosition = tagAreaStart
                             m_TrackEndPosition = tagAreaEnd
+                            m_UpdateVersion = newPDVersionString
+                            m_UpdateReleaseAnnouncementURL = xmlEngine.getUniqueTag_String("raurl-" & updateTagIDs(i))
                             
                         End If
                         
@@ -685,7 +527,8 @@ Public Sub processProgramUpdateFile(ByRef srcXML As String)
             'If trackWithValidUpdate is >= 0, it points to the update track with the highest possible update target.
             If trackWithValidUpdate >= 0 Then
             
-                'Make a backup copy of the update XML string.  We'll be referring to this later, after the patch files have downloaded.
+                'Make a backup copy of the update XML string.  We'll need to refer to it later, after the patch files have downloaded,
+                ' as it contains failsafe checksumming information.
                 m_PDPatchXML = xmlEngine.returnCurrentXMLString(True)
                 
                 'Construct a URL that matches the selected update track
@@ -712,11 +555,16 @@ Public Sub processProgramUpdateFile(ByRef srcXML As String)
                 ' checksum as the file's unique ID value.  Post-download and extraction, we use this value to ensure that
                 ' the extracted data matches what we originally uploaded.
                 If FormMain.requestAsynchronousDownload("PD_UPDATE_PATCH", updateURL, PD_PATCH_IDENTIFIER, vbAsyncReadForceUpdate, True, g_UserPreferences.getUpdatePath & "PDPatch.tmp") Then
+                    
                     Debug.Print "Download successfully initiated for program patch file at " & updateURL
+                    
+                    'Only now do we report SUCCESS to the caller
+                    processProgramUpdateFile = True
+                    
                 Else
                     Debug.Print "WARNING! FormMain.requestAsynchronousDownload refused to initiate download of " & updateURL & " patch file."
                 End If
-            
+                
             'No update was found.  Exit now.
             Else
             
@@ -734,7 +582,7 @@ Public Sub processProgramUpdateFile(ByRef srcXML As String)
         Debug.Print "WARNING! Program update XML did not load successfully - check for an encoding error, maybe...?"
     End If
     
-End Sub
+End Function
 
 'When live-patching program files, we double-check checksums of both the temp files and the final binary copies.  This prevents hijackers from
 ' intercepting the files mid-transit, and replacing them with their own.
@@ -1199,6 +1047,7 @@ Public Sub displayUpdateNotification()
     'Suspend any previous update notification flags
     g_ShowUpdateNotification = False
     
+    'Display the dialog
     FormUpdateNotify.Show vbModeless, FormMain
     
     Exit Sub
@@ -1209,3 +1058,33 @@ couldNotDisplayUpdateNotification:
     g_ShowUpdateNotification = True
 
 End Sub
+
+'PD should always be able to provide a release announcement URL, but I still recommend testing this string for emptiness prior to displaying
+' it to the user.
+Public Function getReleaseAnnouncementURL() As String
+    getReleaseAnnouncementURL = m_UpdateReleaseAnnouncementURL
+End Function
+
+'Outside functions can also request a human-readable string of the update number.
+Public Function getUpdateVersion() As String
+    
+    'Parse the version string, which is currently on the form Major.Minor.Build.Revision
+    Dim verStrings() As String
+    verStrings = Split(m_UpdateVersion, ".")
+    If UBound(verStrings) < 2 Then verStrings = Split(m_UpdateVersion, ",")
+    
+    'We always want major and minor version numbers
+    If UBound(verStrings) >= 1 Then
+        
+        getUpdateVersion = verStrings(0) & "." & verStrings(1)
+        
+        'If the revision value is non-zero, include it too
+        If UBound(verStrings) >= 3 Then
+            If StrComp(verStrings(3), "0", vbBinaryCompare) <> 0 Then getUpdateVersion = getUpdateVersion & "." & verStrings(3)
+        End If
+        
+    Else
+        getUpdateVersion = m_UpdateVersion
+    End If
+    
+End Function
