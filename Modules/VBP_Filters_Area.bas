@@ -532,9 +532,9 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigm
     
     'Intermediate float arrays are required
     Dim rFloat() As Single, gFloat() As Single, bFloat() As Single
-    ReDim rFloat(0 To iWidth - 1, 0 To iHeight - 1) As Single
-    ReDim gFloat(0 To iWidth - 1, 0 To iHeight - 1) As Single
-    ReDim bFloat(0 To iWidth - 1, 0 To iHeight - 1) As Single
+    ReDim rFloat(initX To finalX, initY To finalY) As Single
+    ReDim gFloat(initX To finalX, initY To finalY) As Single
+    ReDim bFloat(initX To finalX, initY To finalY) As Single
     
     'Copy the contents of the current image into the float arrays
     For x = initX To finalX
@@ -554,55 +554,65 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigm
     Next x
     
     '/* Filter horizontally along each row */
-    For y = 0 To iHeight - 1
+    For y = initY To finalY
     
         For step = 0 To numSteps - 1
             
             'Set initial values
-            rFloat(0, y) = rFloat(0, y) * boundaryScale
-            gFloat(0, y) = gFloat(0, y) * boundaryScale
-            bFloat(0, y) = bFloat(0, y) * boundaryScale
+            rFloat(initX, y) = rFloat(initX, y) * boundaryScale
+            gFloat(initX, y) = gFloat(initX, y) * boundaryScale
+            bFloat(initX, y) = bFloat(initX, y) * boundaryScale
             
             'Filter right
-            For x = 1 To iWidth - 1
+            For x = initX + 1 To finalX
                 QuickX2 = (x - 1)
                 rFloat(x, y) = rFloat(x, y) + nu * rFloat(QuickX2, y)
                 gFloat(x, y) = gFloat(x, y) + nu * gFloat(QuickX2, y)
                 bFloat(x, y) = bFloat(x, y) + nu * bFloat(QuickX2, y)
             Next x
             
+            'Fix closing row
+            rFloat(finalX, y) = rFloat(finalX, y) * boundaryScale
+            gFloat(finalX, y) = gFloat(finalX, y) * boundaryScale
+            bFloat(finalX, y) = bFloat(finalX, y) * boundaryScale
+            
             'Filter left
-            For x = iWidth - 2 To 1 Step -1
+            For x = finalX To 1 Step -1
                 QuickX = (x - 1)
                 rFloat(QuickX, y) = rFloat(QuickX, y) + nu * rFloat(x, y)
                 gFloat(QuickX, y) = gFloat(QuickX, y) + nu * gFloat(x, y)
                 bFloat(QuickX, y) = bFloat(QuickX, y) + nu * bFloat(x, y)
             Next x
-            
+                        
         Next step
     
     Next y
     
     'Now repeat all the above steps, but filtering vertically along each column, instead
-    For x = 0 To iWidth - 1
+    For x = initX To finalX
         
         For step = 0 To numSteps - 1
             
             'Set initial values
-            rFloat(x, 0) = rFloat(x, 0) * boundaryScale
-            gFloat(x, 0) = gFloat(x, 0) * boundaryScale
-            bFloat(x, 0) = bFloat(x, 0) * boundaryScale
+            rFloat(x, initY) = rFloat(x, initY) * boundaryScale
+            gFloat(x, initY) = gFloat(x, initY) * boundaryScale
+            bFloat(x, initY) = bFloat(x, initY) * boundaryScale
             
             'Filter down
-            For y = 1 To iHeight - 1
+            For y = initY + 1 To finalY
                 QuickY = (y - 1)
                 rFloat(x, y) = rFloat(x, y) + nu * rFloat(x, QuickY)
                 gFloat(x, y) = gFloat(x, y) + nu * gFloat(x, QuickY)
                 bFloat(x, y) = bFloat(x, y) + nu * bFloat(x, QuickY)
             Next y
             
+            'Fix closing column values
+            rFloat(x, finalY) = rFloat(x, finalY) * boundaryScale
+            gFloat(x, finalY) = gFloat(x, finalY) * boundaryScale
+            bFloat(x, finalY) = bFloat(x, finalY) * boundaryScale
+            
             'Filter up
-            For y = iHeight - 2 To 1 Step -1
+            For y = finalY To 1 Step -1
                 QuickY = y - 1
                 rFloat(x, QuickY) = rFloat(x, QuickY) + nu * rFloat(x, y)
                 gFloat(x, QuickY) = gFloat(x, QuickY) + nu * gFloat(x, y)
@@ -622,13 +632,10 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigm
         g = gFloat(x, y) * postScale * 255
         b = bFloat(x, y) * postScale * 255
         
+        'Perform failsafe clipping
         If r > 255 Then r = 255
         If g > 255 Then g = 255
         If b > 255 Then b = 255
-        
-        If r < 0 Then r = 0
-        If g < 0 Then g = 0
-        If b < 0 Then b = 0
         
         ImageData(QuickX, y) = b
         ImageData(QuickX + 1, y) = g
