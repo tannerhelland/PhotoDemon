@@ -1036,7 +1036,7 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
         
         'PD's custom-built controls self-manage translations.  Simply ask them to update against the current theme, and they'll take
         ' care of the rest.
-        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is smartOptionButton) Then
+        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is smartOptionButton) Then
             eControl.updateAgainstCurrentTheme
         End If
         
