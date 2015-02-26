@@ -6153,6 +6153,11 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 </phrase>
 
 <phrase>
+<original>Verifying plugin URL</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>%1 could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.</original>
 <translation>%1 kon de insteekmodule-server niet vinden. Gelieve uw internetverbinding te dubbel-checken. Als het probleem zich blijft voordoen, probeer het dan opnieuw op een ander tijdstip.</translation>
 </phrase>
@@ -6182,7 +6187,7 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 <translation>Totale downloadgrootte</translation>
 </phrase>
 
-<!-- VBP_FormPluginDownloader.frm contains 67 phrases. 19 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- VBP_FormPluginDownloader.frm contains 70 phrases. 21 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPluginDownloader.frm-->
 
@@ -8091,7 +8096,12 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>voorbeeld van effect weergeven</translation>
 </phrase>
 
-<!-- fxPreview.ctl contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>show original image (alt+t)</original>
+<translation></translation>
+</phrase>
+
+<!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for fxPreview.ctl-->
 
@@ -8320,13 +8330,18 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <!-- BEGIN text for smartOptionButton.ctl -->
 
-<!-- smartOptionButton.ctl contains 0 phrases. -->
+<phrase>
+<original>caption</original>
+<translation></translation>
+</phrase>
+
+<!-- smartOptionButton.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for smartOptionButton.ctl-->
 
 <!-- BEGIN text for smartCheckBox.ctl -->
 
-<!-- smartCheckBox.ctl contains 0 phrases. -->
+<!-- smartCheckBox.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for smartCheckBox.ctl-->
 
@@ -13048,7 +13063,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- BEGIN text for pdLabel.ctl -->
 
-<!-- pdLabel.ctl contains 0 phrases. -->
+<!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
 
@@ -13259,6 +13274,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>A PhotoDemon update is available.  Restart the program to complete the update process.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Restart now to access to the latest version of the program.</original>
 <translation></translation>
 </phrase>
@@ -13278,16 +13298,16 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormUpdateNotify.frm contains 8 phrases.  One was a duplicate of an existing phrase, so only 7 new phrases were written to file. -->
+<!-- VBP_FormUpdateNotify.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormUpdateNotify.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2320</phrasecount>
+<phrasecount>2324</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4038 phrases. -->
-<!-- 1718 are duplicates, so only 2320 unique phrases have been written to file. -->
-<!-- These 2320 phrases contain approximately 13398 total words. -->
+<!-- As of this build, PhotoDemon contains 4046 phrases. -->
+<!-- 1722 are duplicates, so only 2324 unique phrases have been written to file. -->
+<!-- These 2324 phrases contain approximately 13419 total words. -->
 
 </pdData>
