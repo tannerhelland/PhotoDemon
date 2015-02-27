@@ -60,7 +60,7 @@ Option Explicit
 Public Event Click()
 
 'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
-Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
+Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, ByRef lpRect As RECT) As Long
 
 'Mouse and keyboard input handlers
 Private WithEvents cMouseEvents As pdInputMouse
@@ -80,6 +80,10 @@ Private btImage As pdDIB                'You must specify this image manually, a
 Private btImageDisabled As pdDIB        'Auto-created disabled version of the image.
 Private btImageHover As pdDIB           'Auto-created hover (glow) version of the image.
 
+'As of Feb 2015, this control also supports unique images when depressed.  This feature is optional!
+Private btImage_Pressed As pdDIB
+Private btImageHover_Pressed As pdDIB   'Auto-created hover (glow) version of the image.
+
 '(x, y) position of the button image.  This is auto-calculated by the control.
 Private btImageCoords As POINTAPI
 
@@ -98,13 +102,21 @@ Private m_BackColor As OLE_COLOR
 'AutoToggle mode allows the button to operate as a normal button (e.g. no persistent value)
 Private m_AutoToggle As Boolean
 
+'StickyToggle mode allows the button to operate as a checkbox (e.g. a persistent value, that switches on every click)
+Private m_StickyToggle As Boolean
+
+'In some circumstances, an image alone is sufficient for indicating "pressed" state.  This value tells the control to *not* render a custom
+' highlight state when a button is depressed.
+Private m_DontHighlightDownState As Boolean
+
 'Additional helpers for rendering themed and multiline tooltips
 Private toolTipManager As pdToolTip
 
 'This toolbox button control is designed to be used in a "radio button"-like system, where buttons exist in a group, and the
 ' pressing of one results in the unpressing of any others.  For the rare circumstances where this behavior is undesirable
 ' (e.g. the pdCanvas status bar, where some instances of this control serve as actual buttons), the AutoToggle property can
-' be set to TRUE.  This will cause the button to operate as a normal command button.
+' be set to TRUE.  This will cause the button to operate as a normal command button, which depresses on MouseDown and raises
+' on MouseUp.
 Public Property Get AutoToggle() As Boolean
     AutoToggle = m_AutoToggle
 End Property
@@ -124,20 +136,42 @@ Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     redrawBackBuffer
 End Property
 
+'In some circumstances, an image alone is sufficient for indicating "pressed" state.  This value tells the control to *not* render a custom
+' highlight state when button state is TRUE (pressed).
+Public Property Get DontHighlightDownState() As Boolean
+    DontHighlightDownState = m_DontHighlightDownState
+End Property
+
+Public Property Let DontHighlightDownState(ByVal newState As Boolean)
+    m_DontHighlightDownState = newState
+    If Value Then redrawBackBuffer
+End Property
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
-Public Property Let Enabled(ByVal NewValue As Boolean)
+Public Property Let Enabled(ByVal newValue As Boolean)
     
-    UserControl.Enabled = NewValue
+    UserControl.Enabled = newValue
     PropertyChanged "Enabled"
     
     'Redraw the control
     redrawBackBuffer
     
+End Property
+
+'Sticky toggle allows this button to operate as a checkbox, where each click toggles its value.  If I was smart, I would have implemented
+' the button's toggle behavior as a single property with multiple enum values, but I didn't think of it in advance, so now I'm stuck
+' with this.  Do not set both StickyToggle and AutoToggle, as the button will not behave correctly.
+Public Property Get StickyToggle() As Boolean
+    StickyToggle = m_StickyToggle
+End Property
+
+Public Property Let StickyToggle(ByVal newValue As Boolean)
+    m_StickyToggle = newValue
 End Property
 
 'A few key events are also handled
@@ -146,10 +180,26 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
     'If space is pressed, and our value is not true, raise a click event.
     If (vkCode = VK_SPACE) Then
 
-        If m_FocusRectActive And Me.Enabled And (Not m_ButtonState) Then
-            m_ButtonState = True
-            redrawBackBuffer
-            RaiseEvent Click
+        If m_FocusRectActive And Me.Enabled Then
+        
+            'Sticky toggle mode causes the button to toggle between true/false
+            If m_StickyToggle Then
+            
+                Value = Not Value
+                redrawBackBuffer
+                RaiseEvent Click
+            
+            'Other modes behave identically
+            Else
+            
+                If (Not m_ButtonState) Then
+                    Value = True
+                    redrawBackBuffer
+                    RaiseEvent Click
+                End If
+            
+            End If
+            
         End If
         
     End If
@@ -161,8 +211,8 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
     'If space was pressed, and AutoToggle is active, remove the button state and redraw it
     If (vkCode = VK_SPACE) Then
 
-        If Me.Enabled And m_ButtonState Then
-            m_ButtonState = False
+        If Me.Enabled And Value And m_AutoToggle Then
+            Value = False
             redrawBackBuffer
         End If
         
@@ -173,10 +223,26 @@ End Sub
 'To improve responsiveness, MouseDown is used instead of Click
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
-    If Me.Enabled And (Not m_ButtonState) Then
-        m_ButtonState = True
-        redrawBackBuffer
-        RaiseEvent Click
+    If Me.Enabled Then
+    
+        'Sticky toggle allows the button to operate as a checkbox
+        If m_StickyToggle Then
+        
+            Value = Not Value
+            redrawBackBuffer
+            RaiseEvent Click
+        
+        'Non-sticky toggle modes will always cause the button to be TRUE on a MouseDown event
+        Else
+        
+            If (Not Value) Then
+                Value = True
+                redrawBackBuffer
+                RaiseEvent Click
+            End If
+            
+        End If
+        
     End If
         
 End Sub
@@ -214,8 +280,8 @@ End Sub
 Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     'If toggle mode is active, remove the button's TRUE state and redraw it
-    If m_AutoToggle And m_ButtonState Then
-        m_ButtonState = False
+    If m_AutoToggle And Value Then
+        Value = False
         redrawBackBuffer
     End If
     
@@ -237,13 +303,13 @@ Public Property Get Value() As Boolean
     Value = m_ButtonState
 End Property
 
-Public Property Let Value(ByVal NewValue As Boolean)
+Public Property Let Value(ByVal newValue As Boolean)
     
     'Update our internal value tracker, but only if autotoggle is not active.  (Autotoggle causes the button to behave like
     ' a normal button, so there's no concept of a persistent "value".)
-    If (m_ButtonState <> NewValue) And (Not m_AutoToggle) Then
+    If (m_ButtonState <> newValue) And (Not m_AutoToggle) Then
     
-        m_ButtonState = NewValue
+        m_ButtonState = newValue
         
         'Redraw the control to match the new state
         redrawBackBuffer
@@ -289,6 +355,38 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     updateControlSize
 
 End Sub
+
+'Assign an *OPTIONAL* special DIB to this button, to be used only when the button is pressed.  A disabled-state image is not generated,
+' but a hover-state one is.
+'
+'IMPORTANT NOTE!  To reduce resource usage, PD requires that this optional "pressed" image have identical dimensions to the primary image.
+' This greatly simplifies layout and painting issues, so I do not expect to change it.
+'
+'Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).  No preprocessing is currently
+' applied to DIBs loaded as a resource, but in the future we will need to deal with high-DPI concerns.
+Public Sub AssignImage_Pressed(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
+    
+    'Load the requested resource DIB, as necessary
+    If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
+    
+    'Start by making a copy of the source DIB
+    Set btImage_Pressed = New pdDIB
+    btImage_Pressed.createFromExistingDIB srcDIB
+    
+    'Also create a "glowy" hovered version of the DIB for hover state
+    Set btImageHover_Pressed = New pdDIB
+    btImageHover_Pressed.createFromExistingDIB btImage_Pressed
+    If customGlowWhenHovered = 0 Then
+        ScaleDIBRGBValues btImageHover_Pressed, UC_HOVER_BRIGHTNESS, True
+    Else
+        ScaleDIBRGBValues btImageHover_Pressed, customGlowWhenHovered, True
+    End If
+    
+    'If the control is currently pressed, request a redraw
+    If Value Then redrawBackBuffer
+
+End Sub
+
 
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
@@ -349,6 +447,8 @@ Private Sub UserControl_InitProperties()
     Value = False
     BackColor = vbWhite
     AutoToggle = False
+    StickyToggle = False
+    DontHighlightDownState = False
     
 End Sub
 
@@ -387,7 +487,9 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         m_BackColor = .ReadProperty("BackColor", vbWhite)
-        m_AutoToggle = .ReadProperty("AutoToggle", False)
+        AutoToggle = .ReadProperty("AutoToggle", False)
+        m_DontHighlightDownState = .ReadProperty("DontHighlightDownState", False)
+        StickyToggle = .ReadProperty("StickyToggle", False)
     End With
 
 End Sub
@@ -422,6 +524,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "BackColor", m_BackColor, vbWhite
         .WriteProperty "AutoToggle", m_AutoToggle, False
+        .WriteProperty "DontHighlightDownState", m_DontHighlightDownState, False
+        .WriteProperty "StickyToggle", m_StickyToggle, False
     End With
     
 End Sub
@@ -456,7 +560,7 @@ Private Sub redrawBackBuffer()
     If Me.Enabled Then
     
         'Is the button pressed?
-        If m_ButtonState Then
+        If m_ButtonState And (Not m_DontHighlightDownState) Then
             btnColorFill = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
             btnColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
             
@@ -496,10 +600,22 @@ Private Sub redrawBackBuffer()
         
         If Me.Enabled Then
             
-            If m_MouseInsideUC Then
-                btImageHover.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
+            If Value And (Not (btImage_Pressed Is Nothing)) Then
+            
+                If m_MouseInsideUC Then
+                    btImageHover_Pressed.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
+                Else
+                    btImage_Pressed.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
+                End If
+            
             Else
-                btImage.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
+                
+                If m_MouseInsideUC Then
+                    btImageHover.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
+                Else
+                    btImage.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
+                End If
+                
             End If
             
         Else
