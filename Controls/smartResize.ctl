@@ -6,7 +6,7 @@ Begin VB.UserControl smartResize
    ClientHeight    =   2850
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   8490
+   ClientWidth     =   8280
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -18,257 +18,170 @@ Begin VB.UserControl smartResize
    EndProperty
    ScaleHeight     =   190
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   566
+   ScaleWidth      =   552
    ToolboxBitmap   =   "smartResize.ctx":0000
+   Begin PhotoDemon.pdButtonToolbox cmdAspectRatio 
+      Height          =   630
+      Left            =   7590
+      TabIndex        =   2
+      Top             =   165
+      Width           =   630
+      _ExtentX        =   1111
+      _ExtentY        =   1111
+      DontHighlightDownState=   -1  'True
+      StickyToggle    =   -1  'True
+   End
    Begin PhotoDemon.pdComboBox cmbResolution 
       Height          =   360
-      Left            =   3600
-      TabIndex        =   13
+      Left            =   3450
+      TabIndex        =   3
       Top             =   1200
       Width           =   4695
-      _extentx        =   8281
-      _extenty        =   635
-      fontsize        =   11
+      _ExtentX        =   8281
+      _ExtentY        =   635
+      FontSize        =   11
    End
    Begin PhotoDemon.pdComboBox cmbHeightUnit 
       Height          =   360
-      Left            =   3600
-      TabIndex        =   12
+      Left            =   3450
+      TabIndex        =   4
       Top             =   600
-      Width           =   4695
-      _extentx        =   8281
-      _extenty        =   635
-      fontsize        =   11
+      Width           =   4050
+      _ExtentX        =   7144
+      _ExtentY        =   635
+      FontSize        =   11
    End
    Begin PhotoDemon.pdComboBox cmbWidthUnit 
       Height          =   360
-      Left            =   3600
-      TabIndex        =   11
+      Left            =   3450
+      TabIndex        =   5
       Top             =   0
-      Width           =   4695
-      _extentx        =   8281
-      _extenty        =   635
-      fontsize        =   14
-   End
-   Begin PhotoDemon.jcbutton cmdAspectRatio 
-      Height          =   630
-      Left            =   420
-      TabIndex        =   8
-      Top             =   180
-      Width           =   630
-      _extentx        =   1111
-      _extenty        =   1111
-      buttonstyle     =   7
-      font            =   "smartResize.ctx":0312
-      backcolor       =   -2147483643
-      caption         =   ""
-      mode            =   1
-      value           =   -1  'True
-      handpointer     =   -1  'True
-      picturenormal   =   "smartResize.ctx":033A
-      picturedown     =   "smartResize.ctx":178C
-      pictureeffectondown=   0
-      captioneffects  =   0
-      colorscheme     =   3
+      Width           =   4050
+      _ExtentX        =   7144
+      _ExtentY        =   635
+      FontSize        =   14
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   345
-      Left            =   2280
+      Left            =   2130
       TabIndex        =   0
       Top             =   0
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   767
-      min             =   1
-      max             =   32767
-      value           =   1
+      _ExtentX        =   2117
+      _ExtentY        =   767
+      Min             =   1
+      Max             =   32767
+      Value           =   1
    End
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   345
-      Left            =   2280
+      Left            =   2130
       TabIndex        =   1
       Top             =   600
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   767
-      min             =   1
-      max             =   32767
-      value           =   1
+      _ExtentX        =   2117
+      _ExtentY        =   767
+      Min             =   1
+      Max             =   32767
+      Value           =   1
    End
    Begin PhotoDemon.textUpDown tudResolution 
       Height          =   345
-      Left            =   2280
-      TabIndex        =   9
+      Left            =   2130
+      TabIndex        =   6
       Top             =   1200
       Width           =   1200
-      _extentx        =   2117
-      _extenty        =   767
-      min             =   1
-      max             =   32767
-      value           =   1
+      _ExtentX        =   2117
+      _ExtentY        =   767
+      Min             =   1
+      Max             =   32767
+      Value           =   1
    End
-   Begin VB.Label lblResolution 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "resolution:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblResolution 
       Height          =   285
-      Left            =   1050
-      TabIndex        =   10
+      Left            =   0
       Top             =   1260
-      Width           =   1140
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "resolution:"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblDimensions 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
+   Begin PhotoDemon.pdLabel lblDimensions 
+      Height          =   285
+      Index           =   0
+      Left            =   0
+      Top             =   1830
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   503
+      Alignment       =   1
       Caption         =   "dimensions:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   915
-      TabIndex        =   5
-      Top             =   1830
-      Width           =   1290
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblDimensions 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "            "
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblDimensions 
       Height          =   285
       Index           =   1
-      Left            =   2280
-      TabIndex        =   7
+      Left            =   2130
       Top             =   1830
-      Width           =   900
-   End
-   Begin VB.Label lblAspectRatio 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
+      Width           =   6060
+      _ExtentX        =   10689
+      _ExtentY        =   503
       Caption         =   "            "
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblAspectRatio 
       Height          =   285
       Index           =   1
-      Left            =   2280
-      TabIndex        =   6
+      Left            =   2130
       Top             =   2400
-      Width           =   900
+      Width           =   6060
+      _ExtentX        =   10689
+      _ExtentY        =   503
+      Caption         =   "            "
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblWidth 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "width:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblWidth 
       Height          =   285
-      Left            =   1530
-      TabIndex        =   4
+      Left            =   0
       Top             =   60
-      Width           =   675
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "width:"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblHeight 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "height:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblHeight 
       Height          =   285
-      Left            =   1455
-      TabIndex        =   3
+      Left            =   0
       Top             =   660
-      Width           =   750
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "height:"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblAspectRatio 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "aspect ratio:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblAspectRatio 
       Height          =   285
       Index           =   0
-      Left            =   900
-      TabIndex        =   2
+      Left            =   0
       Top             =   2400
-      Width           =   1305
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "aspect ratio:"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "smartResize"
@@ -335,9 +248,6 @@ Private previousUnitOfResolution As ResolutionUnit
 '"Unknown size mode" is used in the batch conversion dialog, as we don't know the size of images in advance
 ' (so if the user selects PERCENT resizing, we can't give them exact dimensions).
 Private m_UnknownSizeMode As Boolean
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Private m_ToolTip As pdToolTip
 
 'If percentage measurements are disabled, this will be set to TRUE.
 Private m_PercentDisabled As Boolean
@@ -442,25 +352,26 @@ End Sub
 
 'When the control's font is changed, this sub will be fired; make sure all child controls have their fonts changed here.
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
+    
     Set UserControl.Font = mFont
     
-    Set lblWidth.Font = UserControl.Font
+    lblWidth.FontSize = UserControl.Font.Size
     tudWidth.FontSize = UserControl.Font.Size
     cmbWidthUnit.FontSize = UserControl.Font.Size
     
-    Set lblHeight.Font = UserControl.Font
+    lblHeight.FontSize = UserControl.Font.Size
     tudHeight.FontSize = UserControl.Font.Size
     cmbHeightUnit.FontSize = UserControl.Font.Size
     
-    Set lblResolution.Font = UserControl.Font
+    lblResolution.FontSize = UserControl.Font.Size
     tudResolution.FontSize = UserControl.Font.Size
     cmbResolution.FontSize = UserControl.Font.Size
     
-    Set lblAspectRatio(0).Font = UserControl.Font
-    Set lblAspectRatio(1).Font = UserControl.Font
+    lblAspectRatio(0).FontSize = UserControl.Font.Size
+    lblAspectRatio(1).FontSize = UserControl.Font.Size
     
-    Set lblDimensions(0).Font = UserControl.Font
-    Set lblDimensions(1).Font = UserControl.Font
+    lblDimensions(0).FontSize = UserControl.Font.Size
+    lblDimensions(1).FontSize = UserControl.Font.Size
     
 End Sub
 
@@ -750,11 +661,6 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    'When compiled, manifest-themed controls need to be further subclassed so they can have transparent backgrounds.
-    'If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then
-    '    g_Themer.requestContainerSubclass UserControl.hWnd
-    'End If
-    
     allowedToUpdateWidth = True
     allowedToUpdateHeight = True
     
@@ -842,42 +748,16 @@ Private Sub UserControl_Show()
     'Translate various bits of UI text at run-time
     If g_IsProgramRunning Then
         
-        lblWidth.Caption = g_Language.TranslateMessage("width") & ":"
-        lblHeight.Caption = g_Language.TranslateMessage("height") & ":"
-        lblWidth.Refresh
-        lblHeight.Refresh
+        'Add the "lock aspect ratio" button
+        cmdAspectRatio.AssignImage "UNLOCK_32"
+        cmdAspectRatio.AssignImage_Pressed "LOCK_32"
         
-        lblResolution.Caption = g_Language.TranslateMessage("resolution") & ":"
-        lblDimensions(0).Caption = g_Language.TranslateMessage("dimensions") & ":"
-        lblAspectRatio(0).Caption = g_Language.TranslateMessage("aspect ratio") & ":"
-        
-        
-        'UPDATE 09 February 14
-        'I'm trying a new strategy for auto-alignment, per http://helpx.adobe.com/photoshop/using/resizing-image.html
-        ' Photoshop has a lovely layout for their latest resize dialog, using much better alignment than anything I have tried so far.
-        ' So the new plan is to simply emulate their strategy!
-        
-        'The only thing we really need to determine dynamically at run-time is the position of the "lock aspect ratio" button, which
-        ' will vary based on the width of the translated "width" and "height" captions.
-        Dim hOffset As Long
-        hOffset = lblWidth.Left
-        If lblHeight.Left < lblWidth.Left Then hOffset = lblHeight.Left
-        
-        hOffset = hOffset - cmdAspectRatio.Width - fixDPI(12)
-        If hOffset < 0 Then hOffset = 0
-        
-        cmdAspectRatio.Left = hOffset
-        
-        'Add tooltips to the form
-        Set m_ToolTip = New pdToolTip
-        
-        m_ToolTip.setTooltip cmdAspectRatio.hWnd, Me.hWnd, "Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync."
-        m_ToolTip.setTooltip cmbWidthUnit.hWnd, Me.hWnd, "Change the unit of measurement used to resize the image."
-        m_ToolTip.setTooltip cmbHeightUnit.hWnd, Me.hWnd, "Change the unit of measurement used to resize the image."
-        m_ToolTip.setTooltip cmbResolution.hWnd, Me.hWnd, "Change the unit of measurement used for image resolution (pixel density)."
-        
-        m_ToolTip.updateAgainstCurrentTheme
-        
+        'Add tooltips to the controls that natively support them
+        cmdAspectRatio.assignTooltip "Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.", "Preserve aspect ratio"
+        cmbWidthUnit.assignTooltip "Change the unit of measurement used to resize the image."
+        cmbHeightUnit.assignTooltip "Change the unit of measurement used to resize the image."
+        cmbResolution.assignTooltip "Change the unit of measurement used for image resolution (pixel density)."
+                
     End If
 
 End Sub
@@ -889,13 +769,6 @@ End Sub
 
 Private Sub tudWidth_Change()
     If Not unitSyncingSuspended Then syncDimensions True
-End Sub
-
-Private Sub UserControl_Terminate()
-    
-    'When the control is terminated, release the subclassing used for transparent backgrounds
-    'If g_IsProgramCompiled And g_IsThemingEnabled And g_IsVistaOrLater Then g_Themer.releaseContainerSubclass UserControl.hWnd
-    
 End Sub
 
 'When one dimension is updated, call this to synchronize the other (as necessary) and/or the aspect ratio
@@ -1086,3 +959,4 @@ Private Function getCurrentHeightUnit() As Long
         getCurrentHeightUnit = cmbHeightUnit.ListIndex
     End If
 End Function
+

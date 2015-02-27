@@ -422,7 +422,11 @@ SB_ZOOM_IN   CUSTOM  MOVEABLE        LOADONCALL      zoom_in_16.png
 SB_ZOOM_OUT  CUSTOM  MOVEABLE        LOADONCALL      zoom_out_16.png
 SB_ZOOM_FIT  CUSTOM  MOVEABLE        LOADONCALL      zoom_fit_16.png
 SB_IMG_SIZE  CUSTOM  MOVEABLE        LOADONCALL      document_resize_16.png
-SB_NETWORK   CUSTOM MOVEABLE       LOADONCALL      network_access_16.png
+SB_NETWORK   CUSTOM  MOVEABLE        LOADONCALL      network_access_16.png
+
+//Resize dialog images
+LOCK_32      CUSTOM  MOVEABLE        LOADONCALL      lock_32.png
+UNLOCK_32    CUSTOM  MOVEABLE        LOADONCALL      unlock_32.png
 
 //Resize mode sample images
 RSZ_STRETCH  CUSTOM  MOVEABLE        LOADONCALL      resize_stretch.png
