@@ -381,7 +381,7 @@ Private Sub Form_Load()
     cmdFile(FILE_UNDO).AssignImage "TF_UNDO", , 50
     cmdFile(FILE_FADE).AssignImage "TF_FADE", , 50
     cmdFile(FILE_REDO).AssignImage "TF_REDO"
-            
+    
     'Initialize canvas tool button images
     cmdTools(NAV_DRAG).AssignImage "T_HAND"
     cmdTools(NAV_MOVE).AssignImage "T_MOVE"

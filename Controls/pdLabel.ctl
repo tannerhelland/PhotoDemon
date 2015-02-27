@@ -694,9 +694,9 @@ Private Sub updateControlSize()
     
     'If the label's caption alignment is RIGHT, and AUTOSIZE is active, we must move the LEFT property by a proportional amount
     ' to any size changes.
-    If (m_Alignment = vbRightJustify) And (origWidth <> m_BackBuffer.getDIBWidth) And (m_Layout = AutoFitCaption) Then
+    If (m_Alignment = vbRightJustify) And (origWidth <> m_BackBuffer.getDIBWidth) And (m_Layout = AutoSizeControl) Then
         m_InternalResizeState = True
-        UserControl.Extender.Left = UserControl.Extender.Left - (m_BackBuffer.getDIBWidth - origWidth)
+        UserControl.Extender.Left = UserControl.Extender.Left + (m_BackBuffer.getDIBWidth - origWidth)
         m_InternalResizeState = False
     End If
     
