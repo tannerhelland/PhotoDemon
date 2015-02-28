@@ -37,7 +37,7 @@ Begin VB.Form FormPreferences
       EndProperty
       Height          =   495
       Left            =   2910
-      TabIndex        =   78
+      TabIndex        =   66
       Top             =   6990
       Width           =   2580
    End
@@ -246,7 +246,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   1
       Left            =   120
-      TabIndex        =   24
+      TabIndex        =   21
       Top             =   960
       Width           =   2520
       _ExtentX        =   4445
@@ -279,7 +279,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   2
       Left            =   120
-      TabIndex        =   37
+      TabIndex        =   31
       Top             =   1800
       Width           =   2520
       _ExtentX        =   4445
@@ -312,7 +312,7 @@ Begin VB.Form FormPreferences
       Height          =   780
       Index           =   3
       Left            =   120
-      TabIndex        =   39
+      TabIndex        =   33
       Top             =   2640
       Width           =   2520
       _ExtentX        =   4445
@@ -347,116 +347,6 @@ Begin VB.Form FormPreferences
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   6480
-      Index           =   6
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   432
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   13
-      Top             =   240
-      Width           =   8295
-      Begin PhotoDemon.pdLabel lblExplanation 
-         Height          =   3015
-         Left            =   240
-         Top             =   3360
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   5318
-         Caption         =   "(disclaimer populated at run-time)"
-         FontSize        =   9
-         Layout          =   1
-      End
-      Begin PhotoDemon.smartCheckBox chkUpdates 
-         Height          =   330
-         Index           =   0
-         Left            =   240
-         TabIndex        =   131
-         Top             =   2280
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   582
-         Caption         =   "update language files independently"
-      End
-      Begin PhotoDemon.pdLabel lblUpdates 
-         Height          =   240
-         Index           =   0
-         Left            =   240
-         Top             =   480
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   503
-         Caption         =   "automatically check for updates:"
-      End
-      Begin PhotoDemon.pdComboBox cboUpdates 
-         Height          =   375
-         Index           =   0
-         Left            =   240
-         TabIndex        =   130
-         Top             =   840
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.smartCheckBox chkUpdates 
-         Height          =   330
-         Index           =   1
-         Left            =   240
-         TabIndex        =   132
-         Top             =   2760
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   582
-         Caption         =   "update plugins independently"
-      End
-      Begin PhotoDemon.pdComboBox cboUpdates 
-         Height          =   375
-         Index           =   1
-         Left            =   240
-         TabIndex        =   133
-         Top             =   1710
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdLabel lblUpdates 
-         Height          =   240
-         Index           =   1
-         Left            =   240
-         Top             =   1320
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   503
-         Caption         =   "allow updates from these tracks:"
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "update options"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   0
-         TabIndex        =   14
-         Top             =   0
-         Width           =   1575
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6480
       Index           =   0
       Left            =   3000
       MousePointer    =   1  'Arrow
@@ -466,10 +356,37 @@ Begin VB.Form FormPreferences
       TabIndex        =   7
       Top             =   240
       Width           =   8295
+      Begin PhotoDemon.pdComboBox cboMRUCaption 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   118
+         Top             =   4800
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   635
+      End
+      Begin PhotoDemon.pdComboBox cboImageCaption 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   117
+         Top             =   2250
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   529
+      End
+      Begin PhotoDemon.pdComboBox cboCanvas 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   116
+         Top             =   810
+         Width           =   6600
+         _ExtentX        =   11642
+         _ExtentY        =   529
+      End
       Begin PhotoDemon.textUpDown tudRecentFiles 
          Height          =   345
          Left            =   3900
-         TabIndex        =   96
+         TabIndex        =   83
          Top             =   5325
          Width           =   1335
          _ExtentX        =   2355
@@ -481,71 +398,16 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.colorSelector csCanvasColor 
          Height          =   435
          Left            =   6960
-         TabIndex        =   91
+         TabIndex        =   78
          Top             =   780
          Width           =   1215
          _ExtentX        =   2143
          _ExtentY        =   767
       End
-      Begin VB.ComboBox cmbMRUCaption 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   31
-         Top             =   4800
-         Width           =   8055
-      End
-      Begin VB.ComboBox cmbImageCaption 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   28
-         ToolTipText     =   "Image windows tend to be large, so feel free to display each image's full location in the image window title bars."
-         Top             =   2250
-         Width           =   8055
-      End
-      Begin VB.ComboBox cmbCanvas 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   9
-         Top             =   810
-         Width           =   6615
-      End
       Begin PhotoDemon.smartCheckBox chkMouseHighResolution 
          Height          =   330
          Left            =   240
-         TabIndex        =   129
+         TabIndex        =   111
          Top             =   3360
          Width           =   7980
          _ExtentX        =   14076
@@ -569,7 +431,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   128
+         TabIndex        =   110
          Top             =   2880
          Width           =   2250
       End
@@ -589,7 +451,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   95
+         TabIndex        =   82
          Top             =   5400
          Width           =   3480
       End
@@ -610,7 +472,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   13
          Left            =   0
-         TabIndex        =   94
+         TabIndex        =   81
          Top             =   3960
          Width           =   1515
       End
@@ -630,7 +492,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   32
+         TabIndex        =   26
          Top             =   4440
          Width           =   3315
       End
@@ -651,7 +513,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   4
          Left            =   0
-         TabIndex        =   30
+         TabIndex        =   25
          Top             =   1440
          Width           =   870
       End
@@ -671,7 +533,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   29
+         TabIndex        =   24
          Top             =   1890
          Width           =   2730
       End
@@ -691,7 +553,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   450
          Width           =   2295
       End
@@ -729,13 +591,40 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   17
+      TabIndex        =   16
       Top             =   240
       Width           =   8295
+      Begin PhotoDemon.pdComboBox cboAlphaCheckSize 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   121
+         Top             =   5250
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboAlphaCheck 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   120
+         Top             =   4260
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboMonitors 
+         Height          =   330
+         Left            =   780
+         TabIndex        =   119
+         Top             =   1950
+         Width           =   7440
+         _ExtentX        =   13123
+         _ExtentY        =   582
+      End
       Begin PhotoDemon.pdTextBox txtColorProfilePath 
          Height          =   315
          Left            =   780
-         TabIndex        =   127
+         TabIndex        =   109
          Top             =   2790
          Width           =   6495
          _ExtentX        =   11456
@@ -755,33 +644,15 @@ Begin VB.Form FormPreferences
          EndProperty
          Height          =   375
          Left            =   7380
-         TabIndex        =   104
+         TabIndex        =   90
          Top             =   2760
          Width           =   810
-      End
-      Begin VB.ComboBox cmbMonitors 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   780
-         Style           =   2  'Dropdown List
-         TabIndex        =   102
-         Top             =   1950
-         Width           =   7440
       End
       Begin PhotoDemon.smartOptionButton optColorManagement 
          Height          =   330
          Index           =   0
          Left            =   240
-         TabIndex        =   99
+         TabIndex        =   86
          Top             =   840
          Width           =   7920
          _ExtentX        =   13970
@@ -792,7 +663,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.colorSelector csAlphaOne 
          Height          =   435
          Left            =   6240
-         TabIndex        =   92
+         TabIndex        =   79
          Top             =   4230
          Width           =   945
          _ExtentX        =   1667
@@ -801,53 +672,17 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkValidateAlpha 
          Height          =   330
          Left            =   240
-         TabIndex        =   79
+         TabIndex        =   67
          Top             =   5760
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "automatically validate all incoming alpha channels"
       End
-      Begin VB.ComboBox cmbAlphaCheckSize 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   21
-         Top             =   5250
-         Width           =   5895
-      End
-      Begin VB.ComboBox cmbAlphaCheck 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   19
-         Top             =   4260
-         Width           =   5895
-      End
       Begin PhotoDemon.colorSelector csAlphaTwo 
          Height          =   435
          Left            =   7320
-         TabIndex        =   93
+         TabIndex        =   80
          Top             =   4230
          Width           =   945
          _ExtentX        =   1667
@@ -857,7 +692,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   1
          Left            =   240
-         TabIndex        =   100
+         TabIndex        =   87
          Top             =   1200
          Width           =   7920
          _ExtentX        =   13970
@@ -881,7 +716,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   2
          Left            =   780
-         TabIndex        =   103
+         TabIndex        =   89
          Top             =   2430
          Width           =   2880
       End
@@ -902,7 +737,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   1
          Left            =   780
-         TabIndex        =   101
+         TabIndex        =   88
          Top             =   1590
          Width           =   1635
       End
@@ -923,7 +758,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   0
          Left            =   240
-         TabIndex        =   98
+         TabIndex        =   85
          Top             =   480
          Width           =   3285
       End
@@ -944,7 +779,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   0
          Left            =   0
-         TabIndex        =   97
+         TabIndex        =   84
          Top             =   0
          Width           =   1980
       End
@@ -964,7 +799,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   22
+         TabIndex        =   19
          Top             =   4860
          Width           =   2790
       End
@@ -984,7 +819,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   20
+         TabIndex        =   18
          Top             =   3870
          Width           =   2970
       End
@@ -1005,7 +840,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   3420
          Width           =   2805
       End
@@ -1023,26 +858,158 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   433
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   40
+      TabIndex        =   34
       Top             =   240
       Width           =   8295
-      Begin VB.ComboBox cmbFiletype 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
+      Begin PhotoDemon.pdComboBox cboFiletype 
+         Height          =   330
          Left            =   600
-         Style           =   2  'Dropdown List
-         TabIndex        =   65
+         TabIndex        =   122
          Top             =   960
          Width           =   7395
+         _ExtentX        =   13044
+         _ExtentY        =   582
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   3735
+         Index           =   4
+         Left            =   240
+         ScaleHeight     =   249
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   529
+         TabIndex        =   49
+         Top             =   1680
+         Width           =   7935
+         Begin PhotoDemon.pdComboBox cboTiffCompression 
+            Height          =   330
+            Left            =   360
+            TabIndex        =   123
+            Top             =   960
+            Width           =   7335
+            _ExtentX        =   12938
+            _ExtentY        =   582
+         End
+         Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
+            Height          =   330
+            Left            =   360
+            TabIndex        =   68
+            Top             =   1560
+            Width           =   7500
+            _ExtentX        =   13229
+            _ExtentY        =   582
+            Caption         =   " save TIFFs as separated CMYK (for printing)"
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "TIFF (Tagged Image File Format) options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   7
+            Left            =   120
+            TabIndex        =   52
+            Top             =   120
+            Width           =   4395
+         End
+         Begin VB.Label lblFileStuff 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "when saving, compress TIFFs using:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Index           =   0
+            Left            =   360
+            TabIndex        =   50
+            Top             =   645
+            Width           =   3135
+         End
+      End
+      Begin VB.PictureBox picFileContainer 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   3855
+         Index           =   2
+         Left            =   240
+         ScaleHeight     =   257
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   529
+         TabIndex        =   47
+         Top             =   1680
+         Width           =   7935
+         Begin PhotoDemon.pdComboBox cboPPMFormat 
+            Height          =   330
+            Left            =   480
+            TabIndex        =   124
+            Top             =   960
+            Width           =   7335
+            _ExtentX        =   12938
+            _ExtentY        =   582
+         End
+         Begin VB.Label lblInterfaceTitle 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "PPM (Portable Pixmap) options"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   12
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   285
+            Index           =   12
+            Left            =   120
+            TabIndex        =   53
+            Top             =   120
+            Width           =   3285
+         End
+         Begin VB.Label lblPPMEncoding 
+            AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
+            Caption         =   "export PPM files using:"
+            BeginProperty Font 
+               Name            =   "Tahoma"
+               Size            =   9.75
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ForeColor       =   &H00404040&
+            Height          =   240
+            Left            =   240
+            TabIndex        =   48
+            Top             =   600
+            Width           =   1950
+         End
       End
       Begin VB.PictureBox picFileContainer 
          Appearance      =   0  'Flat
@@ -1055,13 +1022,13 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   69
+         TabIndex        =   57
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkPNGBackground 
             Height          =   330
             Left            =   360
-            TabIndex        =   82
+            TabIndex        =   70
             Top             =   2520
             Width           =   7500
             _ExtentX        =   13229
@@ -1071,7 +1038,7 @@ Begin VB.Form FormPreferences
          Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
             Height          =   330
             Left            =   360
-            TabIndex        =   81
+            TabIndex        =   69
             Top             =   2040
             Width           =   7500
             _ExtentX        =   13229
@@ -1082,7 +1049,7 @@ Begin VB.Form FormPreferences
             Height          =   330
             Left            =   360
             Max             =   9
-            TabIndex        =   71
+            TabIndex        =   59
             Top             =   1080
             Value           =   9
             Width           =   7095
@@ -1105,7 +1072,7 @@ Begin VB.Form FormPreferences
             Height          =   195
             Index           =   1
             Left            =   5625
-            TabIndex        =   74
+            TabIndex        =   62
             Top             =   1560
             Width           =   1590
          End
@@ -1126,7 +1093,7 @@ Begin VB.Form FormPreferences
             Height          =   195
             Index           =   0
             Left            =   600
-            TabIndex        =   73
+            TabIndex        =   61
             Top             =   1560
             Width           =   1110
          End
@@ -1147,7 +1114,7 @@ Begin VB.Form FormPreferences
             Height          =   240
             Index           =   1
             Left            =   360
-            TabIndex        =   72
+            TabIndex        =   60
             Top             =   720
             Width           =   4725
          End
@@ -1168,7 +1135,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   20
             Left            =   120
-            TabIndex        =   70
+            TabIndex        =   58
             Top             =   120
             Width           =   4290
          End
@@ -1184,13 +1151,13 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   75
+         TabIndex        =   63
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkTGARLE 
             Height          =   330
             Left            =   360
-            TabIndex        =   83
+            TabIndex        =   71
             Top             =   600
             Width           =   7500
             _ExtentX        =   13229
@@ -1214,7 +1181,7 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   21
             Left            =   120
-            TabIndex        =   76
+            TabIndex        =   64
             Top             =   120
             Width           =   2700
          End
@@ -1230,13 +1197,13 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   67
+         TabIndex        =   55
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkBMPRLE 
             Height          =   330
             Left            =   360
-            TabIndex        =   84
+            TabIndex        =   72
             Top             =   600
             Width           =   7500
             _ExtentX        =   13229
@@ -1260,168 +1227,9 @@ Begin VB.Form FormPreferences
             Height          =   285
             Index           =   19
             Left            =   120
-            TabIndex        =   68
+            TabIndex        =   56
             Top             =   120
             Width           =   2295
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   3735
-         Index           =   4
-         Left            =   240
-         ScaleHeight     =   249
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   529
-         TabIndex        =   59
-         Top             =   1680
-         Width           =   7935
-         Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
-            Height          =   330
-            Left            =   360
-            TabIndex        =   80
-            Top             =   1560
-            Width           =   7500
-            _ExtentX        =   13229
-            _ExtentY        =   582
-            Caption         =   " save TIFFs as separated CMYK (for printing)"
-         End
-         Begin VB.ComboBox cmbTIFFCompression 
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   360
-            Style           =   2  'Dropdown List
-            TabIndex        =   60
-            Top             =   960
-            Width           =   7335
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "TIFF (Tagged Image File Format) options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   7
-            Left            =   120
-            TabIndex        =   63
-            Top             =   120
-            Width           =   4395
-         End
-         Begin VB.Label lblFileStuff 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "when saving, compress TIFFs using:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Index           =   0
-            Left            =   360
-            TabIndex        =   61
-            Top             =   645
-            Width           =   3135
-         End
-      End
-      Begin VB.PictureBox picFileContainer 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   3855
-         Index           =   2
-         Left            =   240
-         ScaleHeight     =   257
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   529
-         TabIndex        =   56
-         Top             =   1680
-         Width           =   7935
-         Begin VB.ComboBox cmbPPMFormat 
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00800000&
-            Height          =   360
-            Left            =   480
-            Style           =   2  'Dropdown List
-            TabIndex        =   57
-            Top             =   960
-            Width           =   7335
-         End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "PPM (Portable Pixmap) options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   285
-            Index           =   12
-            Left            =   120
-            TabIndex        =   64
-            Top             =   120
-            Width           =   3285
-         End
-         Begin VB.Label lblPPMEncoding 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "export PPM files using:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
-            Left            =   240
-            TabIndex        =   58
-            Top             =   600
-            Width           =   1950
          End
       End
       Begin VB.Label lblFileFreeImageWarning 
@@ -1429,7 +1237,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   495
          Left            =   600
-         TabIndex        =   66
+         TabIndex        =   54
          Top             =   5520
          Width           =   7455
       End
@@ -1457,7 +1265,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   18
          Left            =   360
-         TabIndex        =   62
+         TabIndex        =   51
          Top             =   480
          Width           =   2520
       End
@@ -1478,7 +1286,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   9
          Left            =   0
-         TabIndex        =   41
+         TabIndex        =   35
          Top             =   0
          Width           =   1950
       End
@@ -1495,90 +1303,54 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   38
+      TabIndex        =   32
       Top             =   240
       Width           =   8295
+      Begin PhotoDemon.pdComboBox cboExportColorDepth 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   125
+         Top             =   1740
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+      End
       Begin PhotoDemon.smartCheckBox chkConfirmUnsaved 
          Height          =   330
          Left            =   240
-         TabIndex        =   90
+         TabIndex        =   77
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "when closing images, warn me me about unsaved changes"
       End
-      Begin VB.ComboBox cmbSaveBehavior 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
+      Begin PhotoDemon.pdComboBox cboDefaultSaveFormat 
+         Height          =   330
          Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   86
-         Top             =   5925
-         Width           =   7980
-      End
-      Begin VB.ComboBox cmbExportColorDepth 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   50
-         Top             =   1740
-         Width           =   7980
-      End
-      Begin VB.ComboBox cmbMetadata 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   47
-         Top             =   4530
-         Width           =   7980
-      End
-      Begin VB.ComboBox cmbDefaultSaveFormat 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   42
+         TabIndex        =   126
          Top             =   3135
          Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboMetadata 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   127
+         Top             =   4530
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboSaveBehavior 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   128
+         Top             =   5925
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
       End
       Begin VB.Label lblSubheader 
          AutoSize        =   -1  'True
@@ -1597,7 +1369,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   3
          Left            =   240
-         TabIndex        =   87
+         TabIndex        =   74
          Top             =   4140
          Width           =   4785
       End
@@ -1618,7 +1390,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   85
+         TabIndex        =   73
          Top             =   3690
          Width           =   4065
       End
@@ -1639,7 +1411,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   0
          Left            =   240
-         TabIndex        =   52
+         TabIndex        =   43
          Top             =   1350
          Width           =   2145
       End
@@ -1660,7 +1432,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   17
          Left            =   0
-         TabIndex        =   51
+         TabIndex        =   42
          Top             =   930
          Width           =   2985
       End
@@ -1681,7 +1453,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   16
          Left            =   0
-         TabIndex        =   49
+         TabIndex        =   41
          Top             =   5085
          Width           =   4320
       End
@@ -1702,7 +1474,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   2
          Left            =   240
-         TabIndex        =   48
+         TabIndex        =   40
          Top             =   5535
          Width           =   1830
       End
@@ -1723,7 +1495,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   11
          Left            =   0
-         TabIndex        =   45
+         TabIndex        =   38
          Top             =   0
          Width           =   2505
       End
@@ -1744,7 +1516,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   1
          Left            =   240
-         TabIndex        =   44
+         TabIndex        =   37
          Top             =   2730
          Width           =   6585
       End
@@ -1765,7 +1537,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   10
          Left            =   0
-         TabIndex        =   43
+         TabIndex        =   36
          Top             =   2310
          Width           =   3285
       End
@@ -1782,31 +1554,13 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   431
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   25
+      TabIndex        =   22
       Top             =   240
       Width           =   8295
-      Begin VB.ComboBox cmbLargeImages 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   26
-         Top             =   3600
-         Width           =   7920
-      End
       Begin PhotoDemon.smartCheckBox chkInitialColorDepth 
          Height          =   330
          Left            =   240
-         TabIndex        =   88
+         TabIndex        =   75
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
@@ -1816,7 +1570,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkToneMapping 
          Height          =   330
          Left            =   240
-         TabIndex        =   89
+         TabIndex        =   76
          Top             =   1320
          Width           =   7920
          _ExtentX        =   13970
@@ -1826,12 +1580,21 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.smartCheckBox chkLoadingOrientation 
          Height          =   330
          Left            =   240
-         TabIndex        =   120
+         TabIndex        =   103
          Top             =   2280
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "obey auto-rotate instructions inside image files"
+      End
+      Begin PhotoDemon.pdComboBox cboLargeImages 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   129
+         Top             =   3600
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
       End
       Begin VB.Label lblInterfaceTitle 
          AutoSize        =   -1  'True
@@ -1850,7 +1613,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   3
          Left            =   60
-         TabIndex        =   121
+         TabIndex        =   104
          Top             =   1920
          Width           =   1140
       End
@@ -1871,7 +1634,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   15
          Left            =   60
-         TabIndex        =   46
+         TabIndex        =   39
          Top             =   0
          Width           =   1200
       End
@@ -1889,7 +1652,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   375
          Left            =   120
-         TabIndex        =   35
+         TabIndex        =   29
          Top             =   6000
          Width           =   8055
       End
@@ -1910,7 +1673,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   6
          Left            =   60
-         TabIndex        =   34
+         TabIndex        =   28
          Top             =   960
          Width           =   3675
       End
@@ -1931,7 +1694,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   5
          Left            =   60
-         TabIndex        =   33
+         TabIndex        =   27
          Top             =   2880
          Width           =   585
       End
@@ -1951,7 +1714,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00404040&
          Height          =   240
          Left            =   240
-         TabIndex        =   27
+         TabIndex        =   23
          Top             =   3240
          Width           =   4845
       End
@@ -1968,97 +1731,13 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   240
       Width           =   8295
-      Begin VB.ComboBox cboPerformance 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Index           =   0
-         ItemData        =   "VBP_FormPreferences.frx":9690
-         Left            =   180
-         List            =   "VBP_FormPreferences.frx":9692
-         Style           =   2  'Dropdown List
-         TabIndex        =   122
-         Top             =   720
-         Width           =   7920
-      End
-      Begin VB.ComboBox cboPerformance 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Index           =   1
-         ItemData        =   "VBP_FormPreferences.frx":9694
-         Left            =   180
-         List            =   "VBP_FormPreferences.frx":9696
-         Style           =   2  'Dropdown List
-         TabIndex        =   117
-         Top             =   1980
-         Width           =   7920
-      End
-      Begin VB.ComboBox cboPerformance 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Index           =   2
-         ItemData        =   "VBP_FormPreferences.frx":9698
-         Left            =   180
-         List            =   "VBP_FormPreferences.frx":969A
-         Style           =   2  'Dropdown List
-         TabIndex        =   109
-         Top             =   3240
-         Width           =   7920
-      End
-      Begin VB.ComboBox cboPerformance 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Index           =   3
-         ItemData        =   "VBP_FormPreferences.frx":969C
-         Left            =   180
-         List            =   "VBP_FormPreferences.frx":969E
-         Style           =   2  'Dropdown List
-         TabIndex        =   107
-         Top             =   4470
-         Width           =   7920
-      End
       Begin PhotoDemon.sliderTextCombo sltUndoCompression 
          Height          =   495
          Left            =   240
-         TabIndex        =   116
+         TabIndex        =   100
          Top             =   5730
          Width           =   7980
          _ExtentX        =   14076
@@ -2066,6 +1745,46 @@ Begin VB.Form FormPreferences
          Max             =   9
          SliderTrackStyle=   1
          NotchPosition   =   2
+      End
+      Begin PhotoDemon.pdComboBox cboPerformance 
+         Height          =   330
+         Index           =   0
+         Left            =   180
+         TabIndex        =   130
+         Top             =   720
+         Width           =   7920
+         _ExtentX        =   14076
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboPerformance 
+         Height          =   330
+         Index           =   1
+         Left            =   180
+         TabIndex        =   131
+         Top             =   1980
+         Width           =   7920
+         _ExtentX        =   14076
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboPerformance 
+         Height          =   330
+         Index           =   2
+         Left            =   180
+         TabIndex        =   132
+         Top             =   3240
+         Width           =   7920
+         _ExtentX        =   14076
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboPerformance 
+         Height          =   330
+         Index           =   3
+         Left            =   180
+         TabIndex        =   133
+         Top             =   4470
+         Width           =   7920
+         _ExtentX        =   14076
+         _ExtentY        =   582
       End
       Begin VB.Label lblPerformanceTitle 
          AutoSize        =   -1  'True
@@ -2084,7 +1803,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   4
          Left            =   0
-         TabIndex        =   124
+         TabIndex        =   106
          Top             =   0
          Width           =   1980
       End
@@ -2105,7 +1824,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   4
          Left            =   180
-         TabIndex        =   123
+         TabIndex        =   105
          Top             =   390
          Width           =   2580
       End
@@ -2126,7 +1845,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   3
          Left            =   180
-         TabIndex        =   119
+         TabIndex        =   102
          Top             =   1650
          Width           =   3150
       End
@@ -2147,7 +1866,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   3
          Left            =   0
-         TabIndex        =   118
+         TabIndex        =   101
          Top             =   1260
          Width           =   900
       End
@@ -2168,7 +1887,7 @@ Begin VB.Form FormPreferences
          Height          =   195
          Index           =   3
          Left            =   360
-         TabIndex        =   115
+         TabIndex        =   99
          Top             =   6210
          Width           =   1785
       End
@@ -2190,7 +1909,7 @@ Begin VB.Form FormPreferences
          Height          =   195
          Index           =   2
          Left            =   4980
-         TabIndex        =   114
+         TabIndex        =   98
          Top             =   6210
          Width           =   2295
       End
@@ -2211,7 +1930,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   2
          Left            =   240
-         TabIndex        =   113
+         TabIndex        =   97
          Top             =   5370
          Width           =   4110
       End
@@ -2232,7 +1951,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   112
+         TabIndex        =   96
          Top             =   4980
          Width           =   1110
       End
@@ -2253,7 +1972,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   111
+         TabIndex        =   95
          Top             =   2520
          Width           =   1170
       End
@@ -2274,7 +1993,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   1
          Left            =   180
-         TabIndex        =   110
+         TabIndex        =   94
          Top             =   2910
          Width           =   4530
       End
@@ -2295,7 +2014,7 @@ Begin VB.Form FormPreferences
          Height          =   240
          Index           =   0
          Left            =   180
-         TabIndex        =   108
+         TabIndex        =   93
          Top             =   4140
          Width           =   2985
       End
@@ -2316,7 +2035,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   0
          Left            =   0
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   3750
          Width           =   915
       End
@@ -2333,13 +2052,13 @@ Begin VB.Form FormPreferences
       ScaleHeight     =   432
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   240
       Width           =   8295
       Begin PhotoDemon.pdTextBox txtHardware 
          Height          =   2235
          Left            =   240
-         TabIndex        =   126
+         TabIndex        =   108
          Top             =   2040
          Width           =   7335
          _ExtentX        =   12938
@@ -2350,7 +2069,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdTextBox txtTempPath 
          Height          =   315
          Left            =   240
-         TabIndex        =   125
+         TabIndex        =   107
          Top             =   510
          Width           =   7335
          _ExtentX        =   12938
@@ -2360,7 +2079,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.jcbutton cmdCopyReportClipboard 
          Height          =   525
          Left            =   7680
-         TabIndex        =   106
+         TabIndex        =   92
          Top             =   3720
          Width           =   525
          _ExtentX        =   873
@@ -2377,7 +2096,7 @@ Begin VB.Form FormPreferences
          EndProperty
          BackColor       =   0
          Caption         =   ""
-         PictureNormal   =   "VBP_FormPreferences.frx":96A0
+         PictureNormal   =   "VBP_FormPreferences.frx":9690
          PictureEffectOnOver=   0
          PictureEffectOnDown=   0
          CaptionEffects  =   0
@@ -2396,7 +2115,7 @@ Begin VB.Form FormPreferences
          EndProperty
          Height          =   450
          Left            =   7680
-         TabIndex        =   16
+         TabIndex        =   15
          ToolTipText     =   "Click to open a browse-for-folder dialog"
          Top             =   435
          Width           =   525
@@ -2418,7 +2137,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   6
          Left            =   0
-         TabIndex        =   105
+         TabIndex        =   91
          Top             =   1560
          Width           =   3120
       End
@@ -2437,7 +2156,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00804040&
          Height          =   480
          Left            =   240
-         TabIndex        =   55
+         TabIndex        =   46
          Top             =   5430
          Width           =   7965
          WordWrap        =   -1  'True
@@ -2457,7 +2176,7 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H00804040&
          Height          =   480
          Left            =   240
-         TabIndex        =   54
+         TabIndex        =   45
          Top             =   4920
          Width           =   7965
          WordWrap        =   -1  'True
@@ -2479,7 +2198,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   5
          Left            =   0
-         TabIndex        =   53
+         TabIndex        =   44
          Top             =   4560
          Width           =   2130
       End
@@ -2500,7 +2219,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   36
+         TabIndex        =   30
          Top             =   0
          Width           =   2385
       End
@@ -2518,10 +2237,120 @@ Begin VB.Form FormPreferences
          ForeColor       =   &H000000FF&
          Height          =   510
          Left            =   240
-         TabIndex        =   23
+         TabIndex        =   20
          Top             =   900
          Width           =   7695
          WordWrap        =   -1  'True
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6480
+      Index           =   6
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   432
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   12
+      Top             =   240
+      Width           =   8295
+      Begin PhotoDemon.pdLabel lblExplanation 
+         Height          =   3015
+         Left            =   240
+         Top             =   3360
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   5318
+         Caption         =   "(disclaimer populated at run-time)"
+         FontSize        =   9
+         Layout          =   1
+      End
+      Begin PhotoDemon.smartCheckBox chkUpdates 
+         Height          =   330
+         Index           =   0
+         Left            =   240
+         TabIndex        =   113
+         Top             =   2280
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   582
+         Caption         =   "update language files independently"
+      End
+      Begin PhotoDemon.pdLabel lblUpdates 
+         Height          =   240
+         Index           =   0
+         Left            =   240
+         Top             =   480
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   503
+         Caption         =   "automatically check for updates:"
+      End
+      Begin PhotoDemon.pdComboBox cboUpdates 
+         Height          =   375
+         Index           =   0
+         Left            =   240
+         TabIndex        =   112
+         Top             =   840
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.smartCheckBox chkUpdates 
+         Height          =   330
+         Index           =   1
+         Left            =   240
+         TabIndex        =   114
+         Top             =   2760
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   582
+         Caption         =   "update plugins independently"
+      End
+      Begin PhotoDemon.pdComboBox cboUpdates 
+         Height          =   375
+         Index           =   1
+         Left            =   240
+         TabIndex        =   115
+         Top             =   1710
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdLabel lblUpdates 
+         Height          =   240
+         Index           =   1
+         Left            =   240
+         Top             =   1320
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   503
+         Caption         =   "allow updates from these tracks:"
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "update options"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   3
+         Left            =   0
+         TabIndex        =   13
+         Top             =   0
+         Width           =   1575
       End
    End
    Begin VB.Line lneVertical 
@@ -2534,7 +2363,7 @@ Begin VB.Form FormPreferences
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   77
+      TabIndex        =   65
       Top             =   6840
       Width           =   12135
    End
@@ -2574,10 +2403,10 @@ Private userInitiatedAlphaSelection As Boolean
 Dim originalg_CanvasBackground As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Alpha channel checkerboard selection; change the color selectors to match
-Private Sub cmbAlphaCheck_Click()
+Private Sub cboAlphaCheck_Click()
 
     'Only respond to user-generated events
     If userInitiatedAlphaSelection Then
@@ -2585,7 +2414,7 @@ Private Sub cmbAlphaCheck_Click()
         userInitiatedAlphaSelection = False
 
         'Redraw the sample picture boxes based on the value the user has selected
-        Select Case cmbAlphaCheck.ListIndex
+        Select Case cboAlphaCheck.ListIndex
         
             'Case 0 - Highlights
             Case 0
@@ -2616,12 +2445,12 @@ Private Sub cmbAlphaCheck_Click()
 End Sub
 
 'Canvas background selection; change the color selection box to match
-Private Sub cmbCanvas_Click()
+Private Sub cboCanvas_Click()
     
     If userInitiatedColorSelection Then
     
         'Redraw the sample color box based on the value the user has selected
-        Select Case cmbCanvas.ListIndex
+        Select Case cboCanvas.ListIndex
             
             Case 0
                 userInitiatedColorSelection = False
@@ -2646,18 +2475,18 @@ Private Sub cmbCanvas_Click()
 End Sub
 
 'When a new filetype is selected on the File Formats settings page, display the matching options panel
-Private Sub cmbFiletype_Click()
+Private Sub cboFiletype_Click()
     
     Dim ftID As Long
-    For ftID = 0 To cmbFiletype.ListCount - 1
-        If ftID = cmbFiletype.ListIndex Then picFileContainer(ftID).Visible = True Else picFileContainer(ftID).Visible = False
+    For ftID = 0 To cboFiletype.ListCount - 1
+        If ftID = cboFiletype.ListIndex Then picFileContainer(ftID).Visible = True Else picFileContainer(ftID).Visible = False
     Next ftID
     
 End Sub
 
 'Whenever the Color and Transparency -> Color Management -> Monitor combo box is changed, load the relevant color profile
 ' path from the preferences file (if one exists)
-Private Sub cmbMonitors_Click()
+Private Sub cboMonitors_Click()
 
     'One of the difficulties with tracking multiple monitors is that the user can attach/detach them at will.  They
     ' can also have multiple monitors attached with the same make and model (and retrieving EDIDs is extremely
@@ -2671,7 +2500,7 @@ Private Sub cmbMonitors_Click()
 
     'Start by retrieving the HMONITOR value for the selected monitor
     Dim hMonitor As Long
-    hMonitor = g_cMonitors.Monitors(cmbMonitors.ListIndex + 1).Handle
+    hMonitor = g_cMonitors.Monitors(cboMonitors.ListIndex + 1).Handle
     
     'Use that to retrieve a stored color profile (if any)
     Dim profilePath As String
@@ -2754,7 +2583,7 @@ Private Sub cmdColorProfilePath_Click()
         txtColorProfilePath = sFile
         
         Dim hMonitor As Long
-        hMonitor = g_cMonitors.Monitors(cmbMonitors.ListIndex + 1).Handle
+        hMonitor = g_cMonitors.Monitors(cboMonitors.ListIndex + 1).Handle
         g_UserPreferences.SetPref_String "Transparency", "MonitorProfile_" & hMonitor, TrimNull(sFile)
         
         'If the "user custom color profiles" option button isn't selected, mark it now
@@ -2794,7 +2623,7 @@ Private Sub CmdOK_Click()
         If cmdCategory(i).Value Then g_UserPreferences.SetPref_Long "Core", "Last Preferences Page", i
     Next i
     
-    g_UserPreferences.SetPref_Long "Core", "Last File Preferences Page", cmbFiletype.ListIndex
+    g_UserPreferences.SetPref_Long "Core", "Last File Preferences Page", cboFiletype.ListIndex
     
     'We may need to access a generic "form" object multiple times, so I declare it at the top of this sub.
     Dim tForm As Form
@@ -2810,7 +2639,7 @@ Private Sub CmdOK_Click()
             g_UserPreferences.SetPref_Long "Interface", "Canvas Background", g_CanvasBackground
         
         'START/END image window caption length
-            g_UserPreferences.SetPref_Long "Interface", "Window Caption Length", cmbImageCaption.ListIndex
+            g_UserPreferences.SetPref_Long "Interface", "Window Caption Length", cboImageCaption.ListIndex
         
         'START/END high-res input tracking
             g_UserPreferences.SetPref_Boolean "Interface", "High Resolution Input", CBool(chkMouseHighResolution.Value)
@@ -2822,8 +2651,8 @@ Private Sub CmdOK_Click()
         'START MRU caption length
         
             'Check to see if the new MRU caption setting matches the old one.  If it doesn't, reload the MRU.
-            If cmbMRUCaption.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0) Then mruNeedsToBeRebuilt = True
-            g_UserPreferences.SetPref_Long "Interface", "MRU Caption Length", cmbMRUCaption.ListIndex
+            If cboMRUCaption.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0) Then mruNeedsToBeRebuilt = True
+            g_UserPreferences.SetPref_Long "Interface", "MRU Caption Length", cboMRUCaption.ListIndex
             
         'END MRU caption length
         
@@ -2869,7 +2698,7 @@ Private Sub CmdOK_Click()
             g_UserPreferences.SetPref_Boolean "Loading", "ExifAutoRotate", CBool(chkLoadingOrientation)
         
         'START initial zoom
-            g_AutozoomLargeImages = cmbLargeImages.ListIndex
+            g_AutozoomLargeImages = cboLargeImages.ListIndex
             g_UserPreferences.SetPref_Long "Loading", "Initial Image Zoom", g_AutozoomLargeImages
         'END initial zoom
     
@@ -2895,16 +2724,16 @@ Private Sub CmdOK_Click()
         'END prompt on unsaved images
     
         'START/END outgoing color depth selection
-            g_UserPreferences.SetPref_Long "Saving", "Outgoing Color Depth", cmbExportColorDepth.ListIndex
+            g_UserPreferences.SetPref_Long "Saving", "Outgoing Color Depth", cboExportColorDepth.ListIndex
     
         'START/END Save behavior (overwrite or copy)
-            g_UserPreferences.SetPref_Long "Saving", "Overwrite Or Copy", cmbSaveBehavior.ListIndex
+            g_UserPreferences.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
         
         'START/END "Save As" dialog's suggested file format
-            g_UserPreferences.SetPref_Long "Saving", "Suggested Format", cmbDefaultSaveFormat.ListIndex
+            g_UserPreferences.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveFormat.ListIndex
     
         'START/END metadata export behavior
-            g_UserPreferences.SetPref_Long "Saving", "Metadata Export", cmbMetadata.ListIndex + 1
+            g_UserPreferences.SetPref_Long "Saving", "Metadata Export", cboMetadata.ListIndex + 1
     
     'END Saving preferences
     
@@ -2927,13 +2756,13 @@ Private Sub CmdOK_Click()
             g_UserPreferences.SetPref_Boolean "File Formats", "PNG Background Color", CBool(chkPNGBackground.Value)
         
         'START/END PPM encoding
-            g_UserPreferences.SetPref_Long "File Formats", "PPM Export Format", cmbPPMFormat.ListIndex
+            g_UserPreferences.SetPref_Long "File Formats", "PPM Export Format", cboPPMFormat.ListIndex
         
         'START/END TGA RLE encoding
             g_UserPreferences.SetPref_Boolean "File Formats", "TGA RLE", CBool(chkTGARLE.Value)
         
         'START/END TIFF compression
-            g_UserPreferences.SetPref_Long "File Formats", "TIFF Compression", cmbTIFFCompression.ListIndex
+            g_UserPreferences.SetPref_Long "File Formats", "TIFF Compression", cboTiffCompression.ListIndex
         
         'START/END TIFF CMYK
             g_UserPreferences.SetPref_Boolean "File Formats", "TIFF CMYK", CBool(chkTIFFCMYK.Value)
@@ -2982,13 +2811,13 @@ Private Sub CmdOK_Click()
         'END use system color profile
 
         'START alpha checkerboard colors
-            g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cmbAlphaCheck.ListIndex)
+            g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
             g_UserPreferences.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)
             g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Two", CLng(csAlphaTwo.Color)
         'END alpha checkerboard colors
             
         'START alpha checkerboard size
-            g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Size", cmbAlphaCheckSize.ListIndex
+            g_UserPreferences.SetPref_Long "Transparency", "Alpha Check Size", cboAlphaCheckSize.ListIndex
             
             'Recreate the cached pattern for the alpha background
             Drawing.createAlphaCheckerboardDIB g_CheckerboardPattern
@@ -3105,41 +2934,40 @@ Private Sub LoadAllPreferences()
         
             userInitiatedColorSelection = False
         
-            cmbCanvas.Clear
-            cmbCanvas.AddItem " system theme: light", 0
-            cmbCanvas.AddItem " system theme: dark", 1
-            cmbCanvas.AddItem " custom color (click box to customize)", 2
+            cboCanvas.Clear
+            cboCanvas.AddItem " system theme: light", 0
+            cboCanvas.AddItem " system theme: dark", 1
+            cboCanvas.AddItem " custom color (click box to customize)", 2
                 
             'Select the proper combo box value based on the g_CanvasBackground variable
             If g_CanvasBackground = vb3DLight Then
                 'System theme: light
-                cmbCanvas.ListIndex = 0
+                cboCanvas.ListIndex = 0
             ElseIf g_CanvasBackground = vb3DShadow Then
                 'System theme: dark
-                cmbCanvas.ListIndex = 1
+                cboCanvas.ListIndex = 1
             Else
                 'Custom color
-                cmbCanvas.ListIndex = 2
+                cboCanvas.ListIndex = 2
             End If
             
             originalg_CanvasBackground = g_CanvasBackground
             
             'Draw the current canvas background to the sample picture box
             csCanvasColor.Color = g_CanvasBackground
-            
-            userInitiatedColorSelection = True
-            
+                        
             'Finally, provide helpful tooltips for the canvas items
-            cmbCanvas.ToolTipText = g_Language.TranslateMessage("The image canvas sits ""behind"" the image on the screen.  Dark colors are generally preferable, as they help the image stand out while you work on it.")
+            cboCanvas.assignTooltip "The image canvas sits ""behind"" the image on the screen.  Dark colors are generally preferable, as they help the image stand out while you work on it."
             csCanvasColor.ToolTipText = g_Language.TranslateMessage("Click to change the image window background color")
         
         'END canvas background
         
         'START image window caption length
-            cmbImageCaption.Clear
-            cmbImageCaption.AddItem " compact - file name only", 0
-            cmbImageCaption.AddItem " descriptive - full location, including folder(s)", 1
-            cmbImageCaption.ListIndex = g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0)
+            cboImageCaption.Clear
+            cboImageCaption.AddItem " compact - file name only", 0
+            cboImageCaption.AddItem " descriptive - full location, including folder(s)", 1
+            cboImageCaption.ListIndex = g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0)
+            cboImageCaption.assignTooltip "Image windows tend to be large, so feel free to display each image's full location in the image window title bars."
         'END image window caption length
         
         'START mouse and pen input
@@ -3153,11 +2981,11 @@ Private Sub LoadAllPreferences()
         'END
         
         'START MRU caption length
-            cmbMRUCaption.Clear
-            cmbMRUCaption.AddItem " compact - file names only", 0
-            cmbMRUCaption.AddItem " descriptive - full locations, including folder(s)", 1
-            cmbMRUCaption.ListIndex = g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0)
-            cmbMRUCaption.ToolTipText = g_Language.TranslateMessage("The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.")
+            cboMRUCaption.Clear
+            cboMRUCaption.AddItem " compact - file names only", 0
+            cboMRUCaption.AddItem " descriptive - full locations, including folder(s)", 1
+            cboMRUCaption.ListIndex = g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0)
+            cboMRUCaption.assignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
         'END MRU caption length
 
         
@@ -3191,12 +3019,12 @@ Private Sub LoadAllPreferences()
         'END auto-rotate according to EXIF data
         
         'START initial image zoom
-            cmbLargeImages.Clear
-            cmbLargeImages.AddItem " automatically fit the image on-screen", 0
-            cmbLargeImages.AddItem " 1:1 (100% zoom, or ""actual size"")", 1
-            cmbLargeImages.ListIndex = g_UserPreferences.GetPref_Long("Loading", "Initial Image Zoom", 0)
+            cboLargeImages.Clear
+            cboLargeImages.AddItem " automatically fit the image on-screen", 0
+            cboLargeImages.AddItem " 1:1 (100% zoom, or ""actual size"")", 1
+            cboLargeImages.ListIndex = g_UserPreferences.GetPref_Long("Loading", "Initial Image Zoom", 0)
             
-            cmbLargeImages.ToolTipText = g_Language.TranslateMessage("Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.")
+            cboLargeImages.assignTooltip "Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable."
         'END initial image zoom
     
     'END Loading preferences
@@ -3209,38 +3037,38 @@ Private Sub LoadAllPreferences()
             If g_ConfirmClosingUnsaved Then chkConfirmUnsaved.Value = vbChecked Else chkConfirmUnsaved.Value = vbUnchecked
     
         'START exported color depth handling
-            cmbExportColorDepth.Clear
-            cmbExportColorDepth.AddItem " to match the image file's original color depth", 0
-            cmbExportColorDepth.AddItem " automatically", 1
-            cmbExportColorDepth.AddItem " by asking me what color depth I want to use", 2
-            cmbExportColorDepth.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Outgoing Color Depth", 1)
+            cboExportColorDepth.Clear
+            cboExportColorDepth.AddItem " to match the image file's original color depth", 0
+            cboExportColorDepth.AddItem " automatically", 1
+            cboExportColorDepth.AddItem " by asking me what color depth I want to use", 2
+            cboExportColorDepth.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Outgoing Color Depth", 1)
         
-            cmbExportColorDepth.ToolTipText = g_Language.TranslateMessage("Some image file types support multiple color depths.  PhotoDemon's developers suggest letting the software choose the best color depth for you, unless you have reason to choose otherwise.")
+            cboExportColorDepth.assignTooltip "Some image file types support multiple color depths.  PhotoDemon's developers suggest letting the software choose the best color depth for you, unless you have reason to choose otherwise."
         'END exported color depth handling
             
         'START suggested save as format
-            cmbDefaultSaveFormat.Clear
-            cmbDefaultSaveFormat.AddItem " the current file format of the image being saved", 0
-            cmbDefaultSaveFormat.AddItem " the last image format I used in the ""Save As"" screen", 1
-            cmbDefaultSaveFormat.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Suggested Format", 0)
+            cboDefaultSaveFormat.Clear
+            cboDefaultSaveFormat.AddItem " the current file format of the image being saved", 0
+            cboDefaultSaveFormat.AddItem " the last image format I used in the ""Save As"" screen", 1
+            cboDefaultSaveFormat.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Suggested Format", 0)
             
-            cmbDefaultSaveFormat.ToolTipText = g_Language.TranslateMessage("Most photo editors use the format of the current image as the default in the ""Save As"" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the ""last used"" option.")
+            cboDefaultSaveFormat.assignTooltip "Most photo editors use the format of the current image as the default in the ""Save As"" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the ""last used"" option."
         'END suggested save as format
         
         'START overwrite vs copy when saving
-            cmbSaveBehavior.Clear
-            cmbSaveBehavior.AddItem " overwrite the current file (standard behavior)", 0
-            cmbSaveBehavior.AddItem " save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
-            cmbSaveBehavior.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0)
+            cboSaveBehavior.Clear
+            cboSaveBehavior.AddItem " overwrite the current file (standard behavior)", 0
+            cboSaveBehavior.AddItem " save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
+            cboSaveBehavior.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0)
             
-            cmbSaveBehavior.ToolTipText = g_Language.TranslateMessage("In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file.")
+            cboSaveBehavior.assignTooltip "In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file."
         'END overwrite vs copy when saving
                
         'START metadata export
-            cmbMetadata.Clear
-            cmbMetadata.AddItem " preserve all relevant metadata", 0
-            cmbMetadata.AddItem " preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)", 1
-            cmbMetadata.AddItem " do not preserve metadata", 2
+            cboMetadata.Clear
+            cboMetadata.AddItem " preserve all relevant metadata", 0
+            cboMetadata.AddItem " preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)", 1
+            cboMetadata.AddItem " do not preserve metadata", 2
             
             'Previously we provided an option for "preserve all metadata" at position 0.  This option is no longer available
             ' (for a huge variety of reasons).  To compensate for the removal of position 0, we apply some special handling
@@ -3248,9 +3076,9 @@ Private Sub LoadAllPreferences()
             Dim tmpPreferenceLong As Long
             tmpPreferenceLong = g_UserPreferences.GetPref_Long("Saving", "Metadata Export", 0)
             If tmpPreferenceLong > 0 Then tmpPreferenceLong = tmpPreferenceLong - 1
-            cmbMetadata.ListIndex = tmpPreferenceLong
+            cboMetadata.ListIndex = tmpPreferenceLong
             
-            cmbMetadata.ToolTipText = g_Language.TranslateMessage("Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu.")
+            cboMetadata.assignTooltip "Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu."
         'END metadata export
     
     'END Saving preferences
@@ -3260,15 +3088,15 @@ Private Sub LoadAllPreferences()
     'START File format preferences
     
         'Prepare the file format selection box.  (No preference is associated with this.)
-            cmbFiletype.Clear
-            cmbFiletype.AddItem "BMP - Bitmap", 0
-            cmbFiletype.AddItem "PNG - Portable Network Graphics", 1
-            cmbFiletype.AddItem "PPM - Portable Pixmap", 2
-            cmbFiletype.AddItem "TGA - Truevision (TARGA)", 3
-            cmbFiletype.AddItem "TIFF - Tagged Image File Format", 4
-            cmbFiletype.ListIndex = 0
+            cboFiletype.Clear
+            cboFiletype.AddItem "BMP - Bitmap", 0
+            cboFiletype.AddItem "PNG - Portable Network Graphics", 1
+            cboFiletype.AddItem "PPM - Portable Pixmap", 2
+            cboFiletype.AddItem "TGA - Truevision (TARGA)", 3
+            cboFiletype.AddItem "TIFF - Tagged Image File Format", 4
+            cboFiletype.ListIndex = 0
             
-            cmbFiletype.ToolTipText = g_Language.TranslateMessage("Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary.")
+            cboFiletype.assignTooltip "Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary."
             
         'BMP
         
@@ -3292,12 +3120,12 @@ Private Sub LoadAllPreferences()
         'PPM
     
             'START PPM export format
-                cmbPPMFormat.Clear
-                cmbPPMFormat.AddItem " binary encoding (faster, smaller file size)", 0
-                cmbPPMFormat.AddItem " ASCII encoding (human-readable, multi-platform)", 1
-                cmbPPMFormat.ListIndex = g_UserPreferences.GetPref_Long("File Formats", "PPM Export Format", 0)
+                cboPPMFormat.Clear
+                cboPPMFormat.AddItem " binary encoding (faster, smaller file size)", 0
+                cboPPMFormat.AddItem " ASCII encoding (human-readable, multi-platform)", 1
+                cboPPMFormat.ListIndex = g_UserPreferences.GetPref_Long("File Formats", "PPM Export Format", 0)
                 
-                cmbPPMFormat.ToolTipText = g_Language.TranslateMessage("Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)")
+                cboPPMFormat.assignTooltip "Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)"
             'END PPM export format
     
         'TGA
@@ -3309,20 +3137,20 @@ Private Sub LoadAllPreferences()
         'TIFF
     
             'START TIFF compression (many options)
-                cmbTIFFCompression.Clear
-                cmbTIFFCompression.AddItem " default settings - CCITT Group 4 for 1bpp, LZW for all others", 0
-                cmbTIFFCompression.AddItem " no compression", 1
-                cmbTIFFCompression.AddItem " Macintosh PackBits (RLE)", 2
-                cmbTIFFCompression.AddItem " Official DEFLATE ('Adobe-style')", 3
-                cmbTIFFCompression.AddItem " PKZIP DEFLATE (also known as zLib DEFLATE)", 4
-                cmbTIFFCompression.AddItem " LZW", 5
-                cmbTIFFCompression.AddItem " JPEG - 8bpp grayscale or 24bpp color only", 6
-                cmbTIFFCompression.AddItem " CCITT Group 3 fax encoding - 1bpp only", 7
-                cmbTIFFCompression.AddItem " CCITT Group 4 fax encoding - 1bpp only", 8
+                cboTiffCompression.Clear
+                cboTiffCompression.AddItem " default settings - CCITT Group 4 for 1bpp, LZW for all others", 0
+                cboTiffCompression.AddItem " no compression", 1
+                cboTiffCompression.AddItem " Macintosh PackBits (RLE)", 2
+                cboTiffCompression.AddItem " Official DEFLATE ('Adobe-style')", 3
+                cboTiffCompression.AddItem " PKZIP DEFLATE (also known as zLib DEFLATE)", 4
+                cboTiffCompression.AddItem " LZW", 5
+                cboTiffCompression.AddItem " JPEG - 8bpp grayscale or 24bpp color only", 6
+                cboTiffCompression.AddItem " CCITT Group 3 fax encoding - 1bpp only", 7
+                cboTiffCompression.AddItem " CCITT Group 4 fax encoding - 1bpp only", 8
                 
-                cmbTIFFCompression.ListIndex = g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0)
+                cboTiffCompression.ListIndex = g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0)
                 
-                cmbTIFFCompression.ToolTipText = g_Language.TranslateMessage("TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.")
+                cboTiffCompression.assignTooltip "TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving."
             'END TIFF compression
                 
             'START/END TIFF CMYK encoding
@@ -3356,22 +3184,22 @@ Private Sub LoadAllPreferences()
         
         'START Color management accuracy v performance
             cboPerformance(0).ListIndex = g_ColorPerformance
-            cboPerformance(0).ToolTipText = g_Language.TranslateMessage("Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.")
+            cboPerformance(0).assignTooltip "Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance."
         'END Color management accuracy v performance
         
         'START Interface decorations performance
             cboPerformance(1).ListIndex = g_InterfacePerformance
-            cboPerformance(1).ToolTipText = g_Language.TranslateMessage("Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.")
+            cboPerformance(1).assignTooltip "Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost."
         'END Interface decorations performance
         
         'START Thumbnail rendering performance
             cboPerformance(2).ListIndex = g_ThumbnailPerformance
-            cboPerformance(2).ToolTipText = g_Language.TranslateMessage("PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance.")
+            cboPerformance(2).assignTooltip "PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance."
         'END Thumbnail rendering performance
         
         'START Viewport rendering performance
             cboPerformance(3).ListIndex = g_ViewportPerformance
-            cboPerformance(3).ToolTipText = g_Language.TranslateMessage("Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.")
+            cboPerformance(3).assignTooltip "Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance."
         'END Viewport rendering performance
         
         'START Undo data compression
@@ -3391,7 +3219,7 @@ Private Sub LoadAllPreferences()
             If g_UserPreferences.GetPref_Boolean("Transparency", "Use System Color Profile", True) Then optColorManagement(0).Value = True Else optColorManagement(1).Value = True
             
             'Load a list of all available monitors
-            cmbMonitors.Clear
+            cboMonitors.Clear
             
             Dim PrimaryMonitor As String, secondaryMonitor As String
             PrimaryMonitor = g_Language.TranslateMessage("Primary monitor") & ": "
@@ -3425,37 +3253,37 @@ Private Sub LoadAllPreferences()
                 'monitorEntry = monitorEntry & " (" & g_cMonitors.Monitors(i).Description & ")"
                 
                 'Display this monitor in the list
-                cmbMonitors.AddItem monitorEntry, i - 1
+                cboMonitors.AddItem monitorEntry, i - 1
                 
             Next i
             
             'Display the primary monitor by default; this will also trigger a load of the matching
             ' custom profile, if one exists.
-            cmbMonitors.ListIndex = primaryIndex
+            cboMonitors.ListIndex = primaryIndex
             
             'Add tooltips to all color-profile-related controls
             optColorManagement(0).assignTooltip "This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting."
             optColorManagement(1).assignTooltip "To configure custom color profiles on a per-monitor basis, please use this setting."
             
-            cmbMonitors.ToolTipText = g_Language.TranslateMessage("Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.")
+            cboMonitors.assignTooltip "Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor."
             cmdColorProfilePath.ToolTipText = g_Language.TranslateMessage("Click this button to bring up a ""browse for color profile"" dialog.")
         
         'END color management preferences
     
         'START alpha-channel checkerboard rendering
             userInitiatedAlphaSelection = False
-            cmbAlphaCheck.Clear
-            cmbAlphaCheck.AddItem " Highlight checks", 0
-            cmbAlphaCheck.AddItem " Midtone checks", 1
-            cmbAlphaCheck.AddItem " Shadow checks", 2
-            cmbAlphaCheck.AddItem " Custom (click boxes to customize)", 3
+            cboAlphaCheck.Clear
+            cboAlphaCheck.AddItem " Highlight checks", 0
+            cboAlphaCheck.AddItem " Midtone checks", 1
+            cboAlphaCheck.AddItem " Shadow checks", 2
+            cboAlphaCheck.AddItem " Custom (click boxes to customize)", 3
             
-            cmbAlphaCheck.ListIndex = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Mode", 0)
+            cboAlphaCheck.ListIndex = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Mode", 0)
             
             csAlphaOne.Color = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
             csAlphaTwo.Color = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Two", RGB(204, 204, 204))
             
-            cmbAlphaCheck.ToolTipText = g_Language.TranslateMessage("If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's colors.")
+            cboAlphaCheck.assignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's colors."
             csAlphaOne.ToolTipText = g_Language.TranslateMessage("Click to change the first checkerboard background color for alpha channels")
             csAlphaTwo.ToolTipText = g_Language.TranslateMessage("Click to change the second checkerboard background color for alpha channels")
             
@@ -3463,14 +3291,14 @@ Private Sub LoadAllPreferences()
         'END alpha-channel checkerboard rendering
         
         'START alpha-channel checkerboard size
-            cmbAlphaCheckSize.Clear
-            cmbAlphaCheckSize.AddItem " Small (4x4 pixels)", 0
-            cmbAlphaCheckSize.AddItem " Medium (8x8 pixels)", 1
-            cmbAlphaCheckSize.AddItem " Large (16x16 pixels)", 2
+            cboAlphaCheckSize.Clear
+            cboAlphaCheckSize.AddItem " Small (4x4 pixels)", 0
+            cboAlphaCheckSize.AddItem " Medium (8x8 pixels)", 1
+            cboAlphaCheckSize.AddItem " Large (16x16 pixels)", 2
             
-            cmbAlphaCheckSize.ListIndex = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Size", 1)
+            cboAlphaCheckSize.ListIndex = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Size", 1)
             
-            cmbAlphaCheckSize.ToolTipText = g_Language.TranslateMessage("If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size.")
+            cboAlphaCheckSize.assignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size."
         'END alpha-channel checkerboard size
         
         'START/END validate incoming alpha channels
@@ -3587,7 +3415,7 @@ Private Sub csAlphaOne_ColorChanged()
     
     If userInitiatedAlphaSelection Then
         userInitiatedAlphaSelection = False
-        cmbAlphaCheck.ListIndex = 3         '3 corresponds to "custom colors"
+        cboAlphaCheck.ListIndex = 3         '3 corresponds to "custom colors"
         userInitiatedAlphaSelection = True
     End If
     
@@ -3597,7 +3425,7 @@ Private Sub csAlphaTwo_ColorChanged()
     
     If userInitiatedAlphaSelection Then
         userInitiatedAlphaSelection = False
-        cmbAlphaCheck.ListIndex = 3         '3 corresponds to "custom colors"
+        cboAlphaCheck.ListIndex = 3         '3 corresponds to "custom colors"
         userInitiatedAlphaSelection = True
     End If
     
@@ -3614,15 +3442,15 @@ Private Sub csCanvasColor_ColorChanged()
         
         'System theme: light
         If g_CanvasBackground = vb3DLight Then
-            If cmbCanvas.ListIndex <> 0 Then cmbCanvas.ListIndex = 0
+            If cboCanvas.ListIndex <> 0 Then cboCanvas.ListIndex = 0
         
         'System theme: dark
         ElseIf g_CanvasBackground = vb3DShadow Then
-            If cmbCanvas.ListIndex <> 1 Then cmbCanvas.ListIndex = 1
+            If cboCanvas.ListIndex <> 1 Then cboCanvas.ListIndex = 1
         
         'Custom color
         Else
-            If cmbCanvas.ListIndex <> 2 Then cmbCanvas.ListIndex = 2
+            If cboCanvas.ListIndex <> 2 Then cboCanvas.ListIndex = 2
         End If
         
         userInitiatedColorSelection = True
@@ -3670,13 +3498,13 @@ Private Sub Form_Load()
     cmdCategory(g_UserPreferences.GetPref_Long("Core", "Last Preferences Page", 0)).Value = True
     
     'Also, activate the last file format preferences sub-panel that the user looked at
-    cmbFiletype.ListIndex = g_UserPreferences.GetPref_Long("Core", "Last File Preferences Page", 1)
+    cboFiletype.ListIndex = g_UserPreferences.GetPref_Long("Core", "Last File Preferences Page", 1)
     picFileContainer(g_UserPreferences.GetPref_Long("Core", "Last File Preferences Page", 1)).Visible = True
     
     'Translate and decorate the form; note that a custom tooltip object is passed.  makeFormPretty will automatically
     ' populate this object for us, which allows for themed and multiline tooltips.
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.
@@ -3687,6 +3515,8 @@ Private Sub Form_Load()
     For i = 0 To picFileContainer.Count - 1
         setArrowCursor picFileContainer(i)
     Next i
+    
+    userInitiatedColorSelection = True
     
 End Sub
 
