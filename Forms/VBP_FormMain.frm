@@ -4303,8 +4303,14 @@ Private Sub MnuTest_Click()
 '    MenuTest
     
     'Current Gaussian Blur IIR tests:
-    Filters_Area.GaussianBlur_IIRImplementation pdImages(g_CurrentImage).getActiveDIB, 200, 3, True
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    'Filters_Area.GaussianBlur_IIRImplementation pdImages(g_CurrentImage).getActiveDIB, 200, 3, True
+    'Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+    'Current FFT tests:
+    'Dim testFFT As pdFFT
+    'Set testFFT = New pdFFT
+    '
+    'testFFT.testFFT
     
 End Sub
 
