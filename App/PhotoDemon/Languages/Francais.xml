@@ -88,7 +88,7 @@
 
 <phrase>
 <original>version %1</original>
-<translation></translation>
+<translation>version %1</translation>
 </phrase>
 
 <!-- VBP_FormSplash.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -267,22 +267,22 @@ S'il vous plaît utiliser un autre programme pour enregistrer cette image dans u
 
 <phrase>
 <original>frame %1</original>
-<translation></translation>
+<translation>cadre %1</translation>
 </phrase>
 
 <phrase>
 <original>icon (%1x%2)</original>
-<translation></translation>
+<translation>icône ( %1x%2)</translation>
 </phrase>
 
 <phrase>
 <original>icon (%1x%2, %3 bpp)</original>
-<translation></translation>
+<translation>icône ( %1x%2, %3 bpp)</translation>
 </phrase>
 
 <phrase>
 <original>page %1</original>
-<translation></translation>
+<translation>page %1</translation>
 </phrase>
 
 <phrase>
@@ -358,7 +358,7 @@ S'il vous plaît utiliser un autre programme pour enregistrer ces images dans un
 
 <phrase>
 <original>Layer import canceled.</original>
-<translation></translation>
+<translation>L'importation de la couche annulée.</translation>
 </phrase>
 
 <phrase>
@@ -402,12 +402,12 @@ Pour activer le support pour les fichiers compressés PDI, cliquez sur Aide > V�
 
 <phrase>
 <original>Ctrl</original>
-<translation></translation>
+<translation>Ctrl</translation>
 </phrase>
 
 <phrase>
 <original>Shift</original>
-<translation></translation>
+<translation>Shift</translation>
 </phrase>
 
 <phrase>
@@ -772,12 +772,14 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <original>Before lossless copies can be saved, you must save this image at least once.
 
 Lossless copies will be saved to the same folder as this initial image save.</original>
-<translation></translation>
+<translation>Avant copies sans perte peuvent être sauvegardés, vous devez enregistrer cette image au moins une fois.
+
+Copies sans pertecopies seront enregistrées dans le même dossier que cette image initiale de sauver.</translation>
 </phrase>
 
 <phrase>
 <original>Initial save required</original>
-<translation></translation>
+<translation>Enregistrer ce nécessaire</translation>
 </phrase>
 
 <phrase>
@@ -787,7 +789,7 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 
 <phrase>
 <original>Background</original>
-<translation></translation>
+<translation>Fond</translation>
 </phrase>
 
 <!-- VBP_MenuModule.bas contains 29 phrases. 19 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -1899,7 +1901,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>&New</original>
-<translation></translation>
+<translation>& Nouveau</translation>
 </phrase>
 
 <phrase>
@@ -1974,7 +1976,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Save copy (&lossless)</original>
-<translation></translation>
+<translation>Enregistrer copie (et sans perte)</translation>
 </phrase>
 
 <phrase>
@@ -2184,7 +2186,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Metadata</original>
-<translation>métadonnées</translation>
+<translation>Métadonnées</translation>
 </phrase>
 
 <phrase>
@@ -2199,7 +2201,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Map photo location</original>
-<translation>dossier emplacement photo</translation>
+<translation>Dossier emplacement photo</translation>
 </phrase>
 
 <phrase>
@@ -2439,7 +2441,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Lighting</original>
-<translation>éclairage</translation>
+<translation>Eclairage</translation>
 </phrase>
 
 <phrase>
@@ -2484,7 +2486,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Channel mixer</original>
-<translation>mélangeur de couches</translation>
+<translation>Mélangeur de couches</translation>
 </phrase>
 
 <phrase>
@@ -2814,7 +2816,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Cross-screen</original>
-<translation></translation>
+<translation>Croix-écran</translation>
 </phrase>
 
 <phrase>
@@ -3019,37 +3021,37 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Record macro</original>
-<translation></translation>
+<translation>Enregistrer macro</translation>
 </phrase>
 
 <phrase>
 <original>Start recording</original>
-<translation></translation>
+<translation>Début de l'enregistrement</translation>
 </phrase>
 
 <phrase>
 <original>Stop recording</original>
-<translation></translation>
+<translation>Arrêter l'enregistrement</translation>
 </phrase>
 
 <phrase>
 <original>Play macro</original>
-<translation>Jouer Macro</translation>
+<translation>Faire Macro</translation>
 </phrase>
 
 <phrase>
 <original>Recent macros</original>
-<translation></translation>
+<translation>Macros récents</translation>
 </phrase>
 
 <phrase>
 <original>Clear recent macro list</original>
-<translation></translation>
+<translation>Effacer liste récente macro</translation>
 </phrase>
 
 <phrase>
 <original>Options</original>
-<translation>Options de</translation>
+<translation>Options</translation>
 </phrase>
 
 <phrase>
@@ -3059,17 +3061,17 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>PD developer tools</original>
-<translation></translation>
+<translation>Outils de développement de PD</translation>
 </phrase>
 
 <phrase>
 <original>Debug window</original>
-<translation></translation>
+<translation>Fenêtre de débogage</translation>
 </phrase>
 
 <phrase>
 <original>Theme editor</original>
-<translation></translation>
+<translation>Éditeur de thème</translation>
 </phrase>
 
 <phrase>
@@ -3079,37 +3081,37 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>Toolbox</original>
-<translation></translation>
+<translation>Boîte à outils</translation>
 </phrase>
 
 <phrase>
 <original>Display toolbox</original>
-<translation></translation>
+<translation>Afficher boîte à outils</translation>
 </phrase>
 
 <phrase>
 <original>Display tool category titles</original>
-<translation></translation>
+<translation>Afficher titres des outils d'affichage </translation>
 </phrase>
 
 <phrase>
 <original>Small buttons</original>
-<translation></translation>
+<translation>Petits boutons</translation>
 </phrase>
 
 <phrase>
 <original>Normal buttons</original>
-<translation></translation>
+<translation>Boutons normaux</translation>
 </phrase>
 
 <phrase>
 <original>Large buttons</original>
-<translation></translation>
+<translation>Boutons gros</translation>
 </phrase>
 
 <phrase>
 <original>Tool options</original>
-<translation></translation>
+<translation>Options des outils</translation>
 </phrase>
 
 <phrase>
@@ -3219,7 +3221,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 <phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
-<translation></translation>
+<translation>Une nouvelle version de PhotoDemon est disponible. La mise à jour est traitement automatiquement en arrière-plan</translation>
 </phrase>
 
 <phrase>
@@ -3231,7 +3233,9 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
-<translation></translation>
+<translation>Une nouvelle version de PhotoDemon est disponible! 
+
+The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez une nouvelle notification quand il se termine.</translation>
 </phrase>
 
 <phrase>
@@ -3335,17 +3339,17 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Rotate layer 90 clockwise</original>
-<translation></translation>
+<translation>Tournez couche 90 dans le sens horaire</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 90 counter-clockwise</original>
-<translation></translation>
+<translation>Tournez couche 90 dans le sens antihoraire</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 180</original>
-<translation></translation>
+<translation>Tourner couche 180</translation>
 </phrase>
 
 <phrase>
@@ -3515,7 +3519,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Save copy</original>
-<translation></translation>
+<translation>Enregistrer copie</translation>
 </phrase>
 
 <phrase>
@@ -3626,7 +3630,9 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <original>Language changed successfully!
 
 Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.</original>
-<translation></translation>
+<translation>Langue changé avec succès!
+
+Note: mineur texte de programme ne peut pas être mise à jour en direct. Ce texte sera traduit correctement la prochaine fois que vous démarrez l'application.</translation>
 </phrase>
 
 <phrase>
@@ -3696,17 +3702,17 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 
 <phrase>
 <original>Rotate image 90 clockwise</original>
-<translation></translation>
+<translation>Tourner l'image 90 dans le sens horaire</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 90 counter-clockwise</original>
-<translation></translation>
+<translation>Tourner image 90 dans le sens antihoraire</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 180</original>
-<translation></translation>
+<translation>Tourner image 180</translation>
 </phrase>
 
 <phrase>
@@ -4266,7 +4272,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 
 <phrase>
 <original>Performance Options</original>
-<translation></translation>
+<translation>Options de performances</translation>
 </phrase>
 
 <phrase>
@@ -4326,22 +4332,22 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 
 <phrase>
 <original>update language files independently</original>
-<translation></translation>
+<translation>mise à jour des fichiers de langue indépendamment</translation>
 </phrase>
 
 <phrase>
 <original>automatically check for updates</original>
-<translation></translation>
+<translation>Vérifier automatiquement les mises à jour</translation>
 </phrase>
 
 <phrase>
 <original>update plugins independently</original>
-<translation></translation>
+<translation>mise à jour les plugins indépendamment</translation>
 </phrase>
 
 <phrase>
 <original>allow updates from these tracks</original>
-<translation></translation>
+<translation>permettre des mises à jour de ces pistes</translation>
 </phrase>
 
 <phrase>
@@ -4356,12 +4362,12 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 
 <phrase>
 <original>use high-resolution input tracking</original>
-<translation></translation>
+<translation>utiliser le suivi d'entrée à haute résolution</translation>
 </phrase>
 
 <phrase>
 <original>mouse and pen input</original>
-<translation></translation>
+<translation>Contribution de la souris et stylet</translation>
 </phrase>
 
 <phrase>
@@ -4591,7 +4597,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 
 <phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
-<translation></translation>
+<translation>tonalité options de mappage d'affichage lors de l'importation HDR et RAW</translation>
 </phrase>
 
 <phrase>
@@ -4726,22 +4732,22 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 
 <phrase>
 <original>If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
-<translation></translation>
+<translation>Si l'image actuelle n'a pas été enregistré, vous recevrez une invite pour la sauver avant qu'elle ne ferme.</translation>
 </phrase>
 
 <phrase>
 <original>Close the current image</original>
-<translation></translation>
+<translation>Fermez l'image actuelle</translation>
 </phrase>
 
 <phrase>
 <original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation></translation>
+<translation>Parce que vous avez désactivé invites de enregistrer (via Edition -> Préférences), vous ne recevrez pas une invite pour sauver cette image avant qu'elle ne ferme.</translation>
 </phrase>
 
 <phrase>
 <original>Preferences updated.</original>
-<translation></translation>
+<translation>Préférences mis à jour.</translation>
 </phrase>
 
 <phrase>
@@ -4795,7 +4801,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
-<translation></translation>
+<translation>Haute résolution suivi permet PhotoDemon de reproduire plus précisément la souris et le mouvement du stylet. Sur certains anciens PC, le système peut mal à suivre avec les données de suivi supplémentaires, vous pouvez désactiver cette option si nécessaire.</translation>
 </phrase>
 
 <phrase>
@@ -4825,7 +4831,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation></translation>
+<translation>Les images HDR et RAW contiennent plus de couleurs que les écrans de PC peuvent afficher physiquement. Avant d'afficher ces images, une opération de mappage de tons doit être appliqué aux données d'image originales.</translation>
 </phrase>
 
 <phrase>
@@ -5165,64 +5171,66 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>each session</original>
-<translation></translation>
+<translation>chaque session</translation>
 </phrase>
 
 <phrase>
 <original>weekly</original>
-<translation></translation>
+<translation>hebdomadaire</translation>
 </phrase>
 
 <phrase>
 <original>monthly</original>
-<translation></translation>
+<translation>mensuel</translation>
 </phrase>
 
 <phrase>
 <original>never (not recommended)</original>
-<translation></translation>
+<translation>jamais (non recommandé)</translation>
 </phrase>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation></translation>
+<translation>Parce PhotoDemon est une application portable, il ne peut vérifier les mises à jour lorsque le programme est en cours d'exécution. Par défaut, PhotoDemon va vérifier les mises à jour chaque fois que le programme est lancé, mais vous pouvez réduire cette fréquence, si désiré.</translation>
 </phrase>
 
 <phrase>
 <original>stable releases</original>
-<translation></translation>
+<translation>versions stables</translation>
 </phrase>
 
 <phrase>
 <original>stable and beta releases</original>
-<translation></translation>
+<translation>versions stables et bêta</translation>
 </phrase>
 
 <phrase>
 <original>stable, beta, and developer releases</original>
-<translation></translation>
+<translation>versions stables, bêta et développeur</translation>
 </phrase>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation></translation>
+<translation>Une des meilleures façons de soutenir PhotoDemon est d'aider les tests de nouvelles versions. Par défaut, PhotoDemon proposera deux versions stables et bêta, mais les vrais aventuriers peut également essayer versions de développeur. (Versions Développeurs donnent un accès immédiat aux dernières améliorations de programme, mais vous pourriez rencontrer quelques bugs.)</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation></translation>
+<translation>Les traducteurs bénévoles de PhotoDemon mettent régulièrement à jour les fichiers de langue du programme. PhotoDemon peut automatiquement télécharger ces mises à jour séparées du programme principal, veiller à ce que vous avez toujours la plupart des fichiers mis à jour linguistiques.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
-<translation></translation>
+<translation>PhotoDemon utilise certains plugins 3rd-party. Parfois, les auteurs de ces plugins corriger les bugs ou ajouter de nouvelles fonctionnalités. Au lieu d'attendre la prochaine version PhotoDemon, vous pouvez recevoir des mises à jour du plugin dès qu'ils deviennent disponibles.</translation>
 </phrase>
 
 <phrase>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation></translation>
+<translation>Les développeurs de PhotoDemon prennent vie privée très au sérieux, donc pas d'informations - statistiques ou autres - est téléchargé pendant le processus de mise à jour. Mises à jour impliquent tout simplement télécharger plusieurs petits fichiers XML à partir photodemon.org. Ces fichiers contiennent les derniers chiffres logiciels, plug-in, et la langue. Si des versions mises à jour sont trouvées, et les préférences de l'utilisateur permettent, les fichiers mis à jour sont ensuite téléchargés et patchés automatically.
+
+If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de visiter photodemon.org de temps en temps pour vérifier les nouvelles versions.</translation>
 </phrase>
 
 <phrase>
@@ -5277,7 +5285,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation></translation>
+<translation>Options de performance permettent de contrôler si PhotoDemon souligne vitesse ou la qualité lors de l'exécution de certaines tâches.</translation>
 </phrase>
 
 <phrase>
@@ -5695,7 +5703,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>set levels automatically</original>
-<translation></translation>
+<translation>régler niveaux automatiquement</translation>
 </phrase>
 
 <phrase>
@@ -5710,7 +5718,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>channel</original>
-<translation></translation>
+<translation>canal</translation>
 </phrase>
 
 <phrase>
@@ -6131,7 +6139,7 @@ To améliorer votre expérience utilisateur, s'il vous plaît laissez le program
 
 <phrase>
 <original>Verifying plugin URL</original>
-<translation></translation>
+<translation>Vérification de plug-in URL</translation>
 </phrase>
 
 <phrase>
@@ -6184,22 +6192,22 @@ To améliorer votre expérience utilisateur, s'il vous plaît laissez le program
 
 <phrase>
 <original>Alt</original>
-<translation></translation>
+<translation>Alt</translation>
 </phrase>
 
 <phrase>
 <original>Enter</original>
-<translation></translation>
+<translation>Entrer</translation>
 </phrase>
 
 <phrase>
 <original>Page Up</original>
-<translation></translation>
+<translation>Page Up</translation>
 </phrase>
 
 <phrase>
 <original>Page Down</original>
-<translation></translation>
+<translation>Page Down</translation>
 </phrase>
 
 <phrase>
@@ -6243,7 +6251,7 @@ To améliorer votre expérience utilisateur, s'il vous plaît laissez le program
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
-<translation></translation>
+<translation>Mise à jour chèque reporté (un chèque a été effectuée récemment)</translation>
 </phrase>
 
 <!-- VBP_SoftwareUpdater.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -6584,7 +6592,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Fade last action</original>
-<translation></translation>
+<translation>Fade dernière action</translation>
 </phrase>
 
 <phrase>
@@ -6604,12 +6612,12 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Undo last action</original>
-<translation></translation>
+<translation>Annuler la dernière action</translation>
 </phrase>
 
 <phrase>
 <original>Redo previous action</original>
-<translation></translation>
+<translation>Rétablir l'action précédente</translation>
 </phrase>
 
 <phrase>
@@ -7464,7 +7472,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Please choose a transparency threshold</original>
-<translation></translation>
+<translation>Se il vous plaît choisir un seuil de transparence</translation>
 </phrase>
 
 <phrase>
@@ -7880,7 +7888,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>options</original>
-<translation></translation>
+<translation>options</translation>
 </phrase>
 
 <phrase>
@@ -7890,12 +7898,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>basic</original>
-<translation></translation>
+<translation>base</translation>
 </phrase>
 
 <phrase>
 <original>advanced</original>
-<translation></translation>
+<translation>avancé</translation>
 </phrase>
 
 <!-- VBP_FormRipple.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -7995,7 +8003,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>show original image (alt+t)</original>
-<translation></translation>
+<translation>montrer l'image originale (alt+t)</translation>
 </phrase>
 
 <!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8229,7 +8237,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>caption</original>
-<translation></translation>
+<translation>légende</translation>
 </phrase>
 
 <!-- smartOptionButton.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -8949,7 +8957,7 @@ Vous souhaitez sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>Step 5: wait for batch processing to finish</original>
-<translation></translation>
+<translation>Étape 5: attendre pour que le traitement par lots et terminer</translation>
 </phrase>
 
 <phrase>
@@ -9276,7 +9284,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 
 <phrase>
 <original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation></translation>
+<translation>Ce format de fichier ne supporte pas les métadonnées. Traitement de métadonnées ignorée.</translation>
 </phrase>
 
 <phrase>
@@ -9312,62 +9320,62 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 
 <phrase>
 <original>Generate full metadata report (HTML)</original>
-<translation></translation>
+<translation>Générer un rapport complet de métadonnées (HTML)</translation>
 </phrase>
 
 <phrase>
 <original>metadata options</original>
-<translation></translation>
+<translation>options de métadonnées</translation>
 </phrase>
 
 <phrase>
 <original>tag values</original>
-<translation></translation>
+<translation>valeurs étiquettes</translation>
 </phrase>
 
 <phrase>
 <original>tag names</original>
-<translation></translation>
+<translation>noms des étiquettes</translation>
 </phrase>
 
 <phrase>
 <original>tags in this category</original>
-<translation></translation>
+<translation>étiquettes dans cette catégorie</translation>
 </phrase>
 
 <phrase>
 <original>metadata groups in this image</original>
-<translation></translation>
+<translation>groupes de métadonnées dans cette image</translation>
 </phrase>
 
 <phrase>
 <original>1 tag in this category</original>
-<translation></translation>
+<translation>Une étiquette dans cette catégorie</translation>
 </phrase>
 
 <phrase>
 <original>%1 tags in this category</original>
-<translation></translation>
+<translation> %1 étiquettes dans cette catégorie</translation>
 </phrase>
 
 <phrase>
 <original>simple</original>
-<translation></translation>
+<translation>simple</translation>
 </phrase>
 
 <phrase>
 <original>technical</original>
-<translation></translation>
+<translation>technique</translation>
 </phrase>
 
 <phrase>
 <original>All metadata information is supplied by the ExifTool plugin.  You can learn more about ExifTool at http://www.sno.phy.queensu.ca/~phil/exiftool/</original>
-<translation></translation>
+<translation>Toutes les informations métadonnées est fourni par le plugin ExifTool. Vous pouvez en apprendre plus sur ExifTool au http://www.sno.phy.queensu.ca/~phil/exiftool/</translation>
 </phrase>
 
 <phrase>
 <original>(encoding unknown)</original>
-<translation></translation>
+<translation>(encodage inconnue)</translation>
 </phrase>
 
 <!-- VBP_FormMetadata.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -9416,7 +9424,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 
 <phrase>
 <original>area outside sphere</original>
-<translation></translation>
+<translation>zone à l'extérieur sphère</translation>
 </phrase>
 
 <phrase>
@@ -9436,12 +9444,12 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 
 <phrase>
 <original>empty</original>
-<translation></translation>
+<translation>vide</translation>
 </phrase>
 
 <phrase>
 <original>rays of light</original>
-<translation></translation>
+<translation>rayons de lumière</translation>
 </phrase>
 
 <!-- VBP_FormSpherize.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -9919,12 +9927,12 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 
 <phrase>
 <original>input channel(s)</original>
-<translation></translation>
+<translation>chaîne (s) d'entrée</translation>
 </phrase>
 
 <phrase>
 <original>options for all channels</original>
-<translation></translation>
+<translation>options pour tous les canaux</translation>
 </phrase>
 
 <phrase>
@@ -10157,12 +10165,12 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 
 <phrase>
 <original>original curve (diagonal line)</original>
-<translation></translation>
+<translation>courbe d'origine (ligne diagonale)</translation>
 </phrase>
 
 <phrase>
 <original>grid</original>
-<translation></translation>
+<translation>grille</translation>
 </phrase>
 
 <phrase>
@@ -10172,7 +10180,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 
 <phrase>
 <original>display</original>
-<translation></translation>
+<translation>exposition</translation>
 </phrase>
 
 <phrase>
@@ -10207,17 +10215,17 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 
 <phrase>
 <original>on</original>
-<translation></translation>
+<translation>on</translation>
 </phrase>
 
 <phrase>
 <original>off</original>
-<translation></translation>
+<translation>off</translation>
 </phrase>
 
 <phrase>
 <original>tool</original>
-<translation></translation>
+<translation>outil</translation>
 </phrase>
 
 <phrase>
@@ -10665,12 +10673,12 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 
 <phrase>
 <original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
-<translation></translation>
+<translation>Traductions automatiques ont été interrompues (l'objet de traduction a cessé de répondre). Le travail existant a été enregistré automatiquement.</translation>
 </phrase>
 
 <phrase>
 <original>Translations interrupted</original>
-<translation></translation>
+<translation>Traductions interrompues</translation>
 </phrase>
 
 <phrase>
@@ -10972,22 +10980,22 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>file</original>
-<translation></translation>
+<translation>fichier</translation>
 </phrase>
 
 <phrase>
 <original>undo</original>
-<translation></translation>
+<translation>annuler</translation>
 </phrase>
 
 <phrase>
 <original>non-destructive</original>
-<translation></translation>
+<translation>non destructif</translation>
 </phrase>
 
 <phrase>
 <original>selection</original>
-<translation></translation>
+<translation>sélection</translation>
 </phrase>
 
 <phrase>
@@ -10997,57 +11005,57 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation></translation>
+<translation>Cette option permet de créer une image vide. Autres façons de créer de nouvelles images peuvent être trouvées dans le menu Fichier -> Importer.</translation>
 </phrase>
 
 <phrase>
 <original>New Image</original>
-<translation></translation>
+<translation>Nouvelle image</translation>
 </phrase>
 
 <phrase>
 <original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
-<translation></translation>
+<translation>Une autre façon d'ouvrir des images est en les faisant glisser à partir de votre bureau ou de l'Explorateur Windows et en les déposant dans PhotoDemon.</translation>
 </phrase>
 
 <phrase>
 <original>Open one or more images for editing</original>
-<translation></translation>
+<translation>Ouvrez une ou plusieurs images pour l'édition</translation>
 </phrase>
 
 <phrase>
 <original>WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
-<translation></translation>
+<translation>ATTENTION: ceci va écraser le fichier de l'image actuelle. Pour enregistrer dans un fichier différent, utilisez l'option "Enregistrer sous" bouton.</translation>
 </phrase>
 
 <phrase>
 <original>Save image in current format</original>
-<translation></translation>
+<translation>Enregistrer l'image dans le format actuel</translation>
 </phrase>
 
 <phrase>
 <original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
-<translation></translation>
+<translation>Vous avez spécifié "sauf" mode sauver, ce qui signifie que chaque sauvegarde va créer un nouveau fichier avec un nom de fichier auto-incrémentée.</translation>
 </phrase>
 
 <phrase>
 <original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
-<translation></translation>
+<translation>Utilisez cette fonction pour enregistrer rapidement une copie sans perte de l'image actuelle. La copie sans perte sera enregistré au format PDI, dans le dossier actuel de l'image, en utilisant le nom de fichier courant (plus un numéro d'auto-incrémenté, si nécessaire).</translation>
 </phrase>
 
 <phrase>
 <original>Save lossless copy</original>
-<translation></translation>
+<translation>Enregistrer une copie sans perte</translation>
 </phrase>
 
 <phrase>
 <original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
-<translation></translation>
+<translation>La commande Enregistrer Sous, soulève toujours une boîte de dialogue, vous pouvez spécifier un nouveau nom de fichier, un dossier ou un format et/d'image pour l'image actuelle.</translation>
 </phrase>
 
 <phrase>
 <original>Save As (export to new format or filename)</original>
-<translation></translation>
+<translation>Enregistrer sous (exportation vers nouveau format ou nom de fichier)</translation>
 </phrase>
 
 <phrase>
@@ -11082,17 +11090,17 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>Polygon Selection</original>
-<translation></translation>
+<translation>Sélection polygone</translation>
 </phrase>
 
 <phrase>
 <original>Lasso (Freehand) Selection</original>
-<translation></translation>
+<translation>Sélection Lasso (Freehand)</translation>
 </phrase>
 
 <phrase>
 <original>Magic Wand Selection</original>
-<translation></translation>
+<translation>Sélection Baguette magique</translation>
 </phrase>
 
 <!-- VBP_ToolbarPrimary.frm contains 51 phrases. 26 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
@@ -11144,17 +11152,17 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>sampling area</original>
-<translation></translation>
+<translation>zone d'échantillonnage</translation>
 </phrase>
 
 <phrase>
 <original>tolerance</original>
-<translation></translation>
+<translation>tolérance</translation>
 </phrase>
 
 <phrase>
 <original>stroke smoothing</original>
-<translation></translation>
+<translation>Lissage coup</translation>
 </phrase>
 
 <phrase>
@@ -11234,7 +11242,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>Highlight</original>
-<translation></translation>
+<translation>Surligner</translation>
 </phrase>
 
 <phrase>
@@ -11244,7 +11252,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>Outline</original>
-<translation></translation>
+<translation>Contour</translation>
 </phrase>
 
 <phrase>
@@ -11269,47 +11277,47 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>image</original>
-<translation></translation>
+<translation>image</translation>
 </phrase>
 
 <phrase>
 <original>layer</original>
-<translation></translation>
+<translation>couche</translation>
 </phrase>
 
 <phrase>
 <original>contiguous</original>
-<translation></translation>
+<translation>contigu</translation>
 </phrase>
 
 <phrase>
 <original>global</original>
-<translation></translation>
+<translation>mondial</translation>
 </phrase>
 
 <phrase>
 <original>Luminance</original>
-<translation></translation>
+<translation>luminance</translation>
 </phrase>
 
 <phrase>
 <original>Red</original>
-<translation></translation>
+<translation>Rouge</translation>
 </phrase>
 
 <phrase>
 <original>Green</original>
-<translation></translation>
+<translation>Vert</translation>
 </phrase>
 
 <phrase>
 <original>Blue</original>
-<translation></translation>
+<translation>Bleu</translation>
 </phrase>
 
 <phrase>
 <original>Alpha</original>
-<translation></translation>
+<translation>Alpha</translation>
 </phrase>
 
 <phrase>
@@ -11359,32 +11367,32 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
-<translation></translation>
+<translation>Cette option permet d'ajuster la courbure, le cas échéant, des côtés du sélection polygone.</translation>
 </phrase>
 
 <phrase>
 <original>This option increases the smoothness of a hand-drawn lasso selection.</original>
-<translation></translation>
+<translation>Cette option augmente la finesse d'une sélection lasso dessinée à la main.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
-<translation></translation>
+<translation>Tolérance contrôle la façon dont deux pixels similaires doivent être avant de les ajouter à une sélection de baguette magique.</translation>
 </phrase>
 
 <phrase>
 <original>The magic wand can operate on the entire image, or just the active layer.</original>
-<translation></translation>
+<translation>La baguette magique peut fonctionner sur la totalité de l'image, ou tout simplement la couche active.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
-<translation></translation>
+<translation>Normalement, la baguette magique va se propager à partir du pixel cible, ajoutant pixels voisins à la sélection comme il va. Vous pouvez également définir à rechercher l'image entière, sans égard pour la continuité.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
-<translation></translation>
+<translation>Cette option contrôle quels critères utilise la baguette magique pour déterminer si un pixel doit être ajoutée à la sélection actuelle.</translation>
 </phrase>
 
 <!-- VBP_ToolbarTools.frm contains 85 phrases. 29 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
@@ -11400,27 +11408,27 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>Open location in E&xplorer</original>
-<translation></translation>
+<translation>Ouvrir emplacement dans E&xplorer</translation>
 </phrase>
 
 <phrase>
 <original>Close all except this</original>
-<translation></translation>
+<translation>Fermer tous sauf ce</translation>
 </phrase>
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation></translation>
+<translation>Une fois cette image a été enregistrée sur le disque, son nom de fichier apparaîtra ici.</translation>
 </phrase>
 
 <phrase>
 <original>This image does not have a filename.</original>
-<translation></translation>
+<translation>Cette image ne est pas un nom de fichier.</translation>
 </phrase>
 
 <phrase>
 <original>Hover an image thumbnail to see its name and current file location.</original>
-<translation></translation>
+<translation>Survolez une vignette de l'image pour voir son nom et l'emplacement du fichier actuel.</translation>
 </phrase>
 
 <!-- VBP_ToolbarImageTabs.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -11739,17 +11747,17 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>Fit width</original>
-<translation></translation>
+<translation>Adapter la largeur</translation>
 </phrase>
 
 <phrase>
 <original>Fit height</original>
-<translation></translation>
+<translation>Adapter hauteur</translation>
 </phrase>
 
 <phrase>
 <original>Fit image</original>
-<translation></translation>
+<translation>Adapter l'image</translation>
 </phrase>
 
 <!-- pdZoom.cls contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11915,17 +11923,22 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation></translation>
+<translation>Conserver le rapport d'aspect (parfois appelé les proportions). Utilisez cette option pour redimensionner une image tout en gardant la largeur et la hauteur en synchronisation.</translation>
+</phrase>
+
+<phrase>
+<original>Preserve aspect ratio</original>
+<translation>Conserver le rapport d'aspect</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation></translation>
+<translation>Changer l'unité de mesure utilisée pour redimensionner l'image.</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation></translation>
+<translation>Changer l'unité de mesure utilisée pour la résolution d'image (densité de pixels).</translation>
 </phrase>
 
 <phrase>
@@ -11938,7 +11951,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 <translation>taille exacte varie par l'image </translation>
 </phrase>
 
-<!-- smartResize.ctl contains 39 phrases. 26 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- smartResize.ctl contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for smartResize.ctl-->
 
@@ -11956,7 +11969,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>Fit the image on-screen</original>
-<translation></translation>
+<translation>Monter l'image à l'écran</translation>
 </phrase>
 
 <phrase>
@@ -11971,12 +11984,12 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>Change viewport zoom</original>
-<translation></translation>
+<translation>Changer fenêtre zoom</translation>
 </phrase>
 
 <phrase>
 <original>Change the image size unit displayed to the left of this box</original>
-<translation></translation>
+<translation>Changer l'unité de taille de l'image affichée vers la gauche de cette boîte</translation>
 </phrase>
 
 <phrase>
@@ -11991,7 +12004,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>Release the mouse button to complete the lasso selection</original>
-<translation></translation>
+<translation>Relâchez le bouton de la souris pour terminer la sélection lasso</translation>
 </phrase>
 
 <phrase>
@@ -12016,7 +12029,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 
 <phrase>
 <original>Click on the first point to complete the polygon selection</original>
-<translation></translation>
+<translation>Cliquez sur le premier point pour terminer la sélection de polygones</translation>
 </phrase>
 
 <phrase>
@@ -12245,7 +12258,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>New layer</original>
-<translation></translation>
+<translation>Nouveau couche</translation>
 </phrase>
 
 <phrase>
@@ -12260,7 +12273,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Move layer up</original>
-<translation></translation>
+<translation>Déplacer couche jusqu'à</translation>
 </phrase>
 
 <phrase>
@@ -12270,7 +12283,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Move layer down</original>
-<translation></translation>
+<translation>Couche Descendre</translation>
 </phrase>
 
 <!-- VBP_ToolbarLayers.frm contains 41 phrases. 21 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -12291,7 +12304,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Legacy file format could not be decoded.</original>
-<translation></translation>
+<translation>Format de fichier Legacy n'a pas pu être décodé.</translation>
 </phrase>
 
 <phrase>
@@ -12301,22 +12314,22 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Directory is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation></translation>
+<translation>Annuaire est comprimé, mais zLib échoué pour le décompresser. Code d'erreur retourné: %1</translation>
 </phrase>
 
 <phrase>
 <original>Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation></translation>
+<translation>Morceau annuaire est comprimé, mais zLib est manquant. Impossible de décompression; abandon de la charge.</translation>
 </phrase>
 
 <phrase>
 <original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation></translation>
+<translation>Morceau de données sont compressées, mais zLib échoué pour le décompresser. Code d'erreur retourné: %1</translation>
 </phrase>
 
 <phrase>
 <original>Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation></translation>
+<translation>Bloc de données est comprimée, mais zLib est manquant. Impossible de décompression; abandon de la charge.</translation>
 </phrase>
 
 <phrase>
@@ -12326,7 +12339,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>File node is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation></translation>
+<translation>Nœud de fichier est compressé, mais zLib est manquant. Impossible de décompression; abandon de la charge.</translation>
 </phrase>
 
 <phrase>
@@ -12569,22 +12582,22 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>synchronize intensity</original>
-<translation></translation>
+<translation>synchroniser intensité</translation>
 </phrase>
 
 <phrase>
 <original>secondary intensity</original>
-<translation></translation>
+<translation>l'intensité secondaire</translation>
 </phrase>
 
 <phrase>
 <original>tertiary intensity</original>
-<translation></translation>
+<translation>intensité tertiaire</translation>
 </phrase>
 
 <phrase>
 <original>Note: you can also set a position by clicking the preview window.</original>
-<translation></translation>
+<translation>Remarque: vous pouvez également définir une position en cliquant sur la fenêtre de prévisualisation.</translation>
 </phrase>
 
 <phrase>
@@ -12594,12 +12607,12 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>yes</original>
-<translation></translation>
+<translation>oui</translation>
 </phrase>
 
 <phrase>
 <original>no</original>
-<translation></translation>
+<translation>non</translation>
 </phrase>
 
 <!-- VBP_FormLensFlare.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -12981,87 +12994,87 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>HDR image identified</original>
-<translation></translation>
+<translation>Image HDR identifié</translation>
 </phrase>
 
 <phrase>
 <original>in the future, automatically apply these settings</original>
-<translation></translation>
+<translation>à l'avenir, se appliquer automatiquement ces paramètres</translation>
 </phrase>
 
 <phrase>
 <original>gamma</original>
-<translation></translation>
+<translation>gamma</translation>
 </phrase>
 
 <phrase>
 <original>adaptation</original>
-<translation></translation>
+<translation>adaptation</translation>
 </phrase>
 
 <phrase>
 <original>color correction</original>
-<translation></translation>
+<translation>correction couleurs</translation>
 </phrase>
 
 <phrase>
 <original>white point</original>
-<translation></translation>
+<translation>point blanc</translation>
 </phrase>
 
 <phrase>
 <original>normalize</original>
-<translation></translation>
+<translation>normaliser</translation>
 </phrase>
 
 <phrase>
 <original>visible spectrum</original>
-<translation></translation>
+<translation>spectre visible</translation>
 </phrase>
 
 <phrase>
 <original>full spectrum</original>
-<translation></translation>
+<translation>spectre complet</translation>
 </phrase>
 
 <phrase>
 <original>This image contains more than 16 million colors.  Before it can be displayed on your screen, it must be converted to a simpler format.  This process is called tone mapping.</original>
-<translation></translation>
+<translation>Cette image contient plus de 16 millions de couleurs. Avant il peut être affiché sur votre écran, il doit être converti à un format plus simple. Ce processus est appelé tone mapping.</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for tone mapping instructions</original>
-<translation></translation>
+<translation>En attendant des instructions de cartographie de tonalité</translation>
 </phrase>
 
 <phrase>
 <original>Cancelling image import</original>
-<translation></translation>
+<translation>Annulation importation d'image</translation>
 </phrase>
 
 <phrase>
 <original>Proceeding with tone mapping</original>
-<translation></translation>
+<translation>De procéder à la cartographie de tonalité</translation>
 </phrase>
 
 <phrase>
 <original>Linear</original>
-<translation></translation>
+<translation>linéaire</translation>
 </phrase>
 
 <phrase>
 <original>Filmic</original>
-<translation></translation>
+<translation>Filmique</translation>
 </phrase>
 
 <phrase>
 <original>Drago</original>
-<translation></translation>
+<translation>Drago</translation>
 </phrase>
 
 <phrase>
 <original>Reinhard</original>
-<translation></translation>
+<translation>Reinhard</translation>
 </phrase>
 
 <!-- VBP_FormToneMapping.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -13072,7 +13085,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Create new image</original>
-<translation></translation>
+<translation>Créer nouvelle image</translation>
 </phrase>
 
 <!-- VBP_FormNewImage.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -13089,17 +13102,17 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Cross-screen (stars)</original>
-<translation></translation>
+<translation>Croix-écran (étoiles)</translation>
 </phrase>
 
 <phrase>
 <original>spokes</original>
-<translation></translation>
+<translation>rayons</translation>
 </phrase>
 
 <phrase>
 <original>Applying cross-screen filter</original>
-<translation></translation>
+<translation>Application du filtre cross-écran</translation>
 </phrase>
 
 <!-- VBP_FormCrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13158,52 +13171,52 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Update ready</original>
-<translation></translation>
+<translation>Mettre à jour prête</translation>
 </phrase>
 
 <phrase>
 <original>Keep working</original>
-<translation></translation>
+<translation>Continuez à travailler</translation>
 </phrase>
 
 <phrase>
 <original>Restart PhotoDemon</original>
-<translation></translation>
+<translation>Redémarrer PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Learn more about the new features in version %1</original>
-<translation></translation>
+<translation>En savoir plus sur les nouvelles fonctionnalités de la version %1</translation>
 </phrase>
 
 <phrase>
 <original>(Sorry, but automatic restarts don't work inside the IDE.)</original>
-<translation></translation>
+<translation>(Désolé, mais redémarrages automatiques ne fonctionnent pas à l'intérieur de l'IDE.)</translation>
 </phrase>
 
 <phrase>
 <original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
-<translation></translation>
+<translation>Une nouvelle version de PhotoDemon est disponible. Redémarrez le programme pour terminer le processus de mise à jour.</translation>
 </phrase>
 
 <phrase>
 <original>Restart now to access to the latest version of the program.</original>
-<translation></translation>
+<translation>Redémarrez maintenant pour accéder à la dernière version du programme.</translation>
 </phrase>
 
 <phrase>
 <original>Apply update now</original>
-<translation></translation>
+<translation>Appliquer mise à jour maintenant</translation>
 </phrase>
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation></translation>
+<translation>Si vous êtes au milieu de quelque chose, ne hésitez pas à continuer à travailler. Le processus de mise à jour complète automatiquement chaque fois que vous utilisez le programme suivant.</translation>
 </phrase>
 
 <phrase>
 <original>Apply update later</original>
-<translation></translation>
+<translation>Appliquer la mise à jour plus tard</translation>
 </phrase>
 
 <!-- VBP_FormUpdateNotify.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -13216,12 +13229,18 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- END text for pdHyperlink.ctl-->
 
+<!-- BEGIN text for pdFFT.cls -->
+
+<!-- pdFFT.cls contains 0 phrases. -->
+
+<!-- END text for pdFFT.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2307</phrasecount>
+<phrasecount>2308</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4029 phrases. -->
-<!-- 1722 are duplicates, so only 2307 unique phrases have been written to file. -->
-<!-- These 2307 phrases contain approximately 13312 total words. -->
+<!-- As of this build, PhotoDemon contains 4019 phrases. -->
+<!-- 1711 are duplicates, so only 2308 unique phrases have been written to file. -->
+<!-- These 2308 phrases contain approximately 13315 total words. -->
 
 </pdData>

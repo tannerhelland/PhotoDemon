@@ -11919,6 +11919,11 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>Preserve aspect ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Change the unit of measurement used to resize the image.</original>
 <translation></translation>
 </phrase>
@@ -11938,7 +11943,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>l'esatta dimensione varierà tramite l'immagine</translation>
 </phrase>
 
-<!-- smartResize.ctl contains 39 phrases. 26 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- smartResize.ctl contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for smartResize.ctl-->
 
@@ -13216,12 +13221,18 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for pdHyperlink.ctl-->
 
+<!-- BEGIN text for pdFFT.cls -->
+
+<!-- pdFFT.cls contains 0 phrases. -->
+
+<!-- END text for pdFFT.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2307</phrasecount>
+<phrasecount>2308</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4029 phrases. -->
-<!-- 1722 are duplicates, so only 2307 unique phrases have been written to file. -->
-<!-- These 2307 phrases contain approximately 13312 total words. -->
+<!-- As of this build, PhotoDemon contains 4019 phrases. -->
+<!-- 1711 are duplicates, so only 2308 unique phrases have been written to file. -->
+<!-- These 2308 phrases contain approximately 13315 total words. -->
 
 </pdData>
