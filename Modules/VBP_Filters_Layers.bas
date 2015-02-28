@@ -1414,7 +1414,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
         stdDev = Sqr(-(gRadius * gRadius) / (2 * Log(1# / 255#)))
     Else
         'Note that this is my addition - for a radius of 1 the GIMP formula results in too small of a sigma value
-        stdDev = 0.5
+        stdDev = gRadius    '0.5
     End If
     
     stdDev2 = stdDev * stdDev

@@ -479,7 +479,7 @@ End Sub
 '
 'I developed this function with help from http://www.getreuer.info/home/gaussianiir
 ' Many thanks to Pascal Getreuer for his valuable reference.
-Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigma As Double, ByVal numSteps As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radius As Double, ByVal numSteps As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -506,6 +506,9 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigm
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
+    If modifyProgBarMax = -1 Then modifyProgBarMax = srcDIB.getDIBWidth + srcDIB.getDIBHeight
+    If Not suppressMessages Then SetProgBarMax modifyProgBarMax
+    
     progBarCheck = findBestProgBarValue()
     
     'Finally, a bunch of variables used in color calculation
@@ -519,6 +522,15 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigm
     Dim nu As Double, boundaryScale As Double, postScale As Double
     Dim i As Long, step As Long
     
+    'Calculate sigma from the radius, using the same formula we do for PD's pure gaussian blur
+    Dim sigma As Double
+    If radius > 1 Then
+        sigma = Sqr(-(radius * radius) / (2 * Log(1# / 255#)))
+    Else
+        'Note that this is my addition - for a radius of 1 the GIMP formula results in too small of a sigma value
+        sigma = radius      '0.5 is used in the original function.
+    End If
+    
     'Make sure sigma and steps are valid
     If sigma <= 0 Then sigma = 0.01
     If numSteps <= 0 Then numSteps = 1
@@ -530,7 +542,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigm
     boundaryScale = (1 / (1 - dnu))
     postScale = (dnu / lambda) ^ (2 * numSteps)
     
-    'Intermediate float arrays are required
+    'Intermediate float arrays are required, so this technique consumes a *lot* of memory.
     Dim rFloat() As Single, gFloat() As Single, bFloat() As Single
     ReDim rFloat(initX To finalX, initY To finalY) As Single
     ReDim gFloat(initX To finalX, initY To finalY) As Single
@@ -540,8 +552,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigm
     For x = initX To finalX
         QuickX = x * qvDepth
     For y = initY To finalY
-
-        'Adjust white balance in a single pass (thanks to the magic of look-up tables)
+        
         r = ImageData(QuickX + 2, y)
         g = ImageData(QuickX + 1, y)
         b = ImageData(QuickX, y)
@@ -585,7 +596,14 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigm
             Next x
                         
         Next step
-    
+        
+        If Not suppressMessages Then
+            If (y And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal y + modifyProgBarOffset
+            End If
+        End If
+        
     Next y
     
     'Now repeat all the above steps, but filtering vertically along each column, instead
@@ -620,6 +638,13 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal sigm
             Next y
             
         Next step
+        
+        If Not suppressMessages Then
+            If (x And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal x + iHeight + modifyProgBarOffset
+            End If
+        End If
     
     Next x
     

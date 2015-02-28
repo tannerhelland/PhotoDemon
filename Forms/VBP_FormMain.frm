@@ -4239,58 +4239,6 @@ End Sub
 
 Private Sub MnuTest_Click()
     
-    'Temporary test(s) of various pdFSO features
-'    Dim cFile As pdFSO
-'    Set cFile = New pdFSO
-'
-'    Dim tmpVerString As String, useProductVersion As Boolean
-'    useProductVersion = True
-'
-'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\FreeImage.dll", tmpVerString, useProductVersion
-'    Debug.Print "FreeImage: " & tmpVerString
-'
-'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\exiftool.exe", tmpVerString, useProductVersion
-'    Debug.Print "ExifTool: " & tmpVerString
-'
-'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\EZTW32.dll", tmpVerString, useProductVersion
-'    Debug.Print "EZTwain: " & tmpVerString
-'
-'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\zlibwapi.dll", tmpVerString, useProductVersion
-'    Debug.Print "zLib: " & tmpVerString
-'
-'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\pngquant.exe", tmpVerString, useProductVersion
-'    Debug.Print "PNGQuant: " & tmpVerString
-'
-'    cFile.GetFileVersionAsString "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.exe", tmpVerString, useProductVersion
-'    Debug.Print "PD itself: " & tmpVerString
-    
-    
-'    'Temporary test(s) of new pdPackage compression code.
-'
-'    'Create a pdPackage instance and add an arbitrary file to it
-'    Dim tmpPackager As pdPackager
-'    Set tmpPackager = New pdPackager
-'
-'    If g_ZLibEnabled Then tmpPackager.init_ZLib g_PluginPath & "zlibwapi.dll"
-'    tmpPackager.prepareNewPackage
-'
-'    If tmpPackager.autoAddNodesFromFolder("C:\PhotoDemon v4\PhotoDemon\Support\", , , True, "C:\PhotoDemon v4\PhotoDemon\") Then Debug.Print "successfully added folder"
-'
-'    'Write the pdPackage to file
-'    tmpPackager.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
-'
-'    'Reset the class, then load the pdPackage file
-'    Set tmpPackager = New pdPackager
-'    If g_ZLibEnabled Then tmpPackager.init_ZLib g_PluginPath & "zlibwapi.dll"
-'    tmpPackager.readPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
-'
-'    'Extract the compressed file, and test its ability to reconstruct the folder hierarchy
-'    If tmpPackager.autoExtractAllFiles("C:\PhotoDemon v4\PhotoDemon\Support\", , False) Then Debug.Print "successfully extracted"
-'    Set tmpPackager = Nothing
-'
-'    'Kill the temp pdPackage file
-'    If FileExist("C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp") Then Kill "C:\PhotoDemon v4\PhotoDemon\no_sync\testnode.pdp"
-    
     
     
 '    'Want to test a new dialog?  Call it here:
@@ -4303,14 +4251,22 @@ Private Sub MnuTest_Click()
 '    MenuTest
     
     'Current Gaussian Blur IIR tests:
-    'Filters_Area.GaussianBlur_IIRImplementation pdImages(g_CurrentImage).getActiveDIB, 200, 3, True
-    'Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
     
-    'Current FFT tests:
-    'Dim testFFT As pdFFT
-    'Set testFFT = New pdFFT
-    '
-    'testFFT.testFFT
+    Dim startTime1 As Single, startTime2 As Single
+    startTime1 = Timer
+    Filters_Layers.CreateApproximateGaussianBlurDIB 500, pdImages(g_CurrentImage).getActiveDIB, tmpDIB, 3, True
+    startTime1 = Timer - startTime1
+    
+    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
+    
+    startTime2 = Timer
+    Filters_Area.GaussianBlur_IIRImplementation tmpDIB, 500, 2, True
+    startTime2 = Timer - startTime2
+    
+    MsgBox "Box blur approximation: " & startTime1 & vbCrLf & "IIR approach: " & startTime2
     
 End Sub
 
