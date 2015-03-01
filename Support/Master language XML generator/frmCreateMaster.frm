@@ -1356,6 +1356,8 @@ Private Sub processFile(ByVal srcFile As String)
     Dim curLineText As String, processedText As String, processedTextSecondary As String, chkText As String
     m_FormName = ""
     
+    Dim toolTipSecondCheckNeeded As Boolean
+        
     'Now, start processing the file one line at a time, searching for relevant text as we go
     Do
     
@@ -1428,10 +1430,10 @@ Private Sub processFile(ByVal srcFile As String)
             If (InStr(1, curLineText, ".assignTooltip """) > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
                 
                 'Process the tooltip text itself
-                processedText = findTooltipMessage(fileLines, curLineNumber, False)
+                processedText = findTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
                 
                 'Process the title, if any
-                processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
+                If toolTipSecondCheckNeeded Then processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
             
             End If
             
@@ -1440,10 +1442,10 @@ Private Sub processFile(ByVal srcFile As String)
             If (InStr(1, curLineText, ".setTooltip") > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
                 
                 'Process the tooltip text itself
-                processedText = findTooltipMessage(fileLines, curLineNumber, False)
+                processedText = findTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
                 
                 'Process the title, if any
-                processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
+                If toolTipSecondCheckNeeded Then processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
             
             End If
             
@@ -1691,7 +1693,7 @@ Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
 End Function
 
 'Given a line number and the original file contents, search for a custom PhotoDemon tooltip assignment
-Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal inReverse As Boolean = False) As String
+Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal inReverse As Boolean = False, Optional ByRef isSecondarySearchNecessary As Boolean) As String
     
     'Finding the text of the message is tricky, because it may be spliced between multiple quotations.  As an example, I frequently
     ' add manual line breaks to messages via " & vbCrLf & " - these need to be checked for and replaced.
@@ -1730,19 +1732,41 @@ Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber
         
         Dim i As Long
         For i = startQuote + 1 To Len(srcLines(lineNumber))
-        
-            If Mid$(srcLines(lineNumber), i, 1) = """" Then insideQuotes = Not insideQuotes
+            
+            'Next, check for quotes
+            If Mid$(srcLines(lineNumber), i, 1) = """" Then
+                
+                'Double-quotes are valid indicators, so manually check their appearance now
+                If i < Len(srcLines(lineNumber)) - 1 Then
+                
+                    If Mid$(srcLines(lineNumber), i, 2) = """""" Then
+                        
+                        'Double quotes were found.  Increment i manually, and do not reset the insideQuotes marker
+                        i = i + 1
+                        
+                    Else
+                        insideQuotes = Not insideQuotes
+                    End If
+                
+                Else
+                    insideQuotes = Not insideQuotes
+                End If
+                
+            End If
             
             If ((Mid$(srcLines(lineNumber), i, 1) = ",") Or (Mid$(srcLines(lineNumber), i, 1) = ")")) And (Not insideQuotes) Then
                 endQuote = i - 1
+                isSecondarySearchNecessary = True
                 Exit For
             End If
             
+            'See if we've reached the end of the line
             If (i = Len(srcLines(lineNumber))) And (Not insideQuotes) Then
                 endQuote = i
+                isSecondarySearchNecessary = False
                 Exit For
             End If
-        
+                    
         Next i
         
         'If endQuote = -1, something went horribly wrong
