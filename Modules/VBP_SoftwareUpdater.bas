@@ -630,8 +630,20 @@ Public Function patchProgramFiles() As Boolean
     tmpXML.writeXMLToFile g_UserPreferences.getUpdatePath & "patch.xml", True
     
     'The patching .exe is embedded inside the update package.  Extract it now.
+    Dim cPackage As pdPackager
+    Set cPackage = New pdPackager
+    If g_ZLibEnabled Then cPackage.init_ZLib g_PluginPath & "zlibwapi.dll"
     
-    'TODO!
+    Dim patchFileName As String
+    patchFileName = "PD_Update_Patcher.exe"
+    
+    If cPackage.readPackageFromFile(m_UpdateFilePath, PD_PATCH_IDENTIFIER) Then
+        cPackage.autoExtractSingleFile g_UserPreferences.getProgramPath, patchFileName, , 99
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  Patch program wasn't found inside the update package.  Patching will not proceed."
+        #End If
+    End If
     
     'All that's left to do is shell the patch .exe.  It will wait for PD to close, then initiate the patching process.
     Dim patchParams As String
@@ -640,152 +652,13 @@ Public Function patchProgramFiles() As Boolean
     'We must tell the patcher where to find the update information
     patchParams = patchParams & " /start " & m_TrackStartPosition & " /end " & m_TrackEndPosition
     
-    'ShellExecute 0, "open", "PD_Patch.exe", patchParams, g_UserPreferences.getProgramPath, 0
+    ShellExecute 0, "open", patchFileName, patchParams, g_UserPreferences.getProgramPath, 0
+    
+    'Regardless of outcome, we kill the update file when we're done with it.
+    'If FileExist(m_UpdateFilePath) Then Kill m_UpdateFilePath
     
     'Exit now
     patchProgramFiles = True
-    Exit Function
-    
-    'OLD CODE CONTINUES HERE:
-        
-    'This function will only return TRUE if all files were patched successfully.
-    Dim allFilesSuccessful As Boolean
-    allFilesSuccessful = True
-    
-    'Temporary files are a necessary evil of this function, due to the ugliness of patching in-use binary files.
-    ' As a security precaution, we'll be hashing our temp filenames.
-    Randomize Timer
-    
-    Dim cHash As CSHA256
-    Set cHash = New CSHA256
-    
-    'An XML object is used to extract secondary failsafe checksum data from the original update file
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    xmlEngine.loadXMLFromString m_PDPatchXML
-    
-    'A pdFSO object helps with some extra file operations
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackager object.
-    Dim cPackage As pdPackager
-    Set cPackage = New pdPackager
-    If g_ZLibEnabled Then cPackage.init_ZLib g_PluginPath & "zlibwapi.dll"
-    
-    If cPackage.readPackageFromFile(m_UpdateFilePath, PD_PATCH_IDENTIFIER) Then
-    
-        'The package appears to be intact.  Time to start enumerating and patching files.
-        Dim rawNewFile() As Byte, newFilenameArray() As Byte, newFilename As String, failsafeChecksum As Long
-        Dim rawOldFile() As Byte
-        
-        Dim numOfNodes As Long
-        numOfNodes = cPackage.getNumOfNodes
-        
-        'Iterate each file in turn, extracting as we go
-        Dim i As Long
-        For i = 0 To numOfNodes - 1
-        
-            'Somewhat unconventionally, we extract the file's contents prior to extracting its name.  We want to verify that the contents
-            ' are intact (via pdPackage's internal checksum data) before proceeding with the overwrite.
-            If cPackage.getNodeDataByIndex(i, False, rawNewFile) Then
-            
-                'If we made it here, it means the internal pdPackage checksum passed successfully, meaning the post-compression file checksum
-                ' matches the original checksum calculated at creation time.  Because we are very cautious, we now apply a second checksum verification,
-                ' using the checksum value embedded within the original pdupdate.xml file.
-    
-                'Start by retrieving the filename of the updated language file; we need this to look up the original checksum value in the update XML file.
-                If cPackage.getNodeDataByIndex(i, True, newFilenameArray) Then
-    
-                    newFilename = Space$((UBound(newFilenameArray) + 1) \ 2)
-                    CopyMemory ByVal StrPtr(newFilename), ByVal VarPtr(newFilenameArray(0)), UBound(newFilenameArray) + 1
-                    
-                    'Retrieve the secondary failsafe checksum for this file
-                    failsafeChecksum = getFailsafeChecksum(xmlEngine, newFilename)
-                    
-                    'Before proceeding with the write, compare the temp file array to our stored checksum
-                    If failsafeChecksum = cPackage.checkSumArbitraryArray(rawNewFile) Then
-                    
-                        'Checksums match!  We now want to overwrite the old binary file with its new copy.
-                        
-                        'Unlike language files, which can be patched willy-nilly, these update packages contain binary files that are likely
-                        ' in use RIGHT NOW by PD.  Files like this normally can't be patched, but we're going to use a special in-place
-                        ' patching system.
-                         
-                        'First, we must write this file out to a temporary file.  The filename doesn't matter, but we'll hash it as a
-                        ' privacy and security precaution.
-                        Dim tmpFilename As String
-                        tmpFilename = Left$(cHash.SHA256(CStr(Rnd) & newFilename), 16) & ".tmp"
-                        
-                        'Write the temp file
-                        If cFile.SaveByteArrayToFile(rawNewFile, g_UserPreferences.getUpdatePath & tmpFilename) Then
-                        
-                            'The temp file is ready to go.  Prepare a destination name, which we get by appending the embedded pdPackage name
-                            ' and the current PD folder.
-                            Dim dstFilename As String
-                            dstFilename = g_UserPreferences.getProgramPath & newFilename
-                            
-                            'Use a special patch function to replace the binary file in question
-                            Dim patchResult As FILE_PATCH_RESULT
-                            patchResult = patchArbitraryFile(dstFilename, g_UserPreferences.getUpdatePath & tmpFilename, , True, failsafeChecksum, cPackage)
-                            
-                            If patchResult = FPR_SUCCESS Then
-                            
-                                'TODO!  Post-write checksum validation
-                                Debug.Print "Successfully patched " & newFilename
-                                
-                            Else
-                            
-                                #If DEBUGMODE = 1 Then
-                                    pdDebug.LogAction "WARNING! patchProgramFiles failed to patch " & newFilename
-                                    
-                                    Select Case patchResult
-                                    
-                                        Case FPR_FAIL_NOTHING_CHANGED
-                                            pdDebug.LogAction "(However, patchProgramFiles was able to restore everything to its initial state.)"
-                                            
-                                        Case FPR_FAIL_BOTH_FILES_REMOVED
-                                            pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill both files while it was at it."
-                                        
-                                        Case FPR_FAIL_NEW_FILE_REMOVED
-                                            pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill the new file while it was at it."
-                                        
-                                        Case FPR_FAIL_OLD_FILE_REMOVED
-                                            pdDebug.LogAction "WARNING! Somehow, patchProgramFiles managed to kill the old file while it was at it."
-                                        
-                                    End Select
-                                    
-                                #End If
-                                
-                                allFilesSuccessful = False
-                                
-                            'End patchArbitraryFile success
-                            End If
-                        
-                        'End writing temp file success
-                        End If
-                        
-                    'End secondary checksum failsafe
-                    End If
-                
-                'End node header data retrieval success
-                End If
-            
-            'End node data retrieval success
-            End If
-        
-        Next i
-        
-        patchProgramFiles = allFilesSuccessful
-    
-    Else
-        Debug.Print "WARNING! Program patch file downloaded, but pdPackager rejected it.  Program update abandoned."
-        patchProgramFiles = False
-    End If
-    
-    'Regardless of outcome, we kill the update file when we're done with it.
-    If FileExist(m_UpdateFilePath) Then Kill m_UpdateFilePath
-    
     Exit Function
     
 ProgramPatchingFailure:
@@ -957,26 +830,31 @@ Public Sub cleanPreviousUpdateFiles()
     
     'Use pdFSO to generate a list of .tmp files in the Update folder
     Dim tmpFileList As pdStringStack
+    Set tmpFileList = New pdStringStack
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
     Dim tmpFile As String
         
-    'If temp files exist, remove them now
-    If cFile.retrieveAllFiles(g_UserPreferences.getUpdatePath, tmpFileList, False, False, "TMP|tmp") Then
-            
-        Do While tmpFileList.PopString(tmpFile)
+    'First, we hard-code a few XML files that may exist due to old PD update methods
+    tmpFileList.AddString g_UserPreferences.getUpdatePath & "patch.xml"
+    tmpFileList.AddString g_UserPreferences.getUpdatePath & "pdupdate.xml"
+    tmpFileList.AddString g_UserPreferences.getUpdatePath & "updates.xml"
+    
+    'Next, we auto-add any .tmp files in the update folder, which should cover all other potential use-cases
+    cFile.retrieveAllFiles g_UserPreferences.getUpdatePath, tmpFileList, False, False, "TMP|tmp"
+    
+    'If temp files exist, remove them now.
+    Do While tmpFileList.PopString(tmpFile)
         
-            cFile.KillFile tmpFile
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Found and deleting update file: " & tmpFile
-            #End If
+        cFile.KillFile tmpFile
         
-        Loop
-        
-    End If
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Found and deleting update file: " & tmpFile
+        #End If
+    
+    Loop
         
     'Do the same thing for temp files in the base PD folder
     Set tmpFileList = Nothing
@@ -1010,6 +888,9 @@ Public Sub cleanPreviousUpdateFiles()
         
     End If
     
+    'Finally, delete the patch exe itself, which will have closed by now
+    cFile.KillFile g_UserPreferences.getProgramPath & "PD_Update_Patcher.exe"
+    
 End Sub
 
 'After patches have been successfully applied, this sub can be used to create a .bat file that will restart PD.
@@ -1038,7 +919,7 @@ End Sub
 Public Function wasProgramStartedViaRestart() As Boolean
     
     Dim restartFile As String
-    restartFile = g_UserPreferences.getProgramPath & "restart.bat"
+    restartFile = g_UserPreferences.getProgramPath & "PD_Update_Patcher.exe"
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -1048,14 +929,14 @@ Public Function wasProgramStartedViaRestart() As Boolean
         cFile.KillFile restartFile
         
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "FYI: this session was started by an update process (restart.bat is present)"
+            pdDebug.LogAction "FYI: this session was started by an update process (PD_Update_Patcher is present)"
         #End If
         
         wasProgramStartedViaRestart = True
     Else
         
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "FYI: this session was started by the user (restart.bat is not present)"
+            pdDebug.LogAction "FYI: this session was started by the user (PD_Update_Patcher is not present)"
         #End If
     
         wasProgramStartedViaRestart = False
