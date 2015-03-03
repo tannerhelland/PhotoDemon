@@ -115,6 +115,7 @@ README_PSC-version.txt
 /Support/Plugin compressor/Compress.exe
 /Support/Master language XML generator/MasterTranslation.exe
 /Support/Update builder/PhotoDemon_Update_Generator.exe
+/Support/Update patcher/PD_Update_Patcher.exe
 /Data
 *.tmpxml
 *.backup
