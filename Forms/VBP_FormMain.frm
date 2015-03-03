@@ -3016,10 +3016,13 @@ Private Sub Form_Unload(Cancel As Integer)
     If Software_Updater.isUpdatePackageAvailable Then
         
         If Software_Updater.patchProgramFiles() Then
-            Debug.Print "A PhotoDemon update was applied successfully.  Restart to make use of the new version."
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "PD_Patch.exe was extracted and started successfully."
+            #End If
             
             'If the user wants a restart, create a restart batch file now
-            If g_UserWantsRestart Then Software_Updater.createRestartBatchFile
+            'If g_UserWantsRestart Then Software_Updater.createRestartBatchFile
             
         Else
             Debug.Print "WARNING!  One or more errors were encountered while applying an update.  PD has attempted to roll everything back to its original state."
@@ -3050,7 +3053,7 @@ Private Sub Form_Unload(Cancel As Integer)
     #End If
     
     'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
-    If g_UserWantsRestart Then Software_Updater.initiateRestart
+    'If g_UserWantsRestart Then Software_Updater.initiateRestart
     
 End Sub
 
@@ -4250,23 +4253,29 @@ Private Sub MnuTest_Click()
 '    ' an image's pixel data, if you want to test any pixel-based code.
 '    MenuTest
     
-    'Current Gaussian Blur IIR tests:
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
+'    'Current Gaussian Blur IIR tests:
+'    Dim tmpDIB As pdDIB
+'    Set tmpDIB = New pdDIB
+'    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
+'
+'    Dim startTime1 As Single, startTime2 As Single
+'    startTime1 = Timer
+'    Filters_Layers.CreateApproximateGaussianBlurDIB 500, pdImages(g_CurrentImage).getActiveDIB, tmpDIB, 3, True
+'    startTime1 = Timer - startTime1
+'
+'    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
+'
+'    startTime2 = Timer
+'    Filters_Area.GaussianBlur_IIRImplementation tmpDIB, 500, 2, True
+'    startTime2 = Timer - startTime2
+'
+'    MsgBox "Box blur approximation: " & startTime1 & vbCrLf & "IIR approach: " & startTime2
+
+    'FFT tests
+    Dim cFFT As pdFFT
+    Set cFFT = New pdFFT
     
-    Dim startTime1 As Single, startTime2 As Single
-    startTime1 = Timer
-    Filters_Layers.CreateApproximateGaussianBlurDIB 500, pdImages(g_CurrentImage).getActiveDIB, tmpDIB, 3, True
-    startTime1 = Timer - startTime1
-    
-    tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
-    
-    startTime2 = Timer
-    Filters_Area.GaussianBlur_IIRImplementation tmpDIB, 500, 2, True
-    startTime2 = Timer - startTime2
-    
-    MsgBox "Box blur approximation: " & startTime1 & vbCrLf & "IIR approach: " & startTime2
+    cFFT.testFFT
     
 End Sub
 

@@ -615,14 +615,39 @@ End Function
 ' This lovely function actually patches any/all relevant files.
 Public Function patchProgramFiles() As Boolean
     
+    On Error GoTo ProgramPatchingFailure
+    
     'If no update file is available, exit without doing anything
     If Len(m_UpdateFilePath) = 0 Then
         patchProgramFiles = True
         Exit Function
     End If
     
-    'On Error GoTo ProgramPatchingFailure
+    'Write the update XML file out to file, so the separate patching app can access it
+    Dim tmpXML As pdXML
+    Set tmpXML = New pdXML
+    tmpXML.loadXMLFromString m_PDPatchXML
+    tmpXML.writeXMLToFile g_UserPreferences.getUpdatePath & "patch.xml", True
     
+    'The patching .exe is embedded inside the update package.  Extract it now.
+    
+    'TODO!
+    
+    'All that's left to do is shell the patch .exe.  It will wait for PD to close, then initiate the patching process.
+    Dim patchParams As String
+    If g_UserWantsRestart Then patchParams = "/restart"
+    
+    'We must tell the patcher where to find the update information
+    patchParams = patchParams & " /start " & m_TrackStartPosition & " /end " & m_TrackEndPosition
+    
+    'ShellExecute 0, "open", "PD_Patch.exe", patchParams, g_UserPreferences.getProgramPath, 0
+    
+    'Exit now
+    patchProgramFiles = True
+    Exit Function
+    
+    'OLD CODE CONTINUES HERE:
+        
     'This function will only return TRUE if all files were patched successfully.
     Dim allFilesSuccessful As Boolean
     allFilesSuccessful = True
@@ -912,7 +937,7 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
     
 End Function
 
-'Rather than apply updates mid-session, any patches are applied at shutdown time
+'Rather than apply updates mid-session, any patches are applied by a separate application, at shutdown time
 Public Sub notifyUpdatePackageAvailable(ByVal tmpUpdateFile As String)
     m_UpdateFilePath = tmpUpdateFile
 End Sub
