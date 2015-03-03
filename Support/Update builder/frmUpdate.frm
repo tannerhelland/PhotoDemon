@@ -195,6 +195,9 @@ Private Sub AssembleNightlyBuild()
     
     nightlyPackage.autoAddNodesFromStringStack nightlyList, "C:\PhotoDemon v4\PhotoDemon\", 0, True, True
     
+    'We also want to add the update patching program itself
+    nightlyPackage.autoAddNodeFromFile "C:\PhotoDemon v4\PhotoDemon\Support\Update patcher\PD_Update_Patcher.exe", 99, True
+    
     'Write the completed package out to the updates folder
     nightlyPackage.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly.pdz", True, True
     
@@ -219,12 +222,14 @@ Private Sub AssembleStableAndBetaBuilds()
     'Build the stable update file directly from its folder.  Unlike the nightly build, all files are allowed, including
     ' XML language files.
     cPackage.prepareNewPackage 4, PD_PATCH_IDENTIFIER
-    cPackage.autoAddNodesFromFolder "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable\"
+    cPackage.autoAddNodesFromFolder "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable\", 0
+    cPackage.autoAddNodeFromFile "C:\PhotoDemon v4\PhotoDemon\Support\Update patcher\PD_Update_Patcher.exe", 99, True
     cPackage.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable.pdz", True, True
     
     'Repeat the above steps for the beta update folder
     cPackage.prepareNewPackage 4, PD_PATCH_IDENTIFIER
-    cPackage.autoAddNodesFromFolder "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta\"
+    cPackage.autoAddNodesFromFolder "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta\", 0
+    cPackage.autoAddNodeFromFile "C:\PhotoDemon v4\PhotoDemon\Support\Update patcher\PD_Update_Patcher.exe", 99, True
     cPackage.writePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta.pdz", True, True
     
     'TEMPORARY TEST ONLY!  Extract an update package to a temp folder, to make sure everything's in order.

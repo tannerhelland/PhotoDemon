@@ -1,4 +1,4 @@
-Attribute VB_Name = "Module1"
+Attribute VB_Name = "Support_Functions"
 'Note: this file has been modified for use within PhotoDemon.
 
 'This code was originally written by Steve McMahon.  You may download the original from this link:
