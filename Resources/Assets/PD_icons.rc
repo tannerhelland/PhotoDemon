@@ -345,6 +345,11 @@ PDLOGOMASK   CUSTOM  MOVEABLE        LOADONCALL      splash_2013_mask.png
 PDLOGOWHITE  CUSTOM  MOVEABLE        LOADONCALL      PD_white_logo_splash.png
 PDLOGOBLACK  CUSTOM  MOVEABLE        LOADONCALL      PD_black_logo_splash.png
 
+//About dialog
+ABOUT_PLUS   CUSTOM  MOVEABLE        LOADONCALL      plus_24.png
+ABOUT_MINUS  CUSTOM  MOVEABLE        LOADONCALL      minus_24.png
+ABOUT_PAUSE  CUSTOM  MOVEABLE        LOADONCALL      pause_24.png
+
 //File tool area toolbox icons
 TF_NEW       CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_new_24.png
 TF_OPEN      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_open_24.png
@@ -401,6 +406,7 @@ ARROWLEFT    CUSTOM  MOVEABLE        LOADONCALL      arrow_left_32.png
 LRGCANCEL    CUSTOM  MOVEABLE        LOADONCALL      cross_32.png
 LRGDELAY     CUSTOM  MOVEABLE        LOADONCALL      calendar_blue_32.png
 LRGUPDATE    CUSTOM  MOVEABLE        LOADONCALL      software_update_32.png
+CLIPBOARDCPY CUSTOM  MOVEABLE        LOADONCALL      clipboard_export_32.png
 
 //Arrow icons for the "canvas size" anchor function
 IMGMEDIUM    CUSTOM  MOVEABLE        LOADONCALL      image_medium.png
