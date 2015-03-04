@@ -26,6 +26,21 @@
 </phrase>
 
 <phrase>
+<original>Decrease speed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Increase speed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pause scrolling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>click to visit</original>
 <translation>clique para visitar</translation>
 </phrase>
@@ -75,7 +90,7 @@
 <translation>Obrigado por usar PhotoDemon</translation>
 </phrase>
 
-<!-- VBP_FormAbout.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- VBP_FormAbout.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for VBP_FormAbout.frm-->
 
@@ -997,7 +1012,7 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 <translation>Concluído.</translation>
 </phrase>
 
-<!-- VBP_FormResize.frm contains 59 phrases. 29 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- VBP_FormResize.frm contains 55 phrases. 25 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <!-- END text for VBP_FormResize.frm-->
 
@@ -4321,6 +4336,31 @@ To habilitar o suporte do scanner, por favor, copie o arquivo EZTW32.dll (dispon
 </phrase>
 
 <phrase>
+<original>Click to open a browse-for-folder dialog</original>
+<translation>Clique para abrir um diálogo de procura-para-pasta</translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>relatório de aceleração de hardware</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>uso de memória será exibido aqui</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnóstico de memória</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>local de arquivo temporário</translation>
+</phrase>
+
+<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation>(disclaimer povoada em tempo de execução)</translation>
 </phrase>
@@ -4348,11 +4388,6 @@ To habilitar o suporte do scanner, por favor, copie o arquivo EZTW32.dll (dispon
 <phrase>
 <original>update options</original>
 <translation>opções de atualização</translation>
-</phrase>
-
-<phrase>
-<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
-<translation>Janelas de imagem tendem a ser grandes, tão à vontade para exibir local completo de cada imagem nas barras de título da janela da imagem.</translation>
 </phrase>
 
 <phrase>
@@ -4451,6 +4486,41 @@ To habilitar o suporte do scanner, por favor, copie o arquivo EZTW32.dll (dispon
 </phrase>
 
 <phrase>
+<original>please select a file type</original>
+<translation>selecione um tipo de arquivo</translation>
+</phrase>
+
+<phrase>
+<original>file format options</original>
+<translation>opções de formato de arquivo</translation>
+</phrase>
+
+<phrase>
+<original>save TIFFs as separated CMYK (for printing)</original>
+<translation>salvar como TIFF CMYK separados (para impressão)</translation>
+</phrase>
+
+<phrase>
+<original>TIFF (Tagged Image File Format) options</original>
+<translation>TIFF (Tagged Image File Format) opções</translation>
+</phrase>
+
+<phrase>
+<original>when saving, compress TIFFs using</original>
+<translation>ao salvar, comprimir TIFF usando</translation>
+</phrase>
+
+<phrase>
+<original>PPM (Portable Pixmap) options</original>
+<translation>PPM (Portable PixMap) opções</translation>
+</phrase>
+
+<phrase>
+<original>export PPM files using</original>
+<translation>arquivos PPM exportação utilizando</translation>
+</phrase>
+
+<phrase>
 <original>preserve file's original background color, if available</original>
 <translation>preservar a cor de fundo original do arquivo, se disponível</translation>
 </phrase>
@@ -4498,41 +4568,6 @@ To habilitar o suporte do scanner, por favor, copie o arquivo EZTW32.dll (dispon
 <phrase>
 <original>BMP (Bitmap) options</original>
 <translation>BMP (bitmap) opções</translation>
-</phrase>
-
-<phrase>
-<original>save TIFFs as separated CMYK (for printing)</original>
-<translation>salvar como TIFF CMYK separados (para impressão)</translation>
-</phrase>
-
-<phrase>
-<original>TIFF (Tagged Image File Format) options</original>
-<translation>TIFF (Tagged Image File Format) opções</translation>
-</phrase>
-
-<phrase>
-<original>when saving, compress TIFFs using</original>
-<translation>ao salvar, comprimir TIFF usando</translation>
-</phrase>
-
-<phrase>
-<original>PPM (Portable Pixmap) options</original>
-<translation>PPM (Portable PixMap) opções</translation>
-</phrase>
-
-<phrase>
-<original>export PPM files using</original>
-<translation>arquivos PPM exportação utilizando</translation>
-</phrase>
-
-<phrase>
-<original>please select a file type</original>
-<translation>selecione um tipo de arquivo</translation>
-</phrase>
-
-<phrase>
-<original>file format options</original>
-<translation>opções de formato de arquivo</translation>
 </phrase>
 
 <phrase>
@@ -4681,31 +4716,6 @@ To habilitar o suporte do scanner, por favor, copie o arquivo EZTW32.dll (dispon
 </phrase>
 
 <phrase>
-<original>Click to open a browse-for-folder dialog</original>
-<translation>Clique para abrir um diálogo de procura-para-pasta</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>relatório de aceleração de hardware</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>uso de memória será exibido aqui</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnóstico de memória</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>local de arquivo temporário</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>(nenhum)</translation>
 </phrase>
@@ -4792,6 +4802,11 @@ Are Tem certeza de que deseja continuar?</translation>
 <phrase>
 <original>descriptive - full location, including folder(s)</original>
 <translation>descritivo - localização completa, incluindo a pasta (s)</translation>
+</phrase>
+
+<phrase>
+<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
+<translation>Janelas de imagem tendem a ser grandes, tão à vontade para exibir local completo de cada imagem nas barras de título da janela da imagem.</translation>
 </phrase>
 
 <phrase>
@@ -5301,7 +5316,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>AVISO: esta pasta é inválida (acesso proibido). Por favor, forneça uma pasta válida. Se nenhuma nova pasta é fornecida, PhotoDemon usará local temporário padrão do sistema.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 286 phrases. 72 were duplicates of existing phrases, so only 214 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 253 phrases. 39 were duplicates of existing phrases, so only 214 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -6763,7 +6778,7 @@ Please válidos inserir um valor numérico.</translation>
 <translation>luminosidade</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 62 phrases. 25 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -9112,7 +9127,7 @@ By padrão, a transparência será dividido ao meio, ou você pode especificar u
 <translation>processada antes de cancelamento. Última imagem processada foi " %1".</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 267 phrases. 145 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 260 phrases. 138 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -11095,7 +11110,7 @@ To continuar, faça o download de uma nova cópia de PhotoDemon de photodemon.or
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolbarPrimary.frm contains 51 phrases. 26 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- VBP_ToolbarPrimary.frm contains 42 phrases. 17 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarPrimary.frm-->
 
@@ -11387,7 +11402,7 @@ To continuar, faça o download de uma nova cópia de PhotoDemon de photodemon.or
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 85 phrases. 29 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 72 phrases. 16 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -11943,7 +11958,7 @@ To continuar, faça o download de uma nova cópia de PhotoDemon de photodemon.or
 <translation>tamanho exato varia de acordo com imagem</translation>
 </phrase>
 
-<!-- smartResize.ctl contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- smartResize.ctl contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for smartResize.ctl-->
 
@@ -12055,7 +12070,7 @@ or os menus File> Open e File> Import.</translation>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 54 phrases. 34 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 48 phrases. 28 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -13229,10 +13244,10 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2308</phrasecount>
+<phrasecount>2311</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4019 phrases. -->
-<!-- 1711 are duplicates, so only 2308 unique phrases have been written to file. -->
-<!-- These 2308 phrases contain approximately 13315 total words. -->
+<!-- As of this build, PhotoDemon contains 3944 phrases. -->
+<!-- 1633 are duplicates, so only 2311 unique phrases have been written to file. -->
+<!-- These 2311 phrases contain approximately 13321 total words. -->
 
 </pdData>
