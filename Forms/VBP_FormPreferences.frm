@@ -37,7 +37,7 @@ Begin VB.Form FormPreferences
       EndProperty
       Height          =   495
       Left            =   2910
-      TabIndex        =   66
+      TabIndex        =   65
       Top             =   6990
       Width           =   2580
    End
@@ -343,6 +343,606 @@ Begin VB.Form FormPreferences
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6480
+      Index           =   7
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   432
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   14
+      Top             =   240
+      Width           =   8295
+      Begin PhotoDemon.pdButtonToolbox cmdCopyReportClipboard 
+         Height          =   570
+         Left            =   7650
+         TabIndex        =   71
+         Top             =   3765
+         Width           =   570
+         _ExtentX        =   1005
+         _ExtentY        =   1005
+         AutoToggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdTextBox txtHardware 
+         Height          =   2235
+         Left            =   240
+         TabIndex        =   56
+         Top             =   2040
+         Width           =   7335
+         _ExtentX        =   12938
+         _ExtentY        =   3942
+         FontSize        =   9
+         Multiline       =   -1  'True
+      End
+      Begin PhotoDemon.pdTextBox txtTempPath 
+         Height          =   315
+         Left            =   240
+         TabIndex        =   58
+         Top             =   510
+         Width           =   7335
+         _ExtentX        =   12938
+         _ExtentY        =   556
+         Text            =   "automatically generated at run-time"
+      End
+      Begin VB.CommandButton cmdTmpPath 
+         Caption         =   "..."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   450
+         Left            =   7680
+         TabIndex        =   15
+         ToolTipText     =   "Click to open a browse-for-folder dialog"
+         Top             =   435
+         Width           =   525
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   6
+         Left            =   0
+         Top             =   1560
+         Width           =   8160
+         _ExtentX        =   14393
+         _ExtentY        =   503
+         Caption         =   "hardware acceleration report:"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblMemoryUsageMax 
+         Height          =   540
+         Left            =   240
+         Top             =   5460
+         Width           =   7965
+         _ExtentX        =   14049
+         _ExtentY        =   953
+         Caption         =   "memory usage will be displayed here"
+         ForeColor       =   8405056
+         Layout          =   1
+         UseCustomForeColor=   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblMemoryUsageCurrent 
+         Height          =   540
+         Left            =   240
+         Top             =   4920
+         Width           =   7965
+         _ExtentX        =   14049
+         _ExtentY        =   953
+         Caption         =   "memory usage will be displayed here"
+         ForeColor       =   8405056
+         Layout          =   1
+         UseCustomForeColor=   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   5
+         Left            =   0
+         Top             =   4560
+         Width           =   8130
+         _ExtentX        =   14340
+         _ExtentY        =   503
+         Caption         =   "memory diagnostics"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblRuntimeSettings 
+         Height          =   285
+         Index           =   1
+         Left            =   0
+         Top             =   0
+         Width           =   8145
+         _ExtentX        =   14367
+         _ExtentY        =   503
+         Caption         =   "temporary file location"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTempPathWarning 
+         Height          =   600
+         Left            =   240
+         Top             =   900
+         Visible         =   0   'False
+         Width           =   7305
+         _ExtentX        =   12885
+         _ExtentY        =   1058
+         ForeColor       =   255
+         Layout          =   1
+         UseCustomForeColor=   -1  'True
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6480
+      Index           =   6
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   432
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   12
+      Top             =   240
+      Width           =   8295
+      Begin PhotoDemon.pdLabel lblExplanation 
+         Height          =   3015
+         Left            =   240
+         Top             =   3360
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   5318
+         Caption         =   "(disclaimer populated at run-time)"
+         FontSize        =   9
+         Layout          =   1
+         UseCustomForeColor=   -1  'True
+      End
+      Begin PhotoDemon.smartCheckBox chkUpdates 
+         Height          =   330
+         Index           =   0
+         Left            =   240
+         TabIndex        =   60
+         Top             =   2280
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   582
+         Caption         =   "update language files independently"
+      End
+      Begin PhotoDemon.pdLabel lblUpdates 
+         Height          =   240
+         Index           =   0
+         Left            =   240
+         Top             =   480
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   503
+         Caption         =   "automatically check for updates:"
+      End
+      Begin PhotoDemon.pdComboBox cboUpdates 
+         Height          =   375
+         Index           =   0
+         Left            =   240
+         TabIndex        =   61
+         Top             =   840
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.smartCheckBox chkUpdates 
+         Height          =   330
+         Index           =   1
+         Left            =   240
+         TabIndex        =   63
+         Top             =   2760
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   582
+         Caption         =   "update plugins independently"
+      End
+      Begin PhotoDemon.pdComboBox cboUpdates 
+         Height          =   375
+         Index           =   1
+         Left            =   240
+         TabIndex        =   64
+         Top             =   1710
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdLabel lblUpdates 
+         Height          =   240
+         Index           =   1
+         Left            =   240
+         Top             =   1320
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   503
+         Caption         =   "allow updates from these tracks:"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   3
+         Left            =   0
+         Top             =   0
+         Width           =   8175
+         _ExtentX        =   14420
+         _ExtentY        =   503
+         Caption         =   "update options"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6480
+      Index           =   0
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   432
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   7
+      Top             =   240
+      Width           =   8295
+      Begin PhotoDemon.pdComboBox cboMRUCaption 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   8
+         Top             =   4800
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   635
+      End
+      Begin PhotoDemon.pdComboBox cboImageCaption 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   9
+         Top             =   2250
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   529
+      End
+      Begin PhotoDemon.pdComboBox cboCanvas 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   11
+         Top             =   810
+         Width           =   6600
+         _ExtentX        =   11642
+         _ExtentY        =   529
+      End
+      Begin PhotoDemon.textUpDown tudRecentFiles 
+         Height          =   345
+         Left            =   3900
+         TabIndex        =   13
+         Top             =   5325
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   661
+         Min             =   1
+         Max             =   32
+         Value           =   10
+      End
+      Begin PhotoDemon.colorSelector csCanvasColor 
+         Height          =   435
+         Left            =   6960
+         TabIndex        =   17
+         Top             =   780
+         Width           =   1215
+         _ExtentX        =   2143
+         _ExtentY        =   767
+      End
+      Begin PhotoDemon.smartCheckBox chkMouseHighResolution 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   18
+         Top             =   3360
+         Width           =   7980
+         _ExtentX        =   14076
+         _ExtentY        =   582
+         Caption         =   "use high-resolution input tracking"
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         Top             =   2880
+         Width           =   8250
+         _ExtentX        =   14552
+         _ExtentY        =   503
+         Caption         =   "mouse and pen input"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblRecentFileCount 
+         Height          =   240
+         Left            =   240
+         Top             =   5400
+         Width           =   3480
+         _ExtentX        =   6138
+         _ExtentY        =   423
+         Caption         =   "maximum number of recent file entries: "
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   13
+         Left            =   0
+         Top             =   3960
+         Width           =   8235
+         _ExtentX        =   14526
+         _ExtentY        =   503
+         Caption         =   "recent files list"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblMRUText 
+         Height          =   240
+         Left            =   240
+         Top             =   4440
+         Width           =   7875
+         _ExtentX        =   13891
+         _ExtentY        =   503
+         Caption         =   "recently used file shortcuts should be: "
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   4
+         Left            =   0
+         Top             =   1440
+         Width           =   8295
+         _ExtentX        =   14631
+         _ExtentY        =   503
+         Caption         =   "captions"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblImageText 
+         Height          =   240
+         Left            =   240
+         Top             =   1890
+         Width           =   8010
+         _ExtentX        =   14129
+         _ExtentY        =   503
+         Caption         =   "image window titles should be: "
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblCanvasFX 
+         Height          =   240
+         Left            =   240
+         Top             =   450
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   503
+         Caption         =   "image canvas background:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   0
+         Top             =   0
+         Width           =   8220
+         _ExtentX        =   14499
+         _ExtentY        =   503
+         Caption         =   "canvas appearance"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6480
+      Index           =   5
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   432
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   16
+      Top             =   240
+      Width           =   8295
+      Begin PhotoDemon.pdComboBox cboAlphaCheckSize 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   19
+         Top             =   5250
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboAlphaCheck 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   20
+         Top             =   4260
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboMonitors 
+         Height          =   330
+         Left            =   780
+         TabIndex        =   23
+         Top             =   1950
+         Width           =   7440
+         _ExtentX        =   13123
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdTextBox txtColorProfilePath 
+         Height          =   315
+         Left            =   780
+         TabIndex        =   24
+         Top             =   2790
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   556
+         Text            =   "(none)"
+      End
+      Begin VB.CommandButton cmdColorProfilePath 
+         Caption         =   "..."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Left            =   7380
+         TabIndex        =   25
+         Top             =   2760
+         Width           =   810
+      End
+      Begin PhotoDemon.smartOptionButton optColorManagement 
+         Height          =   330
+         Index           =   0
+         Left            =   240
+         TabIndex        =   26
+         Top             =   840
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "use the system color profile"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.colorSelector csAlphaOne 
+         Height          =   435
+         Left            =   6240
+         TabIndex        =   27
+         Top             =   4230
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   767
+      End
+      Begin PhotoDemon.smartCheckBox chkValidateAlpha 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   66
+         Top             =   5760
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "automatically validate all incoming alpha channels"
+      End
+      Begin PhotoDemon.colorSelector csAlphaTwo 
+         Height          =   435
+         Left            =   7320
+         TabIndex        =   28
+         Top             =   4230
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   767
+      End
+      Begin PhotoDemon.smartOptionButton optColorManagement 
+         Height          =   330
+         Index           =   1
+         Left            =   240
+         TabIndex        =   29
+         Top             =   1200
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "use one or more custom color profiles"
+      End
+      Begin PhotoDemon.pdLabel lblColorManagement 
+         Height          =   240
+         Index           =   2
+         Left            =   780
+         Top             =   2430
+         Width           =   7440
+         _ExtentX        =   13123
+         _ExtentY        =   503
+         Caption         =   "color profile for selected monitor:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblColorManagement 
+         Height          =   240
+         Index           =   1
+         Left            =   780
+         Top             =   1590
+         Width           =   7395
+         _ExtentX        =   13044
+         _ExtentY        =   503
+         Caption         =   "available monitors:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblColorManagement 
+         Height          =   240
+         Index           =   0
+         Left            =   240
+         Top             =   480
+         Width           =   7965
+         _ExtentX        =   14049
+         _ExtentY        =   503
+         Caption         =   "when rendering images to the screen:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   0
+         Top             =   0
+         Width           =   8220
+         _ExtentX        =   14499
+         _ExtentY        =   503
+         Caption         =   "color management"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblAlphaCheckSize 
+         Height          =   240
+         Left            =   240
+         Top             =   4860
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   503
+         Caption         =   "transparency checkerboard size:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblAlphaCheck 
+         Height          =   240
+         Left            =   240
+         Top             =   3870
+         Width           =   8010
+         _ExtentX        =   14129
+         _ExtentY        =   503
+         Caption         =   "transparency checkerboard colors:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         Top             =   3420
+         Width           =   8205
+         _ExtentX        =   14473
+         _ExtentY        =   503
+         Caption         =   "transparency management"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
@@ -426,7 +1026,7 @@ Begin VB.Form FormPreferences
          Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
             Height          =   330
             Left            =   360
-            TabIndex        =   68
+            TabIndex        =   67
             Top             =   1560
             Width           =   7500
             _ExtentX        =   13229
@@ -520,7 +1120,7 @@ Begin VB.Form FormPreferences
          Begin PhotoDemon.smartCheckBox chkPNGBackground 
             Height          =   330
             Left            =   360
-            TabIndex        =   70
+            TabIndex        =   69
             Top             =   2520
             Width           =   7500
             _ExtentX        =   13229
@@ -530,7 +1130,7 @@ Begin VB.Form FormPreferences
          Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
             Height          =   330
             Left            =   360
-            TabIndex        =   69
+            TabIndex        =   68
             Top             =   2040
             Width           =   7500
             _ExtentX        =   13229
@@ -606,7 +1206,7 @@ Begin VB.Form FormPreferences
          ScaleHeight     =   249
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   529
-         TabIndex        =   63
+         TabIndex        =   62
          Top             =   1680
          Width           =   7935
          Begin PhotoDemon.smartCheckBox chkTGARLE 
@@ -1175,628 +1775,12 @@ Begin VB.Form FormPreferences
          ForeColor       =   4210752
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6480
-      Index           =   7
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   432
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   14
-      Top             =   240
-      Width           =   8295
-      Begin PhotoDemon.pdTextBox txtHardware 
-         Height          =   2235
-         Left            =   240
-         TabIndex        =   56
-         Top             =   2040
-         Width           =   7335
-         _ExtentX        =   12938
-         _ExtentY        =   3942
-         FontSize        =   9
-         Multiline       =   -1  'True
-      End
-      Begin PhotoDemon.pdTextBox txtTempPath 
-         Height          =   315
-         Left            =   240
-         TabIndex        =   58
-         Top             =   510
-         Width           =   7335
-         _ExtentX        =   12938
-         _ExtentY        =   556
-         Text            =   "automatically generated at run-time"
-      End
-      Begin PhotoDemon.jcbutton cmdCopyReportClipboard 
-         Height          =   525
-         Left            =   7680
-         TabIndex        =   60
-         Top             =   3720
-         Width           =   525
-         _ExtentX        =   873
-         _ExtentY        =   873
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   0
-         Caption         =   ""
-         PictureNormal   =   "VBP_FormPreferences.frx":9690
-         PictureEffectOnOver=   0
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         TooltipBackColor=   0
-      End
-      Begin VB.CommandButton cmdTmpPath 
-         Caption         =   "..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   450
-         Left            =   7680
-         TabIndex        =   15
-         ToolTipText     =   "Click to open a browse-for-folder dialog"
-         Top             =   435
-         Width           =   525
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   6
-         Left            =   0
-         Top             =   1560
-         Width           =   8160
-         _ExtentX        =   14393
-         _ExtentY        =   503
-         Caption         =   "hardware acceleration report:"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblMemoryUsageMax 
-         Height          =   540
-         Left            =   240
-         Top             =   5460
-         Width           =   7965
-         _ExtentX        =   14049
-         _ExtentY        =   953
-         Caption         =   "memory usage will be displayed here"
-         ForeColor       =   8405056
-         Layout          =   1
-         UseCustomForeColor=   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblMemoryUsageCurrent 
-         Height          =   540
-         Left            =   240
-         Top             =   4920
-         Width           =   7965
-         _ExtentX        =   14049
-         _ExtentY        =   953
-         Caption         =   "memory usage will be displayed here"
-         ForeColor       =   8405056
-         Layout          =   1
-         UseCustomForeColor=   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   5
-         Left            =   0
-         Top             =   4560
-         Width           =   8130
-         _ExtentX        =   14340
-         _ExtentY        =   503
-         Caption         =   "memory diagnostics"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblRuntimeSettings 
-         Height          =   285
-         Index           =   1
-         Left            =   0
-         Top             =   0
-         Width           =   8145
-         _ExtentX        =   14367
-         _ExtentY        =   503
-         Caption         =   "temporary file location"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTempPathWarning 
-         Height          =   600
-         Left            =   240
-         Top             =   900
-         Visible         =   0   'False
-         Width           =   7305
-         _ExtentX        =   12885
-         _ExtentY        =   1058
-         ForeColor       =   255
-         Layout          =   1
-         UseCustomForeColor=   -1  'True
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6480
-      Index           =   6
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   432
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   12
-      Top             =   240
-      Width           =   8295
-      Begin PhotoDemon.pdLabel lblExplanation 
-         Height          =   3015
-         Left            =   240
-         Top             =   3360
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   5318
-         Caption         =   "(disclaimer populated at run-time)"
-         FontSize        =   9
-         Layout          =   1
-         UseCustomForeColor=   -1  'True
-      End
-      Begin PhotoDemon.smartCheckBox chkUpdates 
-         Height          =   330
-         Index           =   0
-         Left            =   240
-         TabIndex        =   61
-         Top             =   2280
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   582
-         Caption         =   "update language files independently"
-      End
-      Begin PhotoDemon.pdLabel lblUpdates 
-         Height          =   240
-         Index           =   0
-         Left            =   240
-         Top             =   480
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   503
-         Caption         =   "automatically check for updates:"
-      End
-      Begin PhotoDemon.pdComboBox cboUpdates 
-         Height          =   375
-         Index           =   0
-         Left            =   240
-         TabIndex        =   62
-         Top             =   840
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.smartCheckBox chkUpdates 
-         Height          =   330
-         Index           =   1
-         Left            =   240
-         TabIndex        =   64
-         Top             =   2760
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   582
-         Caption         =   "update plugins independently"
-      End
-      Begin PhotoDemon.pdComboBox cboUpdates 
-         Height          =   375
-         Index           =   1
-         Left            =   240
-         TabIndex        =   65
-         Top             =   1710
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdLabel lblUpdates 
-         Height          =   240
-         Index           =   1
-         Left            =   240
-         Top             =   1320
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   503
-         Caption         =   "allow updates from these tracks:"
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   3
-         Left            =   0
-         Top             =   0
-         Width           =   8175
-         _ExtentX        =   14420
-         _ExtentY        =   503
-         Caption         =   "update options"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6480
-      Index           =   0
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   432
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   7
-      Top             =   240
-      Width           =   8295
-      Begin PhotoDemon.pdComboBox cboMRUCaption 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   8
-         Top             =   4800
-         Width           =   8055
-         _ExtentX        =   14208
-         _ExtentY        =   635
-      End
-      Begin PhotoDemon.pdComboBox cboImageCaption 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   9
-         Top             =   2250
-         Width           =   8055
-         _ExtentX        =   14208
-         _ExtentY        =   529
-      End
-      Begin PhotoDemon.pdComboBox cboCanvas 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   11
-         Top             =   810
-         Width           =   6600
-         _ExtentX        =   11642
-         _ExtentY        =   529
-      End
-      Begin PhotoDemon.textUpDown tudRecentFiles 
-         Height          =   345
-         Left            =   3900
-         TabIndex        =   13
-         Top             =   5325
-         Width           =   1335
-         _ExtentX        =   2355
-         _ExtentY        =   661
-         Min             =   1
-         Max             =   32
-         Value           =   10
-      End
-      Begin PhotoDemon.colorSelector csCanvasColor 
-         Height          =   435
-         Left            =   6960
-         TabIndex        =   17
-         Top             =   780
-         Width           =   1215
-         _ExtentX        =   2143
-         _ExtentY        =   767
-      End
-      Begin PhotoDemon.smartCheckBox chkMouseHighResolution 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   18
-         Top             =   3360
-         Width           =   7980
-         _ExtentX        =   14076
-         _ExtentY        =   582
-         Caption         =   "use high-resolution input tracking"
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         Top             =   2880
-         Width           =   8250
-         _ExtentX        =   14552
-         _ExtentY        =   503
-         Caption         =   "mouse and pen input"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblRecentFileCount 
-         Height          =   240
-         Left            =   240
-         Top             =   5400
-         Width           =   3480
-         _ExtentX        =   6138
-         _ExtentY        =   423
-         Caption         =   "maximum number of recent file entries: "
-         ForeColor       =   4210752
-         Layout          =   2
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   13
-         Left            =   0
-         Top             =   3960
-         Width           =   8235
-         _ExtentX        =   14526
-         _ExtentY        =   503
-         Caption         =   "recent files list"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblMRUText 
-         Height          =   240
-         Left            =   240
-         Top             =   4440
-         Width           =   7875
-         _ExtentX        =   13891
-         _ExtentY        =   503
-         Caption         =   "recently used file shortcuts should be: "
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   4
-         Left            =   0
-         Top             =   1440
-         Width           =   8295
-         _ExtentX        =   14631
-         _ExtentY        =   503
-         Caption         =   "captions"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblImageText 
-         Height          =   240
-         Left            =   240
-         Top             =   1890
-         Width           =   8010
-         _ExtentX        =   14129
-         _ExtentY        =   503
-         Caption         =   "image window titles should be: "
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblCanvasFX 
-         Height          =   240
-         Left            =   240
-         Top             =   450
-         Width           =   8055
-         _ExtentX        =   14208
-         _ExtentY        =   503
-         Caption         =   "image canvas background:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   0
-         Top             =   0
-         Width           =   8220
-         _ExtentX        =   14499
-         _ExtentY        =   503
-         Caption         =   "canvas appearance"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6480
-      Index           =   5
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   432
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   16
-      Top             =   240
-      Width           =   8295
-      Begin PhotoDemon.pdComboBox cboAlphaCheckSize 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   19
-         Top             =   5250
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdComboBox cboAlphaCheck 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   20
-         Top             =   4260
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdComboBox cboMonitors 
-         Height          =   330
-         Left            =   780
-         TabIndex        =   23
-         Top             =   1950
-         Width           =   7440
-         _ExtentX        =   13123
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdTextBox txtColorProfilePath 
-         Height          =   315
-         Left            =   780
-         TabIndex        =   24
-         Top             =   2790
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   556
-         Text            =   "(none)"
-      End
-      Begin VB.CommandButton cmdColorProfilePath 
-         Caption         =   "..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   7380
-         TabIndex        =   25
-         Top             =   2760
-         Width           =   810
-      End
-      Begin PhotoDemon.smartOptionButton optColorManagement 
-         Height          =   330
-         Index           =   0
-         Left            =   240
-         TabIndex        =   26
-         Top             =   840
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "use the system color profile"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.colorSelector csAlphaOne 
-         Height          =   435
-         Left            =   6240
-         TabIndex        =   27
-         Top             =   4230
-         Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   767
-      End
-      Begin PhotoDemon.smartCheckBox chkValidateAlpha 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   67
-         Top             =   5760
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "automatically validate all incoming alpha channels"
-      End
-      Begin PhotoDemon.colorSelector csAlphaTwo 
-         Height          =   435
-         Left            =   7320
-         TabIndex        =   28
-         Top             =   4230
-         Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   767
-      End
-      Begin PhotoDemon.smartOptionButton optColorManagement 
-         Height          =   330
-         Index           =   1
-         Left            =   240
-         TabIndex        =   29
-         Top             =   1200
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "use one or more custom color profiles"
-      End
-      Begin PhotoDemon.pdLabel lblColorManagement 
-         Height          =   240
-         Index           =   2
-         Left            =   780
-         Top             =   2430
-         Width           =   7440
-         _ExtentX        =   13123
-         _ExtentY        =   503
-         Caption         =   "color profile for selected monitor:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblColorManagement 
-         Height          =   240
-         Index           =   1
-         Left            =   780
-         Top             =   1590
-         Width           =   7395
-         _ExtentX        =   13044
-         _ExtentY        =   503
-         Caption         =   "available monitors:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblColorManagement 
-         Height          =   240
-         Index           =   0
-         Left            =   240
-         Top             =   480
-         Width           =   7965
-         _ExtentX        =   14049
-         _ExtentY        =   503
-         Caption         =   "when rendering images to the screen:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   0
-         Top             =   0
-         Width           =   8220
-         _ExtentX        =   14499
-         _ExtentY        =   503
-         Caption         =   "color management"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblAlphaCheckSize 
-         Height          =   240
-         Left            =   240
-         Top             =   4860
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   503
-         Caption         =   "transparency checkerboard size:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblAlphaCheck 
-         Height          =   240
-         Left            =   240
-         Top             =   3870
-         Width           =   8010
-         _ExtentX        =   14129
-         _ExtentY        =   503
-         Caption         =   "transparency checkerboard colors:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         Top             =   3420
-         Width           =   8205
-         _ExtentX        =   14473
-         _ExtentY        =   503
-         Caption         =   "transparency management"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
    Begin VB.Label lblBackground 
       Appearance      =   0  'Flat
       ForeColor       =   &H80000008&
       Height          =   735
       Left            =   0
-      TabIndex        =   71
+      TabIndex        =   70
       Top             =   6900
       Width           =   11535
    End
@@ -2816,7 +2800,7 @@ Private Sub LoadAllPreferences()
             txtHardware = getDeviceCapsString()
             
         '...and give the "copy to clipboard" button a tooltip
-            cmdCopyReportClipboard.ToolTip = g_Language.TranslateMessage("Copy the report to the system clipboard")
+            cmdCopyReportClipboard.assignTooltip "Copy the report to the system clipboard"
         
         'Display what we know about PD's memory usage
             lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(GetPhotoDemonMemoryUsage()), "###,###,###,###") & " K"
@@ -2904,6 +2888,9 @@ Private Sub Form_Load()
 
     'Populate all controls with the corresponding values from the preferences file
     LoadAllPreferences
+    
+    'Load custom command button images
+    cmdCopyReportClipboard.AssignImage "CLIPBOARDCPY"
     
     'Populate the multi-line tooltips for the category command buttons (on the left)
         'Interface
