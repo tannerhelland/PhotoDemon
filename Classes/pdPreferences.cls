@@ -546,6 +546,8 @@ Private Sub createNewPreferencesFile()
         
         xmlEngine.writeTag "UpdateLanguagesIndependently", True
         xmlEngine.writeTag "UpdatePluginsIndependently", True
+        xmlEngine.writeTag "UpdateNotifications", True
+        
     xmlEngine.closeTag "Updates"
     xmlEngine.writeBlankLine
     

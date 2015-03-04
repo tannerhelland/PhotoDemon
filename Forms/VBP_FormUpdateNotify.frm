@@ -4,7 +4,7 @@ Begin VB.Form FormUpdateNotify
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Update ready"
-   ClientHeight    =   2355
+   ClientHeight    =   2790
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   9195
@@ -20,11 +20,22 @@ Begin VB.Form FormUpdateNotify
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   157
+   ScaleHeight     =   186
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   613
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.smartCheckBox chkNotify 
+      Height          =   330
+      Left            =   120
+      TabIndex        =   2
+      Top             =   2370
+      Width           =   9015
+      _ExtentX        =   15901
+      _ExtentY        =   159
+      Caption         =   "in the future, do not notify me of updates"
+      Value           =   0
+   End
    Begin PhotoDemon.pdHyperlink lblReleaseAnnouncement 
       Height          =   270
       Left            =   840
@@ -94,6 +105,9 @@ Private m_Tooltip As pdToolTip
 
 Private Sub cmdUpdate_Click(Index As Integer)
     
+    'Regardless of the user's choice, we always update their notification preference
+    g_UserPreferences.SetPref_Boolean "Updates", "Update Notifications", Not CBool(chkNotify.Value)
+    
     Select Case Index
     
         'Restart now
@@ -101,6 +115,9 @@ Private Sub cmdUpdate_Click(Index As Integer)
         
             'Set a program-wide restart flag, which PD will use post-patch to initiate a restart.
             g_UserWantsRestart = True
+            
+            'Hide this dialog
+            Me.Visible = False
             
             'Initiate shutdown
             Process "Exit program", True
@@ -117,6 +134,13 @@ Private Sub cmdUpdate_Click(Index As Integer)
 End Sub
 
 Private Sub Form_Load()
+    
+    'Load the "notify of updates" preference
+    If g_UserPreferences.GetPref_Boolean("Updates", "Update Notifications", True) Then
+        chkNotify.Value = vbUnchecked
+    Else
+        chkNotify.Value = vbChecked
+    End If
     
     'Theme the dialog
     makeFormPretty Me
