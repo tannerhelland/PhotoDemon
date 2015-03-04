@@ -4341,31 +4341,6 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 </phrase>
 
 <phrase>
-<original>Click to open a browse-for-folder dialog</original>
-<translation>Cliquez pour ouvrir un dialogue de parcourir-pour-dossier</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>rapport de l'accélération matérielle</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>utilisation de la mémoire sera affichée ici</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnostics de mémoire</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>emplacement des fichiers temporaires</translation>
-</phrase>
-
-<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation>(disclaimer peuplée au moment de l'exécution)</translation>
 </phrase>
@@ -4393,6 +4368,11 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 <phrase>
 <original>update options</original>
 <translation>options de mise à jour</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4718,6 +4698,31 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 <phrase>
 <original>viewport</original>
 <translation>fenêtre</translation>
+</phrase>
+
+<phrase>
+<original>Click to open a browse-for-folder dialog</original>
+<translation>Cliquez pour ouvrir un dialogue de parcourir-pour-dossier</translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>rapport de l'accélération matérielle</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>utilisation de la mémoire sera affichée ici</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnostics de mémoire</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>emplacement des fichiers temporaires</translation>
 </phrase>
 
 <phrase>
@@ -5240,6 +5245,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
@@ -5323,7 +5333,7 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 253 phrases. 39 were duplicates of existing phrases, so only 214 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 255 phrases. 39 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -13190,6 +13200,11 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 </phrase>
 
 <phrase>
+<original>in the future, do not notify me of updates</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Keep working</original>
 <translation>Continuez à travailler</translation>
 </phrase>
@@ -13234,7 +13249,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <translation>Appliquer la mise à jour plus tard</translation>
 </phrase>
 
-<!-- VBP_FormUpdateNotify.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- VBP_FormUpdateNotify.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for VBP_FormUpdateNotify.frm-->
 
@@ -13252,10 +13267,10 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2311</phrasecount>
+<phrasecount>2314</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3944 phrases. -->
-<!-- 1633 are duplicates, so only 2311 unique phrases have been written to file. -->
-<!-- These 2311 phrases contain approximately 13321 total words. -->
+<!-- As of this build, PhotoDemon contains 3947 phrases. -->
+<!-- 1633 are duplicates, so only 2314 unique phrases have been written to file. -->
+<!-- These 2314 phrases contain approximately 13357 total words. -->
 
 </pdData>
