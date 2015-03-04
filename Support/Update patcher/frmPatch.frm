@@ -115,57 +115,75 @@ Private Sub Form_Load()
     'Position the output text box
     txtOut.Width = FormPatch.ScaleWidth - txtOut.Left * 2
     
-    'Check relevant command-line params
-    parseCommandLine
+    'Check relevant command-line params; this function returns TRUE if the command line contains parameters
+    If parseCommandLine() Then
     
-    'Replace the crappy default VB icon
-    SetIcon Me.hWnd, "AAA", True
+        'Replace the crappy default VB icon
+        SetIcon Me.hWnd, "AAA", True
+        
+        'Wait for PD to close; when it does, the timer will initiate the rest of the patch process.
+        txtOut.Text = "Waiting for PhotoDemon to terminate..."
+        m_PDClosed = False
+        tmrCheck.Enabled = True
+        
+    'If the command line is empty, the user somehow ran this independent of PD.  Terminate immediately.
+    Else
     
-    'Wait for PD to close; when it does, the timer will initiate the rest of the patch process.
-    txtOut.Text = "Waiting for PhotoDemon to terminate..."
-    m_PDClosed = False
-    tmrCheck.Enabled = True
+        txtOut.Text = "No update available.  Closing updater..."
+    
+    End If
     
 End Sub
 
 'Parse the command line for all relevant instructions.  PD handles some update tasks for us, and it relays its findings through
 ' the command line.
-Private Sub parseCommandLine()
+Private Function parseCommandLine() As Boolean
     
     'Split params according to spaces
     Dim allParams() As String
     allParams = Split(Command$, " ")
     
-    Dim curLine As Long
-    curLine = LBound(allParams)
+    'Check for an empty command line
+    If UBound(allParams) <= LBound(allParams) Then
+        parseCommandLine = False
     
-    'Iterate through the params, looking for meaningful entries as we go
-    Do While curLine <= UBound(allParams)
-        
-        'Start checking instructions of interest
-        If StringsEqual(allParams(curLine), "/restart") Then
-            m_RestartWhenDone = True
-        
-        ElseIf StringsEqual(allParams(curLine), "/start") Then
-            
-            'Retrieve the start position
-            curLine = curLine + 1
-            m_TrackStartPosition = CLng(allParams(curLine))
-            
-        ElseIf StringsEqual(allParams(curLine), "/end") Then
-            
-            'Retrieve the start position
-            curLine = curLine + 1
-            m_TrackEndPosition = CLng(allParams(curLine))
-        
-        End If
-        
-        'Increment to the next line and continue checking params
-        curLine = curLine + 1
-        
-    Loop
+    'Retrieve all parameters
+    Else
     
-End Sub
+        Dim curLine As Long
+        curLine = LBound(allParams)
+        
+        'Iterate through the params, looking for meaningful entries as we go
+        Do While curLine <= UBound(allParams)
+            
+            'Start checking instructions of interest
+            If StringsEqual(allParams(curLine), "/restart") Then
+                m_RestartWhenDone = True
+            
+            ElseIf StringsEqual(allParams(curLine), "/start") Then
+                
+                'Retrieve the start position
+                curLine = curLine + 1
+                m_TrackStartPosition = CLng(allParams(curLine))
+                
+            ElseIf StringsEqual(allParams(curLine), "/end") Then
+                
+                'Retrieve the start position
+                curLine = curLine + 1
+                m_TrackEndPosition = CLng(allParams(curLine))
+            
+            End If
+            
+            'Increment to the next line and continue checking params
+            curLine = curLine + 1
+            
+        Loop
+        
+        parseCommandLine = True
+        
+    End If
+    
+End Function
 
 'Shortcut function for checking string equality
 Private Function StringsEqual(ByVal strOne As String, ByVal strTwo As String) As Boolean
