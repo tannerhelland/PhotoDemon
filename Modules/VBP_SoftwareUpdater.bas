@@ -786,15 +786,20 @@ End Function
 
 'If an update is ready, you may call this function to display an update notification to the user
 Public Sub displayUpdateNotification()
-
+    
     'If a modal dialog is active, raising a new window will cause a crash; we must deal with this accordingly
     On Error GoTo couldNotDisplayUpdateNotification
     
     'Suspend any previous update notification flags
     g_ShowUpdateNotification = False
     
-    'Display the dialog
-    FormUpdateNotify.Show vbModeless, FormMain
+    'Check user preferences; they can choose to ignore update notifications
+    If g_UserPreferences.GetPref_Boolean("Updates", "Update Notifications", True) Then
+    
+        'Display the dialog
+        FormUpdateNotify.Show vbModeless, FormMain
+        
+    End If
     
     Exit Sub
     
