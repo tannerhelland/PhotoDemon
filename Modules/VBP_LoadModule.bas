@@ -58,6 +58,18 @@ Public Sub LoadTheProgram()
     #End If
     
     '*************************************************************************************************************************************
+    ' With the debugger initialized, prep a few crucial variables
+    '*************************************************************************************************************************************
+
+    'Retrieve a Unicode-friendly copy of any command line parameters, and store them publicly
+    Dim cUnicode As pdUnicode
+    Set cUnicode = New pdUnicode
+    g_CommandLine = cUnicode.CommandW()
+    
+    'We also need to create a blank pdImages() array, as some initialization functions may attempt to access the array
+    ReDim pdImages(0) As pdImage
+    
+    '*************************************************************************************************************************************
     ' Prepare the splash screen (but don't display it yet)
     '*************************************************************************************************************************************
     
