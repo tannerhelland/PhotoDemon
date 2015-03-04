@@ -49,29 +49,29 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   3360
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   5
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0   'False
+      pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -2521,25 +2521,15 @@ Private Sub Form_Load()
     On Error GoTo FormMainLoadError
     
     '*************************************************************************************************************************************
-    ' Before doing anything else, store the command line to memory
-    '*************************************************************************************************************************************
-
-    'Use a global variable to store any command line parameters we may have been passed
-    g_CommandLine = Command$
-        
-    'Create a blank pdImages() array, to avoid errors
-    ReDim pdImages(0) As pdImage
-    
-    '*************************************************************************************************************************************
-    ' Reroute control to "LoadTheProgram", which initializes all key PD systems
+    ' Start by rerouting control to "LoadTheProgram", which initializes all key PD systems
     '*************************************************************************************************************************************
     
-    'The bulk of the loading code actually takes place inside the LoadTheprogram subroutine (which can be found in the "Loading" module)
+    'The bulk of the loading code actually takes place inside the LoadTheProgram subroutine (which can be found in the "Loading" module)
     Loading.LoadTheProgram
     
     
     '*************************************************************************************************************************************
-    ' Now that all engines are initialized, prep and display the main editing window
+    ' Now that all engines are initialized, we can prep and display the main editing window
     '*************************************************************************************************************************************
     
     'We can now display the main form and any visible toolbars.  (There is currently a flicker if toolbars have been hidden by the user,
@@ -2580,7 +2570,7 @@ Private Sub Form_Load()
         g_WindowManager.setWindowVisibility toolbar_Debug.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
     #End If
     
-    'Synchronize the main canvas layout
+    'With all toolboxes loaded, we need to synchronize the main canvas layout against any that remain visible
     refreshAllCanvases
     
     'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
