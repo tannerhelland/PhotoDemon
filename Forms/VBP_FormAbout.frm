@@ -25,31 +25,17 @@ Begin VB.Form FormAbout
    ScaleWidth      =   779
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.jcbutton cmdSpeed 
-      Height          =   480
+   Begin PhotoDemon.pdButtonToolbox cmdSpeed 
+      Height          =   510
       Index           =   0
-      Left            =   240
+      Left            =   120
       TabIndex        =   2
       Top             =   8280
-      Width           =   480
-      _ExtentX        =   873
-      _ExtentY        =   873
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      Width           =   510
+      _ExtentX        =   1296
+      _ExtentY        =   661
       BackColor       =   0
-      Caption         =   "jcbutton"
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormAbout.frx":0000
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      AutoToggle      =   -1  'True
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -90,58 +76,29 @@ Begin VB.Form FormAbout
       Top             =   8280
       Width           =   1365
    End
-   Begin PhotoDemon.jcbutton cmdSpeed 
-      Height          =   480
+   Begin PhotoDemon.pdButtonToolbox cmdSpeed 
+      Height          =   510
       Index           =   1
       Left            =   720
       TabIndex        =   3
       Top             =   8280
-      Width           =   480
-      _ExtentX        =   847
-      _ExtentY        =   847
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      Width           =   510
+      _ExtentX        =   1296
+      _ExtentY        =   661
       BackColor       =   0
-      Caption         =   ""
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormAbout.frx":0D52
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      AutoToggle      =   -1  'True
    End
-   Begin PhotoDemon.jcbutton cmdSpeed 
-      Height          =   480
+   Begin PhotoDemon.pdButtonToolbox cmdSpeed 
+      Height          =   510
       Index           =   2
-      Left            =   1200
+      Left            =   1320
       TabIndex        =   4
       Top             =   8280
-      Width           =   480
-      _ExtentX        =   847
-      _ExtentY        =   847
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      Width           =   510
+      _ExtentX        =   1296
+      _ExtentY        =   661
       BackColor       =   0
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormAbout.frx":1AA4
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      StickyToggle    =   -1  'True
    End
 End
 Attribute VB_Name = "FormAbout"
@@ -311,6 +268,16 @@ Private Sub Form_Load()
     cmdSpeed(1).Enabled = True
     cmdSpeed(2).Value = False
     
+    'Load button images
+    cmdSpeed(0).AssignImage "ABOUT_MINUS"
+    cmdSpeed(1).AssignImage "ABOUT_PLUS"
+    cmdSpeed(2).AssignImage "ABOUT_PAUSE"
+    
+    'Load button tooltips
+    cmdSpeed(0).assignTooltip "Decrease speed"
+    cmdSpeed(1).assignTooltip "Increase speed"
+    cmdSpeed(2).assignTooltip "Pause scrolling"
+    
     'Reset the mouse coordinates and currently hovered entry
     mouseX = -1
     mouseY = -1
@@ -394,7 +361,7 @@ Private Sub Form_Load()
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx", True
     GenerateThankyou "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/", True
     GenerateThankyou "PortableFreeware.com team", "http://www.portablefreeware.com/forums/viewtopic.php?t=21652", True
-    GenerateThankyou "Raj Chaudhuri"
+    GenerateThankyou "Raj Chaudhuri", "https://github.com/rajch", True
     GenerateThankyou "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1", True
     GenerateThankyou "Rod Stephens", "http://www.vb-helper.com", True
     GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp", True
@@ -562,7 +529,7 @@ End Sub
 Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
-    If ((offsetY + fixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight) Then
+    If ((offsetY + fixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight - 40) Then
     
         'Check to see if the current credit block is highlighted
         Dim isHovered As Boolean
