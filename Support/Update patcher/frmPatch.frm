@@ -115,11 +115,14 @@ Private Sub Form_Load()
     'Position the output text box
     txtOut.Width = FormPatch.ScaleWidth - txtOut.Left * 2
     
+    'Replace the crappy default VB icon
+    SetIcon Me.hWnd, "AAA", True
+    
+    'Display the window
+    Me.Show
+    
     'Check relevant command-line params; this function returns TRUE if the command line contains parameters
     If parseCommandLine() Then
-    
-        'Replace the crappy default VB icon
-        SetIcon Me.hWnd, "AAA", True
         
         'Wait for PD to close; when it does, the timer will initiate the rest of the patch process.
         txtOut.Text = "Waiting for PhotoDemon to terminate..."
@@ -129,8 +132,10 @@ Private Sub Form_Load()
     'If the command line is empty, the user somehow ran this independent of PD.  Terminate immediately.
     Else
     
-        txtOut.Text = "No update available.  Closing updater..."
-    
+        textOut "It appears that something other than PhotoDemon launched this program.", False
+        textOut "For security reasons, this update patcher will not run unless started by PhotoDemon itself.", False
+        textOut "(You may close this window now.)", False
+        
     End If
     
 End Sub
@@ -139,12 +144,16 @@ End Sub
 ' the command line.
 Private Function parseCommandLine() As Boolean
     
+    Dim cUnicode As pdUnicode
+    Set cUnicode = New pdUnicode
+    
     'Split params according to spaces
     Dim allParams() As String
-    allParams = Split(Command$, " ")
+    allParams = Split(cUnicode.CommandW, " ")
     
     'Check for an empty command line
     If UBound(allParams) <= LBound(allParams) Then
+        textOut "WARNING! Input parameters invalid (" & cUnicode.CommandW & ").", False
         parseCommandLine = False
     
     'Retrieve all parameters
