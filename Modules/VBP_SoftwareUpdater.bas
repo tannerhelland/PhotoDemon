@@ -655,10 +655,19 @@ Public Function patchProgramFiles() As Boolean
     'We must tell the patcher where to find the update information
     patchParams = patchParams & " /start " & m_TrackStartPosition & " /end " & m_TrackEndPosition
     
-    ShellExecute 0, "open", patchFileName, patchParams, g_UserPreferences.getProgramPath, 0
+    Dim shellReturn As Long
+    shellReturn = ShellExecute(0, vbNullString, g_UserPreferences.getProgramPath & patchFileName, patchParams, vbNullString, 0)
     
-    'Regardless of outcome, we kill the update file when we're done with it.
-    'If FileExist(m_UpdateFilePath) Then Kill m_UpdateFilePath
+    'ShellExecute returns a value > 32 if successful (https://msdn.microsoft.com/en-us/library/windows/desktop/bb762153%28v=vs.85%29.aspx)
+    If shellReturn < 32 Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ShellExecute could not launch the updater!  It returned code #" & shellReturn & "."
+        #End If
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ShellExecute returned success.  Updater should launch momentarily..."
+        #End If
+    End If
     
     'Exit now
     patchProgramFiles = True

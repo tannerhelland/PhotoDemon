@@ -44,6 +44,11 @@ Private Const CRYPT_STRING_NOCRLF As Long = &H40000000
 Private Declare Function CryptBinaryToString Lib "Crypt32" Alias "CryptBinaryToStringW" (ByRef pbBinary As Byte, ByVal cbBinary As Long, ByVal dwFlags As Long, ByVal pszString As Long, ByRef pcchString As Long) As Long
 Private Declare Function CryptStringToBinary Lib "Crypt32" Alias "CryptStringToBinaryW" (ByVal pszString As Long, ByVal cchString As Long, ByVal dwFlags As Long, ByVal pbBinary As Long, ByRef pcbBinary As Long, ByRef pdwSkip As Long, ByRef pdwFlags As Long) As Long
 
+'This class can now retrieve a wide-char version of the command line
+Private Declare Function GetCommandLineW Lib "kernel32" () As Long
+Private Declare Function lstrcpynW Lib "kernel32" (ByVal lpString1 As Long, ByVal lpString2 As Long, ByVal iMaxLength As Long) As Long
+Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
+
 'Given a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
 Public Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As Byte) As Boolean
     
@@ -350,3 +355,43 @@ Public Function Base64Decode(ByRef dstArray() As Byte, ByVal strBase64 As String
     
 End Function
 
+'Return a Unicode-friendly copy of PD's command line params.  Thank you to contributor "dilettante" for the original version of this code,
+' available here (link good as of March 2015): http://www.xtremevbtalk.com/showthread.php?t=325868
+Public Function CommandW$()
+    
+    'If inside the IDE, we return the regular command-line; this allows test params set via Project Properties to still work
+    If inIDE Then
+        CommandW$ = Command$()
+    
+    'When compiled, a true Unicode-friendly command line is returned
+    Else
+        
+        'Get a pointer to the command line string
+        Dim ptrCommandLine As Long
+        ptrCommandLine = GetCommandLineW()
+        
+        'Copy the pointer into a VB string
+        Dim charLen As Long
+        charLen = lstrlenW(ptrCommandLine)
+        CommandW$ = Space$(charLen)
+        lstrcpynW StrPtr(CommandW$), ptrCommandLine, charLen + 1
+        
+        'To match VB's regular Command$ function, we strip out the program name and return just the argument portion
+        Dim firstDelimiter As String
+        If StrComp(Left$(CommandW$, 1), """", vbBinaryCompare) = 0 Then
+            firstDelimiter = """"
+        Else
+            firstDelimiter = " "
+        End If
+        
+        'Trim everything prior to the first delimiter
+        CommandW$ = Trim$(Mid$(CommandW$, InStr(2, CommandW$, firstDelimiter) + 1))
+        
+    End If
+    
+End Function
+
+'Some Unicode behavior varies inside the IDE, so this class must occasionally check for IDE vs compiled behavior
+Private Function inIDE() As Boolean
+    inIDE = Not CBool(App.logMode = 1)
+End Function
