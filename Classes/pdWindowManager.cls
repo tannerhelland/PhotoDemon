@@ -1319,7 +1319,10 @@ Public Function restoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
                 .lastPosition.y2 = .lastPosition.y1 + winHeight
             End If
             
-            MoveWindow .hWnd, .lastPosition.x1, .lastPosition.y1, .lastPosition.x2 - .lastPosition.x1, .lastPosition.y2 - .lastPosition.y1, 1
+            'If the loaded positions are valid, restore them now
+            If (.lastPosition.x2 > .lastPosition.x1) And (.lastPosition.y2 > .lastPosition.y1) Then
+                MoveWindow .hWnd, .lastPosition.x1, .lastPosition.y1, .lastPosition.x2 - .lastPosition.x1, .lastPosition.y2 - .lastPosition.y1, 1
+            End If
             
         End With
         
@@ -1573,7 +1576,7 @@ End Sub
 'Each child window must be registered through this class, using its hWnd.  This class will then use that hWnd to do things
 ' like move child windows proportionally to their parent.
 Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pdWindowType, Optional ByVal preferredLocationIfNecessary As Long = 1, Optional ByVal toolbarType As pdToolbarType = NOT_A_TOOLBAR, Optional imageWindowIndex As Long = -1, Optional ByVal minWidth As Long = -1, Optional ByVal minHeight As Long = -1)
-
+    
     'Has this window already been registered?  If so, don't re-register it.
     Dim i As Long
     For i = 0 To numOfPDWindows
@@ -1609,7 +1612,7 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
         .typeOfWindow = whatWindowType
         .windowName = childForm.Name
     End With
-        
+    
     'Subclass this window, and add a user param of 64 + "index in array".  We can use this value to recognize this hWnd as belonging
     ' to a child window, and quickly look it up in our window tracking array.
     cSubclass.ssc_Subclass pdWindows(numOfPDWindows).hWnd, 64 + numOfPDWindows, , Me
