@@ -57,7 +57,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0   'False
+      enabled         =   0
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
@@ -68,10 +68,10 @@ Begin VB.Form FormMain
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   3360
-      _extentx        =   635
-      _extenty        =   635
-      errasout        =   0   'False
-      pollinterval    =   5
+      _ExtentX        =   635
+      _ExtentY        =   635
+      ErrAsOut        =   0   'False
+      PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -2536,6 +2536,10 @@ Private Sub Form_Load()
     ' and I'm working on a solution to that.)
     Me.Visible = True
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Registering toolbars with the window manager..."
+    #End If
+    
     'Register all toolbox forms with the window manager
     g_WindowManager.registerChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX, , fixDPI(48)
     g_WindowManager.registerChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , fixDPI(200)
@@ -2547,18 +2551,34 @@ Private Sub Form_Load()
         g_WindowManager.registerChildForm toolbar_Debug, GENERIC_FLOATING_WINDOW, 4, DEBUG_TOOLBOX
     #End If
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Preparing primary toolbar..."
+    #End If
+    
     'Display the various toolboxes per the user's display settings
     toolbar_Toolbox.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_Toolbox.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Preparing layers toolbar..."
+    #End If
+    
     toolbar_Layers.Show vbModeless, Me
     g_WindowManager.setWindowVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Preparing options toolbar..."
+    #End If
     
     'Visibility for the options toolbox is automatically set according to the current tool; this is different from other dialogs.
     ' (Note that the .resetToolButtonStates function checks the relevant preference prior to changing the window state, so all
     '  cases are covered nicely.)
     toolbar_Options.Show vbModeless, Me
     toolbar_Toolbox.resetToolButtonStates
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Preparing image tabstrip..."
+    #End If
     
     'We only display the image tab manager now if the user loaded two or more images from the command line
     toolbar_ImageTabs.Show vbModeless, Me
@@ -2570,12 +2590,20 @@ Private Sub Form_Load()
         g_WindowManager.setWindowVisibility toolbar_Debug.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
     #End If
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Updating primary canvas against current toolbar layout..."
+    #End If
+    
     'With all toolboxes loaded, we need to synchronize the main canvas layout against any that remain visible
     refreshAllCanvases
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Preparing input tracker..."
+    #End If
+    
     'Enable mouse subclassing for events like mousewheel, forward/back keys, enter/leave
     Set cMouseEvents = New pdInputMouse
-    cMouseEvents.addInputTracker Me.hWnd
+    cMouseEvents.addInputTracker Me.hWnd, True, , True
     
     
     '*************************************************************************************************************************************
