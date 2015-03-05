@@ -520,7 +520,7 @@ Public Sub LoadTheProgram()
     #End If
     
     'Display the main form
-    FormMain.Show
+    'FormMain.Show
     
     Unload FormSplash
         
