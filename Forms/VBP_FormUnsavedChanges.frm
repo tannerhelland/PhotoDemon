@@ -146,7 +146,7 @@ Private userAnswer As VbMsgBoxResult
 Private cImgCtl As clsControlImage
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -188,8 +188,8 @@ Public Sub showDialog(ByRef ownerForm As Form)
     lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", pdImages(imageBeingClosed).originalFileNameAndExtension)
 
     'Use a custom tooltip class to allow for multiline tooltips
-    Set m_ToolTip = New clsToolTip
-    With m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    With m_Tooltip
     
         .Create Me
         .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
@@ -246,7 +246,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
     End If
 
     'Apply any custom styles to the form
-    makeFormPretty Me, m_ToolTip, True
+    makeFormPretty Me, m_Tooltip, True
 
     'Display the form
     showPDDialog vbModal, Me, True

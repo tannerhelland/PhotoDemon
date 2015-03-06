@@ -286,3 +286,18 @@ Public Function promptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
     End If
 
 End Function
+
+'Present an "add new preset" dialog box to the user.
+Public Function promptNewPreset(ByRef srcCommandBar As commandBar, ByRef parentForm As Form, ByRef dstPresetName As String) As VbMsgBoxResult
+
+    Load dialog_AddPreset
+    dialog_AddPreset.showDialog srcCommandBar, parentForm
+
+    promptNewPreset = dialog_AddPreset.DialogResult
+    
+    dstPresetName = dialog_AddPreset.NewPresetName
+    
+    Unload dialog_AddPreset
+    Set dialog_AddPreset = Nothing
+
+End Function
