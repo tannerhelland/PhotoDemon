@@ -1633,6 +1633,9 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                     pdMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
                 End If
                 
+                'If the update managed to download while the reader was staring at the message box, display the restart notification immediately
+                If g_ShowUpdateNotification Then Software_Updater.displayUpdateNotification
+                
             End If
             
         Else
@@ -3595,6 +3598,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
             ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
             Me.asyncDownloader.addToQueue "PROGRAM_UPDATE_CHECK_USER", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.getUpdatePath & "updates.xml"
+            
         
         'Submit feedback
         Case 3

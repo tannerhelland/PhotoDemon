@@ -21,6 +21,15 @@ Begin VB.UserControl commandBar
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   637
    ToolboxBitmap   =   "commandBar.ctx":0000
+   Begin PhotoDemon.pdComboBox cmbPreset 
+      Height          =   345
+      Left            =   1800
+      TabIndex        =   5
+      Top             =   195
+      Width           =   3135
+      _extentx        =   5530
+      _extenty        =   609
+   End
    Begin VB.CommandButton cmdRandomize 
       Caption         =   "Randomize"
       BeginProperty Font 
@@ -51,16 +60,9 @@ Begin VB.UserControl commandBar
       EndProperty
       Height          =   510
       Left            =   5010
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   120
       Width           =   720
-   End
-   Begin VB.ComboBox cmbPreset 
-      Height          =   360
-      Left            =   1800
-      TabIndex        =   4
-      Top             =   195
-      Width           =   3105
    End
    Begin VB.CommandButton cmdReset 
       Caption         =   "Reset"
@@ -184,7 +186,7 @@ Private userSuppliedToolName As String
 Private cImgCtl As clsControlImage
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'XML handling (used to save/load presets) is handled through a specialized class
 Dim xmlEngine As pdXML
@@ -421,7 +423,7 @@ Private Sub cmdRandomize_Click()
     RaiseEvent RandomizeClick
     
     'For good measure, erase any preset name in the combo box
-    cmbPreset.Text = ""
+    'cmbPreset.Text = ""
     
     'Enable preview
     allowPreviews = True
@@ -441,88 +443,90 @@ Private Function savePreset() As Boolean
 
     Message "Saving preset..."
 
-    'If no name has been entered, prompt the user to do it now.
-    If Len(cmbPreset.Text) = 0 Then
-        pdMsgBox "Before saving, please enter a name for this preset (in the box next to the save button).", vbInformation + vbOKOnly + vbApplicationModal, "Preset name required"
-        cmbPreset.Text = g_Language.TranslateMessage("(enter name here)")
-        cmbPreset.SetFocus
-        cmbPreset.SelStart = 0
-        cmbPreset.SelLength = Len(cmbPreset.Text)
+    'Prompt the user for a name
+    Dim newNameReturn As VbMsgBoxResult, newPresetName As String
+    newNameReturn = Dialog_Handler.promptNewPreset(Me, UserControl.Parent, newPresetName)
+    
+    If newNameReturn = vbOK Then
+        
+        'If a name has been entered but it is the same as an existing preset, prompt the user to overwrite.
+        Dim overwritingExistingPreset As Boolean
+        overwritingExistingPreset = False
+        
+        'For now, overwriting happens automatically.  I'll deal with this more elegantly in the future.
+        
+        'Old overwrite detection code continues here, for convenience.
+        Dim i As Long
+        For i = 0 To cmbPreset.ListCount - 1
+            If (StrComp(cmbPreset.List(i), newPresetName, vbTextCompare) = 0) Or ((StrComp(xmlEngine.getXMLSafeTagName(cmbPreset.List(i)), xmlEngine.getXMLSafeTagName(newPresetName), vbTextCompare) = 0)) Then
+'
+'                Dim msgReturn As VbMsgBoxResult
+'                msgReturn = pdMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel + vbApplicationModal + vbInformation, "Overwrite existing preset")
+'
+'                'Based on the user's answer to the confirmation message box, continue or exit
+'                Select Case msgReturn
+'
+'                    'If the user selects YES, continue on like normal
+'                    Case vbYes
+                        overwritingExistingPreset = True
+'
+'                    'If the user selects NO, exit and let them enter a new name
+'                    Case vbNo
+'                        cmbPreset.Text = g_Language.TranslateMessage("(enter name here)")
+'                        cmbPreset.SetFocus
+'                        cmbPreset.SelStart = 0
+'                        cmbPreset.SelLength = Len(cmbPreset.Text)
+'                        Message "Preset save canceled."
+'                        savePreset = False
+'                        Exit Function
+'
+'                    'If the user selects CANCEL, just exit
+'                    Case vbCancel
+'                        Message "Preset save canceled."
+'                        savePreset = False
+'                        Exit Function
+'
+'                End Select
+'
+            End If
+        Next i
+        
+        'If we've made it all the way here, the combo box contains the user's desired name for this preset.
+                
+        'Write the preset out to file.
+        fillXMLSettings newPresetName
+        
+        'Because the user may still cancel the dialog, we want to request an XML file dump immediately, so
+        ' this preset is not lost.
+        xmlEngine.writeXMLToFile parentToolPath
+        
+        'Also, add this preset to the combo box
+        If Not overwritingExistingPreset Then
+            newPresetName = " " & newPresetName
+            cmbPreset.AddItem newPresetName
+        End If
+        
+        Message "Preset saved."
+        
+        savePreset = True
+        
+    Else
         Message "Preset save canceled."
         savePreset = False
         Exit Function
     End If
-    
-    'If a name has been entered but it is the same as an existing preset, prompt the user to overwrite.
-    Dim overwritingExistingPreset As Boolean
-    overwritingExistingPreset = False
-    
-    Dim i As Long
-    For i = 0 To cmbPreset.ListCount - 1
-        If (StrComp(cmbPreset.List(i), cmbPreset.Text, vbTextCompare) = 0) Or ((StrComp(xmlEngine.getXMLSafeTagName(cmbPreset.List(i)), xmlEngine.getXMLSafeTagName(cmbPreset.Text), vbTextCompare) = 0)) Then
-            
-            Dim msgReturn As VbMsgBoxResult
-            msgReturn = pdMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel + vbApplicationModal + vbInformation, "Overwrite existing preset")
-            
-            'Based on the user's answer to the confirmation message box, continue or exit
-            Select Case msgReturn
-            
-                'If the user selects YES, continue on like normal
-                Case vbYes
-                    overwritingExistingPreset = True
-                
-                'If the user selects NO, exit and let them enter a new name
-                Case vbNo
-                    cmbPreset.Text = g_Language.TranslateMessage("(enter name here)")
-                    cmbPreset.SetFocus
-                    cmbPreset.SelStart = 0
-                    cmbPreset.SelLength = Len(cmbPreset.Text)
-                    Message "Preset save canceled."
-                    savePreset = False
-                    Exit Function
-                
-                'If the user selects CANCEL, just exit
-                Case vbCancel
-                    Message "Preset save canceled."
-                    savePreset = False
-                    Exit Function
-            
-            End Select
-            
-        End If
-    Next i
-    
-    'If we've made it all the way here, the combo box contains the user's desired name for this preset.
-    
-    'Write the preset out to file.
-    fillXMLSettings cmbPreset.Text
-    
-    'Because the user may still cancel the dialog, we want to request an XML file dump immediately, so
-    ' this preset is not lost.
-    xmlEngine.writeXMLToFile parentToolPath
-    
-    'Also, add this preset to the combo box
-    If Not overwritingExistingPreset Then
-        Dim newPresetName As String
-        newPresetName = " " & Trim$(cmbPreset.Text)
-        cmbPreset.AddItem newPresetName
-    End If
-    
-    Message "Preset saved."
-    
-    savePreset = True
     
 End Function
 
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
+    Set cmdOK.Font = mFont
+    Set cmdCancel.Font = mFont
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
-    Set cmbPreset.Font = mFont
+    cmbPreset.FontSize = mFont.Size
 End Sub
 
 'Backcolor is used to control the color of the base user control; nothing else is affected by it
@@ -687,7 +691,7 @@ Private Sub cmdReset_Click()
     RaiseEvent ResetClick
     
     'For good measure, erase any preset name in the combo box
-    cmbPreset.Text = ""
+    'cmbPreset.Text = ""
     
     'Enable previews
     allowPreviews = True
@@ -705,8 +709,8 @@ Private Sub UserControl_Initialize()
     userAllowsPreviews = True
 
     'Apply the hand cursor to all command buttons
-    setHandCursorToHwnd CmdOK.hWnd
-    setHandCursorToHwnd CmdCancel.hWnd
+    setHandCursorToHwnd cmdOK.hWnd
+    setHandCursorToHwnd cmdCancel.hWnd
     setHandCursorToHwnd cmdReset.hWnd
     setHandCursorToHwnd cmdRandomize.hWnd
     setHandCursorToHwnd cmdSavePreset.hWnd
@@ -794,8 +798,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
         'Right-align the Cancel and OK buttons
-        CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - fixDPI(8)
-        CmdOK.Left = CmdCancel.Left - CmdOK.Width - fixDPI(8)
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
         
     End If
     
@@ -815,13 +819,13 @@ Private Sub UserControl_Show()
     ' (which allows for linebreaks and theming).
     If g_IsProgramRunning Then
         
-        Set m_ToolTip = New clsToolTip
-        With m_ToolTip
+        Set m_Tooltip = New clsToolTip
+        With m_Tooltip
         
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool CmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
-            .AddTool CmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
+            .AddTool cmdOK, g_Language.TranslateMessage("Apply this action to the current image.")
+            .AddTool cmdCancel, g_Language.TranslateMessage("Exit this tool.  No changes will be made to the image.")
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
@@ -830,8 +834,8 @@ Private Sub UserControl_Show()
         End With
         
         'Translate all control captions
-        CmdOK.Caption = g_Language.TranslateMessage(CmdOK.Caption)
-        CmdCancel.Caption = g_Language.TranslateMessage(CmdCancel.Caption)
+        cmdOK.Caption = g_Language.TranslateMessage(cmdOK.Caption)
+        cmdCancel.Caption = g_Language.TranslateMessage(cmdCancel.Caption)
         
         'In the IDE, we also need to translate the left-hand buttons
         If Not g_IsProgramCompiled Then
@@ -900,7 +904,7 @@ Private Sub UserControl_Show()
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
     On Error GoTo somethingStoleFocus
-    If g_IsProgramRunning Then CmdOK.SetFocus
+    If g_IsProgramRunning Then cmdOK.SetFocus
 
 somethingStoleFocus:
     
@@ -1209,7 +1213,7 @@ Private Sub findAllXMLPresets()
     End If
     
     'When finished, clear any active text in the combo box
-    cmbPreset.Text = ""
+    'cmbPreset.Text = ""
 
 End Sub
 

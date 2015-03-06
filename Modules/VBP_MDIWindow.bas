@@ -191,13 +191,13 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 End If
             
                 'Before displaying the "do you want to save this image?" dialog, bring the image in question to the foreground.
-                If FormMain.Enabled Then activatePDImage imageID, "unsaved changes dialog required"
+                If FormMain.Enabled Then activatePDImage imageID, "unsaved changes dialog required", True
                 
                 'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
                 ' displayed and the user will be given an option to apply their choice to all unsaved images.
                 Dim confirmReturn As VbMsgBoxResult
                 confirmReturn = confirmClose(imageID)
-                        
+                
             Else
                 confirmReturn = g_HowToDealWithAllUnsavedImages
             End If
@@ -220,7 +220,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 
                 'If the form being saved is enabled, bring that image to the foreground. (If a "Save As" is required, this
                 ' helps show the user which image the Save As form is referencing.)
-                If FormMain.Enabled Then activatePDImage imageID, "image being saved during shutdown"
+                If FormMain.Enabled Then activatePDImage imageID, "image being saved during shutdown", True
                 
                 'Attempt to save. Note that the user can still cancel at this point, and we want to honor their cancellation
                 Dim saveSuccessful As Boolean
